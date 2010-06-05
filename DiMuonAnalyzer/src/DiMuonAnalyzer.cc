@@ -13,7 +13,7 @@
 //
 // Original Author:  Tae Jeong Kim,40 R-A32,+41227678602,
 //         Created:  Fri Jun  4 17:19:29 CEST 2010
-// $Id$
+// $Id: DiMuonAnalyzer.cc,v 1.1 2010/06/04 22:35:17 tjkim Exp $
 //
 //
 
@@ -30,6 +30,7 @@
 
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "DataFormats/PatCandidates/interface/Muon.h"
+#include "DataFormats/Math/interface/LorentzVector.h"
 
 #include "TTree.h"
 #include "TFile.h" 
@@ -53,7 +54,9 @@ class DiMuonAnalyzer : public edm::EDAnalyzer {
       edm::InputTag muonLabel_;
       TTree* tree;
       TFile* file;
-      std::vector<double>* pt;
+      std::vector<math::XYZTLorentzVector>* Z;
+      std::vector<math::XYZTLorentzVector>* muon1;
+      std::vector<math::XYZTLorentzVector>* muon2;
       // ----------member data ---------------------------
 };
 
@@ -75,7 +78,9 @@ DiMuonAnalyzer::DiMuonAnalyzer(const edm::ParameterSet& iConfig)
   outputFile_ = iConfig.getParameter< std::string > ("outputFile");
   muonLabel_ =  iConfig.getParameter<edm::InputTag>("muonLabel");
   file = new TFile(outputFile_.c_str(),"RECREATE");
-  pt = new std::vector<double>();
+  Z = new std::vector<math::XYZTLorentzVector>();
+  muon1 = new std::vector<math::XYZTLorentzVector>();
+  muon2 = new std::vector<math::XYZTLorentzVector>();
 }
 
 
@@ -96,21 +101,26 @@ DiMuonAnalyzer::~DiMuonAnalyzer()
 void
 DiMuonAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 {
-   using namespace edm;
-   
-   pt->clear();
+  using namespace edm;
+  Z->clear();
+  muon1->clear();
+  muon2->clear();
 
-   typedef pat::MuonCollection::const_iterator MI;
-   edm::Handle<pat::MuonCollection> muons_;
-   iEvent.getByLabel(muonLabel_,muons_);
+  typedef pat::MuonCollection::const_iterator MI;
+  edm::Handle<pat::MuonCollection> muons_;
+  iEvent.getByLabel(muonLabel_,muons_);
 
-   for(MI mi = muons_->begin(); mi != muons_->end(); mi++){
-    pt->push_back(mi->pt());
-   }
+  for(MI mi = muons_->begin(); mi != muons_->end(); mi++){
+    for(MI mj = mi + 1 ; mj != muons_->end(); mj++){
+      Z->push_back(mi->p4() + mj->p4());
+      muon1->push_back(mi->p4());
+      muon2->push_back(mj->p4());
+    }
+  }
    
-   //ESHandle<SetupData> pSetup;
-   //iSetup.get<SetupRecord>().get(pSetup);
-   tree->Fill();
+  //ESHandle<SetupData> pSetup;
+  //iSetup.get<SetupRecord>().get(pSetup);
+  tree->Fill();
 }
 
 
@@ -119,7 +129,10 @@ void
 DiMuonAnalyzer::beginJob()
 {
   tree = new TTree("DiMuonTree", "Tree for Top quark study");
-  tree->Branch("pt", "std::vector<double>", &pt);
+  tree->Branch("Z","std::vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >", &Z);
+  tree->Branch("muon1","std::vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >", &muon1);
+  tree->Branch("muon2","std::vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >", &muon2);
+
 }
 
 // ------------ method called once each job just after ending the event loop  ------------
