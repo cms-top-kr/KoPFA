@@ -13,7 +13,7 @@
 //
 // Original Author:  Tae Jeong Kim,40 R-A32,+41227678602,
 //         Created:  Fri Jun  4 17:19:29 CEST 2010
-// $Id: DiMuonAnalyzer.cc,v 1.1 2010/06/04 22:35:17 tjkim Exp $
+// $Id: DiMuonAnalyzer.cc,v 1.2 2010/06/05 00:08:30 tjkim Exp $
 //
 //
 
@@ -31,6 +31,7 @@
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "DataFormats/PatCandidates/interface/Muon.h"
 #include "DataFormats/Math/interface/LorentzVector.h"
+#include "KoPFA/DataFormats/interface/ZCandidate.h"
 
 #include "TTree.h"
 #include "TFile.h" 
@@ -54,7 +55,7 @@ class DiMuonAnalyzer : public edm::EDAnalyzer {
       edm::InputTag muonLabel_;
       TTree* tree;
       TFile* file;
-      std::vector<math::XYZTLorentzVector>* Z;
+      std::vector<Ko::ZCandidate>* Z;
       std::vector<math::XYZTLorentzVector>* muon1;
       std::vector<math::XYZTLorentzVector>* muon2;
       // ----------member data ---------------------------
@@ -78,7 +79,7 @@ DiMuonAnalyzer::DiMuonAnalyzer(const edm::ParameterSet& iConfig)
   outputFile_ = iConfig.getParameter< std::string > ("outputFile");
   muonLabel_ =  iConfig.getParameter<edm::InputTag>("muonLabel");
   file = new TFile(outputFile_.c_str(),"RECREATE");
-  Z = new std::vector<math::XYZTLorentzVector>();
+  Z = new std::vector<Ko::ZCandidate>();
   muon1 = new std::vector<math::XYZTLorentzVector>();
   muon2 = new std::vector<math::XYZTLorentzVector>();
 }
@@ -112,7 +113,9 @@ DiMuonAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 
   for(MI mi = muons_->begin(); mi != muons_->end(); mi++){
     for(MI mj = mi + 1 ; mj != muons_->end(); mj++){
-      Z->push_back(mi->p4() + mj->p4());
+      int sign = mi->charge() * mj->charge();
+      Ko::ZCandidate dimuon(mi->p4(), mj->p4(), sign);
+      Z->push_back(dimuon);
       muon1->push_back(mi->p4());
       muon2->push_back(mj->p4());
     }
@@ -129,7 +132,7 @@ void
 DiMuonAnalyzer::beginJob()
 {
   tree = new TTree("DiMuonTree", "Tree for Top quark study");
-  tree->Branch("Z","std::vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >", &Z);
+  tree->Branch("Z","std::vector<Ko::ZCandidate>", &Z);
   tree->Branch("muon1","std::vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >", &muon1);
   tree->Branch("muon2","std::vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >", &muon2);
 

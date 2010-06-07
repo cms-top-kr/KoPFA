@@ -1,0 +1,10 @@
+<lcgdict>
+
+  <class name="Ko::ZCandidate"/>
+  <class name="std::vector<Ko::ZCandidate>"/>
+  <class name="edm::Wrapper<Ko::ZCandidate>"/>
+  <class name="edm::Wrapper<std::vector<Ko::ZCandidate> >"/>
+  <class name="edm::Ptr<Ko::ZCandidate>"/>
+
+</lcgdict>
+
