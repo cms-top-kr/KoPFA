@@ -13,7 +13,7 @@
 //
 // Original Author:  Tae Jeong Kim,40 R-A32,+41227678602,
 //         Created:  Fri Jun  4 17:19:29 CEST 2010
-// $Id: DiMuonAnalyzer.cc,v 1.2 2010/06/05 00:08:30 tjkim Exp $
+// $Id: DiMuonAnalyzer.cc,v 1.3 2010/06/07 16:05:31 tjkim Exp $
 //
 //
 
@@ -24,6 +24,8 @@
 // user include files
 #include "FWCore/Framework/interface/Frameworkfwd.h"
 #include "FWCore/Framework/interface/EDAnalyzer.h"
+#include "FWCore/ServiceRegistry/interface/Service.h"
+#include "CommonTools/UtilAlgos/interface/TFileService.h"
 
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/Framework/interface/MakerMacros.h"
@@ -35,6 +37,7 @@
 
 #include "TTree.h"
 #include "TFile.h" 
+#include "TH1.h"
 
 //
 // class declaration
@@ -51,10 +54,13 @@ class DiMuonAnalyzer : public edm::EDAnalyzer {
       virtual void analyze(const edm::Event&, const edm::EventSetup&);
       virtual void endJob() ;
 
-      std::string outputFile_;
       edm::InputTag muonLabel_;
       TTree* tree;
-      TFile* file;
+
+      TH1F * h_leadingpt;
+      TH1F * h_secondpt;
+      TH1F * h_mass;
+
       std::vector<Ko::ZCandidate>* Z;
       std::vector<math::XYZTLorentzVector>* muon1;
       std::vector<math::XYZTLorentzVector>* muon2;
@@ -76,9 +82,15 @@ DiMuonAnalyzer::DiMuonAnalyzer(const edm::ParameterSet& iConfig)
 
 {
    //now do what ever initialization is needed
-  outputFile_ = iConfig.getParameter< std::string > ("outputFile");
   muonLabel_ =  iConfig.getParameter<edm::InputTag>("muonLabel");
-  file = new TFile(outputFile_.c_str(),"RECREATE");
+
+  edm::Service<TFileService> fs;
+  tree = fs->make<TTree>("tree", "Tree for Top quark study");
+
+  h_leadingpt   = fs->make<TH1F>( "leadingpt"  , "p_{t}", 100,  0., 100. );
+  h_secondpt    = fs->make<TH1F>( "secondpt"  , "p_{t}", 100,  0., 100. );
+  h_mass      = fs->make<TH1F>( "mass", "Mass", 100, 0., 200. );   
+
   Z = new std::vector<Ko::ZCandidate>();
   muon1 = new std::vector<math::XYZTLorentzVector>();
   muon2 = new std::vector<math::XYZTLorentzVector>();
@@ -103,6 +115,7 @@ void
 DiMuonAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 {
   using namespace edm;
+  using namespace std;
   Z->clear();
   muon1->clear();
   muon2->clear();
@@ -115,9 +128,15 @@ DiMuonAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
     for(MI mj = mi + 1 ; mj != muons_->end(); mj++){
       int sign = mi->charge() * mj->charge();
       Ko::ZCandidate dimuon(mi->p4(), mj->p4(), sign);
+
       Z->push_back(dimuon);
       muon1->push_back(mi->p4());
       muon2->push_back(mj->p4());
+
+      h_leadingpt->Fill(mi->pt());
+      h_secondpt->Fill(mj->pt());
+      h_mass->Fill(dimuon.mass());
+
     }
   }
    
@@ -131,7 +150,6 @@ DiMuonAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 void 
 DiMuonAnalyzer::beginJob()
 {
-  tree = new TTree("DiMuonTree", "Tree for Top quark study");
   tree->Branch("Z","std::vector<Ko::ZCandidate>", &Z);
   tree->Branch("muon1","std::vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >", &muon1);
   tree->Branch("muon2","std::vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >", &muon2);
@@ -141,8 +159,7 @@ DiMuonAnalyzer::beginJob()
 // ------------ method called once each job just after ending the event loop  ------------
 void 
 DiMuonAnalyzer::endJob() {
-  file->Write();
-  file->Close();
+
 }
 
 //define this as a plug-in

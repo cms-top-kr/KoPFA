@@ -15,11 +15,14 @@ process.load("KoPFA.DiMuonAnalyzer.RD.SDMUON_MuonFilter_Run_135176_135802_cff")
 #    )
 #)
 
+# register TFileService
+process.TFileService = cms.Service("TFileService",
+    fileName = cms.string('vallot.root')
+)
 
-process.demo = cms.EDAnalyzer('DiMuonAnalyzer',
+process.DiMuon = cms.EDAnalyzer('DiMuonAnalyzer',
   muonLabel =  cms.InputTag('selectedPatMuons'),
-  outputFile = cms.string('ntuple.root')
 )
 
 
-process.p = cms.Path(process.demo)
+process.p = cms.Path(process.DiMuon)
