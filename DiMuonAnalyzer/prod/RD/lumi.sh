@@ -1,0 +1,2 @@
+lumiCalc.py -c frontier://LumiProd/CMS_LUMI_PROD -i Cert_132440-137028_7TeV_June14thReReco_Collisions10_JSON_TopFiltered_July11th.txt overview > Cert_132440-137028_7TeV_June14thReReco_Collisions10_JSON_TopFiltered_July11th_lumi.txt
+lumiCalc.py -c frontier://LumiProd/CMS_LUMI_PROD -i Cert_132440-139790_7TeV_StreamExpress_Collisions10_JSON_TopFiltered_July11th.txt overview > Cert_132440-139790_7TeV_StreamExpress_Collisions10_JSON_TopFiltered_July11th_lumi.txt 
