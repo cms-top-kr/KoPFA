@@ -33,8 +33,7 @@ process.maxEvents = cms.untracked.PSet(
 process.source = cms.Source("PoolSource",
                                 fileNames = cms.untracked.vstring(
 #'rfio:/castor/cern.ch/user/w/wreece/SDMUONFILTER/WmunuSpring10/24BF0D12-DF46-DF11-BA71-001D0968F2F6.root')
-'rfio:/castor/cern.ch/user/t/tjkim/SDMUONFILTER/MC/Summer10/test.root')
-#'/store/data/Run2010A/Mu/RECO/Jul6thReReco_v1/0054/FCC806C9-7D89-DF11-8666-0022649F01AA.root')
+'/store/data/Run2010A/Mu/RECO/Jul6thReReco_v1/0054/FCC806C9-7D89-DF11-8666-0022649F01AA.root')
 #'/store/relval/CMSSW_3_6_1_patch1/RelValTTbar/GEN-SIM-RECO/START36_V8-v1/0000/DA3B2785-F462-DF11-B39C-0030487C5CE2.root'    )
 )                            
 #pat event CONTENT
@@ -220,10 +219,13 @@ SelectEvents = cms.vstring('muonFilter') #When running on SD no need to have a f
 #process.load("PFAnalyses.CommonTools.RandomCone_cfi")
 #process.randomCones.muonLabel = cms.InputTag("selectedPatMuonsPFlow")
 #process.load("PFAnalyses.W.countingSequences_cfi")
+process.load("KoPFA/CommonTools/EventInfo_cfi")
 
 process.TFileService = cms.Service("TFileService",
     fileName = cms.string('vallot.root')
 )
+
+process.TotalEventInfo = cms.Path(process.EventInfo)
 
 process.DiMuonPFlow = cms.EDAnalyzer('DiMuonAnalyzer',
   muonLabel =  cms.InputTag('PFMuons'),
@@ -236,12 +238,14 @@ process.DiMuon = cms.EDAnalyzer('DiMuonAnalyzer',
 process.DiMuonAnalPFlow = cms.Path(
                                process.PFMuons
                              +process.patPFMuonFilter
-                             +process.DiMuonPFlow)
+                             +process.DiMuonPFlow
+                             )
 
 process.DiMuonAnal = cms.Path(
                               process.Muons
                              +process.patMuonFilter
-                             +process.DiMuon)
+                             +process.DiMuon
+                             )
 
 process.p = cms.Path(
 #         process.startupSequence*
@@ -261,6 +265,7 @@ process.e = cms.EndPath(
 
 
 process.schedule = cms.Schedule(#process.l1tcollpath,
+                                process.TotalEventInfo,
                                 process.goodvertex,                            
                                 process.p,
                                 process.muonFilter,

@@ -219,10 +219,13 @@ SelectEvents = cms.vstring('muonFilter') #When running on SD no need to have a f
 #process.load("PFAnalyses.CommonTools.RandomCone_cfi")
 #process.randomCones.muonLabel = cms.InputTag("selectedPatMuonsPFlow")
 #process.load("PFAnalyses.W.countingSequences_cfi")
+process.load("KoPFA/CommonTools/EventInfo_cfi")
 
 process.TFileService = cms.Service("TFileService",
     fileName = cms.string('vallot.root')
 )
+
+process.TotalEventInfo = cms.Path(process.EventInfo)
 
 process.DiMuonPFlow = cms.EDAnalyzer('DiMuonAnalyzer',
   muonLabel =  cms.InputTag('PFMuons'),
@@ -235,12 +238,14 @@ process.DiMuon = cms.EDAnalyzer('DiMuonAnalyzer',
 process.DiMuonAnalPFlow = cms.Path(
                                process.PFMuons
                              +process.patPFMuonFilter
-                             +process.DiMuonPFlow)
+                             +process.DiMuonPFlow
+                             )
 
 process.DiMuonAnal = cms.Path(
                               process.Muons
                              +process.patMuonFilter
-                             +process.DiMuon)
+                             +process.DiMuon
+                             )
 
 process.p = cms.Path(
 #         process.startupSequence*
@@ -260,6 +265,7 @@ process.e = cms.EndPath(
 
 
 process.schedule = cms.Schedule(#process.l1tcollpath,
+                                process.TotalEventInfo,
                                 process.goodvertex,                            
                                 process.p,
                                 process.muonFilter,

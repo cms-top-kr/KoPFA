@@ -13,7 +13,7 @@
 //
 // Original Author:  Tae Jeong Kim,40 R-A32,+41227678602,
 //         Created:  Fri Jun  4 17:19:29 CEST 2010
-// $Id: DiMuonAnalyzer.cc,v 1.3 2010/06/07 16:05:31 tjkim Exp $
+// $Id: DiMuonAnalyzer.cc,v 1.4 2010/06/11 20:35:51 tjkim Exp $
 //
 //
 
@@ -65,6 +65,12 @@ class DiMuonAnalyzer : public edm::EDAnalyzer {
       std::vector<math::XYZTLorentzVector>* muon1;
       std::vector<math::XYZTLorentzVector>* muon2;
       // ----------member data ---------------------------
+
+      //add run event data
+      unsigned int EVENT;
+      unsigned int RUN;
+      unsigned int LUMI;
+  
 };
 
 //
@@ -120,6 +126,10 @@ DiMuonAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
   muon1->clear();
   muon2->clear();
 
+  EVENT  = iEvent.id().event();
+  RUN    = iEvent.id().run();
+  LUMI   = iEvent.id().luminosityBlock();
+
   typedef pat::MuonCollection::const_iterator MI;
   edm::Handle<pat::MuonCollection> muons_;
   iEvent.getByLabel(muonLabel_,muons_);
@@ -150,10 +160,14 @@ DiMuonAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 void 
 DiMuonAnalyzer::beginJob()
 {
+  tree->Branch("EVENT",&EVENT,"EVENT/i");
+  tree->Branch("RUN",&RUN,"RUN/i");
+  tree->Branch("LUMI",&LUMI,"LUMI/i");
+
   tree->Branch("Z","std::vector<Ko::ZCandidate>", &Z);
   tree->Branch("muon1","std::vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >", &muon1);
   tree->Branch("muon2","std::vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >", &muon2);
-
+  
 }
 
 // ------------ method called once each job just after ending the event loop  ------------
