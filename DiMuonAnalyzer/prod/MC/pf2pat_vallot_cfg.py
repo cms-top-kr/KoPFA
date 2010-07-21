@@ -135,22 +135,13 @@ process.goodvertex=cms.Path(process.primaryVertexFilter+process.noscraping)
 
 #PATMUON Selector
 #Here we define the muon selectors
-process.load("KoPFA.DiMuonAnalyzer.PatMuonSelector_cfi")
+process.load("KoPFA.CommonTools.MuonSelector_cfi")
    
-process.patPFMuonFilter = cms.EDFilter("CandViewCountFilter",
-  src = cms.InputTag('PFMuons'),
-  minNumber = cms.uint32(1)
-)
-
-process.patMuonFilter = cms.EDFilter("CandViewCountFilter",
-  src = cms.InputTag('Muons'),
-  minNumber = cms.uint32(1)
-)
-
 process.pfmuonFilter = cms.Path(
                              process.primaryVertexFilter
                              +process.noscraping
 #                            process.Mu_1e28
+                             +process.acceptedMuonsPFlow
                              +process.PFMuons
                              +process.patPFMuonFilter)
 
@@ -158,6 +149,7 @@ process.muonFilter = cms.Path(
                              process.primaryVertexFilter
                              +process.noscraping
 #                             process.Mu_1e28
+                             +process.acceptedMuons
                              +process.Muons
                              +process.patMuonFilter)
 
@@ -236,13 +228,15 @@ process.DiMuon = cms.EDAnalyzer('DiMuonAnalyzer',
 )
 
 process.DiMuonAnalPFlow = cms.Path(
-                               process.PFMuons
+                              process.acceptedMuonsPFlow
+                             +process.PFMuons
                              +process.patPFMuonFilter
                              +process.DiMuonPFlow
                              )
 
 process.DiMuonAnal = cms.Path(
-                              process.Muons
+                              process.acceptedMuons
+                             +process.Muons
                              +process.patMuonFilter
                              +process.DiMuon
                              )
