@@ -2,7 +2,7 @@
  double scale = 1.0;
 
  //luminosity
- double lumi_e=0.080;
+ double lumi_e=0.078;
 
  //cross section at D0 
  //double Zmm = 242 ;
