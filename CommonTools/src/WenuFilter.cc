@@ -13,7 +13,7 @@
 //
 // Original Author:  Tae Jeong Kim
 //         Created:  Mon Dec 14 01:29:35 CET 2009
-// $Id: WenuFilter.cc,v 1.1 2010/06/22 14:44:25 tjkim Exp $
+// $Id: WenuFilter.cc,v 1.1 2010/07/22 20:14:22 tjkim Exp $
 //
 //
 
@@ -174,7 +174,7 @@ double WenuFilter::transverseMass( const reco::Candidate::LorentzVector& lepton,
 }
 
 //define this as a plug-in
-//DEFINE_FWK_MODULE(WenuFilter);
+DEFINE_FWK_MODULE(WenuFilter);
 
 
 
