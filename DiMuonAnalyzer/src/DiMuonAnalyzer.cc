@@ -13,7 +13,7 @@
 //
 // Original Author:  Tae Jeong Kim,40 R-A32,+41227678602,
 //         Created:  Fri Jun  4 17:19:29 CEST 2010
-// $Id: DiMuonAnalyzer.cc,v 1.4 2010/06/11 20:35:51 tjkim Exp $
+// $Id: DiMuonAnalyzer.cc,v 1.5 2010/07/18 08:18:28 tjkim Exp $
 //
 //
 
@@ -134,7 +134,7 @@ DiMuonAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
   edm::Handle<pat::MuonCollection> muons_;
   iEvent.getByLabel(muonLabel_,muons_);
 
-  for(MI mi = muons_->begin(); mi != muons_->end(); mi++){
+  for(MI mi = muons_->begin(); mi != muons_->end()-1; mi++){
     for(MI mj = mi + 1 ; mj != muons_->end(); mj++){
       int sign = mi->charge() * mj->charge();
       Ko::ZCandidate dimuon(mi->p4(), mj->p4(), sign);
