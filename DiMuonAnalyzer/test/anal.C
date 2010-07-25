@@ -1,6 +1,15 @@
 #include "norm.h"
+#include "THStack.h"
+#include "TChain.h"
+#include "TH1.h"
+#include "TCut.h"
+#include "TPad.h"
+#include "TCanvas.h"
+#include "TLegend.h"
 
 void anal(){
+  totalevent();
+
   TChain * data = new TChain("DiMuonPFlow/tree");
   TChain * Zmumu = new TChain("DiMuonPFlow/tree");
   TChain * Ztautau = new TChain("DiMuonPFlow/tree");
@@ -8,16 +17,18 @@ void anal(){
   TChain * QCD = new TChain("DiMuonPFlow/tree");
   TChain * TTbar = new TChain("DiMuonPFlow/tree");
 
-  //data->Add("vallot_RD.root");
-  Zmumu->Add("vallot_Zmumu.root");
-  Ztautau->Add("vallot_Ztautau.root");
-  Wmunu->Add("vallot_Wmunu.root");
-  QCD->Add("vallot_QCD.root");
-  TTbar->Add("vallot_TTbar2l.root");
+  data->Add("data/July19th/Commissioning10-SD_Mu-Jun14thSkim_v1/vallot_*.root");
+  data->Add("data/July19th/Run2010A-Jul16thReReco-v1/vallot_*.root");
+  data->Add("data/July19th/Run2010A-PromptReco-v4/vallot_*.root");
+  Zmumu->Add("mc/Summer10_v2/Zmumu/vallot_*.root");
+  Ztautau->Add("mc/Summer10_v2/Ztautau/vallot_*.root");
+  Wmunu->Add("mc/Summer10_v2/Wmunu/vallot_*.root");
+  QCD->Add("mc/Summer10_v2/InclusiveMu15/vallot_*.root");
+  TTbar->Add("mc/Summer10_v2/TTbar/vallot_*.root");
 
- data->Add("rfio:/castor/cern.ch/user/t/tjkim/SDMUONFILTER/July11th_v5/Commissioning10-SD_Mu-Jun14thSkim_v1/vallot_*.root");
- data->Add("rfio:/castor/cern.ch/user/t/tjkim/SDMUONFILTER/July11th_v5/Run2010A-Jun14thReReco_v1/vallot_*.root");
- data->Add("rfio:/castor/cern.ch/user/t/tjkim/SDMUONFILTER/July11th_v5/Run2010A-PromptReco-v4/vallot_*.root");
+ //data->Add("rfio:/castor/cern.ch/user/t/tjkim/SDMUONFILTER/July11th_v5/Commissioning10-SD_Mu-Jun14thSkim_v1/vallot_*.root");
+ //data->Add("rfio:/castor/cern.ch/user/t/tjkim/SDMUONFILTER/July11th_v5/Run2010A-Jun14thReReco_v1/vallot_*.root");
+ //data->Add("rfio:/castor/cern.ch/user/t/tjkim/SDMUONFILTER/July11th_v5/Run2010A-PromptReco-v4/vallot_*.root");
  //Zmumu->Add("rfio:/castor/cern.ch/user/t/tjkim/SDMUONFILTER/MC/Summer10/Zmumu/vallot_*.root");
  //Ztautau->Add("rfio:/castor/cern.ch/user/t/tjkim/SDMUONFILTER/MC/Summer10/Ztautau/vallot_*.root");
  //Wmunu->Add("rfio:/castor/cern.ch/user/t/tjkim/SDMUONFILTER/MC/Summer10/Wmunu/vallot_*.root");
@@ -30,8 +41,9 @@ void anal(){
   double xlow = 0;
   double xmax = 200;
   TCanvas *c = new TCanvas("c","c",1);
-  gPad->SetLogy();
-
+  //gPad->SetLogy();
+  c->SetLogy();
+  
   TH1 *dimuon_data = new TH1F("dimuon_data","dimuon_data",nbin,xlow,xmax); 
   data->Project("dimuon_data","Z.mass()",cut);
   dimuon_data->Sumw2();
@@ -60,7 +72,7 @@ void anal(){
   dimuon_Ztautau->Scale(norm_Ztautau);
   dimuon_Wmunu->Scale(norm_Wmunu);
   dimuon_QCD->Scale(norm_QCD);
-  dimuon_TTbar->Scale(norm_tt2l);
+  dimuon_TTbar->Scale(norm_tt);
 
   dimuon_Zmumu->SetFillColor(2);
   dimuon_Ztautau->SetFillColor(5);
@@ -92,6 +104,22 @@ void anal(){
   l->SetFillColor(0);
   l->SetLineColor(0);
   l->Draw();
+
+  double ndata = dimuon_data->GetEntries();
+  double nZmm = dimuon_Zmumu->GetEntries()*norm_Zmm;
+  double nQCD = dimuon_QCD->GetEntries()*norm_QCD;
+  double nZtautau = dimuon_Ztautau->GetEntries()*norm_Ztautau;
+  double nWmunu = dimuon_Wmunu->GetEntries()*norm_Wmunu;
+  double nTTbar = dimuon_TTbar->GetEntries()*norm_tt;
  
+  cout << "data= " << dimuon_data->GetEntries() << endl;
+  cout << "Zmumu= " << dimuon_Zmumu->GetEntries()*norm_Zmm << endl;
+  cout << "QCD= " << dimuon_QCD->GetEntries()*norm_QCD << endl;
+  cout << "Ztautau= " << dimuon_Ztautau->GetEntries()*norm_Ztautau << endl;
+  cout << "Wmunu= " << dimuon_Wmunu->GetEntries()*norm_Wmunu << endl;
+  cout << "TTbar= " << dimuon_TTbar->GetEntries()*norm_tt << endl;
+  cout << "total= " << nZmm + nQCD + nZtautau + nWmunu + nTTbar << endl;
+
+  c->Print("dimuon.eps"); 
  
 }
