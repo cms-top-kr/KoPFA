@@ -13,7 +13,7 @@
 //
 // Original Author:  Tae Jeong Kim,40 R-A32,+41227678602,
 //         Created:  Fri Jun  4 17:19:29 CEST 2010
-// $Id: DiMuonAnalyzer.cc,v 1.5 2010/07/18 08:18:28 tjkim Exp $
+// $Id: DiMuonAnalyzer.cc,v 1.6 2010/07/23 13:58:03 tjkim Exp $
 //
 //
 
@@ -24,19 +24,25 @@
 // user include files
 #include "FWCore/Framework/interface/Frameworkfwd.h"
 #include "FWCore/Framework/interface/EDAnalyzer.h"
-#include "FWCore/ServiceRegistry/interface/Service.h"
-#include "CommonTools/UtilAlgos/interface/TFileService.h"
 
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/Framework/interface/MakerMacros.h"
+#include "FWCore/ServiceRegistry/interface/Service.h"
+#include "CommonTools/UtilAlgos/interface/TFileService.h"
 
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
+#include "DataFormats/Candidate/interface/Candidate.h"
+#include "CommonTools/Utils/interface/StringObjectFunction.h"
+#include "DataFormats/PatCandidates/interface/LookupTableRecord.h"
 #include "DataFormats/PatCandidates/interface/Muon.h"
 #include "DataFormats/Math/interface/LorentzVector.h"
 #include "KoPFA/DataFormats/interface/ZCandidate.h"
 
+#include "DQMServices/Core/interface/MonitorElement.h"
+#include "DQMServices/Core/interface/DQMStore.h"
+
+#include "TFile.h"
 #include "TTree.h"
-#include "TFile.h" 
 #include "TH1.h"
 
 //
@@ -55,8 +61,11 @@ class DiMuonAnalyzer : public edm::EDAnalyzer {
       virtual void endJob() ;
 
       edm::InputTag muonLabel_;
+      std::vector<std::string> filters_;
+
       TTree* tree;
 
+      TH1F * tmp;
       TH1F * h_leadingpt;
       TH1F * h_secondpt;
       TH1F * h_mass;
@@ -89,9 +98,10 @@ DiMuonAnalyzer::DiMuonAnalyzer(const edm::ParameterSet& iConfig)
 {
    //now do what ever initialization is needed
   muonLabel_ =  iConfig.getParameter<edm::InputTag>("muonLabel");
-
+  filters_ = iConfig.getUntrackedParameter<std::vector<std::string> >("filters");
   edm::Service<TFileService> fs;
   tree = fs->make<TTree>("tree", "Tree for Top quark study");
+  tmp = fs->make<TH1F>("EventSummary","EventSummary",filters_.size(),0,filters_.size());
 
   h_leadingpt   = fs->make<TH1F>( "leadingpt"  , "p_{t}", 100,  0., 100. );
   h_secondpt    = fs->make<TH1F>( "secondpt"  , "p_{t}", 100,  0., 100. );
@@ -100,6 +110,7 @@ DiMuonAnalyzer::DiMuonAnalyzer(const edm::ParameterSet& iConfig)
   Z = new std::vector<Ko::ZCandidate>();
   muon1 = new std::vector<math::XYZTLorentzVector>();
   muon2 = new std::vector<math::XYZTLorentzVector>();
+
 }
 
 
@@ -136,6 +147,7 @@ DiMuonAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 
   for(MI mi = muons_->begin(); mi != muons_->end()-1; mi++){
     for(MI mj = mi + 1 ; mj != muons_->end(); mj++){
+
       int sign = mi->charge() * mj->charge();
       Ko::ZCandidate dimuon(mi->p4(), mj->p4(), sign);
 
@@ -153,6 +165,7 @@ DiMuonAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
   //ESHandle<SetupData> pSetup;
   //iSetup.get<SetupRecord>().get(pSetup);
   tree->Fill();
+
 }
 
 
@@ -173,7 +186,14 @@ DiMuonAnalyzer::beginJob()
 // ------------ method called once each job just after ending the event loop  ------------
 void 
 DiMuonAnalyzer::endJob() {
-
+           DQMStore* store = &*edm::Service<DQMStore>();
+           if(filters_.size()>0) {
+             for(unsigned int i=0;i<filters_.size();++i) {
+               MonitorElement *tmpM = store->get(filters_[i]);
+               tmp->SetBinContent(i+1,tmpM->getFloatValue());
+               tmp->GetXaxis()->SetBinLabel(i+1,filters_[i].c_str());
+             }
+           }
 }
 
 //define this as a plug-in
