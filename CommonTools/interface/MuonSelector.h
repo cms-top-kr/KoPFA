@@ -9,7 +9,7 @@
 #include "FWCore/Framework/interface/EventSetup.h"
 #include "DataFormats/PatCandidates/interface/Muon.h"
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
-#include "PFAnalyses/CommonTools/interface/PatMuonSelector.h"
+#include "KoPFA/CommonTools/interface/MuonIDSelector.h"
 
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "FWCore/Utilities/interface/InputTag.h"
@@ -26,10 +26,8 @@ class MuonSelector : public edm::EDProducer
  private:
   
   edm::InputTag muonLabel_;
+  MuonIDSelector   muonSelector_;
   edm::InputTag beamSpotLabel_;
-  double chi2_;
-  double nHits_;
-  double d0_;
  
   typedef pat::MuonCollection::const_iterator MI;
   edm::Handle<pat::MuonCollection> muons_;

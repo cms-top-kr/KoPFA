@@ -1,5 +1,9 @@
 import FWCore.ParameterSet.Config as cms
 
+from KoPFA.CommonTools.muonSelectorPSet_cff import muonSelectorPSet
+muonSelector = muonSelectorPSet.clone()
+
+
 acceptedMuons = cms.EDFilter("PATMuonSelector",
     src = cms.InputTag("selectedPatMuons"),
     cut =cms.string("pt > 15 && abs(eta) < 2.4")
@@ -9,10 +13,7 @@ Muons = cms.EDProducer(
     "MuonSelector",
     muonLabel  = cms.InputTag("acceptedMuons"),
     beamSpotLabel = cms.InputTag("offlineBeamSpot"),
-
-    chi2 = cms.untracked.double("999999"),
-    nHits = cms.untracked.double("-1"),
-    d0 = cms.untracked.double("0.2"),
+    muonSelector = muonSelectorPSet,
 )
 
 patMuonFilter = cms.EDFilter("CandViewCountFilter",
@@ -29,10 +30,7 @@ PFMuons = cms.EDProducer(
     "MuonSelector",
     muonLabel  = cms.InputTag("acceptedMuonsPFlow"),
     beamSpotLabel = cms.InputTag("offlineBeamSpot"),
-
-    chi2 = cms.untracked.double("999999"),
-    nHits = cms.untracked.double("-1"),
-    d0 = cms.untracked.double("0.2"),
+    muonSelector = muonSelectorPSet,
 )
 
 patPFMuonFilter = cms.EDFilter("CandViewCountFilter",
