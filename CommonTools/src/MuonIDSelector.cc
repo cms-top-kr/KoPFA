@@ -20,6 +20,7 @@ MuonIDSelector::MuonIDSelector()
   : verbose_(false){
   push_back("VBTF",0);
   push_back("QTF",0);
+  push_back("TOP",0);
   push_back("isGlobalMuon",0);
   push_back("isTrackerMuon",0);
   push_back("nMatches",0);
@@ -33,6 +34,7 @@ MuonIDSelector::MuonIDSelector()
   push_back("dz",0.);
   push_back("relIso",0.); 
   push_back("tmLastStationAngTight",0);
+  push_back("globalMuonPromptTight",0);
   push_back("pt",0);
   push_back("eta",0);
 
@@ -43,10 +45,12 @@ void MuonIDSelector::initialize( const edm::ParameterSet& ps ) {
 
   initialize(ps.getParameter< int >("VBTF"),  
 	     ps.getParameter< int >("QTF"),  
+	     ps.getParameter< int >("TOP"),  
 	     ps.getParameter< int >("isGlobalMuon"),
 	     ps.getParameter< int >("isTrackerMuon"),
 	     ps.getParameter< int >("nMatches"),
 	     ps.getParameter< int >("tmLastStationAngTight"),
+	     ps.getParameter< int >("globalMuonPromptTight"),
 	     ps.getParameter< int >("muonHits"),
 	     ps.getParameter< double >("globalNormChi2"),
 	     ps.getParameter< int >("trackerHits"),
@@ -66,10 +70,12 @@ void MuonIDSelector::initialize( const edm::ParameterSet& ps ) {
 
 void MuonIDSelector::initialize(int VBTF,
 				 int QTF,
+				 int TOP,
 				 int isGlobalMuon,
 				 int isTrackerMuon,
 				 int nMatches,
 				 int tmLastStationAngTight,
+                                 int globalMuonPromptTight,
 				 int muonHits,	
 				 double globalNormChi2,
 				 int trackerHits,
@@ -83,10 +89,12 @@ void MuonIDSelector::initialize(int VBTF,
 				 double eta){
   set("VBTF",VBTF);
   set("QTF",QTF);
+  set("TOP",TOP);
   set("isGlobalMuon",isGlobalMuon);
   set("isTrackerMuon",isTrackerMuon);
   set("nMatches",nMatches);
   set("tmLastStationAngTight",tmLastStationAngTight);
+  set("globalMuonPromptTight",globalMuonPromptTight);
   set("muonHits",muonHits);
   set("globalNormChi2",globalNormChi2);
   set("trackerHits",trackerHits);
@@ -122,6 +130,7 @@ bool MuonIDSelector::muIDSelection( const pat::Muon& muon,
   int isTracker = (int)muon.isTrackerMuon();
   int nMatches = (int)muon.numberOfMatches();
   int tmLastStationAngTight = (int)muon::isGoodMuon(muon,muon::TMLastStationAngTight);
+  int globalMuonPromptTight = (int)muon::isGoodMuon(muon,muon::GlobalMuonPromptTight);
 
   // from global track
   int muonHits = 0.;
@@ -174,6 +183,9 @@ bool MuonIDSelector::muIDSelection( const pat::Muon& muon,
   if(ignoreCut("tmLastStationAngTight") ||   tmLastStationAngTight == cut("tmLastStationAngTight", int() )) 
     passCut( ret, "tmLastStationAngTight");  
 
+  if(ignoreCut("globalMuonPromptTight") ||   globalMuonPromptTight == cut("globalMuonPromptTight", int() ))
+    passCut( ret, "globalMuonPromptTight");
+
   if(ignoreCut("muonHits") || muonHits > cut("muonHits", int() ))
     passCut( ret, "muonHits");
 
@@ -201,6 +213,17 @@ bool MuonIDSelector::muIDSelection( const pat::Muon& muon,
   
   if(ignoreCut("relIso") || relIso< cut("relIso", double() ) )
     passCut( ret, "relIso");
+
+  // No isolation included in VBTF cuts
+  if(ignoreCut("TOP") || (
+                           isGlobal == cut("isGlobalMuon", int() )  &&
+                           isTracker == cut("isTrackerMuon", int() ) &&
+                           globalMuonPromptTight == cut("gobalMuonPromptTight", int() ) &&
+                           trackerHits >= cut("trackerHits", int() ) &&
+                           globalNormChi2 <= cut("globalNormChi2", double() ) 
+                           )
+     )
+    passCut( ret, "TOP");
 
 
   // No isolation included in VBTF cuts
