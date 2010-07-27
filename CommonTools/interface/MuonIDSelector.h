@@ -36,10 +36,12 @@ class MuonIDSelector : public Selector<pat::Muon>  {
 
 void initialize(int VBTF,
 		int QTF,
+		int TOP,
 		int isGlobalMuon,
 		int isTrackerMuon,
 		int nMatches,
 		int tmLastStationAngTight,
+		int globalMuonPromptTight,
 		int muonHits,	
 		double globalNormChi2,
 		int trackerHits,
