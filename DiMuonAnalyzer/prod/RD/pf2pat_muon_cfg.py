@@ -13,7 +13,7 @@ process.source = cms.Source("PoolSource",
                                 fileNames = cms.untracked.vstring(
 '/store/data/Run2010A/Mu/RECO/Jul6thReReco_v1/0054/FCC806C9-7D89-DF11-8666-0022649F01AA.root')
 )
-process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(100) )
+process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(1000) )
 
 ## Geometry and Detector Conditions (needed for a few patTuple production steps)
 process.load("Configuration.StandardSequences.Geometry_cff")
@@ -70,6 +70,7 @@ process.patMuonFilter = cms.EDFilter("CandViewCountFilter",
    
 ##################################################################
 process.load("KoPFA.CommonTools.countingSequences_cfi")
+process.load("KoPFA.DiMuonAnalyzer.triggerMatch_cfi" )
 
 process.outpath = cms.EndPath(process.saveHistosInRunInfo*process.out)
 
@@ -79,10 +80,14 @@ process.p = cms.Path(
                  process.startupSequence*
                  process.patDefaultSequence*
                  getattr(process,"patPF2PATSequence"+postfix)*
+                 process.triggerMatch*
                  process.acceptedMuons*
                  process.patMuonFilter*
                  process.finalSequence
     )
+
+#from PhysicsTools.PatAlgos.tools.trigTools import *
+#switchOnTriggerStandAlone( process )
 
 from PhysicsTools.PatAlgos.patEventContent_cff import *
 process.out.outputCommands += patTriggerEventContent
@@ -90,8 +95,9 @@ process.out.outputCommands += patExtraAodEventContent
 process.out.outputCommands += patEventContentNoCleaning
 
 process.out.outputCommands.extend(cms.untracked.vstring(
-                                                    'keep *_MEtoEDMConverter_*_*',
+                                                    'keep *_MEtoEDMConverter_*_PAT',
                                                     'keep *_particleFlow_*_*',
+                                                    'keep *_triggeredPatMuons_*_*',
                                                 ))
 
 process.MessageLogger.cerr.FwkReport.reportEvery = 100
