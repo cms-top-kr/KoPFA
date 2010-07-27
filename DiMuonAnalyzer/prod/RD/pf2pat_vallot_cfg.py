@@ -27,7 +27,7 @@ process.load("FWCore.MessageLogger.MessageLogger_cfi")
 process.MessageLogger.cerr.FwkReport.reportEvery = 100
 
 process.maxEvents = cms.untracked.PSet(
-        input = cms.untracked.int32(1000)
+        input = cms.untracked.int32(100)
         )
 
 process.source = cms.Source("PoolSource",
@@ -212,6 +212,7 @@ SelectEvents = cms.vstring('muonFilter') #When running on SD no need to have a f
 #process.randomCones.muonLabel = cms.InputTag("selectedPatMuonsPFlow")
 #process.load("PFAnalyses.W.countingSequences_cfi")
 process.load("KoPFA/CommonTools/EventInfo_cfi")
+process.load("KoPFA.CommonTools.countingSequences_cfi")
 
 process.TFileService = cms.Service("TFileService",
     fileName = cms.string('vallot.root')
@@ -221,16 +222,29 @@ process.TotalEventInfo = cms.Path(process.EventInfo)
 
 process.DiMuonPFlow = cms.EDAnalyzer('DiMuonAnalyzer',
   muonLabel =  cms.InputTag('PFMuons'),
+  useEventCounter = cms.bool( True ),
+  filters = cms.untracked.vstring(
+                              'initialEvents',
+                              'finalEvents'
+                              ),
+
 )
 
 process.DiMuon = cms.EDAnalyzer('DiMuonAnalyzer',
   muonLabel =  cms.InputTag('Muons'),
+  useEventCounter = cms.bool( True ),
+  filters = cms.untracked.vstring(
+                              'initialEvents',
+                              'finalEvents'
+                              ),
 )
 
 process.DiMuonAnalPFlow = cms.Path(
                               process.acceptedMuonsPFlow
                              +process.PFMuons
                              +process.patPFMuonFilter
+                             +process.finalSequence
+                             +process.loadHistosFromRunInfo
                              +process.DiMuonPFlow
                              )
 
@@ -238,11 +252,13 @@ process.DiMuonAnal = cms.Path(
                               process.acceptedMuons
                              +process.Muons
                              +process.patMuonFilter
+                             +process.finalSequence
+                             +process.loadHistosFromRunInfo
                              +process.DiMuon
                              )
 
 process.p = cms.Path(
-#         process.startupSequence*
+         process.startupSequence*
 process.patDefaultSequence*
 getattr(process,"patPF2PATSequence"+postfix)
 #         process.postPF2PAT*

@@ -13,7 +13,7 @@
 //
 // Original Author:  Tae Jeong Kim,40 R-A32,+41227678602,
 //         Created:  Fri Jun  4 17:19:29 CEST 2010
-// $Id: DiMuonAnalyzer.cc,v 1.6 2010/07/23 13:58:03 tjkim Exp $
+// $Id: DiMuonAnalyzer.cc,v 1.7 2010/07/26 08:52:26 tjkim Exp $
 //
 //
 
@@ -62,6 +62,7 @@ class DiMuonAnalyzer : public edm::EDAnalyzer {
 
       edm::InputTag muonLabel_;
       std::vector<std::string> filters_;
+      bool useEventCounter_;
 
       TTree* tree;
 
@@ -98,6 +99,7 @@ DiMuonAnalyzer::DiMuonAnalyzer(const edm::ParameterSet& iConfig)
 {
    //now do what ever initialization is needed
   muonLabel_ =  iConfig.getParameter<edm::InputTag>("muonLabel");
+  useEventCounter_ = iConfig.getParameter<bool>("useEventCounter");
   filters_ = iConfig.getUntrackedParameter<std::vector<std::string> >("filters");
   edm::Service<TFileService> fs;
   tree = fs->make<TTree>("tree", "Tree for Top quark study");
@@ -186,12 +188,14 @@ DiMuonAnalyzer::beginJob()
 // ------------ method called once each job just after ending the event loop  ------------
 void 
 DiMuonAnalyzer::endJob() {
-           DQMStore* store = &*edm::Service<DQMStore>();
-           if(filters_.size()>0) {
-             for(unsigned int i=0;i<filters_.size();++i) {
-               MonitorElement *tmpM = store->get(filters_[i]);
-               tmp->SetBinContent(i+1,tmpM->getFloatValue());
-               tmp->GetXaxis()->SetBinLabel(i+1,filters_[i].c_str());
+           if(useEventCounter_){
+             DQMStore* store = &*edm::Service<DQMStore>();
+             if(filters_.size()>0) {
+               for(unsigned int i=0;i<filters_.size();++i) {
+                 MonitorElement *tmpM = store->get(filters_[i]);
+                 tmp->SetBinContent(i+1,tmpM->getFloatValue());
+                 tmp->GetXaxis()->SetBinLabel(i+1,filters_[i].c_str());
+               }
              }
            }
 }
