@@ -6,7 +6,6 @@ process = cms.Process("PAT")
 # Starting with a skeleton process which gets imported with the following line
 #from PhysicsTools.PatAlgos.patTemplate_cfg import *
 
-
 ## MessageLogger
 process.load("FWCore.MessageLogger.MessageLogger_cfi")
 
@@ -20,7 +19,6 @@ process.load("PhysicsTools.PatAlgos.patSequences_cff")
 process.load("PhysicsTools.PFCandProducer.PF2PAT_cff")
 
 process.options   = cms.untracked.PSet( wantSummary = cms.untracked.bool(True))
-
 
 # initialize MessageLogger and output report
 process.load("FWCore.MessageLogger.MessageLogger_cfi")
@@ -50,12 +48,6 @@ process.outMuonFilter = cms.OutputModule("PoolOutputModule",
      fileName = cms.untracked.string('PF2PAT_SDMUON_GOODCOLL_MuonFilter.root'),
      )
 
-#run36xOn35xInput =False 
-#runOnData = True 
-#if run36xOn35xInput:
-#    from PhysicsTools.PatAlgos.tools.cmsswVersionTools import *  
-#    run36xOn35xInput(process)
-
 #PF2PAT
 process.load("PhysicsTools.PatAlgos.patSequences_cff")
 from PhysicsTools.PatAlgos.tools.pfTools import *
@@ -71,21 +63,12 @@ process.GlobalTag.globaltag = cms.string('GR09_R_35X_V4::All')
 #switchJECSet(process,"Summer09_7TeV")
 process.patJets.addTagInfos = False
 
-
-
 #REMOVE ISOLATION FROM PF2PAT!!!
 process.pfIsolatedMuons.isolationCuts        = cms.vdouble(9999.,9999.,9999.)
 process.pfIsolatedMuons.combinedIsolationCut = cms.double(9999.)
 
-#Lower the jet min pT to 5 GeV
-process.pfJets.ptMin = 5
-
-#Lower the muon pT to 0 GeV
-process.pfMuonsPtGt5.ptMin = 0.0
-
 #Embed PFCandidates in the patMuons and patElectrons
 process.patMuonsPFlow.embedPFCandidate = cms.bool(True)
-
 
 #Removing the taus from the PF2PAT list
 process.pfTaus.discriminators = cms.VPSet( 
@@ -93,15 +76,6 @@ process.pfTaus.discriminators = cms.VPSet(
     selectionCut=cms.double(10.) ),
     )
         
-##################################################################
-
-#LOAD THE HLT
-#process.load("PFAnalyses.W.hltSelection_cfi")
-
-#LOAD THE W creation(Combines mu+MET applies basic cuts on the trigger acceptance, it includes also the statupSequence)
-#process.ipMuons.src =  cms.InputTag("selectedPatMuonsPFlow")
-
-
 ##################################################################
 #Skim on GOODCOLLISION EVENTS
 import HLTrigger.HLTfilters.hltHighLevelDev_cfi
@@ -155,7 +129,6 @@ process.muonFilter = cms.Path(
 
 ##################################################################
 
-
 #ADDING THE TRIGGER INFORMATION IN THE PF2PAT+PAT OUTPUT FILE
 #from PhysicsTools.PatAlgos.patEventContent_cff import patEventContentNoCleaning
 process.load("Configuration.EventContent.EventContent_cff") 
@@ -207,10 +180,6 @@ process.outMuonFilter.SelectEvents = cms.untracked.PSet(
 SelectEvents = cms.vstring('muonFilter') #When running on SD no need to have a further L1 requirement
 )
 
-#Adding random cones
-#process.load("PFAnalyses.CommonTools.RandomCone_cfi")
-#process.randomCones.muonLabel = cms.InputTag("selectedPatMuonsPFlow")
-#process.load("PFAnalyses.W.countingSequences_cfi")
 process.load("KoPFA/CommonTools/EventInfo_cfi")
 process.load("KoPFA.CommonTools.countingSequences_cfi")
 
@@ -259,12 +228,8 @@ process.DiMuonAnal = cms.Path(
 
 process.p = cms.Path(
          process.startupSequence*
-process.patDefaultSequence*
-getattr(process,"patPF2PATSequence"+postfix)
-#         process.postPF2PAT*
-#         process.randomCones*
-#        process.patRecoMuonSequence*
-#         process.selectWtoMuNu
+         process.patDefaultSequence*
+         getattr(process,"patPF2PATSequence"+postfix)
     )
 
 process.e = cms.EndPath(
