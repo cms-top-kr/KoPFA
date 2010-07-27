@@ -4,6 +4,8 @@
 <use name=DataFormats/PatCandidates>
 <use name=PhysicsTools/UtilAlgos>
 <use name=FWCore/ServiceRegistry>
+<use name=PFAnalyses/CommonTools>
+<use name="DQMServices/Core">
 
 <flags EDM_PLUGIN=1>
 <export>
@@ -11,4 +13,6 @@
    <use name=FWCore/Framework>
    <use name=FWCore/PluginManager>
    <use name=FWCore/ParameterSet>
+   <use name=PFAnalyses/CommonTools>
+   <use name="DQMServices/Core">
 </export>
