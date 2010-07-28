@@ -13,7 +13,7 @@
 //
 // Original Author:  Tae Jeong Kim,40 R-A32,+41227678602,
 //         Created:  Fri Jun  4 17:19:29 CEST 2010
-// $Id: DiMuonAnalyzer.cc,v 1.7 2010/07/26 08:52:26 tjkim Exp $
+// $Id: DiMuonAnalyzer.cc,v 1.8 2010/07/27 21:30:04 tjkim Exp $
 //
 //
 
@@ -35,6 +35,7 @@
 #include "CommonTools/Utils/interface/StringObjectFunction.h"
 #include "DataFormats/PatCandidates/interface/LookupTableRecord.h"
 #include "DataFormats/PatCandidates/interface/Muon.h"
+#include "DataFormats/PatCandidates/interface/MET.h"
 #include "DataFormats/Math/interface/LorentzVector.h"
 #include "KoPFA/DataFormats/interface/ZCandidate.h"
 
@@ -61,6 +62,7 @@ class DiMuonAnalyzer : public edm::EDAnalyzer {
       virtual void endJob() ;
 
       edm::InputTag muonLabel_;
+      edm::InputTag metLabel_;
       std::vector<std::string> filters_;
       bool useEventCounter_;
 
@@ -74,6 +76,8 @@ class DiMuonAnalyzer : public edm::EDAnalyzer {
       std::vector<Ko::ZCandidate>* Z;
       std::vector<math::XYZTLorentzVector>* muon1;
       std::vector<math::XYZTLorentzVector>* muon2;
+    
+      double MET;
       // ----------member data ---------------------------
 
       //add run event data
@@ -99,6 +103,7 @@ DiMuonAnalyzer::DiMuonAnalyzer(const edm::ParameterSet& iConfig)
 {
    //now do what ever initialization is needed
   muonLabel_ =  iConfig.getParameter<edm::InputTag>("muonLabel");
+  metLabel_ = iConfig.getParameter<edm::InputTag>("metLabel");
   useEventCounter_ = iConfig.getParameter<bool>("useEventCounter");
   filters_ = iConfig.getUntrackedParameter<std::vector<std::string> >("filters");
   edm::Service<TFileService> fs;
@@ -145,7 +150,12 @@ DiMuonAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 
   typedef pat::MuonCollection::const_iterator MI;
   edm::Handle<pat::MuonCollection> muons_;
+  edm::Handle<pat::METCollection> MET_;
   iEvent.getByLabel(muonLabel_,muons_);
+  iEvent.getByLabel(metLabel_,MET_);
+
+  pat::METCollection::const_iterator mi = MET_->begin();
+  MET = mi->pt(); 
 
   for(MI mi = muons_->begin(); mi != muons_->end()-1; mi++){
     for(MI mj = mi + 1 ; mj != muons_->end(); mj++){
@@ -161,6 +171,7 @@ DiMuonAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
       h_secondpt->Fill(mj->pt());
       h_mass->Fill(dimuon.mass());
 
+      break;
     }
   }
    
@@ -182,6 +193,8 @@ DiMuonAnalyzer::beginJob()
   tree->Branch("Z","std::vector<Ko::ZCandidate>", &Z);
   tree->Branch("muon1","std::vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >", &muon1);
   tree->Branch("muon2","std::vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >", &muon2);
+
+  tree->Branch("MET",&MET,"MET/d");
   
 }
 
