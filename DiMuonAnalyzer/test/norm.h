@@ -30,8 +30,8 @@ void totalevent(){
   double Wtautau = 7899;
   double tt      = 94.3;
   double tt2l    = 17.3;
-  double QCD     = 296900000;
-
+  double QCD     = 109853;
+ 
   TChain * nZmumu = new TChain("EventInfo/tree");
   TChain * nZtautau = new TChain("EventInfo/tree");
   TChain * nWmunu = new TChain("EventInfo/tree");
