@@ -72,7 +72,7 @@ process.patMuonFilter = cms.EDFilter("CandViewCountFilter",
 process.load("KoPFA.CommonTools.countingSequences_cfi")
 process.load("KoPFA.DiMuonAnalyzer.triggerMatch_cfi" )
 
-process.outpath = cms.EndPath(process.saveHistosInRunInfo*process.out)
+#process.outpath = cms.EndPath(process.saveHistosInRunInfo*process.out)
 
 from PhysicsTools.PatAlgos.patEventContent_cff import *
 process.out.outputCommands += patTriggerEventContent
@@ -105,6 +105,7 @@ process.load("KoPFA.CommonTools.MuonSelector_cfi")
 
 process.DiMuonPFlow = cms.EDAnalyzer('DiMuonAnalyzer',
   muonLabel =  cms.InputTag('PFMuons'),
+  metLabel =  cms.InputTag('patMETsPFlow'),
   useEventCounter = cms.bool( True ),
   filters = cms.untracked.vstring(
                               'initialEvents',
@@ -115,6 +116,7 @@ process.DiMuonPFlow = cms.EDAnalyzer('DiMuonAnalyzer',
 
 process.DiMuon = cms.EDAnalyzer('DiMuonAnalyzer',
   muonLabel =  cms.InputTag('Muons'),
+  metLabel =  cms.InputTag('patMETsPFlow'),
   useEventCounter = cms.bool( True ),
   filters = cms.untracked.vstring(
                               'initialEvents',
