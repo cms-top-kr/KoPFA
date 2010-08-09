@@ -8,23 +8,51 @@
 #include "TLegend.h"
 
 void anal(){
-  totalevent();
 
-  TChain * data = new TChain("DiMuonPFlow/tree");
-  TChain * Zmumu = new TChain("DiMuonPFlow/tree");
-  TChain * Ztautau = new TChain("DiMuonPFlow/tree");
-  TChain * Wmunu = new TChain("DiMuonPFlow/tree");
-  TChain * QCD = new TChain("DiMuonPFlow/tree");
-  TChain * TTbar = new TChain("DiMuonPFlow/tree");
+  TFile * fdata = new TFile("data/July19th_v7/vallot_RD.root");
+  TFile * fZmumu = new TFile("mc/Summer10_v7/vallot_Zmumu.root");
+  TFile * fZtautau = new TFile("mc/Summer10_v7/vallot_Ztautau.root");
+  TFile * fWmunu = new TFile("mc/Summer10_v7/vallot_Wmunu.root");
+  TFile * fQCD = new TFile("mc/Summer10_v7/vallot_QCD.root");
+  TFile * fTTbar = new TFile("mc/Summer10_v7/vallot_TTbar.root");
 
-  data->Add("data/July19th/Commissioning10-SD_Mu-Jun14thSkim_v1/vallot_*.root");
-  data->Add("data/July19th/Run2010A-Jul16thReReco-v1/vallot_*.root");
-  data->Add("data/July19th/Run2010A-PromptReco-v4/vallot_*.root");
-  Zmumu->Add("mc/Summer10_v2/Zmumu/vallot_*.root");
-  Ztautau->Add("mc/Summer10_v2/Ztautau/vallot_*.root");
-  Wmunu->Add("mc/Summer10_v2/Wmunu/vallot_*.root");
-  QCD->Add("mc/Summer10_v2/InclusiveMu15/vallot_*.root");
-  TTbar->Add("mc/Summer10_v2/TTbar/vallot_*.root");
+  TH1F * evtdata = (TH1F *) fdata->Get("DiMuon/EventSummary");
+  TH1F * evtZmumu = (TH1F *) fZmumu->Get("DiMuon/EventSummary");
+  TH1F * evtZtautau = (TH1F *) fZtautau->Get("DiMuon/EventSummary");
+  TH1F * evtWmunu = (TH1F *) fWmunu->Get("DiMuon/EventSummary");
+  TH1F * evtQCD = (TH1F *) fQCD->Get("DiMuon/EventSummary");
+  TH1F * evtTTbar = (TH1F *) fTTbar->Get("DiMuon/EventSummary");
+
+  TTree * data = (TTree *) fdata->Get("DiMuon/tree");
+  TTree * Zmumu = (TTree *) fZmumu->Get("DiMuon/tree");
+  TTree * Ztautau = (TTree *) fZtautau->Get("DiMuon/tree");
+  TTree * Wmunu = (TTree *) fWmunu->Get("DiMuon/tree");
+  TTree * QCD = (TTree *) fQCD->Get("DiMuon/tree");
+  TTree * TTbar = (TTree *) fTTbar->Get("DiMuon/tree");
+
+  int evnZmumu = evtZmumu->GetBinContent(1);
+  int evnZtautau = evtZtautau->GetBinContent(1);
+  int evnWmunu = evtWmunu->GetBinContent(1);
+  int evnQCD = evtQCD->GetBinContent(1);
+  int evnTTbar = evtTTbar->GetBinContent(1);
+
+  totalevent( evnZmumu, evnZtautau, evnWmunu, evnQCD, evnTTbar);
+
+  //TChain * data = new TChain("DiMuonPFlow/tree");
+  //TChain * Zmumu = new TChain("DiMuonPFlow/tree");
+  //TChain * Ztautau = new TChain("DiMuonPFlow/tree");
+  //TChain * Wmunu = new TChain("DiMuonPFlow/tree");
+  //TChain * QCD = new TChain("DiMuonPFlow/tree");
+  //TChain * TTbar = new TChain("DiMuonPFlow/tree");
+
+  //data->Add("data/July19th_v7/Commissioning10-SD_Mu-Jun14thSkim_v1/vallot_*.root");
+  //data->Add("data/July19th_v7/Run2010A-Jul16thReReco-v1/vallot_*.root");
+  //data->Add("data/July19th_v7/Run2010A-PromptReco-v4/vallot_*.root");
+  //Zmumu->Add("mc/Summer10_v7/Zmumu/vallot_*.root");
+  //Ztautau->Add("mc/Summer10_v7/Ztautau/vallot_*.root");
+  //Wmunu->Add("mc/Summer10_v7/Wmunu/vallot_*.root");
+  //QCD->Add("mc/Summer10_v7/InclusiveMu15/vallot_*.root");
+  //TTbar->Add("mc/Summer10_v7/TTbar/vallot_*.root");
 
  //data->Add("rfio:/castor/cern.ch/user/t/tjkim/SDMUONFILTER/July11th_v5/Commissioning10-SD_Mu-Jun14thSkim_v1/vallot_*.root");
  //data->Add("rfio:/castor/cern.ch/user/t/tjkim/SDMUONFILTER/July11th_v5/Run2010A-Jun14thReReco_v1/vallot_*.root");
@@ -35,7 +63,8 @@ void anal(){
  //QCD->Add("rfio:/castor/cern.ch/user/t/tjkim/SDMUONFILTER/MC/Summer10/InclusiveMu15/vallot_*.root");
   //TTbar->Add("rfio:/castor/cern.ch/user/t/tjkim/SDMUONFILTER/MC/Summer10/TTbar/vallot_*.root");
 
-  TCut cut = "muon1.pt() > 15 && muon2.pt() > 15 && Z.mass() > 20 && Z.sign() < 0";
+  TCut cut = "muon1.pt() > 20 && muon2.pt() > 20 && Z.mass() > 20 && Z.sign() < 0";
+  TCut mass = "Z.mass() > 60 && Z.mass() < 120";
 
   int nbin = 40;
   double xlow = 0;
