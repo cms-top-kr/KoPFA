@@ -169,7 +169,6 @@ readFiles.extend([
 	'rfio:///castor/cern.ch/user/t/tjkim/MUONSKIM/Aug9th/Run2010A-PromptReco-v4/patTuple_muon_80_0_xqL.root',
 	'rfio:///castor/cern.ch/user/t/tjkim/MUONSKIM/Aug9th/Run2010A-PromptReco-v4/patTuple_muon_81_0_sAn.root',
 	'rfio:///castor/cern.ch/user/t/tjkim/MUONSKIM/Aug9th/Run2010A-PromptReco-v4/patTuple_muon_82_0_FYT.root',
-	'rfio:///castor/cern.ch/user/t/tjkim/MUONSKIM/Aug9th/Run2010A-PromptReco-v4/patTuple_muon_82_0_u7B.root',
 	'rfio:///castor/cern.ch/user/t/tjkim/MUONSKIM/Aug9th/Run2010A-PromptReco-v4/patTuple_muon_83_0_KDu.root',
 	'rfio:///castor/cern.ch/user/t/tjkim/MUONSKIM/Aug9th/Run2010A-PromptReco-v4/patTuple_muon_84_3_92K.root',
 	'rfio:///castor/cern.ch/user/t/tjkim/MUONSKIM/Aug9th/Run2010A-PromptReco-v4/patTuple_muon_85_1_Z1H.root',
