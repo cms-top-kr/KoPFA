@@ -69,7 +69,7 @@ process.patMuonFilter = cms.EDFilter("CandViewCountFilter",
 )
    
 ##################################################################
-process.load("KoPFA.CommonTools.countingSequences_cfi")
+process.load("PFAnalyses.CommonTools.countingSequences_cfi")
 process.load("KoPFA.DiMuonAnalyzer.triggerMatch_cfi" )
 
 #process.outpath = cms.EndPath(process.saveHistosInRunInfo*process.out)
