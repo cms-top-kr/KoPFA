@@ -7,13 +7,27 @@ double norm_tt     ;
 double norm_tt2l   ;
 double norm_QCD    ;
 
-void totalevent( double & nZmumu, double & nZtautau, double & nWmunu, double & nQCD, double & nTTbar){
+void totalevent( TFile* fdata, TFile* fZmumu, TFile* fZtautau, TFile* fWmunu, TFile* fQCD, TFile* fTTbar){
+  using namespace std;
+
+  TH1F * evtdata = (TH1F *) fdata->Get("DiMuon/EventSummary");
+  TH1F * evtZmumu = (TH1F *) fZmumu->Get("DiMuon/EventSummary");
+  TH1F * evtZtautau = (TH1F *) fZtautau->Get("DiMuon/EventSummary");
+  TH1F * evtWmunu = (TH1F *) fWmunu->Get("DiMuon/EventSummary");
+  TH1F * evtQCD = (TH1F *) fQCD->Get("DiMuon/EventSummary");  
+  TH1F * evtTTbar = (TH1F *) fTTbar->Get("DiMuon/EventSummary");
+
+  int nZmumu = evtZmumu->GetBinContent(1);  
+  int nZtautau = evtZtautau->GetBinContent(1);
+  int nWmunu = evtWmunu->GetBinContent(1);
+  int nQCD = evtQCD->GetBinContent(1);
+  int nTTbar = evtTTbar->GetBinContent(1);
 
   //unit pb
   double scale = 1.0;
 
   //luminosity
-  double lumi_e=0.250;
+  double lumi_e=0.840;
 
   //cross section at D0 
   //double Zmm = 242 ;
@@ -27,9 +41,13 @@ void totalevent( double & nZmumu, double & nZtautau, double & nWmunu, double & n
   //cross section at CMS at 7 TeV 
   double Zmm     = 1300 ;
   double Ztautau = 1300 ;
+
+  //double Zmm     = 1660 ;
+  //double Ztautau = 1660 ;
   double Wmunu   = 7899;
   double Wtaunu = 7899;
-  double tt      = 94.3;
+  //double tt      = 94.3;
+  double tt      = 148.9;
   double tt2l    = 17.3;
   double QCD     = 109853;
  
@@ -59,12 +77,12 @@ void totalevent( double & nZmumu, double & nZtautau, double & nWmunu, double & n
   //N_Wmunu = nWmunu->GetEntries();
   //N_QCD = nQCD->GetEntries();
   //N_tt = nTTbar->GetEntries();
-
-  cout << "Zmm= " << N_Zmm << endl;
-  cout << "Ztautau= " << N_Ztautau << endl;
-  cout << "Wmunu= " << N_Wmunu << endl;
-  cout << "QCD= " << N_QCD << endl;
-  cout << "tt= " << N_tt << endl;
+  
+  //cout << "Zmm= " << N_Zmm << endl;
+  //cout << "Ztautau= " << N_Ztautau << endl;
+  //cout << "Wmunu= " << N_Wmunu << endl;
+  //cout << "QCD= " << N_QCD << endl;
+  //cout << "tt= " << N_tt << endl;
 
   //luminosity for MC
   double L_Zmm     = N_Zmm/Zmm;
