@@ -1,3 +1,4 @@
+#include <iostream>
 #include "norm.h"
 #include "THStack.h"
 #include "TChain.h"
@@ -6,15 +7,17 @@
 #include "TPad.h"
 #include "TCanvas.h"
 #include "TLegend.h"
+#include "TFile.h"
+
 
 void anal(){
-
-  TFile * fdata = new TFile("data/July19th_v7/vallot_RD.root");
-  TFile * fZmumu = new TFile("mc/Summer10_v7/vallot_Zmumu.root");
-  TFile * fZtautau = new TFile("mc/Summer10_v7/vallot_Ztautau.root");
-  TFile * fWmunu = new TFile("mc/Summer10_v7/vallot_Wmunu.root");
-  TFile * fQCD = new TFile("mc/Summer10_v7/vallot_QCD.root");
-  TFile * fTTbar = new TFile("mc/Summer10_v7/vallot_TTbar.root");
+  using namespace std;
+  TFile * fdata = new TFile("/home/tjkim/ntuple/data/top/Aug13/vallot.root");
+  TFile * fZmumu = new TFile("/home/tjkim/ntuple/mc/top/Summer10/vallot_Zmumu.root");
+  TFile * fZtautau = new TFile("/home/tjkim/ntuple/mc/top/Summer10/vallot_Ztautau.root");
+  TFile * fWmunu = new TFile("/home/tjkim/ntuple/mc/top/Summer10/vallot_Wmunu.root");
+  TFile * fQCD = new TFile("/home/tjkim/ntuple/mc/top/Summer10/vallot_QCD.root");  
+  TFile * fTTbar = new TFile("/home/tjkim/ntuple/mc/top/Summer10/vallot_TTbar.root");
 
   TH1F * evtdata = (TH1F *) fdata->Get("DiMuon/EventSummary");
   TH1F * evtZmumu = (TH1F *) fZmumu->Get("DiMuon/EventSummary");
@@ -38,117 +41,146 @@ void anal(){
 
   totalevent( evnZmumu, evnZtautau, evnWmunu, evnQCD, evnTTbar);
 
-  //TChain * data = new TChain("DiMuonPFlow/tree");
-  //TChain * Zmumu = new TChain("DiMuonPFlow/tree");
-  //TChain * Ztautau = new TChain("DiMuonPFlow/tree");
-  //TChain * Wmunu = new TChain("DiMuonPFlow/tree");
-  //TChain * QCD = new TChain("DiMuonPFlow/tree");
-  //TChain * TTbar = new TChain("DiMuonPFlow/tree");
+  TCut step0;
+  TCut step1 = "Z.mass() > 0";
+  TCut step2 = "Z.mass() > 0 && Z.sign() < 0";
+  TCut step3 = "Z.mass() > 0 && Z.sign() < 0 && !( Z.mass() > 76 && Z.mass() < 106)";
+  TCut step4 = "Z.mass() > 0 && Z.sign() < 0 && !( Z.mass() > 76 && Z.mass() < 106) && @jets.size() >= 2";
+  TCut step5 = "Z.mass() > 0 && Z.sign() < 0 && !( Z.mass() > 76 && Z.mass() < 106) && @jets.size() >= 2 && MET > 30";
 
-  //data->Add("data/July19th_v7/Commissioning10-SD_Mu-Jun14thSkim_v1/vallot_*.root");
-  //data->Add("data/July19th_v7/Run2010A-Jul16thReReco-v1/vallot_*.root");
-  //data->Add("data/July19th_v7/Run2010A-PromptReco-v4/vallot_*.root");
-  //Zmumu->Add("mc/Summer10_v7/Zmumu/vallot_*.root");
-  //Ztautau->Add("mc/Summer10_v7/Ztautau/vallot_*.root");
-  //Wmunu->Add("mc/Summer10_v7/Wmunu/vallot_*.root");
-  //QCD->Add("mc/Summer10_v7/InclusiveMu15/vallot_*.root");
-  //TTbar->Add("mc/Summer10_v7/TTbar/vallot_*.root");
+  //numberOfEvents( data,Zmumu,Ztautau,Wmunu,QCD, TTbar, step1,"step0");
 
- //data->Add("rfio:/castor/cern.ch/user/t/tjkim/SDMUONFILTER/July11th_v5/Commissioning10-SD_Mu-Jun14thSkim_v1/vallot_*.root");
- //data->Add("rfio:/castor/cern.ch/user/t/tjkim/SDMUONFILTER/July11th_v5/Run2010A-Jun14thReReco_v1/vallot_*.root");
- //data->Add("rfio:/castor/cern.ch/user/t/tjkim/SDMUONFILTER/July11th_v5/Run2010A-PromptReco-v4/vallot_*.root");
- //Zmumu->Add("rfio:/castor/cern.ch/user/t/tjkim/SDMUONFILTER/MC/Summer10/Zmumu/vallot_*.root");
- //Ztautau->Add("rfio:/castor/cern.ch/user/t/tjkim/SDMUONFILTER/MC/Summer10/Ztautau/vallot_*.root");
- //Wmunu->Add("rfio:/castor/cern.ch/user/t/tjkim/SDMUONFILTER/MC/Summer10/Wmunu/vallot_*.root");
- //QCD->Add("rfio:/castor/cern.ch/user/t/tjkim/SDMUONFILTER/MC/Summer10/InclusiveMu15/vallot_*.root");
-  //TTbar->Add("rfio:/castor/cern.ch/user/t/tjkim/SDMUONFILTER/MC/Summer10/TTbar/vallot_*.root");
+  plotStep(data, Zmumu, Ztautau, Wmunu, QCD, TTbar, step1, "step1"); 
+  plotStep(data, Zmumu, Ztautau, Wmunu, QCD, TTbar, step2, "step2"); 
+  plotStep(data, Zmumu, Ztautau, Wmunu, QCD, TTbar, step3, "step3"); 
+  plotStep(data, Zmumu, Ztautau, Wmunu, QCD, TTbar, step4, "step4"); 
+  plotStep(data, Zmumu, Ztautau, Wmunu, QCD, TTbar, step5, "step5"); 
 
-  TCut cut = "muon1.pt() > 20 && muon2.pt() > 20 && Z.mass() > 20 && Z.sign() < 0";
-  TCut mass = "Z.mass() > 60 && Z.mass() < 120";
+}
 
-  int nbin = 40;
-  double xlow = 0;
-  double xmax = 200;
-  TCanvas *c = new TCanvas("c","c",1);
-  //gPad->SetLogy();
-  c->SetLogy();
-  
-  TH1 *dimuon_data = new TH1F("dimuon_data","dimuon_data",nbin,xlow,xmax); 
-  data->Project("dimuon_data","Z.mass()",cut);
-  dimuon_data->Sumw2();
-  dimuon_data->SetMarkerStyle(20);
-  dimuon_data->SetMarkerSize(1);
-  dimuon_data->SetTitle(0);
-  dimuon_data->SetStats(0);
-
-  dimuon_data->GetXaxis()->SetTitle("Dimuon Mass (GeV/c^{2})");
-  dimuon_data->GetYaxis()->SetTitle("Events/5 GeV/c^{2}");
-
+void plotStep(TTree* data, TTree* Zmumu, TTree* Ztautau, TTree* Wmunu, TTree* QCD, TTree* TTbar, TCut cut, TString& step){
  
-  TH1 *dimuon_Zmumu = new TH1F("dimuon_Zmumu","dimuon_Zmumu",nbin,xlow,xmax);
-  TH1 *dimuon_Ztautau = new TH1F("dimuon_Ztautau","dimuon_Ztautau",nbin,xlow,xmax);
-  TH1 *dimuon_Wmunu = new TH1F("dimuon_Wmunu","dimuon_Wmunu",nbin,xlow,xmax);
-  TH1 *dimuon_QCD = new TH1F("dimuon_QCD","dimuon_QCD",nbin,xlow,xmax);
-  TH1 *dimuon_TTbar = new TH1F("dimuon_TTbar","dimuon_TTbar",nbin,xlow,xmax);  
+  //histStack(fdata, fZmumu, fZtautau, fWmunu, fQCD, fTTbar, "h_mass","Dimuon Mass (GeV/c^{2})", "Events/5 GeV/c^{2}",40,0, 200, 1000,0.02, "dimuon",Form("mass_h_%s",step.Data()), true);
+  //histStack(fdata, fZmumu, fZtautau, fWmunu, fQCD, fTTbar, "h_leadingpt","Leading p_{T} (GeV/c)", "Events/5 GeV/c",20,0, 100, 30, 0, "leading",Form("pt_h_%s",step.Data()), false);
 
-  Zmumu->Project("dimuon_Zmumu","Z.mass()",cut);
-  Ztautau->Project("dimuon_Ztautau","Z.mass()",cut);
-  Wmunu->Project("dimuon_Wmunu","Z.mass()",cut);
-  QCD->Project("dimuon_QCD","Z.mass()",cut);
-  TTbar->Project("dimuon_TTbar","Z.mass()",cut);
+  plotStack(data, Zmumu, Ztautau, Wmunu, QCD, TTbar, "Z.mass()",cut, "Dimuon Mass (GeV/c^{2})", "Events/2 GeV/c^{2}",100, 0, 200, 1000,0.02, "dimuon",Form("mass_%s",step.Data()), true);
+  plotStack(data, Zmumu, Ztautau, Wmunu, QCD, TTbar, "Z.leg1().pt()",cut, "Leading p_{T} (GeV/c)", "Events/2 GeV/c", 50, 0, 100, 40,0, "leading",Form("pt_%s",step.Data()), false);
+  //plotStack(data, Zmumu, Ztautau, Wmunu, QCD, TTbar, "Z.leg1().eta()",cut, "Leading #eta (radian)", "Events/0.1 rad.", 70, -3.5, 3.5, 20,0, "leading",Form("eta_%s",step.Data()), false);
+  //plotStack(data, Zmumu, Ztautau, Wmunu, QCD, TTbar, "Z.leg1().phi()",cut, "Leading #phi (radian)", "Events/0.1 rad.", 70, -3.5, 3.5, 20,0, "leading",Form("phi_%s",step.Data()), false);
+  //plotStack(data, Zmumu, Ztautau, Wmunu, QCD, TTbar, "Z.leg2().pt()",cut, "Second p_{T} (GeV/c)", "Events/5 GeV/c", 20, 0, 100, 100,0, "second",Form("pt_h_%s",step.Data()), false); 
+  //plotStack(data, Zmumu, Ztautau, Wmunu, QCD, TTbar, "Z.leg2().eta()",cut, "Second #eta (radian)", "Events/0.1 rad.", 70, -3.5, 3.5, 20,0, "second",Form("eta_%s",step.Data()), false);
+  //plotStack(data, Zmumu, Ztautau, Wmunu, QCD, TTbar, "Z.leg2().phi()",cut, "Second #phi (radian)", "Events/0.1 rad.", 70, -3.5, 3.5, 20,0, "second",Form("phi_%s",step.Data()), false);
+  plotStack(data, Zmumu, Ztautau, Wmunu, QCD, TTbar, "@jets.size()",cut, "Jet Multiplicity", "Events", 10, 0, 10, 130 , -1, "jet",Form("multiplicity_%s",step.Data()), false);
+  plotStack(data, Zmumu, Ztautau, Wmunu, QCD, TTbar, "MET",cut, "Missing E_{T}", "Events", 40, 0, 80, 70 , -1, "met",Form("et_%s",step.Data()), false);
 
-  dimuon_Zmumu->Scale(norm_Zmm);
-  dimuon_Ztautau->Scale(norm_Ztautau);
-  dimuon_Wmunu->Scale(norm_Wmunu);
-  dimuon_QCD->Scale(norm_QCD);
-  dimuon_TTbar->Scale(norm_tt);
+  numberOfEvents( data,Zmumu,Ztautau,Wmunu,QCD, TTbar, cut, step); 
+}
 
-  dimuon_Zmumu->SetFillColor(2);
-  dimuon_Ztautau->SetFillColor(5);
-  dimuon_Wmunu->SetFillColor(6);
-  dimuon_QCD->SetFillColor(3);
-  dimuon_TTbar->SetFillColor(4);
+void histStack(TFile* fdata, TFile * fZmumu, TFile * fZtautau, TFile* fWmunu, TFile* fQCD, TFile* fTTbar, TString var, TString & xtitle, TString & ytitle, const int& nbin, const double& xlow, const double& xmax, const double& max, const double & min, const TString& hName, const TString& name, bool & log){
+
+  TH1F * h_data = (TH1F *) fdata->Get(Form("DiMuon/%s",var.Data()));
+  TH1F * h_Zmumu = (TH1F *) fZmumu->Get(Form("DiMuon/%s",var.Data()));
+  TH1F * h_Ztautau = (TH1F *) fZtautau->Get(Form("DiMuon/%s",var.Data()));
+  TH1F * h_Wmunu = (TH1F *) fWmunu->Get(Form("DiMuon/%s",var.Data()));
+  TH1F * h_QCD = (TH1F *) fQCD->Get(Form("DiMuon/%s",var.Data()));
+  TH1F * h_TTbar = (TH1F *) fTTbar->Get(Form("DiMuon/%s",var.Data()));
+
+  plotStackBase(h_data, h_Zmumu, h_Ztautau, h_Wmunu, h_QCD, h_TTbar, xtitle, ytitle, nbin, xlow, xmax, max, min, hName, name, log);
+
+}
+
+
+void plotStack(TTree* data, TTree * Zmumu, TTree * Ztautau, TTree* Wmunu, TTree* QCD, TTree* TTbar, TString var, TCut cut, TString & xtitle, TString & ytitle, const int& nbin, const double& xlow, const double& xmax, const double& max, const double & min, const TString& hName, const TString& name, bool & log){
+
+  TH1 *h_data = new TH1D(Form("h_data_%s_%s",hName.Data(),name.Data()),"h_data",nbin,xlow,xmax);
+  TH1 *h_Zmumu = new TH1F(Form("h_Zmumu_%s_%s",hName.Data(),name.Data()),"h_Zmumu",nbin,xlow,xmax);
+  TH1 *h_Ztautau = new TH1F(Form("h_Ztautau_%s_%s",hName.Data(),name.Data()),"h_Ztautau",nbin,xlow,xmax);
+  TH1 *h_Wmunu = new TH1F(Form("h_Wmunu_%s_%s",hName.Data(),name.Data()),"h_Wmunu",nbin,xlow,xmax);
+  TH1 *h_QCD = new TH1F(Form("h_QCD_%s_%s",hName.Data(),name.Data()),"h_QCD",nbin,xlow,xmax);
+  TH1 *h_TTbar = new TH1F(Form("h_TTbar_%s_%s",hName.Data(),name.Data()),"h_TTbar",nbin,xlow,xmax);
+
+  data->Project(Form("h_data_%s_%s",hName.Data(),name.Data()),Form("%s",var.Data()),cut); 
+  Zmumu->Project(Form("h_Zmumu_%s_%s",hName.Data(),name.Data()),Form("%s",var.Data()),cut);
+  Ztautau->Project(Form("h_Ztautau_%s_%s",hName.Data(), name.Data()),Form("%s",var.Data()),cut);
+  Wmunu->Project(Form("h_Wmunu_%s_%s",hName.Data(),name.Data()),Form("%s",var.Data()),cut);
+  QCD->Project(Form("h_QCD_%s_%s",hName.Data(),name.Data()),Form("%s",var.Data()),cut);
+  TTbar->Project(Form("h_TTbar_%s_%s",hName.Data(),name.Data()),Form("%s",var.Data()),cut);
+
+  plotStackBase(h_data, h_Zmumu, h_Ztautau, h_Wmunu, h_QCD, h_TTbar, xtitle, ytitle, nbin, xlow, xmax, max, min, hName, name, log);
+
+}
+
+void plotStackBase(TH1* h_data, TH1 * h_Zmumu, TH1 * h_Ztautau, TH1* h_Wmunu, TH1* h_QCD, TH1* h_TTbar, TString & xtitle, TString & ytitle, const int& nbin, const double& xlow, const double& xmax, const double& max, const double & min, const TString& hName, const TString& name, bool & log){
+  TCanvas* c = new TCanvas(Form("c_%s_%s",hName.Data(), name.Data()),Form("c_%s_%s",hName.Data(), name.Data()),1);
+  if(log)
+    c->SetLogy();
+
+  h_data->Sumw2();
+  h_data->SetMarkerStyle(20);
+  h_data->SetMarkerSize(1);
+  h_data->SetTitle(0);
+  h_data->SetStats(0);
+  h_data->GetXaxis()->SetTitle(xtitle.Data());
+  h_data->GetYaxis()->SetTitle(ytitle.Data());
+
+
+  h_Zmumu->Scale(norm_Zmm);
+  h_Ztautau->Scale(norm_Ztautau);
+  h_Wmunu->Scale(norm_Wmunu);
+  h_QCD->Scale(norm_QCD);
+  h_TTbar->Scale(norm_tt);
+
+  h_Zmumu->SetFillColor(2);
+  h_Ztautau->SetFillColor(5);
+  h_Wmunu->SetFillColor(6);
+  h_QCD->SetFillColor(3);
+  h_TTbar->SetFillColor(4);
 
   THStack *stack = new THStack("stack","stack");
   
-  stack->Add(dimuon_QCD);
-  stack->Add(dimuon_TTbar);
-  stack->Add(dimuon_Wmunu);
-  stack->Add(dimuon_Ztautau);
-  stack->Add(dimuon_Zmumu);
+  stack->Add(h_QCD);
+  stack->Add(h_TTbar);
+  stack->Add(h_Wmunu);
+  stack->Add(h_Ztautau);
+  stack->Add(h_Zmumu);
   stack->SetTitle(0);
-  stack->SetMaximum(1000); 
-  stack->SetMinimum(0.001);
+  if(max != -1)
+    stack->SetMaximum(max); 
+  if(min != -1)
+    stack->SetMinimum(min);
   stack->Draw();
-  dimuon_data->Draw("same");
+  h_data->Draw("same");
 
   TLegend *l= new TLegend(0.75,0.65,0.90,0.88);
-  l->AddEntry(dimuon_data,"Data","p");
-  l->AddEntry(dimuon_Zmumu,"Z #rightarrow #mu#mu","f");
-  l->AddEntry(dimuon_Ztautau,"Z #rightarrow #tau#tau","f");
-  l->AddEntry(dimuon_Wmunu,"W #rightarrow #mu#nu","f");
-  l->AddEntry(dimuon_QCD,"QCD","f");
-  l->AddEntry(dimuon_TTbar,"t#bar{t}","f");
+  l->AddEntry(h_data,"Data","p");
+  l->AddEntry(h_Zmumu,"Z #rightarrow #mu#mu","f");
+  l->AddEntry(h_Ztautau,"Z #rightarrow #tau#tau","f");
+  l->AddEntry(h_Wmunu,"W #rightarrow #mu#nu","f");
+  l->AddEntry(h_QCD,"QCD","f");
+  l->AddEntry(h_TTbar,"t#bar{t}","f");
   l->SetTextSize(0.04);
   l->SetFillColor(0);
   l->SetLineColor(0);
   l->Draw();
 
-  double ndata = dimuon_data->GetEntries();
-  double nZmm = dimuon_Zmumu->GetEntries()*norm_Zmm;
-  double nQCD = dimuon_QCD->GetEntries()*norm_QCD;
-  double nZtautau = dimuon_Ztautau->GetEntries()*norm_Ztautau;
-  double nWmunu = dimuon_Wmunu->GetEntries()*norm_Wmunu;
-  double nTTbar = dimuon_TTbar->GetEntries()*norm_tt;
- 
-  cout << "data= " << dimuon_data->GetEntries() << endl;
-  cout << "Zmumu= " << dimuon_Zmumu->GetEntries()*norm_Zmm << endl;
-  cout << "QCD= " << dimuon_QCD->GetEntries()*norm_QCD << endl;
-  cout << "Ztautau= " << dimuon_Ztautau->GetEntries()*norm_Ztautau << endl;
-  cout << "Wmunu= " << dimuon_Wmunu->GetEntries()*norm_Wmunu << endl;
-  cout << "TTbar= " << dimuon_TTbar->GetEntries()*norm_tt << endl;
-  cout << "total= " << nZmm + nQCD + nZtautau + nWmunu + nTTbar << endl;
+  //c->Print("dimuon.eps"); 
 
-  c->Print("dimuon.eps"); 
- 
+}
+
+
+void numberOfEvents( TTree* data, TTree * Zmumu, TTree * Ztautau, TTree* Wmunu, TTree* QCD, TTree* TTbar, TCut cut,TString& s){
+  double ndata = data->GetEntries(cut);  
+  double nZmm = Zmumu->GetEntries(cut)*norm_Zmm;
+  double nQCD = QCD->GetEntries(cut)*norm_QCD;  
+  double nZtautau = Ztautau->GetEntries(cut)*norm_Ztautau;
+  double nWmunu = Wmunu->GetEntries(cut)*norm_Wmunu;
+  double nTTbar = TTbar->GetEntries(cut)*norm_tt;  
+  cout << s.Data() << endl; 
+  cout << "Zmumu   = " << nZmm << endl;
+  cout << "QCD     = " << nQCD << endl;
+  cout << "Ztautau = " << nZtautau << endl;
+  cout << "Wmunu   = " << nWmunu << endl;
+  cout << "TTbar   = " << nTTbar << endl;
+  cout << "Total   = " << nZmm + nQCD + nZtautau + nWmunu + nTTbar << endl;
+  cout << "Data    = " << ndata << endl;
 }
