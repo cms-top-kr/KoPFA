@@ -11,9 +11,10 @@ process.options   = cms.untracked.PSet( wantSummary = cms.untracked.bool(True) )
 ## Source
 process.source = cms.Source("PoolSource",
                                 fileNames = cms.untracked.vstring(
-'/store/data/Run2010A/Mu/RECO/Jul6thReReco_v1/0054/FCC806C9-7D89-DF11-8666-0022649F01AA.root')
+'/store/data/Run2010A/Mu/RECO/v4/000/140/379/E6F46854-8592-DF11-AACD-001617C3B6CE.root',)
+
 )
-process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(1000) )
+process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
 
 ## Geometry and Detector Conditions (needed for a few patTuple production steps)
 process.load("Configuration.StandardSequences.Geometry_cff")
@@ -56,11 +57,15 @@ process.noscraping = cms.EDFilter("FilterOutScraping",
    thresh = cms.untracked.double(0.25)
 )
 
+#REMOVE ISOLATION FROM PF2PAT!!!
+process.pfIsolatedMuonsPFlow.isolationCuts        = cms.vdouble(9999.,9999.,9999.)
+process.pfIsolatedMuonsPFlow.combinedIsolationCut = cms.double(9999.)
+
 #PATMUON Selector
 #Here we define the muon selectors
 process.acceptedMuons = cms.EDFilter("PATMuonSelector",
     src = cms.InputTag("selectedPatMuons"),
-    cut =cms.string("pt > 15 && abs(eta) < 2.4")
+    cut =cms.string("pt > 15 && abs(eta) < 2.5")
 )
 
 process.patMuonFilter = cms.EDFilter("CandViewCountFilter",
