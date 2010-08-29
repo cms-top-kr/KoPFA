@@ -24,7 +24,6 @@ process.TFileService = cms.Service("TFileService",
 )
 
 process.load("KoPFA.CommonTools.countingSequences_cfi")
-#process.load("KoPFA.CommonTools.MuonSelector_cfi")
 
 process.VertexFilter = cms.EDFilter('VertexFilter',
     vertexLabel =  cms.InputTag('offlinePrimaryVertices'),
@@ -32,18 +31,28 @@ process.VertexFilter = cms.EDFilter('VertexFilter',
     max = cms.untracked.int32(999),
 )
 
-process.acceptedMuons = cms.EDFilter("PATMuonSelector",
-    src = cms.InputTag("selectedPatMuonsPFlow"),
-    cut =cms.string("pt > 20 && abs(eta) < 2.1")
+from KoPFA.CommonTools.muonSelectorPSet_cff import muonSelectorPSet
+muonSelector = muonSelectorPSet.clone()
+
+process.Muons = cms.EDProducer(
+    "KoMuonSelector",
+    version = cms.untracked.int32( 1 ),#PF
+    muonLabel  = cms.InputTag("selectedPatMuonsPFlow"),
+    beamSpotLabel = cms.InputTag("offlineBeamSpot"),
+    muonSelector = muonSelectorPSet,
 )
 
 process.patMuonFilter = cms.EDFilter("CandViewCountFilter",
-  src = cms.InputTag('acceptedMuons'),
+  src = cms.InputTag('Muons'),
   minNumber = cms.uint32(1)
 )
 
+from PFAnalyses.CommonTools.Selectors.looseJetIdPSet_cff import looseJetIdPSet
+myJetId = looseJetIdPSet.clone()
+myJetId.verbose = False
+
 process.DiMuon = cms.EDAnalyzer('DiMuonAnalyzer',
-  muonLabel =  cms.InputTag('acceptedMuons'),
+  muonLabel =  cms.InputTag('Muons'),
   metLabel =  cms.InputTag('patMETsPFlow'),
   jetLabel =  cms.InputTag('selectedPatJetsPFlow'),
   useEventCounter = cms.bool( True ),
@@ -51,22 +60,25 @@ process.DiMuon = cms.EDAnalyzer('DiMuonAnalyzer',
                               'initialEvents',
                               'finalEvents'
                               ),
+  looseJetId = myJetId, 
 )
-
-#process.acceptedMuons.src = "selectedPatMuons"
-#process.Muons.version = 2 #VBTF
 
 process.load("HLTrigger.HLTfilters.hltHighLevel_cfi")
 process.hltHighLevel.HLTPaths = cms.vstring('HLT_Mu9')
 process.load("KoPFA.IsoAnalyzer.Isolation_cfi")
-process.MuonIso.collectionLabel = "acceptedMuons"
+process.MuonIso.collectionLabel = "Muons"
+process.MuonAna = cms.EDAnalyzer('MuonIsoAna',
+    collectionLabel =  cms.InputTag('Muons'),
+)
 
 process.p = cms.Path(
                      process.loadHistosFromRunInfo*
-#                     process.hltHighLevel*
-                     process.acceptedMuons*
+                     process.hltHighLevel*
+                     process.Muons*
                      process.patMuonFilter*
                      process.VertexFilter*
                      process.MuonIso*
+                     process.MuonAna*
                      process.DiMuon
                     )
+
