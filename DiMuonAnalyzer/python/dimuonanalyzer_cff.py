@@ -23,20 +23,24 @@ process.TFileService = cms.Service("TFileService",
     fileName = cms.string('vallot.root')
 )
 
-process.load("KoPFA.CommonTools.countingSequences_cfi")
-
 process.VertexFilter = cms.EDFilter('VertexFilter',
     vertexLabel =  cms.InputTag('offlinePrimaryVertices'),
     min = cms.untracked.int32(1),
     max = cms.untracked.int32(999),
 )
 
-from KoPFA.CommonTools.muonSelectorPSet_cff import muonSelectorPSet
+process.load("PFAnalyses.CommonTools.countingSequences_cfi")
+from PFAnalyses.CommonTools.Selectors.muonSelectorPSet_cff import muonSelectorPSet
+#from KoPFA.CommonTools.muonSelectorPSet_cff import muonSelectorPSet
 muonSelector = muonSelectorPSet.clone()
+
+#muonSelector.dxy = 0.02
+#muonSelector.eta = 2.5
+#muonSelector.pt = 20
 
 process.Muons = cms.EDProducer(
     "KoMuonSelector",
-    version = cms.untracked.int32( 1 ),#PF
+    version = cms.untracked.int32( 3 ),#TOP
     muonLabel  = cms.InputTag("selectedPatMuonsPFlow"),
     beamSpotLabel = cms.InputTag("offlineBeamSpot"),
     muonSelector = muonSelectorPSet,
@@ -77,8 +81,8 @@ process.p = cms.Path(
                      process.Muons*
                      process.patMuonFilter*
                      process.VertexFilter*
-                     process.MuonIso*
-                     process.MuonAna*
+#                     process.MuonIso*
+#                     process.MuonAna*
                      process.DiMuon
                     )
 
