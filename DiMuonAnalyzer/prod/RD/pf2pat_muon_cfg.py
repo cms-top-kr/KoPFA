@@ -11,7 +11,10 @@ process.options   = cms.untracked.PSet( wantSummary = cms.untracked.bool(True) )
 ## Source
 process.source = cms.Source("PoolSource",
                                 fileNames = cms.untracked.vstring(
-'/store/data/Run2010A/Mu/RECO/v4/000/140/379/E6F46854-8592-DF11-AACD-001617C3B6CE.root',)
+#'/store/data/Run2010A/Mu/RECO/v4/000/140/379/E6F46854-8592-DF11-AACD-001617C3B6CE.root',
+'rfio:/castor/cern.ch/user/w/wreece/SDMUONFILTER/WmunuSpring10/24BF0D12-DF46-DF11-BA71-001D0968F2F6.root'
+)
+
 
 )
 process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
@@ -37,6 +40,8 @@ process.out = cms.OutputModule("PoolOutputModule",
 process.load("PhysicsTools.PatAlgos.patSequences_cff")
 process.load("PhysicsTools.PFCandProducer.PF2PAT_cff")
 
+process.pfPileUp.Enable = True #enable for test, Aug 30
+
 #PF2PAT
 process.load("PhysicsTools.PatAlgos.patSequences_cff")
 from PhysicsTools.PatAlgos.tools.pfTools import *
@@ -46,7 +51,7 @@ removeMCMatching(process, ['All'] )
 
 process.primaryVertexFilter = cms.EDFilter("VertexSelector",
    src = cms.InputTag("offlinePrimaryVertices"),
-   cut = cms.string("!isFake && ndof > 4 && abs(z) <= 15 && position.Rho <= 2"), # tracksSize() > 3 for the older cut
+   cut = cms.string("!isFake && ndof > 4 && abs(z) < 24 && position.Rho < 2"), # tracksSize() > 3 for the older cut
    filter = cms.bool(True),   # otherwise it won't filter the events, just produce an empty vertex collection.
 )
 
@@ -73,19 +78,22 @@ process.patMuonFilter = cms.EDFilter("CandViewCountFilter",
   minNumber = cms.uint32(1)
 )
    
+#run36xOn35xInput = True 
+#if run36xOn35xInput:
+#    from PhysicsTools.PatAlgos.tools.cmsswVersionTools import *
+#    run36xOn35xInput(process)
+
 ##################################################################
-process.load("KoPFA.CommonTools.countingSequences_cfi")
-process.load("KoPFA.DiMuonAnalyzer.triggerMatch_cfi" )
+process.load("PFAnalyses.CommonTools.countingSequences_cfi")
 
 process.outpath = cms.EndPath(process.saveHistosInRunInfo*process.out)
 
 process.p = cms.Path(
-                 process.primaryVertexFilter*
-                 process.noscraping*
                  process.startupSequence*
+                 process.noscraping*
+                 process.primaryVertexFilter*
                  process.patDefaultSequence*
                  getattr(process,"patPF2PATSequence"+postfix)*
-                 process.triggerMatch*
                  process.acceptedMuons*
                  process.patMuonFilter*
                  process.finalSequence
@@ -102,7 +110,6 @@ process.out.outputCommands += patEventContentNoCleaning
 process.out.outputCommands.extend(cms.untracked.vstring(
                                                     'keep *_MEtoEDMConverter_*_PAT',
                                                     'keep *_particleFlow_*_*',
-                                                    'keep *_triggeredPatMuons_*_*',
                                                 ))
 
 process.MessageLogger.cerr.FwkReport.reportEvery = 100

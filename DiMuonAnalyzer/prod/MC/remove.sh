@@ -6,8 +6,10 @@ rm -rf TTbar2l
 rm -rf TTbar 
 rm -rf Wmunu 
 rm -rf Wtaunu  
-rm -rf DYmumu_M10to20
+rm -rf DYmumu
 rm -rf QCD_Pt15
 rm -rf QCD_Pt30 
 rm -rf ZJets
 rm -rf WJets
+rm -rf SingleTop
+rm -rf VVJets

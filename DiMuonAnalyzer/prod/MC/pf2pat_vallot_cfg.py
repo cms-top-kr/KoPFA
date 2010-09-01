@@ -11,9 +11,15 @@ process.options   = cms.untracked.PSet( wantSummary = cms.untracked.bool(True) )
 ## Source
 process.source = cms.Source("PoolSource",
                                 fileNames = cms.untracked.vstring(
-'/store/data/Run2010A/Mu/RECO/Jul6thReReco_v1/0054/FCC806C9-7D89-DF11-8666-0022649F01AA.root')
+'/store/data/Run2010A/Mu/RECO/v4/000/140/379/E6F46854-8592-DF11-AACD-001617C3B6CE.root',
+#'/store/data/Run2010A/Mu/RECO/v4/000/140/379/DADA85C0-8692-DF11-B916-0030486733D8.root',
+#'/store/data/Run2010A/Mu/RECO/v4/000/140/379/D659EFB7-AF92-DF11-96BD-00304879FC6C.root',
+#'/store/data/Run2010A/Mu/RECO/v4/000/140/379/44E5E31D-8492-DF11-AA30-001D09F253C0.root'
+  )
+
 )
-process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(1000) )
+
+process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
 
 ## Geometry and Detector Conditions (needed for a few patTuple production steps)
 process.load("Configuration.StandardSequences.Geometry_cff")
@@ -56,20 +62,44 @@ process.noscraping = cms.EDFilter("FilterOutScraping",
    thresh = cms.untracked.double(0.25)
 )
 
+#REMOVE ISOLATION FROM PF2PAT!!!
+process.pfIsolatedMuonsPFlow.isolationCuts        = cms.vdouble(9999.,9999.,9999.)
+process.pfIsolatedMuonsPFlow.combinedIsolationCut = cms.double(9999.)
+
 #PATMUON Selector
 #Here we define the muon selectors
-process.acceptedMuons = cms.EDFilter("PATMuonSelector",
-    src = cms.InputTag("selectedPatMuons"),
-    cut =cms.string("pt > 15 && abs(eta) < 2.4")
+from KoPFA.CommonTools.muonSelectorPSet_cff import muonSelectorPSet
+muonSelector = muonSelectorPSet.clone()
+  
+process.Muons = cms.EDProducer(
+    "KoMuonSelector",
+    version = cms.untracked.int32( 1 ),#PF
+    muonLabel  = cms.InputTag("selectedPatMuons"),
+    beamSpotLabel = cms.InputTag("offlineBeamSpot"),
+    muonSelector = muonSelectorPSet,
 )
 
 process.patMuonFilter = cms.EDFilter("CandViewCountFilter",
-  src = cms.InputTag('acceptedMuons'),
-  minNumber = cms.uint32(1)
+  src = cms.InputTag('Muons'),
+  minNumber = cms.uint32(0)
 )
-   
+
+process.PFMuons = cms.EDProducer(
+    "KoMuonSelector",
+    version = cms.untracked.int32( 1 ),#PF
+    muonLabel  = cms.InputTag("selectedPatMuonsPFlow"),
+    beamSpotLabel = cms.InputTag("offlineBeamSpot"),
+    muonSelector = muonSelectorPSet,
+)
+
+process.patPFMuonFilter = cms.EDFilter("CandViewCountFilter",
+  src = cms.InputTag('PFMuons'),
+  minNumber = cms.uint32(0)
+)
+
+ 
 ##################################################################
-process.load("KoPFA.CommonTools.countingSequences_cfi")
+process.load("PFAnalyses.CommonTools.countingSequences_cfi")
 process.load("KoPFA.DiMuonAnalyzer.triggerMatch_cfi" )
 
 #process.outpath = cms.EndPath(process.saveHistosInRunInfo*process.out)
@@ -92,7 +122,6 @@ process.p = cms.Path(
                  process.patDefaultSequence*
                  getattr(process,"patPF2PATSequence"+postfix)*
                  process.triggerMatch*
-                 process.acceptedMuons*
                  process.patMuonFilter*
                  process.finalSequence
     )
@@ -102,26 +131,33 @@ process.TFileService = cms.Service("TFileService",
 )
 
 process.load("KoPFA.CommonTools.MuonSelector_cfi")
+from PFAnalyses.CommonTools.Selectors.looseJetIdPSet_cff import looseJetIdPSet
+myJetId = looseJetIdPSet.clone()
+myJetId.verbose = False
+
 
 process.DiMuonPFlow = cms.EDAnalyzer('DiMuonAnalyzer',
   muonLabel =  cms.InputTag('PFMuons'),
   metLabel =  cms.InputTag('patMETsPFlow'),
+  jetLabel =  cms.InputTag('selectedPatJetsPFlow'),
   useEventCounter = cms.bool( True ),
   filters = cms.untracked.vstring(
                               'initialEvents',
                               'finalEvents'
                               ),
-
+  looseJetId = myJetId,
 )
 
 process.DiMuon = cms.EDAnalyzer('DiMuonAnalyzer',
   muonLabel =  cms.InputTag('Muons'),
   metLabel =  cms.InputTag('patMETsPFlow'),
+  jetLabel =  cms.InputTag('selectedPatJetsPFlow'),
   useEventCounter = cms.bool( True ),
   filters = cms.untracked.vstring(
                               'initialEvents',
                               'finalEvents'
                               ),
+  looseJetId = myJetId,
 )
 
 process.DiMuonAnalPFlow = cms.Path(
@@ -130,7 +166,6 @@ process.DiMuonAnalPFlow = cms.Path(
                              +process.startupSequence
                              +process.patDefaultSequence
                              +getattr(process,"patPF2PATSequence"+postfix)
-                             +process.acceptedMuonsPFlow
                              +process.PFMuons
                              +process.patPFMuonFilter
                              +process.finalSequence
@@ -144,7 +179,6 @@ process.DiMuonAnal = cms.Path(
                              +process.startupSequence
                              +process.patDefaultSequence
                              +getattr(process,"patPF2PATSequence"+postfix)
-                             +process.acceptedMuons
                              +process.Muons
                              +process.patMuonFilter
                              +process.finalSequence
