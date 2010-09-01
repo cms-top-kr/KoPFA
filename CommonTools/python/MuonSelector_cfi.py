@@ -6,13 +6,13 @@ muonSelector = muonSelectorPSet.clone()
 
 acceptedMuons = cms.EDFilter("PATMuonSelector",
     src = cms.InputTag("selectedPatMuons"),
-    cut =cms.string("pt > 15 && abs(eta) < 2.4")
+    cut =cms.string("pt > 20 && abs(eta) < 2.5")
 )
 
 Muons = cms.EDProducer(
     "KoMuonSelector",
-    version = cms.untracked.int32( 2 ),#VBTF
-    muonLabel  = cms.InputTag("acceptedMuons"),
+    version = cms.untracked.int32( 3 ),#TOP
+    muonLabel  = cms.InputTag("selectedPatMuons"),
     beamSpotLabel = cms.InputTag("offlineBeamSpot"),
     muonSelector = muonSelectorPSet,
 )
@@ -24,13 +24,13 @@ patMuonFilter = cms.EDFilter("CandViewCountFilter",
 
 acceptedMuonsPFlow = cms.EDFilter("PATMuonSelector",
     src = cms.InputTag("selectedPatMuonsPFlow"),
-    cut =cms.string("pt > 15 && abs(eta) < 2.4")
+    cut =cms.string("pt > 20 && abs(eta) < 2.5")
 )
 
 PFMuons = cms.EDProducer(
     "KoMuonSelector",
-    version = cms.untracked.int32( 2 ),#VBTF
-    muonLabel  = cms.InputTag("acceptedMuonsPFlow"),
+    version = cms.untracked.int32( 3 ),#TOP
+    muonLabel  = cms.InputTag("selectedPatMuonsPFlow"),
     beamSpotLabel = cms.InputTag("offlineBeamSpot"),
     muonSelector = muonSelectorPSet,
 )

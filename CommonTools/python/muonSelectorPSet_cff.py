@@ -37,7 +37,7 @@ muonSelectorPSet = cms.PSet(
     # chi2/Dof from the global fit
     trackNormChi2 = cms.double(9999.),
     #transverse impact parameter
-    dxy = cms.double(0.2),
+    dxy = cms.double(0.02),
     # zed impact parameter 
     dz = cms.double(9999.),
 
@@ -61,7 +61,7 @@ muonSelectorPSet = cms.PSet(
     # relative isolation
     relIso = cms.double(999),
 
-    eta = cms.double(2.4),
+    eta = cms.double(2.5),
     pt = cms.double(20.),
 
     )
