@@ -30,20 +30,19 @@ process.VertexFilter = cms.EDFilter('VertexFilter',
 )
 
 process.load("PFAnalyses.CommonTools.countingSequences_cfi")
-from PFAnalyses.CommonTools.Selectors.muonSelectorPSet_cff import muonSelectorPSet
-#from KoPFA.CommonTools.muonSelectorPSet_cff import muonSelectorPSet
-muonSelector = muonSelectorPSet.clone()
 
-#muonSelector.dxy = 0.02
-#muonSelector.eta = 2.5
-#muonSelector.pt = 20
+from PFAnalyses.CommonTools.Selectors.muonSelectorPSet_cff import muonSelectorPSet
+muonId = muonSelectorPSet.clone()
+muonId.dxy = 0.02
+muonId.eta = 2.5
+muonId.pt = 20
 
 process.Muons = cms.EDProducer(
     "KoMuonSelector",
-    version = cms.untracked.int32( 3 ),#TOP
+    version = cms.untracked.int32( 1 ),#TOP
     muonLabel  = cms.InputTag("selectedPatMuonsPFlow"),
     beamSpotLabel = cms.InputTag("offlineBeamSpot"),
-    muonSelector = muonSelectorPSet,
+    muonSelector = muonId,
 )
 
 process.patMuonFilter = cms.EDFilter("CandViewCountFilter",
@@ -51,9 +50,10 @@ process.patMuonFilter = cms.EDFilter("CandViewCountFilter",
   minNumber = cms.uint32(1)
 )
 
+
 from PFAnalyses.CommonTools.Selectors.looseJetIdPSet_cff import looseJetIdPSet
 myJetId = looseJetIdPSet.clone()
-myJetId.verbose = False
+myJetId.verbose = False 
 
 process.DiMuon = cms.EDAnalyzer('DiMuonAnalyzer',
   muonLabel =  cms.InputTag('Muons'),
