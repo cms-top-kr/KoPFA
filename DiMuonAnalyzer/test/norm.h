@@ -39,17 +39,19 @@ void totalevent( TFile* fdata, TFile* fZmumu, TFile* fZtautau, TFile* fWmunu, TF
   //double Wm = 2583 ;
   //double ZZ4mu = 0.001278;
   //cross section at CMS at 7 TeV 
-  double Zmm     = 1300 ;
-  double Ztautau = 1300 ;
+  //double Zmm     = 1300 ;
+  //double Ztautau = 1300 ;
 
-  //double Zmm     = 1660 ;
-  //double Ztautau = 1660 ;
-  double Wmunu   = 7899;
+  double Zmm     = 1660 ;
+  //double Zmm     = 3048 ;
+  double Ztautau = 1660 ;
+  double Wmunu = 31314;
+  //double Wmunu   = 7899;
   double Wtaunu = 7899;
-  //double tt      = 94.3;
-  double tt      = 148.9;
+  double tt      = 157.5;
   double tt2l    = 17.3;
-  double QCD     = 109853;
+  //double QCD     = 109853;
+  double QCD     = 79688 ;
  
   //TChain * nZmumu = new TChain("EventInfo/tree");
   //TChain * nZtautau = new TChain("EventInfo/tree");
@@ -77,12 +79,13 @@ void totalevent( TFile* fdata, TFile* fZmumu, TFile* fZtautau, TFile* fWmunu, TF
   //N_Wmunu = nWmunu->GetEntries();
   //N_QCD = nQCD->GetEntries();
   //N_tt = nTTbar->GetEntries();
-  
-  //cout << "Zmm= " << N_Zmm << endl;
-  //cout << "Ztautau= " << N_Ztautau << endl;
-  //cout << "Wmunu= " << N_Wmunu << endl;
-  //cout << "QCD= " << N_QCD << endl;
-  //cout << "tt= " << N_tt << endl;
+  cout << "Lumi-----------" << endl; 
+  cout << "Zmm= " << N_Zmm/Zmm << "(" << N_Zmm << ")" << endl;
+  cout << "Ztautau= " << N_Ztautau/Ztautau << "(" << N_Ztautau << ")" << endl;
+  cout << "Wmunu= " << N_Wmunu/Wmunu << "(" << N_Wmunu << ")" << endl;
+  cout << "QCD= " << N_QCD/QCD << "(" << N_QCD << ")" << endl;
+  cout << "tt= " << N_tt/tt << "(" << N_tt << ")" << endl;
+  cout << "---------------" << endl;
 
   //luminosity for MC
   double L_Zmm     = N_Zmm/Zmm;

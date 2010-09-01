@@ -1,5 +1,6 @@
 #include <iostream>
 #include "norm.h"
+#include "style.h"
 #include "THStack.h"
 #include "TChain.h"
 #include "TH1.h"
@@ -9,15 +10,20 @@
 #include "TLegend.h"
 #include "TFile.h"
 
+TString dir = "TOPDIL";
+//TString dir = "TOPDIL_NoPileupSequence";
+bool print = false;
 
 void anal(){
   using namespace std;
-  TFile * fdata = new TFile("/home/tjkim/ntuple/data/top/Aug13/vallot.root");
-  TFile * fZmumu = new TFile("/home/tjkim/ntuple/mc/top/Summer10/vallot_Zmumu.root");
-  TFile * fZtautau = new TFile("/home/tjkim/ntuple/mc/top/Summer10/vallot_Ztautau.root");
-  TFile * fWmunu = new TFile("/home/tjkim/ntuple/mc/top/Summer10/vallot_Wmunu.root");
-  TFile * fQCD = new TFile("/home/tjkim/ntuple/mc/top/Summer10/vallot_QCD.root");  
-  TFile * fTTbar = new TFile("/home/tjkim/ntuple/mc/top/Summer10/vallot_TTbar.root");
+  TFile * fdata = new TFile("/home/tjkim/ntuple/data/top/Aug13/vallot_presentedAug26.root");
+  //TFile * fdata = new TFile("/home/tjkim/ntuple/data/top/Aug13/vallot.root");
+  //TFile * fdata = new TFile("/home/tjkim/ntuple/data/top/Aug13_noPileupSequence/vallot.root");
+  TFile * fZmumu = new TFile("/home/tjkim/ntuple/mc/top/Spring10/vallot_Zmumu.root");
+  TFile * fZtautau = new TFile("/home/tjkim/ntuple/mc/top/Spring10/vallot_Ztautau.root");
+  TFile * fWmunu = new TFile("/home/tjkim/ntuple/mc/top/Spring10/vallot_WJets.root");
+  TFile * fQCD = new TFile("/home/tjkim/ntuple/mc/top/Spring10/vallot_QCD.root");  
+  TFile * fTTbar = new TFile("/home/tjkim/ntuple/mc/top/Spring10/vallot_TTbar.root");
 
   TTree * data = (TTree *) fdata->Get("DiMuon/tree");
   TTree * Zmumu = (TTree *) fZmumu->Get("DiMuon/tree");
@@ -28,21 +34,29 @@ void anal(){
 
   totalevent( fdata, fZmumu, fZtautau, fWmunu, fQCD, fTTbar);
 
-  TCut step0;
-  TCut step1 = "Z.mass() > 0";
-  TCut step2 = "Z.mass() > 0 && Z.sign() < 0";
-  TCut step3 = "Z.mass() > 0 && Z.sign() < 0 && !( Z.mass() > 76 && Z.mass() < 106)";
-  TCut step4 = "Z.mass() > 0 && Z.sign() < 0 && !( Z.mass() > 76 && Z.mass() < 106) && @jets.size() >= 2";
-  TCut step5 = "Z.mass() > 0 && Z.sign() < 0 && !( Z.mass() > 76 && Z.mass() < 106) && @jets.size() >= 2 && MET > 30";
+  TCut pfiso = "(chIso1+nhIso1+phIso1)/Z.leg1().pt() < 0.14 && (chIso2+nhIso2+phIso2)/Z.leg2().pt() < 0.14 ";
+ 
+  TCut pre;
+  TCut step0 = "Z.mass() > 10";
+  TCut step1 = step0 && pfiso;  
+  TCut step2 = step1 && "Z.sign() < 0";
+  TCut step3 = step2 && "abs(Z.mass() - 91) > 15";
+  TCut step4 = step3 && "@jetspt30.size() >= 1";
+  TCut step5 = step4 && "MET > 30";
 
-  //numberOfEvents( data,Zmumu,Ztautau,Wmunu,QCD, TTbar, step1,"step0");
+  //numberOfEvents( data,Zmumu,Ztautau,Wmunu,QCD, TTbar, pre,"pre");
 
+  plotStep(data, Zmumu, Ztautau, Wmunu, QCD, TTbar, step0, "step0",1); 
   plotStep(data, Zmumu, Ztautau, Wmunu, QCD, TTbar, step1, "step1",1); 
   plotStep(data, Zmumu, Ztautau, Wmunu, QCD, TTbar, step2, "step2",1); 
   plotStep(data, Zmumu, Ztautau, Wmunu, QCD, TTbar, step3, "step3",0.1); 
   plotStep(data, Zmumu, Ztautau, Wmunu, QCD, TTbar, step4, "step4",0.1); 
   plotStep(data, Zmumu, Ztautau, Wmunu, QCD, TTbar, step5, "step5",0.1); 
 
+  cout <<"step4" << endl;
+  data->Scan("RUN:LUMI:EVENT",step4);
+  cout <<"step5" << endl;
+  data->Scan("RUN:LUMI:EVENT",step5);
 }
 
 void plotStep(TTree* data, TTree* Zmumu, TTree* Ztautau, TTree* Wmunu, TTree* QCD, TTree* TTbar, TCut cut, TString& step, const double & r){ 
@@ -50,13 +64,12 @@ void plotStep(TTree* data, TTree* Zmumu, TTree* Ztautau, TTree* Wmunu, TTree* QC
   //histStack(fdata, fZmumu, fZtautau, fWmunu, fQCD, fTTbar, "h_mass","Dimuon Mass (GeV/c^{2})", "Events/5 GeV/c^{2}",40,0, 200, 1000,0.02, "dimuon",Form("mass_h_%s",step.Data()), true);
   //histStack(fdata, fZmumu, fZtautau, fWmunu, fQCD, fTTbar, "h_leadingpt","Leading p_{T} (GeV/c)", "Events/5 GeV/c",20,0, 100, 30, 0, "leading",Form("pt_h_%s",step.Data()), false);
 
-  if( step.Data() == "step1" || step.Data() == "step2" ){ 
-    plotStack(data, Zmumu, Ztautau, Wmunu, QCD, TTbar, "Z.mass()",cut, "Dimuon Mass (GeV/c^{2})", "Events/2 GeV/c^{2}",100, 0, 200, 1000*r,0.02*r, "dimuon",Form("mass_%s",step.Data()), true);
+  if( step.Contains("step0") || step.Contains("step1") || step.Contains("step2") ){ 
+    plotStack(data, Zmumu, Ztautau, Wmunu, QCD, TTbar, "Z.mass()",cut, "Dimuon Mass (GeV/c^{2})", "Events/5 GeV/c^{2}",40, 0, 200, 1000*r,0.02*r, "dimuon",Form("mass_%s",step.Data()), true);
   }
 
-  plotStack(data, Zmumu, Ztautau, Wmunu, QCD, TTbar, "@jets.size()",cut, "Jet Multiplicity", "Events", 10, 0, 10, 130*r , -1, "jet",Form("multiplicity_%s",s
-tep.Data()), false);
-  plotStack(data, Zmumu, Ztautau, Wmunu, QCD, TTbar, "MET",cut, "Missing E_{T}", "Events", 40, 0, 80, 70*r , 0.02*r, "met",Form("et_%s",step.Data()), true);
+  plotStack(data, Zmumu, Ztautau, Wmunu, QCD, TTbar, "@jetspt30.size()",cut, "Jet Multiplicity", "Events", 5, 0, 5, 250*r , -1, "jet",Form("multiplicity_%s",step.Data()), true);
+  plotStack(data, Zmumu, Ztautau, Wmunu, QCD, TTbar, "MET",cut, "Missing E_{T}", "Events", 8, 0, 80, 300*r , 0.02*r, "met",Form("et_%s",step.Data()), true);
   
   //plotStack(data, Zmumu, Ztautau, Wmunu, QCD, TTbar, "Z.leg1().pt()",cut, "Leading p_{T} (GeV/c)", "Events/2 GeV/c", 50, 0, 100, 40,0, "leading",Form("pt_%s",step.Data()), false);
   //plotStack(data, Zmumu, Ztautau, Wmunu, QCD, TTbar, "Z.leg1().eta()",cut, "Leading #eta (radian)", "Events/0.1 rad.", 70, -3.5, 3.5, 20,0, "leading",Form("eta_%s",step.Data()), false);
@@ -107,6 +120,21 @@ void plotStackBase(TH1* h_data, TH1 * h_Zmumu, TH1 * h_Ztautau, TH1* h_Wmunu, TH
   if(log)
     c->SetLogy();
 
+  //overflow adding
+  double overflow_data = h_data->GetBinContent(nbin+1); 
+  double overflow_Zmumu = h_Zmumu->GetBinContent(nbin+1); 
+  double overflow_Ztautau = h_Ztautau->GetBinContent(nbin+1); 
+  double overflow_Wmunu = h_Wmunu->GetBinContent(nbin+1); 
+  double overflow_QCD = h_QCD->GetBinContent(nbin+1); 
+  double overflow_TTbar = h_TTbar->GetBinContent(nbin+1); 
+ 
+  h_data->AddBinContent(nbin,overflow_data) << endl;
+  h_Zmumu->AddBinContent(nbin,overflow_Zmumu) << endl;
+  h_Ztautau->AddBinContent(nbin,overflow_Ztautau) << endl;
+  h_Wmunu->AddBinContent(nbin,overflow_Wmunu) << endl;
+  h_QCD->AddBinContent(nbin,overflow_QCD) << endl;
+  h_TTbar->AddBinContent(nbin,overflow_TTbar) << endl;
+
   h_data->Sumw2();
   h_data->SetMarkerStyle(20);
   h_data->SetMarkerSize(1);
@@ -114,7 +142,6 @@ void plotStackBase(TH1* h_data, TH1 * h_Zmumu, TH1 * h_Ztautau, TH1* h_Wmunu, TH
   h_data->SetStats(0);
   h_data->GetXaxis()->SetTitle(xtitle.Data());
   h_data->GetYaxis()->SetTitle(ytitle.Data());
-
 
   h_Zmumu->Scale(norm_Zmm);
   h_Ztautau->Scale(norm_Ztautau);
@@ -155,7 +182,7 @@ void plotStackBase(TH1* h_data, TH1 * h_Zmumu, TH1 * h_Ztautau, TH1* h_Wmunu, TH
   l->SetLineColor(0);
   l->Draw();
 
-  //c->Print("dimuon.eps"); 
+  Print(c, dir, hName, name, print);
 
 }
 
@@ -171,15 +198,23 @@ void numberOfEvents( TTree* data, TTree * Zmumu, TTree * Ztautau, TTree* Wmunu, 
   double bkg = nZmm+nQCD+nZtautau+nWmunu;
   double soverb = sig/TMath::Sqrt(sig+bkg);
 
+  double eZmm = sqrt(nZmm*norm_Zmm);
+  double eQCD = sqrt(nQCD*norm_QCD);
+  double eZtautau = sqrt(nZtautau*norm_Ztautau);
+  double eWmunu = sqrt(nWmunu*norm_Wmunu);
+  double eTTbar = sqrt(nTTbar*norm_tt); 
+  double eTotal = sqrt(eZmm*eZmm+eQCD*eQCD+eZtautau*eZtautau+eWmunu*eWmunu+eTTbar*eTTbar);
+
   cout << s.Data() << " ------------------ " <<  endl; 
-  cout << "Zmumu   = " << nZmm << endl;
-  cout << "QCD     = " << nQCD << endl;
-  cout << "Ztautau = " << nZtautau << endl;
-  cout << "Wmunu   = " << nWmunu << endl;
-  cout << "TTbar   = " << nTTbar << endl;
-  cout << "Total   = " << nZmm + nQCD + nZtautau + nWmunu + nTTbar << endl;
+  cout << "Zmumu   = " << nZmm << " +- " << eZmm << endl;
+  cout << "QCD     = " << nQCD << " +- " << eQCD << endl;
+  cout << "Ztautau = " << nZtautau << " +- " << eZtautau << endl;
+  cout << "Wmunu   = " << nWmunu << " +- " << eWmunu << endl;
+  cout << "TTbar   = " << nTTbar << " +- " << eTTbar << endl;
+  cout << "Total   = " << nZmm + nQCD + nZtautau + nWmunu + nTTbar << " +- " << eTotal << endl;
   cout << "------------------------ " <<  endl;
   cout << "Data    = " << ndata << endl;
   cout << "s/Sqrt(s+b) = " << soverb << endl;
   cout << "------------------------ " <<  endl;
+
 }
