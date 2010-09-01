@@ -81,8 +81,8 @@ process.p = cms.Path(
                      process.Muons*
                      process.patMuonFilter*
                      process.VertexFilter*
-#                     process.MuonIso*
-#                     process.MuonAna*
+                     process.MuonIso*
+                     process.MuonAna*
                      process.DiMuon
                     )
 
