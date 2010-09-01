@@ -13,7 +13,7 @@
 //
 // Original Author:  Tae Jeong Kim,40 R-A32,+41227678602,
 //         Created:  Fri Jun  4 17:19:29 CEST 2010
-// $Id: DiMuonAnalyzer.cc,v 1.9 2010/07/28 00:19:42 tjkim Exp $
+// $Id: DiMuonAnalyzer.cc,v 1.10 2010/08/29 15:10:17 tjkim Exp $
 //
 //
 
@@ -94,23 +94,9 @@ class DiMuonAnalyzer : public edm::EDAnalyzer {
       TH1F * h_jetpt30_multi;
 
       std::vector<Ko::ZCandidate>* Z;
-      std::vector<math::XYZTLorentzVector>* muon1;
-      std::vector<math::XYZTLorentzVector>* muon2;
       std::vector<math::XYZTLorentzVector>* jets;
       std::vector<math::XYZTLorentzVector>* jetspt30;
-      std::vector<math::XYZTLorentzVector>* muons;
 
-      std::vector<double>* chIso;
-      std::vector<double>* phIso;
-      std::vector<double>* nhIso;
-      std::vector<double>* chIsoOpt;
-      std::vector<double>* phIsoOpt;
-      std::vector<double>* nhIsoOpt;
-
-      std::vector<double>* trackIso;
-      std::vector<double>* ecalIso;
-      std::vector<double>* hcalIso;
- 
       std::vector<double>* chIso1;
       std::vector<double>* phIso1;
       std::vector<double>* nhIso1;
@@ -164,8 +150,6 @@ DiMuonAnalyzer::DiMuonAnalyzer(const edm::ParameterSet& iConfig)
   filters_ = iConfig.getUntrackedParameter<std::vector<std::string> >("filters");
   looseJetIdSelector_.initialize( iConfig.getParameter<edm::ParameterSet> ("looseJetId") );
 
-  
-
   edm::Service<TFileService> fs;
   tree = fs->make<TTree>("tree", "Tree for Top quark study");
   tmp = fs->make<TH1F>("EventSummary","EventSummary",filters_.size(),0,filters_.size());
@@ -178,23 +162,9 @@ DiMuonAnalyzer::DiMuonAnalyzer(const edm::ParameterSet& iConfig)
   h_jetpt30_multi = fs->make<TH1F>( "h_jetpt30_multi", "jet30pt_multi", 10, 0, 10);
 
   Z = new std::vector<Ko::ZCandidate>();
-  muon1 = new std::vector<math::XYZTLorentzVector>();
-  muon2 = new std::vector<math::XYZTLorentzVector>();
   jets = new std::vector<math::XYZTLorentzVector>();
   jetspt30 = new std::vector<math::XYZTLorentzVector>();
-  muons = new std::vector<math::XYZTLorentzVector>();
 
-  chIso = new std::vector<double>;
-  phIso = new std::vector<double>;
-  nhIso = new std::vector<double>;
-  chIsoOpt = new std::vector<double>;
-  phIsoOpt = new std::vector<double>;
-  nhIsoOpt = new std::vector<double>;
-
-  trackIso = new std::vector<double>;
-  ecalIso = new std::vector<double>;
-  hcalIso = new std::vector<double>;
-  
   chIso1 = new std::vector<double>;
   phIso1 = new std::vector<double>;
   nhIso1 = new std::vector<double>;
@@ -241,22 +211,8 @@ DiMuonAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
   using namespace isodeposit;
 
   Z->clear();
-  muon1->clear();
-  muon2->clear();
   jets->clear();
   jetspt30->clear();
-  muons->clear();
-
-  chIso->clear();
-  phIso->clear();
-  nhIso->clear();
-  chIsoOpt->clear();
-  phIsoOpt->clear();
-  nhIsoOpt->clear();
-
-  trackIso->clear();
-  ecalIso->clear();
-  hcalIso->clear();
 
   chIso1->clear();
   phIso1->clear();
@@ -315,28 +271,9 @@ DiMuonAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
   h_jet_multi->Fill(jets->size());
   h_jetpt30_multi->Fill(jetspt30->size());
 
-
   IsoDeposit::AbsVetos vetos_ch;
   IsoDeposit::AbsVetos vetos_nh;
   IsoDeposit::AbsVetos vetos_ph;
-
-  for(MI mi = muons_->begin(); mi != muons_->end(); mi++){
-    muons->push_back(mi->p4());
-
-    chIso->push_back(mi->chargedHadronIso());
-    phIso->push_back(mi->photonIso());
-    nhIso->push_back(mi->neutralHadronIso());
-
-    chIsoOpt->push_back(mi->isoDeposit(pat::PfChargedHadronIso)->depositAndCountWithin(0.4, vetos_ch).first);
-    nhIsoOpt->push_back(mi->isoDeposit(pat::PfNeutralHadronIso)->depositAndCountWithin(0.4, vetos_nh, 0.5).first);
-    phIsoOpt->push_back(mi->isoDeposit(pat::PfGammaIso)->depositAndCountWithin(0.4, vetos_ph, 0.5).first);
-
-    trackIso->push_back(mi->trackIso());
-    ecalIso->push_back(mi->ecalIso());
-    hcalIso->push_back(mi->hcalIso());
-
-
-  }
 
   for(MI mi = muons_->begin(); mi != muons_->end()-1; mi++){
    
@@ -346,8 +283,6 @@ DiMuonAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
       Ko::ZCandidate dimuon(mi->p4(), mj->p4(), sign);
 
       Z->push_back(dimuon);
-      muon1->push_back(mi->p4());
-      muon2->push_back(mj->p4());
 
       h_leadingpt->Fill(mi->pt());
       h_secondpt->Fill(mj->pt());
@@ -357,25 +292,25 @@ DiMuonAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
       phIso1->push_back(mi->photonIso());
       nhIso1->push_back(mi->neutralHadronIso());
 
-      chIso2->push_back(mi->chargedHadronIso());
-      phIso2->push_back(mi->photonIso());
-      nhIso2->push_back(mi->neutralHadronIso());
+      chIso2->push_back(mj->chargedHadronIso());
+      phIso2->push_back(mj->photonIso());
+      nhIso2->push_back(mj->neutralHadronIso());
 
       chIsoOpt1->push_back(mi->isoDeposit(pat::PfChargedHadronIso)->depositAndCountWithin(0.4, vetos_ch).first);
       nhIsoOpt1->push_back(mi->isoDeposit(pat::PfNeutralHadronIso)->depositAndCountWithin(0.4, vetos_nh, 0.5).first);
       phIsoOpt1->push_back(mi->isoDeposit(pat::PfGammaIso)->depositAndCountWithin(0.4, vetos_ph, 0.5).first);
 
-      chIsoOpt2->push_back(mi->isoDeposit(pat::PfChargedHadronIso)->depositAndCountWithin(0.4, vetos_ch).first);
-      nhIsoOpt2->push_back(mi->isoDeposit(pat::PfNeutralHadronIso)->depositAndCountWithin(0.4, vetos_nh, 0.5).first);
-      phIsoOpt2->push_back(mi->isoDeposit(pat::PfGammaIso)->depositAndCountWithin(0.4, vetos_ph, 0.5).first);
+      chIsoOpt2->push_back(mj->isoDeposit(pat::PfChargedHadronIso)->depositAndCountWithin(0.4, vetos_ch).first);
+      nhIsoOpt2->push_back(mj->isoDeposit(pat::PfNeutralHadronIso)->depositAndCountWithin(0.4, vetos_nh, 0.5).first);
+      phIsoOpt2->push_back(mj->isoDeposit(pat::PfGammaIso)->depositAndCountWithin(0.4, vetos_ph, 0.5).first);
 
       trackIso1->push_back(mi->trackIso());
       ecalIso1->push_back(mi->ecalIso());
       hcalIso1->push_back(mi->hcalIso());
 
-      trackIso2->push_back(mi->trackIso());
-      ecalIso2->push_back(mi->ecalIso());
-      hcalIso2->push_back(mi->hcalIso());
+      trackIso2->push_back(mj->trackIso());
+      ecalIso2->push_back(mj->ecalIso());
+      hcalIso2->push_back(mj->hcalIso());
 
       break;
     }
@@ -397,24 +332,9 @@ DiMuonAnalyzer::beginJob()
   tree->Branch("LUMI",&LUMI,"LUMI/i");
 
   tree->Branch("Z","std::vector<Ko::ZCandidate>", &Z);
-  tree->Branch("muon1","std::vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >", &muon1);
-  tree->Branch("muon2","std::vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >", &muon2);
 
   tree->Branch("jets","std::vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >", &jets);
   tree->Branch("jetspt30","std::vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >", &jetspt30);
-  tree->Branch("muons","std::vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >", &muons);
-
-  tree->Branch("chIsoOpt","std::vector<double>", &chIsoOpt);
-  tree->Branch("phIsoOpt","std::vector<double>", &phIsoOpt);
-  tree->Branch("nhIsoOpt","std::vector<double>", &nhIsoOpt);
-
-  tree->Branch("chIso","std::vector<double>", &chIso);
-  tree->Branch("phIso","std::vector<double>", &phIso);
-  tree->Branch("nhIso","std::vector<double>", &nhIso);
-
-  tree->Branch("trackIso","std::vector<double>", &trackIso);
-  tree->Branch("ecalIso","std::vector<double>", &ecalIso);
-  tree->Branch("hcalIso","std::vector<double>", &hcalIso);
 
   tree->Branch("chIso1","std::vector<double>", &chIso1);
   tree->Branch("phIso1","std::vector<double>", &phIso1);
