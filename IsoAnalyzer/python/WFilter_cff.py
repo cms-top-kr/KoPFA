@@ -1,21 +1,21 @@
 import FWCore.ParameterSet.Config as cms
 
 WenuMtCut = cms.EDFilter("WenuFilter",
-  eleLabel =  cms.InputTag("selectedPatElectronsPFlowIso"),
+  eleLabel =  cms.InputTag("Muons"),
   metLabel =  cms.InputTag('patMETsPFlow'),
   pfCandidateLabel = cms.InputTag('particleFlow'),
-  minMt = cms.double(60),
-  mindphi = cms.double(-999),
-  maxdphi = cms.double(2.0),
+  minMt = cms.double(70),
+  mindphi = cms.double(0.0), #anlge between lepton and neutrino should be larger than maxdphi or smaller than mindphi
+  maxdphi = cms.double(0.0),
 )
 
 
 WmunuMtCut = cms.EDFilter("WmunuFilter",
-  muonLabel =  cms.InputTag("selectedPatMuonsPFlowIso"),
+  muonLabel =  cms.InputTag("Muons"),
   metLabel =  cms.InputTag('patMETsPFlow'),
   pfCandidateLabel = cms.InputTag('particleFlow'),
-  minMt = cms.double(60),
-  mindphi = cms.double(-999),
-  maxdphi = cms.double(2.0),
+  minMt = cms.double(70),
+  mindphi = cms.double(0.0),
+  maxdphi = cms.double(0.0),
 )
 

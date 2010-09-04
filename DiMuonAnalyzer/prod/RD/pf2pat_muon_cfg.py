@@ -40,7 +40,7 @@ process.out = cms.OutputModule("PoolOutputModule",
 process.load("PhysicsTools.PatAlgos.patSequences_cff")
 process.load("PhysicsTools.PFCandProducer.PF2PAT_cff")
 
-process.pfPileUp.Enable = True #enable for test, Aug 30
+process.pfPileUp.Enable = False #enable for test, Aug 30
 
 #PF2PAT
 process.load("PhysicsTools.PatAlgos.patSequences_cff")

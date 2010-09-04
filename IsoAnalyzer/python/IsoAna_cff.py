@@ -50,22 +50,9 @@ process.patMuonFilter = cms.EDFilter("CandViewCountFilter",
   minNumber = cms.uint32(1)
 )
 
-
 from PFAnalyses.CommonTools.Selectors.looseJetIdPSet_cff import looseJetIdPSet
 myJetId = looseJetIdPSet.clone()
 myJetId.verbose = False 
-
-process.DiMuon = cms.EDAnalyzer('DiMuonAnalyzer',
-  muonLabel =  cms.InputTag('Muons'),
-  metLabel =  cms.InputTag('patMETsPFlow'),
-  jetLabel =  cms.InputTag('selectedPatJetsPFlow'),
-  useEventCounter = cms.bool( True ),
-  filters = cms.untracked.vstring(
-                              'initialEvents',
-                              'finalEvents'
-                              ),
-  looseJetId = myJetId, 
-)
 
 process.load("HLTrigger.HLTfilters.hltHighLevel_cfi")
 process.hltHighLevel.HLTPaths = cms.vstring('HLT_Mu9')
@@ -75,14 +62,17 @@ process.MuonAna = cms.EDAnalyzer('MuonIsoAna',
     collectionLabel =  cms.InputTag('Muons'),
 )
 
+process.load("KoPFA.IsoAnalyzer.WFilter_cff")
+process.WmunuMtCut.muonLabel = "Muons"
+
 process.p = cms.Path(
                      process.loadHistosFromRunInfo*
                      process.hltHighLevel*
                      process.Muons*
                      process.patMuonFilter*
+                     process.WmunuMtCut*
                      process.VertexFilter*
                      process.MuonIso*
-                     process.MuonAna*
-                     process.DiMuon
+                     process.MuonAna
                     )
 
