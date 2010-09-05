@@ -36,20 +36,23 @@ muonId = muonSelectorPSet.clone()
 muonId.dxy = 0.02
 muonId.eta = 2.5
 muonId.pt = 20
+from PFAnalyses.CommonTools.Selectors.muonIsoSelectorPSet_cff import muonIsoSelectorPSet
+muonIso = muonIsoSelectorPSet.clone()
 
 process.Muons = cms.EDProducer(
     "KoMuonSelector",
     version = cms.untracked.int32( 1 ),#TOP
     muonLabel  = cms.InputTag("selectedPatMuonsPFlow"),
     beamSpotLabel = cms.InputTag("offlineBeamSpot"),
-    muonSelector = muonId,
+    muonIdSelector = muonId,
+    muonIsoSelector = muonIso,
+
 )
 
 process.patMuonFilter = cms.EDFilter("CandViewCountFilter",
   src = cms.InputTag('Muons'),
   minNumber = cms.uint32(1)
 )
-
 
 from PFAnalyses.CommonTools.Selectors.looseJetIdPSet_cff import looseJetIdPSet
 myJetId = looseJetIdPSet.clone()
