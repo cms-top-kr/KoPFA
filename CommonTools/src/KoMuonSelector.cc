@@ -14,7 +14,8 @@ KoMuonSelector::KoMuonSelector(const edm::ParameterSet& cfg)
 {
   version_ = cfg.getUntrackedParameter<int>("version", 1);
   muonLabel_ = cfg.getParameter<edm::InputTag>("muonLabel");
-  muonSelector_.initialize( cfg.getParameter<edm::ParameterSet>("muonSelector") );
+  muonIdSelector_.initialize( cfg.getParameter<edm::ParameterSet>("muonIdSelector") );
+  muonIsoSelector_.initialize( cfg.getParameter<edm::ParameterSet>("muonIsoSelector") );
   beamSpotLabel_ = cfg.getParameter<edm::InputTag>("beamSpotLabel");
   produces<std::vector<pat::Muon> >("");
   edm::Service<TFileService> fs;
@@ -28,7 +29,6 @@ KoMuonSelector::KoMuonSelector(const edm::ParameterSet& cfg)
   cutNames.push_back("chi2");
 
   int nBins = (int) cutNames.size();
-  cout << "nBins= " << nBins << endl;
   cutflow   = fs->make<TH1F>( "cutflow", "cutflow", nBins,-0.5,nBins-0.5);
 
   pt = new std::vector<double>();
@@ -80,18 +80,20 @@ void KoMuonSelector::produce(edm::Event& iEvent, const edm::EventSetup& es)
   std::auto_ptr<std::vector<pat::Muon> > pos(new std::vector<pat::Muon>());
 
   int cut[6] = {0,0,0,0,0,0};
-  
+  cout << "EVENT= " << EVENT << " LUMI= " << LUMI << endl;
   for (unsigned int i=0; i < muons_->size();++i){
     const pat::Muon muon = muons_->at(i);
-    pat::strbitset muonSel = muonSelector_.getBitTemplate();
-    muonSelector_( muon, beamSpot_, muonSel );
+    pat::strbitset muonIdSel = muonIdSelector_.getBitTemplate();
+    pat::strbitset muonIsoSel = muonIsoSelector_.getBitTemplate();
+    muonIdSelector_( muon, beamSpot_, muonIdSel );
+    muonIsoSelector_( muon, muonIsoSel );
 
-    bool C1 = muonSel.test("eta") && muonSel.test("pt");
-    bool C2 = C1 && muonSel.test("dxy");
-    bool C3 = C2 && muonSel.test("isGlobalMuon");
-    bool C4 = C3 && muonSel.test("isTrackerMuon");
-    bool C5 = C4 && muonSel.test("trackerHits");
-    bool C6 = C5 && muonSel.test("globalNormChi2");
+    bool C1 = muonIdSel.test("eta") && muonIdSel.test("pt");
+    bool C2 = C1 && muonIdSel.test("dxy");
+    bool C3 = C2 && muonIdSel.test("isGlobalMuon");
+    bool C4 = C3 && muonIdSel.test("isTrackerMuon");
+    bool C5 = C4 && muonIdSel.test("trackerHits");
+    bool C6 = C5 && muonIdSel.test("globalNormChi2");
   
     if(C1) cut[0]++;
     if(C2) cut[1]++;
@@ -100,14 +102,19 @@ void KoMuonSelector::produce(edm::Event& iEvent, const edm::EventSetup& es)
     if(C5) cut[4]++;
     if(C6) cut[5]++;    
 
-    bool pfpass = muonSel.test("dxy") && muonSel.test("eta") && muonSel.test("pt");
+    bool passIso = muonIsoSel.test("pfOptimizedRel");
+
     bool passed = false;
 
-    if(version_==1) passed = pfpass;
-    else if(version_==2) passed = muonSel.test("VBTF") && pfpass;
-    else if(version_==3) passed = C6;
+    bool pfpass = muonIdSel.test("dxy") && muonIdSel.test("eta") && muonIdSel.test("pt");
 
+    if(version_==1) passed = pfpass;
+    else if(version_==2) passed = muonIdSel.test("VBTF") && pfpass;
+    else if(version_==3) passed = C6;
+    else if(version_==4) passed = pfpass && passIso; 
+  
     if(passed){
+      cout << "passed" << endl;
       pos->push_back((*muons_)[i]);
 
       pt->push_back(muon.pt());
@@ -131,13 +138,13 @@ void KoMuonSelector::produce(edm::Event& iEvent, const edm::EventSetup& es)
   for(int i=0; i < (int) cutNames.size() ; i++){
     cutflow->AddBinContent(i+1, cut[i]);
   }
-  tree->Fill(); 
 
 
   multiplicity = (int) pos->size();
 
   iEvent.put(pos);
-  
+ 
+  tree->Fill(); 
 
 }
 

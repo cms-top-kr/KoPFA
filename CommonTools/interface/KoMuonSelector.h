@@ -11,6 +11,7 @@
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
 #include "KoPFA/CommonTools/interface/MuonIDSelector.h"
 #include "PFAnalyses/CommonTools/interface/PatMuonSelector.h"
+#include "PFAnalyses/CommonTools/interface/PatLeptonSelector.h"
 
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "FWCore/Utilities/interface/InputTag.h"
@@ -38,10 +39,10 @@ class KoMuonSelector : public edm::EDProducer
  private:
 
   // Cut version
-  int version_; // 1 for PFMUON, 2 for VBTF, 3 for TOP
+  int version_; // 1 for PFMUON, 2 for VBTF, 3 for TOP , 4 for PFMUON && ISO
   edm::InputTag muonLabel_;
-  PatMuonSelector   muonSelector_;
-  //MuonIDSelector   muonSelector_;
+  PatMuonSelector   muonIdSelector_;
+  PatMuonIsolationSelector muonIsoSelector_;
   edm::InputTag beamSpotLabel_;
  
   typedef pat::MuonCollection::const_iterator MI;
