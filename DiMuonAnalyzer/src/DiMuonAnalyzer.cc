@@ -13,7 +13,7 @@
 //
 // Original Author:  Tae Jeong Kim,40 R-A32,+41227678602,
 //         Created:  Fri Jun  4 17:19:29 CEST 2010
-// $Id: DiMuonAnalyzer.cc,v 1.10 2010/08/29 15:10:17 tjkim Exp $
+// $Id: DiMuonAnalyzer.cc,v 1.11 2010/09/01 09:37:40 tjkim Exp $
 //
 //
 
@@ -271,10 +271,6 @@ DiMuonAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
   h_jet_multi->Fill(jets->size());
   h_jetpt30_multi->Fill(jetspt30->size());
 
-  IsoDeposit::AbsVetos vetos_ch;
-  IsoDeposit::AbsVetos vetos_nh;
-  IsoDeposit::AbsVetos vetos_ph;
-
   for(MI mi = muons_->begin(); mi != muons_->end()-1; mi++){
    
     for(MI mj = mi + 1 ; mj != muons_->end(); mj++){
@@ -296,13 +292,26 @@ DiMuonAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
       phIso2->push_back(mj->photonIso());
       nhIso2->push_back(mj->neutralHadronIso());
 
+      reco::IsoDeposit::Direction Dir1 = Direction(mi->eta(),mi->phi());
+      reco::IsoDeposit::Direction Dir2 = Direction(mj->eta(),mj->phi());
+
+      IsoDeposit::AbsVetos vetos_ch;
+      IsoDeposit::AbsVetos vetos_nh;
+      vetos_nh.push_back(new ThresholdVeto( 0.5 ));
+      IsoDeposit::AbsVetos vetos_ph1;
+      vetos_ph1.push_back(new ThresholdVeto( 0.5 ));
+      vetos_ph1.push_back(new RectangularEtaPhiVeto( Dir1, -0.1, 0.1, -0.2, 0.2));
+      IsoDeposit::AbsVetos vetos_ph2;
+      vetos_ph2.push_back(new ThresholdVeto( 0.5 ));
+      vetos_ph2.push_back(new RectangularEtaPhiVeto( Dir2, -0.1, 0.1, -0.2, 0.2));
+
       chIsoOpt1->push_back(mi->isoDeposit(pat::PfChargedHadronIso)->depositAndCountWithin(0.4, vetos_ch).first);
-      nhIsoOpt1->push_back(mi->isoDeposit(pat::PfNeutralHadronIso)->depositAndCountWithin(0.4, vetos_nh, 0.5).first);
-      phIsoOpt1->push_back(mi->isoDeposit(pat::PfGammaIso)->depositAndCountWithin(0.4, vetos_ph, 0.5).first);
+      nhIsoOpt1->push_back(mi->isoDeposit(pat::PfNeutralHadronIso)->depositAndCountWithin(0.4, vetos_nh).first);
+      phIsoOpt1->push_back(mi->isoDeposit(pat::PfGammaIso)->depositAndCountWithin(0.4, vetos_ph1).first);
 
       chIsoOpt2->push_back(mj->isoDeposit(pat::PfChargedHadronIso)->depositAndCountWithin(0.4, vetos_ch).first);
-      nhIsoOpt2->push_back(mj->isoDeposit(pat::PfNeutralHadronIso)->depositAndCountWithin(0.4, vetos_nh, 0.5).first);
-      phIsoOpt2->push_back(mj->isoDeposit(pat::PfGammaIso)->depositAndCountWithin(0.4, vetos_ph, 0.5).first);
+      nhIsoOpt2->push_back(mj->isoDeposit(pat::PfNeutralHadronIso)->depositAndCountWithin(0.4, vetos_nh).first);
+      phIsoOpt2->push_back(mj->isoDeposit(pat::PfGammaIso)->depositAndCountWithin(0.4, vetos_ph2).first);
 
       trackIso1->push_back(mi->trackIso());
       ecalIso1->push_back(mi->ecalIso());
