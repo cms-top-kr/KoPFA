@@ -80,7 +80,6 @@ void KoMuonSelector::produce(edm::Event& iEvent, const edm::EventSetup& es)
   std::auto_ptr<std::vector<pat::Muon> > pos(new std::vector<pat::Muon>());
 
   int cut[6] = {0,0,0,0,0,0};
-  cout << "EVENT= " << EVENT << " LUMI= " << LUMI << endl;
   for (unsigned int i=0; i < muons_->size();++i){
     const pat::Muon muon = muons_->at(i);
     pat::strbitset muonIdSel = muonIdSelector_.getBitTemplate();
@@ -114,7 +113,6 @@ void KoMuonSelector::produce(edm::Event& iEvent, const edm::EventSetup& es)
     else if(version_==4) passed = pfpass && passIso; 
   
     if(passed){
-      cout << "passed" << endl;
       pos->push_back((*muons_)[i]);
 
       pt->push_back(muon.pt());
