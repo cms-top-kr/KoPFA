@@ -109,7 +109,6 @@ process.out.outputCommands += patExtraAodEventContent
 process.out.outputCommands += patEventContentNoCleaning
 
 process.out.outputCommands.extend(cms.untracked.vstring(
-                                                    'keep recoGenParticles_genParticles_*_*'
                                                     'keep *_MEtoEDMConverter_*_PAT',
                                                     'keep *_particleFlow_*_*',
                                                 ))
