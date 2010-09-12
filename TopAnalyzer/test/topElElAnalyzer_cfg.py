@@ -1,4 +1,4 @@
-from KoPFA.TopAnalyzer.topDiElAnalyzer_cff import process
+from KoPFA.TopAnalyzer.topElElAnalyzer_cff import process
 
 import FWCore.ParameterSet.Config as cms
 

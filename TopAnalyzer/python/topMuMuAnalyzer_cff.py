@@ -17,6 +17,11 @@ process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
 #)
 
 #process.load("KoPFA.DiMuonAnalyzer.RD.patTuple_muon_cff")
+#process.load("SimGeneral.HepPDTESSource.pythiapdt_cfi")
+#process.printTree = cms.EDAnalyzer("ParticleListDrawer",
+#                                    src = cms.InputTag("genParticles"),
+#                                    maxEventsToPrint  = cms.untracked.int32(20)
+#                                    )
 
 # register TFileService
 process.TFileService = cms.Service("TFileService",
@@ -39,25 +44,28 @@ muonId.pt = 20
 from PFAnalyses.CommonTools.Selectors.muonIsoSelectorPSet_cff import muonIsoSelectorPSet
 muonIso = muonIsoSelectorPSet.clone()
 
-process.Electrons = cms.EDFilter("PATElectronSelector",
-    src = cms.InputTag("selectedPatElectronsPFlow"),
-    #cut =cms.string("pt > 20 && abs(eta) < 2.1 && mva > 0.4 && gsfTrack.trackerExpectedHitsInner.numberOfHits<=1")
-    cut =cms.string("pt > 20 && abs(eta) < 2.5")
+process.Muons = cms.EDProducer(
+    "KoMuonSelector",
+    version = cms.untracked.int32( 1 ),#TOP
+    muonLabel  = cms.InputTag("selectedPatMuonsPFlow"),
+    beamSpotLabel = cms.InputTag("offlineBeamSpot"),
+    muonIdSelector = muonId,
+    muonIsoSelector = muonIso,
+
 )
 
-process.patElectronFilter = cms.EDFilter("CandViewCountFilter",
-  src = cms.InputTag('Electrons'),
-  minNumber = cms.uint32(1)
+process.patMuonFilter = cms.EDFilter("CandViewCountFilter",
+  src = cms.InputTag('Muons'),
+  minNumber = cms.uint32(2)
 )
-
 
 from PFAnalyses.CommonTools.Selectors.looseJetIdPSet_cff import looseJetIdPSet
 myJetId = looseJetIdPSet.clone()
 myJetId.verbose = False 
 
-process.ElEl = cms.EDAnalyzer('TopElElAnalyzer',
-  muonLabel1 =  cms.InputTag('Electrons'),
-  muonLabel2 =  cms.InputTag('Electrons'),
+process.DiMuon = cms.EDAnalyzer('TopMuMuAnalyzer',
+  muonLabel1 =  cms.InputTag('Muons'),
+  muonLabel2 =  cms.InputTag('Muons'),
   metLabel =  cms.InputTag('patMETsPFlow'),
   jetLabel =  cms.InputTag('selectedPatJetsPFlow'),
   useEventCounter = cms.bool( True ),
@@ -72,11 +80,12 @@ process.load("HLTrigger.HLTfilters.hltHighLevel_cfi")
 process.hltHighLevel.HLTPaths = cms.vstring('HLT_Mu9')
 
 process.p = cms.Path(
+#                     process.printTree*
                      process.loadHistosFromRunInfo*
-#                     process.hltHighLevel*
-                     process.Electrons*
-                     process.patElectronFilter*
+                     process.hltHighLevel*
+                     process.Muons*
+                     process.patMuonFilter*
                      process.VertexFilter*
-                     process.ElEl
+                     process.DiMuon
                     )
 

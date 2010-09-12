@@ -39,28 +39,25 @@ muonId.pt = 20
 from PFAnalyses.CommonTools.Selectors.muonIsoSelectorPSet_cff import muonIsoSelectorPSet
 muonIso = muonIsoSelectorPSet.clone()
 
-process.Muons = cms.EDProducer(
-    "KoMuonSelector",
-    version = cms.untracked.int32( 1 ),#TOP
-    muonLabel  = cms.InputTag("selectedPatMuonsPFlow"),
-    beamSpotLabel = cms.InputTag("offlineBeamSpot"),
-    muonIdSelector = muonId,
-    muonIsoSelector = muonIso,
-
+process.Electrons = cms.EDFilter("PATElectronSelector",
+    src = cms.InputTag("selectedPatElectronsPFlow"),
+    #cut =cms.string("pt > 20 && abs(eta) < 2.1 && mva > 0.4 && gsfTrack.trackerExpectedHitsInner.numberOfHits<=1")
+    cut =cms.string("pt > 20 && abs(eta) < 2.5")
 )
 
-process.patMuonFilter = cms.EDFilter("CandViewCountFilter",
-  src = cms.InputTag('Muons'),
+process.patElectronFilter = cms.EDFilter("CandViewCountFilter",
+  src = cms.InputTag('Electrons'),
   minNumber = cms.uint32(2)
 )
+
 
 from PFAnalyses.CommonTools.Selectors.looseJetIdPSet_cff import looseJetIdPSet
 myJetId = looseJetIdPSet.clone()
 myJetId.verbose = False 
 
-process.DiMuon = cms.EDAnalyzer('TopMuMuAnalyzer',
-  muonLabel1 =  cms.InputTag('Muons'),
-  muonLabel2 =  cms.InputTag('Muons'),
+process.ElEl = cms.EDAnalyzer('TopElElAnalyzer',
+  muonLabel1 =  cms.InputTag('Electrons'),
+  muonLabel2 =  cms.InputTag('Electrons'),
   metLabel =  cms.InputTag('patMETsPFlow'),
   jetLabel =  cms.InputTag('selectedPatJetsPFlow'),
   useEventCounter = cms.bool( True ),
@@ -76,10 +73,10 @@ process.hltHighLevel.HLTPaths = cms.vstring('HLT_Mu9')
 
 process.p = cms.Path(
                      process.loadHistosFromRunInfo*
-                     process.hltHighLevel*
-                     process.Muons*
-                     process.patMuonFilter*
+#                     process.hltHighLevel*
+                     process.Electrons*
+                     process.patElectronFilter*
                      process.VertexFilter*
-                     process.DiMuon
+                     process.ElEl
                     )
 

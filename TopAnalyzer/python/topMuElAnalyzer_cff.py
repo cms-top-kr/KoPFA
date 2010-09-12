@@ -29,6 +29,13 @@ process.VertexFilter = cms.EDFilter('VertexFilter',
     max = cms.untracked.int32(999),
 )
 
+process.GenZmassFilter = cms.EDFilter('GenZmassFilter',
+    genParticlesLabel = cms.InputTag('genParticles'),
+    applyFilter = cms.untracked.bool( False ),
+    min = cms.untracked.int32(0),
+    max = cms.untracked.int32(999),
+)
+
 process.load("PFAnalyses.CommonTools.countingSequences_cfi")
 
 from PFAnalyses.CommonTools.Selectors.muonSelectorPSet_cff import muonSelectorPSet
@@ -56,8 +63,8 @@ process.patMuonFilter = cms.EDFilter("CandViewCountFilter",
 
 process.Electrons = cms.EDFilter("PATElectronSelector",
     src = cms.InputTag("selectedPatElectronsPFlow"),
-    #cut =cms.string("pt > 20 && abs(eta) < 2.1 && mva > 0.4 && gsfTrack.trackerExpectedHitsInner.numberOfHits<=1")
-    cut =cms.string("pt > 20 && abs(eta) < 2.5")
+    cut =cms.string("pt > 20 && abs(eta) < 2.1 && mva > 0.4 && gsfTrack.trackerExpectedHitsInner.numberOfHits<=1")
+    #cut =cms.string("pt > 20 && abs(eta) < 2.5")
 )
 
 process.patElectronFilter = cms.EDFilter("CandViewCountFilter",
@@ -72,7 +79,7 @@ myJetId.verbose = False
 
 process.MuEl = cms.EDAnalyzer('TopMuElAnalyzer',
   muonLabel1 =  cms.InputTag('Muons'),
-  muonLabel2 =  cms.InputTag('Muons'),
+  muonLabel2 =  cms.InputTag('Electrons'),
   metLabel =  cms.InputTag('patMETsPFlow'),
   jetLabel =  cms.InputTag('selectedPatJetsPFlow'),
   useEventCounter = cms.bool( True ),
@@ -89,6 +96,7 @@ process.hltHighLevel.HLTPaths = cms.vstring('HLT_Mu9')
 process.p = cms.Path(
                      process.loadHistosFromRunInfo*
                      process.hltHighLevel*
+                     process.GenZmassFilter*
                      process.Muons*
                      process.patMuonFilter*
                      process.Electrons*
