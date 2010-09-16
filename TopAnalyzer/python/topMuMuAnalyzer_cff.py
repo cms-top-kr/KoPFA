@@ -70,7 +70,7 @@ from PFAnalyses.CommonTools.Selectors.looseJetIdPSet_cff import looseJetIdPSet
 myJetId = looseJetIdPSet.clone()
 myJetId.verbose = False 
 
-process.DiMuon = cms.EDAnalyzer('TopMuMuAnalyzer',
+process.MuMu = cms.EDAnalyzer('TopMuMuAnalyzer',
   muonLabel1 =  cms.InputTag('Muons'),
   muonLabel2 =  cms.InputTag('Muons'),
   metLabel =  cms.InputTag('patMETsPFlow'),
@@ -94,6 +94,6 @@ process.p = cms.Path(
                      process.Muons*
                      process.patMuonFilter*
                      process.VertexFilter*
-                     process.DiMuon
+                     process.MuMu
                     )
 
