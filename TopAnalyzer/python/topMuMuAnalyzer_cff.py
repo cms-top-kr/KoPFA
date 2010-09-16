@@ -34,6 +34,13 @@ process.VertexFilter = cms.EDFilter('VertexFilter',
     max = cms.untracked.int32(999),
 )
 
+process.GenZmassFilter = cms.EDFilter('GenZmassFilter',
+    genParticlesLabel = cms.InputTag('genParticles'),
+    applyFilter = cms.untracked.bool( False ),
+    min = cms.untracked.int32(0),
+    max = cms.untracked.int32(999),
+)
+
 process.load("PFAnalyses.CommonTools.countingSequences_cfi")
 
 from PFAnalyses.CommonTools.Selectors.muonSelectorPSet_cff import muonSelectorPSet
@@ -83,6 +90,7 @@ process.p = cms.Path(
 #                     process.printTree*
                      process.loadHistosFromRunInfo*
                      process.hltHighLevel*
+                     process.GenZmassFilter*
                      process.Muons*
                      process.patMuonFilter*
                      process.VertexFilter*
