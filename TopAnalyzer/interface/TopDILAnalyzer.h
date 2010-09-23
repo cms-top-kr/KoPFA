@@ -13,7 +13,7 @@
 //
 // Original Author:  Tae Jeong Kim,40 R-A32,+41227678602,
 //         Created:  Fri Jun  4 17:19:29 CEST 2010
-// $Id: TopDILAnalyzer.h,v 1.1 2010/09/08 00:26:44 tjkim Exp $
+// $Id: TopDILAnalyzer.h,v 1.2 2010/09/08 00:48:10 tjkim Exp $
 //
 //
 
@@ -221,10 +221,6 @@ class TopDILAnalyzer : public edm::EDAnalyzer {
 	  h_jet_multi->Fill(jets->size());
 	  h_jetpt30_multi->Fill(jetspt30->size());
 
-	  IsoDeposit::AbsVetos vetos_ch;
-	  IsoDeposit::AbsVetos vetos_nh;
-	  IsoDeposit::AbsVetos vetos_ph;
-
           for(unsigned i = 0; i != muons1_->size(); i++){
             for(unsigned j = 0; j != muons2_->size(); j++){
               T1 it1 = muons1_->at(i);
@@ -243,6 +239,18 @@ class TopDILAnalyzer : public edm::EDAnalyzer {
 	      h_secondpt->Fill(it2.pt());
 	      h_mass->Fill(dimuon.mass());
 
+              reco::IsoDeposit::Direction Dir1 = Direction(it1.eta(),it1.phi());
+              reco::IsoDeposit::Direction Dir2 = Direction(it2.eta(),it2.phi());
+              IsoDeposit::AbsVetos vetos_ch;
+              IsoDeposit::AbsVetos vetos_nh;
+              vetos_nh.push_back(new ThresholdVeto( 0.5 ));
+              IsoDeposit::AbsVetos vetos_ph1;
+              vetos_ph1.push_back(new ThresholdVeto( 0.5 ));
+              vetos_ph1.push_back(new RectangularEtaPhiVeto( Dir1, -0.1, 0.1, -0.2, 0.2));
+              IsoDeposit::AbsVetos vetos_ph2;
+              vetos_ph2.push_back(new ThresholdVeto( 0.5 ));
+              vetos_ph2.push_back(new RectangularEtaPhiVeto( Dir2, -0.1, 0.1, -0.2, 0.2));
+
 	      chIso1->push_back(it1.chargedHadronIso());
 	      phIso1->push_back(it1.photonIso());
 	      nhIso1->push_back(it1.neutralHadronIso());
@@ -252,12 +260,12 @@ class TopDILAnalyzer : public edm::EDAnalyzer {
 	      nhIso2->push_back(it2.neutralHadronIso());
 
 	      chIsoOpt1->push_back(it1.isoDeposit(pat::PfChargedHadronIso)->depositAndCountWithin(0.4, vetos_ch).first);
-	      nhIsoOpt1->push_back(it1.isoDeposit(pat::PfNeutralHadronIso)->depositAndCountWithin(0.4, vetos_nh, 0.5).first);
-	      phIsoOpt1->push_back(it1.isoDeposit(pat::PfGammaIso)->depositAndCountWithin(0.4, vetos_ph, 0.5).first);
+	      nhIsoOpt1->push_back(it1.isoDeposit(pat::PfNeutralHadronIso)->depositAndCountWithin(0.4, vetos_nh).first);
+	      phIsoOpt1->push_back(it1.isoDeposit(pat::PfGammaIso)->depositAndCountWithin(0.4, vetos_ph1).first);
 
 	      chIsoOpt2->push_back(it2.isoDeposit(pat::PfChargedHadronIso)->depositAndCountWithin(0.4, vetos_ch).first);
-	      nhIsoOpt2->push_back(it2.isoDeposit(pat::PfNeutralHadronIso)->depositAndCountWithin(0.4, vetos_nh, 0.5).first);
-	      phIsoOpt2->push_back(it2.isoDeposit(pat::PfGammaIso)->depositAndCountWithin(0.4, vetos_ph, 0.5).first);
+	      nhIsoOpt2->push_back(it2.isoDeposit(pat::PfNeutralHadronIso)->depositAndCountWithin(0.4, vetos_nh).first);
+	      phIsoOpt2->push_back(it2.isoDeposit(pat::PfGammaIso)->depositAndCountWithin(0.4, vetos_ph2).first);
 
 	      trackIso1->push_back(it1.trackIso());
 	      ecalIso1->push_back(it1.ecalIso());
