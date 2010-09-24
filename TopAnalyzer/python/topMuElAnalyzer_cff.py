@@ -37,34 +37,11 @@ process.GenZmassFilter = cms.EDFilter('GenZmassFilter',
 )
 
 process.load("PFAnalyses.CommonTools.countingSequences_cfi")
-
-from PFAnalyses.CommonTools.Selectors.muonSelectorPSet_cff import muonSelectorPSet
-muonId = muonSelectorPSet.clone()
-muonId.dxy = 0.02
-muonId.eta = 2.5
-muonId.pt = 20
-from PFAnalyses.CommonTools.Selectors.muonIsoSelectorPSet_cff import muonIsoSelectorPSet
-muonIso = muonIsoSelectorPSet.clone()
-
-process.Muons = cms.EDProducer(
-    "KoMuonSelector",
-    version = cms.untracked.int32( 1 ),#TOP
-    muonLabel  = cms.InputTag("selectedPatMuonsPFlow"),
-    beamSpotLabel = cms.InputTag("offlineBeamSpot"),
-    muonIdSelector = muonId,
-    muonIsoSelector = muonIso,
-
-)
+process.load("KoPFA.TopAnalyzer.topLeptonSelector_cfi")
 
 process.patMuonFilter = cms.EDFilter("CandViewCountFilter",
   src = cms.InputTag('Muons'),
   minNumber = cms.uint32(1)
-)
-
-process.Electrons = cms.EDFilter("PATElectronSelector",
-    src = cms.InputTag("selectedPatElectronsPFlow"),
-    cut =cms.string("pt > 20 && abs(eta) < 2.1 && mva > 0.4 && gsfTrack.trackerExpectedHitsInner.numberOfHits<=1")
-    #cut =cms.string("pt > 20 && abs(eta) < 2.5")
 )
 
 process.patElectronFilter = cms.EDFilter("CandViewCountFilter",
@@ -92,6 +69,7 @@ process.MuEl = cms.EDAnalyzer('TopMuElAnalyzer',
 
 process.load("HLTrigger.HLTfilters.hltHighLevel_cfi")
 process.hltHighLevel.HLTPaths = cms.vstring('HLT_Mu9')
+#process.hltHighLevel.HLTPaths = cms.vstring('HLT_Mu9','HLT_Ele10_LW_L1R')
 
 process.p = cms.Path(
                      process.loadHistosFromRunInfo*

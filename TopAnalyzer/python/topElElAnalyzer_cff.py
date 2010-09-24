@@ -29,6 +29,13 @@ process.VertexFilter = cms.EDFilter('VertexFilter',
     max = cms.untracked.int32(999),
 )
 
+process.GenZmassFilter = cms.EDFilter('GenZmassFilter',
+    genParticlesLabel = cms.InputTag('genParticles'),
+    applyFilter = cms.untracked.bool( False ),
+    min = cms.untracked.int32(0),
+    max = cms.untracked.int32(999),
+)
+
 process.load("PFAnalyses.CommonTools.countingSequences_cfi")
 
 from PFAnalyses.CommonTools.Selectors.muonSelectorPSet_cff import muonSelectorPSet
@@ -39,11 +46,7 @@ muonId.pt = 20
 from PFAnalyses.CommonTools.Selectors.muonIsoSelectorPSet_cff import muonIsoSelectorPSet
 muonIso = muonIsoSelectorPSet.clone()
 
-process.Electrons = cms.EDFilter("PATElectronSelector",
-    src = cms.InputTag("selectedPatElectronsPFlow"),
-    #cut =cms.string("pt > 20 && abs(eta) < 2.1 && mva > 0.4 && gsfTrack.trackerExpectedHitsInner.numberOfHits<=1")
-    cut =cms.string("pt > 20 && abs(eta) < 2.5")
-)
+process.load("KoPFA.TopAnalyzer.topLeptonSelector_cfi") 
 
 process.patElectronFilter = cms.EDFilter("CandViewCountFilter",
   src = cms.InputTag('Electrons'),
@@ -69,11 +72,12 @@ process.ElEl = cms.EDAnalyzer('TopElElAnalyzer',
 )
 
 process.load("HLTrigger.HLTfilters.hltHighLevel_cfi")
-process.hltHighLevel.HLTPaths = cms.vstring('HLT_Mu9')
+#process.hltHighLevel.HLTPaths = cms.vstring('HLT_Ele10_LW_L1R')
 
 process.p = cms.Path(
                      process.loadHistosFromRunInfo*
-#                     process.hltHighLevel*
+                     process.hltHighLevel*
+                     process.GenZmassFilter*
                      process.Electrons*
                      process.patElectronFilter*
                      process.VertexFilter*

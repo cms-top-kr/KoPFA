@@ -42,24 +42,7 @@ process.GenZmassFilter = cms.EDFilter('GenZmassFilter',
 )
 
 process.load("PFAnalyses.CommonTools.countingSequences_cfi")
-
-from PFAnalyses.CommonTools.Selectors.muonSelectorPSet_cff import muonSelectorPSet
-muonId = muonSelectorPSet.clone()
-muonId.dxy = 0.02
-muonId.eta = 2.5
-muonId.pt = 20
-from PFAnalyses.CommonTools.Selectors.muonIsoSelectorPSet_cff import muonIsoSelectorPSet
-muonIso = muonIsoSelectorPSet.clone()
-
-process.Muons = cms.EDProducer(
-    "KoMuonSelector",
-    version = cms.untracked.int32( 1 ),#TOP
-    muonLabel  = cms.InputTag("selectedPatMuonsPFlow"),
-    beamSpotLabel = cms.InputTag("offlineBeamSpot"),
-    muonIdSelector = muonId,
-    muonIsoSelector = muonIso,
-
-)
+process.load("KoPFA.TopAnalyzer.topLeptonSelector_cfi")
 
 process.patMuonFilter = cms.EDFilter("CandViewCountFilter",
   src = cms.InputTag('Muons'),
