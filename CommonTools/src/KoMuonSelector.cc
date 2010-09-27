@@ -107,7 +107,8 @@ void KoMuonSelector::produce(edm::Event& iEvent, const edm::EventSetup& es)
 
     bool pfpass = muonIdSel.test("dxy") && muonIdSel.test("eta") && muonIdSel.test("pt");
 
-    if(version_==1) passed = pfpass;
+    if(version_==0) passed = muonIdSel.test("eta") && muonIdSel.test("pt");
+    else if(version_==1) passed = pfpass;
     else if(version_==2) passed = muonIdSel.test("VBTF") && pfpass;
     else if(version_==3) passed = C6;
     else if(version_==4) passed = pfpass && passIso; 
