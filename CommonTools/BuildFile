@@ -15,4 +15,21 @@
    <use name=FWCore/ParameterSet>
    <use name=PFAnalyses/CommonTools>
    <use name="DQMServices/Core">
+   <use name=FWCore/MessageLogger>
+   <use name=FWCore/MessageService>
+   <use name=FWCore/ServiceRegistry>
+   <use name=FWCore/Utilities>
+   <use name=DataFormats/Common>
+   <use name=DataFormats/PatCandidates>
+   <use name=HLTrigger/HLTcore>
+   <use name=PhysicsTools/PatAlgos>
+   <use name=PhysicsTools/PatUtils>
+   <use name=PhysicsTools/UtilAlgos>
+   <use name=CommonTools/Utils>
+   <use name=CommonTools/UtilAlgos>
+   <use name=MuonAnalysis/Examples>
+   <use name=root>
+   <use name=RecoMuon/DetLayers>
+   <use name=RecoMuon/Records>
+   <use name=TrackingTools/IPTools>
 </export>
