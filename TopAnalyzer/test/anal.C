@@ -18,7 +18,7 @@
 
 using namespace std;
 
-double lumi_e = 2.88;
+double lumi_e = 3.1;
 TString dir = "temp";
 bool print = false;
 TString type = "MuMu";
@@ -49,7 +49,7 @@ void numberOfEvents( TCut cut, const TString& s){
     double numEvt = trees[i]->GetEntries(cut)*norms[i];
     if(hNames[i].Contains("TTbar")) sig = numEvt;
     double err = sqrt(numEvt*norms[i]);
-    if(hNames[i].Contains("Zll") || hNames[i].Contains("ZJets")){
+    if(hNames[i].Contains("Zll") ||hNames[i].Contains("DYll") || hNames[i].Contains("ZJets")){
       Zn = Zn + numEvt;
       Zerr2 = err*err; 
     }else{
@@ -97,19 +97,16 @@ void plotStackBase(TH1* h_data, vector<TH1*> h_mc, const TString & xtitle, const
 
   THStack *stack = new THStack("stack","stack");
 
+  int nhis = (int) h_mc.size();
+  TH1 * h_Z = h_mc[nhis-1]; //ZJets
 
-  for(int i=0; i < (int) h_mc.size(); i++){ 
-    if(hNames[i].Contains("Zll") || hNames[i].Contains("ZJets")){
+  for(int i=0; i < (int) h_mc.size()-1; i++){ 
+    if(hNames[i].Contains("Zll") || hNames[i].Contains("DYll")){
+      h_Z->Add(h_mc[i]);
       continue;
     }else{
       stack->Add(h_mc[i]);
     }
-  }
-  
-  int nhis = (int) h_mc.size();
-  TH1 * h_Z = h_mc[nhis-1];
-  if( hNames[nhis-2].Contains("ZJets")){ 
-    h_Z->Add(h_mc[nhis-2]);
   }
 
   stack->Add(h_Z);
@@ -126,7 +123,7 @@ void plotStackBase(TH1* h_data, vector<TH1*> h_mc, const TString & xtitle, const
   TLegend *l= new TLegend(0.73,0.57,0.88,0.88);
   l->AddEntry(h_data,"Data","p");
   for(int i= (int)trees.size()-1  ;i >= 0 ; i--){
-    if(hNames[i].Contains("Zll")) continue;
+    if(hNames[i].Contains("Zll") || hNames[i].Contains("DYll")) continue;
     l->AddEntry(h_mc[i],labels[i],"f");
   }
   l->SetTextSize(0.04);
@@ -171,21 +168,23 @@ void plotStack( TString var, TCut cut, const TString & xtitle, const TString & y
 
 void plotStep(TCut cut, const TString& step, const double & r){
 
-  //histStack( "DiMuon", "h_mass","Dimuon Mass (GeV/c^{2})", "Events/5 GeV/c^{2}",40, 1000,0.02, "dimuon",Form("mass_h_%s",step.Data()), true);
-  //histStack( "DiMuon", "h_leadingpt","Leading p_{T} (GeV/c)", "Events/5 GeV/c",20, 30, 0, "leading",Form("pt_h_%s",step.Data()), false);
-  if( step.Contains("step1") || step.Contains("step2") ){
-    plotStack( "Z.mass()",cut, "Dimuon Mass (GeV/c^{2})", "Events/5 GeV/c^{2}",40, 0, 200, 1000, 0.1, "dimuon",Form("mass_%s",step.Data()), true);
+  //histStack( type, "h_mass","Dimuon Mass (GeV/c^{2})", "Events/5 GeV/c^{2}",40, 1000,0.02, "dimuon",Form("mass_h_%s",step.Data()), true);
+  //histStack( type, "h_leadingpt","Leading p_{T} (GeV/c)", "Events/5 GeV/c",20, 30, 0, "leading",Form("pt_h_%s",step.Data()), false);
+  if( step.Contains("step1") || step.Contains("step2") || step.Contains("step3") ){
+    plotStack( "Z.mass()",cut, "Dimuon Mass (GeV/c^{2})", "Events/5 GeV/c^{2}",40, 0, 200, 1100, 0.1, "dimuon",Form("mass_%s",step.Data()), true);
   }
 
-  plotStack("@jetspt30.size()",cut, "Jet Multiplicity", "Events", 5, 0, 5, 1200*r , -1, "jet",Form("multiplicity_%s",step.Data()), true);
-  plotStack("MET",cut, "Missing E_{T}", "Events", 8, 0, 80, 1200*r , 0.02*r, "met",Form("et_%s",step.Data()), true);
+  plotStack("@jetspt30.size()",cut, "Jet Multiplicity", "Events", 5, 0, 5, 3000*r , -1, "jet",Form("multiplicity_%s",step.Data()), true);
+  plotStack("MET",cut, "Missing E_{T}", "Events", 8, 0, 80, 1200*r , 0.1*r, "met",Form("et_%s",step.Data()), true);
 
-  //plotStack("Z.leg1().pt()", cut, "Leading p_{T} (GeV/c)","Events/2 GeV/c", 20, 0, 100,    400,0.1, "leading",Form("pt_%s",step.Data()),  false);
-  //plotStack("Z.leg1().eta()",cut, "Leading #eta (radian)","Events/0.1 rad.",35, -3.5, 3.5, 120, 0.1, "leading",Form("eta_%s",step.Data()), false);
-  //plotStack("Z.leg1().phi()",cut, "Leading #phi (radian)","Events/0.1 rad.",35, -3.5, 3.5, 100, 0.1, "leading",Form("phi_%s",step.Data()), false);
-  //plotStack("Z.leg2().pt()", cut, "Second p_{T} (GeV/c)", "Events/5 GeV/c", 20, 0, 100,    400,0.1, "second", Form("pt_h_%s",step.Data()),false); 
-  //plotStack("Z.leg2().eta()",cut, "Second #eta (radian)", "Events/0.1 rad.",35, -3.5, 3.5, 120, 0.1, "second", Form("eta_%s",step.Data()), false);
-  //plotStack("Z.leg2().phi()",cut, "Second #phi (radian)", "Events/0.1 rad.",35, -3.5, 3.5, 100, 0.1, "second", Form("phi_%s",step.Data()), false);
+  if( step.Contains("step1") || step.Contains("step2") || step.Contains("step3") ){
+    plotStack("Z.leg1().pt()", cut, "Leading p_{T} (GeV/c)","Events/2 GeV/c", 20, 0, 100,    500*r,0.1, "leading",Form("pt_%s",step.Data()),  false);
+    plotStack("Z.leg1().eta()",cut, "Leading #eta (radian)","Events/0.1 rad.",35, -3.5, 3.5, 150*r, 0.1, "leading",Form("eta_%s",step.Data()), false);
+    plotStack("Z.leg1().phi()",cut, "Leading #phi (radian)","Events/0.1 rad.",35, -3.5, 3.5, 130*r, 0.1, "leading",Form("phi_%s",step.Data()), false);
+    plotStack("Z.leg2().pt()", cut, "Second p_{T} (GeV/c)", "Events/5 GeV/c", 20, 0, 100,    500*r,0.1, "second", Form("pt_h_%s",step.Data()),false); 
+    plotStack("Z.leg2().eta()",cut, "Second #eta (radian)", "Events/0.1 rad.",35, -3.5, 3.5, 150*r, 0.1, "second", Form("eta_%s",step.Data()), false);
+    plotStack("Z.leg2().phi()",cut, "Second #phi (radian)", "Events/0.1 rad.",35, -3.5, 3.5, 130*r, 0.1, "second", Form("phi_%s",step.Data()), false);
+  }
 
   numberOfEvents( cut, step);
 }
@@ -207,44 +206,63 @@ void addFile(const TString& name, const TString& h, const TString& l, const doub
   colors.push_back(c);
 }  
 
-void anal(const TString& t="MuMu", bool p= false, const TString& d="temp"){
+void anal(const TString& t="MuMu", const TString& postfix = "", bool p= false, const TString& d="temp"){
   type = t;
   print = p;
   dir = d;
-  TString mcpath = "/home/tjkim/ntuple/top/"+type+"/MC/Spring10/";
+  TString mcpath = "/home/tjkim/ntuple/top/"+type+"/MC/Spring10"+postfix+"/";
   gROOT->LoadMacro("tdrstyle.C");
   defaultStyle();
   
   //myfile.open (Form("Info_%s.txt",dir.Data()));
 
-  fdata = new TFile("/home/tjkim/ntuple/top/"+type+"/RD/Sep11/vallot.root");
+  fdata = new TFile("/home/tjkim/ntuple/top/"+type+"/RD/Sep11"+postfix+"/vallot.root");
   data = (TTree *) fdata->Get(type+"/tree");
 
   addFile(mcpath+"vallot_TTbar.root", "TTbar", "t#bar{t}", 157.5, 4);//Blue
-  if(type == "MuMu") addFile(mcpath+"vallot_InclusiveMu15.root", "QCD", "QCD", 79688, 3);//Green
-  //else if(type == "ElEl") addFile(mcpath+"vallot_QCD_BCtoE_Pt20to30.root", "QCD", "QCD", 79688, 3);//Green
+  //if(type == "MuMu") addFile(mcpath+"vallot_InclusiveMu15.root", "QCD", "QCD", 79688, 3);//Green
+  //else if(type == "ElEl") addFile(mcpath+"vallot_QCD_BCtoE_Pt20to30.root", "QCD", "QCD", 108330 , 3);//Green
   addFile(mcpath+"vallot_WJets.root", "Wlnu", "W #rightarrow l#nu", 31314, 46);// brown
   addFile(mcpath+"vallot_VVJets.root", "Dibosons", "Dibosons", 4.8 ,6 );//Magenta
   addFile(mcpath+"vallot_SingleTop.root", "SingleTop", "single top", 10.6 ,7 );// sky
   addFile(mcpath+"vallot_Ztautau.root", "Ztautau", "Z/#gamma* #rightarrow #tau#tau", 1660, 5);//Yellow
-  addFile(mcpath+"vallot_ZJets.root", "ZJets", "Z/#gamma* #rightarrow ll", 3048, 2);//Red 
-  if(type == "MuMu") addFile(mcpath+"vallot_Zmumu.root", "Zll", "Z/#gamma* #rightarrow ll", 1660, 2);//Red  
-  else if(type == "ElEl") addFile(mcpath+"vallot_Zee.root", "Zll", "Z/#gamma* #rightarrow ll", 1660, 2);//Red  
+  if(type == "MuMu") {
+    addFile(mcpath+"vallot_Zmumu.root", "Zll", "Z/#gamma* #rightarrow ll", 1660, 2);//Red  
+    addFile(mcpath+"vallot_DYmumu.root", "DYll", "Z/#gamma* #rightarrow ll", 3457, 2);//Red  
+  } else if(type == "ElEl") {
+    addFile(mcpath+"vallot_Zee.root", "Zll", "Z/#gamma* #rightarrow ll", 1660, 2);//Red  
+    addFile(mcpath+"vallot_DYee.root", "DYll", "Z/#gamma* #rightarrow ll", 3457, 2);//Red  
+  }
+  addFile(mcpath+"vallot_ZJets.root", "ZJets", "Z/#gamma* #rightarrow ll", 3048, 2);//Red
 
-  TCut pfiso = "(chIso1+nhIso1/0.33+phIso1)/Z.leg1().pt() < 0.21 && (chIso2+nhIso2/0.33+phIso2)/Z.leg2().pt() < 0.21 ";
+  TCut pfiso;
+  if( type == "MuEl" ){
+    pfiso = "(chIsoOpt1+nhIsoOpt1+phIsoOpt1)/Z.leg1().pt() < 0.21 && (chIso2+phIso2)/Z.leg2().pt() < 0.15 ";
+  }else if( type == "ElEl" ){
+    pfiso = "(chIso1+phIso1)/Z.leg1().pt() < 0.15 && (chIso2+phIso2)/Z.leg2().pt() < 0.15 ";
+  }else if( type == "MuMu" ){
+    pfiso = "(chIsoOpt1+nhIsoOpt1+phIsoOpt1)/Z.leg1().pt() < 0.21 && (chIsoOpt2+nhIsoOpt2+phIsoOpt2)/Z.leg2().pt() < 0.21 ";
+  }else{
+    cout << "No isolation required" << endl;
+  }
 
   TCut step1 = "Z.mass() > 10";
   TCut step2 = step1 && pfiso;
   TCut step3 = step2 && "Z.sign() < 0";
   TCut step4 = step3 && "abs(Z.mass() - 91) > 15";
-  TCut step5 = step4 && "@jetspt30.size() >= 1";
-  TCut step6 = step5 && "MET > 30";
+  TCut step5 = step4 && "@jetspt30.size() >= 2";
+  TCut step6;
+  if(type == "MuEl") {
+    step6 = step5 && "MET > 20";
+  } else {
+    step6 = step5 && "MET > 30";
+  }
 
-  //histStack("Muons", "cutflow","cutflow", "Muons",6, 60000, 1, "muon","cutflow", false);
+  //histStack(type, "cutflow","cutflow", "Muons",6, 60000, 1, "muon","cutflow", false);
 
   bool isoPlot = false;
   if(isoPlot){
-    int max = 1200;
+    int max = 1500;
     int min = -1;
     plotStack( "chIso1",step1, "chIso", "Events", 40, 0, 4, max , min, "iso","chIso1", true);
     plotStack( "nhIso1/0.33",step1, "nhIso/0.33", "Events", 40, 0, 4, max , min, "iso","nhIso1", true);
@@ -254,15 +272,16 @@ void anal(const TString& t="MuMu", bool p= false, const TString& d="temp"){
     plotStack( "phIso2",step1, "phIso", "Events", 40, 0, 4, max , min, "iso","phIso2", true);
   }
 
-  plotStep( step1, "step1",1); 
-  plotStep( step2, "step2",1); 
+  //plotStep( step1, "step1",1.5); 
+  //plotStep( step2, "step2",1); 
   plotStep( step3, "step3",1); 
   plotStep( step4, "step4",0.1); 
   plotStep( step5, "step5",0.1); 
   plotStep( step6, "step6",0.1); 
 
   cout <<"Final" << endl;
-  data->Scan("RUN:LUMI:EVENT",step6);
+  data->Scan("RUN:LUMI:EVENT:@jetspt30.size():@jets.size():MET",step6);
+  cout << data->GetEntries(step6) << endl; 
 
   //myfile.close();
 }
