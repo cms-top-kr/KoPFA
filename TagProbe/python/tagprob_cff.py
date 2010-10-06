@@ -11,7 +11,6 @@ process.TFileService = cms.Service("TFileService",
     fileName = cms.string('tagprob.root')
 )
 
-
 #process.source = cms.Source("PoolSource", fileNames = cms.untracked.vstring(
    #'file:/afs/cern.ch/user/t/tjkim/public/forColin/pf2pat_iso.root',
 #   '/store/data/Run2010A/Mu/RECO/v4/000/142/136/1A788144-289E-DF11-AC2A-001D09F2960F.root'
@@ -26,23 +25,27 @@ from PFAnalyses.CommonTools.Selectors.muonSelectorPSet_cff import muonSelectorPS
 muonId = muonSelectorPSet.clone()
 muonId.dxy = 0.02
 muonId.eta = 2.5
-muonId.pt = 20
+muonId.pt = 20 
 from PFAnalyses.CommonTools.Selectors.muonIsoSelectorPSet_cff import muonIsoSelectorPSet
 muonIso = muonIsoSelectorPSet.clone()
 
-process.triggeredMuons = cms.EDFilter("PATMuonRefSelector",
-    src = cms.InputTag("selectedPatMuonsPFlow"),
-    cut = cms.string("!triggerObjectMatchesByPath('HLT_Mu9').empty()")
-)
-
-process.tagMuons = cms.EDProducer(
-    "KoMuonRefSelector",
+process.taggedMuons = cms.EDProducer(
+    "KoMuonSelector",
     version = cms.untracked.int32( 4 ),
-    #muonLabel  = cms.InputTag("selectedPatMuonsPFlow"),
-    muonLabel  = cms.InputTag("triggeredMuons"),
+    muonLabel  = cms.InputTag("selectedPatMuonsPFlow"),
     beamSpotLabel = cms.InputTag("offlineBeamSpot"),
     muonIdSelector = muonId,
     muonIsoSelector = muonIso,
+)
+
+process.load("KoPFA.DiMuonAnalyzer.triggerMatch_cfi")
+process.patMuonTriggerMatch.src = "taggedMuons"
+process.triggeredPatMuons.src = "taggedMuons"
+#PASS_HLT = "!triggerObjectMatchesByPath('%s').empty()" % ("HLT_Mu9",);
+
+process.tagMuons = cms.EDFilter("PATMuonSelector",
+    src = cms.InputTag("triggeredPatMuons"),
+    cut = cms.string("")
 )
 
 process.PFMuons = cms.EDProducer(
@@ -81,21 +84,6 @@ process.load("TrackPropagation.SteppingHelixPropagator.SteppingHelixPropagatorAn
 process.load("TrackPropagation.SteppingHelixPropagator.SteppingHelixPropagatorAlong_cfi")
 process.load("TrackPropagation.SteppingHelixPropagator.SteppingHelixPropagatorOpposite_cfi")
 process.GlobalTag.globaltag = cms.string('MC_3XY_V14::All')
-
-#TRACK_CUTS="track.numberOfValidHits >= 10 && track.normalizedChi2 < 5 && abs(track.d0) < 2 && abs(track.dz) < 30"
-#process.betterTracks = cms.EDFilter("TrackSelector",
-    #src = cms.InputTag("goodTracks"),
-#    src = cms.InputTag("generalTracks"),
-#    cut = cms.string(TRACK_CUTS.replace("track.","")),
-#)
-#process.tkTracks  = cms.EDProducer("ConcreteChargedCandidateProducer", 
-#    src  = cms.InputTag("betterTracks"),      
-#    particleType = cms.string("mu+"),
-#) 
-#process.tkProbes = cms.EDFilter("CandViewRefSelector",
-#    src = cms.InputTag("tkTracks"),
-#    cut = cms.string("pt > 3 && abs(eta) < 2.4"),
-#)
 
 process.goodTracks = cms.EDFilter("TrackSelector",
     src = cms.InputTag("generalTracks"), # or cms.InputTag("standAloneMuons","UpdatedAtVtx"), 
@@ -152,12 +140,33 @@ process.passingprobesForIDMuons = cms.EDProducer("MatchedCandidateSelector",
 
 process.tagProbes = cms.EDProducer("CandViewShallowCloneCombiner",
     decay = cms.string("tagMuons@+ trackProbes@-"), # charge coniugate states are implied; 'tagMuons' and 'trkProbes' should be collections of Candidates
-    cut   = cms.string("70 < mass < 110"),
+    cut   = cms.string("20 < mass < 200"),
 )
 
 process.tagProbesIso = cms.EDProducer("CandViewShallowCloneCombiner",
     decay = cms.string("tagMuons@+ IDMuons@-"), # charge coniugate states are implied; 'tagMuons' and 'trkProbes' should be collections of Candidates
-    cut   = cms.string("70 < mass < 110"),
+    cut   = cms.string("20 < mass < 200"),
+)
+
+process.muMcMatchTag = cms.EDProducer("MCTruthDeltaRMatcherNew",
+    pdgId = cms.vint32(13),
+    src = cms.InputTag("tagMuons"),
+    distMin = cms.double(0.3),
+    matched = cms.InputTag("genParticles")
+)
+
+process.muMcMatchTrackProbe = cms.EDProducer("MCTruthDeltaRMatcherNew",
+    pdgId = cms.vint32(13),
+    src = cms.InputTag("trackCands"),
+    distMin = cms.double(0.3),
+    matched = cms.InputTag("genParticles")
+)
+
+process.muMcMatchIDMuonProbe = cms.EDProducer("MCTruthDeltaRMatcherNew",
+    pdgId = cms.vint32(13),
+    src = cms.InputTag("selectedPatMuonsPFlow"),
+    distMin = cms.double(0.3),
+    matched = cms.InputTag("genParticles")
 )
 
 process.tnpTree = cms.EDAnalyzer("TagProbeFitTreeProducer",
@@ -181,6 +190,13 @@ process.tnpTree = cms.EDAnalyzer("TagProbeFitTreeProducer",
     addRunLumiInfo = cms.bool(True),
     ## MC-related info
     isMC = cms.bool(False), ## on MC you can set this to true, add some parameters and get extra info in the tree.
+    motherPdgId = cms.vint32(22,23),
+    makeMCUnbiasTree = cms.bool(True),
+    checkMotherInUnbiasEff = cms.bool(True),
+    tagMatches = cms.InputTag("muMcMatchTag"),
+    probeMatches  = cms.InputTag("muMcMatchTrackProbe"),
+    allProbes     = cms.InputTag("trackProbes"),
+
 )
 
 process.tnpTreeIso = cms.EDAnalyzer("TagProbeFitTreeProducer",
@@ -200,10 +216,18 @@ process.tnpTreeIso = cms.EDAnalyzer("TagProbeFitTreeProducer",
     addRunLumiInfo = cms.bool(True),
     ## MC-related info
     isMC = cms.bool(False),
+    motherPdgId = cms.vint32(22,23),
+    makeMCUnbiasTree = cms.bool(True),
+    checkMotherInUnbiasEff = cms.bool(True),
+    tagMatches = cms.InputTag("muMcMatchTag"),
+    probeMatches  = cms.InputTag("muMcMatchIDMuonProbe"),
+    allProbes     = cms.InputTag("IDMuons"),
 )
 
-process.p = cms.Path(
-                      process.triggeredMuons
+if process.tnpTree.isMC: 
+   process.p = cms.Path(
+                     process.taggedMuons
+                     *process.triggerMatch
                      *process.tagMuons
                      *process.PFMuons
                      *process.IDMuons
@@ -215,8 +239,36 @@ process.p = cms.Path(
                      *process.tkToIDMuons
                      *process.passingprobesForPFMuons
                      *process.passingprobesForIDMuons
+                     *process.muMcMatchTag
+                     *process.muMcMatchTrackProbe
+                     *process.muMcMatchIDMuonProbe
                      *process.tagProbes
                      *process.tnpTree
                      *process.tagProbesIso
                      *process.tnpTreeIso
-)
+  )
+
+else:
+   process.p = cms.Path(
+                     process.taggedMuons
+                     *process.triggerMatch
+                     *process.tagMuons
+                     *process.PFMuons
+                     *process.IDMuons
+                     *process.IsoMuons
+                     *process.goodTracks
+                     *process.trackCands
+                     *process.trackProbes
+                     *process.tkToPFMuons
+                     *process.tkToIDMuons
+                     *process.passingprobesForPFMuons
+                     *process.passingprobesForIDMuons
+#                     *process.muMcMatchTag
+#                     *process.muMcMatchTrackProbe
+#                     *process.muMcMatchIDMuonProbe
+                     *process.tagProbes
+                     *process.tnpTree
+                     *process.tagProbesIso
+                     *process.tnpTreeIso
+  )
+

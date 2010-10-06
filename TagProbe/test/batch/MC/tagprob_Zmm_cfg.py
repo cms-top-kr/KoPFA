@@ -8,4 +8,7 @@ process.TFileService = cms.Service("TFileService",
     fileName = cms.string('tagprob_mc.root')
 )
 
+process.tnpTree.isMC = True
+process.tnpTreeIso.isMC = True
+
 
