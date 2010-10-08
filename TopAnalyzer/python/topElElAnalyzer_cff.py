@@ -69,6 +69,8 @@ process.ElEl = cms.EDAnalyzer('TopElElAnalyzer',
                               'finalEvents'
                               ),
   looseJetId = myJetId, 
+  relIso1 = cms.untracked.double(0.20),
+  relIso2 = cms.untracked.double(0.20),
 )
 
 process.load("HLTrigger.HLTfilters.hltHighLevel_cfi")

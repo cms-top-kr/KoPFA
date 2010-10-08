@@ -64,6 +64,8 @@ process.MuMu = cms.EDAnalyzer('TopMuMuAnalyzer',
                               'finalEvents'
                               ),
   looseJetId = myJetId, 
+  relIso1 = cms.untracked.double(0.21),
+  relIso2 = cms.untracked.double(0.21),
 )
 
 process.load("HLTrigger.HLTfilters.hltHighLevel_cfi")
