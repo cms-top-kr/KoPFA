@@ -13,7 +13,7 @@
 //
 // Original Author:  Tae Jeong Kim,40 R-A32,+41227678602,
 //         Created:  Fri Jun  4 17:19:29 CEST 2010
-// $Id: TopDILAnalyzer.h,v 1.2 2010/09/08 00:48:10 tjkim Exp $
+// $Id: TopDILAnalyzer.h,v 1.3 2010/09/23 08:13:32 tjkim Exp $
 //
 //
 
@@ -72,6 +72,8 @@ class TopDILAnalyzer : public edm::EDAnalyzer {
       useEventCounter_ = iConfig.getParameter<bool>("useEventCounter");
       filters_ = iConfig.getUntrackedParameter<std::vector<std::string> >("filters");
       looseJetIdSelector_.initialize( iConfig.getParameter<edm::ParameterSet> ("looseJetId") );
+      relIso1_ = iConfig.getUntrackedParameter<double>("relIso1");
+      relIso2_ = iConfig.getUntrackedParameter<double>("relIso2");
 
       edm::Service<TFileService> fs;
       tree = fs->make<TTree>("tree", "Tree for Top quark study");
@@ -225,13 +227,14 @@ class TopDILAnalyzer : public edm::EDAnalyzer {
             for(unsigned j = 0; j != muons2_->size(); j++){
               T1 it1 = muons1_->at(i);
               T2 it2 = muons2_->at(j);
-              const edm::Ptr<T1> Ptr1(muons1_,i); 
-              const edm::Ptr<T2> Ptr2(muons2_,j); 
-	      bool match = MatchObjects( Ptr1->p4(), Ptr2->p4(), true);
+              it1.setP4(it1.pfCandidateRef()->p4());
+              it2.setP4(it2.pfCandidateRef()->p4());
+
+	      bool match = MatchObjects( it1.p4(), it2.p4(), true);
 	      if(match) continue;
 
 	      int sign = it1.charge() * it2.charge();
-	      Ko::ZCandidate dimuon(Ptr1->p4(), Ptr2->p4(), sign);
+	      Ko::ZCandidate dimuon(it1.p4(), it2.p4(), sign);
 
 	      Z->push_back(dimuon);
 
@@ -308,6 +311,9 @@ class TopDILAnalyzer : public edm::EDAnalyzer {
         bool overlap = false;
         for(unsigned i = 0; i != src1->size(); i++){
           T1 it = src1->at(i);
+          it.setP4(it.pfCandidateRef()->p4());
+          double relIso = ( it.chargedHadronIso() + it.neutralHadronIso() + it.photonIso() )/it.pt();
+          if( relIso >= relIso1_ ) continue;
           double dRval = deltaR(eta, phi, it.eta(), it.phi());
           overlap = dRval < 0.4 ;
           if(overlap) return overlap;
@@ -315,6 +321,9 @@ class TopDILAnalyzer : public edm::EDAnalyzer {
 
         for(unsigned i = 0; i != src2->size(); i++){
           T2 it = src2->at(i);
+          it.setP4(it.pfCandidateRef()->p4());
+          double relIso = ( it.chargedHadronIso() + it.neutralHadronIso() + it.photonIso() )/it.pt();
+          if( relIso >= relIso2_ ) continue; 
           double dRval = deltaR(eta, phi, it.eta(), it.phi());
           overlap = dRval < 0.4 ;
           if(overlap) return overlap;
@@ -354,6 +363,9 @@ class TopDILAnalyzer : public edm::EDAnalyzer {
       bool useEventCounter_;
       /// loose jet ID. 
       PatJetIdSelector looseJetIdSelector_;
+      /// relIso
+      double relIso1_;
+      double relIso2_;
  
       TTree* tree;
 
