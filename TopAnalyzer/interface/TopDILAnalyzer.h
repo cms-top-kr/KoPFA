@@ -13,7 +13,7 @@
 //
 // Original Author:  Tae Jeong Kim,40 R-A32,+41227678602,
 //         Created:  Fri Jun  4 17:19:29 CEST 2010
-// $Id: TopDILAnalyzer.h,v 1.3 2010/09/23 08:13:32 tjkim Exp $
+// $Id: TopDILAnalyzer.h,v 1.4 2010/10/08 10:51:41 tjkim Exp $
 //
 //
 
@@ -59,6 +59,10 @@
 //
 // class declaration
 //
+using namespace edm;
+using namespace std;
+using namespace reco;
+using namespace isodeposit;
 
 template<typename T1, typename T2>
 class TopDILAnalyzer : public edm::EDAnalyzer {
@@ -155,10 +159,10 @@ class TopDILAnalyzer : public edm::EDAnalyzer {
 
       virtual void analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 	{
-	  using namespace edm;
-	  using namespace std;
-	  using namespace reco;
-	  using namespace isodeposit;
+	  //using namespace edm;
+	  //using namespace std;
+	  //using namespace reco;
+	  //using namespace isodeposit;
 
 	  Z->clear();
 	  jets->clear();
@@ -249,10 +253,10 @@ class TopDILAnalyzer : public edm::EDAnalyzer {
               vetos_nh.push_back(new ThresholdVeto( 0.5 ));
               IsoDeposit::AbsVetos vetos_ph1;
               vetos_ph1.push_back(new ThresholdVeto( 0.5 ));
-              vetos_ph1.push_back(new RectangularEtaPhiVeto( Dir1, -0.1, 0.1, -0.2, 0.2));
+              //vetos_ph1.push_back(new RectangularEtaPhiVeto( Dir1, -0.1, 0.1, -0.2, 0.2));
               IsoDeposit::AbsVetos vetos_ph2;
               vetos_ph2.push_back(new ThresholdVeto( 0.5 ));
-              vetos_ph2.push_back(new RectangularEtaPhiVeto( Dir2, -0.1, 0.1, -0.2, 0.2));
+              //vetos_ph2.push_back(new RectangularEtaPhiVeto( Dir2, -0.1, 0.1, -0.2, 0.2));
 
 	      chIso1->push_back(it1.chargedHadronIso());
 	      phIso1->push_back(it1.photonIso());
@@ -312,7 +316,15 @@ class TopDILAnalyzer : public edm::EDAnalyzer {
         for(unsigned i = 0; i != src1->size(); i++){
           T1 it = src1->at(i);
           it.setP4(it.pfCandidateRef()->p4());
-          double relIso = ( it.chargedHadronIso() + it.neutralHadronIso() + it.photonIso() )/it.pt();
+          IsoDeposit::AbsVetos vetos_ch;
+          IsoDeposit::AbsVetos vetos_nh;
+          IsoDeposit::AbsVetos vetos_ph;
+          vetos_nh.push_back(new ThresholdVeto( 0.5 ));
+          vetos_ph.push_back(new ThresholdVeto( 0.5 ));
+          double chIso = it.isoDeposit(pat::PfChargedHadronIso)->depositAndCountWithin(0.4, vetos_ch).first;
+          double nhIso = it.isoDeposit(pat::PfNeutralHadronIso)->depositAndCountWithin(0.4, vetos_nh).first;
+          double phIso = it.isoDeposit(pat::PfGammaIso)->depositAndCountWithin(0.4, vetos_ph).first;
+          double relIso = ( chIso+nhIso+phIso )/it.pt();
           if( relIso >= relIso1_ ) continue;
           double dRval = deltaR(eta, phi, it.eta(), it.phi());
           overlap = dRval < 0.4 ;
@@ -322,7 +334,15 @@ class TopDILAnalyzer : public edm::EDAnalyzer {
         for(unsigned i = 0; i != src2->size(); i++){
           T2 it = src2->at(i);
           it.setP4(it.pfCandidateRef()->p4());
-          double relIso = ( it.chargedHadronIso() + it.neutralHadronIso() + it.photonIso() )/it.pt();
+          IsoDeposit::AbsVetos vetos_ch;
+          IsoDeposit::AbsVetos vetos_nh;
+          IsoDeposit::AbsVetos vetos_ph;
+          vetos_nh.push_back(new ThresholdVeto( 0.5 ));
+          vetos_ph.push_back(new ThresholdVeto( 0.5 ));
+          double chIso = it.isoDeposit(pat::PfChargedHadronIso)->depositAndCountWithin(0.4, vetos_ch).first;
+          double nhIso = it.isoDeposit(pat::PfNeutralHadronIso)->depositAndCountWithin(0.4, vetos_nh).first;
+          double phIso = it.isoDeposit(pat::PfGammaIso)->depositAndCountWithin(0.4, vetos_ph).first;
+          double relIso = ( chIso+nhIso+phIso )/it.pt();
           if( relIso >= relIso2_ ) continue; 
           double dRval = deltaR(eta, phi, it.eta(), it.phi());
           overlap = dRval < 0.4 ;
