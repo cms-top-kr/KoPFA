@@ -13,7 +13,7 @@
 //
 // Original Author:  Tae Jeong Kim
 //         Created:  Mon Dec 14 01:29:35 CET 2009
-// $Id: GenZmassFilter.cc,v 1.1 2010/07/22 20:10:20 tjkim Exp $
+// $Id: GenZmassFilter.cc,v 1.1 2010/09/09 15:15:54 tjkim Exp $
 //
 //
 
@@ -65,6 +65,7 @@ class GenZmassFilter : public edm::EDFilter {
       virtual void endJob() ;
       // ----------member data ---------------------------
       edm::InputTag genParticlesLabel_;
+      bool applyFilter_;
       int min_;
       int max_;
 
@@ -85,6 +86,7 @@ GenZmassFilter::GenZmassFilter(const edm::ParameterSet& ps)
 {
    //now do what ever initialization is needed
   genParticlesLabel_= ps.getParameter<edm::InputTag>("genParticlesLabel");
+  applyFilter_=ps.getUntrackedParameter<bool>("applyFilter",false);
   min_ = ps.getUntrackedParameter<int>("min",0);
   max_ = ps.getUntrackedParameter<int>("max",999);
 }
@@ -107,6 +109,11 @@ GenZmassFilter::~GenZmassFilter()
 bool
 GenZmassFilter::filter(edm::Event& iEvent, const edm::EventSetup& iSetup)
 {
+
+  if (!applyFilter_)
+    return true;
+
+
   bool accepted = false;
   using namespace edm;
   using namespace std;
