@@ -13,7 +13,7 @@ patMuonTrigger = cms.EDProducer( "PATTriggerProducer",
 
 #Match With The triggers
 patMuonTriggerMatch = cms.EDProducer( "PATTriggerMatcherDRDPtLessByR",
-                                       src     = cms.InputTag( 'selectedPatMuons'),
+                                       src     = cms.InputTag( 'selectedPatMuonsPFlow'),
                                        matched = cms.InputTag( "patMuonTrigger" ),
                                        andOr          = cms.bool( False ),
                                        filterIdsEnum  = cms.vstring( '*' ),
@@ -28,7 +28,7 @@ patMuonTriggerMatch = cms.EDProducer( "PATTriggerMatcherDRDPtLessByR",
                                        )
 
 triggeredPatMuons = cms.EDProducer("PATTriggerMatchMuonEmbedder",
-                                   src     = cms.InputTag('selectedPatMuons'),
+                                   src     = cms.InputTag('selectedPatMuonsPFlow'),
                                    matches = cms.VInputTag( "patMuonTriggerMatch")
                                    )
 
