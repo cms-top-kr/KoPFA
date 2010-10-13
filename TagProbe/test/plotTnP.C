@@ -1,26 +1,79 @@
-void plotTnP(){
+#include "TH1.h"
+#include "TH2.h"
+#include "TFile.h"
+#include "TLatex.h"
+#include "TCanvas.h"
+#include "TROOT.h"
+#include "TGraphAsymmErrors.h"
 
- //gROOT->LoadMacro("tdrstyle.C");
- //setTDRStyle();
+void printEff(RooHist* h){
+   for(int i=0 ; i < h->GetMaxSize() ; i++){
+    double x;
+    double y;
+    double xerrhi = h->GetErrorXhigh(i);
+    double xerrlo = h->GetErrorXlow(i);
+    double yerrhi = h->GetErrorYhigh(i);
+    double yerrlo = h->GetErrorYlow(i);
+    double eff =  h->GetPoint(i,x,y);
+    cout << "[" << x-xerrlo  << "," << x+xerrhi << "] "  << " eff= " << y << "(+" << yerrhi << " -" << yerrlo << ")" << endl;
+  }
+}
 
- TFile * f = new TFile("testEfficiency.root"); 
+void setRangeY(TCanvas *c, double min=0, double max=1.1){
+  for(size_t i=0, n = c->GetListOfPrimitives()->GetSize(); i <n; ++i){
+    TObject *o = c->GetListOfPrimitives()->At(i);
+    if(o->InheritsFrom("TH1")) ((TH1*)o)->GetYaxis()->SetRangeUser(min,max);
+  }
+}
 
- //c->Draw();
- plotEff(f,"tnpTree/pt/fit_eff_plots/pt_PLOT","hxy_fit_eff");
- plotEff(f,"tnpTree/abseta/fit_eff_plots/abseta_PLOT","hxy_fit_eff");
- //plotEff(f,"tnpTree/pt/cnt_eff_plots/pt_PLOT","hxy_cnt_eff");
- //plotEff(f,"tnpTree/abseta/cnt_eff_plots/abseta_PLOT","hxy_cnt_eff");
+void plot2Eff(TFile *f1, TFile* f2, const TString & leg1, const TString & leg2, const TString& dir1, const TString &dir2, const TString& plot1, const TString & plot2, const TString& printName, const TString& hName){
+  f1->cd(dir1);
+  TCanvas* c1 = (TCanvas*) gDirectory->FindKey(plot1)->ReadObj();
+  getObjects(c1);
+  TString obj1="";
+  if(dir1.Contains("cnt")) obj1 = "hxy_cnt_eff";
+  else obj1 = "hxy_fit_eff";
+  RooHist* h1 = (RooHist*) c1->FindObject(obj1);
 
+  setRangeY(c1,0.5,1.1);
+  h1->SetLineWidth(2);
+  h1->SetLineColor(4);
+  h1->SetMarkerColor(4);
+  h1->SetMarkerStyle(20);
+  h1->SetMarkerSize(0.7);
+  cout << "data-----" << plot1 << "---" << hName << "----" << endl;
+  printEff(h1);
 
- //getObjects(c);
- //TCanvas * c1 = (TCanvas *) f->Get("tnpTree/pt/pt_bin0__gaussPlusLinear/fit_canvas");
- //c1->Draw();
+  f2->cd(dir2);
+  TCanvas* c2 = (TCanvas*) gDirectory->FindKey(plot2)->ReadObj();
+  TString obj2="";
+  if(dir2.Contains("cnt")) obj2 = "hxy_cnt_eff";
+  else obj2 = "hxy_fit_eff";
+  RooHist* h2 = (RooHist*) c2->FindObject(obj2);
+  
+  setRangeY(c2,0.5,1.1); 
+  h2->SetLineWidth(2);
+  h2->SetLineColor(2);
+  h2->SetMarkerColor(2);
+  h2->SetMarkerStyle(20);
+  h2->SetMarkerSize(0.7);
+
+  cout << "MC-----" << plot2 << "---"<< hName << "---" << endl;
+  printEff(h2);
+
+  c1->Draw();
+  h2->Draw("P Same");
+
+  doLegend(h1, h2, leg1, leg2);
+  c1->Print("c_"+printName+"_"+hName+".png");
+  c1->Print("c_"+printName+"_"+hName+".eps");
 
 }
 
+
 void plotEff(TFile* f, const TString& dir, const TString& hName){
   TCanvas * c = (TCanvas *) f->Get(Form("%s",dir.Data()));
-  //getObjects(c);
+  getObjects(c);
   RooHist* h = (RooHist*) c->FindObject(Form("%s",hName.Data()));
   h->SetLineWidth(2);
   h->SetLineColor(4);
@@ -28,15 +81,31 @@ void plotEff(TFile* f, const TString& dir, const TString& hName){
   h->SetMarkerStyle(20);
   h->SetMarkerSize(1.0);
 
-  for(int i=0 ; i < h->GetMaxSize() ; i++){
-    double x;
-    double y;
-    double yerrhi = h->GetErrorYhigh(i);
-    double yerrlo = h->GetErrorYlow(i);
-    double eff =  h->GetPoint(i,x,y);
-    cout << "x= " << x << " eff= " << y << "(+" << yerrhi << " -" << yerrlo << ")" << endl;
-  }
+  cout << "---" << plot << "---" << hName << "---" << endl;
+  printEff(h);
+
   c->Draw();
+}
+
+void plot2DEff(TFile* f, const TString& dir, const TString& plot, const TString& hName){
+  gStyle->SetPalette(1);
+  f->cd(dir);
+  TCanvas* c = (TCanvas*) gDirectory->FindKey(plot)->ReadObj();
+  TH2* h2 = (TH2F*) c->FindObject(plot);
+  cout << "---" << plot << "---" << hName << "---" << endl;
+  h2->SetMarkerSize(1.3);
+  int nbinx = h2->GetNbinsX();
+  int nbiny = h2->GetNbinsY(); 
+  for(int i=1; i <=nbinx ; i++){
+    for(int j=1; j <=nbiny ; j++){
+      cout << "[" << i << "," << j << "] " << "eff= " << h2->GetBinContent(i,j) << "( +- " << h2->GetBinError(i,j) << " )" << endl;
+    }
+  }
+
+  c->Draw();
+  c->Print("c_"+plot+"_"+hName+".png");
+  c->Print("c_"+plot+"_"+hName+".eps");
+
 }
 
 void getObjects( TCanvas *c){
@@ -49,63 +118,84 @@ void getObjects( TCanvas *c){
       cout << "histo: " << obj->GetName() << endl;
     }
     if (obj->InheritsFrom("RooHist")) {
-      cout << "roohisto: " << obj->GetName() << endl;
+      cout << "RooHisto: " << obj->GetName() << endl;
     }
-    if (obj->InheritsFrom("RooFit")) {
-      cout << "roofit: " << obj->GetName() << endl;
-    }
-    if (obj->InheritsFrom("TCanvas")) {
-      cout << "canvas: " << obj->GetName() << endl;
-    }
-    if (obj->InheritsFrom("TFit")) {
-      cout << "fit: " << obj->GetName() << endl;
+    if (obj->InheritsFrom("RooPlot")) {
+      cout << "RooPlot: " << obj->GetName() << endl;
     }
 
   }
 }
 
 
-myPlot2(TString file1, TString dir1, TString plot1, TString file2, TString dir2, TString plot2){
-    TFile * f1 = new TFile(file1);
-    f1->cd(dir1);
-    TCanvas* c1 = (TCanvas*) gDirectory->FindKey(plot1)->ReadObj();
-    RooHist* h1 = (RooHist*) c1->FindObject("hxy_fit_eff");
-    h1->SetLineWidth(2);
-    h1->SetLineColor(209);
-    h1->SetMarkerColor(209);
-    h1->SetMarkerStyle(25);
-    h1->SetMarkerSize(1.0);
-
-    TFile * f2= new TFile(file2);
-    f2->cd(dir2);
-    TCanvas* c2 = (TCanvas*) gDirectory->FindKey(plot2)->ReadObj();
-    RooHist* h2 = (RooHist*) c2->FindObject("hxy_fit_eff");
-
-    h2->SetLineWidth(2);
-    h2->SetLineColor(206);
-    h2->SetMarkerColor(206);
-    h2->SetMarkerStyle(20);
-    h2->SetMarkerSize(1.);
-
-
-    c1->Draw();
-    h2->Draw("P SAME");
-
-    doLegend(h1, h2, "deltaR02", "deltaR03");
-    c1->SaveAs(plot1+".png");
-/*
-    doLegend(hfit,href,datalbl,reflbl);
-    gPad->Print(prefix+alias+".png");
-*/
-}
-
 void doLegend(TGraphAsymmErrors *g1, TGraphAsymmErrors *g2, TString lab1, TString lab2) {
-    TLegend *leg = new TLegend(.65,.2 ,.85,.5 );
+    TLegend *leg = new TLegend(.55,.15 ,.85,.45 );
     leg->AddEntry(g1, lab1, "LP");
     leg->AddEntry(g2, lab2, "LP");
     leg->SetFillColor(0);
+    leg->SetTextSize(0.04);
+    leg->SetLineColor(0);
     leg->Draw();
 }
 
 
+void plotTnP(){
+  
+  using namespace std;
+
+  gROOT->LoadMacro("tdrstyle.C");
+  setTDRStyle();
+
+  TFile * f = new TFile("result6/plot/Efficiency_ID.root");
+  TFile * f_MC = new TFile("result6/plot/Efficiency_ID_mc.root");
+  TFile * f_MCUnbias = new TFile("result6/plot/Efficiency_ID_mcUnbias.root");
+  TFile * f_Iso = new TFile("result6/plot/Efficiency_Iso.root");
+  TFile * f_Iso_MC = new TFile("result6/plot/Efficiency_Iso_mc.root");
+  TFile * f_Iso_MCUnbias = new TFile("result6/plot/Efficiency_Iso_mcUnbias.root");
+
+  // Data vs MC
+  cout << "Data vs MC" << endl;
+  plot2Eff(f,f_MC,"Data","MC","tnpTree/PF_abseta/fit_eff_plots","tnpTree/PF_abseta/fit_eff_plots","abseta_PLOT","abseta_PLOT","abseta","PF");
+  plot2Eff(f,f_MC,"Data","MC","tnpTree/PF_pt/fit_eff_plots","tnpTree/PF_pt/fit_eff_plots","pt_PLOT","pt_PLOT","pt","PF");
+
+  plot2Eff(f,f_MC,"Data","MC","tnpTree/ID_abseta/fit_eff_plots","tnpTree/ID_abseta/fit_eff_plots","abseta_PLOT","abseta_PLOT","abseta","ID");
+  plot2Eff(f,f_MC,"Data","MC","tnpTree/ID_pt/fit_eff_plots","tnpTree/ID_pt/fit_eff_plots","pt_PLOT","pt_PLOT","pt","ID");
+
+  plot2Eff(f_Iso,f_Iso_MC,"Data","MC","tnpTreeIso/abseta/fit_eff_plots","tnpTreeIso/abseta/fit_eff_plots","abseta_PLOT","abseta_PLOT","abseta","Iso");
+  plot2Eff(f_Iso,f_Iso_MC,"Data","MC","tnpTreeIso/pt/fit_eff_plots","tnpTreeIso/pt/fit_eff_plots","pt_PLOT","pt_PLOT","pt","Iso");
+
+  // Data vs MC truth
+  cout << "Data vs MC truth" << endl;
+  plot2Eff(f,f_MC,"Data","MC truth","tnpTree/PF_abseta/fit_eff_plots","tnpTree/PF_abseta_mcTrue/cnt_eff_plots","abseta_PLOT","abseta_PLOT_mcTrue_true","abseta_mcTrue","PF");
+  plot2Eff(f,f_MC,"Data","MC truth","tnpTree/PF_pt/fit_eff_plots","tnpTree/PF_pt_mcTrue/cnt_eff_plots","pt_PLOT","pt_PLOT_mcTrue_true","pt_mcTrue","PF");
+
+  plot2Eff(f,f_MC,"Data","MC truth","tnpTree/ID_abseta/fit_eff_plots","tnpTree/ID_abseta_mcTrue/cnt_eff_plots","abseta_PLOT","abseta_PLOT_mcTrue_true","abseta_mcTrue","ID");
+  plot2Eff(f,f_MC,"Data","MC truth","tnpTree/ID_pt/fit_eff_plots","tnpTree/ID_pt_mcTrue/cnt_eff_plots","pt_PLOT","pt_PLOT_mcTrue_true","pt_mcTrue","ID");
+
+  plot2Eff(f_Iso,f_Iso_MC,"Data","MC truth","tnpTreeIso/abseta/fit_eff_plots","tnpTreeIso/abseta_mcTrue/cnt_eff_plots","abseta_PLOT","abseta_PLOT_mcTrue_true","abseta_mcTrue","Iso");
+  plot2Eff(f_Iso,f_Iso_MC,"Data","MC truth","tnpTreeIso/pt/fit_eff_plots","tnpTreeIso/pt_mcTrue/cnt_eff_plots","pt_PLOT","pt_PLOT_mcTrue_true","pt_mcTrue","Iso");
+  
+  // Data vs MC unbiased truth
+  cout << "Data vs MC unbiased truth" << endl;
+  plot2Eff(f,f_MCUnbias,"Data","MC(unbiased) truth ","tnpTree/PF_abseta/fit_eff_plots","tnpTree/PF_abseta_mcTrue/cnt_eff_plots","abseta_PLOT","abseta_PLOT_mcTrue_true","abseta_mcTrue_Unbiased","PF");
+  plot2Eff(f,f_MCUnbias,"Data","MC(unbiased) truth","tnpTree/PF_pt/fit_eff_plots","tnpTree/PF_pt_mcTrue/cnt_eff_plots","pt_PLOT","pt_PLOT_mcTrue_true","pt_mcTrue_Unbiased","PF");
+
+  plot2Eff(f,f_MCUnbias,"Data","MC(unbiased) truth","tnpTree/ID_abseta/fit_eff_plots","tnpTree/ID_abseta_mcTrue/cnt_eff_plots","abseta_PLOT","abseta_PLOT_mcTrue_true","abseta_mcTrue_Unbiased","ID");
+  plot2Eff(f,f_MCUnbias,"Data","MC(unbiased) truth","tnpTree/ID_pt/fit_eff_plots","tnpTree/ID_pt_mcTrue/cnt_eff_plots","pt_PLOT","pt_PLOT_mcTrue_true","pt_mcTrue_Unbiased","ID");
+
+  plot2Eff(f_Iso,f_Iso_MCUnbias,"Data","MC(unbiased) truth","tnpTreeIso/abseta/fit_eff_plots","tnpTreeIso/abseta_mcTrue/cnt_eff_plots","abseta_PLOT","abseta_PLOT_mcTrue_true","abseta_mcTrue_Unbiased","Iso");
+  plot2Eff(f_Iso,f_Iso_MCUnbias,"Data","MC(unbiased) truth","tnpTreeIso/pt/fit_eff_plots","tnpTreeIso/pt_mcTrue/cnt_eff_plots","pt_PLOT","pt_PLOT_mcTrue_true","pt_mcTrue_Unbiased","Iso");
+
+
+  //2D histograms
+  plot2DEff(f, "tnpTree/PF_pt_abseta/fit_eff_plots","pt_abseta_PLOT","PF");
+  plot2DEff(f_MC, "tnpTree/PF_pt_abseta/fit_eff_plots","pt_abseta_PLOT","PF_mc");
+
+  plot2DEff(f, "tnpTree/ID_pt_abseta/fit_eff_plots","pt_abseta_PLOT","ID");
+  plot2DEff(f_MC, "tnpTree/ID_pt_abseta/fit_eff_plots","pt_abseta_PLOT","ID_mc");
+
+  plot2DEff(f_Iso, "tnpTreeIso/pt_abseta/fit_eff_plots","pt_abseta_PLOT","Iso");
+  plot2DEff(f_Iso_MC, "tnpTreeIso/pt_abseta/fit_eff_plots","pt_abseta_PLOT","Iso_mc");
+
+}
 
