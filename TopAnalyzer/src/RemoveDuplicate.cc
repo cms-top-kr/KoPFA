@@ -13,7 +13,7 @@
 //
 // Original Author:  Tae Jeong Kim
 //         Created:  Mon Dec 14 01:29:35 CET 2009
-// $Id: RemoveDuplicate.cc,v 1.1 2010/09/09 15:15:54 tjkim Exp $
+// $Id: RemoveDuplicate.cc,v 1.1 2010/10/12 15:15:10 tjkim Exp $
 //
 //
 
@@ -22,7 +22,6 @@
 
 // user include files
 #include "FWCore/Framework/interface/Frameworkfwd.h"
-#include "FWCore/Framework/interface/EDAnalyzer.h"
 #include "FWCore/Framework/interface/EDFilter.h"
 #include "FWCore/ServiceRegistry/interface/Service.h"
 #include "CommonTools/UtilAlgos/interface/TFileService.h"
@@ -31,16 +30,10 @@
 #include "FWCore/Framework/interface/MakerMacros.h"
 
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
-#include "DataFormats/PatCandidates/interface/Muon.h"
-#include "DataFormats/Math/interface/LorentzVector.h"
 
-#include "DataFormats/TrackReco/interface/TrackFwd.h"
-#include "DataFormats/VertexReco/interface/VertexFwd.h"
-#include "DataFormats/TrackReco/interface/Track.h"
-#include "DataFormats/VertexReco/interface/Vertex.h"
-#include "DataFormats/Math/interface/Point3D.h"
-#include "RecoVertex/VertexPrimitives/interface/TransientVertex.h"
 #include "KoPFA/DataFormats/interface/Event.h"
+
+#include <set>
 //
 // class declaration
 //
@@ -59,11 +52,7 @@ class RemoveDuplicate : public edm::EDFilter {
       // ----------member data ---------------------------
       bool applyFilter_;
 
-      unsigned int EVENT;
-      unsigned int RUN;
-      unsigned int LUMI;
-
-      std::vector<Ko::Event>* events;
+      std::set<edm::EventID> eventSet_;
 };
 
 //
@@ -104,34 +93,18 @@ RemoveDuplicate::filter(edm::Event& iEvent, const edm::EventSetup& iSetup)
   if (!applyFilter_)
     return true;
 
-  bool accepted = false;
-  using namespace edm;
-  using namespace std;
-  using namespace reco;
-
-  EVENT  = iEvent.id().event();
-  RUN    = iEvent.id().run();
-  LUMI   = iEvent.id().luminosityBlock();
-
-  bool duplicate = false;
-  for(size_t i = 0; i < events->size() ; i++){
-    duplicate = events->at(i).run() == RUN && events->at(i).lumi() == LUMI && events->at(i).event() == EVENT;
-    if(duplicate) break;
+  if ( eventSet_.find(iEvent.id()) == eventSet_.end() )
+  {
+    eventSet_.insert(iEvent.id());
+    return true;
   }
 
-  if(!duplicate) {
-    accepted = true;
-    Ko::Event event(RUN, LUMI, EVENT); 
-    events->push_back(event);
-  }
-
-  return accepted;
+  return false;
 }
 
 // ------------ method called once each job just before starting event loop  ------------
 void 
 RemoveDuplicate::beginJob(){
-  events = new std::vector<Ko::Event>();
 }
 
 // ------------ method called once each job just after ending the event loop  ------------
@@ -141,6 +114,4 @@ RemoveDuplicate::endJob() {
 
 //define this as a plug-in
 DEFINE_FWK_MODULE(RemoveDuplicate);
-
-
 
