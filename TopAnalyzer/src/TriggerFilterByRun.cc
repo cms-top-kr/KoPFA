@@ -51,7 +51,7 @@ private:
 TriggerFilterByRun::TriggerFilterByRun(const edm::ParameterSet& pset)
 {
   triggerResultsLabel_ = pset.getUntrackedParameter<edm::InputTag>("triggerResults", edm::InputTag("TriggerResults", "", "HLT"));
-  VPSet triggerPSets = pset.getUntrackedParameter<VPSet>("triggerSets");
+  VPSet triggerPSets = pset.getUntrackedParameter<VPSet>("triggerPSets");
 
   for ( VPSet::const_iterator triggerPSet = triggerPSets.begin();
         triggerPSet != triggerPSets.end(); ++triggerPSet )
