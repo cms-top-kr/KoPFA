@@ -22,8 +22,8 @@ public:
   TriggerFilterByRun(const edm::ParameterSet& pset);
   ~TriggerFilterByRun() {};
 
-  void beginRun(edm::Run& run, edm::EventSetup& eventSetup);
-  bool filter(edm::Event& event, edm::EventSetup& eventSetup);
+  bool beginRun(edm::Run& run, const edm::EventSetup& eventSetup);
+  bool filter(edm::Event& event, const edm::EventSetup& eventSetup);
 
   typedef vector<edm::ParameterSet> VPSet;
 
@@ -65,7 +65,7 @@ TriggerFilterByRun::TriggerFilterByRun(const edm::ParameterSet& pset)
   }
 }
 
-void TriggerFilterByRun::beginRun(edm::Run& run, edm::EventSetup& eventSetup)
+bool TriggerFilterByRun::beginRun(edm::Run& run, const edm::EventSetup& eventSetup)
 {
   const int runNumber = run.run();
   // Find trigger sets corresponding to this run
@@ -80,9 +80,11 @@ void TriggerFilterByRun::beginRun(edm::Run& run, edm::EventSetup& eventSetup)
 
     currentTriggerNames_.push_back(triggerSet->triggerName_);
   }
+
+  return true;
 }
 
-bool TriggerFilterByRun::filter(edm::Event& event, edm::EventSetup& eventSetup)
+bool TriggerFilterByRun::filter(edm::Event& event, const edm::EventSetup& eventSetup)
 {
   // We accept event if we don't know which triggers to be required
   if ( currentTriggerNames_.empty() ) return true;
