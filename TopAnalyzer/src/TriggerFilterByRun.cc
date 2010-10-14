@@ -31,15 +31,15 @@ private:
   struct TriggerSet
   {
     TriggerSet() {};
-    TriggerSet(const int runBegin, const int runEnd, const string triggerName)
+    TriggerSet(const int runBegin, const int runEnd, const vector<string> triggerNames)
     {
       runBegin_ = runBegin;
       runEnd_ = runEnd;
-      triggerName_ = triggerName;
+      triggerNames_ = triggerNames;
     };
 
     int runBegin_, runEnd_;
-    string triggerName_;
+    vector<string> triggerNames_;
   };
 
   edm::InputTag triggerResultsLabel_;
@@ -59,9 +59,9 @@ TriggerFilterByRun::TriggerFilterByRun(const edm::ParameterSet& pset)
     const int runBegin = triggerPSet->getUntrackedParameter<int>("runBegin");
     const int runEnd = triggerPSet->getUntrackedParameter<int>("runEnd");
 
-    const string triggerName = triggerPSet->getUntrackedParameter<string>("triggerName");
+    const vector<string> triggerNames = triggerPSet->getUntrackedParameter<vector<string> >("triggerNames");
 
-    triggerSets_.push_back(TriggerSet(runBegin, runEnd, triggerName));
+    triggerSets_.push_back(TriggerSet(runBegin, runEnd, triggerNames));
   }
 }
 
@@ -78,7 +78,8 @@ bool TriggerFilterByRun::beginRun(edm::Run& run, const edm::EventSetup& eventSet
     if ( runNumber < runBegin ) continue;
     if ( runBegin <= runEnd and runNumber >= runEnd ) continue;
 
-    currentTriggerNames_.push_back(triggerSet->triggerName_);
+    const vector<string>& input = triggerSet->triggerNames_;
+    currentTriggerNames_.insert(currentTriggerNames_.end(), input.begin(), input.end());
   }
 
   return true;
