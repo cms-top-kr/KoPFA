@@ -117,3 +117,5 @@ bool TriggerFilterByRun::filter(edm::Event& event, const edm::EventSetup& eventS
   return false;
 }
 
+DEFINE_FWK_MODULE(TriggerFilterByRun);
+
