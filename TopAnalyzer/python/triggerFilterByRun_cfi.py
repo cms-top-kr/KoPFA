@@ -43,12 +43,14 @@ electronTriggerFilterByRun = cms.EDFilter("TriggerFilterByRun",
             runBegin = cms.untracked.int32(144000),
             runEnd = cms.untracked.int32(144114),
             triggerNames = cms.untracked.vstring("HLT_Ele15_SW_CaloEleId_L1R", 
+                                                 "HLT_Ele20_SW_L1R",
                                                  "HLT_DoubleEle10_SW_L1R")
         ),
         cms.untracked.PSet(
             runBegin = cms.untracked.int32(146000),
             runEnd = cms.untracked.int32(147120),
-            triggerNames = cms.untracked.vstring("HLT_Ele17_SW_CaloEleId_L1R")
+            triggerNames = cms.untracked.vstring("HLT_DoubleEle10_SW_L1R",
+                                                 "HLT_Ele17_SW_CaloEleId_L1R")
         ),
         cms.untracked.PSet(
             runBegin = cms.untracked.int32(147120),
