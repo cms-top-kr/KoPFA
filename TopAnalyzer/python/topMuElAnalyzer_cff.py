@@ -69,13 +69,18 @@ process.MuEl = cms.EDAnalyzer('TopMuElAnalyzer',
   relIso2 = cms.untracked.double(0.20),
 )
 
+process.removeDuplicate = cms.EDFilter("RemoveDuplicate",
+  applyFilter = cms.untracked.bool( True )
+)
+
 process.load("HLTrigger.HLTfilters.hltHighLevel_cfi")
-process.hltHighLevel.HLTPaths = cms.vstring('HLT_Mu9')
-#process.hltHighLevel.HLTPaths = cms.vstring('HLT_Mu9','HLT_Ele10_LW_L1R')
+process.hltHighLevel.HLTPaths = cms.vstring('HLT_Mu9','HLT_Ele10_LW_L1R')
+process.hltHighLevel.throw = cms.bool(False)
 
 process.p = cms.Path(
                      process.loadHistosFromRunInfo*
                      process.hltHighLevel*
+                     process.removeDuplicate*
                      process.GenZmassFilter*
                      process.Muons*
                      process.patMuonFilter*
