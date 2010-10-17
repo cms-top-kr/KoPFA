@@ -109,7 +109,8 @@ void KoElectronSelector::produce(edm::Event& iEvent, const edm::EventSetup& es)
     bool passed = false;
 
     //bool pfpass = electronIdSel.test("dxy") && electronIdSel.test("eta") && electronIdSel.test("pt");
-    cout << " 90relIso=" << electron.electronID("simpleEleId90relIso") << " 90cIso= " << electron.electronID("simpleEleId90cIso") <<  endl;
+    //cout << " 90relIso=" << electron.electronID("simpleEleId90relIso") << " 90cIso= " << electron.electronID("simpleEleId90cIso") <<  endl;
+    //cout << electron.superCluster()->energy() << endl;
     passed = electron.electronID("simpleEleId90relIso") == version_;
     //if(version_==0) passed = electronIdSel.test("eta") && electronIdSel.test("pt");
     //else if(version_==1) passed = pfpass;
