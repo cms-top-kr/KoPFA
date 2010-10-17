@@ -78,7 +78,7 @@ process.load("HLTrigger.HLTfilters.hltHighLevel_cfi")
 
 process.p = cms.Path(
                      process.loadHistosFromRunInfo*
-                     process.hltHighLevel*
+#                     process.hltHighLevel*
                      process.GenZmassFilter*
                      process.Electrons*
                      process.patElectronFilter*

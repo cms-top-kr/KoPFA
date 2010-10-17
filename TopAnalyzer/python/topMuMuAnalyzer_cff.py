@@ -74,7 +74,7 @@ process.hltHighLevel.HLTPaths = cms.vstring('HLT_Mu9')
 process.p = cms.Path(
 #                     process.printTree*
                      process.loadHistosFromRunInfo*
-                     process.hltHighLevel*
+#                     process.hltHighLevel*
                      process.GenZmassFilter*
                      process.Muons*
                      process.patMuonFilter*
