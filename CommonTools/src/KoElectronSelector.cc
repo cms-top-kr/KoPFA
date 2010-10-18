@@ -84,7 +84,9 @@ void KoElectronSelector::produce(edm::Event& iEvent, const edm::EventSetup& es)
 
   int cut[6] = {0,0,0,0,0,0};
   for (unsigned int i=0; i < electrons_->size();++i){
-    const pat::Electron electron = electrons_->at(i);
+    pat::Electron electron = electrons_->at(i);
+    electron.setP4(electron.pfCandidateRef()->p4());
+
     pat::strbitset electronIdSel = electronIdSelector_.getBitTemplate();
     pat::strbitset electronIsoSel = electronIsoSelector_.getBitTemplate();
     electronIdSelector_( electron, beamSpot_->position(), electronIdSel );
@@ -111,7 +113,9 @@ void KoElectronSelector::produce(edm::Event& iEvent, const edm::EventSetup& es)
     //bool pfpass = electronIdSel.test("dxy") && electronIdSel.test("eta") && electronIdSel.test("pt");
     //cout << " 90relIso=" << electron.electronID("simpleEleId90relIso") << " 90cIso= " << electron.electronID("simpleEleId90cIso") <<  endl;
     //cout << electron.superCluster()->energy() << endl;
-    passed = electron.electronID("simpleEleId90relIso") == version_;
+    bool passWP90ID = electron.electronID("simpleEleId90relIso") == version_;
+    bool pass2 = electron.superCluster()->energy() > 15 && electron.pt() > 20 && fabs(electron.eta()) < 2.5 && electron.gsfTrack()->dxy() < 0.04;
+    passed = passWP90ID && pass2;
     //if(version_==0) passed = electronIdSel.test("eta") && electronIdSel.test("pt");
     //else if(version_==1) passed = pfpass;
     //else if(version_==2) passed = electronIdSel.test("VBTF") && pfpass;
