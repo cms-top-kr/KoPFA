@@ -23,6 +23,7 @@
 #include "TFile.h"
 #include "TTree.h"
 #include "TH1.h"
+#include "TH2.h"
 
 class KoElectronSelector : public edm::EDProducer
 {
@@ -48,6 +49,7 @@ class KoElectronSelector : public edm::EDProducer
   edm::Handle<pat::ElectronCollection> electrons_;
   edm::Handle<reco::BeamSpot> beamSpot_;
   TH1F * cutflow;
+  TH2F * id2mva;
   vector<std::string> cutNames;
 
   TTree *tree;

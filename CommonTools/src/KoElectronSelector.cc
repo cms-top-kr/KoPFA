@@ -33,6 +33,7 @@ KoElectronSelector::KoElectronSelector(const edm::ParameterSet& cfg)
 
   int nBins = (int) cutNames.size();
   cutflow   = fs->make<TH1F>( "cutflow", "cutflow", nBins,-0.5,nBins-0.5);
+  id2mva = fs->make<TH2F>( "id2mva","id2mva", 200, -1,1, 8,0,8);  
 
   pt = new std::vector<double>();
   eta = new std::vector<double>();
@@ -113,17 +114,20 @@ void KoElectronSelector::produce(edm::Event& iEvent, const edm::EventSetup& es)
     //bool pfpass = electronIdSel.test("dxy") && electronIdSel.test("eta") && electronIdSel.test("pt");
     //cout << " 90relIso=" << electron.electronID("simpleEleId90relIso") << " 90cIso= " << electron.electronID("simpleEleId90cIso") <<  endl;
     //cout << electron.superCluster()->energy() << endl;
+    bool passPre = electron.pt() > 20 && fabs(electron.eta()) < 2.5 && fabs(electron.gsfTrack()->dxy(beamSpot_->position())) < 0.04;
+    bool passMVA = electron.mva() > 0.4;
     bool passWP90ID = electron.electronID("simpleEleId90relIso") == version_;
-    bool pass2 = electron.superCluster()->energy() > 15 && electron.pt() > 20 && fabs(electron.eta()) < 2.5 && electron.gsfTrack()->dxy() < 0.04;
-    passed = passWP90ID && pass2;
+    if(version_ == 10) passed = passPre && passMVA;
+    else passed = passPre && passWP90ID;
     //if(version_==0) passed = electronIdSel.test("eta") && electronIdSel.test("pt");
     //else if(version_==1) passed = pfpass;
     //else if(version_==2) passed = electronIdSel.test("VBTF") && pfpass;
     //else if(version_==3) passed = C6;
     //else if(version_==4) passed = pfpass && passIso;  
- 
+    id2mva->Fill( electron.mva(), electron.electronID("simpleEleId90relIso"));
+
     if(passed){
-      cout << "passed " << endl;
+      cout << "passed " << electron.electronID("simpleEleId90cIso") << electron.electronID("simpleEleId90relIso") << endl;
       pos->push_back((*electrons_)[i]);
 
       pt->push_back(electron.pt());
@@ -183,6 +187,9 @@ KoElectronSelector::endJob() {
   for(int i=0 ; i < 6; i++){
     cutflow->GetXaxis()->SetBinLabel(i+1,cutNames[i].c_str());
   }
+  id2mva->GetXaxis()->SetTitle("mva");
+  id2mva->GetYaxis()->SetTitle("id90");
+
 }
 
 
