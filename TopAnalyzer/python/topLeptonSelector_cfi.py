@@ -23,7 +23,7 @@ from PFAnalyses.CommonTools.Selectors.newElectronIsoSelectorPSet_cff import elec
 
 Electrons = cms.EDProducer(
     "KoElectronSelector",
-    version = cms.untracked.int32( 5 ),# WP90
+    version = cms.untracked.int32( 10 ),# 10 = MVA, 5 = WP90?
     electronLabel  = cms.InputTag("selectedPatElectronsPFlow"),
     beamSpotLabel = cms.InputTag("offlineBeamSpot"),
     electronIdSelector = electronSelectorPSet,
@@ -31,7 +31,7 @@ Electrons = cms.EDProducer(
 )
 
 #Electrons = cms.EDFilter("PATElectronSelector",
-#    src = cms.InputTag("WP90Electrons"),
+#    src = cms.InputTag("selectedPatElectronsPFlow"),
 #    cut =cms.string("pt > 20 && abs(eta) < 2.5 && abs(gsfTrack.dxy) < 0.04 && mva > 0.4 && gsfTrack.trackerExpectedHitsInner.numberOfHits<=1 ")
 #)
 
