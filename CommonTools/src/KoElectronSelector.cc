@@ -34,6 +34,7 @@ KoElectronSelector::KoElectronSelector(const edm::ParameterSet& cfg)
   int nBins = (int) cutNames.size();
   cutflow   = fs->make<TH1F>( "cutflow", "cutflow", nBins,-0.5,nBins-0.5);
   id2mva = fs->make<TH2F>( "id2mva","id2mva", 200, -1,1, 8,0,8);  
+  pfMVA2patMVA_ = fs->make<TH2F>("pfMVA2patMVA", "PF based e_pi MVA vs standard MVA;PF based e_pi MVA;Standard MVA", 100, -1, 1, 100, -1, 1);
 
   pt = new std::vector<double>();
   eta = new std::vector<double>();
@@ -124,7 +125,9 @@ void KoElectronSelector::produce(edm::Event& iEvent, const edm::EventSetup& es)
     //else if(version_==2) passed = electronIdSel.test("VBTF") && pfpass;
     //else if(version_==3) passed = C6;
     //else if(version_==4) passed = pfpass && passIso;  
+
     id2mva->Fill( electron.mva(), electron.electronID("simpleEleId90relIso"));
+    pfMVA2patMVA_->Fill( electron.mva(), electron.pfCandidateRef()->mva_e_pi());
 
     if(passed){
       cout << "passed " << electron.electronID("simpleEleId90cIso") << electron.electronID("simpleEleId90relIso") << endl;
@@ -189,7 +192,6 @@ KoElectronSelector::endJob() {
   }
   id2mva->GetXaxis()->SetTitle("mva");
   id2mva->GetYaxis()->SetTitle("id90");
-
 }
 
 
