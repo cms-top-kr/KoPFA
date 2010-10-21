@@ -34,6 +34,7 @@ KoElectronSelector::KoElectronSelector(const edm::ParameterSet& cfg)
   int nBins = (int) cutNames.size();
   cutflow   = fs->make<TH1F>( "cutflow", "cutflow", nBins,-0.5,nBins-0.5);
   id2mva = fs->make<TH2F>( "id2mva","id2mva", 200, -1,1, 8,0,8);  
+  id2pfmva = fs->make<TH2F>( "id2pfmva","id2pfmva", 200, -1,1, 8,0,8);  
   pfMVA2patMVA_ = fs->make<TH2F>("pfMVA2patMVA", "PF based e_pi MVA vs standard MVA;PF based e_pi MVA;Standard MVA", 100, -1, 1, 100, -1, 1);
 
   pt = new std::vector<double>();
@@ -117,9 +118,14 @@ void KoElectronSelector::produce(edm::Event& iEvent, const edm::EventSetup& es)
     //cout << electron.superCluster()->energy() << endl;
     bool passPre = electron.pt() > 20 && fabs(electron.eta()) < 2.5 && fabs(electron.gsfTrack()->dxy(beamSpot_->position())) < 0.04;
     bool passMVA = electron.mva() > 0.4;
-    bool passWP90ID = electron.electronID("simpleEleId90relIso") == version_;
-    if(version_ == 10) passed = passPre && passMVA;
-    else passed = passPre && passWP90ID;
+    int result = (int)electron.electronID("simpleEleId90relIso");
+    bool passWP90ID = ( result == 5 || result == 7)  ;
+
+    if(version_ == 10){
+      passed = passPre && passMVA;
+    } else if (version_ == 5){
+      passed = passPre && passWP90ID;
+    }
     //if(version_==0) passed = electronIdSel.test("eta") && electronIdSel.test("pt");
     //else if(version_==1) passed = pfpass;
     //else if(version_==2) passed = electronIdSel.test("VBTF") && pfpass;
@@ -127,10 +133,10 @@ void KoElectronSelector::produce(edm::Event& iEvent, const edm::EventSetup& es)
     //else if(version_==4) passed = pfpass && passIso;  
 
     id2mva->Fill( electron.mva(), electron.electronID("simpleEleId90relIso"));
+    id2pfmva->Fill( electron.pfCandidateRef()->mva_e_pi(), electron.electronID("simpleEleId90relIso"));
     pfMVA2patMVA_->Fill( electron.mva(), electron.pfCandidateRef()->mva_e_pi());
 
     if(passed){
-      cout << "passed " << electron.electronID("simpleEleId90cIso") << electron.electronID("simpleEleId90relIso") << endl;
       pos->push_back((*electrons_)[i]);
 
       pt->push_back(electron.pt());
@@ -192,6 +198,11 @@ KoElectronSelector::endJob() {
   }
   id2mva->GetXaxis()->SetTitle("mva");
   id2mva->GetYaxis()->SetTitle("id90");
+  id2pfmva->GetXaxis()->SetTitle("mva");
+  id2pfmva->GetYaxis()->SetTitle("id90");
+
+  pfMVA2patMVA_->GetXaxis()->SetTitle("mva"); 
+  pfMVA2patMVA_->GetYaxis()->SetTitle("pfCandidateRefmva"); 
 }
 
 
