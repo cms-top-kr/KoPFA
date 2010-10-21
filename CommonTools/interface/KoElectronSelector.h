@@ -49,7 +49,9 @@ class KoElectronSelector : public edm::EDProducer
   edm::Handle<pat::ElectronCollection> electrons_;
   edm::Handle<reco::BeamSpot> beamSpot_;
   TH1F * cutflow;
-  TH2F * id2mva, * pfMVA2patMVA_;
+  TH2F * id2mva; 
+  TH2F * id2pfmva; 
+  TH2F * pfMVA2patMVA_;
   vector<std::string> cutNames;
 
   TTree *tree;
