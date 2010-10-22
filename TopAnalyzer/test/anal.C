@@ -18,7 +18,7 @@
 
 using namespace std;
 
-double lumi_e = 3.1;
+double lumi_e = 7.1;
 TString dir = "temp";
 bool print = false;
 TString type = "MuMu";
@@ -33,6 +33,8 @@ std::vector<Color_t> colors;
 
 TFile * fdata;
 TTree * data;
+TCut antipfiso = "(chIsoOpt1+nhIsoOpt1+phIsoOpt1)/Z.leg1().pt() > 0.21 && (chIsoOpt2+nhIsoOpt2+phIsoOpt2)/Z.leg2().pt() > 0.21 ";
+double fQCD= 1.123;
 
 void numberOfEvents( TCut cut, const TString& s){
 
@@ -59,6 +61,8 @@ void numberOfEvents( TCut cut, const TString& s){
     sumerr2 = sumerr2 + err*err;
   }
   cout << "Z = " << Zn << " +- " << sqrt(Zerr2) << endl;
+  double nQCD = fQCD*data->GetEntries(cut && antipfiso);
+  cout << "QCD = " << nQCD << " +- " << sqrt(nQCD) << endl;
 
   double bkg = total - sig;
   double soverb = sig/TMath::Sqrt(sig+bkg);
@@ -158,6 +162,8 @@ void plotStack( TString var, TCut cut, const TString & xtitle, const TString & y
   }
 
   data->Project(Form("h_data_%s_%s",hName.Data(),name.Data()),Form("%s",var.Data()),cut);
+  data->Project(Form("h_qcd_%s_%s",hName.Data(),name.Data()),Form("%s",var.Data()),cut && antipfiso);
+
   for(int i=0 ; i < (int)trees.size() ; i++){
      trees[i]->Project(Form("h_%s_%s_%s",hNames[i].Data(), hName.Data(),name.Data()),Form("%s",var.Data()),cut);
   }
@@ -171,19 +177,19 @@ void plotStep(TCut cut, const TString& step, const double & r){
   //histStack( type, "h_mass","Dimuon Mass (GeV/c^{2})", "Events/5 GeV/c^{2}",40, 1000,0.02, "dimuon",Form("mass_h_%s",step.Data()), true);
   //histStack( type, "h_leadingpt","Leading p_{T} (GeV/c)", "Events/5 GeV/c",20, 30, 0, "leading",Form("pt_h_%s",step.Data()), false);
   if( step.Contains("step1") || step.Contains("step2") || step.Contains("step3") ){
-    plotStack( "Z.mass()",cut, "Dimuon Mass (GeV/c^{2})", "Events/5 GeV/c^{2}",40, 0, 200, 1100, 0.1, "dimuon",Form("mass_%s",step.Data()), true);
+    plotStack( "Z.mass()",cut, "Dimuon Mass (GeV/c^{2})", "Events/5 GeV/c^{2}",40, 0, 200, 1500, 0.1, "dimuon",Form("mass_%s",step.Data()), true);
   }
 
-  plotStack("@jetspt30.size()",cut, "Jet Multiplicity", "Events", 5, 0, 5, 3000*r , -1, "jet",Form("multiplicity_%s",step.Data()), true);
-  plotStack("MET",cut, "Missing E_{T}", "Events", 8, 0, 80, 1200*r , 0.1*r, "met",Form("et_%s",step.Data()), true);
+  plotStack("@jetspt30.size()",cut, "Jet Multiplicity", "Events", 5, 0, 5, 600*lumi_e*r , -1, "jet",Form("multiplicity_%s",step.Data()), true);
+  plotStack("MET",cut, "Missing E_{T}", "Events", 8, 0, 80, 400*lumi_e*r , 0.1*r, "met",Form("et_%s",step.Data()), true);
 
   if( step.Contains("step1") || step.Contains("step2") || step.Contains("step3") ){
-    plotStack("Z.leg1().pt()", cut, "Leading p_{T} (GeV/c)","Events/2 GeV/c", 20, 0, 100,    500*r,0.1, "leading",Form("pt_%s",step.Data()),  false);
-    plotStack("Z.leg1().eta()",cut, "Leading #eta (radian)","Events/0.1 rad.",35, -3.5, 3.5, 150*r, 0.1, "leading",Form("eta_%s",step.Data()), false);
-    plotStack("Z.leg1().phi()",cut, "Leading #phi (radian)","Events/0.1 rad.",35, -3.5, 3.5, 130*r, 0.1, "leading",Form("phi_%s",step.Data()), false);
-    plotStack("Z.leg2().pt()", cut, "Second p_{T} (GeV/c)", "Events/5 GeV/c", 20, 0, 100,    500*r,0.1, "second", Form("pt_h_%s",step.Data()),false); 
-    plotStack("Z.leg2().eta()",cut, "Second #eta (radian)", "Events/0.1 rad.",35, -3.5, 3.5, 150*r, 0.1, "second", Form("eta_%s",step.Data()), false);
-    plotStack("Z.leg2().phi()",cut, "Second #phi (radian)", "Events/0.1 rad.",35, -3.5, 3.5, 130*r, 0.1, "second", Form("phi_%s",step.Data()), false);
+    plotStack("Z.leg1().pt()", cut, "Leading p_{T} (GeV/c)","Events/2 GeV/c", 20, 0, 100,    140*lumi_e*r,0.1, "leading",Form("pt_%s",step.Data()),  false);
+    plotStack("Z.leg1().eta()",cut, "Leading #eta (radian)","Events/0.1 rad.",35, -3.5, 3.5, 40*lumi_e*r, 0.1, "leading",Form("eta_%s",step.Data()), false);
+    plotStack("Z.leg1().phi()",cut, "Leading #phi (radian)","Events/0.1 rad.",35, -3.5, 3.5, 40*lumi_e*r, 0.1, "leading",Form("phi_%s",step.Data()), false);
+    plotStack("Z.leg2().pt()", cut, "Second p_{T} (GeV/c)", "Events/5 GeV/c", 20, 0, 100,    140*lumi_e*r,0.1, "second", Form("pt_h_%s",step.Data()),false); 
+    plotStack("Z.leg2().eta()",cut, "Second #eta (radian)", "Events/0.1 rad.",35, -3.5, 3.5, 40*lumi_e*r, 0.1, "second", Form("eta_%s",step.Data()), false);
+    plotStack("Z.leg2().phi()",cut, "Second #phi (radian)", "Events/0.1 rad.",35, -3.5, 3.5, 40*lumi_e*r, 0.1, "second", Form("phi_%s",step.Data()), false);
   }
 
   numberOfEvents( cut, step);
@@ -216,7 +222,7 @@ void anal(const TString& t="MuMu", const TString& postfix = "", bool p= false, c
   
   //myfile.open (Form("Info_%s.txt",dir.Data()));
 
-  fdata = new TFile("/home/tjkim/ntuple/top/"+type+"/RD/Sep11"+postfix+"/vallot.root");
+  fdata = new TFile("/home/tjkim/ntuple/top/"+type+"/RD/Oct8"+postfix+"/vallot.root");
   data = (TTree *) fdata->Get(type+"/tree");
 
   addFile(mcpath+"vallot_TTbar.root", "TTbar", "t#bar{t}", 157.5, 4);//Blue
@@ -241,15 +247,17 @@ void anal(const TString& t="MuMu", const TString& postfix = "", bool p= false, c
   }else if( type == "ElEl" ){
     pfiso = "(chIso1+phIso1)/Z.leg1().pt() < 0.15 && (chIso2+phIso2)/Z.leg2().pt() < 0.15 ";
   }else if( type == "MuMu" ){
-    pfiso = "(chIsoOpt1+nhIsoOpt1+phIsoOpt1)/Z.leg1().pt() < 0.21 && (chIsoOpt2+nhIsoOpt2+phIsoOpt2)/Z.leg2().pt() < 0.21 ";
+    pfiso = "(chIso1+nhIso1+phIso1)/Z.leg1().pt() < 0.21 && (chIso2+nhIso2+phIso2)/Z.leg2().pt() < 0.21 ";
   }else{
     cout << "No isolation required" << endl;
   }
-
-  TCut step1 = "Z.mass() > 10";
+ 
+  TCut step1 = "Z.mass() > 12";
   TCut step2 = step1 && pfiso;
   TCut step3 = step2 && "Z.sign() < 0";
   TCut step4 = step3 && "abs(Z.mass() - 91) > 15";
+  if( type != "MuEl") step4 = step3 && "abs(Z.mass() - 91) > 15";
+  else if ( type == "MuEl") step4 = step3;
   TCut step5 = step4 && "@jetspt30.size() >= 2";
   TCut step6;
   if(type == "MuEl") {
@@ -272,15 +280,15 @@ void anal(const TString& t="MuMu", const TString& postfix = "", bool p= false, c
     plotStack( "phIso2",step1, "phIso", "Events", 40, 0, 4, max , min, "iso","phIso2", true);
   }
 
-  //plotStep( step1, "step1",1.5); 
-  //plotStep( step2, "step2",1); 
+  plotStep( step1, "step1",1.5); 
+  plotStep( step2, "step2",1); 
   plotStep( step3, "step3",1); 
-  plotStep( step4, "step4",0.1); 
-  plotStep( step5, "step5",0.1); 
-  plotStep( step6, "step6",0.1); 
+  plotStep( step4, "step4",0.5); 
+  plotStep( step5, "step5",0.5); 
+  plotStep( step6, "step6",0.5); 
 
   cout <<"Final" << endl;
-  data->Scan("RUN:LUMI:EVENT:@jetspt30.size():@jets.size():MET",step6);
+  data->Scan("RUN:LUMI:EVENT:Z.mass():@jetspt30.size():MET",step6);
   cout << data->GetEntries(step6) << endl; 
 
   //myfile.close();
