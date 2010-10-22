@@ -5,6 +5,8 @@
 #include "TCanvas.h"
 #include "TROOT.h"
 #include "TGraphAsymmErrors.h"
+//#include "TStyle.h"
+
 
 void printEff(RooHist* h){
    for(int i=0 ; i < h->GetMaxSize() ; i++){
@@ -27,9 +29,11 @@ void setRangeY(TCanvas *c, double min=0, double max=1.1){
 }
 
 void plot2Eff(TFile *f1, TFile* f2, const TString & leg1, const TString & leg2, const TString& dir1, const TString &dir2, const TString& plot1, const TString & plot2, const TString& printName, const TString& hName){
+  gStyle->SetPadTickX(1);
+
   f1->cd(dir1);
   TCanvas* c1 = (TCanvas*) gDirectory->FindKey(plot1)->ReadObj();
-  getObjects(c1);
+  //getObjects(c1);
   TString obj1="";
   if(dir1.Contains("cnt")) obj1 = "hxy_cnt_eff";
   else obj1 = "hxy_fit_eff";
@@ -87,24 +91,39 @@ void plotEff(TFile* f, const TString& dir, const TString& hName){
   c->Draw();
 }
 
-void plot2DEff(TFile* f, const TString& dir, const TString& plot, const TString& hName){
+void plot2DEff(TFile* f, TFile* f_MC, const TString& dir, const TString& plot, const TString& hName){
   gStyle->SetPalette(1);
   f->cd(dir);
   TCanvas* c = (TCanvas*) gDirectory->FindKey(plot)->ReadObj();
-  TH2* h2 = (TH2F*) c->FindObject(plot);
+  TH2* h = (TH2F*) c->FindObject(plot);
   cout << "---" << plot << "---" << hName << "---" << endl;
-  h2->SetMarkerSize(1.3);
-  int nbinx = h2->GetNbinsX();
-  int nbiny = h2->GetNbinsY(); 
-  for(int i=1; i <=nbinx ; i++){
-    for(int j=1; j <=nbiny ; j++){
-      cout << "[" << i << "," << j << "] " << "eff= " << h2->GetBinContent(i,j) << "( +- " << h2->GetBinError(i,j) << " )" << endl;
-    }
-  }
+  h->SetMarkerSize(2.5);
 
   c->Draw();
   c->Print("c_"+plot+"_"+hName+".png");
   c->Print("c_"+plot+"_"+hName+".eps");
+
+  f_MC->cd(dir);
+  TCanvas* c2 = (TCanvas*) gDirectory->FindKey(plot)->ReadObj();
+  TH2* h2 = (TH2F*) c2->FindObject(plot);
+  cout << "---" << plot << "---" << hName << "---" << endl;
+  h2->SetMarkerSize(2.5);
+  c2->Draw();  
+  c2->Print("c_"+plot+"_"+hName+"_mc.png");
+  c2->Print("c_"+plot+"_"+hName+"_mc.eps");
+
+
+  int nbinx = h->GetNbinsX();
+  int nbiny = h->GetNbinsY();
+  for(int i=1; i <=nbinx ; i++){
+    for(int j=1; j <=nbiny ; j++){  
+      cout << "data  = " << "[" << i << "," << j << "] " << "eff= " << h->GetBinContent(i,j) << "( +- " << h->GetBinError(i,j) << " )" << endl;
+      cout << "mc    = " << "[" << i << "," << j << "] " << "eff= " << h2->GetBinContent(i,j) << "( +- " << h2->GetBinError(i,j) << " )" << endl;
+      double scale = h->GetBinContent(i,j)/h2->GetBinContent(i,j);
+      double scale_err = h->GetBinError(i,j)/h2->GetBinContent(i,j);
+      cout << "SCALE : " << scale << "( +- " << scale_err << " )" << endl;
+    }
+  }
 
 }
 
@@ -138,64 +157,77 @@ void doLegend(TGraphAsymmErrors *g1, TGraphAsymmErrors *g2, TString lab1, TStrin
     leg->Draw();
 }
 
+//void SetStyle(){
+//  compStyle->SetPadTickX(1);  // To get tick marks on the opposite side of the frame
+//  compStyle->SetPadTickY(1);
+//  compStyle->cd();
+//}
 
 void plotTnP(){
   
   using namespace std;
+  TFile * f = new TFile("result3/plot/Efficiency_ID.root");
+  //TFile * f_MC = new TFile("result/plot/Efficiency_ID.root");
+  TFile * f_MC = new TFile("result3/plot/Efficiency_ID_mc.root");
+  TFile * f_MCUnbias = new TFile("result3/plot/Efficiency_ID_mcUnbias.root");
 
-  gROOT->LoadMacro("tdrstyle.C");
-  setTDRStyle();
-
-  TFile * f = new TFile("result6/plot/Efficiency_ID.root");
-  TFile * f_MC = new TFile("result6/plot/Efficiency_ID_mc.root");
-  TFile * f_MCUnbias = new TFile("result6/plot/Efficiency_ID_mcUnbias.root");
-  TFile * f_Iso = new TFile("result6/plot/Efficiency_Iso.root");
-  TFile * f_Iso_MC = new TFile("result6/plot/Efficiency_Iso_mc.root");
-  TFile * f_Iso_MCUnbias = new TFile("result6/plot/Efficiency_Iso_mcUnbias.root");
+  TFile * f_Iso = new TFile("result3/plot/Efficiency_Iso.root");
+  //TFile * f_Iso_MC = new TFile("result/plot/Efficiency_Iso.root");
+  TFile * f_Iso_MC = new TFile("result3/plot/Efficiency_Iso_mc.root");
+  TFile * f_Iso_MCUnbias = new TFile("result3/plot/Efficiency_Iso_mcUnbias.root");
 
   // Data vs MC
   cout << "Data vs MC" << endl;
-  plot2Eff(f,f_MC,"Data","MC","tnpTree/PF_abseta/fit_eff_plots","tnpTree/PF_abseta/fit_eff_plots","abseta_PLOT","abseta_PLOT","abseta","PF");
-  plot2Eff(f,f_MC,"Data","MC","tnpTree/PF_pt/fit_eff_plots","tnpTree/PF_pt/fit_eff_plots","pt_PLOT","pt_PLOT","pt","PF");
+  TString l1 = "Data";
+  TString l2 = "MC";
 
-  plot2Eff(f,f_MC,"Data","MC","tnpTree/ID_abseta/fit_eff_plots","tnpTree/ID_abseta/fit_eff_plots","abseta_PLOT","abseta_PLOT","abseta","ID");
-  plot2Eff(f,f_MC,"Data","MC","tnpTree/ID_pt/fit_eff_plots","tnpTree/ID_pt/fit_eff_plots","pt_PLOT","pt_PLOT","pt","ID");
+  bool datavsmc = false;
+  bool datavstruth = false;
+  bool datavsunbiased = false;
+  bool h2d = true;
 
-  plot2Eff(f_Iso,f_Iso_MC,"Data","MC","tnpTreeIso/abseta/fit_eff_plots","tnpTreeIso/abseta/fit_eff_plots","abseta_PLOT","abseta_PLOT","abseta","Iso");
-  plot2Eff(f_Iso,f_Iso_MC,"Data","MC","tnpTreeIso/pt/fit_eff_plots","tnpTreeIso/pt/fit_eff_plots","pt_PLOT","pt_PLOT","pt","Iso");
+  if( datavsmc ){
+    plot2Eff(f,f_MC,l1,l2,"tnpTree/PF_abseta/fit_eff_plots","tnpTree/PF_abseta/fit_eff_plots","abseta_PLOT","abseta_PLOT","abseta","PF");
+    plot2Eff(f,f_MC,l1,l2,"tnpTree/PF_pt/fit_eff_plots","tnpTree/PF_pt/fit_eff_plots","pt_PLOT","pt_PLOT","pt","PF");
 
+    plot2Eff(f,f_MC,l1,l2,"tnpTree/ID_abseta/fit_eff_plots","tnpTree/ID_abseta/fit_eff_plots","abseta_PLOT","abseta_PLOT","abseta","ID");
+    plot2Eff(f,f_MC,l1,l2,"tnpTree/ID_pt/fit_eff_plots","tnpTree/ID_pt/fit_eff_plots","pt_PLOT","pt_PLOT","pt","ID");
+
+    plot2Eff(f_Iso,f_Iso_MC,l1,l2,"tnpTreeIso/abseta/fit_eff_plots","tnpTreeIso/abseta/fit_eff_plots","abseta_PLOT","abseta_PLOT","abseta","Iso");
+    plot2Eff(f_Iso,f_Iso_MC,l1,l2,"tnpTreeIso/pt/fit_eff_plots","tnpTreeIso/pt/fit_eff_plots","pt_PLOT","pt_PLOT","pt","Iso");
+  }
   // Data vs MC truth
-  cout << "Data vs MC truth" << endl;
-  plot2Eff(f,f_MC,"Data","MC truth","tnpTree/PF_abseta/fit_eff_plots","tnpTree/PF_abseta_mcTrue/cnt_eff_plots","abseta_PLOT","abseta_PLOT_mcTrue_true","abseta_mcTrue","PF");
-  plot2Eff(f,f_MC,"Data","MC truth","tnpTree/PF_pt/fit_eff_plots","tnpTree/PF_pt_mcTrue/cnt_eff_plots","pt_PLOT","pt_PLOT_mcTrue_true","pt_mcTrue","PF");
+  if( datavstruth ){ 
+    cout << "Data vs MC truth" << endl;
+    plot2Eff(f,f_MC,"Data","MC truth","tnpTree/PF_abseta/fit_eff_plots","tnpTree/PF_abseta_mcTrue/cnt_eff_plots","abseta_PLOT","abseta_PLOT_mcTrue_true","abseta_mcTrue","PF");
+    plot2Eff(f,f_MC,"Data","MC truth","tnpTree/PF_pt/fit_eff_plots","tnpTree/PF_pt_mcTrue/cnt_eff_plots","pt_PLOT","pt_PLOT_mcTrue_true","pt_mcTrue","PF");
 
-  plot2Eff(f,f_MC,"Data","MC truth","tnpTree/ID_abseta/fit_eff_plots","tnpTree/ID_abseta_mcTrue/cnt_eff_plots","abseta_PLOT","abseta_PLOT_mcTrue_true","abseta_mcTrue","ID");
-  plot2Eff(f,f_MC,"Data","MC truth","tnpTree/ID_pt/fit_eff_plots","tnpTree/ID_pt_mcTrue/cnt_eff_plots","pt_PLOT","pt_PLOT_mcTrue_true","pt_mcTrue","ID");
+    plot2Eff(f,f_MC,"Data","MC truth","tnpTree/ID_abseta/fit_eff_plots","tnpTree/ID_abseta_mcTrue/cnt_eff_plots","abseta_PLOT","abseta_PLOT_mcTrue_true","abseta_mcTrue","ID");
+    plot2Eff(f,f_MC,"Data","MC truth","tnpTree/ID_pt/fit_eff_plots","tnpTree/ID_pt_mcTrue/cnt_eff_plots","pt_PLOT","pt_PLOT_mcTrue_true","pt_mcTrue","ID");
 
-  plot2Eff(f_Iso,f_Iso_MC,"Data","MC truth","tnpTreeIso/abseta/fit_eff_plots","tnpTreeIso/abseta_mcTrue/cnt_eff_plots","abseta_PLOT","abseta_PLOT_mcTrue_true","abseta_mcTrue","Iso");
-  plot2Eff(f_Iso,f_Iso_MC,"Data","MC truth","tnpTreeIso/pt/fit_eff_plots","tnpTreeIso/pt_mcTrue/cnt_eff_plots","pt_PLOT","pt_PLOT_mcTrue_true","pt_mcTrue","Iso");
-  
+    plot2Eff(f_Iso,f_Iso_MC,"Data","MC truth","tnpTreeIso/abseta/fit_eff_plots","tnpTreeIso/abseta_mcTrue/cnt_eff_plots","abseta_PLOT","abseta_PLOT_mcTrue_true","abseta_mcTrue","Iso");
+    plot2Eff(f_Iso,f_Iso_MC,"Data","MC truth","tnpTreeIso/pt/fit_eff_plots","tnpTreeIso/pt_mcTrue/cnt_eff_plots","pt_PLOT","pt_PLOT_mcTrue_true","pt_mcTrue","Iso");
+  }
   // Data vs MC unbiased truth
-  cout << "Data vs MC unbiased truth" << endl;
-  plot2Eff(f,f_MCUnbias,"Data","MC(unbiased) truth ","tnpTree/PF_abseta/fit_eff_plots","tnpTree/PF_abseta_mcTrue/cnt_eff_plots","abseta_PLOT","abseta_PLOT_mcTrue_true","abseta_mcTrue_Unbiased","PF");
-  plot2Eff(f,f_MCUnbias,"Data","MC(unbiased) truth","tnpTree/PF_pt/fit_eff_plots","tnpTree/PF_pt_mcTrue/cnt_eff_plots","pt_PLOT","pt_PLOT_mcTrue_true","pt_mcTrue_Unbiased","PF");
+  if( datavsunbiased =){
+    cout << "Data vs MC unbiased truth" << endl;
+    plot2Eff(f,f_MCUnbias,"Data","MC(unbiased) truth ","tnpTree/PF_abseta/fit_eff_plots","tnpTree/PF_abseta_mcTrue/cnt_eff_plots","abseta_PLOT","abseta_PLOT_mcTrue_true","abseta_mcTrue_Unbiased","PF");
+    plot2Eff(f,f_MCUnbias,"Data","MC(unbiased) truth","tnpTree/PF_pt/fit_eff_plots","tnpTree/PF_pt_mcTrue/cnt_eff_plots","pt_PLOT","pt_PLOT_mcTrue_true","pt_mcTrue_Unbiased","PF");
 
-  plot2Eff(f,f_MCUnbias,"Data","MC(unbiased) truth","tnpTree/ID_abseta/fit_eff_plots","tnpTree/ID_abseta_mcTrue/cnt_eff_plots","abseta_PLOT","abseta_PLOT_mcTrue_true","abseta_mcTrue_Unbiased","ID");
-  plot2Eff(f,f_MCUnbias,"Data","MC(unbiased) truth","tnpTree/ID_pt/fit_eff_plots","tnpTree/ID_pt_mcTrue/cnt_eff_plots","pt_PLOT","pt_PLOT_mcTrue_true","pt_mcTrue_Unbiased","ID");
+    plot2Eff(f,f_MCUnbias,"Data","MC(unbiased) truth","tnpTree/ID_abseta/fit_eff_plots","tnpTree/ID_abseta_mcTrue/cnt_eff_plots","abseta_PLOT","abseta_PLOT_mcTrue_true","abseta_mcTrue_Unbiased","ID");
+    plot2Eff(f,f_MCUnbias,"Data","MC(unbiased) truth","tnpTree/ID_pt/fit_eff_plots","tnpTree/ID_pt_mcTrue/cnt_eff_plots","pt_PLOT","pt_PLOT_mcTrue_true","pt_mcTrue_Unbiased","ID");
 
-  plot2Eff(f_Iso,f_Iso_MCUnbias,"Data","MC(unbiased) truth","tnpTreeIso/abseta/fit_eff_plots","tnpTreeIso/abseta_mcTrue/cnt_eff_plots","abseta_PLOT","abseta_PLOT_mcTrue_true","abseta_mcTrue_Unbiased","Iso");
-  plot2Eff(f_Iso,f_Iso_MCUnbias,"Data","MC(unbiased) truth","tnpTreeIso/pt/fit_eff_plots","tnpTreeIso/pt_mcTrue/cnt_eff_plots","pt_PLOT","pt_PLOT_mcTrue_true","pt_mcTrue_Unbiased","Iso");
+    plot2Eff(f_Iso,f_Iso_MCUnbias,"Data","MC(unbiased) truth","tnpTreeIso/abseta/fit_eff_plots","tnpTreeIso/abseta_mcTrue/cnt_eff_plots","abseta_PLOT","abseta_PLOT_mcTrue_true","abseta_mcTrue_Unbiased","Iso");
+    plot2Eff(f_Iso,f_Iso_MCUnbias,"Data","MC(unbiased) truth","tnpTreeIso/pt/fit_eff_plots","tnpTreeIso/pt_mcTrue/cnt_eff_plots","pt_PLOT","pt_PLOT_mcTrue_true","pt_mcTrue_Unbiased","Iso");
 
+  }
 
-  //2D histograms
-  plot2DEff(f, "tnpTree/PF_pt_abseta/fit_eff_plots","pt_abseta_PLOT","PF");
-  plot2DEff(f_MC, "tnpTree/PF_pt_abseta/fit_eff_plots","pt_abseta_PLOT","PF_mc");
-
-  plot2DEff(f, "tnpTree/ID_pt_abseta/fit_eff_plots","pt_abseta_PLOT","ID");
-  plot2DEff(f_MC, "tnpTree/ID_pt_abseta/fit_eff_plots","pt_abseta_PLOT","ID_mc");
-
-  plot2DEff(f_Iso, "tnpTreeIso/pt_abseta/fit_eff_plots","pt_abseta_PLOT","Iso");
-  plot2DEff(f_Iso_MC, "tnpTreeIso/pt_abseta/fit_eff_plots","pt_abseta_PLOT","Iso_mc");
+  if( h2d == true){
+    //2D histograms
+    plot2DEff(f, f_MC, "tnpTree/PF_pt_abseta/fit_eff_plots","pt_abseta_PLOT","PF");
+    plot2DEff(f, f_MC, "tnpTree/ID_pt_abseta/fit_eff_plots","pt_abseta_PLOT","ID");
+    plot2DEff(f_Iso, f_Iso_MC, "tnpTreeIso/pt_abseta/fit_eff_plots","pt_abseta_PLOT","Iso");
+  }
 
 }
 
