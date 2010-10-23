@@ -5,8 +5,8 @@ WenuMtCut = cms.EDFilter("WenuFilter",
   metLabel =  cms.InputTag('patMETsPFlow'),
   pfCandidateLabel = cms.InputTag('particleFlow'),
   minMt = cms.double(70),
-  mindphi = cms.double(0.0), #anlge between lepton and neutrino should be larger than maxdphi or smaller than mindphi
-  maxdphi = cms.double(0.0),
+  mindphi = cms.double(-1.0), #anlge between lepton and neutrino should be smaller than maxdphi and larger than mindphi
+  maxdphi = cms.double(999.0),
 )
 
 
@@ -15,7 +15,7 @@ WmunuMtCut = cms.EDFilter("WmunuFilter",
   metLabel =  cms.InputTag('patMETsPFlow'),
   pfCandidateLabel = cms.InputTag('particleFlow'),
   minMt = cms.double(70),
-  mindphi = cms.double(0.0),
-  maxdphi = cms.double(0.0),
+  mindphi = cms.double(-1.0),
+  maxdphi = cms.double(999.0),
 )
 
