@@ -13,7 +13,7 @@
 //
 // Original Author:  Tae Jeong Kim
 //         Created:  Mon Dec 14 01:29:35 CET 2009
-// $Id: WmunuFilter.cc,v 1.1 2010/07/22 20:14:22 tjkim Exp $
+// $Id: WmunuFilter.cc,v 1.2 2010/07/23 12:22:52 tjkim Exp $
 //
 //
 
@@ -133,7 +133,7 @@ WmunuFilter::filter(edm::Event& iEvent, const edm::EventSetup& iSetup)
 
   const pat::Muon& leading = *(sortedMuons.begin()->second);
   mt = transverseMass( leading.p4(), mi->p4() );
-  delphi = deltaPhi(leading.phi(), mi->p4().phi());
+  delphi = fabs(deltaPhi(leading.phi(), mi->p4().phi()));
   
   chargedhadron_size = 0;
   for(reco::PFCandidateCollection::const_iterator ci  = pfCandidates_->begin(); ci!=pfCandidates_->end(); ++ci) {
@@ -143,7 +143,7 @@ WmunuFilter::filter(edm::Event& iEvent, const edm::EventSetup& iSetup)
  
   //cout << "mt= " << mt << " delphi= " << delphi << "chargedhadron size= " << chargedhadron_size << endl;
  
-  if (mt > minMt_ && (delphi > maxdphi_ || delphi < mindphi_) ) {
+  if (mt > minMt_ && (delphi < maxdphi_ && delphi > mindphi_) ) {
     accepted = true;
   }
 
