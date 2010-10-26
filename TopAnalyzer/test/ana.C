@@ -5,7 +5,7 @@ using namespace std;
 
 void defaultStyle();
 
-void ana(string decayMode = "MuMu")
+void ana(string decayMode = "MuMu", string imageOutDir = "")
 {
   gSystem->Load("libFWCoreFWLite.so");
   gSystem->Load("libDataFormatsFWLite.so");
@@ -16,7 +16,7 @@ void ana(string decayMode = "MuMu")
   AutoLibraryLoader::enable();
 
   gSystem->CompileMacro("TopAnalyzerLite.cc", "k");
-  TopAnalyzerLite* analyzer = new TopAnalyzerLite(decayMode);
+  TopAnalyzerLite* analyzer = new TopAnalyzerLite(decayMode, imageOutDir);
 
   const std::string mcPath = "batch/" + decayMode;
   const std::string rdPath = "batch/" + decayMode;
@@ -67,8 +67,8 @@ void ana(string decayMode = "MuMu")
   }
   else if ( decayMode == "ElEl" )
   {
-    //analyzer->addCutStep("(chIso1+phIso1)/Z.leg1().pt() < 0.15 && (chIso2+phIso2)/Z.leg2().pt() < 0.15", "ZMass,nJet,MET,pt1,eta1,phi1,pt2,eta2,phi2");
-    analyzer->addCutStep("(chIso1+phIso1)/Z.leg1().pt() < 0.15 && (chIso2+phIso2)/Z.leg2().pt() < 0.15", "");
+    //analyzer->addCutStep("(chIso1+phIso1)/Z.leg1().pt() < 0.15 && (chIso2+phIso2)/Z.leg2().pt() < 0.20", "ZMass,nJet,MET,pt1,eta1,phi1,pt2,eta2,phi2");
+    analyzer->addCutStep("(chIso1+phIso1)/Z.leg1().pt() < 0.15 && (chIso2+phIso2)/Z.leg2().pt() < 0.20", "");
   }
   analyzer->addCutStep("Z.sign() < 0", "ZMass,nJet,MET,pt1,eta1,phi1,pt2,eta2,phi2");
   analyzer->addCutStep("abs(Z.mass() - 91) > 15", "nJet,MET", 0.5);
