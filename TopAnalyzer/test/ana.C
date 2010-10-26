@@ -3,6 +3,8 @@
 
 using namespace std;
 
+void defaultStyle();
+
 void ana(string decayMode = "MuMu")
 {
   gSystem->Load("libFWCoreFWLite.so");
@@ -15,27 +17,34 @@ void ana(string decayMode = "MuMu")
 
   gSystem->CompileMacro("TopAnalyzerLite.cc", "k");
   TopAnalyzerLite* analyzer = new TopAnalyzerLite(decayMode);
-  //TopAnalyzerLite* analyzer = new TopAnalyzerLite("topElElAnalyzer");
 
   const std::string mcPath = "batch/" + decayMode;
   const std::string rdPath = "batch/" + decayMode;
 
-  gROOT->LoadMacro("/afs/cern.ch/cms/slc5_ia32_gcc434/cms/cmssw/CMSSW_3_8_4/bin/slc5_ia32_gcc434/tdrstyle.C");
-  //defaultStyle();
+  defaultStyle();
 
-  //analyzer->addRealData(rdPath+"/vallot_Run2010A_Sep17ReReco.root", 3.1);
-  //analyzer->addRealData(rdPath+"/vallot_Run2010B_PromptReco.root", 4.0);
-  analyzer->addRealData(rdPath+"/vallot.root", 7.1);
+  analyzer->addRealData(rdPath+"/vallot_Run2010A_Sep17ReReco.root", 3.1);
+  analyzer->addRealData(rdPath+"/vallot_Run2010B_PromptReco.root", 4.0);
+  //analyzer->addRealData(rdPath+"/vallot.root", 7.1);
 
-  analyzer->addMC("TTbar", "t#bar{t}", mcPath+"/vallot_TTbar.root", 157.5, 4);
-  analyzer->addMC("Wlnu", "W #rightarrow l#nu", mcPath+"/vallot_WJets.root", 31314, 46);
-  analyzer->addMC("VVJets" "Dibosons", "Dibosons", mcPath+"/vallot_VVJets.root", 4.8, 6);
-  analyzer->addMC("SingleTop", "Single top", mcPath+"/vallot_SingleTop.root", 10.6, 7);
-  analyzer->addMC("Ztautau", "Z/#gamma* #rightarrow #tau#tau", mcPath+"/vallot_Ztautau.root", 1660, 5);
+  analyzer->addMC("TTbar", "t#bar{t}", mcPath+"/vallot_TTbar.root", 157.5, 10000, 4);
+  analyzer->addMC("Wlnu", "W #rightarrow l#nu", mcPath+"/vallot_WJets.root", 31314, 500000, 46);
+  analyzer->addMC("VVJets" "Dibosons", "Dibosons", mcPath+"/vallot_VVJets.root", 4.8, 10000, 6);
+  analyzer->addMC("SingleTop", "Single top", mcPath+"/vallot_SingleTop.root", 10.6, 10000, 7);
+  analyzer->addMC("Ztautau", "Z/#gamma* #rightarrow #tau#tau", mcPath+"/vallot_Ztautau.root", 1660, 50000, 5);
+  analyzer->addMC("ZTauDecay", "Z/#gamma* #rightarrow #tau#tau", mcPath+"/vallot_ZtauDecay.root", 3048, 50000, 5);
 
-  analyzer->addMC("Zll", "Z/#gamma* #rightarrow ll", mcPath+"/vallot_Zmumu.root", 1660, 2);
-  analyzer->addMC("DYll", "Z/#gamma* #rightarrow ll", mcPath+"/vallot_DYmumu.root", 3457, 2);
-  analyzer->addMC("ZJets", "Z/#gamma* #rightarrow ll", mcPath+"/vallot_ZJets.root", 3048, 2);
+  if ( decayMode == "MuMu" )
+  {
+    analyzer->addMC("Zll", "Z/#gamma* #rightarrow ll", mcPath+"/vallot_Zmumu.root", 1660, 50000, 2);
+    analyzer->addMC("DYll", "Z/#gamma* #rightarrow ll", mcPath+"/vallot_DYmumu.root", 3457, 100000, 2);
+  }
+  else if ( decayMode == "ElEl" )
+  {
+    analyzer->addMC("Zll", "Z/#gamma* #rightarrow ll", mcPath+"/vallot_Zee.root", 1660, 50000, 2);
+    analyzer->addMC("DYll", "Z/#gamma* #rightarrow ll", mcPath+"/vallot_DYee.root", 3457, 100000, 2);
+  }
+  analyzer->addMC("ZJets", "Z/#gamma* #rightarrow ll", mcPath+"/vallot_ZJets.root", 3048, 50000, 2);
 
   analyzer->addMonitorPlot("ZMass", "Z.mass()", "Dilepton mass;Dilepton Mass (GeV/c^{2});Events/5 GeV/c^{2}", 40, 0, 200);
   analyzer->addMonitorPlot("nJet", "@jetspt30.size()", "Jet Multiplicity;Jet Multiplicity;Events", 5, 0, 5);
@@ -48,8 +57,14 @@ void ana(string decayMode = "MuMu")
   analyzer->addMonitorPlot("phi2", "Z.leg2().phi()", "Leading #phi;#phi (Radian);Events/0.2 rad.", 35, -3.5, 3.5);
 
   analyzer->addCutStep("Z.mass() > 12", "");//, "ZMass,nJet,MET,pt1,eta1,phi1,pt2,eta2,phi2");
-  analyzer->addCutStep("(chIso1+phIso1)/Z.leg1().pt() < 0.21 && (chIso2+phIso2)/Z.leg2().pt() < 0.21", "");//, "ZMass,nJet,MET,pt1,eta1,phi1,pt2,eta2,phi2");
-  //analyzer->addCutStep("(chIso1+phIso1)/Z.leg1().pt() < 0.15 && (chIso2+phIso2)/Z.leg2().pt() < 0.15", "");//, "ZMass,nJet,MET,pt1,eta1,phi1,pt2,eta2,phi2");
+  if ( decayMode == "MuMu" )
+  {
+    analyzer->addCutStep("(chIso1+phIso1)/Z.leg1().pt() < 0.21 && (chIso2+phIso2)/Z.leg2().pt() < 0.21", "");//, "ZMass,nJet,MET,pt1,eta1,phi1,pt2,eta2,phi2");
+  }
+  else if ( decayMode == "ElEl" )
+  {
+    analyzer->addCutStep("(chIso1+phIso1)/Z.leg1().pt() < 0.15 && (chIso2+phIso2)/Z.leg2().pt() < 0.15", "");//, "ZMass,nJet,MET,pt1,eta1,phi1,pt2,eta2,phi2");
+  }
   analyzer->addCutStep("Z.sign() < 0", "ZMass,nJet,MET,pt1,eta1,phi1,pt2,eta2,phi2");
   analyzer->addCutStep("abs(Z.mass() - 91) > 15", "nJet,MET");
   analyzer->addCutStep("@jetspt30.size() >= 2", "nJet,MET");
@@ -59,4 +74,50 @@ void ana(string decayMode = "MuMu")
 
   analyzer->applyCutSteps();
 }
+
+void defaultStyle()
+{
+    gROOT->SetStyle("Plain");
+    //gStyle->SetOptStat(1110);
+    gStyle->SetOptStat(0); //remove statistics box
+    gStyle->SetOptFit(1);
+    gStyle->SetStatW(0.25);
+    gStyle->SetStatH(0.15);
+
+    gStyle->SetCanvasDefH(400);
+    gStyle->SetCanvasDefW(400);
+
+    // For the axis:
+    gStyle->SetAxisColor(1, "XYZ");
+    gStyle->SetStripDecimals(kTRUE);
+    gStyle->SetTickLength(0.03, "XYZ");
+    gStyle->SetNdivisions(510, "XYZ");
+    gStyle->SetPadTickX(1);  // To get tick marks on the opposite side of the frame
+    gStyle->SetPadTickY(1);
+
+    // To make 2D contour colorful
+    gStyle->SetPalette(1);
+
+    //gStyle->SetOptTitle(0);
+    // Margins:
+    gStyle->SetPadTopMargin(0.1);
+    gStyle->SetPadBottomMargin(0.15);
+    gStyle->SetPadLeftMargin(0.15);
+    gStyle->SetPadRightMargin(0.05);
+
+    // For the axis titles:
+    gStyle->SetTitleColor(1, "XYZ");
+    gStyle->SetTitleFont(42, "XYZ");
+    gStyle->SetTitleSize(0.06, "XYZ");
+    gStyle->SetTitleXOffset(0.9);
+    gStyle->SetTitleYOffset(1.1);
+
+    // For the axis labels:
+    gStyle->SetLabelColor(1, "XYZ");
+    gStyle->SetLabelFont(42, "XYZ");
+    gStyle->SetLabelOffset(0.007, "XYZ");
+    gStyle->SetLabelSize(0.05, "XYZ");
+
+}
+
 
