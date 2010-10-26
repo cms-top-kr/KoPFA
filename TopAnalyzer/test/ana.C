@@ -46,29 +46,34 @@ void ana(string decayMode = "MuMu")
   }
   analyzer->addMC("ZJets", "Z/#gamma* #rightarrow ll", mcPath+"/vallot_ZJets.root", 3048, 50000, 2);
 
-  analyzer->addMonitorPlot("ZMass", "Z.mass()", "Dilepton mass;Dilepton Mass (GeV/c^{2});Events/5 GeV/c^{2}", 40, 0, 200);
-  analyzer->addMonitorPlot("nJet", "@jetspt30.size()", "Jet Multiplicity;Jet Multiplicity;Events", 5, 0, 5);
-  analyzer->addMonitorPlot("MET", "MET", "Missing E_{T};Missing E_{T} (GeV);Events", 8, 0, 80);
-  analyzer->addMonitorPlot("pt1", "Z.leg1().pt()", "Leading p_{T};p_{T} (GeV/c);Events/2 GeV/c", 20, 0, 100);
-  analyzer->addMonitorPlot("eta1", "Z.leg1().eta()", "Leading #eta;#eta (Radian);Events/0.1 rad.", 35, -3.5, 3.5);
-  analyzer->addMonitorPlot("phi1", "Z.leg1().phi()", "Leading #phi;#phi (Radian);Events/0.1 rad.", 35, -3.5, 3.5);
-  analyzer->addMonitorPlot("pt2", "Z.leg2().pt()", "Leading p_{T};p_{T} (GeV/c);Events/2 GeV/c", 20, 0, 200);
-  analyzer->addMonitorPlot("eta2", "Z.leg2().eta()", "Leading #eta;#eta (Radian);Events/0.2 rad.", 35, -3.5, 3.5);
-  analyzer->addMonitorPlot("phi2", "Z.leg2().phi()", "Leading #phi;#phi (Radian);Events/0.2 rad.", 35, -3.5, 3.5);
+  analyzer->addMonitorPlot("ZMass", "Z.mass()", "Dilepton mass;Dilepton Mass (GeV/c^{2});Events/5 GeV/c^{2}", 40, 0, 200, 0.1, 1500);
+  analyzer->addMonitorPlot("nJet", "@jetspt30.size()", "Jet Multiplicity;Jet Multiplicity;Events", 5, 0, 5, 0.05, 5000);
+  analyzer->addMonitorPlot("MET", "MET", "Missing E_{T};Missing E_{T} (GeV);Events", 8, 0, 80, 0.1, 2000);
 
-  analyzer->addCutStep("Z.mass() > 12", "");//, "ZMass,nJet,MET,pt1,eta1,phi1,pt2,eta2,phi2");
+/*
+  analyzer->addMonitorPlot("pt1", "Z.leg1().pt()", "Leading p_{T};p_{T} (GeV/c);Events/2 GeV/c", 20, 0, 100);
+  analyzer->addMonitorPlot("pt2", "Z.leg2().pt()", "Leading p_{T};p_{T} (GeV/c);Events/2 GeV/c", 20, 0, 200);
+  analyzer->addMonitorPlot("eta1", "Z.leg1().eta()", "Leading #eta;#eta (Radian);Events/0.2 rad.", 35, -3.5, 3.5);
+  analyzer->addMonitorPlot("eta2", "Z.leg2().eta()", "Leading #eta;#eta (Radian);Events/0.2 rad.", 35, -3.5, 3.5);
+  analyzer->addMonitorPlot("phi1", "Z.leg1().phi()", "Leading #phi;#phi (Radian);Events/0.2 rad.", 35, -3.5, 3.5);
+  analyzer->addMonitorPlot("phi2", "Z.leg2().phi()", "Leading #phi;#phi (Radian);Events/0.2 rad.", 35, -3.5, 3.5);
+*/
+  //analyzer->addCutStep("Z.mass() > 12", "ZMass,nJet,MET,pt1,eta1,phi1,pt2,eta2,phi2", 1.5);
+  analyzer->addCutStep("Z.mass() > 12", "", 1.5);
   if ( decayMode == "MuMu" )
   {
-    analyzer->addCutStep("(chIso1+phIso1)/Z.leg1().pt() < 0.21 && (chIso2+phIso2)/Z.leg2().pt() < 0.21", "");//, "ZMass,nJet,MET,pt1,eta1,phi1,pt2,eta2,phi2");
+    //analyzer->addCutStep("(chIso1+phIso1)/Z.leg1().pt() < 0.21 && (chIso2+phIso2)/Z.leg2().pt() < 0.21", "ZMass,nJet,MET,pt1,eta1,phi1,pt2,eta2,phi2");
+    analyzer->addCutStep("(chIso1+phIso1)/Z.leg1().pt() < 0.21 && (chIso2+phIso2)/Z.leg2().pt() < 0.21", "");
   }
   else if ( decayMode == "ElEl" )
   {
-    analyzer->addCutStep("(chIso1+phIso1)/Z.leg1().pt() < 0.15 && (chIso2+phIso2)/Z.leg2().pt() < 0.15", "");//, "ZMass,nJet,MET,pt1,eta1,phi1,pt2,eta2,phi2");
+    //analyzer->addCutStep("(chIso1+phIso1)/Z.leg1().pt() < 0.15 && (chIso2+phIso2)/Z.leg2().pt() < 0.15", "ZMass,nJet,MET,pt1,eta1,phi1,pt2,eta2,phi2");
+    analyzer->addCutStep("(chIso1+phIso1)/Z.leg1().pt() < 0.15 && (chIso2+phIso2)/Z.leg2().pt() < 0.15", "");
   }
   analyzer->addCutStep("Z.sign() < 0", "ZMass,nJet,MET,pt1,eta1,phi1,pt2,eta2,phi2");
-  analyzer->addCutStep("abs(Z.mass() - 91) > 15", "nJet,MET");
-  analyzer->addCutStep("@jetspt30.size() >= 2", "nJet,MET");
-  analyzer->addCutStep("MET > 30", "nJet,MET");
+  analyzer->addCutStep("abs(Z.mass() - 91) > 15", "nJet,MET", 0.5);
+  analyzer->addCutStep("@jetspt30.size() >= 2", "MET", 0.5);
+  analyzer->addCutStep("MET > 30", "nJet", 0.5);
 
   //analyzer->addCutStep("Z.mass() > 12 && (chIso1+phIso1)/Z.leg1().pt() < 0.15 && (chIso2+phIso2)/Z.leg2().pt() < 0.15 && Z.sign() < 0 && abs(Z.mass() - 91) > 15 && @jetspt30.size() >= 2 && MET > 30", "nJet,MET");
 
