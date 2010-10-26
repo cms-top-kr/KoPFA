@@ -23,7 +23,7 @@ using namespace std;
 class TopAnalyzerLite
 {
 public:
-  TopAnalyzerLite(const string subDirName = "", const string imageOutDir = "image");
+  TopAnalyzerLite(const string subDirName = "", const string imageOutDir = "");
   ~TopAnalyzerLite() {};
 
   void addMC(const string channelName, const string channelLabel, 
