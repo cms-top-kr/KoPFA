@@ -33,8 +33,6 @@ std::vector<Color_t> colors;
 
 TFile * fdata;
 TTree * data;
-TCut antipfiso = "(chIsoOpt1+nhIsoOpt1+phIsoOpt1)/Z.leg1().pt() > 0.21 && (chIsoOpt2+nhIsoOpt2+phIsoOpt2)/Z.leg2().pt() > 0.21 ";
-double fQCD= 1.123;
 
 void numberOfEvents( TCut cut, const TString& s){
 
@@ -44,6 +42,8 @@ void numberOfEvents( TCut cut, const TString& s){
   double sig = 0;
   double Zn = 0;
   double Zerr2 = 0; 
+  double Ztau = 0;
+  double Ztauerr2 = 0;
 
   cout << s.Data() << "------------------------" << endl; 
 
@@ -53,16 +53,19 @@ void numberOfEvents( TCut cut, const TString& s){
     double err = sqrt(numEvt*norms[i]);
     if(hNames[i].Contains("Zll") ||hNames[i].Contains("DYll") || hNames[i].Contains("ZJets")){
       Zn = Zn + numEvt;
-      Zerr2 = err*err; 
+      Zerr2 = Zerr2+err*err; 
+    }else if(hNames[i].Contains("Ztautau") || hNames[i].Contains("ZtauDecay")){
+      Ztau = Ztau + numEvt;
+      Ztauerr2 = Ztauerr2 + err*err;
     }else{
       cout << hNames[i] << " = " << numEvt << " +- " << err << endl;
     }
     total = total + numEvt;
     sumerr2 = sumerr2 + err*err;
   }
-  cout << "Z = " << Zn << " +- " << sqrt(Zerr2) << endl;
-  double nQCD = fQCD*data->GetEntries(cut && antipfiso);
-  cout << "QCD = " << nQCD << " +- " << sqrt(nQCD) << endl;
+
+  cout << "Ztautau = " << Ztau << " +- " << sqrt(Ztauerr2) << endl;
+  cout << "Zll = " << Zn << " +- " << sqrt(Zerr2) << endl;
 
   double bkg = total - sig;
   double soverb = sig/TMath::Sqrt(sig+bkg);
@@ -77,7 +80,7 @@ void numberOfEvents( TCut cut, const TString& s){
 
 }
 
-void plotStackBase(TH1* h_data, vector<TH1*> h_mc, const TString & xtitle, const TString & ytitle, const int& nbin,  const double& max, const double & min, const TString& hName, const TString& name, const bool & log){
+void plotStackBase(TH1* h_data, vector<TH1*> h_mc, const TString & xtitle, const TString & ytitle, const int& nbin, const double& xlow, const double& xmax,  const double& max, const double & min, const TString& hName, const TString& name, const bool & log){
 
   TCanvas* c = new TCanvas(Form("c_%s_%s",hName.Data(), name.Data()),Form("c_%s_%s",hName.Data(), name.Data()),1);
   if(log)
@@ -101,19 +104,27 @@ void plotStackBase(TH1* h_data, vector<TH1*> h_mc, const TString & xtitle, const
 
   THStack *stack = new THStack("stack","stack");
 
-  int nhis = (int) h_mc.size();
-  TH1 * h_Z = h_mc[nhis-1]; //ZJets
+  //int nhis = (int) h_mc.size();
+  TH1 * h_Zll = new TH1F(Form("h_Zll_%s_%s",hName.Data(),name.Data()),"h_Zll",nbin,xlow,xmax); //ZJets
+  TH1 * h_Ztau = new TH1F(Form("h_Ztau_%s_%s",hName.Data(),name.Data()),"h_Ztau",nbin,xlow,xmax); //Ztautau
+  //TH1 * h_Zll;
+  //TH1 * h_Ztau;
 
-  for(int i=0; i < (int) h_mc.size()-1; i++){ 
-    if(hNames[i].Contains("Zll") || hNames[i].Contains("DYll")){
-      h_Z->Add(h_mc[i]);
+  for(int i=0; i < (int) h_mc.size(); i++){ 
+    if(hNames[i].Contains("ZJets") || hNames[i].Contains("Zll") || hNames[i].Contains("DYll")){
+      h_Zll->Add(h_mc[i]);
+      h_Zll->SetFillColor(colors[i]);
       continue;
+    }else if(hNames[i].Contains("Ztautau") || hNames[i].Contains("ZtauDecay")){
+      h_Ztau->Add(h_mc[i]);
+      h_Ztau->SetFillColor(colors[i]);
     }else{
       stack->Add(h_mc[i]);
     }
   }
 
-  stack->Add(h_Z);
+  stack->Add(h_Ztau);
+  stack->Add(h_Zll);
 
   if(max != -1)
     stack->SetMaximum(max); 
@@ -127,7 +138,7 @@ void plotStackBase(TH1* h_data, vector<TH1*> h_mc, const TString & xtitle, const
   TLegend *l= new TLegend(0.73,0.57,0.88,0.88);
   l->AddEntry(h_data,"Data","p");
   for(int i= (int)trees.size()-1  ;i >= 0 ; i--){
-    if(hNames[i].Contains("Zll") || hNames[i].Contains("DYll")) continue;
+    if(hNames[i].Contains("Zll") || hNames[i].Contains("DYll") || hNames[i].Contains("ZtauDecay")) continue;
     l->AddEntry(h_mc[i],labels[i],"f");
   }
   l->SetTextSize(0.04);
@@ -139,7 +150,7 @@ void plotStackBase(TH1* h_data, vector<TH1*> h_mc, const TString & xtitle, const
 
 }
 
-void histStack(const TString& dir, const TString& var, const TString & xtitle, const TString & ytitle, const int& nbin, const double& max, const double & min, const TString& hName, const TString& name, const  bool & log){
+void histStack(const TString& dir, const TString& var, const TString & xtitle, const TString & ytitle, const int& nbin, const double& xlow, const double& xmax, const double& max, const double & min, const TString& hName, const TString& name, const  bool & log){
 
   TH1F * h_data = (TH1F *) fdata->Get(Form("%s/%s",dir.Data(),var.Data()));
   std::vector<TH1*> h_mc;
@@ -147,7 +158,7 @@ void histStack(const TString& dir, const TString& var, const TString & xtitle, c
   for(int i=0; i < (int) trees.size() ; i++){
     h_mc.push_back((TH1F *) files[i]->Get(Form("%s/%s",dir.Data(),var.Data())));
   }
-  plotStackBase(h_data, h_mc, xtitle, ytitle, nbin,  max, min, hName, name, log);
+  plotStackBase(h_data, h_mc, xtitle, ytitle, nbin,  xlow, xmax, max, min, hName, name, log);
 
 }
 
@@ -162,22 +173,21 @@ void plotStack( TString var, TCut cut, const TString & xtitle, const TString & y
   }
 
   data->Project(Form("h_data_%s_%s",hName.Data(),name.Data()),Form("%s",var.Data()),cut);
-  data->Project(Form("h_qcd_%s_%s",hName.Data(),name.Data()),Form("%s",var.Data()),cut && antipfiso);
 
   for(int i=0 ; i < (int)trees.size() ; i++){
      trees[i]->Project(Form("h_%s_%s_%s",hNames[i].Data(), hName.Data(),name.Data()),Form("%s",var.Data()),cut);
   }
 
-  plotStackBase(h_data, h_mc, xtitle, ytitle, nbin, max, min, hName, name, log);
+  plotStackBase(h_data, h_mc, xtitle, ytitle, nbin, xlow, xmax, max, min, hName, name, log);
 
 }
 
 void plotStep(TCut cut, const TString& step, const double & r){
 
-  //histStack( type, "h_mass","Dimuon Mass (GeV/c^{2})", "Events/5 GeV/c^{2}",40, 1000,0.02, "dimuon",Form("mass_h_%s",step.Data()), true);
-  //histStack( type, "h_leadingpt","Leading p_{T} (GeV/c)", "Events/5 GeV/c",20, 30, 0, "leading",Form("pt_h_%s",step.Data()), false);
+  //histStack( type, "h_mass","Dimuon Mass (GeV/c^{2})", "Events/5 GeV/c^{2}",40,  0, 200, 1000,0.02, "dimuon",Form("mass_h_%s",step.Data()), true);
+  //histStack( type, "h_leadingpt","Leading p_{T} (GeV/c)", "Events/5 GeV/c",20, 0, 100, 30, 0, "leading",Form("pt_h_%s",step.Data()), false);
   if( step.Contains("step1") || step.Contains("step2") || step.Contains("step3") ){
-    plotStack( "Z.mass()",cut, "Dimuon Mass (GeV/c^{2})", "Events/5 GeV/c^{2}",40, 0, 200, 1500, 0.1, "dimuon",Form("mass_%s",step.Data()), true);
+    plotStack( "Z.mass()",cut, "Dilepton Mass (GeV/c^{2})", "Events/5 GeV/c^{2}",40, 0, 200, 1500, 0.1, "dilepton",Form("mass_%s",step.Data()), true);
   }
 
   plotStack("@jetspt30.size()",cut, "Jet Multiplicity", "Events", 5, 0, 5, 600*lumi_e*r , -1, "jet",Form("multiplicity_%s",step.Data()), true);
@@ -217,21 +227,26 @@ void anal(const TString& t="MuMu", const TString& postfix = "", bool p= false, c
   print = p;
   dir = d;
   TString mcpath = "/home/tjkim/ntuple/top/"+type+"/MC/Spring10"+postfix+"/";
+  TString datapath = "/home/tjkim/ntuple/top/"+type+"/RD/Oct8"+postfix+"/";
   gROOT->LoadMacro("tdrstyle.C");
   defaultStyle();
   
   //myfile.open (Form("Info_%s.txt",dir.Data()));
 
-  fdata = new TFile("/home/tjkim/ntuple/top/"+type+"/RD/Oct8"+postfix+"/vallot.root");
+  fdata = new TFile(datapath+"vallot.root");
   data = (TTree *) fdata->Get(type+"/tree");
 
   addFile(mcpath+"vallot_TTbar.root", "TTbar", "t#bar{t}", 157.5, 4);//Blue
-  //if(type == "MuMu") addFile(mcpath+"vallot_InclusiveMu15.root", "QCD", "QCD", 79688, 3);//Green
+  //if(type == "MuMu") {
+    //addFile(mcpath+"vallot_InclusiveMu15.root", "QCD", "QCD", 79688, 3);//Green
+    //addFile(datapath+"vallot.root","QCD","QCD",1,3);
+  //}
   //else if(type == "ElEl") addFile(mcpath+"vallot_QCD_BCtoE_Pt20to30.root", "QCD", "QCD", 108330 , 3);//Green
   addFile(mcpath+"vallot_WJets.root", "Wlnu", "W #rightarrow l#nu", 31314, 46);// brown
   addFile(mcpath+"vallot_VVJets.root", "Dibosons", "Dibosons", 4.8 ,6 );//Magenta
   addFile(mcpath+"vallot_SingleTop.root", "SingleTop", "single top", 10.6 ,7 );// sky
   addFile(mcpath+"vallot_Ztautau.root", "Ztautau", "Z/#gamma* #rightarrow #tau#tau", 1660, 5);//Yellow
+  addFile(mcpath+"vallot_ZtautauZJets.root", "ZtauDecay", "Z/#gamma* #rightarrow #tau#tau", 3048, 5);//Yellow
   if(type == "MuMu") {
     addFile(mcpath+"vallot_Zmumu.root", "Zll", "Z/#gamma* #rightarrow ll", 1660, 2);//Red  
     addFile(mcpath+"vallot_DYmumu.root", "DYll", "Z/#gamma* #rightarrow ll", 3457, 2);//Red  
@@ -243,9 +258,9 @@ void anal(const TString& t="MuMu", const TString& postfix = "", bool p= false, c
 
   TCut pfiso;
   if( type == "MuEl" ){
-    pfiso = "(chIsoOpt1+nhIsoOpt1+phIsoOpt1)/Z.leg1().pt() < 0.21 && (chIso2+phIso2)/Z.leg2().pt() < 0.15 ";
+    pfiso = "(chIso1+nhIso1+phIso1)/Z.leg1().pt() < 0.21 && (chIso2+phIso2+nhIso2)/Z.leg2().pt() < 0.20 ";
   }else if( type == "ElEl" ){
-    pfiso = "(chIso1+phIso1)/Z.leg1().pt() < 0.15 && (chIso2+phIso2)/Z.leg2().pt() < 0.15 ";
+    pfiso = "(chIso1+nhIso1+phIso1)/Z.leg1().pt() < 0.20 && (chIso2+phIso2+nhIso2)/Z.leg2().pt() < 0.20 ";
   }else if( type == "MuMu" ){
     pfiso = "(chIso1+nhIso1+phIso1)/Z.leg1().pt() < 0.21 && (chIso2+nhIso2+phIso2)/Z.leg2().pt() < 0.21 ";
   }else{
@@ -253,8 +268,8 @@ void anal(const TString& t="MuMu", const TString& postfix = "", bool p= false, c
   }
  
   TCut step1 = "Z.mass() > 12";
-  TCut step2 = step1 && pfiso;
-  TCut step3 = step2 && "Z.sign() < 0";
+  TCut step2 = step1 && "Z.sign() < 0";
+  TCut step3 = step2 && pfiso;
   TCut step4 = step3 && "abs(Z.mass() - 91) > 15";
   if( type != "MuEl") step4 = step3 && "abs(Z.mass() - 91) > 15";
   else if ( type == "MuEl") step4 = step3;
@@ -266,6 +281,17 @@ void anal(const TString& t="MuMu", const TString& postfix = "", bool p= false, c
     step6 = step5 && "MET > 30";
   }
 
+
+  //TCut antipfiso = "(chIsoOpt1+nhIsoOpt1+phIsoOpt1)/Z.leg1().pt() > 0.21 && (chIsoOpt2+nhIsoOpt2+phIsoOpt2)/Z.leg2().pt() > 0.21 ";
+  //TCut step1forQCD = antipfiso && "Z.mass() > 12";
+  //TCut step2forQCD = step1 && "Z.sign() < 0";
+  //TCut step3forQCD = step2;
+  //TCut step4forQCD = step3 && "abs(Z.mass() - 91) > 15";
+  //TCut step5forQCD = step4 && "@jetspt30.size() >= 2";
+  //TCut step6forQCD = step5 && "MET > 30";
+  //double fQCD = 1.123;
+  //double isoQCD = 0;
+
   //histStack(type, "cutflow","cutflow", "Muons",6, 60000, 1, "muon","cutflow", false);
 
   bool isoPlot = false;
@@ -273,10 +299,10 @@ void anal(const TString& t="MuMu", const TString& postfix = "", bool p= false, c
     int max = 1500;
     int min = -1;
     plotStack( "chIso1",step1, "chIso", "Events", 40, 0, 4, max , min, "iso","chIso1", true);
-    plotStack( "nhIso1/0.33",step1, "nhIso/0.33", "Events", 40, 0, 4, max , min, "iso","nhIso1", true);
+    plotStack( "nhIso1",step1, "nhIso", "Events", 40, 0, 4, max , min, "iso","nhIso1", true);
     plotStack( "phIso1",step1, "phIso", "Events", 40, 0, 4, max , min, "iso","phIso1", true);
     plotStack( "chIso2",step1, "chIso", "Events", 40, 0, 4, max , min, "iso","chIso2", true);
-    plotStack( "nhIso2/0.33",step1, "nhIso/0.33", "Events", 40, 0, 4, max , min, "iso","nhIso2", true);
+    plotStack( "nhIso2",step1, "nhIso", "Events", 40, 0, 4, max , min, "iso","nhIso2", true);
     plotStack( "phIso2",step1, "phIso", "Events", 40, 0, 4, max , min, "iso","phIso2", true);
   }
 
