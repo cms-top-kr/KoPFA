@@ -13,7 +13,7 @@
 //
 // Original Author:  Tae Jeong Kim
 //         Created:  Mon Dec 14 01:29:35 CET 2009
-// $Id: GenZmassFilter.cc,v 1.1 2010/09/09 15:15:54 tjkim Exp $
+// $Id: GenZmassFilter.cc,v 1.2 2010/10/12 15:14:06 tjkim Exp $
 //
 //
 
@@ -66,6 +66,7 @@ class GenZmassFilter : public edm::EDFilter {
       // ----------member data ---------------------------
       edm::InputTag genParticlesLabel_;
       bool applyFilter_;
+      std::vector<int> decayMode_;
       int min_;
       int max_;
 
@@ -87,6 +88,7 @@ GenZmassFilter::GenZmassFilter(const edm::ParameterSet& ps)
    //now do what ever initialization is needed
   genParticlesLabel_= ps.getParameter<edm::InputTag>("genParticlesLabel");
   applyFilter_=ps.getUntrackedParameter<bool>("applyFilter",false);
+  decayMode_ = ps.getUntrackedParameter<std::vector<int> >("decayMode");
   min_ = ps.getUntrackedParameter<int>("min",0);
   max_ = ps.getUntrackedParameter<int>("max",999);
 }
@@ -127,15 +129,40 @@ GenZmassFilter::filter(edm::Event& iEvent, const edm::EventSetup& iSetup)
   if(genParticles_.isValid()){
     for (reco::GenParticleCollection::const_iterator mcIter=genParticles_->begin(); mcIter != genParticles_->end(); mcIter++ ) {
       int genId = mcIter->pdgId();
-      if( abs(genId) == 23 && mcIter->status() ==3 ){
-        double gmass =  mcIter->p4().M();
-        genZmass = gmass;
-        break;
+      bool passMode = false;
+      for(size_t i = 0 ; i < decayMode_.size() ;i++){
+        if(abs(genId) == decayMode_[i]) passMode = true;
+      }
+
+      if( passMode ){
+        int moid = -99;
+        int gmoid = -99;
+        const reco::Candidate *mcand = mcIter->mother();
+        if( mcand != 0) {
+          moid = mcand->pdgId();
+          if( mcand->pdgId() == mcIter->pdgId() ) {
+            if( mcand->mother() != 0 ){
+              const reco::Candidate *gcand = mcand->mother();
+              gmoid = gcand->pdgId();
+              if( gmoid == 23 ) {
+                genZmass = gcand->p4().M();
+                cout << "gmoid= " << genZmass << endl;
+                if( genZmass > min_ && genZmass < max_) accepted = true;
+                break;
+              }
+            }
+          }
+
+          if( moid == 23 ) {
+            genZmass = mcand->p4().M();
+            cout << "moid= " << genZmass << endl;
+            if( genZmass > min_ && genZmass < max_) accepted = true;
+            break;
+          }
+        }
       }
     }
   }
-
-  if( genZmass > min_ && genZmass < max_) accepted = true; 
 
   return accepted;
 }
