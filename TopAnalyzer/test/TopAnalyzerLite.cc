@@ -30,9 +30,10 @@ public:
              const string fileName, const double xsec, const double nEvents, 
              const Color_t color);
   void addRealData(const string fileName, const double lumi);
-  void addCutStep(const TCut cut, const string monitorPlotNames);
+  void addCutStep(const TCut cut, const string monitorPlotNames, const double plotScale = 1.0);
   void addMonitorPlot(const string name, const string varexp, const string title,
-                      const int nBins, const double xmin, const double xmax, const bool doLogy = true);
+                      const int nBins, const double xmin, const double xmax, 
+                      const double ymin = 0, const double ymax = 0, const bool doLogy = true);
 
   void applyCutSteps();
 
@@ -54,6 +55,14 @@ private:
     int nBins;
     double xmin, xmax;
     bool doLogy;
+    double ymin, ymax;
+  };
+
+  struct CutStep
+  {
+    TCut cut;
+    vector<string> monitorPlotNames;
+    double plotScale;
   };
 
   double lumi_;
@@ -62,11 +71,11 @@ private:
   TChain* realDataChain_;
 
   map<const string, MonitorPlot> monitorPlots_;
-  vector<pair<TCut, vector<string> > > cuts_;
+  vector<CutStep> cuts_;
 
   string imageOutDir_;
 
-  void plot(const string name, TCut cut, MonitorPlot& monitorPlot);
+  void plot(const string name, TCut cut, MonitorPlot& monitorPlot, const double plotScale = 1.0);
   void printStat(const string& name, TCut cut);
 };
 
@@ -119,7 +128,7 @@ void TopAnalyzerLite::addRealData(const string fileName, const double lumi)
   realDataChain_->Add(fileName.c_str());
 }
 
-void TopAnalyzerLite::addCutStep(const TCut cut, string monitorPlotNamesStr)
+void TopAnalyzerLite::addCutStep(const TCut cut, string monitorPlotNamesStr, const double plotScale)
 {
   replace(monitorPlotNamesStr.begin(), monitorPlotNamesStr.end(), ',', ' ');
 
@@ -127,13 +136,15 @@ void TopAnalyzerLite::addCutStep(const TCut cut, string monitorPlotNamesStr)
   istringstream iss(monitorPlotNamesStr, istringstream::in);
   string tmpStr;
   while ( iss >> tmpStr ) tokens.push_back(tmpStr);
-  cuts_.push_back(make_pair(cut, tokens));
+  CutStep cutStep = {cut, tokens, plotScale};
+  cuts_.push_back(cutStep);
 }
 
 void TopAnalyzerLite::addMonitorPlot(const string name, const string varexp, const string title,
-                                     const int nBins, const double xmin, const double xmax, const bool doLogy)
+                                     const int nBins, const double xmin, const double xmax,
+                                     const double ymin, const double ymax, const bool doLogy)
 {
-  MonitorPlot monitorPlot = {varexp, title, nBins, xmin, xmax, doLogy};
+  MonitorPlot monitorPlot = {varexp, title, nBins, xmin, xmax, doLogy, ymin, ymax};
   monitorPlots_[name] = monitorPlot;
 }
 
@@ -151,16 +162,18 @@ void TopAnalyzerLite::applyCutSteps()
   TCut cut = "";
   for ( unsigned int i=0; i<cuts_.size(); ++i )
   {
-    cut = cut && cuts_[i].first;
-    const vector<string>& monitorPlotNames = cuts_[i].second;
+    cut = cut && cuts_[i].cut;
+    const vector<string>& monitorPlotNames = cuts_[i].monitorPlotNames;
+    const double plotScale = cuts_[i].plotScale;
 
     printStat(Form("Step_%d", i+1), cut);
     for ( unsigned int j = 0; j < monitorPlotNames.size(); ++ j)
     {
       const string& plotName = monitorPlotNames[j];
 
+      if ( monitorPlots_.find(plotName) == monitorPlots_.end() ) continue;
       MonitorPlot& monitorPlot = monitorPlots_[plotName];
-      plot(Form("Step_%d_%s", i+1, plotName.c_str()), cut, monitorPlot);
+      plot(Form("Step_%d_%s", i+1, plotName.c_str()), cut, monitorPlot, lumi_*plotScale);
     }
   }
 
@@ -168,19 +181,21 @@ void TopAnalyzerLite::applyCutSteps()
   TCut finalCut = "";
   for ( unsigned int i=0; i<cuts_.size(); ++i )
   {
-    finalCut = finalCut && cuts_[i].first;
+    finalCut = finalCut && cuts_[i].cut;
   }
   realDataChain_->Scan("RUN:LUMI:EVENT:Z.mass():@jetspt30.size():MET",finalCut); 
   cout << "Number of entries after final selection = " << realDataChain_->GetEntries(finalCut) << endl;
 }
 
-void TopAnalyzerLite::plot(const string name, const TCut cut, MonitorPlot& monitorPlot)
+void TopAnalyzerLite::plot(const string name, const TCut cut, MonitorPlot& monitorPlot, const double plotScale)
 {
   const string& varexp = monitorPlot.varexp;
   const string& title = monitorPlot.title;
   const int nBins = monitorPlot.nBins;
   const double xmin = monitorPlot.xmin;
   const double xmax = monitorPlot.xmax;
+  double ymin = monitorPlot.ymin;
+  double ymax = monitorPlot.ymax;
 
   TLegend* legend = new TLegend(0.73,0.57,0.88,0.88);
   legend->SetTextSize(0.04);
@@ -201,7 +216,7 @@ void TopAnalyzerLite::plot(const string name, const TCut cut, MonitorPlot& monit
   legend->AddEntry(hData, "Data", "p");
 
   THStack* hStack = new THStack("hStack", title.c_str());
-  set<string> drawnLabels;
+  map<string, int> drawnLabels;
   for ( unsigned int i=0; i<channels_.size(); ++i )
   {
     Channel& channel = channels_[i];
@@ -212,41 +227,46 @@ void TopAnalyzerLite::plot(const string name, const TCut cut, MonitorPlot& monit
     hMC->AddBinContent(nBins, hMC->GetBinContent(nBins+1));
     hMC->Scale(lumi_*channel.xsec/channel.nEvents);
     hMC->SetFillColor(channel.color);
-    hMC->SetLineColor(channel.color);
 
-    hStack->Add(hMC);
-    // If already in the stack, hide line and do not add in the legend
-    if ( drawnLabels.find(channel.label) == drawnLabels.end() ) 
+    // Add to the HStack if there's no duplicated label
+    // If duplicated label exists, call TH1::Add
+    map<string, int>::const_iterator drawnLabel = drawnLabels.find(channel.label);
+    if ( drawnLabel == drawnLabels.end() ) 
     {
       legend->AddEntry(hMC, channel.label.c_str(), "f");
-      drawnLabels.insert(channel.label);
+      drawnLabels.insert(make_pair(channel.label, i));
+      hStack->Add(hMC);
+    }
+    else
+    {
+      // Find previously added histogram in the HStack
+      const unsigned int index = drawnLabel->second;
+      const char* prevChannel = channels_[index].name.c_str();
+      const TString prevHistName = Form("hMC_%s_%s", prevChannel, name.c_str());
+
+      TH1F* h = (TH1F*)(hStack->GetStack()->FindObject(prevHistName));
+      if ( h ) h->Add(hMC);
     }
   }
 
-  double ymin = 0, ymax = 0;
-  if ( true )
+  TCanvas* c = new TCanvas(Form("c_%s", name.c_str()), name.c_str(), 1);
+  if ( ymax == 0 )
   {
-    //const int dataMinBin = hData->GetMinimumBin();
     const int dataMaxBin = hData->GetMaximumBin();
-
-    //const double dataYmin = hData->GetBinContent(dataMinBin) - hData->GetBinError(dataMinBin);
     const double dataYmax = hData->GetBinContent(dataMaxBin) + hData->GetBinError(dataMaxBin);
-    //const double mcYmin = hStack->GetMinimum();
     const double mcYmax = hStack->GetMaximum();
 
-    //ymin = TMath::Min(dataYmin, mcYmin);
     ymax = TMath::Max(dataYmax, mcYmax);
   }
 
-  TCanvas* c = new TCanvas(Form("c_%s", name.c_str()), name.c_str(), 1);
   if ( monitorPlot.doLogy ) 
   {
     if ( ymin <= 0 ) ymin = 1e-2;
     c->SetLogy();
   }
 
-  hStack->SetMinimum(0.7*ymin);
-  hStack->SetMaximum(1.1*ymax);
+  hStack->SetMinimum(ymin);
+  hStack->SetMaximum(ymax);
 
   hStack->Draw();
   hData->Draw("same");
@@ -255,6 +275,7 @@ void TopAnalyzerLite::plot(const string name, const TCut cut, MonitorPlot& monit
   if ( imageOutDir_ != "" )
   {
     c->Print((imageOutDir_+"/"+c->GetName()+".png").c_str());
+    c->Print((imageOutDir_+"/"+c->GetName()+".eps").c_str());
   }
 }
 
