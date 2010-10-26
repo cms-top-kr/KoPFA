@@ -11,17 +11,17 @@ input = sys.argv[1]
 type = sys.argv[2]
 
 if type == "MuMu":
-  mclist = ["ZJets", "Ztautau", "WJets", "VVJets", "TTbar", "SingleTop", "Zmumu", "DYmumu"]
+  mclist = ["ZJets", "ZtauDecay", "Ztautau", "WJets", "VVJets", "TTbar", "SingleTop", "Zmumu", "DYmumu"]
   #qcdlist =["InclusiveMu15"]
   qcdlist =[""]
 elif type == "ElEl":
-  mclist = ["ZJets", "Ztautau", "WJets", "VVJets", "TTbar", "SingleTop", "Zee", "DYee"]
+  mclist = ["ZJets", "ZtauDecay", "Ztautau", "WJets", "VVJets", "TTbar", "SingleTop", "Zee", "DYee"]
   qcdlist =[""]
 elif type == "MuEl":
-  mclist = ["ZJets", "Ztautau", "WJets", "VVJets", "TTbar", "SingleTop", "Zee", "DYee"]
+  mclist = ["ZJets", "ZtauDecay", "Ztautau", "WJets", "VVJets", "TTbar", "SingleTop"]
   qcdlist =[""]
 
-datalist = ["data_1","data_2","data_3","data_4"]
+datalist = ["data_1","data_2"]
 
 def processSample(sample, dir):
     os.system("rfmkdir "+dir+"/"+sample)
