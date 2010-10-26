@@ -26,7 +26,9 @@ public:
   TopAnalyzerLite(const string subDirName = "", const string imageOutDir = "image");
   ~TopAnalyzerLite() {};
 
-  void addMC(const string channelName, const string channelLabel, const string fileName, const double xsec, const Color_t color);
+  void addMC(const string channelName, const string channelLabel, 
+             const string fileName, const double xsec, const double nEvents, 
+             const Color_t color);
   void addRealData(const string fileName, const double lumi);
   void addCutStep(const TCut cut, const string monitorPlotNames);
   void addMonitorPlot(const string name, const string varexp, const string title,
@@ -54,7 +56,6 @@ private:
     bool doLogy;
   };
 
-  double nEvents_;
   double lumi_;
   string subDirName_;
   vector<Channel> channels_;
@@ -72,13 +73,14 @@ private:
 TopAnalyzerLite::TopAnalyzerLite(const string subDirName, const string imageOutDir)
 {
   subDirName_ = subDirName;
-  nEvents_ = 0;
   lumi_ = 0;
   realDataChain_ = 0;
   imageOutDir_ = imageOutDir;
 }
 
-void TopAnalyzerLite::addMC(const string channelName, const string channelLabel, const string fileName, const double xsec, const Color_t color)
+void TopAnalyzerLite::addMC(const string channelName, const string channelLabel, 
+                            const string fileName, const double xsec, const double nEvents, 
+                            const Color_t color)
 {
   int channelIndex = -1;
   for ( unsigned int i = 0; i < channels_.size(); ++i )
@@ -100,11 +102,6 @@ void TopAnalyzerLite::addMC(const string channelName, const string channelLabel,
 
   Channel& channel = channels_[channelIndex];
 
-  TFile* f = TFile::Open(fileName.c_str());
-  TH1F* hNEvents = (TH1F*)f->Get((subDirName_+"/EventSummary").c_str());
-  const double nEvents = hNEvents->GetBinContent(1);
-  f->Close();
-
   channel.nEvents += nEvents;
   channel.chain->Add(fileName.c_str());
 }
@@ -119,23 +116,6 @@ void TopAnalyzerLite::addRealData(const string fileName, const double lumi)
     realDataChain_ = new TChain(chainName.c_str(), chainName.c_str());
   }
 
-  TFile* f = TFile::Open(fileName.c_str());
-  if ( !f )
-  {
-    cout << "Cannot open file " << fileName << endl;
-    return;
-  }
-  TH1F* hNEvents = (TH1F*)f->Get((subDirName_+"/EventSummary").c_str());
-  if ( !hNEvents )
-  {
-    cout << "Cannot read histogram hNEvents from" << fileName << endl;
-    return;
-  }
-  const double nEvents = hNEvents->GetBinContent(1);
-
-  f->Close();
-
-  nEvents_ += nEvents;
   realDataChain_->Add(fileName.c_str());
 }
 
