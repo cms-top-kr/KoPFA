@@ -246,7 +246,7 @@ void anal(const TString& t="MuMu", const TString& postfix = "", bool p= false, c
   addFile(mcpath+"vallot_VVJets.root", "Dibosons", "Dibosons", 4.8 ,6 );//Magenta
   addFile(mcpath+"vallot_SingleTop.root", "SingleTop", "single top", 10.6 ,7 );// sky
   addFile(mcpath+"vallot_Ztautau.root", "Ztautau", "Z/#gamma* #rightarrow #tau#tau", 1660, 5);//Yellow
-  addFile(mcpath+"vallot_ZtautauZJets.root", "ZtauDecay", "Z/#gamma* #rightarrow #tau#tau", 3048, 5);//Yellow
+  addFile(mcpath+"vallot_ZtauDecay.root", "ZtauDecay", "Z/#gamma* #rightarrow #tau#tau", 3048, 5);//Yellow
   if(type == "MuMu") {
     addFile(mcpath+"vallot_Zmumu.root", "Zll", "Z/#gamma* #rightarrow ll", 1660, 2);//Red  
     addFile(mcpath+"vallot_DYmumu.root", "DYll", "Z/#gamma* #rightarrow ll", 3457, 2);//Red  
