@@ -36,6 +36,7 @@ public:
                       const double ymin = 0, const double ymax = 0, const bool doLogy = true);
 
   void applyCutSteps();
+  TObjArray getHistograms();
 
 private:
   struct Channel
@@ -77,6 +78,8 @@ private:
 
   void plot(const string name, TCut cut, MonitorPlot& monitorPlot, const double plotScale = 1.0);
   void printStat(const string& name, TCut cut);
+
+  TObjArray histograms_;
 };
 
 TopAnalyzerLite::TopAnalyzerLite(const string subDirName, const string imageOutDir)
@@ -202,8 +205,9 @@ void TopAnalyzerLite::plot(const string name, const TCut cut, MonitorPlot& monit
   legend->SetFillColor(0);
   legend->SetLineColor(0);
 
-  TString dataHistName = Form("hData_%s", name.c_str());
+  TString dataHistName = Form("hData_%s_%s", subDirName_.c_str(), name.c_str());
   TH1F* hData = new TH1F(dataHistName, title.c_str(), nBins, xmin, xmax);
+  histograms_.Add(hData);
 
   realDataChain_->Project(dataHistName, varexp.c_str(), cut);
   hData->AddBinContent(nBins, hData->GetBinContent(nBins+1));
@@ -220,7 +224,7 @@ void TopAnalyzerLite::plot(const string name, const TCut cut, MonitorPlot& monit
   for ( unsigned int i=0; i<channels_.size(); ++i )
   {
     Channel& channel = channels_[i];
-    TString mcHistName = Form("hMC_%s_%s", channel.name.c_str(), name.c_str());
+    TString mcHistName = Form("hMC_%s_%s_%s", subDirName_.c_str(), channel.name.c_str(), name.c_str());
     TH1F* hMC = new TH1F(mcHistName, title.c_str(), nBins, xmin, xmax);
 
     channel.chain->Project(mcHistName, varexp.c_str(), cut);
@@ -236,6 +240,7 @@ void TopAnalyzerLite::plot(const string name, const TCut cut, MonitorPlot& monit
       legend->AddEntry(hMC, channel.label.c_str(), "f");
       drawnLabels.insert(make_pair(channel.label, i));
       hStack->Add(hMC);
+      histograms_.Add(hMC);
     }
     else
     {
@@ -318,3 +323,7 @@ void TopAnalyzerLite::printStat(const string& name, TCut cut)
   cout << "------------------------------" << endl;
 }
 
+TObjArray TopAnalyzerLite::getHistograms()
+{
+  return histograms_;
+}

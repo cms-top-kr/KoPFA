@@ -78,6 +78,8 @@ void ana(string decayMode = "MuMu", string imageOutDir = "")
   //analyzer->addCutStep("Z.mass() > 12 && (chIso1+phIso1)/Z.leg1().pt() < 0.15 && (chIso2+phIso2)/Z.leg2().pt() < 0.15 && Z.sign() < 0 && abs(Z.mass() - 91) > 15 && @jetspt30.size() >= 2 && MET > 30", "nJet,MET");
 
   analyzer->applyCutSteps();
+
+  TObjArray histograms = analyzer->getHistograms();
 }
 
 void defaultStyle()
