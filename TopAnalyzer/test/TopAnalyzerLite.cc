@@ -9,13 +9,15 @@
 #include "TLegend.h"
 #include "TFile.h"
 #include "TTree.h"
+#include "TTreePlayer.h"
 #include "TMath.h"
 #include "TROOT.h"
+#include "TSystem.h"
 
 #include <iostream>
 #include <sstream>
 #include <set>
-//#include <fstream>
+#include <fstream>
 //#include <algorithm>
 
 using namespace std;
@@ -24,7 +26,7 @@ class TopAnalyzerLite
 {
 public:
   TopAnalyzerLite(const string subDirName = "", const string imageOutDir = "");
-  ~TopAnalyzerLite() {};
+  ~TopAnalyzerLite();
 
   void addMC(const string channelName, const string channelLabel, 
              const string fileName, const double xsec, const double nEvents, 
@@ -86,6 +88,8 @@ private:
   void printStat(const string& name, TCut cut);
 
   TObjArray histograms_;
+  ofstream fout_;
+  bool writeSummary_;
 };
 
 TopAnalyzerLite::TopAnalyzerLite(const string subDirName, const string imageOutDir)
@@ -94,6 +98,19 @@ TopAnalyzerLite::TopAnalyzerLite(const string subDirName, const string imageOutD
   lumi_ = 0;
   realDataChain_ = 0;
   imageOutDir_ = imageOutDir;
+
+  if ( imageOutDir != "" )
+  {
+    gSystem->mkdir(imageOutDir.c_str(), true);
+    fout_.open((imageOutDir+"/summary.txt").c_str());
+    writeSummary_ = true;
+  }
+  else writeSummary_ = false;
+}
+
+TopAnalyzerLite::~TopAnalyzerLite()
+{
+  if ( writeSummary_ ) fout_.close();
 }
 
 void TopAnalyzerLite::addMC(const string channelName, const string channelLabel, 
@@ -161,12 +178,19 @@ void TopAnalyzerLite::applyCutSteps()
 {
   cout << "--------------------------------------\n";
   cout << " Cross sections and sample statistics \n";
+  if ( writeSummary_ )
+  {
+    fout_ << "--------------------------------------\n";
+    fout_ << " Cross sections and sample statistics \n";
+  }
   for ( unsigned int i=0; i<channels_.size(); ++i )
   {
     Channel& channel = channels_[i];
     cout << " * " << channel.name << "\t" << channel.xsec << " /pb (" << channel.nEvents << ")\n";
+    if ( writeSummary_ ) fout_ << " * " << channel.name << "\t" << channel.xsec << " /pb (" << channel.nEvents << ")\n";
   }
   cout << "--------------------------------------\n";
+  if ( writeSummary_ ) fout_ << "--------------------------------------\n";
 
   TCut cut = "";
   for ( unsigned int i=0; i<cuts_.size(); ++i )
@@ -187,6 +211,7 @@ void TopAnalyzerLite::applyCutSteps()
   }
 
   cout << "Final" << endl;
+  if ( writeSummary_ ) fout_ << "Final" << endl;
   TCut finalCut = "";
   for ( unsigned int i=0; i<cuts_.size(); ++i )
   {
@@ -194,6 +219,22 @@ void TopAnalyzerLite::applyCutSteps()
   }
   realDataChain_->Scan("RUN:LUMI:EVENT:Z.mass():@jetspt30.size():MET",finalCut); 
   cout << "Number of entries after final selection = " << realDataChain_->GetEntries(finalCut) << endl;
+
+  if ( writeSummary_ )
+  {
+    const string tmpFileName = imageOutDir_+"/tmp.txt";
+
+    ((TTreePlayer*)(realDataChain_->GetPlayer()))->SetScanRedirect(true);
+    ((TTreePlayer*)(realDataChain_->GetPlayer()))->SetScanFileName(tmpFileName.c_str());
+    realDataChain_->Scan("RUN:LUMI:EVENT:Z.mass():@jetspt30.size():MET",finalCut); 
+    ((TTreePlayer*)(realDataChain_->GetPlayer()))->SetScanRedirect(false);
+
+    ifstream tmpFile(tmpFileName.c_str());
+    copy(istreambuf_iterator<char>(tmpFile), istreambuf_iterator<char>(), ostreambuf_iterator<char>(fout_));
+    fout_ << "Number of entries after final selection = " << realDataChain_->GetEntries(finalCut) << endl;
+
+    gSystem->Exec(("rm -f "+tmpFileName).c_str());
+  }
 }
 
 void TopAnalyzerLite::plot(const string name, const TCut cut, MonitorPlot& monitorPlot, const double plotScale)
@@ -309,8 +350,14 @@ void TopAnalyzerLite::plot(const string name, const TCut cut, MonitorPlot& monit
 
 void TopAnalyzerLite::printStat(const string& name, TCut cut)
 {
-  cout << "------------------------\n";
+  cout << "-------------------------\n";
   cout << "   " << name << endl;
+
+  if ( writeSummary_ )
+  {
+    fout_ << "-------------------------\n";
+    fout_ << "   " << name << endl;
+  }
 
   const double nData = realDataChain_->GetEntries(cut);
 
@@ -355,6 +402,7 @@ void TopAnalyzerLite::printStat(const string& name, TCut cut)
     Stat& stat = stats[i];
 
     cout << stat.name << ' ' << stat.nEvents << " +- " << sqrt(stat.nEventsErr2) << endl;
+    if ( writeSummary_ ) fout_ << stat.name << ' ' << stat.nEvents << " +- " << sqrt(stat.nEventsErr2) << endl;
 
     if ( stat.name == "TTbar" )
     {
@@ -365,7 +413,7 @@ void TopAnalyzerLite::printStat(const string& name, TCut cut)
     nTotalErr2 += stat.nEventsErr2;
   }
 
-  const double nBkg = nTotal - nSignal;
+  //const double nBkg = nTotal - nSignal;
   const double signif = nSignal/sqrt(nTotal);
   const double nTotalErr = sqrt(nTotalErr2);
 
@@ -374,6 +422,15 @@ void TopAnalyzerLite::printStat(const string& name, TCut cut)
   cout << "Data        = " << nData << endl;
   cout << "S/sqrt(S+B) = " << signif << endl;
   cout << "------------------------------" << endl;
+
+  if ( writeSummary_ )
+  {
+    fout_ << "Total       = " << nTotal << " +- " << nTotalErr << endl;
+    fout_ << "------------------------------" << endl;
+    fout_ << "Data        = " << nData << endl;
+    fout_ << "S/sqrt(S+B) = " << signif << endl;
+    fout_ << "------------------------------" << endl;
+  }
 }
 
 TObjArray TopAnalyzerLite::getHistograms()
