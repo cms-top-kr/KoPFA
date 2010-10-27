@@ -1,24 +1,24 @@
-#include "THStack.h"
-#include "TLatex.h"
-//#include "TGraphAsymmErrors.h"
-#include "TChain.h"
-#include "TH1.h"
-#include "TCut.h"
-#include "TPad.h"
-#include "TCanvas.h"
-#include "TLegend.h"
-#include "TFile.h"
-#include "TTree.h"
-#include "TTreePlayer.h"
-#include "TMath.h"
 #include "TROOT.h"
 #include "TSystem.h"
 
+#include "TCut.h"
+#include "TFile.h"
+#include "TChain.h"
+#include "TTreePlayer.h"
+
+#include "TCanvas.h"
+#include "TPad.h"
+#include "TLegend.h"
+#include "TH1F.h"
+#include "THStack.h"
+
+#include "TMath.h"
+
 #include <iostream>
+#include <fstream>
 #include <sstream>
 #include <set>
-#include <fstream>
-//#include <algorithm>
+#include <algorithm>
 
 using namespace std;
 
@@ -28,7 +28,7 @@ public:
   TopAnalyzerLite(const string subDirName = "", const string imageOutDir = "");
   ~TopAnalyzerLite();
 
-  void addMC(const string channelName, const string channelLabel, 
+  void addMC(const string mcSampleName, const string mcSampleLabel, 
              const string fileName, const double xsec, const double nEvents, 
              const Color_t color);
   void addRealData(const string fileName, const double lumi);
@@ -41,7 +41,7 @@ public:
   TObjArray getHistograms();
 
 private:
-  struct Channel
+  struct MCSample
   {
     string name;
     double nEvents;
@@ -76,7 +76,7 @@ private:
 
   double lumi_;
   string subDirName_;
-  vector<Channel> channels_;
+  vector<MCSample> mcSamples_;
   TChain* realDataChain_;
 
   map<const string, MonitorPlot> monitorPlots_;
@@ -113,32 +113,32 @@ TopAnalyzerLite::~TopAnalyzerLite()
   if ( writeSummary_ ) fout_.close();
 }
 
-void TopAnalyzerLite::addMC(const string channelName, const string channelLabel, 
+void TopAnalyzerLite::addMC(const string mcSampleName, const string mcSampleLabel, 
                             const string fileName, const double xsec, const double nEvents, 
                             const Color_t color)
 {
-  int channelIndex = -1;
-  for ( unsigned int i = 0; i < channels_.size(); ++i )
+  int mcSampleIndex = -1;
+  for ( unsigned int i = 0; i < mcSamples_.size(); ++i )
   {
-    if ( channels_[i].name == channelName )
+    if ( mcSamples_[i].name == mcSampleName )
     {
-      channelIndex = i;
+      mcSampleIndex = i;
       break;
     }
   }
 
-  if ( channelIndex == -1 )
+  if ( mcSampleIndex == -1 )
   {
-    Channel channel = {channelName, 0, xsec, 0, channelLabel, color};
-    channel.chain = new TChain((subDirName_+"/tree").c_str(), (subDirName_+"/tree").c_str());
-    channels_.push_back(channel);
-    channelIndex = channels_.size()-1;
+    MCSample mcSample = {mcSampleName, 0, xsec, 0, mcSampleLabel, color};
+    mcSample.chain = new TChain((subDirName_+"/tree").c_str(), (subDirName_+"/tree").c_str());
+    mcSamples_.push_back(mcSample);
+    mcSampleIndex = mcSamples_.size()-1;
   }
 
-  Channel& channel = channels_[channelIndex];
+  MCSample& mcSample = mcSamples_[mcSampleIndex];
 
-  channel.nEvents += nEvents;
-  channel.chain->Add(fileName.c_str());
+  mcSample.nEvents += nEvents;
+  mcSample.chain->Add(fileName.c_str());
 }
 
 void TopAnalyzerLite::addRealData(const string fileName, const double lumi)
@@ -183,11 +183,11 @@ void TopAnalyzerLite::applyCutSteps()
     fout_ << "--------------------------------------\n";
     fout_ << " Cross sections and sample statistics \n";
   }
-  for ( unsigned int i=0; i<channels_.size(); ++i )
+  for ( unsigned int i=0; i<mcSamples_.size(); ++i )
   {
-    Channel& channel = channels_[i];
-    cout << " * " << channel.name << "\t" << channel.xsec << " /pb (" << channel.nEvents << ")\n";
-    if ( writeSummary_ ) fout_ << " * " << channel.name << "\t" << channel.xsec << " /pb (" << channel.nEvents << ")\n";
+    MCSample& mcSample = mcSamples_[i];
+    cout << " * " << mcSample.name << "\t" << mcSample.xsec << " /pb (" << mcSample.nEvents << ")\n";
+    if ( writeSummary_ ) fout_ << " * " << mcSample.name << "\t" << mcSample.xsec << " /pb (" << mcSample.nEvents << ")\n";
   }
   cout << "--------------------------------------\n";
   if ( writeSummary_ ) fout_ << "--------------------------------------\n";
@@ -269,16 +269,16 @@ void TopAnalyzerLite::plot(const string name, const TCut cut, MonitorPlot& monit
   THStack* hStack = new THStack("hStack", title.c_str());
   typedef vector<pair<string, TH1F*> > LabeledPlots;
   LabeledPlots stackedPlots;
-  for ( unsigned int i=0; i<channels_.size(); ++i )
+  for ( unsigned int i=0; i<mcSamples_.size(); ++i )
   {
-    Channel& channel = channels_[i];
-    TString mcHistName = Form("hMC_%s_%s_%s", subDirName_.c_str(), channel.name.c_str(), name.c_str());
+    MCSample& mcSample = mcSamples_[i];
+    TString mcHistName = Form("hMC_%s_%s_%s", subDirName_.c_str(), mcSample.name.c_str(), name.c_str());
     TH1F* hMC = new TH1F(mcHistName, title.c_str(), nBins, xmin, xmax);
 
-    channel.chain->Project(mcHistName, varexp.c_str(), cut);
+    mcSample.chain->Project(mcHistName, varexp.c_str(), cut);
     hMC->AddBinContent(nBins, hMC->GetBinContent(nBins+1));
-    hMC->Scale(lumi_*channel.xsec/channel.nEvents);
-    hMC->SetFillColor(channel.color);
+    hMC->Scale(lumi_*mcSample.xsec/mcSample.nEvents);
+    hMC->SetFillColor(mcSample.color);
 
     // Add to the HStack if there's no duplicated label
     // If duplicated label exists, call TH1::Add
@@ -287,7 +287,7 @@ void TopAnalyzerLite::plot(const string name, const TCut cut, MonitorPlot& monit
     for ( LabeledPlots::const_iterator plotIter = stackedPlots.begin();
           plotIter != stackedPlots.end(); ++plotIter )
     {
-      if ( plotIter->first == channel.label )
+      if ( plotIter->first == mcSample.label )
       {
         matchedPlot = plotIter;
         break;
@@ -296,7 +296,7 @@ void TopAnalyzerLite::plot(const string name, const TCut cut, MonitorPlot& monit
     // If the label was not in the stack, insert it
     if ( matchedPlot == stackedPlots.end() ) 
     {
-      stackedPlots.push_back(make_pair(channel.label, hMC));
+      stackedPlots.push_back(make_pair(mcSample.label, hMC));
       hStack->Add(hMC);
       histograms_.Add(hMC);
     }
@@ -365,12 +365,12 @@ void TopAnalyzerLite::printStat(const string& name, TCut cut)
   double nTotalErr2 = 0;
 
   vector<Stat> stats;
-  for ( unsigned int i=0; i<channels_.size(); ++i )
+  for ( unsigned int i=0; i<mcSamples_.size(); ++i )
   {
-    Channel& channel = channels_[i];
+    MCSample& mcSample = mcSamples_[i];
 
-    const double norm = lumi_*channel.xsec/channel.nEvents;
-    const double nEvents = channel.chain->GetEntries(cut)*norm;
+    const double norm = lumi_*mcSample.xsec/mcSample.nEvents;
+    const double nEvents = mcSample.chain->GetEntries(cut)*norm;
     const double nEventsErr2 = nEvents*norm;
     
     // Merge statistics with same labels
@@ -378,7 +378,7 @@ void TopAnalyzerLite::printStat(const string& name, TCut cut)
     for ( vector<Stat>::iterator statObj = stats.begin();
           statObj != stats.end(); ++statObj )
     {
-      if ( statObj->label == channel.label )
+      if ( statObj->label == mcSample.label )
       {
         matchedStatObj = statObj;
         break;
@@ -386,7 +386,7 @@ void TopAnalyzerLite::printStat(const string& name, TCut cut)
     }
     if ( matchedStatObj == stats.end() )
     {
-      Stat stat = {channel.name, channel.label, nEvents, nEventsErr2};
+      Stat stat = {mcSample.name, mcSample.label, nEvents, nEventsErr2};
       stats.push_back(stat);
     }
     else
