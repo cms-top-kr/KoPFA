@@ -40,6 +40,8 @@ class KoMuonSelector : public edm::EDProducer
 
   // Cut version
   int version_; // 1 for PFMUON, 2 for VBTF, 3 for TOP , 4 for PFMUON && ISO
+  vector<std::string> cut_;
+  vector<std::string> isocut_;
   edm::InputTag muonLabel_;
   PatMuonSelector   muonIdSelector_;
   PatMuonIsolationSelector muonIsoSelector_;

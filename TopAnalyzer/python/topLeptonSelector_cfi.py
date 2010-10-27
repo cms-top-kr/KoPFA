@@ -11,7 +11,9 @@ muonId.pt = 20
 Muons = cms.EDProducer(
     "KoMuonSelector",
     version = cms.untracked.int32( 1 ),# dxy, pt, eta
-    muonLabel  = cms.InputTag("selectedPatMuonsPFlow"),
+    cut = cms.vstring(),
+    isocut = cms.vstring(),
+    muonLabel  = cms.InputTag("acceptedMuons"),
     beamSpotLabel = cms.InputTag("offlineBeamSpot"),
     muonIdSelector = muonId,
     muonIsoSelector = muonIsoSelectorPSet,
@@ -23,16 +25,10 @@ from PFAnalyses.CommonTools.Selectors.newElectronIsoSelectorPSet_cff import elec
 
 Electrons = cms.EDProducer(
     "KoElectronSelector",
-    version = cms.untracked.int32( 10 ),# 10 = MVA, 5 = WP90?
-    electronLabel  = cms.InputTag("selectedPatElectronsPFlow"),
+    version = cms.untracked.int32( 5 ),# 10 = MVA, 5 = WP90?
+    electronLabel  = cms.InputTag("acceptedElectrons"),
     beamSpotLabel = cms.InputTag("offlineBeamSpot"),
     electronIdSelector = electronSelectorPSet,
     electronIsoSelector = electronIsoSelectorPSet,
 )
-
-#Electrons = cms.EDFilter("PATElectronSelector",
-#    src = cms.InputTag("selectedPatElectronsPFlow"),
-#    cut =cms.string("pt > 20 && abs(eta) < 2.5 && abs(gsfTrack.dxy) < 0.04 && mva > 0.4 && gsfTrack.trackerExpectedHitsInner.numberOfHits<=1 ")
-#)
-
 
