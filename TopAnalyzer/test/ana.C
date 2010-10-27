@@ -47,8 +47,8 @@ void ana(string decayMode = "MuMu", string imageOutDir = "")
   analyzer->addMC("ZJets", "Z/#gamma* #rightarrow ll", mcPath+"/vallot_ZJets.root", 3048, 50000, 2);
 
   analyzer->addMonitorPlot("ZMass", "Z.mass()", "Dilepton mass;Dilepton Mass (GeV/c^{2});Events/5 GeV/c^{2}", 40, 0, 200, 0.1, 1500);
-  analyzer->addMonitorPlot("nJet", "@jetspt30.size()", "Jet Multiplicity;Jet Multiplicity;Events", 5, 0, 5, 0.05, 5000);
-  analyzer->addMonitorPlot("MET", "MET", "Missing E_{T};Missing E_{T} (GeV);Events", 8, 0, 80, 0.1, 2000);
+  analyzer->addMonitorPlot("nJet", "@jetspt30.size()", "Jet Multiplicity;Jet Multiplicity;Events", 5, 0, 5, 0.05, 600);
+  analyzer->addMonitorPlot("MET", "MET", "Missing E_{T};Missing E_{T} (GeV);Events", 8, 0, 80, 0.1, 400);
 
 /*
   analyzer->addMonitorPlot("pt1", "Z.leg1().pt()", "Leading p_{T};p_{T} (GeV/c);Events/2 GeV/c", 20, 0, 100);
@@ -63,12 +63,12 @@ void ana(string decayMode = "MuMu", string imageOutDir = "")
   if ( decayMode == "MuMu" )
   {
     //analyzer->addCutStep("(chIso1+phIso1)/Z.leg1().pt() < 0.21 && (chIso2+phIso2)/Z.leg2().pt() < 0.21", "ZMass,nJet,MET,pt1,eta1,phi1,pt2,eta2,phi2");
-    analyzer->addCutStep("(chIso1+phIso1)/Z.leg1().pt() < 0.21 && (chIso2+phIso2)/Z.leg2().pt() < 0.21", "");
+    analyzer->addCutStep("(chIso1+nhIso1+phIso1)/Z.leg1().pt() < 0.21 && (chIso2+nhIso2+phIso2)/Z.leg2().pt() < 0.21", "");
   }
   else if ( decayMode == "ElEl" )
   {
     //analyzer->addCutStep("(chIso1+phIso1)/Z.leg1().pt() < 0.15 && (chIso2+phIso2)/Z.leg2().pt() < 0.20", "ZMass,nJet,MET,pt1,eta1,phi1,pt2,eta2,phi2");
-    analyzer->addCutStep("(chIso1+phIso1)/Z.leg1().pt() < 0.15 && (chIso2+phIso2)/Z.leg2().pt() < 0.20", "");
+    analyzer->addCutStep("(chIso1+nhIso1+phIso1)/Z.leg1().pt() < 0.20 && (chIso2+nhIso2+phIso2)/Z.leg2().pt() < 0.20", "");
   }
   analyzer->addCutStep("Z.sign() < 0", "ZMass,nJet,MET,pt1,eta1,phi1,pt2,eta2,phi2");
   analyzer->addCutStep("abs(Z.mass() - 91) > 15", "nJet,MET", 0.5);
@@ -86,6 +86,8 @@ void defaultStyle()
 {
     gROOT->SetStyle("Plain");
     //gStyle->SetOptStat(1110);
+
+    gStyle->SetOptTitle(0);
     gStyle->SetOptStat(0); //remove statistics box
     gStyle->SetOptFit(1);
     gStyle->SetStatW(0.25);
