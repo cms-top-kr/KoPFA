@@ -220,7 +220,8 @@ void TopAnalyzerLite::plot(const string name, const TCut cut, MonitorPlot& monit
   legend->AddEntry(hData, "Data", "p");
 
   THStack* hStack = new THStack("hStack", title.c_str());
-  map<string, int> drawnLabels;
+  typedef vector<pair<string, TH1F*> > LabeledPlots;
+  LabeledPlots stackedPlots;
   for ( unsigned int i=0; i<channels_.size(); ++i )
   {
     Channel& channel = channels_[i];
@@ -234,24 +235,40 @@ void TopAnalyzerLite::plot(const string name, const TCut cut, MonitorPlot& monit
 
     // Add to the HStack if there's no duplicated label
     // If duplicated label exists, call TH1::Add
-    map<string, int>::const_iterator drawnLabel = drawnLabels.find(channel.label);
-    if ( drawnLabel == drawnLabels.end() ) 
+    // First, find if plot with same label already in the THStack
+    LabeledPlots::const_iterator matchedPlot = stackedPlots.end();
+    for ( LabeledPlots::const_iterator plotIter = stackedPlots.begin();
+          plotIter != stackedPlots.end(); ++plotIter )
     {
-      legend->AddEntry(hMC, channel.label.c_str(), "f");
-      drawnLabels.insert(make_pair(channel.label, i));
+      if ( plotIter->first == channel.label )
+      {
+        matchedPlot = plotIter;
+        break;
+      }
+    }
+    // If the label was not in the stack, insert it
+    if ( matchedPlot == stackedPlots.end() ) 
+    {
+      stackedPlots.push_back(make_pair(channel.label, hMC));
       hStack->Add(hMC);
       histograms_.Add(hMC);
     }
+    // If tehre's plot with same label, sum entries
     else
     {
-      // Find previously added histogram in the HStack
-      const unsigned int index = drawnLabel->second;
-      const char* prevChannel = channels_[index].name.c_str();
-      const TString prevHistName = Form("hMC_%s_%s", prevChannel, name.c_str());
-
-      TH1F* h = (TH1F*)(hStack->GetStack()->FindObject(prevHistName));
+      TH1F* h = matchedPlot->second;
       if ( h ) h->Add(hMC);
+      // In this case, temporary histogram is not needed anymore.
+      delete hMC;
     }
+  }
+
+  // Build legend, legend should be added in reversed order of THStack
+  for ( int i=stackedPlots.size()-1; i>=0; --i )
+  {
+    const char* label = stackedPlots[i].first.c_str();
+    TH1F* h = stackedPlots[i].second;
+    legend->AddEntry(h, label, "f");
   }
 
   TCanvas* c = new TCanvas(Form("c_%s", name.c_str()), name.c_str(), 1);
