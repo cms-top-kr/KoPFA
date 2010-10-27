@@ -66,6 +66,12 @@ private:
     double plotScale;
   };
 
+  struct Stat
+  {
+    string name, label;
+    double nEvents, nEventsErr2;
+  };
+
   double lumi_;
   string subDirName_;
   vector<Channel> channels_;
@@ -198,7 +204,7 @@ void TopAnalyzerLite::plot(const string name, const TCut cut, MonitorPlot& monit
   const double xmin = monitorPlot.xmin;
   const double xmax = monitorPlot.xmax;
   double ymin = monitorPlot.ymin;
-  double ymax = monitorPlot.ymax;
+  double ymax = monitorPlot.ymax*plotScale;
 
   TLegend* legend = new TLegend(0.73,0.57,0.88,0.88);
   legend->SetTextSize(0.04);
@@ -309,7 +315,9 @@ void TopAnalyzerLite::printStat(const string& name, TCut cut)
   const double nData = realDataChain_->GetEntries(cut);
 
   double nTotal = 0, nSignal = 0;
-  double nTotalErr2 = 0, nSignalErr = 0;
+  double nTotalErr2 = 0;
+
+  vector<Stat> stats;
   for ( unsigned int i=0; i<channels_.size(); ++i )
   {
     Channel& channel = channels_[i];
@@ -317,16 +325,44 @@ void TopAnalyzerLite::printStat(const string& name, TCut cut)
     const double norm = lumi_*channel.xsec/channel.nEvents;
     const double nEvents = channel.chain->GetEntries(cut)*norm;
     const double nEventsErr2 = nEvents*norm;
-    const double nEventsErr = sqrt(nEventsErr2);
     
-    cout << channel.name << ' ' << nEvents << " +- " << nEventsErr << endl;
-    if ( channel.name == "TTbar" )
+    // Merge statistics with same labels
+    vector<Stat>::iterator matchedStatObj = stats.end();
+    for ( vector<Stat>::iterator statObj = stats.begin();
+          statObj != stats.end(); ++statObj )
     {
-      nSignal = nEvents;
-      nSignalErr = nEventsErr;
+      if ( statObj->label == channel.label )
+      {
+        matchedStatObj = statObj;
+        break;
+      }
     }
-    nTotal += nEvents;
-    nTotalErr2 += nEventsErr2;
+    if ( matchedStatObj == stats.end() )
+    {
+      Stat stat = {channel.name, channel.label, nEvents, nEventsErr2};
+      stats.push_back(stat);
+    }
+    else
+    {
+      matchedStatObj->nEvents += nEvents;
+      matchedStatObj->nEventsErr2 += nEventsErr2;
+    }
+  }
+
+  // Print out statistics
+  for ( int i=stats.size()-1; i>=0; --i )
+  {
+    Stat& stat = stats[i];
+
+    cout << stat.name << ' ' << stat.nEvents << " +- " << sqrt(stat.nEventsErr2) << endl;
+
+    if ( stat.name == "TTbar" )
+    {
+      nSignal = stat.nEvents;
+    }
+
+    nTotal += stat.nEvents;
+    nTotalErr2 += stat.nEventsErr2;
   }
 
   const double nBkg = nTotal - nSignal;
