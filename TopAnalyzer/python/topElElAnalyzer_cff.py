@@ -70,6 +70,7 @@ process.ElEl = cms.EDAnalyzer('TopElElAnalyzer',
                               'finalEvents'
                               ),
   looseJetId = myJetId, 
+  #for jet cleaning overlapping with isolated epton within 0.4
   relIso1 = cms.untracked.double(0.20),
   relIso2 = cms.untracked.double(0.20),
 )

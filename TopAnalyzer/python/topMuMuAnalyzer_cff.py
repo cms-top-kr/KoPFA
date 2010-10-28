@@ -65,6 +65,7 @@ process.MuMu = cms.EDAnalyzer('TopMuMuAnalyzer',
                               'finalEvents'
                               ),
   looseJetId = myJetId, 
+  #for jet cleaning overlapping with isolated epton within 0.4
   relIso1 = cms.untracked.double(0.21),
   relIso2 = cms.untracked.double(0.21),
 )

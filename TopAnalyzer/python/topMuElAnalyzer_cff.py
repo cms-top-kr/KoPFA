@@ -17,6 +17,11 @@ process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
 #)
 
 #process.load("KoPFA.DiMuonAnalyzer.RD.patTuple_muon_cff")
+process.load("SimGeneral.HepPDTESSource.pythiapdt_cfi")
+process.printTree = cms.EDAnalyzer("ParticleListDrawer",
+                                    src = cms.InputTag("genParticles"),
+                                    maxEventsToPrint  = cms.untracked.int32(40)
+                                    )
 
 # register TFileService
 process.TFileService = cms.Service("TFileService",
@@ -66,6 +71,7 @@ process.MuEl = cms.EDAnalyzer('TopMuElAnalyzer',
                               'finalEvents'
                               ),
   looseJetId = myJetId, 
+  #for jet cleaning overlapping with isolated epton within 0.4
   relIso1 = cms.untracked.double(0.21),
   relIso2 = cms.untracked.double(0.20),
 )
@@ -83,10 +89,10 @@ process.p = cms.Path(
                      process.hltHighLevel*
                      process.removeDuplicate*
                      process.GenZmassFilter*
-                     process.Muons*
-                     process.patMuonFilter*
                      process.Electrons*
                      process.patElectronFilter*
+                     process.Muons*
+                     process.patMuonFilter*
                      process.VertexFilter*
                      process.MuEl
                     )
