@@ -65,8 +65,7 @@ void ana(string decayMode = "MuMu", string imageOutDir = "")
   analyzer->addMonitorPlot("dphi2", "asin(sin(Z.leg2().phi()-met[0].phi()))", "Angle diff", 50, -2, 2, 0.1, 5000);
 
   //analyzer->addCutStep("Z.mass() > 12", "ZMass,nJet,MET,pt1,eta1,phi1,pt2,eta2,phi2", 1.5);
-  analyzer->addCutStep("", "metPhi,dphi1,dphi2", 1); 
-  analyzer->addCutStep("Z.mass() > 12", "", 1.5);
+  analyzer->addCutStep("Z.mass() > 12", "metPhi,dphi1,dphi2", 1.5);
   if ( decayMode == "MuMu" )
   {
     //analyzer->addCutStep("(chIso1+phIso1)/Z.leg1().pt() < 0.21 && (chIso2+phIso2)/Z.leg2().pt() < 0.21", "ZMass,nJet,MET,pt1,eta1,phi1,pt2,eta2,phi2");
