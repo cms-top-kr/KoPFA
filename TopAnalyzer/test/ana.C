@@ -24,7 +24,9 @@ void ana(string decayMode = "MuMu", string imageOutDir = "")
   defaultStyle();
 
   analyzer->addRealData(rdPath+"/vallot_Run2010A_Sep17ReReco.root", 3.1);
+  //analyzer->addRealData(rdPath+"/vallot_Run2010A_Sep17ReReco.root", 3.1*1047/2850);
   analyzer->addRealData(rdPath+"/vallot_Run2010B_PromptReco.root", 4.0);
+  //analyzer->addRealData(rdPath+"/vallot_Run2010B_PromptReco.root", 4.0*781/3382);
   //analyzer->addRealData(rdPath+"/vallot.root", 7.1);
 
   analyzer->addMC("TTbar", "t#bar{t}", mcPath+"/vallot_TTbar.root", 157.5, 10000, 4);
@@ -58,7 +60,12 @@ void ana(string decayMode = "MuMu", string imageOutDir = "")
   analyzer->addMonitorPlot("phi1", "Z.leg1().phi()", "Leading #phi;#phi (Radian);Events/0.2 rad.", 35, -3.5, 3.5, 0.1, 5000);
   analyzer->addMonitorPlot("phi2", "Z.leg2().phi()", "Leading #phi;#phi (Radian);Events/0.2 rad.", 35, -3.5, 3.5, 0.1, 5000);
 
+  analyzer->addMonitorPlot("metPhi", "met[0].phi()", "MET phi", 50, -3.2, 3.2);
+  analyzer->addMonitorPlot("dphi1", "asin(sin(Z.leg1().phi()-met[0].phi()))", "Angle diff", 50, -2, 2);
+  analyzer->addMonitorPlot("dphi2", "asin(sin(Z.leg2().phi()-met[0].phi()))", "Angle diff", 50, -2, 2);
+
   //analyzer->addCutStep("Z.mass() > 12", "ZMass,nJet,MET,pt1,eta1,phi1,pt2,eta2,phi2", 1.5);
+  analyzer->addCutStep("", "metPhi,dphi1,dphi2", 1); 
   analyzer->addCutStep("Z.mass() > 12", "", 1.5);
   if ( decayMode == "MuMu" )
   {
@@ -70,13 +77,13 @@ void ana(string decayMode = "MuMu", string imageOutDir = "")
     //analyzer->addCutStep("(chIso1+phIso1)/Z.leg1().pt() < 0.15 && (chIso2+phIso2)/Z.leg2().pt() < 0.20", "ZMass,nJet,MET,pt1,eta1,phi1,pt2,eta2,phi2");
     analyzer->addCutStep("(chIso1+nhIso1+phIso1)/Z.leg1().pt() < 0.20 && (chIso2+nhIso2+phIso2)/Z.leg2().pt() < 0.20", "");
   }
-  analyzer->addCutStep("Z.sign() < 0", "ZMass,nJet,MET,pt1,eta1,phi1,pt2,eta2,phi2");
+  analyzer->addCutStep("Z.sign() < 0", "ZMass,nJet,MET,pt1,eta1,phi1,pt2,eta2,phi2,dphi1,metPhi");
   analyzer->addCutStep("abs(Z.mass() - 91) > 15", "nJet,MET", 0.5);
   analyzer->addCutStep("@jetspt30.size() >= 2", "MET,ZMassFinal", 0.5);
   analyzer->addCutStep("MET > 30", "nJet,ZMassFinal", 0.5);
 
   //analyzer->addCutStep("Z.mass() > 12 && (chIso1+phIso1)/Z.leg1().pt() < 0.15 && (chIso2+phIso2)/Z.leg2().pt() < 0.15 && Z.sign() < 0 && abs(Z.mass() - 91) > 15 && @jetspt30.size() >= 2 && MET > 30", "nJet,MET");
-
+:
   analyzer->applyCutSteps();
 
   TObjArray histograms = analyzer->getHistograms();
