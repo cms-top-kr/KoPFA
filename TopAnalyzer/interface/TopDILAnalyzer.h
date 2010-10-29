@@ -13,7 +13,7 @@
 //
 // Original Author:  Tae Jeong Kim,40 R-A32,+41227678602,
 //         Created:  Fri Jun  4 17:19:29 CEST 2010
-// $Id: TopDILAnalyzer.h,v 1.4 2010/10/08 10:51:41 tjkim Exp $
+// $Id: TopDILAnalyzer.h,v 1.5 2010/10/08 15:58:07 tjkim Exp $
 //
 //
 
@@ -91,6 +91,7 @@ class TopDILAnalyzer : public edm::EDAnalyzer {
       h_jetpt30_multi = fs->make<TH1F>( "h_jetpt30_multi", "jet30pt_multi", 10, 0, 10);
 
       Z = new std::vector<Ko::ZCandidate>();
+      met = new std::vector<math::XYZTLorentzVector>();
       jets = new std::vector<math::XYZTLorentzVector>();
       jetspt30 = new std::vector<math::XYZTLorentzVector>();
 
@@ -129,6 +130,7 @@ class TopDILAnalyzer : public edm::EDAnalyzer {
 
         tree->Branch("Z","std::vector<Ko::ZCandidate>", &Z);
 
+	tree->Branch("met","std::vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >", &met);
 	tree->Branch("jets","std::vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >", &jets);
 	tree->Branch("jetspt30","std::vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >", &jetspt30);
 
@@ -165,6 +167,7 @@ class TopDILAnalyzer : public edm::EDAnalyzer {
 	  //using namespace isodeposit;
 
 	  Z->clear();
+	  met->clear();
 	  jets->clear();
 	  jetspt30->clear();
 
@@ -203,6 +206,7 @@ class TopDILAnalyzer : public edm::EDAnalyzer {
 
 	  pat::METCollection::const_iterator mi = MET_->begin();
 	  MET = mi->pt();
+          met->push_back(mi->p4());
 	  h_MET->Fill(MET);
 
 	  edm::Handle<pat::JetCollection> Jets;
@@ -398,6 +402,7 @@ class TopDILAnalyzer : public edm::EDAnalyzer {
       TH1F * h_jetpt30_multi;
 
       std::vector<Ko::ZCandidate>* Z;
+      std::vector<math::XYZTLorentzVector>* met;
       std::vector<math::XYZTLorentzVector>* jets;
       std::vector<math::XYZTLorentzVector>* jetspt30;
 
