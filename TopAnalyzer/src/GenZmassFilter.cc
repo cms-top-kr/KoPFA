@@ -13,7 +13,7 @@
 //
 // Original Author:  Tae Jeong Kim
 //         Created:  Mon Dec 14 01:29:35 CET 2009
-// $Id: GenZmassFilter.cc,v 1.2 2010/10/12 15:14:06 tjkim Exp $
+// $Id: GenZmassFilter.cc,v 1.3 2010/10/26 11:45:05 tjkim Exp $
 //
 //
 
@@ -146,7 +146,6 @@ GenZmassFilter::filter(edm::Event& iEvent, const edm::EventSetup& iSetup)
               gmoid = gcand->pdgId();
               if( gmoid == 23 ) {
                 genZmass = gcand->p4().M();
-                cout << "gmoid= " << genZmass << endl;
                 if( genZmass > min_ && genZmass < max_) accepted = true;
                 break;
               }
@@ -155,7 +154,6 @@ GenZmassFilter::filter(edm::Event& iEvent, const edm::EventSetup& iSetup)
 
           if( moid == 23 ) {
             genZmass = mcand->p4().M();
-            cout << "moid= " << genZmass << endl;
             if( genZmass > min_ && genZmass < max_) accepted = true;
             break;
           }
