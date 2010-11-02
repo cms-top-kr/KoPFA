@@ -16,7 +16,6 @@
 
 #include <iostream>
 #include <fstream>
-#include <sstream>
 #include <set>
 #include <algorithm>
 
@@ -28,17 +27,19 @@ public:
   TopAnalyzerLite(const string subDirName = "", const string imageOutDir = "");
   ~TopAnalyzerLite();
 
-  void addMC(const string mcSampleName, const string mcSampleLabel, 
-             const string fileName, const double xsec, const double nEvents, 
+  void addMC(const string mcSampleName, const string mcSampleLabel,
+             const string fileName, const double xsec, const double nEvents,
              const Color_t color);
   void addRealData(const string fileName, const double lumi);
-  void addCutStep(const TCut cut, const string monitorPlotNames, const double plotScale = 1.0);
+  void addCutStep(const TCut cut, const TString monitorPlotNamesStr, const double plotScale = 1.0);
   void addMonitorPlot(const string name, const string varexp, const string title,
-                      const int nBins, const double xmin, const double xmax, 
+                      const int nBins, const double xmin, const double xmax,
                       const double ymin = 0, const double ymax = 0, const bool doLogy = true);
 
   void applyCutSteps();
   TObjArray getHistograms();
+
+  void applySingleCut(const TCut cut, const TString monitirPlotNamesStr);
 
 private:
   struct MCSample
@@ -113,8 +114,8 @@ TopAnalyzerLite::~TopAnalyzerLite()
   if ( writeSummary_ ) fout_.close();
 }
 
-void TopAnalyzerLite::addMC(const string mcSampleName, const string mcSampleLabel, 
-                            const string fileName, const double xsec, const double nEvents, 
+void TopAnalyzerLite::addMC(const string mcSampleName, const string mcSampleLabel,
+                            const string fileName, const double xsec, const double nEvents,
                             const Color_t color)
 {
   int mcSampleIndex = -1;
@@ -154,15 +155,23 @@ void TopAnalyzerLite::addRealData(const string fileName, const double lumi)
   realDataChain_->Add(fileName.c_str());
 }
 
-void TopAnalyzerLite::addCutStep(const TCut cut, string monitorPlotNamesStr, const double plotScale)
+void TopAnalyzerLite::addCutStep(const TCut cut, TString monitorPlotNamesStr, const double plotScale)
 {
-  replace(monitorPlotNamesStr.begin(), monitorPlotNamesStr.end(), ',', ' ');
+  TObjArray* monitorPlotNames = monitorPlotNamesStr.Tokenize(",");
+  const int nPlots = monitorPlotNames->GetSize();
 
-  vector<string> tokens;
-  istringstream iss(monitorPlotNamesStr, istringstream::in);
-  string tmpStr;
-  while ( iss >> tmpStr ) tokens.push_back(tmpStr);
-  CutStep cutStep = {cut, tokens, plotScale};
+  vector<string> plotNames;
+  for ( int i=0; i<nPlots; ++i )
+  {
+    TObject* obj = monitorPlotNames->At(i);
+    if ( !obj ) continue;
+
+    const string plotName = obj->GetName();
+  
+    plotNames.push_back(plotName);
+  }
+
+  CutStep cutStep = {cut, plotNames, plotScale};
   cuts_.push_back(cutStep);
 }
 
@@ -217,7 +226,7 @@ void TopAnalyzerLite::applyCutSteps()
   {
     finalCut = finalCut && cuts_[i].cut;
   }
-  realDataChain_->Scan("RUN:LUMI:EVENT:Z.mass():@jetspt30.size():MET",finalCut); 
+  realDataChain_->Scan("RUN:LUMI:EVENT:Z.mass():@jetspt30.size():MET",finalCut);
   cout << "Number of entries after final selection = " << realDataChain_->GetEntries(finalCut) << endl;
 
   if ( writeSummary_ )
@@ -226,7 +235,7 @@ void TopAnalyzerLite::applyCutSteps()
 
     ((TTreePlayer*)(realDataChain_->GetPlayer()))->SetScanRedirect(true);
     ((TTreePlayer*)(realDataChain_->GetPlayer()))->SetScanFileName(tmpFileName.c_str());
-    realDataChain_->Scan("RUN:LUMI:EVENT:Z.mass():@jetspt30.size():MET",finalCut); 
+    realDataChain_->Scan("RUN:LUMI:EVENT:Z.mass():@jetspt30.size():MET",finalCut);
     ((TTreePlayer*)(realDataChain_->GetPlayer()))->SetScanRedirect(false);
 
     ifstream tmpFile(tmpFileName.c_str());
@@ -294,7 +303,7 @@ void TopAnalyzerLite::plot(const string name, const TCut cut, MonitorPlot& monit
       }
     }
     // If the label was not in the stack, insert it
-    if ( matchedPlot == stackedPlots.end() ) 
+    if ( matchedPlot == stackedPlots.end() )
     {
       stackedPlots.push_back(make_pair(mcSample.label, hMC));
       hStack->Add(hMC);
@@ -328,7 +337,7 @@ void TopAnalyzerLite::plot(const string name, const TCut cut, MonitorPlot& monit
     ymax = TMath::Max(dataYmax, mcYmax);
   }
 
-  if ( monitorPlot.doLogy ) 
+  if ( monitorPlot.doLogy )
   {
     if ( ymin <= 0 ) ymin = 1e-2;
     c->SetLogy();
@@ -372,7 +381,7 @@ void TopAnalyzerLite::printStat(const string& name, TCut cut)
     const double norm = lumi_*mcSample.xsec/mcSample.nEvents;
     const double nEvents = mcSample.chain->GetEntries(cut)*norm;
     const double nEventsErr2 = nEvents*norm;
-    
+
     // Merge statistics with same labels
     vector<Stat>::iterator matchedStatObj = stats.end();
     for ( vector<Stat>::iterator statObj = stats.begin();
@@ -433,7 +442,35 @@ void TopAnalyzerLite::printStat(const string& name, TCut cut)
   }
 }
 
+void TopAnalyzerLite::applySingleCut(const TCut cut, const TString monitorPlotNamesStr)
+{
+  static int singleCutUniqueId = 0;
+
+  TObjArray* monitorPlotNames = monitorPlotNamesStr.Tokenize(",");
+  const int nPlots = monitorPlotNames->GetSize();
+
+  cout << "----------------------------\n";
+  cout << "Result of single cut" << endl;
+  cout << "Cut = " << cut << endl;
+  printStat(Form("SingleCut_%d", singleCutUniqueId), cut);
+  for ( int i=0; i<nPlots; ++i )
+  {
+    TObject* obj = monitorPlotNames->At(i);
+    if ( !obj ) continue;
+
+    const string plotName = obj->GetName();
+    if ( monitorPlots_.find(plotName) == monitorPlots_.end() ) continue;
+    MonitorPlot& monitorPlot = monitorPlots_[plotName];
+    plot(Form("SingleCut_%d_%s", singleCutUniqueId, plotName.c_str()), cut, monitorPlot);
+  }
+
+  monitorPlotNames->Delete();
+
+  ++singleCutUniqueId;
+}
+
 TObjArray TopAnalyzerLite::getHistograms()
 {
   return histograms_;
 }
+
