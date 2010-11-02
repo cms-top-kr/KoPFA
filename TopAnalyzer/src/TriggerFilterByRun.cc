@@ -42,6 +42,7 @@ private:
     vector<string> triggerNames_;
   };
 
+  bool filterOutUndefined_;
   edm::InputTag triggerResultsLabel_;
   vector<TriggerSet> triggerSets_;
   vector<string> currentTriggerNames_;
