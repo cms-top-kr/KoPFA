@@ -75,8 +75,10 @@ bool TriggerFilterByRun::beginRun(edm::Run& run, const edm::EventSetup& eventSet
   {
     const int runBegin = triggerSet->runBegin_;
     const int runEnd = triggerSet->runEnd_;
-    if ( runNumber < runBegin ) continue;
-    if ( runBegin <= runEnd and runNumber >= runEnd ) continue;
+
+    // If the run number is sit in the run range of this trigger name,
+    // put into the list of trigger names to be considered.
+    if ( runNumber < runBegin or runNumber > runEnd) continue;
 
     const vector<string>& input = triggerSet->triggerNames_;
     currentTriggerNames_.insert(currentTriggerNames_.end(), input.begin(), input.end());
