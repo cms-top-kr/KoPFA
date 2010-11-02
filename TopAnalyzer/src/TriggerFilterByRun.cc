@@ -45,12 +45,12 @@ private:
   edm::InputTag triggerResultsLabel_;
   vector<TriggerSet> triggerSets_;
   vector<string> currentTriggerNames_;
-  bool isTriggerSetUpdated_;
 };
 
 TriggerFilterByRun::TriggerFilterByRun(const edm::ParameterSet& pset)
 {
   triggerResultsLabel_ = pset.getUntrackedParameter<edm::InputTag>("triggerResults", edm::InputTag("TriggerResults", "", "HLT"));
+  filterOutUndefined_ = pset.getUntrackedParameter<bool>("filterOutUndefined", true);
   VPSet triggerPSets = pset.getUntrackedParameter<VPSet>("triggerPSets");
 
   for ( VPSet::const_iterator triggerPSet = triggerPSets.begin();
@@ -78,7 +78,7 @@ bool TriggerFilterByRun::beginRun(edm::Run& run, const edm::EventSetup& eventSet
 
     // If the run number is sit in the run range of this trigger name,
     // put into the list of trigger names to be considered.
-    if ( runNumber < runBegin or runNumber > runEnd) continue;
+    if ( runNumber < runBegin or runNumber > runEnd ) continue;
 
     const vector<string>& input = triggerSet->triggerNames_;
     currentTriggerNames_.insert(currentTriggerNames_.end(), input.begin(), input.end());
@@ -89,8 +89,13 @@ bool TriggerFilterByRun::beginRun(edm::Run& run, const edm::EventSetup& eventSet
 
 bool TriggerFilterByRun::filter(edm::Event& event, const edm::EventSetup& eventSetup)
 {
-  // We accept event if we don't know which triggers to be required
-  if ( currentTriggerNames_.empty() ) return true;
+  // If we don't know which triggers to be required, no need to check trigger bits.
+  if ( currentTriggerNames_.empty() )
+  {
+    // More simpler form is possible, but keep this for readability
+    if ( filterOutUndefined_ ) return false;
+    else return true;
+  }
 
   edm::Handle<edm::TriggerResults> triggerResultsHandle;
   if ( !event.getByLabel(triggerResultsLabel_, triggerResultsHandle) )
