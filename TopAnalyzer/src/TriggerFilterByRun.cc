@@ -100,19 +100,13 @@ bool TriggerFilterByRun::filter(edm::Event& event, const edm::EventSetup& eventS
 
   if ( !triggerResults->wasrun() or !triggerResults->accept() ) return false;
 
-  const int nTriggerResult = triggerResults->size();
   const edm::TriggerNames& triggerNames = event.triggerNames(*triggerResults);
 
-  for ( int triggerIndex = 0; triggerIndex < nTriggerResult; ++triggerIndex )
+  for ( vector<string>::const_iterator triggerNameToFilter = currentTriggerNames_.begin();
+      triggerNameToFilter != currentTriggerNames_.end(); ++triggerNameToFilter )
   {
-    if ( !triggerResults->accept(triggerIndex) ) continue;
-    const string triggerName = triggerNames.triggerName(triggerIndex);
-
-    for ( vector<string>::const_iterator triggerNameToFilter = currentTriggerNames_.begin();
-          triggerNameToFilter != currentTriggerNames_.end(); ++triggerNameToFilter )
-    {
-      if ( triggerName == *triggerNameToFilter ) return true;
-    }
+    const int triggerIndex = triggerNames.triggerIndex(*triggerNameToFilter);
+    if ( triggerResults->accept(triggerIndex) ) return true;
   }
 
   return false;
