@@ -29,7 +29,7 @@ void ana(string decayMode = "MuMu", string imageOutDir = "")
   //analyzer->addRealData(rdPath+"/vallot_Run2010B_PromptReco.root", 4.0*781/3382);
   //analyzer->addRealData(rdPath+"/vallot.root", 7.1);
 
-  analyzer->addMC("TTbar", "t#bar{t}", mcPath+"/vallot_TTbar.root", 157.5, 10000, 4);
+  analyzer->addMC("TTbar", "t#bar{t}", mcPath+"/vallot_TTbar.root", 157.5, 1000000, 4);
   analyzer->addMC("Wlnu", "W #rightarrow l#nu", mcPath+"/vallot_WJets.root", 31314, 500000, 46);
   analyzer->addMC("VVJets" "Dibosons", "Dibosons", mcPath+"/vallot_VVJets.root", 4.8, 10000, 6);
   analyzer->addMC("SingleTop", "Single top", mcPath+"/vallot_SingleTop.root", 10.6, 10000, 7);
@@ -73,7 +73,7 @@ void ana(string decayMode = "MuMu", string imageOutDir = "")
   }
   else if ( decayMode == "ElEl" )
   {
-    //analyzer->addCutStep("(chIso1+phIso1)/Z.leg1().pt() < 0.15 && (chIso2+phIso2)/Z.leg2().pt() < 0.20", "ZMass,nJet,MET,pt1,eta1,phi1,pt2,eta2,phi2");
+    //analyzer->addCutStep("(chIso1+phIso1)/Z.leg1().pt() < 0.20 && (chIso2+phIso2)/Z.leg2().pt() < 0.20", "ZMass,nJet,MET,pt1,eta1,phi1,pt2,eta2,phi2");
     analyzer->addCutStep("(chIso1+nhIso1+phIso1)/Z.leg1().pt() < 0.20 && (chIso2+nhIso2+phIso2)/Z.leg2().pt() < 0.20", "");
   }
   analyzer->addCutStep("Z.sign() < 0", "ZMass,nJet,MET,pt1,eta1,phi1,pt2,eta2,phi2,dphi1,metPhi");
@@ -81,9 +81,10 @@ void ana(string decayMode = "MuMu", string imageOutDir = "")
   analyzer->addCutStep("@jetspt30.size() >= 2", "MET,ZMassFinal", 0.5);
   analyzer->addCutStep("MET > 30", "nJet,ZMassFinal", 0.5);
 
-  //analyzer->addCutStep("Z.mass() > 12 && (chIso1+phIso1)/Z.leg1().pt() < 0.15 && (chIso2+phIso2)/Z.leg2().pt() < 0.15 && Z.sign() < 0 && abs(Z.mass() - 91) > 15 && @jetspt30.size() >= 2 && MET > 30", "nJet,MET");
-:
   analyzer->applyCutSteps();
+
+  analyzer->applySingleCut("Z.mass() > 12 && (chIso1+phIso1)/Z.leg1().pt() < 0.21 && (chIso2+phIso2)/Z.leg2().pt() < 0.21 && Z.sign() < 0 && abs(Z.mass() - 91) > 15 && @jetspt30.size() >= 2 && MET > 30", "nJet,MET,ZMass");
+  analyzer->applySingleCut("Z.mass() > 12 && (chIso1+phIso1)/Z.leg1().pt() < 0.21 && (chIso2+phIso2)/Z.leg2().pt() < 0.21 && Z.sign() < 0 && abs(Z.mass() - 91) < 15 && @jetspt30.size() >= 2 && MET > 30", "nJet,MET,ZMass");
 
   TObjArray histograms = analyzer->getHistograms();
 }
