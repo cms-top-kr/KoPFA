@@ -13,7 +13,7 @@
 //
 // Original Author:  Tae Jeong Kim,40 R-A32,+41227678602,
 //         Created:  Fri Jun  4 17:19:29 CEST 2010
-// $Id: TopDILAnalyzer.h,v 1.5 2010/10/08 15:58:07 tjkim Exp $
+// $Id: TopDILAnalyzer.h,v 1.6 2010/10/29 12:46:36 tjkim Exp $
 //
 //
 
@@ -156,6 +156,7 @@ class TopDILAnalyzer : public edm::EDAnalyzer {
 	tree->Branch("hcalIso2","std::vector<double>", &hcalIso2);
 
         tree->Branch("MET",&MET,"MET/d");
+        tree->Branch("dphimetlepton",&dphimetlepton,"dphimetlepton/d");
 
       } 
 
@@ -223,8 +224,10 @@ class TopDILAnalyzer : public edm::EDAnalyzer {
 
 	    if(passId){
 	      jets->push_back(it->p4());
-	      if( it->pt() > 30)
-		jetspt30->push_back(it->p4());
+
+	      if( it->pt() > 30){
+                jetspt30->push_back(it->p4());
+              }
 	    }
 	  }
 
@@ -240,10 +243,11 @@ class TopDILAnalyzer : public edm::EDAnalyzer {
 
 	      bool match = MatchObjects( it1.p4(), it2.p4(), true);
 	      if(match) continue;
+              dphimetlepton = fabs(deltaPhi(mi->phi(),it1.phi()));
 
 	      int sign = it1.charge() * it2.charge();
 	      Ko::ZCandidate dimuon(it1.p4(), it2.p4(), sign);
-
+              
 	      Z->push_back(dimuon);
 
 	      h_leadingpt->Fill(it1.pt());
@@ -428,6 +432,7 @@ class TopDILAnalyzer : public edm::EDAnalyzer {
       std::vector<double>* hcalIso2;
     
       double MET;
+      double dphimetlepton;
       // ----------member data ---------------------------
 
       //add run event data
