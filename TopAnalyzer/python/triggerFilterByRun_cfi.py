@@ -2,6 +2,8 @@ import FWCore.ParameterSet.Config as cms
 
 muonTriggerFilterByRun = cms.EDFilter("TriggerFilterByRun",
     triggerResults = cms.untracked.InputTag("TriggerResults", "", "HLT"),
+    filter = cms.untracked.bool(True),
+    filterOutUndefined = cms.untracked.bool(True),
     triggerPSets = cms.untracked.VPSet(
         cms.untracked.PSet(
             runBegin = cms.untracked.int32(0),
@@ -23,6 +25,8 @@ muonTriggerFilterByRun = cms.EDFilter("TriggerFilterByRun",
 
 electronTriggerFilterByRun = cms.EDFilter("TriggerFilterByRun",
     triggerResults = cms.untracked.InputTag("TriggerResults", "", "HLT"),
+    filter = cms.untracked.bool(True),
+    filterOutUndefined = cms.untracked.bool(True),
     triggerPSets = cms.untracked.VPSet(
         cms.untracked.PSet(
             runBegin = cms.untracked.int32(0),
