@@ -42,7 +42,7 @@ private:
     vector<string> triggerNames_;
   };
 
-  bool filterOutUndefined_;
+  bool doFilter_, filterOutUndefined_;
   edm::InputTag triggerResultsLabel_;
   vector<TriggerSet> triggerSets_;
   vector<string> currentTriggerNames_;
@@ -51,6 +51,7 @@ private:
 TriggerFilterByRun::TriggerFilterByRun(const edm::ParameterSet& pset)
 {
   triggerResultsLabel_ = pset.getUntrackedParameter<edm::InputTag>("triggerResults", edm::InputTag("TriggerResults", "", "HLT"));
+  doFilter_ = pset.getUntrackedParameter<bool>("filter", true);
   filterOutUndefined_ = pset.getUntrackedParameter<bool>("filterOutUndefined", true);
   VPSet triggerPSets = pset.getUntrackedParameter<VPSet>("triggerPSets");
 
@@ -90,6 +91,8 @@ bool TriggerFilterByRun::beginRun(edm::Run& run, const edm::EventSetup& eventSet
 
 bool TriggerFilterByRun::filter(edm::Event& event, const edm::EventSetup& eventSetup)
 {
+  if ( !doFilter_ ) return true;
+
   // If we don't know which triggers to be required, no need to check trigger bits.
   if ( currentTriggerNames_.empty() )
   {
