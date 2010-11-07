@@ -116,7 +116,8 @@ bool TriggerFilterByRun::filter(edm::Event& event, const edm::EventSetup& eventS
   for ( vector<string>::const_iterator triggerNameToFilter = currentTriggerNames_.begin();
       triggerNameToFilter != currentTriggerNames_.end(); ++triggerNameToFilter )
   {
-    const int triggerIndex = triggerNames.triggerIndex(*triggerNameToFilter);
+    const unsigned int triggerIndex = triggerNames.triggerIndex(*triggerNameToFilter);
+    if ( triggerIndex == triggerNames.size() ) continue;
     if ( triggerResults->accept(triggerIndex) ) return true;
   }
 
