@@ -9,9 +9,10 @@
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
 
+#include "HLTrigger/HLTcore/interface/HLTConfigProvider.h"
+#include "DataFormats/HLTReco/interface/TriggerEvent.h"
 #include "FWCore/Common/interface/TriggerNames.h"
 #include "DataFormats/Common/interface/TriggerResults.h"
-
 #include <vector>
 
 using namespace std;
@@ -28,6 +29,8 @@ public:
   typedef vector<edm::ParameterSet> VPSet;
 
 private:
+  //HLTConfigProvider hltConfig_;
+
   struct TriggerSet
   {
     TriggerSet() {};
@@ -44,13 +47,16 @@ private:
 
   bool doFilter_, filterOutUndefined_;
   edm::InputTag triggerResultsLabel_;
+  edm::InputTag triggerEventLabel_;
   vector<TriggerSet> triggerSets_;
   vector<string> currentTriggerNames_;
 };
 
 TriggerFilterByRun::TriggerFilterByRun(const edm::ParameterSet& pset)
 {
-  triggerResultsLabel_ = pset.getUntrackedParameter<edm::InputTag>("triggerResults", edm::InputTag("TriggerResults", "", "HLT"));
+  triggerResultsLabel_ = pset.getUntrackedParameter<edm::InputTag>("triggerResults", edm::InputTag("TriggerResults", "", "REDIGI"));
+  triggerEventLabel_ = pset.getUntrackedParameter<edm::InputTag>("triggerEvent", edm::InputTag("hltTriggerSummaryAOD", "", "REDIGI"));
+  
   doFilter_ = pset.getUntrackedParameter<bool>("filter", true);
   filterOutUndefined_ = pset.getUntrackedParameter<bool>("filterOutUndefined", true);
   VPSet triggerPSets = pset.getUntrackedParameter<VPSet>("triggerPSets");
@@ -69,6 +75,9 @@ TriggerFilterByRun::TriggerFilterByRun(const edm::ParameterSet& pset)
 
 bool TriggerFilterByRun::beginRun(edm::Run& run, const edm::EventSetup& eventSetup)
 {
+  using namespace std;
+  using namespace edm;
+
   const int runNumber = run.run();
   // Find trigger sets corresponding to this run
   currentTriggerNames_.clear();
@@ -91,6 +100,8 @@ bool TriggerFilterByRun::beginRun(edm::Run& run, const edm::EventSetup& eventSet
 
 bool TriggerFilterByRun::filter(edm::Event& event, const edm::EventSetup& eventSetup)
 {
+  bool accept = false;
+
   if ( !doFilter_ ) return true;
 
   // If we don't know which triggers to be required, no need to check trigger bits.
@@ -102,6 +113,8 @@ bool TriggerFilterByRun::filter(edm::Event& event, const edm::EventSetup& eventS
   }
 
   edm::Handle<edm::TriggerResults> triggerResultsHandle;
+  edm::Handle<trigger::TriggerEvent> triggerEventHandle;
+
   if ( !event.getByLabel(triggerResultsLabel_, triggerResultsHandle) )
   {
     edm::LogError("TriggerFilterByRun") << "Cannot find TriggerResults\n";
@@ -109,6 +122,10 @@ bool TriggerFilterByRun::filter(edm::Event& event, const edm::EventSetup& eventS
   }
   const edm::TriggerResults* triggerResults = triggerResultsHandle.product();
 
+  if ( !event.getByLabel(triggerEventLabel_,triggerEventHandle) ) {
+    edm::LogError("TriggerFilterByRun") << "Cannot find TriggerEvent\n";
+    return false;
+  }
   if ( !triggerResults->wasrun() or !triggerResults->accept() ) return false;
 
   const edm::TriggerNames& triggerNames = event.triggerNames(*triggerResults);
@@ -118,10 +135,30 @@ bool TriggerFilterByRun::filter(edm::Event& event, const edm::EventSetup& eventS
   {
     const unsigned int triggerIndex = triggerNames.triggerIndex(*triggerNameToFilter);
     if ( triggerIndex == triggerNames.size() ) continue;
-    if ( triggerResults->accept(triggerIndex) ) return true;
+    if ( triggerResults->accept(triggerIndex) ) accept = true;
+    if ( accept && *triggerNameToFilter == "HLT_Ele10_LW_L1R") {
+      size_t n(0);
+      bool acceptPseudoHLT_Electron15 = false;
+      edm::InputTag memberTag_("hltL1NonIsoHLTNonIsoSingleElectronLWEt10PixelMatchFilter","","REDIGI");
+      const unsigned int filterIndex(triggerEventHandle->filterIndex(memberTag_));
+      if (filterIndex < triggerEventHandle->sizeFilters()) {
+        const trigger::Keys& KEYS(triggerEventHandle->filterKeys(filterIndex));
+        const size_t n1(KEYS.size());
+        for (size_t i=0; i!=n1; ++i) {
+          const trigger::TriggerObject& triggerObject( triggerEventHandle->getObjects().at(KEYS[i]) );
+          if (triggerObject.pt() >= 15) n++;
+        }
+        // if at least one trigger object matched the criteria, the object is selected
+        if (n>=1) {
+          acceptPseudoHLT_Electron15 = true;;
+          cout << "pass" << endl;
+        }
+      }
+      accept = acceptPseudoHLT_Electron15;
+    }
   }
 
-  return false;
+  return accept;
 }
 
 DEFINE_FWK_MODULE(TriggerFilterByRun);
