@@ -124,20 +124,17 @@ void KoMuonSelector::produce(edm::Event& iEvent, const edm::EventSetup& es)
         if(!passId) break;
       }
       for(size_t i =0 ; i < isocut_.size() ; i++){
-        passIso = muonIsoSel.test(cut_[i]);
+        passIso = muonIsoSel.test(isocut_[i]);
         if(!passIso) break;
       }
       passed = passId && passIso;
-      if(passed) cout << passId << " " << passIso << endl;
     } else if(version_==0) passed = C1;
     else if(version_==1) passed = C2;
     else if(version_==2) passed = muonIdSel.test("VBTF") && C2;
     else if(version_==3) passed = muonIdSel.test("TOPDIL") && C2;
     else if(version_==4) passed = C2 && muonIsoSel.test("pfOptimizedRel");
-
     if(passed){
       pos->push_back((*muons_)[i]);
-
       pt->push_back(muon.pt());
       eta->push_back(muon.eta());
       phi->push_back(muon.phi());
