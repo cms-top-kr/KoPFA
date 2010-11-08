@@ -103,7 +103,7 @@ electronTriggerFilterForMC = cms.EDFilter("TriggerFilterByRun",
         cms.untracked.PSet(
             runBegin = cms.untracked.int32(0),
             runEnd = cms.untracked.int32(999999),
-            triggerNames = cms.untracked.vstring("HLT_Ele10_LW_L1R")
+            triggerNames = cms.untracked.vstring("HLT_Ele10_SW_L1R")
         )
     )
 )
