@@ -224,7 +224,10 @@ process.tnpTreeIso = cms.EDAnalyzer("TagProbeFitTreeProducer",
     allProbes     = cms.InputTag("IDMuons"),
 )
 
-if process.tnpTree.isMC: 
+MC = False 
+#print process.tnpTree.isMC.value()
+
+if MC== True: 
    process.p = cms.Path(
                      process.taggedMuons
                      *process.triggerMatch
