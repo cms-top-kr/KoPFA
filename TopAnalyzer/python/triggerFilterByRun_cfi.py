@@ -25,14 +25,23 @@ muonTriggerFilterByRun = cms.EDFilter("TriggerFilterByRun",
 
 electronTriggerFilterByRun = cms.EDFilter("TriggerFilterByRun",
     triggerResults = cms.untracked.InputTag("TriggerResults", "", "HLT"),
+    triggerEvent = cms.untracked.InputTag("hltTriggerSummaryAOD", "", "HLT"),
     filter = cms.untracked.bool(True),
     filterOutUndefined = cms.untracked.bool(True),
+
+    ## Special treatment for early runs, to do trigger object matching
+    doMatch = cms.untracked.bool(True),
+    matchRunBegin = cms.untracked.int32(0),
+    matchRunEnd = cms.untracked.int32(138000),
+    matchMinPt = cms.untracked.double(15),
+    matchTriggerObject = cms.untracked.InputTag("hltL1NonIsoHLTNonIsoSingleElectronLWEt10PixelMatchFilter"),
+ 
     triggerPSets = cms.untracked.VPSet(
         cms.untracked.PSet(
             runBegin = cms.untracked.int32(0),
             runEnd = cms.untracked.int32(138000),
             triggerNames = cms.untracked.vstring("HLT_Ele10_LW_L1R")
-        ),
+       ),
         cms.untracked.PSet(
             runBegin = cms.untracked.int32(138000),
             runEnd = cms.untracked.int32(141900),
@@ -77,3 +86,24 @@ electronTriggerFilterByRun = cms.EDFilter("TriggerFilterByRun",
     )
 )
 
+electronTriggerFilterForMC = cms.EDFilter("TriggerFilterByRun",
+    triggerResults = cms.untracked.InputTag("TriggerResults", "", "HLT"),
+    triggerEvent = cms.untracked.InputTag("hltTriggerSummaryAOD", "", "HLT"),
+    filter = cms.untracked.bool(True),
+    filterOutUndefined = cms.untracked.bool(True),
+
+    ## Special treatment for early runs, to do trigger object matching
+    doMatch = cms.untracked.bool(True),
+    matchRunBegin = cms.untracked.int32(0),
+    matchRunEnd = cms.untracked.int32(999999),
+    matchMinPt = cms.untracked.double(15),
+    matchTriggerObject = cms.untracked.InputTag("hltL1NonIsoHLTNonIsoSingleElectronLWEt10PixelMatchFilter"),
+ 
+    triggerPSets = cms.untracked.VPSet(
+        cms.untracked.PSet(
+            runBegin = cms.untracked.int32(0),
+            runEnd = cms.untracked.int32(999999),
+            triggerNames = cms.untracked.vstring("HLT_Ele10_LW_L1R")
+        )
+    )
+)

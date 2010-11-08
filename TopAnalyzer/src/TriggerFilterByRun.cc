@@ -46,6 +46,12 @@ private:
   };
 
   bool doFilter_, filterOutUndefined_;
+  
+  bool doMatch_;
+  double matchRunBegin_, matchRunEnd_;
+  double matchMinPt_;
+  edm::InputTag matchTriggerObjectLabel_;
+
   edm::InputTag triggerResultsLabel_;
   edm::InputTag triggerEventLabel_;
   vector<TriggerSet> triggerSets_;
@@ -60,6 +66,16 @@ TriggerFilterByRun::TriggerFilterByRun(const edm::ParameterSet& pset)
   doFilter_ = pset.getUntrackedParameter<bool>("filter", true);
   filterOutUndefined_ = pset.getUntrackedParameter<bool>("filterOutUndefined", true);
   VPSet triggerPSets = pset.getUntrackedParameter<VPSet>("triggerPSets");
+
+  // Special treatment for early runs, to do trigger object matching
+  doMatch_ = pset.getUntrackedParameter<bool>("doMatch", false);
+  if ( doMatch_ )
+  {
+    matchRunBegin_ = pset.getUntrackedParameter<int>("matchRunBegin");
+    matchRunEnd_ = pset.getUntrackedParameter<int>("matchRunEnd");
+    matchMinPt_ = pset.getUntrackedParameter<double>("matchMinPt");
+    matchTriggerObjectLabel_ = pset.getUntrackedParameter<edm::InputTag>("matchTriggerObject");
+  }
 
   for ( VPSet::const_iterator triggerPSet = triggerPSets.begin();
         triggerPSet != triggerPSets.end(); ++triggerPSet )
@@ -100,8 +116,6 @@ bool TriggerFilterByRun::beginRun(edm::Run& run, const edm::EventSetup& eventSet
 
 bool TriggerFilterByRun::filter(edm::Event& event, const edm::EventSetup& eventSetup)
 {
-  bool accept = false;
-
   if ( !doFilter_ ) return true;
 
   // If we don't know which triggers to be required, no need to check trigger bits.
@@ -113,7 +127,6 @@ bool TriggerFilterByRun::filter(edm::Event& event, const edm::EventSetup& eventS
   }
 
   edm::Handle<edm::TriggerResults> triggerResultsHandle;
-  edm::Handle<trigger::TriggerEvent> triggerEventHandle;
 
   if ( !event.getByLabel(triggerResultsLabel_, triggerResultsHandle) )
   {
@@ -121,41 +134,55 @@ bool TriggerFilterByRun::filter(edm::Event& event, const edm::EventSetup& eventS
     return false;
   }
   const edm::TriggerResults* triggerResults = triggerResultsHandle.product();
-
-  if ( !event.getByLabel(triggerEventLabel_,triggerEventHandle) ) {
-    edm::LogError("TriggerFilterByRun") << "Cannot find TriggerEvent\n";
-    return false;
-  }
   if ( !triggerResults->wasrun() or !triggerResults->accept() ) return false;
 
+  edm::Handle<trigger::TriggerEvent> triggerEventHandle;
+  if ( doMatch_ )
+  {
+    if ( !event.getByLabel(triggerEventLabel_,triggerEventHandle) ) {
+      edm::LogError("TriggerFilterByRun") << "Cannot find TriggerEvent\n";
+      return false;
+    }
+  }
+
+  const int runNumber = event.id().run();
   const edm::TriggerNames& triggerNames = event.triggerNames(*triggerResults);
+
+  bool accept = false;
 
   for ( vector<string>::const_iterator triggerNameToFilter = currentTriggerNames_.begin();
       triggerNameToFilter != currentTriggerNames_.end(); ++triggerNameToFilter )
   {
     const unsigned int triggerIndex = triggerNames.triggerIndex(*triggerNameToFilter);
     if ( triggerIndex == triggerNames.size() ) continue;
-    if ( triggerResults->accept(triggerIndex) ) accept = true;
-    if ( accept && *triggerNameToFilter == "HLT_Ele10_LW_L1R") {
-      size_t n(0);
-      bool acceptPseudoHLT_Electron15 = false;
-      edm::InputTag memberTag_("hltL1NonIsoHLTNonIsoSingleElectronLWEt10PixelMatchFilter","","REDIGI");
-      const unsigned int filterIndex(triggerEventHandle->filterIndex(memberTag_));
-      if (filterIndex < triggerEventHandle->sizeFilters()) {
-        const trigger::Keys& KEYS(triggerEventHandle->filterKeys(filterIndex));
-        const size_t n1(KEYS.size());
-        for (size_t i=0; i!=n1; ++i) {
-          const trigger::TriggerObject& triggerObject( triggerEventHandle->getObjects().at(KEYS[i]) );
-          if (triggerObject.pt() >= 15) n++;
-        }
-        // if at least one trigger object matched the criteria, the object is selected
-        if (n>=1) {
-          acceptPseudoHLT_Electron15 = true;;
-          cout << "pass" << endl;
-        }
+    if ( !triggerResults->accept(triggerIndex) ) accept = true;
+
+    // If matching is turn on and the run number is in the run range, try trigger object matching
+    if ( doMatch_ and matchRunBegin_ >= runNumber and matchRunEnd_ <= runNumber )
+    {
+      const unsigned int filterIndex = triggerEventHandle->filterIndex(matchTriggerObjectLabel_);
+
+      // Check filterIndex for safety : invalid values in case of wrong input like typo
+      // Skip if the label is not found
+      if ( filterIndex >= triggerEventHandle->sizeFilters() )
+      {
+        edm::LogError("TriggerFilterByRun") << "Filter name is not in the trigger object\n";
+        continue;
       }
-      accept = acceptPseudoHLT_Electron15;
+
+      int nMatch = 0;
+      const trigger::Keys& keys = triggerEventHandle->filterKeys(filterIndex);
+      const size_t nKey = keys.size();
+      for ( size_t i=0; i<nKey; ++i )
+      {
+        const trigger::TriggerObject& triggerObject = triggerEventHandle->getObjects().at(keys[i]);
+        if ( triggerObject.pt() >= matchMinPt_ ) ++nMatch;
+      }
+
+      if ( nMatch == 0 ) accept = false;
     }
+
+    if ( accept ) return true;
   }
 
   return accept;
