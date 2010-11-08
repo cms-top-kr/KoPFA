@@ -50,6 +50,7 @@ private:
   bool doMatch_;
   double matchRunBegin_, matchRunEnd_;
   double matchMinPt_;
+  std::string matchTriggerPath_;
   edm::InputTag matchTriggerObjectLabel_;
 
   edm::InputTag triggerResultsLabel_;
@@ -74,6 +75,7 @@ TriggerFilterByRun::TriggerFilterByRun(const edm::ParameterSet& pset)
     matchRunBegin_ = pset.getUntrackedParameter<int>("matchRunBegin");
     matchRunEnd_ = pset.getUntrackedParameter<int>("matchRunEnd");
     matchMinPt_ = pset.getUntrackedParameter<double>("matchMinPt");
+    matchTriggerPath_ = pset.getUntrackedParameter<std::string>("matchTriggerPath");
     matchTriggerObjectLabel_ = pset.getUntrackedParameter<edm::InputTag>("matchTriggerObject");
   }
 
@@ -158,7 +160,8 @@ bool TriggerFilterByRun::filter(edm::Event& event, const edm::EventSetup& eventS
     if ( !triggerResults->accept(triggerIndex) ) accept = true;
 
     // If matching is turn on and the run number is in the run range, try trigger object matching
-    if ( doMatch_ and matchRunBegin_ >= runNumber and matchRunEnd_ <= runNumber )
+    if ( doMatch_ and matchRunBegin_ >= runNumber and matchRunEnd_ <= runNumber and
+         matchTriggerPath_ == *triggerNameToFilter )
     {
       const unsigned int filterIndex = triggerEventHandle->filterIndex(matchTriggerObjectLabel_);
 

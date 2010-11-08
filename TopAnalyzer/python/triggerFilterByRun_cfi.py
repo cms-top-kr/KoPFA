@@ -34,8 +34,9 @@ electronTriggerFilterByRun = cms.EDFilter("TriggerFilterByRun",
     matchRunBegin = cms.untracked.int32(0),
     matchRunEnd = cms.untracked.int32(138000),
     matchMinPt = cms.untracked.double(15),
+    matchTriggerPath = cms.untracked.string("HLT_Ele10_SW_L1R"),
     matchTriggerObject = cms.untracked.InputTag("hltL1NonIsoHLTNonIsoSingleElectronLWEt10PixelMatchFilter"),
- 
+
     triggerPSets = cms.untracked.VPSet(
         cms.untracked.PSet(
             runBegin = cms.untracked.int32(0),
@@ -55,7 +56,7 @@ electronTriggerFilterByRun = cms.EDFilter("TriggerFilterByRun",
         cms.untracked.PSet(
             runBegin = cms.untracked.int32(144000),
             runEnd = cms.untracked.int32(144114),
-            triggerNames = cms.untracked.vstring("HLT_Ele15_SW_CaloEleId_L1R", 
+            triggerNames = cms.untracked.vstring("HLT_Ele15_SW_CaloEleId_L1R",
                                                  "HLT_Ele20_SW_L1R",
                                                  "HLT_DoubleEle10_SW_L1R")
         ),
@@ -86,6 +87,22 @@ electronTriggerFilterByRun = cms.EDFilter("TriggerFilterByRun",
     )
 )
 
+muonTriggerFilterForMC = cms.EDFilter("TriggerFilterByRun",
+    triggerResults = cms.untracked.InputTag("TriggerResults", "", "HLT"),
+    filter = cms.untracked.bool(True),
+    filterOutUndefined = cms.untracked.bool(True),
+
+    doMatch = cms.untracked.bool(False),
+
+    triggerPSets = cms.untracked.VPSet(
+        cms.untracked.PSet(
+            runBegin = cms.untracked.int32(0),
+            runEnd = cms.untracked.int32(999999),
+            triggerNames = cms.untracked.vstring("HLT_Mu9")
+        )
+    )
+)
+
 electronTriggerFilterForMC = cms.EDFilter("TriggerFilterByRun",
     triggerResults = cms.untracked.InputTag("TriggerResults", "", "HLT"),
     triggerEvent = cms.untracked.InputTag("hltTriggerSummaryAOD", "", "HLT"),
@@ -97,8 +114,9 @@ electronTriggerFilterForMC = cms.EDFilter("TriggerFilterByRun",
     matchRunBegin = cms.untracked.int32(0),
     matchRunEnd = cms.untracked.int32(999999),
     matchMinPt = cms.untracked.double(15),
+    matchTriggerPath = cms.untracked.string("HLT_Ele10_SW_L1R"),
     matchTriggerObject = cms.untracked.InputTag("hltL1NonIsoHLTNonIsoSingleElectronLWEt10PixelMatchFilter"),
- 
+
     triggerPSets = cms.untracked.VPSet(
         cms.untracked.PSet(
             runBegin = cms.untracked.int32(0),
