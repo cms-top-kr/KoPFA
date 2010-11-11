@@ -157,7 +157,7 @@ bool TriggerFilterByRun::filter(edm::Event& event, const edm::EventSetup& eventS
   {
     const unsigned int triggerIndex = triggerNames.triggerIndex(*triggerNameToFilter);
     if ( triggerIndex == triggerNames.size() ) continue;
-    if ( !triggerResults->accept(triggerIndex) ) accept = true;
+    if ( triggerResults->accept(triggerIndex) ) accept = true;
 
     // If matching is turn on and the run number is in the run range, try trigger object matching
     if ( doMatch_ and matchRunBegin_ >= runNumber and matchRunEnd_ <= runNumber and
