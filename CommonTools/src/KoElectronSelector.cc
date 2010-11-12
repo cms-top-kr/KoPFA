@@ -88,11 +88,10 @@ void KoElectronSelector::produce(edm::Event& iEvent, const edm::EventSetup& es)
 
     pat::strbitset electronIdSel = electronIdSelector_.getBitTemplate();
     pat::strbitset electronIsoSel = electronIsoSelector_.getBitTemplate();
-    electronIdSelector_( electron, beamSpot_->position(), electronIdSel );
-    electronIsoSelector_( electron, electronIsoSel );
+    //electronIdSelector_( electron, beamSpot_->position(), electronIdSel );
+    //electronIsoSelector_( electron, electronIsoSel );
 
     bool passed = false;
-
     bool passPre = electron.pt() > ptcut_ && fabs(electron.eta()) < etacut_ && fabs(electron.gsfTrack()->dxy(beamSpot_->position())) < 0.04;
     bool passMVA = electron.mva() > 0.4;
     int result = (int)electron.electronID("simpleEleId90relIso");
@@ -105,9 +104,10 @@ void KoElectronSelector::produce(edm::Event& iEvent, const edm::EventSetup& es)
     }
 
     id2mva->Fill( electron.mva(), electron.electronID("simpleEleId90relIso"));
-    id2pfmva->Fill( electron.pfCandidateRef()->mva_e_pi(), electron.electronID("simpleEleId90relIso"));
-    pfMVA2patMVA_->Fill( electron.mva(), electron.pfCandidateRef()->mva_e_pi());
-
+    if(usepflow_){
+      id2pfmva->Fill( electron.pfCandidateRef()->mva_e_pi(), electron.electronID("simpleEleId90relIso"));
+      pfMVA2patMVA_->Fill( electron.mva(), electron.pfCandidateRef()->mva_e_pi());
+    }
     if(passed){
       pos->push_back((*electrons_)[i]);
 
@@ -115,12 +115,11 @@ void KoElectronSelector::produce(edm::Event& iEvent, const edm::EventSetup& es)
       eta->push_back(electron.eta());
       phi->push_back(electron.phi());
 
-      //chIso->push_back(electron.chargedHadronIso());
-      //phIso->push_back(electron.photonIso());
-      //nhIso->push_back(electron.neutralHadronIso());
-      chIso->push_back(electron.isoDeposit(pat::PfChargedHadronIso)->depositAndCountWithin(0.4, vetos_ch).first);
-      nhIso->push_back(electron.isoDeposit(pat::PfNeutralHadronIso)->depositAndCountWithin(0.4, vetos_nh, 0.5).first);
-      phIso->push_back(electron.isoDeposit(pat::PfGammaIso)->depositAndCountWithin(0.4, vetos_ph, 0.5).first);
+      if(usepflow_){
+        chIso->push_back(electron.isoDeposit(pat::PfChargedHadronIso)->depositAndCountWithin(0.4, vetos_ch).first);
+        nhIso->push_back(electron.isoDeposit(pat::PfNeutralHadronIso)->depositAndCountWithin(0.4, vetos_nh, 0.5).first);
+        phIso->push_back(electron.isoDeposit(pat::PfGammaIso)->depositAndCountWithin(0.4, vetos_ph, 0.5).first);
+      }
 
       trackIso->push_back(electron.trackIso());
       ecalIso->push_back(electron.ecalIso());
