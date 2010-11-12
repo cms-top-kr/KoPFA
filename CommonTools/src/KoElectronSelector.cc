@@ -17,6 +17,8 @@ KoElectronSelector::KoElectronSelector(const edm::ParameterSet& cfg)
 {
   version_ = cfg.getUntrackedParameter<int>("version", 1);
   usepflow_ = cfg.getUntrackedParameter<bool>("usepflow",true);
+  ptcut_ = cfg.getUntrackedParameter<double>("ptcut",20);
+  etacut_ = cfg.getUntrackedParameter<double>("etacut",2.4);
   electronLabel_ = cfg.getParameter<edm::InputTag>("electronLabel");
   electronIdSelector_.initialize( cfg.getParameter<edm::ParameterSet>("electronIdSelector") );
   electronIsoSelector_.initialize( cfg.getParameter<edm::ParameterSet>("electronIsoSelector") );
@@ -25,15 +27,6 @@ KoElectronSelector::KoElectronSelector(const edm::ParameterSet& cfg)
   edm::Service<TFileService> fs;
   tree = fs->make<TTree>("tree", "Tree for electron study");
 
-  cutNames.push_back("pre");
-  cutNames.push_back("dxy");
-  cutNames.push_back("isGlobal");
-  cutNames.push_back("isTracker");
-  cutNames.push_back("trackerHits");
-  cutNames.push_back("chi2");
-
-  int nBins = (int) cutNames.size();
-  cutflow   = fs->make<TH1F>( "cutflow", "cutflow", nBins,-0.5,nBins-0.5);
   id2mva = fs->make<TH2F>( "id2mva","id2mva", 200, -1,1, 8,0,8);  
   id2pfmva = fs->make<TH2F>( "id2pfmva","id2pfmva", 200, -1,1, 8,0,8);  
   pfMVA2patMVA_ = fs->make<TH2F>("pfMVA2patMVA", "PF based e_pi MVA vs standard MVA;PF based e_pi MVA;Standard MVA", 100, -1, 1, 100, -1, 1);
@@ -86,7 +79,6 @@ void KoElectronSelector::produce(edm::Event& iEvent, const edm::EventSetup& es)
 
   std::auto_ptr<std::vector<pat::Electron> > pos(new std::vector<pat::Electron>());
 
-  int cut[6] = {0,0,0,0,0,0};
   for (unsigned int i=0; i < electrons_->size();++i){
     pat::Electron electron = electrons_->at(i);
 
@@ -99,28 +91,9 @@ void KoElectronSelector::produce(edm::Event& iEvent, const edm::EventSetup& es)
     electronIdSelector_( electron, beamSpot_->position(), electronIdSel );
     electronIsoSelector_( electron, electronIsoSel );
 
-    //bool C1 = electronIdSel.test("eta") && electronIdSel.test("pt");
-    //bool C2 = C1 && electronIdSel.test("dxy");
-    //bool C3 = C2 && electronIdSel.test("isGlobalMuon");
-    //bool C4 = C3 && electronIdSel.test("isTrackerMuon");
-    //bool C5 = C4 && electronIdSel.test("trackerHits");
-    //bool C6 = C5 && electronIdSel.test("globalNormChi2");
-  
-    //if(C1) cut[0]++;
-    //if(C2) cut[1]++;
-    //if(C3) cut[2]++;
-    //if(C4) cut[3]++;
-    //if(C5) cut[4]++;
-    //if(C6) cut[5]++;    
-
-    //bool passIso = electronIsoSel.test("pfOptimizedRel");
-
     bool passed = false;
 
-    //bool pfpass = electronIdSel.test("dxy") && electronIdSel.test("eta") && electronIdSel.test("pt");
-    //cout << " 90relIso=" << electron.electronID("simpleEleId90relIso") << " 90cIso= " << electron.electronID("simpleEleId90cIso") <<  endl;
-    //cout << electron.superCluster()->energy() << endl;
-    bool passPre = electron.pt() > 20 && fabs(electron.eta()) < 2.5 && fabs(electron.gsfTrack()->dxy(beamSpot_->position())) < 0.04;
+    bool passPre = electron.pt() > ptcut_ && fabs(electron.eta()) < etacut_ && fabs(electron.gsfTrack()->dxy(beamSpot_->position())) < 0.04;
     bool passMVA = electron.mva() > 0.4;
     int result = (int)electron.electronID("simpleEleId90relIso");
     bool passWP90ID = ( result == 5 || result == 7)  ;
@@ -130,11 +103,6 @@ void KoElectronSelector::produce(edm::Event& iEvent, const edm::EventSetup& es)
     } else if (version_ == 5){
       passed = passPre && passWP90ID;
     }
-    //if(version_==0) passed = electronIdSel.test("eta") && electronIdSel.test("pt");
-    //else if(version_==1) passed = pfpass;
-    //else if(version_==2) passed = electronIdSel.test("VBTF") && pfpass;
-    //else if(version_==3) passed = C6;
-    //else if(version_==4) passed = pfpass && passIso;  
 
     id2mva->Fill( electron.mva(), electron.electronID("simpleEleId90relIso"));
     id2pfmva->Fill( electron.pfCandidateRef()->mva_e_pi(), electron.electronID("simpleEleId90relIso"));
@@ -160,11 +128,6 @@ void KoElectronSelector::produce(edm::Event& iEvent, const edm::EventSetup& es)
 
     }
   }
-
-  for(int i=0; i < (int) cutNames.size() ; i++){
-    cutflow->AddBinContent(i+1, cut[i]);
-  }
-
 
   multiplicity = (int) pos->size();
 
@@ -197,9 +160,7 @@ KoElectronSelector::beginJob(){
 
 void
 KoElectronSelector::endJob() {
-  for(int i=0 ; i < 6; i++){
-    cutflow->GetXaxis()->SetBinLabel(i+1,cutNames[i].c_str());
-  }
+
   id2mva->GetXaxis()->SetTitle("mva");
   id2mva->GetYaxis()->SetTitle("id90");
   id2pfmva->GetXaxis()->SetTitle("mva");

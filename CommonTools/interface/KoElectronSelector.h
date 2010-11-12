@@ -42,6 +42,8 @@ class KoElectronSelector : public edm::EDProducer
   int version_; // 1 for PFMUON, 2 for VBTF, 3 for TOP , 4 for PFMUON && ISO
   bool usepflow_;
   edm::InputTag electronLabel_;
+  double ptcut_;
+  double etacut_;
   PatElectronSelector   electronIdSelector_;
   PatElectronIsolationSelector electronIsoSelector_;
   edm::InputTag beamSpotLabel_;
@@ -49,11 +51,9 @@ class KoElectronSelector : public edm::EDProducer
   typedef pat::ElectronCollection::const_iterator MI;
   edm::Handle<pat::ElectronCollection> electrons_;
   edm::Handle<reco::BeamSpot> beamSpot_;
-  TH1F * cutflow;
   TH2F * id2mva; 
   TH2F * id2pfmva; 
   TH2F * pfMVA2patMVA_;
-  vector<std::string> cutNames;
 
   TTree *tree;
 
