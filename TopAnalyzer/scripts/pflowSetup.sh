@@ -1,8 +1,10 @@
+#Common analysis packages fop pflow
 cvs co -r Jeroen_Sep28 -d AnalysisDataFormats/PFAnalyses UserCode/PFAnalyses/AnalysisDataFormats/PFAnalyses
 cvs co -r TJ_Nov9 -d PFAnalyses/CommonTools UserCode/PFAnalyses/CommonTools
 cvs co -r Colin_Sept28_newSamplesInterface -d PFAnalyses/RootTools UserCode/PFAnalyses/RootTools
 cvs co -r Jeroen_Sep29 -d PFAnalyses/TemplateAnalysis UserCode/PFAnalyses/TemplateAnalysis
 
+#F2PAT+PAT and dependencies
 cvs co -r michal_V06-01-02_mod DataFormats/PatCandidates
 cvs co -r Colin_384_noMoreJetPtCutInPF2PAT_Sept30 PhysicsTools/PFCandProducer
 cvs co -r Colin_384_noMoreJetPtCutInPF2PAT_Sept30 PhysicsTools/PatAlgos
