@@ -16,6 +16,7 @@ using namespace std;
 KoElectronSelector::KoElectronSelector(const edm::ParameterSet& cfg)
 {
   version_ = cfg.getUntrackedParameter<int>("version", 1);
+  usepflow_ = cfg.getUntrackedParameter<bool>("usepflow",true);
   electronLabel_ = cfg.getParameter<edm::InputTag>("electronLabel");
   electronIdSelector_.initialize( cfg.getParameter<edm::ParameterSet>("electronIdSelector") );
   electronIsoSelector_.initialize( cfg.getParameter<edm::ParameterSet>("electronIsoSelector") );
@@ -88,7 +89,10 @@ void KoElectronSelector::produce(edm::Event& iEvent, const edm::EventSetup& es)
   int cut[6] = {0,0,0,0,0,0};
   for (unsigned int i=0; i < electrons_->size();++i){
     pat::Electron electron = electrons_->at(i);
-    electron.setP4(electron.pfCandidateRef()->p4());
+
+    if(usepflow_){
+      electron.setP4(electron.pfCandidateRef()->p4());
+    }
 
     pat::strbitset electronIdSel = electronIdSelector_.getBitTemplate();
     pat::strbitset electronIsoSel = electronIsoSelector_.getBitTemplate();

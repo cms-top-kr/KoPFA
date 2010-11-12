@@ -40,6 +40,7 @@ class KoElectronSelector : public edm::EDProducer
 
   // Cut version
   int version_; // 1 for PFMUON, 2 for VBTF, 3 for TOP , 4 for PFMUON && ISO
+  bool usepflow_;
   edm::InputTag electronLabel_;
   PatElectronSelector   electronIdSelector_;
   PatElectronIsolationSelector electronIsoSelector_;
