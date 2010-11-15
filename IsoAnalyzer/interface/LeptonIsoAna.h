@@ -20,6 +20,10 @@
 #include "DataFormats/PatCandidates/interface/LookupTableRecord.h"
 
 #include "DQMServices/Core/interface/DQMStore.h"
+#include "DataFormats/RecoCandidate/interface/IsoDepositDirection.h"
+#include "DataFormats/RecoCandidate/interface/IsoDeposit.h"
+#include "DataFormats/RecoCandidate/interface/IsoDepositVetos.h"
+#include "DataFormats/PatCandidates/interface/Isolation.h"
 
 
 #include <TFile.h>
@@ -46,9 +50,18 @@ public:
    nhIso = new std::vector<double>();
    phIso = new std::vector<double>();
 
-   chIsoOpt = new std::vector<double>;
-   phIsoOpt = new std::vector<double>;
-   nhIsoOpt = new std::vector<double>;
+   chIsoOpt03 = new std::vector<double>;
+   phIsoOpt03 = new std::vector<double>;
+   nhIsoOpt03 = new std::vector<double>;
+
+   chIsoOpt04 = new std::vector<double>;
+   phIsoOpt04 = new std::vector<double>;
+   nhIsoOpt04 = new std::vector<double>;
+
+   chIsoOpt05 = new std::vector<double>;
+   phIsoOpt05 = new std::vector<double>;
+   nhIsoOpt05 = new std::vector<double>;
+
 
    trackIso = new std::vector<double>();
    ecalIso = new std::vector<double>();
@@ -74,10 +87,18 @@ private:
    tree->Branch("nhIso","std::vector<double>",&nhIso);
    tree->Branch("phIso","std::vector<double>",&phIso);
   
-   tree->Branch("chIsoOpt","std::vector<double>", &chIsoOpt);
-   tree->Branch("phIsoOpt","std::vector<double>", &phIsoOpt);
-   tree->Branch("nhIsoOpt","std::vector<double>", &nhIsoOpt);
- 
+   tree->Branch("chIsoOpt03","std::vector<double>", &chIsoOpt03);
+   tree->Branch("phIsoOpt03","std::vector<double>", &phIsoOpt03);
+   tree->Branch("nhIsoOpt03","std::vector<double>", &nhIsoOpt03);
+
+   tree->Branch("chIsoOpt04","std::vector<double>", &chIsoOpt04);
+   tree->Branch("phIsoOpt04","std::vector<double>", &phIsoOpt04);
+   tree->Branch("nhIsoOpt04","std::vector<double>", &nhIsoOpt04);
+
+   tree->Branch("chIsoOpt05","std::vector<double>", &chIsoOpt05);
+   tree->Branch("phIsoOpt05","std::vector<double>", &phIsoOpt05);
+   tree->Branch("nhIsoOpt05","std::vector<double>", &nhIsoOpt05);
+
    tree->Branch("trackIso","std::vector<double>",&trackIso);
    tree->Branch("ecalIso","std::vector<double>",&ecalIso);
    tree->Branch("hcalIso","std::vector<double>",&hcalIso);
@@ -104,10 +125,19 @@ private:
     nhIso->clear();
     phIso->clear();
 
-    chIsoOpt->clear();
-    phIsoOpt->clear();
-    nhIsoOpt->clear();
+    chIsoOpt03->clear();
+    phIsoOpt03->clear();
+    nhIsoOpt03->clear();
 
+    chIsoOpt04->clear();
+    phIsoOpt04->clear();
+    nhIsoOpt04->clear();
+
+    chIsoOpt05->clear();
+    phIsoOpt05->clear();
+    nhIsoOpt05->clear();
+
+ 
     trackIso->clear();
     ecalIso->clear();
     hcalIso->clear();
@@ -121,10 +151,6 @@ private:
     LUMI   = iEvent.id().luminosityBlock();
     multiplicity = (int) collection_->size();
 
-    IsoDeposit::AbsVetos vetos_ch;
-    IsoDeposit::AbsVetos vetos_nh;
-    IsoDeposit::AbsVetos vetos_ph;
-
     for(unsigned i = 0; i != collection_->size(); i++){
       T it = collection_->at(i);
 
@@ -136,9 +162,24 @@ private:
       phIso->push_back(it.photonIso());
       nhIso->push_back(it.neutralHadronIso());
 
-      chIsoOpt->push_back(it.isoDeposit(pat::PfChargedHadronIso)->depositAndCountWithin(0.4, vetos_ch).first);
-      nhIsoOpt->push_back(it.isoDeposit(pat::PfNeutralHadronIso)->depositAndCountWithin(0.4, vetos_nh, 0.5).first);
-      phIsoOpt->push_back(it.isoDeposit(pat::PfGammaIso)->depositAndCountWithin(0.4, vetos_ph, 0.5).first);
+      IsoDeposit::AbsVetos vetos_ch;
+      IsoDeposit::AbsVetos vetos_nh;
+      vetos_nh.push_back(new ThresholdVeto( 0.5 ));
+      IsoDeposit::AbsVetos vetos_ph;
+      vetos_ph.push_back(new ThresholdVeto( 0.5 ));
+
+      chIsoOpt03->push_back(it.isoDeposit(pat::PfChargedHadronIso)->depositAndCountWithin(0.3, vetos_ch).first);
+      nhIsoOpt03->push_back(it.isoDeposit(pat::PfNeutralHadronIso)->depositAndCountWithin(0.3, vetos_nh).first);
+      phIsoOpt03->push_back(it.isoDeposit(pat::PfGammaIso)->depositAndCountWithin(0.3, vetos_ph).first);
+
+      chIsoOpt04->push_back(it.isoDeposit(pat::PfChargedHadronIso)->depositAndCountWithin(0.4, vetos_ch).first);
+      nhIsoOpt04->push_back(it.isoDeposit(pat::PfNeutralHadronIso)->depositAndCountWithin(0.4, vetos_nh).first);
+      phIsoOpt04->push_back(it.isoDeposit(pat::PfGammaIso)->depositAndCountWithin(0.4, vetos_ph).first);
+
+      chIsoOpt05->push_back(it.isoDeposit(pat::PfChargedHadronIso)->depositAndCountWithin(0.5, vetos_ch).first);
+      nhIsoOpt05->push_back(it.isoDeposit(pat::PfNeutralHadronIso)->depositAndCountWithin(0.5, vetos_nh).first);
+      phIsoOpt05->push_back(it.isoDeposit(pat::PfGammaIso)->depositAndCountWithin(0.5, vetos_ph).first);
+
 
       trackIso->push_back(it.trackIso());
       ecalIso->push_back(it.ecalIso());
@@ -168,9 +209,18 @@ private:
   std::vector<double>* nhIso;
   std::vector<double>* phIso;
 
-  std::vector<double>* chIsoOpt;
-  std::vector<double>* phIsoOpt;
-  std::vector<double>* nhIsoOpt;
+  std::vector<double>* chIsoOpt03;
+  std::vector<double>* phIsoOpt03;
+  std::vector<double>* nhIsoOpt03;
+
+  std::vector<double>* chIsoOpt04;
+  std::vector<double>* phIsoOpt04;
+  std::vector<double>* nhIsoOpt04;
+
+  std::vector<double>* chIsoOpt05;
+  std::vector<double>* phIsoOpt05;
+  std::vector<double>* nhIsoOpt05;
+
 
   std::vector<double>* trackIso;
   std::vector<double>* ecalIso;
