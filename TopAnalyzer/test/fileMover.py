@@ -7,11 +7,32 @@ import re
 import sys
 import time
 
-#location = "srm://srm.ciemat.es:8443/srm/managerv2?SFN"
-location = "srm://maite.iihe.ac.be:8443/srm/managerv2?SFN=/pnfs/iihe/cms/ph/sc4"
-#dir = "/store/mc/Fall10/DYJetsToLL_TuneD6T_M-50_7TeV-madgraph-tauola/AODSIM/START38_V12-v2/0022/D8FAE496-FAE3-DF11-8D1A-842B2B5027EB.root"
-#dir = "/store/mc/Spring10/ZJets-madgraph/GEN-SIM-RECO/START3X_V26_S09-v1/0014/F0D822C6-4D47-DF11-9590-0030487E5179.root"
-dir = "/store/mc/Spring10/TTbarJets-madgraph/GEN-SIM-RECO/START3X_V26_S09-v1/0016/6E7C4631-9D47-DF11-96CE-003048C69288.root"
-filename = "test_Spring10_TTbar.root"
+#os.system("voms-proxy-init -voms cms")
 
-os.system("lcg-cp -b -D srmv2 --vo cms \""+location+dir+"\" /tmp/tjkim/"+filename)
+location = "srm://maite.iihe.ac.be:8443/srm/managerv2?SFN=/pnfs/iihe/cms/ph/sc4"
+fileNames = [
+        '/store/mc/Fall10/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/AODSIM/START38_V12-v2/0005/36D94209-ADE3-DF11-9040-00145E551385.root',
+        '/store/mc/Fall10/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/AODSIM/START38_V12-v2/0004/DC31018F-06E3-DF11-9F4F-001D09675288.root',
+        '/store/mc/Fall10/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/AODSIM/START38_V12-v2/0004/AA58573A-FCE2-DF11-B0F9-00145E551FF1.root',
+        '/store/mc/Fall10/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/AODSIM/START38_V12-v2/0002/EA149FB1-1EE2-DF11-9ADD-00145E551805.root',
+        '/store/mc/Fall10/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/AODSIM/START38_V12-v2/0002/DE88D0EE-65E2-DF11-BF62-00D0680BF984.root',
+        '/store/mc/Fall10/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/AODSIM/START38_V12-v2/0002/D001EAAC-64E2-DF11-8C97-00D0680B8821.root',
+        '/store/mc/Fall10/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/AODSIM/START38_V12-v2/0002/AE7BF2DF-53E2-DF11-BAD0-00145E5523CC.root',
+        '/store/mc/Fall10/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/AODSIM/START38_V12-v2/0002/9E37B266-48E2-DF11-9215-00145E551FC4.root',
+        '/store/mc/Fall10/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/AODSIM/START38_V12-v2/0002/86A4CE5B-64E2-DF11-84D1-00144F45F56E.root',
+        '/store/mc/Fall10/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/AODSIM/START38_V12-v2/0002/42D1D8E0-1EE2-DF11-899E-00145E551A9B.root',
+        '/store/mc/Fall10/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/AODSIM/START38_V12-v2/0002/264D2AFB-70E2-DF11-90FA-001D096766B0.root',
+        '/store/mc/Fall10/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/AODSIM/START38_V12-v2/0001/B8FEF9BF-FDE1-DF11-A4F4-00D0680BF8E8.root'
+]
+
+i = 0
+for file in fileNames:
+  prefix = file.split("/",5)
+  outname = prefix[3]+"_"+prefix[4]+"_"+ str(i) +".root"
+  print "copying... " + outname 
+  os.system("lcg-cp -b -D srmv2 --vo cms \""+location+file+"\" "+"/tmp/tjkim/"+outname)
+  os.system("rfcp /tmp/tjkim/"+outname+" /castor/cern.ch/user/t/tjkim/MC/Fall10/test")
+  i = i + 1;
+
+
+
