@@ -83,10 +83,12 @@ process.removeDuplicate = cms.EDFilter("RemoveDuplicate",
 process.load("HLTrigger.HLTfilters.hltHighLevel_cfi")
 process.hltHighLevel.HLTPaths = cms.vstring('HLT_Mu9','HLT_Ele10_LW_L1R')
 process.hltHighLevel.throw = cms.bool(False)
+process.load("KoPFA.TopAnalyzer.triggerFilterByRun_cfi")
 
 process.p = cms.Path(
                      process.loadHistosFromRunInfo*
-                     process.hltHighLevel*
+#                     process.hltHighLevel*
+                     process.emuTriggerFilterForMC*
                      process.removeDuplicate*
                      process.GenZmassFilter*
                      process.Electrons*
