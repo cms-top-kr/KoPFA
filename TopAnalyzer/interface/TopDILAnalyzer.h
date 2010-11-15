@@ -13,7 +13,7 @@
 //
 // Original Author:  Tae Jeong Kim,40 R-A32,+41227678602,
 //         Created:  Fri Jun  4 17:19:29 CEST 2010
-// $Id: TopDILAnalyzer.h,v 1.6 2010/10/29 12:46:36 tjkim Exp $
+// $Id: TopDILAnalyzer.h,v 1.7 2010/11/02 19:18:04 tjkim Exp $
 //
 //
 
@@ -91,6 +91,7 @@ class TopDILAnalyzer : public edm::EDAnalyzer {
       h_jetpt30_multi = fs->make<TH1F>( "h_jetpt30_multi", "jet30pt_multi", 10, 0, 10);
 
       Z = new std::vector<Ko::ZCandidate>();
+      toptotal = new std::vector<math::XYZTLorentzVector>();
       met = new std::vector<math::XYZTLorentzVector>();
       jets = new std::vector<math::XYZTLorentzVector>();
       jetspt30 = new std::vector<math::XYZTLorentzVector>();
@@ -129,6 +130,7 @@ class TopDILAnalyzer : public edm::EDAnalyzer {
         tree->Branch("LUMI",&LUMI,"LUMI/i");
 
         tree->Branch("Z","std::vector<Ko::ZCandidate>", &Z);
+        tree->Branch("toptotal","std::vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >", &toptotal);
 
 	tree->Branch("met","std::vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >", &met);
 	tree->Branch("jets","std::vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >", &jets);
@@ -168,6 +170,7 @@ class TopDILAnalyzer : public edm::EDAnalyzer {
 	  //using namespace isodeposit;
 
 	  Z->clear();
+	  toptotal->clear();
 	  met->clear();
 	  jets->clear();
 	  jetspt30->clear();
@@ -249,6 +252,9 @@ class TopDILAnalyzer : public edm::EDAnalyzer {
 	      Ko::ZCandidate dimuon(it1.p4(), it2.p4(), sign);
               
 	      Z->push_back(dimuon);
+              if(jetspt30->size() >= 2){
+                toptotal->push_back(it1.p4() + it2.p4() + jetspt30->at(0) + jetspt30->at(1) + met->at(0));
+              }
 
 	      h_leadingpt->Fill(it1.pt());
 	      h_secondpt->Fill(it2.pt());
@@ -294,6 +300,7 @@ class TopDILAnalyzer : public edm::EDAnalyzer {
 	    }
             break;
 	  }
+
 	  //ESHandle<SetupData> pSetup;
 	  //iSetup.get<SetupRecord>().get(pSetup);
 	  tree->Fill();
@@ -406,6 +413,7 @@ class TopDILAnalyzer : public edm::EDAnalyzer {
       TH1F * h_jetpt30_multi;
 
       std::vector<Ko::ZCandidate>* Z;
+      std::vector<math::XYZTLorentzVector>* toptotal;
       std::vector<math::XYZTLorentzVector>* met;
       std::vector<math::XYZTLorentzVector>* jets;
       std::vector<math::XYZTLorentzVector>* jetspt30;
