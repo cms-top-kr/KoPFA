@@ -226,10 +226,13 @@ void TopAnalyzerLite::applyCutSteps()
   {
     finalCut = finalCut && cuts_[i].cut;
   }
-  realDataChain_->Scan("RUN:LUMI:EVENT:Z.mass():@jetspt30.size():MET",finalCut);
-  cout << "Number of entries after final selection = " << realDataChain_->GetEntries(finalCut) << endl;
+  if ( realDataChain_ )
+  {
+    realDataChain_->Scan("RUN:LUMI:EVENT:Z.mass():@jetspt30.size():MET",finalCut);
+    cout << "Number of entries after final selection = " << realDataChain_->GetEntries(finalCut) << endl;
+  }
 
-  if ( writeSummary_ )
+  if ( writeSummary_ && realDataChain_ )
   {
     const string tmpFileName = imageOutDir_+"/tmp.txt";
 
@@ -265,7 +268,7 @@ void TopAnalyzerLite::plot(const string name, const TCut cut, MonitorPlot& monit
   TH1F* hData = new TH1F(dataHistName, title.c_str(), nBins, xmin, xmax);
   histograms_.Add(hData);
 
-  realDataChain_->Project(dataHistName, varexp.c_str(), cut);
+  if ( realDataChain_ ) realDataChain_->Project(dataHistName, varexp.c_str(), cut);
   hData->AddBinContent(nBins, hData->GetBinContent(nBins+1));
   hData->Sumw2();
   hData->SetMarkerStyle(20);
@@ -368,7 +371,7 @@ void TopAnalyzerLite::printStat(const string& name, TCut cut)
     fout_ << "   " << name << endl;
   }
 
-  const double nData = realDataChain_->GetEntries(cut);
+  const double nData = realDataChain_ ? realDataChain_->GetEntries(cut) : 0;
 
   double nTotal = 0, nSignal = 0;
   double nTotalErr2 = 0;
@@ -405,13 +408,23 @@ void TopAnalyzerLite::printStat(const string& name, TCut cut)
     }
   }
 
+  // Get the field width for printing
+  int maxFWidth = 0;
+  for ( int i=stats.size()-1; i>=0; --i )
+  {
+    const int fWidth = stats[i].label.size();
+    if ( fWidth > maxFWidth ) maxFWidth = fWidth;
+  }
+  TString form = TString("%-") + Form("%d", maxFWidth) + "s";
+
   // Print out statistics
   for ( int i=stats.size()-1; i>=0; --i )
   {
     Stat& stat = stats[i];
+    const string label = Form(form.Data(), stat.label.c_str());
 
-    cout << stat.name << ' ' << stat.nEvents << " +- " << sqrt(stat.nEventsErr2) << endl;
-    if ( writeSummary_ ) fout_ << stat.name << ' ' << stat.nEvents << " +- " << sqrt(stat.nEventsErr2) << endl;
+    cout << label << " = " << stat.nEvents << " +- " << sqrt(stat.nEventsErr2) << endl;
+    if ( writeSummary_ ) fout_ << label << " = " << stat.nEvents << " +- " << sqrt(stat.nEventsErr2) << endl;
 
     if ( stat.name == "TTbar" )
     {
@@ -426,19 +439,19 @@ void TopAnalyzerLite::printStat(const string& name, TCut cut)
   const double signif = nSignal/sqrt(nTotal);
   const double nTotalErr = sqrt(nTotalErr2);
 
-  cout << "Total       = " << nTotal << " +- " << nTotalErr << endl;
-  cout << "------------------------------" << endl;
-  cout << "Data        = " << nData << endl;
-  cout << "S/sqrt(S+B) = " << signif << endl;
-  cout << "------------------------------" << endl;
+  cout << Form(form.Data(), "Total") << " = " << nTotal << " +- " << nTotalErr << endl;
+  cout << "-----------------------------------------------" << endl;
+  cout << Form(form.Data(), "Data") << " = " << nData << endl;
+  cout << Form(form.Data(), "S/sqrt(S+B)") << " = " << signif << endl;
+  cout << "-----------------------------------------------" << endl;
 
   if ( writeSummary_ )
   {
-    fout_ << "Total       = " << nTotal << " +- " << nTotalErr << endl;
-    fout_ << "------------------------------" << endl;
-    fout_ << "Data        = " << nData << endl;
-    fout_ << "S/sqrt(S+B) = " << signif << endl;
-    fout_ << "------------------------------" << endl;
+    fout_ << Form(form.Data(), "Total") << " = " << nTotal << " +- " << nTotalErr << endl;
+    fout_ << "-----------------------------------------------" << endl;
+    fout_ << Form(form.Data(), "Data") << " = " << nData << endl;
+    fout_ << Form(form.Data(), "S/sqrt(S+B)") << " = " << signif << endl;
+    fout_ << "-----------------------------------------------" << endl;
   }
 }
 
