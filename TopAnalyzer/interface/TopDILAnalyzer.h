@@ -13,7 +13,7 @@
 //
 // Original Author:  Tae Jeong Kim,40 R-A32,+41227678602,
 //         Created:  Fri Jun  4 17:19:29 CEST 2010
-// $Id: TopDILAnalyzer.h,v 1.7 2010/11/02 19:18:04 tjkim Exp $
+// $Id: TopDILAnalyzer.h,v 1.8 2010/11/15 09:26:26 tjkim Exp $
 //
 //
 
@@ -52,6 +52,9 @@
 #include "DataFormats/RecoCandidate/interface/IsoDepositVetos.h"
 #include "DataFormats/PatCandidates/interface/Isolation.h"
 
+#include "CondFormats/JetMETObjects/interface/JetCorrectorParameters.h"
+#include "CondFormats/JetMETObjects/interface/FactorizedJetCorrector.h"
+
 #include "TFile.h"
 #include "TTree.h"
 #include "TH1.h"
@@ -78,6 +81,10 @@ class TopDILAnalyzer : public edm::EDAnalyzer {
       looseJetIdSelector_.initialize( iConfig.getParameter<edm::ParameterSet> ("looseJetId") );
       relIso1_ = iConfig.getUntrackedParameter<double>("relIso1");
       relIso2_ = iConfig.getUntrackedParameter<double>("relIso2");
+
+      // Residual Jet energy correction for 38X
+      doResJec_ = iConfig.getUntrackedParameter<bool>("doResJec", false);
+      resJetCorrector_ = 0;
 
       edm::Service<TFileService> fs;
       tree = fs->make<TTree>("tree", "Tree for Top quark study");
@@ -120,7 +127,10 @@ class TopDILAnalyzer : public edm::EDAnalyzer {
     }
 
 
-    ~TopDILAnalyzer(){}
+    ~TopDILAnalyzer()
+    {
+      if ( resJetCorrector_ ) delete resJetCorrector_;
+    }
 
    private:
       virtual void beginJob() 
@@ -160,6 +170,14 @@ class TopDILAnalyzer : public edm::EDAnalyzer {
         tree->Branch("MET",&MET,"MET/d");
         tree->Branch("dphimetlepton",&dphimetlepton,"dphimetlepton/d");
 
+        // Jet energy correction for 38X
+        if ( doResJec_ )
+        {
+          edm::FileInPath jecFile("CondFormats/JetMETObjects/data/Spring10DataV2_L2L3Residual_AK5PF.txt");
+          std::vector<JetCorrectorParameters> jecParams;
+          jecParams.push_back(JetCorrectorParameters(jecFile.fullPath()));
+          resJetCorrector_ = new FactorizedJetCorrector(jecParams);
+        }
       } 
 
       virtual void analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
@@ -226,10 +244,22 @@ class TopDILAnalyzer : public edm::EDAnalyzer {
 	    bool passId = looseJetIdSelector_( *it, looseJetIdSel);
 
 	    if(passId){
-	      jets->push_back(it->p4());
+              ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > jetLVec;
+              jetLVec.SetPxPyPzE(it->px(), it->py(), it->pz(), it->energy());
+
+              // Residual jet energy correction for 38X
+              if ( doResJec_ )
+              {
+                resJetCorrector_->setJetEta(it->eta());
+                resJetCorrector_->setJetPt(it->pt());
+                const double jecFactor = resJetCorrector_->getCorrection();
+                jetLVec *= jecFactor;
+              }
+
+	      jets->push_back(jetLVec);
 
 	      if( it->pt() > 30){
-                jetspt30->push_back(it->p4());
+                jetspt30->push_back(jetLVec);
               }
 	    }
 	  }
@@ -448,5 +478,8 @@ class TopDILAnalyzer : public edm::EDAnalyzer {
       unsigned int RUN;
       unsigned int LUMI;
   
+      // Residual Jet energy correction for 38X
+      bool doResJec_;
+      FactorizedJetCorrector* resJetCorrector_;
 };
 
