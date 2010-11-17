@@ -13,11 +13,16 @@ process.source = cms.Source("PoolSource",
 )
 
 process.TFileService = cms.Service("TFileService",
-    fileName = cms.string('vallot_TTbar.root')
+    fileName = cms.string('vallot_ZZ.root')
 )
 
-process.load("PFAnalyses.TTbarDIL.Sources.ELE.MC.Fall10.patTuple_TTbar_cff")
+process.load("PFAnalyses.TTbarDIL.Sources.ELE.MC.Fall10.patTuple_ZZ_cff")
 process.load("KoPFA.TopAnalyzer.topAnalysis_cff")
+
+process.electronTriggerFilterForMC.triggerResults = "TriggerResults::REDIGI38X"
+process.electronTriggerFilterForMC.triggerEvent = "hltTriggerSummaryAOD::REDIGI38X"
+process.electronTriggerFilterForMC.matchTriggerPath = cms.untracked.string('HLT_Ele10_LW_L1R')
+process.electronTriggerFilterForMC.matchTriggerObject = cms.untracked.InputTag("hltL1NonIsoHLTNonIsoSingleElectronLWEt10PixelMatchFilter")
 
 process.p = cms.Path(
     process.topElElAnalysisMCSequence

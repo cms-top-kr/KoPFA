@@ -13,10 +13,10 @@ process.source = cms.Source("PoolSource",
 )
 
 process.TFileService = cms.Service("TFileService",
-    fileName = cms.string('vallot_TTbar.root')
+    fileName = cms.string('vallot_ZW.root')
 )
 
-process.load("PFAnalyses.TTbarDIL.Sources.ELE.MC.Fall10.patTuple_TTbar_cff")
+process.load("PFAnalyses.TTbarDIL.Sources.ELE.MC.Fall10.patTuple_ZW_cff")
 process.load("KoPFA.TopAnalyzer.topAnalysis_cff")
 
 process.p = cms.Path(

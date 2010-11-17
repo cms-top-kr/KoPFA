@@ -13,13 +13,19 @@ process.source = cms.Source("PoolSource",
 )
 
 process.TFileService = cms.Service("TFileService",
-    fileName = cms.string('vallot_TTbar.root')
+    fileName = cms.string('vallot_Ztt.root')
 )
 
-process.load("PFAnalyses.TTbarDIL.Sources.ELE.MC.Fall10.patTuple_TTbar_cff")
+process.load("PFAnalyses.TTbarDIL.Sources.ELE.MC.Fall10.patTuple_ZJets50_cff")
 process.load("KoPFA.TopAnalyzer.topAnalysis_cff")
+
+process.GenZmassFilter.applyFilter = True
+process.GenZmassFilter.decayMode = [15]
+process.GenZmassFilter.min = 50
+process.GenZmassFilter.max = 999999
 
 process.p = cms.Path(
     process.topElElAnalysisMCSequence
 )
+
 

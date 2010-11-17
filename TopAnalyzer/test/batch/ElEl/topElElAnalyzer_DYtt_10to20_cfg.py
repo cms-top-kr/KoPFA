@@ -13,16 +13,21 @@ process.source = cms.Source("PoolSource",
 )
 
 process.TFileService = cms.Service("TFileService",
-    fileName = cms.string('vallot_Zee.root')
+    fileName = cms.string('vallot_DYtt_10to20.root')
 )
 
-process.load("PFAnalyses.TTbarDIL.Sources.ELE.MC.Fall10.patTuple_ZJets50_cff")
+process.load("PFAnalyses.TTbarDIL.Sources.ELE.MC.Fall10.patTuple_DYtt_10to20_cff")
 process.load("KoPFA.TopAnalyzer.topAnalysis_cff")
 
+process.electronTriggerFilterForMC.triggerResults = "TriggerResults::REDIGI38X"
+process.electronTriggerFilterForMC.triggerEvent = "hltTriggerSummaryAOD::REDIGI38X"
+process.electronTriggerFilterForMC.matchTriggerPath = cms.untracked.string('HLT_Ele10_LW_L1R')
+process.electronTriggerFilterForMC.matchTriggerObject = cms.untracked.InputTag("hltL1NonIsoHLTNonIsoSingleElectronLWEt10PixelMatchFilter")
+
 process.GenZmassFilter.applyFilter = True
-process.GenZmassFilter.decayMode = [11, 13]
-process.GenZmassFilter.min = 50
-process.GenZmassFilter.max = 999999
+process.GenZmassFilter.decayMode = [15]
+process.GenZmassFilter.min = 0
+process.GenZmassFilter.max = 20
 
 process.p = cms.Path(
     process.topElElAnalysisMCSequence
