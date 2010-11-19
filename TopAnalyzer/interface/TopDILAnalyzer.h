@@ -13,7 +13,7 @@
 //
 // Original Author:  Tae Jeong Kim,40 R-A32,+41227678602,
 //         Created:  Fri Jun  4 17:19:29 CEST 2010
-// $Id: TopDILAnalyzer.h,v 1.8 2010/11/15 09:26:26 tjkim Exp $
+// $Id: TopDILAnalyzer.h,v 1.9 2010/11/16 09:51:20 jhgoh Exp $
 //
 //
 
@@ -117,6 +117,13 @@ class TopDILAnalyzer : public edm::EDAnalyzer {
       phIsoOpt2 = new std::vector<double>;
       nhIsoOpt2 = new std::vector<double>;
 
+      relIso03lep1 = new std::vector<double>;
+      relIso03lep2 = new std::vector<double>;
+      relIso04lep1 = new std::vector<double>;
+      relIso04lep2 = new std::vector<double>;
+      relIso05lep1 = new std::vector<double>;
+      relIso05lep2 = new std::vector<double>;
+
       trackIso1 = new std::vector<double>;
       ecalIso1 = new std::vector<double>;
       hcalIso1 = new std::vector<double>;
@@ -159,6 +166,13 @@ class TopDILAnalyzer : public edm::EDAnalyzer {
 	tree->Branch("chIsoOpt2","std::vector<double>", &chIsoOpt2);
 	tree->Branch("phIsoOpt2","std::vector<double>", &phIsoOpt2);
 	tree->Branch("nhIsoOpt2","std::vector<double>", &nhIsoOpt2);
+
+        tree->Branch("relIso03lep1","std::vector<double>",&relIso03lep1);
+        tree->Branch("relIso03lep2","std::vector<double>",&relIso03lep2);
+        tree->Branch("relIso04lep1","std::vector<double>",&relIso04lep1);
+        tree->Branch("relIso04lep2","std::vector<double>",&relIso04lep2);
+        tree->Branch("relIso05lep1","std::vector<double>",&relIso05lep1);
+        tree->Branch("relIso05lep2","std::vector<double>",&relIso05lep2);
 
 	tree->Branch("trackIso1","std::vector<double>", &trackIso1);
 	tree->Branch("ecalIso1","std::vector<double>", &ecalIso1);
@@ -206,6 +220,13 @@ class TopDILAnalyzer : public edm::EDAnalyzer {
 	  chIsoOpt2->clear();
 	  phIsoOpt2->clear();
 	  nhIsoOpt2->clear();
+ 
+          relIso03lep1->clear();
+          relIso03lep2->clear();
+          relIso04lep1->clear();
+          relIso04lep2->clear();
+          relIso05lep1->clear();
+          relIso05lep2->clear();
 
 	  trackIso1->clear();
 	  ecalIso1->clear();
@@ -234,39 +255,6 @@ class TopDILAnalyzer : public edm::EDAnalyzer {
 	  edm::Handle<pat::JetCollection> Jets;
 	  iEvent.getByLabel(jetLabel_, Jets);
 
-	  for (JI it = Jets->begin(); it != Jets->end(); ++it) {
-
-	    if(abs(it->eta()) >= 2.5) continue;
-	    bool overlap = checkOverlap(it->eta(), it->phi(), muons1_, muons2_);
-	    if( overlap ) continue;
-
-	    pat::strbitset looseJetIdSel = looseJetIdSelector_.getBitTemplate();
-	    bool passId = looseJetIdSelector_( *it, looseJetIdSel);
-
-	    if(passId){
-              ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > jetLVec;
-              jetLVec.SetPxPyPzE(it->px(), it->py(), it->pz(), it->energy());
-
-              // Residual jet energy correction for 38X
-              if ( doResJec_ )
-              {
-                resJetCorrector_->setJetEta(it->eta());
-                resJetCorrector_->setJetPt(it->pt());
-                const double jecFactor = resJetCorrector_->getCorrection();
-                jetLVec *= jecFactor;
-              }
-
-	      jets->push_back(jetLVec);
-
-	      if( it->pt() > 30){
-                jetspt30->push_back(jetLVec);
-              }
-	    }
-	  }
-
-	  h_jet_multi->Fill(jets->size());
-	  h_jetpt30_multi->Fill(jetspt30->size());
-
           for(unsigned i = 0; i != muons1_->size(); i++){
             for(unsigned j = 0; j != muons2_->size(); j++){
               T1 it1 = muons1_->at(i);
@@ -282,9 +270,6 @@ class TopDILAnalyzer : public edm::EDAnalyzer {
 	      Ko::ZCandidate dimuon(it1.p4(), it2.p4(), sign);
               
 	      Z->push_back(dimuon);
-              if(jetspt30->size() >= 2){
-                toptotal->push_back(it1.p4() + it2.p4() + jetspt30->at(0) + jetspt30->at(1) + met->at(0));
-              }
 
 	      h_leadingpt->Fill(it1.pt());
 	      h_secondpt->Fill(it2.pt());
@@ -310,13 +295,48 @@ class TopDILAnalyzer : public edm::EDAnalyzer {
 	      phIso2->push_back(it2.photonIso());
 	      nhIso2->push_back(it2.neutralHadronIso());
 
-	      chIsoOpt1->push_back(it1.isoDeposit(pat::PfChargedHadronIso)->depositAndCountWithin(0.4, vetos_ch).first);
-	      nhIsoOpt1->push_back(it1.isoDeposit(pat::PfNeutralHadronIso)->depositAndCountWithin(0.4, vetos_nh).first);
-	      phIsoOpt1->push_back(it1.isoDeposit(pat::PfGammaIso)->depositAndCountWithin(0.4, vetos_ph1).first);
+              double chiso03lep1 = it1.isoDeposit(pat::PfChargedHadronIso)->depositAndCountWithin(0.3, vetos_ch).first;
+              double nhiso03lep1 = it1.isoDeposit(pat::PfNeutralHadronIso)->depositAndCountWithin(0.3, vetos_nh).first;
+              double phiso03lep1 = it1.isoDeposit(pat::PfGammaIso)->depositAndCountWithin(0.3, vetos_ph1).first;
+              double chiso03lep2 = it2.isoDeposit(pat::PfChargedHadronIso)->depositAndCountWithin(0.3, vetos_ch).first;
+              double nhiso03lep2 = it2.isoDeposit(pat::PfNeutralHadronIso)->depositAndCountWithin(0.3, vetos_nh).first;
+              double phiso03lep2 = it2.isoDeposit(pat::PfGammaIso)->depositAndCountWithin(0.3, vetos_ph1).first;
 
-	      chIsoOpt2->push_back(it2.isoDeposit(pat::PfChargedHadronIso)->depositAndCountWithin(0.4, vetos_ch).first);
-	      nhIsoOpt2->push_back(it2.isoDeposit(pat::PfNeutralHadronIso)->depositAndCountWithin(0.4, vetos_nh).first);
-	      phIsoOpt2->push_back(it2.isoDeposit(pat::PfGammaIso)->depositAndCountWithin(0.4, vetos_ph2).first);
+              double chiso04lep1 = it1.isoDeposit(pat::PfChargedHadronIso)->depositAndCountWithin(0.4, vetos_ch).first;
+              double nhiso04lep1 = it1.isoDeposit(pat::PfNeutralHadronIso)->depositAndCountWithin(0.4, vetos_nh).first;
+              double phiso04lep1 = it1.isoDeposit(pat::PfGammaIso)->depositAndCountWithin(0.4, vetos_ph1).first;
+              double chiso04lep2 = it2.isoDeposit(pat::PfChargedHadronIso)->depositAndCountWithin(0.4, vetos_ch).first;
+              double nhiso04lep2 = it2.isoDeposit(pat::PfNeutralHadronIso)->depositAndCountWithin(0.4, vetos_nh).first;
+              double phiso04lep2 = it2.isoDeposit(pat::PfGammaIso)->depositAndCountWithin(0.4, vetos_ph1).first;
+
+              double chiso05lep1 = it1.isoDeposit(pat::PfChargedHadronIso)->depositAndCountWithin(0.5, vetos_ch).first;
+              double nhiso05lep1 = it1.isoDeposit(pat::PfNeutralHadronIso)->depositAndCountWithin(0.5, vetos_nh).first;
+              double phiso05lep1 = it1.isoDeposit(pat::PfGammaIso)->depositAndCountWithin(0.5, vetos_ph1).first;
+              double chiso05lep2 = it2.isoDeposit(pat::PfChargedHadronIso)->depositAndCountWithin(0.5, vetos_ch).first;
+              double nhiso05lep2 = it2.isoDeposit(pat::PfNeutralHadronIso)->depositAndCountWithin(0.5, vetos_nh).first;
+              double phiso05lep2 = it2.isoDeposit(pat::PfGammaIso)->depositAndCountWithin(0.5, vetos_ph1).first;     
+
+	      chIsoOpt1->push_back(chiso04lep1);
+	      nhIsoOpt1->push_back(nhiso04lep1);
+	      phIsoOpt1->push_back(phiso04lep1);
+
+              chIsoOpt2->push_back(chiso04lep2);
+              nhIsoOpt2->push_back(nhiso04lep2);
+              phIsoOpt2->push_back(phiso04lep2);
+
+              double reliso03lep1 =  (chiso03lep1+ nhiso03lep1 + phiso03lep1) / it1.pt();
+              double reliso03lep2 =  (chiso03lep2+ nhiso03lep2 + phiso03lep2) / it2.pt();
+              double reliso04lep1 =  (chiso04lep1+ nhiso04lep1 + phiso04lep1) / it1.pt();
+              double reliso04lep2 =  (chiso04lep2+ nhiso04lep2 + phiso04lep2) / it2.pt();
+              double reliso05lep1 =  (chiso05lep1+ nhiso05lep1 + phiso05lep1) / it1.pt();
+              double reliso05lep2 =  (chiso05lep2+ nhiso05lep2 + phiso05lep2) / it2.pt();
+
+              relIso03lep1->push_back(reliso03lep1);
+              relIso03lep2->push_back(reliso03lep2);
+              relIso04lep1->push_back(reliso04lep1);
+              relIso04lep2->push_back(reliso04lep2);
+              relIso05lep1->push_back(reliso05lep1);
+              relIso05lep2->push_back(reliso05lep2);
 
 	      trackIso1->push_back(it1.trackIso());
 	      ecalIso1->push_back(it1.ecalIso());
@@ -325,6 +345,47 @@ class TopDILAnalyzer : public edm::EDAnalyzer {
 	      trackIso2->push_back(it2.trackIso());
 	      ecalIso2->push_back(it2.ecalIso());
 	      hcalIso2->push_back(it2.hcalIso());
+
+              //Jet selection by checking overlap with selected leptons
+              for (JI jit = Jets->begin(); jit != Jets->end(); ++jit) {
+                
+                //geometric acceptance
+                if(abs(jit->eta()) >= 2.5) continue;
+
+                pat::strbitset looseJetIdSel = looseJetIdSelector_.getBitTemplate();
+                bool passId = looseJetIdSelector_( *jit, looseJetIdSel);
+                //jet id
+                if(passId){
+                  double dRval1 = deltaR(jit->eta(), jit->phi(), it1.eta(), it1.phi());
+                  double dRval2 = deltaR(jit->eta(), jit->phi(), it2.eta(), it2.phi());
+                  bool overlap = checkOverlap(jit->eta(), jit->phi(), dRval1, reliso04lep1, dRval2, reliso04lep2);
+                  //jet cleaning
+                  if( overlap ) continue;
+
+                  ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > corrjet;
+                  corrjet.SetPxPyPzE(jit->px(),jit->py(),jit->pz(),jit->energy());
+
+                  if(doResJec_){
+                    resJetCorrector_->setJetEta(jit->eta());
+                    resJetCorrector_->setJetPt(jit->pt());
+                    const double scaleF = resJetCorrector_->getCorrection();
+                    corrjet *= scaleF;
+                  }
+           
+                  jets->push_back(corrjet);
+                  if( corrjet.pt() > 30){
+                    jetspt30->push_back(corrjet);
+                  }
+                }
+              }
+
+              h_jet_multi->Fill(jets->size());
+              h_jetpt30_multi->Fill(jetspt30->size());
+
+
+              if(jetspt30->size() >= 2){
+                toptotal->push_back(it1.p4() + it2.p4() + jetspt30->at(0) + jetspt30->at(1) + met->at(0));
+              }
 
 	      break;
 	    }
@@ -354,50 +415,24 @@ class TopDILAnalyzer : public edm::EDAnalyzer {
       }
 
 
-      bool checkOverlap(const double & eta, const double & phi, edm::Handle<vector<T1> >& src1, edm::Handle<vector<T2> >& src2)
+      bool checkOverlap(const double & eta, const double & phi, const double & dRval1,const double & reliso1, const double &dRval2, const double & reliso2)
       {
 
         bool overlap = false;
-        for(unsigned i = 0; i != src1->size(); i++){
-          T1 it = src1->at(i);
-          it.setP4(it.pfCandidateRef()->p4());
-          IsoDeposit::AbsVetos vetos_ch;
-          IsoDeposit::AbsVetos vetos_nh;
-          IsoDeposit::AbsVetos vetos_ph;
-          vetos_nh.push_back(new ThresholdVeto( 0.5 ));
-          vetos_ph.push_back(new ThresholdVeto( 0.5 ));
-          double chIso = it.isoDeposit(pat::PfChargedHadronIso)->depositAndCountWithin(0.4, vetos_ch).first;
-          double nhIso = it.isoDeposit(pat::PfNeutralHadronIso)->depositAndCountWithin(0.4, vetos_nh).first;
-          double phIso = it.isoDeposit(pat::PfGammaIso)->depositAndCountWithin(0.4, vetos_ph).first;
-          double relIso = ( chIso+nhIso+phIso )/it.pt();
-          if( relIso >= relIso1_ ) continue;
-          double dRval = deltaR(eta, phi, it.eta(), it.phi());
-          overlap = dRval < 0.4 ;
+        if( reliso1 < relIso1_ ) {
+          overlap = dRval1 < 0.4 ;
           if(overlap) return overlap;
         }
 
-        for(unsigned i = 0; i != src2->size(); i++){
-          T2 it = src2->at(i);
-          it.setP4(it.pfCandidateRef()->p4());
-          IsoDeposit::AbsVetos vetos_ch;
-          IsoDeposit::AbsVetos vetos_nh;
-          IsoDeposit::AbsVetos vetos_ph;
-          vetos_nh.push_back(new ThresholdVeto( 0.5 ));
-          vetos_ph.push_back(new ThresholdVeto( 0.5 ));
-          double chIso = it.isoDeposit(pat::PfChargedHadronIso)->depositAndCountWithin(0.4, vetos_ch).first;
-          double nhIso = it.isoDeposit(pat::PfNeutralHadronIso)->depositAndCountWithin(0.4, vetos_nh).first;
-          double phIso = it.isoDeposit(pat::PfGammaIso)->depositAndCountWithin(0.4, vetos_ph).first;
-          double relIso = ( chIso+nhIso+phIso )/it.pt();
-          if( relIso >= relIso2_ ) continue; 
-          double dRval = deltaR(eta, phi, it.eta(), it.phi());
-          overlap = dRval < 0.4 ;
+        if( reliso2 < relIso2_ ) {
+          overlap = dRval2 < 0.4 ;
           if(overlap) return overlap;
         }
 
         return overlap;
 
       }
-
+     
       bool MatchObjects( const reco::Candidate::LorentzVector& pasObj,
                                        const reco::Candidate::LorentzVector& proObj,
                                        bool exact ) {
@@ -461,6 +496,13 @@ class TopDILAnalyzer : public edm::EDAnalyzer {
       std::vector<double>* chIsoOpt2;
       std::vector<double>* phIsoOpt2;
       std::vector<double>* nhIsoOpt2;
+
+      std::vector<double>* relIso03lep1;
+      std::vector<double>* relIso03lep2;
+      std::vector<double>* relIso04lep1;
+      std::vector<double>* relIso04lep2;
+      std::vector<double>* relIso05lep1;
+      std::vector<double>* relIso05lep2;
 
       std::vector<double>* trackIso1;
       std::vector<double>* ecalIso1;
