@@ -5,7 +5,7 @@ from PFAnalyses.CommonTools.Selectors.muonIsoSelectorPSet_cff import muonIsoSele
 muonId = muonSelectorPSet.clone()
 muonId.verbose = False 
 muonId.dxy = 0.02
-muonId.eta = 2.5
+muonId.eta = 2.4
 muonId.pt = 20
 
 Muons = cms.EDProducer(
