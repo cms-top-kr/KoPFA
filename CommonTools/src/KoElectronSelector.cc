@@ -18,7 +18,7 @@ KoElectronSelector::KoElectronSelector(const edm::ParameterSet& cfg)
   version_ = cfg.getUntrackedParameter<int>("version", 1);
   usepflow_ = cfg.getUntrackedParameter<bool>("usepflow",true);
   ptcut_ = cfg.getUntrackedParameter<double>("ptcut",20);
-  etacut_ = cfg.getUntrackedParameter<double>("etacut",2.4);
+  etacut_ = cfg.getUntrackedParameter<double>("etacut",2.5);
   electronLabel_ = cfg.getParameter<edm::InputTag>("electronLabel");
   electronIdSelector_.initialize( cfg.getParameter<edm::ParameterSet>("electronIdSelector") );
   electronIsoSelector_.initialize( cfg.getParameter<edm::ParameterSet>("electronIsoSelector") );
