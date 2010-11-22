@@ -11,15 +11,13 @@ input = sys.argv[1]
 type = sys.argv[2]
 
 if type == "MuMu":
-  mclist = ["ZJets", "ZtauDecay", "Ztautau", "Zmumu","Zee", "Wmu","We","Wtau", "TTbar", "SingleTop","DYmumu","DYee","DYtautau"]
-  #qcdlist =["InclusiveMu15"]
+  mclist = ["ZJets", "ZtauDecay", "Ztautau", "Zmumu","Zee", "Wmu","We","Wtau", "ZZ","WW","ZW","TTbar", "SingleTop","DYmumu","DYee","DYtautau"]
   qcdlist =[""]
 elif type == "ElEl":
-  mclist = ["ZJets", "ZtauDecay", "Ztautau", "Zmumu","Zee", "Wmu","We","Wtau", "TTbar", "SingleTop","DYmumu","DYee","DYtautau"]
+  mclist = ["ZJets", "ZtauDecay", "Ztautau", "Zmumu","Zee", "Wmu","We","Wtau", "ZZ","WW","ZW","TTbar", "SingleTop","DYmumu","DYee","DYtautau"]
   qcdlist =[""]
 elif type == "MuEl":
-  mclist = ["ZJets", "ZtauDecay", "Ztautau", "Zmumu","Zee", "Wmu","We","Wtau", "TTbar", "SingleTop","DYmumu","DYee","DYtautau"]
-  #mclist = ["ZZ","WW","ZW"]
+  mclist = ["ZJets", "ZtauDecay", "Ztautau", "Zmumu","Zee", "Wmu","We","Wtau", "ZZ","WW","ZW","TTbar", "SingleTop","DYmumu","DYee","DYtautau"]
   qcdlist =[""]
 
 datalist = ["data_1","data_2"]
