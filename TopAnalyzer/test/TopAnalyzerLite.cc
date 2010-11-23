@@ -37,11 +37,12 @@ public:
                       const double ymin = 0, const double ymax = 0, const bool doLogy = true);
 
   void applyCutSteps();
-  TObjArray getHistograms();
-
   void applySingleCut(const TCut cut, const TString monitirPlotNamesStr);
+  void saveHistograms(TString fileName = "");
 
 private:
+  TObjArray getHistograms();
+
   struct MCSample
   {
     string name;
@@ -485,5 +486,19 @@ void TopAnalyzerLite::applySingleCut(const TCut cut, const TString monitorPlotNa
 TObjArray TopAnalyzerLite::getHistograms()
 {
   return histograms_;
+}
+
+void TopAnalyzerLite::saveHistograms(TString fileName)
+{
+  if ( fileName == "" )
+  {
+    fileName = subDirName_+".root";
+  }
+
+  TFile* f = TFile::Open(fileName, "recreate");
+  TObjArray histograms = getHistograms();
+  histograms.Write();
+  f->Write();
+  f->Close();
 }
 
