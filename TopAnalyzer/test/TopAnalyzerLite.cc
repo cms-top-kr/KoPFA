@@ -92,6 +92,8 @@ private:
   TObjArray histograms_;
   ofstream fout_;
   bool writeSummary_;
+
+  TDirectory* baseRootDir_;
 };
 
 TopAnalyzerLite::TopAnalyzerLite(const string subDirName, const string imageOutDir)
@@ -100,6 +102,8 @@ TopAnalyzerLite::TopAnalyzerLite(const string subDirName, const string imageOutD
   lumi_ = 0;
   realDataChain_ = 0;
   imageOutDir_ = imageOutDir;
+
+  baseRootDir_ = gROOT->mkdir(subDirName_.c_str());
 
   if ( imageOutDir != "" )
   {
@@ -132,6 +136,7 @@ void TopAnalyzerLite::addMC(const string mcSampleName, const string mcSampleLabe
   if ( mcSampleIndex == -1 )
   {
     MCSample mcSample = {mcSampleName, 0, xsec, 0, mcSampleLabel, color};
+    baseRootDir_->cd();
     mcSample.chain = new TChain((subDirName_+"/tree").c_str(), (subDirName_+"/tree").c_str());
     mcSamples_.push_back(mcSample);
     mcSampleIndex = mcSamples_.size()-1;
@@ -148,8 +153,8 @@ void TopAnalyzerLite::addRealData(const string fileName, const double lumi)
   lumi_ += lumi;
   if ( !realDataChain_ )
   {
-    gROOT->cd();
     const string chainName = subDirName_+"/tree";
+    baseRootDir_->cd();
     realDataChain_ = new TChain(chainName.c_str(), chainName.c_str());
   }
 
@@ -260,12 +265,14 @@ void TopAnalyzerLite::plot(const string name, const TCut cut, MonitorPlot& monit
   double ymin = monitorPlot.ymin;
   double ymax = monitorPlot.ymax*plotScale;
 
+  baseRootDir_->cd();
   TLegend* legend = new TLegend(0.73,0.57,0.88,0.88);
   legend->SetTextSize(0.04);
   legend->SetFillColor(0);
   legend->SetLineColor(0);
 
-  TString dataHistName = Form("hData_%s_%s", subDirName_.c_str(), name.c_str());
+  //TString dataHistName = Form("hData_%s_%s", subDirName_.c_str(), name.c_str());
+  TString dataHistName = Form("hData_%s", name.c_str());
   TH1F* hData = new TH1F(dataHistName, title.c_str(), nBins, xmin, xmax);
   histograms_.Add(hData);
 
@@ -285,7 +292,8 @@ void TopAnalyzerLite::plot(const string name, const TCut cut, MonitorPlot& monit
   for ( unsigned int i=0; i<mcSamples_.size(); ++i )
   {
     MCSample& mcSample = mcSamples_[i];
-    TString mcHistName = Form("hMC_%s_%s_%s", subDirName_.c_str(), mcSample.name.c_str(), name.c_str());
+    //TString mcHistName = Form("hMC_%s_%s_%s", subDirName_.c_str(), mcSample.name.c_str(), name.c_str());
+    TString mcHistName = Form("hMC_%s_%s", mcSample.name.c_str(), name.c_str());
     TH1F* hMC = new TH1F(mcHistName, title.c_str(), nBins, xmin, xmax);
 
     mcSample.chain->Project(mcHistName, varexp.c_str(), cut);
