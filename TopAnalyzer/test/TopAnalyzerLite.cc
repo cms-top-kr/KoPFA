@@ -366,6 +366,7 @@ void TopAnalyzerLite::plot(const string name, const TCut cut, MonitorPlot& monit
   {
     c->Print((imageOutDir_+"/"+c->GetName()+".png").c_str());
     c->Print((imageOutDir_+"/"+c->GetName()+".eps").c_str());
+    c->Print((imageOutDir_+"/"+c->GetName()+".pdf").c_str());
   }
 }
 
