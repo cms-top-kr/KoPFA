@@ -79,10 +79,10 @@ electronTriggerFilterByRun = cms.EDFilter("TriggerFilterByRun",
             triggerNames = cms.untracked.vstring("HLT_DoubleEle17_SW_L1R_v1",
                                                  "HLT_Ele17_SW_TightCaloEleId_Ele8HE_L1R_v2",
                                                  "HLT_Ele17_SW_TightCaloEleId_Ele8HE_L1R_v1",
-                                                 "HLT_Ele22_SW_TightEleId_L1R_v3",
-                                                 "HLT_Ele22_SW_TightEleId_L1R_v2",
-                                                 "HLT_Ele17_SW_TightEleIdIsol_L1R_v3",
-                                                 "HLT_Ele17_SW_TightEleIdIsol_L1R_v2")
+                                                 "HLT_Ele22_SW_TighterEleId_L1R_v3",
+                                                 "HLT_Ele22_SW_TighterEleId_L1R_v2",
+                                                 "HLT_Ele17_SW_TighterEleIdIsol_L1R_v3",
+                                                 "HLT_Ele17_SW_TighterEleIdIsol_L1R_v2")
         ),
     )
 )
