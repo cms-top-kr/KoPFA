@@ -27,11 +27,16 @@ void mergeChannel (TString filename, TString step, TString histotype, bool logsc
   hData->GetXaxis()->SetTitleOffset(0.8);
   hData->GetYaxis()->SetTitleOffset(0.8);
   
+  Int_t nData = hData->GetEntries();
+  Int_t nMcTotal = 0;
+  Int_t nMc[n];
   TH1F* hMc[n];
   THStack *hStack = new THStack("hStack",TString("MC")+hist);
   for(int i=0; i<n; ++i) {
-    cout << mc[i] << endl;
     hMc[i] = (TH1F*)(gROOT->FindObject(mc[i]));
+    nMc[i] = hMc[i]->GetEntries();
+    nMcTotal += nMc[i];
+    cout << "MC type " << i << ": " << Form("%25s",mc[i].Data()) << ", Entries = " << Form("%10d",nMc[i]) << endl;
     hMc[i]->SetTitle("");
     hMc[i]->GetXaxis()->SetTitleOffset(1.3);
     hMc[i]->GetYaxis()->SetTitleOffset(1.3);
@@ -39,7 +44,10 @@ void mergeChannel (TString filename, TString step, TString histotype, bool logsc
     
     hStack->Add(hMc[i]);
   }
-  
+  cout << "----------------------------------------------------------- " << endl;
+  cout << "MC total before normalization                 = " << Form("%10d",nMcTotal) << endl;
+  cout << "Data                                          = " << Form("%10d",nData) << endl << endl;
+
   TCanvas *c1 = new TCanvas("c1","c1",0,0,700,500);
   c1->Divide(2,3);
   for(int i=0; i<n; ++i) {
@@ -52,14 +60,14 @@ void mergeChannel (TString filename, TString step, TString histotype, bool logsc
   hData->Draw("same");
   
   hData->SetTitle("");
-  if(hmax!=0) hData->SetMaximum(hmax);
   hData->SetMinimum(hmin);
+
+  if(hmax!=0) hData->SetMaximum(hmax);
+  if(logscale) gPad->SetLogy();
   
   gPad->RedrawAxis();
   gPad->SetTicks();
-  
-  if(logscale) gPad->SetLogy();
-  
+    
   TLegend *leg = new TLegend(0.70,0.57,0.88,0.88,NULL,"brNDC");
   leg->SetBorderSize(1);
   leg->SetTextFont(62);
@@ -72,7 +80,7 @@ void mergeChannel (TString filename, TString step, TString histotype, bool logsc
   if (hData->GetEntries()>0) leg->AddEntry(hData,"Data","p");
   for(int i=0; i<n; ++i) {
     int j = n-i-1;
-    if (hMc[j]->GetEntries()>0) leg->AddEntry(hMc[j],legMc[j],"f");
+    leg->AddEntry(hMc[j],legMc[j],"f");
   }
   leg->Draw();
   
