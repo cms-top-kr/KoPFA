@@ -24,8 +24,8 @@ void mergeChannel (TString filename, TString step, TString histotype, bool logsc
   legMc[5] = TString("Z/#gamma* #rightarrow ll");
   
   TH1F* hData = (TH1F*)(gROOT->FindObject(data));
-  hData->GetXaxis()->SetTitleOffset(0.8);
-  hData->GetYaxis()->SetTitleOffset(0.8);
+  //hData->GetXaxis()->SetTitleOffset(0.8);
+  //hData->GetYaxis()->SetTitleOffset(0.8);
   
   Int_t nData = hData->GetEntries();
   Int_t nMcTotal = 0;
@@ -38,8 +38,8 @@ void mergeChannel (TString filename, TString step, TString histotype, bool logsc
     nMcTotal += nMc[i];
     cout << "MC type " << i << ": " << Form("%25s",mc[i].Data()) << ", Entries = " << Form("%10d",nMc[i]) << endl;
     hMc[i]->SetTitle("");
-    hMc[i]->GetXaxis()->SetTitleOffset(1.3);
-    hMc[i]->GetYaxis()->SetTitleOffset(1.3);
+    //hMc[i]->GetXaxis()->SetTitleOffset(1.3);
+    //hMc[i]->GetYaxis()->SetTitleOffset(1.3);
     hMc[i]->SetStats(0);
     
     hStack->Add(hMc[i]);
@@ -68,7 +68,8 @@ void mergeChannel (TString filename, TString step, TString histotype, bool logsc
   gPad->RedrawAxis();
   gPad->SetTicks();
     
-  TLegend *leg = new TLegend(0.70,0.57,0.88,0.88,NULL,"brNDC");
+  //TLegend *leg = new TLegend(0.70,0.57,0.88,0.88,NULL,"brNDC");
+  TLegend *leg = new TLegend(0.75,0.64,0.9,0.92,NULL,"brNDC");
   leg->SetBorderSize(1);
   leg->SetTextFont(62);
   leg->SetTextSize(0.04);
