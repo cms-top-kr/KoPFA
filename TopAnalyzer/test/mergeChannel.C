@@ -1,10 +1,21 @@
-void mergeChannel (TString filename, TString step, TString histotype, bool logscale=true, float hmax=0, float hmin=0.02)
+void mergeChannel (TString filename, TString step, TString histotype, bool logscale=true, float hmax=0, float hmin=0.02, int ch=0)
 {
-  
+
   TFile *_file0 = TFile::Open(filename);
-  
+
+  TString channel = TString("");
+  if(ch==1) channel = TString("Events with ee");
+  else if(ch==2) channel = TString("Events with #mu#mu");
+  else if(ch==3) channel = TString("Events with e#mu");
+  else if(ch==4) channel = TString("Events with ee/#mu#mu/e#mu");
+
+  TString title[3];
+  title[0] = TString("CMS Preliminary");
+  title[1] = TString("35 pb^{-1} at  #sqrt{s} = 7 TeV");
+  title[2] = TString(channel);
+
   const int n = 6;
-  
+ 
   TString hist = TString("_Step_")+ TString(step) + TString("_") + TString(histotype);
   TString data = TString("hData") + TString(hist);
   TString mc[n];
@@ -14,7 +25,7 @@ void mergeChannel (TString filename, TString step, TString histotype, bool logsc
   mc[3] = TString("hMC_SingleTop") + TString(hist);
   mc[4] = TString("hMC_DYtt") + TString(hist);
   mc[5] = TString("hMC_DYll") + TString(hist);
-  
+
   TString legMc[n];
   legMc[0] = TString("t#bar{t}");
   legMc[1] = TString("W #rightarrow l#nu");
@@ -22,11 +33,11 @@ void mergeChannel (TString filename, TString step, TString histotype, bool logsc
   legMc[3] = TString("Single top");
   legMc[4] = TString("Z/#gamma* #rightarrow #tau#tau");
   legMc[5] = TString("Z/#gamma* #rightarrow ll");
-  
+
   TH1F* hData = (TH1F*)(gROOT->FindObject(data));
   //hData->GetXaxis()->SetTitleOffset(0.8);
   //hData->GetYaxis()->SetTitleOffset(0.8);
-  
+
   Int_t nData = hData->GetEntries();
   Int_t nMcTotal = 0;
   Int_t nMc[n];
@@ -48,28 +59,27 @@ void mergeChannel (TString filename, TString step, TString histotype, bool logsc
   cout << "MC total before normalization                 = " << Form("%10d",nMcTotal) << endl;
   cout << "Data                                          = " << Form("%10d",nData) << endl << endl;
 
-  TCanvas *c1 = new TCanvas("c1","c1",0,0,700,500);
+  TCanvas *c1 = new TCanvas("c1","c1",1);
   c1->Divide(2,3);
   for(int i=0; i<n; ++i) {
     c1->cd(i+1); hMc[i]->Draw();
   }
-  
-  TCanvas *c2 = new TCanvas("c2","c2",100,100,700,500);
+ 
+  TCanvas *c2 = new TCanvas("c2","c2",1);
   hData->Draw();
   hStack->Draw("same");
   hData->Draw("same");
-  
+ 
   hData->SetTitle("");
   hData->SetMinimum(hmin);
 
   if(hmax!=0) hData->SetMaximum(hmax);
   if(logscale) gPad->SetLogy();
-  
+ 
   gPad->RedrawAxis();
   gPad->SetTicks();
-    
-  //TLegend *leg = new TLegend(0.70,0.57,0.88,0.88,NULL,"brNDC");
-  TLegend *leg = new TLegend(0.75,0.64,0.9,0.92,NULL,"brNDC");
+ 
+  TLegend *leg = new TLegend(0.73,0.57,0.88,0.88,NULL,"brNDC");
   leg->SetBorderSize(1);
   leg->SetTextFont(62);
   leg->SetTextSize(0.04);
@@ -84,9 +94,24 @@ void mergeChannel (TString filename, TString step, TString histotype, bool logsc
     leg->AddEntry(hMc[j],legMc[j],"f");
   }
   leg->Draw();
-  
-  c2->Print(TString("c")+hist+TString(".png"));
+
+  TPaveText *pt = new TPaveText(0.18,0.74,0.18,0.88,"brNDC");
+  pt->SetBorderSize(1);
+  pt->SetTextFont(42);
+  pt->SetTextSize(0.04);
+  pt->SetLineColor(0);
+  pt->SetLineStyle(1);
+  pt->SetLineWidth(1);
+  pt->SetFillColor(0);
+  pt->SetFillStyle(1001);
+  pt->SetTextAlign(12);
+  pt->AddText(title[0]);
+  pt->AddText(title[1]); 
+  pt->AddText(title[2]);
+  pt->Draw();
+
   c2->Print(TString("c")+hist+TString(".eps"));
   c2->Print(TString("c")+hist+TString(".pdf"));
-  
+  //c2->Print(TString("c")+hist+TString(".png"));
+
 }
