@@ -13,7 +13,7 @@
 //
 // Original Author:  Tae Jeong Kim,40 R-A32,+41227678602,
 //         Created:  Fri Jun  4 17:19:29 CEST 2010
-// $Id: TopDILAnalyzer.h,v 1.9 2010/11/16 09:51:20 jhgoh Exp $
+// $Id: TopDILAnalyzer.h,v 1.10 2010/11/19 14:11:20 tjkim Exp $
 //
 //
 
@@ -54,10 +54,11 @@
 
 #include "CondFormats/JetMETObjects/interface/JetCorrectorParameters.h"
 #include "CondFormats/JetMETObjects/interface/FactorizedJetCorrector.h"
-
+#include "KoPFA/TopAnalyzer/interface/MaosTTbar.h"
 #include "TFile.h"
 #include "TTree.h"
 #include "TH1.h"
+#include "TLorentzVector.h"
 
 //
 // class declaration
@@ -183,6 +184,18 @@ class TopDILAnalyzer : public edm::EDAnalyzer {
 
         tree->Branch("MET",&MET,"MET/d");
         tree->Branch("dphimetlepton",&dphimetlepton,"dphimetlepton/d");
+
+        tree->Branch("mao1M",&mao1M,"mao1M/d");
+        tree->Branch("mao1Mt2",&mao1M,"mao1Mt2/d");
+   
+        tree->Branch("mao2M",&mao2M,"mao2M/d");
+        tree->Branch("mao2Mt2",&mao2M,"mao2Mt2/d");
+
+        tree->Branch("mao1top1M",&mao1top1M,"mao1top1M/d");
+        tree->Branch("mao1top2M",&mao1top2M,"mao1top2M/d");
+
+        tree->Branch("mao2top1M",&mao2top1M,"mao2top1M/d");
+        tree->Branch("mao2top2M",&mao2top2M,"mao2top2M/d");
 
         // Jet energy correction for 38X
         if ( doResJec_ )
@@ -385,6 +398,38 @@ class TopDILAnalyzer : public edm::EDAnalyzer {
 
               if(jetspt30->size() >= 2){
                 toptotal->push_back(it1.p4() + it2.p4() + jetspt30->at(0) + jetspt30->at(1) + met->at(0));
+                
+                //case 1
+                math::XYZTLorentzVector vis1op1 = it1.p4()+jetspt30->at(0);
+                math::XYZTLorentzVector vis2op1 = it2.p4()+jetspt30->at(1);
+                TLorentzVector lep1op1(vis1op1.Px(), vis1op1.Py(), vis1op1.Pz(), vis1op1.E());
+                TLorentzVector lep2op1(vis2op1.Px(), vis2op1.Py(), vis2op1.Pz(), vis2op1.E());
+                
+                //case 2
+                math::XYZTLorentzVector vis1op2 = it2.p4()+jetspt30->at(0);
+                math::XYZTLorentzVector vis2op2 = it1.p4()+jetspt30->at(1);
+                TLorentzVector lep1op2(vis1op2.Px(), vis1op2.Py(), vis1op2.Pz(), vis1op2.E());
+                TLorentzVector lep2op2(vis2op2.Px(), vis2op2.Py(), vis2op2.Pz(), vis2op2.E());
+
+                //missing et
+                math::XYZTLorentzVector invis = met->at(0);
+                TLorentzVector metvec(invis.Px(), invis.Py(), invis.Pz(), invis.E());
+                //set z compontent to be 0
+                metvec.SetPz(0.0);
+                metvec.SetE(metvec.P());
+
+                //Fill tree for ttbar invariant mass and top mass for two different cases
+                Ko::MaosTTbar ttbar1;
+                mao1Mt2 = ttbar1.MAOS(metvec, lep1op1, lep2op1, 0.0, 0.0, false);
+                mao1M = ttbar1.M();
+                mao1top1M = ttbar1.top1M();
+                mao1top2M = ttbar1.top2M();
+ 
+                Ko::MaosTTbar ttbar2;
+                mao2Mt2 = ttbar2.MAOS(metvec, lep1op2, lep2op2, 0.0, 0.0, false);
+                mao2M = ttbar2.M();
+                mao2top1M = ttbar2.top1M();
+                mao2top2M = ttbar2.top2M();
               }
 
 	      break;
@@ -513,6 +558,16 @@ class TopDILAnalyzer : public edm::EDAnalyzer {
     
       double MET;
       double dphimetlepton;
+
+      double mao1M;
+      double mao1Mt2;
+      double mao2M;
+      double mao2Mt2;
+      double mao1top1M;
+      double mao1top2M;
+      double mao2top1M;
+      double mao2top2M;
+
       // ----------member data ---------------------------
 
       //add run event data
