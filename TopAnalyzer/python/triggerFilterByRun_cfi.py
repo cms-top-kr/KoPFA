@@ -103,6 +103,38 @@ muonTriggerFilterForMC = cms.EDFilter("TriggerFilterByRun",
     )
 )
 
+muonTriggerFilterForMCREDIGI38X = cms.EDFilter("TriggerFilterByRun",
+    triggerResults = cms.untracked.InputTag("TriggerResults", "", "REDIGI38X"),
+    filter = cms.untracked.bool(True),
+    filterOutUndefined = cms.untracked.bool(True),
+
+    doMatch = cms.untracked.bool(False),
+
+    triggerPSets = cms.untracked.VPSet(
+        cms.untracked.PSet(
+            runBegin = cms.untracked.int32(0),
+            runEnd = cms.untracked.int32(999999),
+            triggerNames = cms.untracked.vstring("HLT_Mu9")
+        )
+    )
+)
+
+muonTriggerFilterForMCREDIGI38XPU = cms.EDFilter("TriggerFilterByRun",
+    triggerResults = cms.untracked.InputTag("TriggerResults", "", "REDIGI38XPU"),
+    filter = cms.untracked.bool(True),
+    filterOutUndefined = cms.untracked.bool(True),
+
+    doMatch = cms.untracked.bool(False),
+
+    triggerPSets = cms.untracked.VPSet(
+        cms.untracked.PSet(
+            runBegin = cms.untracked.int32(0),
+            runEnd = cms.untracked.int32(999999),
+            triggerNames = cms.untracked.vstring("HLT_Mu9")
+        )
+    )
+)
+
 electronTriggerFilterForMC = cms.EDFilter("TriggerFilterByRun",
     triggerResults = cms.untracked.InputTag("TriggerResults", "", "HLT"),
     triggerEvent = cms.untracked.InputTag("hltTriggerSummaryAOD", "", "HLT"),
