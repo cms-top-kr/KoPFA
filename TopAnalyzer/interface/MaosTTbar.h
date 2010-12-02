@@ -35,6 +35,33 @@ namespace Ko{
       return (Ko::tmpl2_ + tmpnu2_).M();
     } 
 
+    int findNearestTopM(double& topMass1, double& topMass2)
+    {
+      const double topMass11 = (Ko::tmpl1_ + tmpnu1_).M();
+      const double topMass12 = (Ko::tmpl1_ + tmpnu2_).M();
+      const double topMass21 = (Ko::tmpl2_ + tmpnu1_).M();
+      const double topMass22 = (Ko::tmpl2_ + tmpnu2_).M();
+
+      // Mass difference with diagonal combination
+      const double dMTop11 = fabs(topMass11 - topMass22);
+      const double dMTop12 = fabs(topMass12 - topMass21);
+
+      if ( dMTop11 < dMTop12 )
+      {
+        topMass1 = topMass11;
+        topMass2 = topMass22;
+
+        return 1;
+      }
+      else
+      {
+        topMass1 = topMass12;
+        topMass2 = topMass21;
+
+        return -1;
+      }
+    }
+
     TLorentzVector nu1(){return tmpnu1_; }
     TLorentzVector nu2(){return tmpnu2_; }
 
