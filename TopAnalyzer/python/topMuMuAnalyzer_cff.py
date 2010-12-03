@@ -78,6 +78,7 @@ process.p = cms.Path(
 #                     process.printTree*
                      process.loadHistosFromRunInfo*
 #                     process.hltHighLevel*
+                     process.muonTriggerFilterForMC*
                      process.GenZmassFilter*
                      process.Muons*
                      process.patMuonFilter*
