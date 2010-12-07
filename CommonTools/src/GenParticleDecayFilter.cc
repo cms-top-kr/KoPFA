@@ -67,41 +67,28 @@ bool GenParticleDecayFilter::filter(edm::Event& event, const edm::EventSetup& ev
     }
 
     // Loop over daughters and try to match
+    // At least one of daughterPdgIds matches, we accept the genParticle
     const unsigned int nDau = particle->numberOfDaughters();
     const unsigned int nPdgId = daughterPdgIds_.size();
-    std::vector<unsigned int> matchedIds;
-    matchedIds.reserve(nPdgId);
+    bool isAnythingMatched = false;
     for ( unsigned int i = 0; i < nDau; ++i )
     {
       const reco::Candidate* dau = particle->daughter(i);
       if ( !dau or dau->status() != 3 ) continue;
 
-      bool isMatched = false;
       for ( unsigned int j = 0; j < nPdgId; ++j )
       {
-        if ( (unsigned int)abs(dau->pdgId()) != daughterPdgIds_[j] ) continue;
-
-        // Check it is already matched
-        bool isAlreadyMatched = false;
-        for ( unsigned int k = 0; k < matchedIds.size(); ++k )
+        if ( (unsigned int)abs(dau->pdgId()) == daughterPdgIds_[j] )
         {
-          if ( j == matchedIds[k] )
-          {
-            isAlreadyMatched = true;
-            break;
-          }
+          isAnythingMatched = true;
+          break;
         }
-        if ( isAlreadyMatched ) continue;
-
-        matchedIds.push_back(j);
-        isMatched = true;
-        break;
       }
-      if ( !isMatched ) break;
+      if ( isAnythingMatched ) break;
     }
-    if ( matchedIds.size() != nPdgId ) continue;
+    if ( !isAnythingMatched ) continue;
 
-    // Now we can say this particle is matching to your criteria
+    // Now we can say this particle is matching to any pdgId's in the PSet
     ++count;
   }
 
