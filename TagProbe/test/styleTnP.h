@@ -5,8 +5,24 @@
 #include "TCanvas.h"
 #include "TROOT.h"
 #include "TGraphAsymmErrors.h"
+#include <iomanip>
+#include <iostream>
 //#include "TStyle.h"
+using namespace std;
 
+string int2string(int i){
+  stringstream ss;
+  ss << i;
+  string s= ss.str();
+  return s;
+}
+
+string float2string(float f,int n){
+  stringstream ss;
+  ss << setiosflags(ios::fixed) << setprecision(n) << f;
+  string s= ss.str();
+  return s;
+}
 
 void printEff(RooHist* h){
    for(int i=0 ; i < h->GetMaxSize() ; i++){
@@ -122,17 +138,72 @@ void plot2DEff(TFile* f, TFile* f_MC, const TString& dir, const TString& plot, c
 
   int nbinx = h->GetNbinsX();
   int nbiny = h->GetNbinsY();
+  string tablefordata;
+  string tableformc;
+  string tableforscale;
+  string columnfortable;
   for(int i=1; i <=nbinx ; i++){
+    string si = int2string(i);
+    string slowedge = int2string(h->GetBinLowEdge(i));
+    int highedge = h->GetBinLowEdge(i) + h->GetBinWidth(i);
+    string shighedge = int2string(highedge);
+    string temp = "$"+slowedge + " \\GeV < p_{T} < " + shighedge+ " \\GeV$";
+    tablefordata += temp; 
+    tableformc += temp; 
+    tableforscale += temp; 
     for(int j=1; j <=nbiny ; j++){  
-      cout << "data  = " << "[ pt bin= " << i << ", eta bin= " << j << "] " << "eff= " << h->GetBinContent(i,j) << "( +- " << h->GetBinError(i,j) << " )" << endl;
-      cout << "mc    = " << "[ pt bin= " << i << ", eta bin= " << j << "] " << "eff= " << h2->GetBinContent(i,j) << "( +- " << h2->GetBinError(i,j) << " )" << endl;
-      double scale = h->GetBinContent(i,j)/h2->GetBinContent(i,j);
-      double scale_err = h->GetBinError(i,j)/h2->GetBinContent(i,j);
-      cout << "[ pt bin= " << i << ", eta bin= " << j << "] " << "SCALE: " << scale << "( +- " << scale_err << " )" << endl;
+      string sj = int2string(j);
+      if(i==1) { 
+        string slowedgey = float2string(h->ProfileY()->GetBinLowEdge(j),1);
+        float highedgey = h->ProfileY()->GetBinLowEdge(j) + h->ProfileY()->GetBinWidth(j);
+        string shighedgey = float2string(highedgey,1);
+
+        if(j==1) { 
+          columnfortable += "Selection";
+          columnfortable = columnfortable + " ~&~ " + " $|\\eta|<"+ shighedgey +"$";
+        }else if( j == nbiny ){
+          columnfortable = columnfortable + " ~&~ " + "$"+slowedgey + "<|\\eta|<"+ shighedgey +"$";
+          columnfortable += "\\\\ \\hline"; 
+        }else columnfortable = columnfortable + " ~&~ " + "$"+slowedgey + "<|\\eta|<"+ shighedgey +"$";
+      }
+
+      float effdata = h->GetBinContent(i,j);
+      float errdata = h->GetBinError(i,j);
+      float effmc = h2->GetBinContent(i,j);
+      float errmc = h2->GetBinError(i,j);
+
+      string seffdata = float2string(effdata,4);
+      string serrdata = float2string(errdata,4);
+      string seffmc = float2string(effmc,4);
+      string serrmc = float2string(errmc,4);
+  
+      tablefordata = tablefordata+" ~&~ "+seffdata + "$\\pm$" + serrdata;
+      tableformc = tableformc+" ~&~ "+seffmc + "$\\pm$" + serrmc;
+
+      float scale = h->GetBinContent(i,j)/h2->GetBinContent(i,j);
+      float scale_err = h->GetBinError(i,j)/h2->GetBinContent(i,j);
+ 
+      string sscale = float2string(scale,4);
+      string sscale_err = float2string(scale_err,4);
+
+      tableforscale = tableforscale+" ~&~ "+ sscale+ "$\\pm$"+ sscale_err;
     }
+   
+    tablefordata = tablefordata + "\\\\ \n";
+    tableformc = tableformc + "\\\\ \n";
+    tableforscale = tableforscale + "\\\\ \n";
   }
 
-  
+  cout.precision(5);
+  cout << "efficiency for data" << endl;
+  cout << columnfortable << endl;
+  cout << tablefordata << endl;
+  cout << "efficiency for mc" << endl;
+  cout << columnfortable << endl;
+  cout << tableformc << endl;
+  cout << "scale factor" << endl;
+  cout << columnfortable << endl;
+  cout << tableforscale << endl;
 
 }
 
@@ -171,4 +242,5 @@ void doLegend(TGraphAsymmErrors *g1, TGraphAsymmErrors *g2, TString lab1, TStrin
 //  compStyle->SetPadTickY(1);
 //  compStyle->cd();
 //}
+
 
