@@ -24,6 +24,7 @@ public:
   void endJob() {};
 
 private:
+  bool applyFilter_;
   unsigned int motherPdgId_, pdgId_;
   std::vector<unsigned int> daughterPdgIds_;
   unsigned int minCount_, maxCount_;
@@ -31,6 +32,7 @@ private:
 
 GenParticleDecayFilter::GenParticleDecayFilter(const edm::ParameterSet& pset)
 {
+  applyFilter_= pset.getUntrackedParameter<bool>("applyFilter",false);
   motherPdgId_ = pset.getUntrackedParameter<unsigned int>("motherPdgId", 0);
   pdgId_ = pset.getUntrackedParameter<unsigned int>("pdgId");
   daughterPdgIds_ = pset.getUntrackedParameter<std::vector<unsigned int> >("daughterPdgIds");
@@ -40,6 +42,10 @@ GenParticleDecayFilter::GenParticleDecayFilter(const edm::ParameterSet& pset)
 
 bool GenParticleDecayFilter::filter(edm::Event& event, const edm::EventSetup& eventSetup)
 {
+  if (!applyFilter_)
+    return true;
+
+
   using namespace std;
   using namespace edm;
   using namespace reco;
