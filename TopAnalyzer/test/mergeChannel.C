@@ -35,6 +35,7 @@ void mergeChannel (TString filename, TString step, TString histotype, bool logsc
   legMc[5] = TString("Z/#gamma* #rightarrow ll");
 
   TH1F* hData = (TH1F*)(gROOT->FindObject(data));
+  if(histotype == "nJet") hData->GetXaxis()->SetNdivisions(205);
   //hData->GetXaxis()->SetTitleOffset(0.8);
   //hData->GetYaxis()->SetTitleOffset(0.8);
 
