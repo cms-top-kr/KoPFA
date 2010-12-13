@@ -5,7 +5,7 @@ using namespace std;
 
 void defaultStyle();
 
-void ana(string decayMode = "MuMu", string imageOutDir = "")
+void ana(string decayMode = "MuEl", string imageOutDir = "")
 {
   gSystem->Load("libFWCoreFWLite.so");
   gSystem->Load("libDataFormatsFWLite.so");
@@ -18,75 +18,97 @@ void ana(string decayMode = "MuMu", string imageOutDir = "")
   gSystem->CompileMacro("TopAnalyzerLite.cc", "k");
   TopAnalyzerLite* analyzer = new TopAnalyzerLite(decayMode, imageOutDir);
 
-  const std::string mcPath = "batch/" + decayMode;
-  const std::string rdPath = "batch/" + decayMode;
+  const std::string mcPath = "/home/tjkim/ntuple/top/"+decayMode+"/MC/Fall10_jetfixed/";
+  const std::string rdPath = "/home/tjkim/ntuple/top/"+decayMode+"/RD/Nov22_jetfixed/";
+
 
   defaultStyle();
 
-  analyzer->addRealData(rdPath+"/vallot_Run2010A_Sep17ReReco.root", 3.1);
+  //analyzer->addRealData(rdPath+"/vallot_Run2010A_Sep17ReReco.root", 3.1);
   //analyzer->addRealData(rdPath+"/vallot_Run2010A_Sep17ReReco.root", 3.1*1047/2850);
-  analyzer->addRealData(rdPath+"/vallot_Run2010B_PromptReco.root", 4.0);
+  //analyzer->addRealData(rdPath+"/vallot_Run2010B_PromptReco.root", 4.0);
   //analyzer->addRealData(rdPath+"/vallot_Run2010B_PromptReco.root", 4.0*781/3382);
-  //analyzer->addRealData(rdPath+"/vallot.root", 7.1);
+  analyzer->addRealData(rdPath+"/vallot.root", 36.1);
 
   analyzer->addMC("TTbar", "t#bar{t}", mcPath+"/vallot_TTbar.root", 157.5, 1000000, 4);
-  analyzer->addMC("Wlnu", "W #rightarrow l#nu", mcPath+"/vallot_WJets.root", 31314, 500000, 46);
-  analyzer->addMC("VVJets" "Dibosons", "Dibosons", mcPath+"/vallot_VVJets.root", 4.8, 10000, 6);
-  analyzer->addMC("SingleTop", "Single top", mcPath+"/vallot_SingleTop.root", 10.6, 10000, 7);
-  analyzer->addMC("Ztautau", "Z/#gamma* #rightarrow #tau#tau", mcPath+"/vallot_Ztautau.root", 1660, 50000, 5);
-  analyzer->addMC("ZTauDecay", "Z/#gamma* #rightarrow #tau#tau", mcPath+"/vallot_ZtauDecay.root", 3048, 50000, 5);
 
-  if ( decayMode == "MuMu" )
-  {
-    analyzer->addMC("Zll", "Z/#gamma* #rightarrow ll", mcPath+"/vallot_Zmumu.root", 1660, 50000, 2);
-    analyzer->addMC("DYll", "Z/#gamma* #rightarrow ll", mcPath+"/vallot_DYmumu.root", 3457, 100000, 2);
-  }
-  else if ( decayMode == "ElEl" )
-  {
-    analyzer->addMC("Zll", "Z/#gamma* #rightarrow ll", mcPath+"/vallot_Zee.root", 1660, 50000, 2);
-    analyzer->addMC("DYll", "Z/#gamma* #rightarrow ll", mcPath+"/vallot_DYee.root", 3457, 100000, 2);
-  }
-  analyzer->addMC("ZJets", "Z/#gamma* #rightarrow ll", mcPath+"/vallot_ZJets.root", 3048, 50000, 2);
+  analyzer->addMC("Wl", "W #rightarrow l#nu", mcPath+"/vallot_We.root", 10438, 2500000, 46);
+  analyzer->addMC("Wm", "W #rightarrow l#nu", mcPath+"/vallot_Wmu.root", 10438, 2500000, 46);
+  analyzer->addMC("Wt", "W #rightarrow l#nu", mcPath+"/vallot_Wtau.root", 10438, 2500000, 46);
+
+  analyzer->addMC("VV", "Dibosons", mcPath+"/vallot_WW.root", 4.51, 100000, 6);
+  analyzer->addMC("ZW", "Dibosons", mcPath+"/vallot_ZW.root", 0.61, 100000, 6);
+  analyzer->addMC("ZZ", "Dibosons", mcPath+"/vallot_ZZ.root", 7.40, 100000, 6);
+
+  analyzer->addMC("SingleTop", "Single top", mcPath+"/vallot_SingleTop.root", 10.6, 100000, 7);
+
+  analyzer->addMC("DYtt", "Z/#gamma* #rightarrow #tau#tau", mcPath+"/vallot_DYtautau.root", 3457, 1000000, 5);
+  analyzer->addMC("DYtt_20to50", "Z/#gamma* #rightarrow #tau#tau", mcPath+"/vallot_Ztautau.root", 1666, 1000000, 5);
+  analyzer->addMC("Ztt"        , "Z/#gamma* #rightarrow #tau#tau", mcPath+"/vallot_ZtauDecay.root", 3048, 2500000, 5);
+
+  analyzer->addMC("DYll",  "Z/#gamma* #rightarrow ll", mcPath+"/vallot_DYee.root", 3457, 1000000, 2);
+  analyzer->addMC("DYmumu","Z/#gamma* #rightarrow ll", mcPath+"/vallot_DYmumu.root", 3457, 1000000, 2);
+  analyzer->addMC("Zee"  , "Z/#gamma* #rightarrow ll", mcPath+"/vallot_Zee.root", 1666, 1000000, 2);
+  analyzer->addMC("Zmumu", "Z/#gamma* #rightarrow ll", mcPath+"/vallot_Zmumu.root", 1666, 1000000, 2);
+  analyzer->addMC("ZJets", "Z/#gamma* #rightarrow ll", mcPath+"/vallot_ZJets.root", 3048, 2500000, 2);
 
   analyzer->addMonitorPlot("ZMass", "Z.mass()", "Dilepton mass;Dilepton Mass (GeV/c^{2});Events/5 GeV/c^{2}", 40, 0, 200, 0.1, 1500);
   analyzer->addMonitorPlot("ZMassFinal", "Z.mass()", "Dilepton mass;Dilepton Mass (GeV/c^{2});Events/40 GeV/c^{2}", 5, 0, 200, 0.1, 1500);
-  analyzer->addMonitorPlot("nJet", "@jetspt30.size()", "Jet Multiplicity;Jet Multiplicity;Events", 5, 0, 5, 0.05, 600);
-  analyzer->addMonitorPlot("MET", "MET", "Missing E_{T};Missing E_{T} (GeV);Events", 8, 0, 80, 0.1, 400);
+  analyzer->addMonitorPlot("nJetlog", "@jetspt30.size()", "Jet Multiplicity;Jet Multiplicity;Events", 5, -0.5, 4.5, 0.05, 600);
+  analyzer->addMonitorPlot("METlog", "MET", "Missing E_{T};Missing E_{T} (GeV);Events", 10, 0, 100, 0.1, 400);
+  analyzer->addMonitorPlot("nJet", "@jetspt30.size()", "Jet Multiplicity;Jet Multiplicity;Events", 5, -0.5, 4.5, 0.1, 3,false);
+  analyzer->addMonitorPlot("MET", "MET", "Missing E_{T};Missing E_{T} (GeV);Events", 10, 0, 100, 0.1, 1.5, false);
 
-  analyzer->addMonitorPlot("pt1", "Z.leg1().pt()", "Leading p_{T};p_{T} (GeV/c);Events/2 GeV/c", 20, 0, 100, 0.1, 1500);
-  analyzer->addMonitorPlot("pt2", "Z.leg2().pt()", "Leading p_{T};p_{T} (GeV/c);Events/2 GeV/c", 20, 0, 200, 0.1, 1500);
+  analyzer->addMonitorPlot("pt1", "Z.leg1().pt()", "Leading p_{T};p_{T} (GeV/c);Events/5 GeV/c", 20, 0, 100, 0.1, 1500);
+  analyzer->addMonitorPlot("pt2", "Z.leg2().pt()", "Leading p_{T};p_{T} (GeV/c);Events/5 GeV/c", 20, 0, 100, 0.1, 1500);
   analyzer->addMonitorPlot("eta1", "Z.leg1().eta()", "Leading #eta;#eta (Radian);Events/0.2 rad.", 35, -3.5, 3.5, 0.1, 5000);
   analyzer->addMonitorPlot("eta2", "Z.leg2().eta()", "Leading #eta;#eta (Radian);Events/0.2 rad.", 35, -3.5, 3.5, 0.1, 5000);
   analyzer->addMonitorPlot("phi1", "Z.leg1().phi()", "Leading #phi;#phi (Radian);Events/0.2 rad.", 35, -3.5, 3.5, 0.1, 5000);
   analyzer->addMonitorPlot("phi2", "Z.leg2().phi()", "Leading #phi;#phi (Radian);Events/0.2 rad.", 35, -3.5, 3.5, 0.1, 5000);
+  analyzer->addMonitorPlot("jet1pt", "jetspt30[0].pt()", "Leading p_{T};p_{T} (GeV/c);Events/5 GeV/c",20, 30, 130, 0.1, 5000);
+  analyzer->addMonitorPlot("jet2pt", "jetspt30[1].pt()", "Leading p_{T};p_{T} (GeV/c);Events/5 GeV/c",20, 30, 130, 0.1, 5000);
 
-  analyzer->addMonitorPlot("metPhi", "met[0].phi()", "Azimuthal angle of Missing E_{T};Azimuthal angle #phi;Events/0.2 rad", 35, -3.5, 3.5, 0.1, 5000);
+  analyzer->addMonitorPlot("metPhi", "met[0].phi()", "Azimuthal angle of Missing E_{T};Azimuthal angle #phi;Events/0.2 rad", 35, -3.5, 3.5, 0.1, 100);
   analyzer->addMonitorPlot("dphi1", "asin(sin(Z.leg1().phi()-met[0].phi()))", "Azimuthal angle difference between leading lepton - MET;Angle difference;Events/0.2 rad", 20, -2, 2, 0.1, 10000);
   analyzer->addMonitorPlot("dphi2", "asin(sin(Z.leg2().phi()-met[0].phi()))", "Azimuthal angle difference between leading lepton - MET;Angle difference;Events/0.2 rad", 20, -2, 2, 0.1, 10000);
+  analyzer->addMonitorPlot("toptotal", "toptotal.M()", "ttbar invariant mass;t#bar{t} invaraint mass;Events/40 GeV", 20, 200, 1000, 0.1, 0.9, false);
+  analyzer->addMonitorPlot("mao1M", "mao1M", "ttbar invariant mass;t#bar{t} invaraint mass;Events/20 GeV", 20, 200, 1000, 0.1, 0.9, false);
+  analyzer->addMonitorPlot("mao2M", "mao2M", "ttbar invariant mass;t#bar{t} invaraint mass;Events/20 GeV", 20, 200, 1000, 0.1, 0.9, false);
 
-  //analyzer->addCutStep("Z.mass() > 12", "ZMass,nJet,MET,pt1,eta1,phi1,pt2,eta2,phi2", 1.5);
-  analyzer->addCutStep("Z.mass() > 12", "metPhi,dphi1,dphi2", 1.5);
+  analyzer->addCutStep("Z.mass() > 12", "", 1.5);
   if ( decayMode == "MuMu" )
   {
-    //analyzer->addCutStep("(chIso1+phIso1)/Z.leg1().pt() < 0.21 && (chIso2+phIso2)/Z.leg2().pt() < 0.21", "ZMass,nJet,MET,pt1,eta1,phi1,pt2,eta2,phi2");
     analyzer->addCutStep("(chIso1+nhIso1+phIso1)/Z.leg1().pt() < 0.21 && (chIso2+nhIso2+phIso2)/Z.leg2().pt() < 0.21", "");
   }
   else if ( decayMode == "ElEl" )
   {
-    //analyzer->addCutStep("(chIso1+phIso1)/Z.leg1().pt() < 0.20 && (chIso2+phIso2)/Z.leg2().pt() < 0.20", "ZMass,nJet,MET,pt1,eta1,phi1,pt2,eta2,phi2");
-    analyzer->addCutStep("(chIso1+nhIso1+phIso1)/Z.leg1().pt() < 0.20 && (chIso2+nhIso2+phIso2)/Z.leg2().pt() < 0.20", "");
+    analyzer->addCutStep("(chIso1+nhIso1+phIso1)/Z.leg1().pt() < 0.26 && (chIso2+nhIso2+phIso2)/Z.leg2().pt() < 0.26", "");
+  }else if ( decayMode == "MuEl" )
+  {
+    cout << "DEBUG: MuEl" << endl;
+    analyzer->addCutStep("(chIso1+nhIso1+phIso1)/Z.leg1().pt() < 0.21 && (chIso2+nhIso2+phIso2)/Z.leg2().pt() < 0.26", "");
   }
-  analyzer->addCutStep("Z.sign() < 0", "ZMass,nJet,MET,pt1,eta1,phi1,pt2,eta2,phi2,dphi1,metPhi");
-  analyzer->addCutStep("abs(Z.mass() - 91) > 15", "nJet,MET", 0.5);
-  analyzer->addCutStep("@jetspt30.size() >= 2", "MET,ZMassFinal", 0.5);
-  analyzer->addCutStep("MET > 30", "nJet,ZMassFinal", 0.5);
 
+  analyzer->addCutStep("Z.sign() < 0", "ZMass,nJetlog,METlog");
+  if ( decayMode == "MuEl") 
+  {
+    analyzer->addCutStep("abs(Z.mass() - 91.2) > -1", "nJetlog,METlog", 0.5);
+  }else{
+    analyzer->addCutStep("abs(Z.mass() - 91.2) > 15", "nJetlog,METlog", 0.5);
+  }
+  analyzer->addCutStep("@jetspt30.size() >= 2", "MET", 0.5);
+  if ( decayMode == "MuEl")
+  {
+    analyzer->addCutStep("MET > 20", "nJet,toptotal", 0.5);
+  }else{
+    analyzer->addCutStep("MET > 30", "nJet,toptotal", 0.5);
+  }
   analyzer->applyCutSteps();
 
-  analyzer->applySingleCut("Z.mass() > 12 && (chIso1+phIso1)/Z.leg1().pt() < 0.21 && (chIso2+phIso2)/Z.leg2().pt() < 0.21 && Z.sign() < 0 && abs(Z.mass() - 91) > 15 && @jetspt30.size() >= 2 && MET > 30", "nJet,MET,ZMass");
-  analyzer->applySingleCut("Z.mass() > 12 && (chIso1+phIso1)/Z.leg1().pt() < 0.21 && (chIso2+phIso2)/Z.leg2().pt() < 0.21 && Z.sign() < 0 && abs(Z.mass() - 91) < 15 && @jetspt30.size() >= 2 && MET > 30", "nJet,MET,ZMass");
+  //analyzer->applySingleCut("Z.mass() > 12 && (chIso1+phIso1)/Z.leg1().pt() < 0.21 && (chIso2+phIso2)/Z.leg2().pt() < 0.21 && Z.sign() < 0 && abs(Z.mass() - 91) > 15 && @jetspt30.size() >= 2 && MET > 30", "nJet,MET,ZMass");
+  //analyzer->applySingleCut("Z.mass() > 12 && (chIso1+phIso1)/Z.leg1().pt() < 0.21 && (chIso2+phIso2)/Z.leg2().pt() < 0.21 && Z.sign() < 0 && abs(Z.mass() - 91) < 15 && @jetspt30.size() >= 2 && MET > 30", "nJet,MET,ZMass");
 
-  TObjArray histograms = analyzer->getHistograms();
+  analyzer->saveHistograms();
 }
 
 void defaultStyle()
