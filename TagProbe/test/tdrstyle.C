@@ -11,6 +11,7 @@ void setTDRStyle() {
   tdrStyle->SetCanvasDefX(0);   //POsition on screen
   tdrStyle->SetCanvasDefY(0);
 
+  tdrStyle->SetPaintTextFormat("5.3f");
 // For the Pad:
   tdrStyle->SetPadBorderMode(0);
   //  tdrStyle->SetPadBorderSize(Width_t size = 1);
