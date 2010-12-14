@@ -27,6 +27,13 @@ basicPDFs = cms.PSet(
            "Chebychev::backgroundPass(mass, {cPass1[0,-1,1], cPass2[0,-1,1]})",
            "Chebychev::backgroundFail(mass, {cFail1[0,-1,1], cFail2[0,-1,1]})",
            "efficiency[0.9,0,1]",
-           "signalFractionInPassing[0.9]",
+           "signalFractionInPassing[0.9]"
+        ),
+        voigtianPlusLinear = cms.vstring(
+            "RooVoigtian::signal(mass, mean[91.2, 89.0, 93.0], width[2.5,0.5,10.0], sigma[5.0, 0.5, 10.0])",
+            "RooExponential::backgroundPass(mass, cPass[0,-10,10])",
+            "RooExponential::backgroundFail(mass, cFail[0,-10,10])",
+            "efficiency[0.9,0,1]",
+            "signalFractionInPassing[0.9]"
         ),
 )
