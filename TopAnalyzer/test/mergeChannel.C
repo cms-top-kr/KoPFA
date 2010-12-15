@@ -1,22 +1,39 @@
-void mergeChannel (TString filename, TString step, TString histotype, bool logscale=true, float hmax=0, float hmin=0.02, int ch=0)
+void mergeChannel (TString filename, TString step, TString histname, bool logscale=true, float hmax=0, float hmin=0.02)
 {
 
   TFile *_file0 = TFile::Open(filename);
 
   TString channel = TString("");
-  if(ch==1) channel = TString("Events with ee");
-  else if(ch==2) channel = TString("Events with #mu#mu");
-  else if(ch==3) channel = TString("Events with e#mu");
-  else if(ch==4) channel = TString("Events with ee/#mu#mu/e#mu");
+  //channel = TString("Events with ee/#mu#mu/e#mu");
+  if(filename=="ElEl.root") channel = TString("Events with ee");
+  else if(filename=="MuMu.root") channel = TString("Events with #mu#mu");
+  else if(filename=="MuEl.root") channel = TString("Events with e#mu");
+
+  TString lumi = "35";
+  lumi = "36.1";
 
   TString title[3];
   title[0] = TString("CMS Preliminary");
-  title[1] = TString("35 pb^{-1} at  #sqrt{s} = 7 TeV");
-  title[2] = TString(channel);
+  title[1] = TString(lumi) + TString(" pb^{-1} at  #sqrt{s} = 7 TeV");
+  if(channel!="NULL") title[2] = TString(channel);
+
+  TPaveText *pt = new TPaveText(0.18,0.74,0.18,0.88,"brNDC");
+  pt->SetBorderSize(1);
+  pt->SetTextFont(42);
+  pt->SetTextSize(0.04);
+  pt->SetLineColor(0);
+  pt->SetLineStyle(1);
+  pt->SetLineWidth(1);
+  pt->SetFillColor(0);
+  pt->SetFillStyle(1001);
+  pt->SetTextAlign(12);
+  pt->AddText(title[0]);
+  pt->AddText(title[1]); 
+  pt->AddText(title[2]);
 
   const int n = 6;
  
-  TString hist = TString("_Step_")+ TString(step) + TString("_") + TString(histotype);
+  TString hist = TString("_Step_")+ TString(step) + TString("_") + TString(histname);
   TString data = TString("hData") + TString(hist);
   TString mc[n];
   mc[0] = TString("hMC_TTbar") + TString(hist);
@@ -35,7 +52,15 @@ void mergeChannel (TString filename, TString step, TString histotype, bool logsc
   legMc[5] = TString("Z/#gamma* #rightarrow ll");
 
   TH1F* hData = (TH1F*)(gROOT->FindObject(data));
-  if(histotype == "nJet") hData->GetXaxis()->SetNdivisions(205);
+  if(histname=="toptotal") hData->GetXaxis()->SetTitle("t#bar{t} invariant mass");
+  if(histname=="nJet" || histname=="nJetlog") {
+    TAxis *xaxis = hData->GetXaxis();
+    xaxis->SetNdivisions(-414);
+    for(int i=1; i<=xaxis->GetNbins(); ++i) {
+      xaxis->SetBinLabel(i,Form("%i",i-1));
+      if(i==xaxis->GetNbins()) xaxis->SetBinLabel(i,Form("#geq%i",i-1));     
+    }
+  }
   //hData->GetXaxis()->SetTitleOffset(0.8);
   //hData->GetYaxis()->SetTitleOffset(0.8);
 
@@ -68,18 +93,20 @@ void mergeChannel (TString filename, TString step, TString histotype, bool logsc
  
   TCanvas *c2 = new TCanvas("c2","c2",1);
   hData->Draw();
+  pt->Draw();
   hStack->Draw("same");
   hData->Draw("same");
+  hData->Draw("sameaxis");
  
   hData->SetTitle("");
   hData->SetMinimum(hmin);
 
   if(hmax!=0) hData->SetMaximum(hmax);
   if(logscale) gPad->SetLogy();
- 
-  gPad->RedrawAxis();
+  
   gPad->SetTicks();
- 
+  //gPad->RedrawAxis();
+  
   TLegend *leg = new TLegend(0.73,0.57,0.88,0.88,NULL,"brNDC");
   leg->SetBorderSize(1);
   leg->SetTextFont(62);
@@ -95,21 +122,6 @@ void mergeChannel (TString filename, TString step, TString histotype, bool logsc
     leg->AddEntry(hMc[j],legMc[j],"f");
   }
   leg->Draw();
-
-  TPaveText *pt = new TPaveText(0.18,0.74,0.18,0.88,"brNDC");
-  pt->SetBorderSize(1);
-  pt->SetTextFont(42);
-  pt->SetTextSize(0.04);
-  pt->SetLineColor(0);
-  pt->SetLineStyle(1);
-  pt->SetLineWidth(1);
-  pt->SetFillColor(0);
-  pt->SetFillStyle(1001);
-  pt->SetTextAlign(12);
-  pt->AddText(title[0]);
-  pt->AddText(title[1]); 
-  pt->AddText(title[2]);
-  pt->Draw();
 
   c2->Print(TString("c")+hist+TString(".eps"));
   c2->Print(TString("c")+hist+TString(".pdf"));
