@@ -265,6 +265,8 @@ void TopAnalyzerLite::plot(const string name, const TCut cut, MonitorPlot& monit
   double ymin = monitorPlot.ymin;
   double ymax = monitorPlot.ymax*plotScale;
 
+  const bool doAutoBin = xmin == xmax;
+
   baseRootDir_->cd();
   TLegend* legend = new TLegend(0.73,0.57,0.88,0.88);
   legend->SetTextSize(0.04);
@@ -273,7 +275,7 @@ void TopAnalyzerLite::plot(const string name, const TCut cut, MonitorPlot& monit
 
   //TString dataHistName = Form("hData_%s_%s", subDirName_.c_str(), name.c_str());
   TString dataHistName = Form("hData_%s", name.c_str());
-  TH1F* hData = new TH1F(dataHistName, title.c_str(), nBins, xmin, xmax);
+  TH1F* hData = new TH1F(dataHistName, title.c_str(), nBins, xmin, doAutoBin ? xmin+nBins : xmax);
   histograms_.Add(hData);
 
   if ( realDataChain_ ) realDataChain_->Project(dataHistName, varexp.c_str(), cut);
@@ -294,7 +296,7 @@ void TopAnalyzerLite::plot(const string name, const TCut cut, MonitorPlot& monit
     MCSample& mcSample = mcSamples_[i];
     //TString mcHistName = Form("hMC_%s_%s_%s", subDirName_.c_str(), mcSample.name.c_str(), name.c_str());
     TString mcHistName = Form("hMC_%s_%s", mcSample.name.c_str(), name.c_str());
-    TH1F* hMC = new TH1F(mcHistName, title.c_str(), nBins, xmin, xmax);
+    TH1F* hMC = new TH1F(mcHistName, title.c_str(), nBins, xmin, doAutoBin ? xmin+nBins : xmax);
 
     mcSample.chain->Project(mcHistName, varexp.c_str(), cut);
     hMC->AddBinContent(nBins, hMC->GetBinContent(nBins+1));
@@ -329,6 +331,30 @@ void TopAnalyzerLite::plot(const string name, const TCut cut, MonitorPlot& monit
       // In this case, temporary histogram is not needed anymore.
       delete hMC;
     }
+  }
+
+  // Do automatic bin labels
+  if ( doAutoBin )
+  {
+    TList* hList = hStack->GetHists();
+    for ( int bin=1; bin<nBins; ++bin )
+    {
+      hData->GetXaxis()->SetBinLabel(bin, Form("%d", int(xmin+bin-1)));
+    }
+    hData->GetXaxis()->SetBinLabel(nBins, Form(">=%d", int(xmin+nBins-1)));
+//    hStack->GetXaxis()->SetBinLabel(nBins, Form(">=%d", nBins-1));
+
+    for ( int i=0; i<hList->GetSize(); ++i )
+    {
+      TH1* h = (TH1*)hList->At(i);
+
+      for ( int bin=1; bin<nBins; ++bin )
+      {
+        h->GetXaxis()->SetBinLabel(bin, Form("%d", int(xmin+bin-1)));
+      }
+      h->GetXaxis()->SetBinLabel(nBins, Form(">=%d", int(xmin+nBins-1)));
+    }
+
   }
 
   // Build legend, legend should be added in reversed order of THStack
