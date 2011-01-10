@@ -13,7 +13,7 @@
 //
 // Original Author:  Tae Jeong Kim,40 R-A32,+41227678602,
 //         Created:  Fri Jun  4 17:19:29 CEST 2010
-// $Id: TopDILAnalyzer.h,v 1.10 2010/11/19 14:11:20 tjkim Exp $
+// $Id: TopDILAnalyzer.h,v 1.11 2010/12/02 11:13:03 tjkim Exp $
 //
 //
 
@@ -186,10 +186,10 @@ class TopDILAnalyzer : public edm::EDAnalyzer {
         tree->Branch("dphimetlepton",&dphimetlepton,"dphimetlepton/d");
 
         tree->Branch("mao1M",&mao1M,"mao1M/d");
-        tree->Branch("mao1Mt2",&mao1M,"mao1Mt2/d");
+        tree->Branch("mao1Mt2",&mao1Mt2,"mao1Mt2/d");
    
         tree->Branch("mao2M",&mao2M,"mao2M/d");
-        tree->Branch("mao2Mt2",&mao2M,"mao2Mt2/d");
+        tree->Branch("mao2Mt2",&mao2Mt2,"mao2Mt2/d");
 
         tree->Branch("mao1top1M",&mao1top1M,"mao1top1M/d");
         tree->Branch("mao1top2M",&mao1top2M,"mao1top2M/d");
