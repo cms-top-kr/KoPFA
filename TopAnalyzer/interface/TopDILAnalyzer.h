@@ -13,7 +13,7 @@
 //
 // Original Author:  Tae Jeong Kim,40 R-A32,+41227678602,
 //         Created:  Fri Jun  4 17:19:29 CEST 2010
-// $Id: TopDILAnalyzer.h,v 1.11 2010/12/02 11:13:03 tjkim Exp $
+// $Id: TopDILAnalyzer.h,v 1.12 2011/01/10 09:40:46 tjkim Exp $
 //
 //
 
@@ -420,13 +420,13 @@ class TopDILAnalyzer : public edm::EDAnalyzer {
 
                 //Fill tree for ttbar invariant mass and top mass for two different cases
                 Ko::MaosTTbar ttbar1;
-                mao1Mt2 = ttbar1.MAOS(metvec, lep1op1, lep2op1, 0.0, 0.0, false);
+                mao1Mt2 = sqrt( ttbar1.MAOS(metvec, lep1op1, lep2op1, 0.0, 0.0, false) );
                 mao1M = ttbar1.M();
                 mao1top1M = ttbar1.top1M();
                 mao1top2M = ttbar1.top2M();
  
                 Ko::MaosTTbar ttbar2;
-                mao2Mt2 = ttbar2.MAOS(metvec, lep1op2, lep2op2, 0.0, 0.0, false);
+                mao2Mt2 = sqrt( ttbar2.MAOS(metvec, lep1op2, lep2op2, 0.0, 0.0, false) );
                 mao2M = ttbar2.M();
                 mao2top1M = ttbar2.top1M();
                 mao2top2M = ttbar2.top2M();
