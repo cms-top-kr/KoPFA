@@ -34,8 +34,8 @@ void minfn(Int_t &npar, Double_t *gin, Double_t &retval, Double_t *par, Int_t if
 
       p1.SetPxPyPzE(par[0], par[1], 0.0, TMath::Hypot(par[0], par[1]));
       p2 = Ko::tmpmet_ - p1;
-      mt12 = Ko::mtsq(Ko::tmpl1_, p1, 0.0, 0.0);
-      mt22 = Ko::mtsq(Ko::tmpl2_, p2, 0.0, 0.0);
+      mt12 = Ko::mtsq(Ko::tmpl1_, p1, Ko::tmpl1_.M(), 0.0);
+      mt22 = Ko::mtsq(Ko::tmpl2_, p2, Ko::tmpl2_.M(), 0.0);
       // should try swapping
       retval = fmax(mt12, mt22);
 }
@@ -43,12 +43,13 @@ void minfn(Int_t &npar, Double_t *gin, Double_t &retval, Double_t *par, Int_t if
 double Ko::MaosTTbar::MT2(const TLorentzVector& metvec, const TLorentzVector &lep1, const TLorentzVector &lep2, double mchi){
 
      TMinuit *gMinuit = new TMinuit(2);
+     gMinuit->SetPrintLevel(-1);
      static bool init=false;
 
      int ierflg=0;
-     if (!init)
-     {
-       cout << "init..." << endl;
+     //if (!init)
+     //{
+     // cout << "init..." << endl;
        gMinuit->SetFCN(minfn);
        arglist[0] = 1.0;
        gMinuit->mnexcm("SET ERR", arglist, 1, ierflg);
@@ -59,7 +60,7 @@ double Ko::MaosTTbar::MT2(const TLorentzVector& metvec, const TLorentzVector &le
        arglist[0] = 1000;
        arglist[1] = 0.1;
        init=true;
-     }
+    // }
 
      // copy
      tmpl1_ = lep1;
@@ -115,11 +116,11 @@ double Ko::MaosTTbar::MAOS(const TLorentzVector& metvec, const TLorentzVector &l
       double mt22 = MT2(metvec, lep1, lep2, mchi);
 
       // add Z componet 
-      tmpnu1_.SetPz(tmpnu1_.Pt()/lep1.Pt()*lep1.Pz());
+      tmpnu1_.SetPz(tmpnu1_.Pt()/sqrt(lep1.M()*lep1.M() + lep1.Pt()*lep1.Pt())*lep1.Pz()); //considering the invariant mass of visible particles
       tmpnu1_.SetE(tmpnu1_.P());
-      tmpnu2_.SetPz(tmpnu2_.Pt()/lep2.Pt()*lep2.Pz());
+      tmpnu2_.SetPz(tmpnu2_.Pt()/sqrt(lep2.M()*lep2.M() + lep2.Pt()*lep2.Pt())*lep2.Pz());
       tmpnu2_.SetE(tmpnu2_.P());
- 
+
       return mt22;
 }
 
