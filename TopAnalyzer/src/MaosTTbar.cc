@@ -1,5 +1,5 @@
 #include "KoPFA/TopAnalyzer/interface/MaosTTbar.h"
-#include<iostream>
+#include <iostream>
 using namespace std;
 
 double Ko::mtsq(const TLorentzVector &ptl, const TLorentzVector &qt, double ml, double mchi)
@@ -27,100 +27,96 @@ TLorentzVector Ko::tmpl2_;
 TLorentzVector Ko::tmpmet_;
 
 void minfn(Int_t &npar, Double_t *gin, Double_t &retval, Double_t *par, Int_t iflag){
-      static TLorentzVector p1;
-      static TLorentzVector p2;
+    static TLorentzVector p1;
+    static TLorentzVector p2;
 
-      double mt12, mt22;
+    double mt12, mt22;
 
-      p1.SetPxPyPzE(par[0], par[1], 0.0, TMath::Hypot(par[0], par[1]));
-      p2 = Ko::tmpmet_ - p1;
-      mt12 = Ko::mtsq(Ko::tmpl1_, p1, Ko::tmpl1_.M(), 0.0);
-      mt22 = Ko::mtsq(Ko::tmpl2_, p2, Ko::tmpl2_.M(), 0.0);
-      // should try swapping
-      retval = fmax(mt12, mt22);
+    p1.SetPxPyPzE(par[0], par[1], 0.0, TMath::Hypot(par[0], par[1]));
+    p2 = Ko::tmpmet_ - p1;
+    mt12 = Ko::mtsq(Ko::tmpl1_, p1, Ko::tmpl1_.M(), 0.0);
+    mt22 = Ko::mtsq(Ko::tmpl2_, p2, Ko::tmpl2_.M(), 0.0);
+    // should try swapping
+    retval = fmax(mt12, mt22);
 }
 
 double Ko::MaosTTbar::MT2(const TLorentzVector& metvec, const TLorentzVector &lep1, const TLorentzVector &lep2, double mchi){
 
-     TMinuit *gMinuit = new TMinuit(2);
-     gMinuit->SetPrintLevel(-1);
-     static bool init=false;
+    TMinuit *gMinuit = new TMinuit(2);
+    gMinuit->SetPrintLevel(-1);
+    static bool init=false;
 
-     int ierflg=0;
-     //if (!init)
-     //{
-     // cout << "init..." << endl;
-       gMinuit->SetFCN(minfn);
-       arglist[0] = 1.0;
-       gMinuit->mnexcm("SET ERR", arglist, 1, ierflg);
-       gMinuit->mnparm(0, "nu1px", 0.001, 0.0001, 0, 0, ierflg);
-       gMinuit->mnparm(1, "nu1py", 0.001, 0.0001, 0, 0, ierflg);
-       arglist[0] = -1;
-       gMinuit->mnexcm("SET PRI", arglist, 1, ierflg);
-       arglist[0] = 1000;
-       arglist[1] = 0.1;
-       init=true;
-    // }
+    int ierflg=0;
+    gMinuit->SetFCN(minfn);
+    arglist[0] = 1.0;
+    gMinuit->mnexcm("SET ERR", arglist, 1, ierflg);
+    gMinuit->mnparm(0, "nu1px", 0.001, 0.0001, 0, 0, ierflg);
+    gMinuit->mnparm(1, "nu1py", 0.001, 0.0001, 0, 0, ierflg);
+    arglist[0] = -1;
+    gMinuit->mnexcm("SET PRI", arglist, 1, ierflg);
+    arglist[0] = 1000;
+    arglist[1] = 0.1;
+    init=true;
 
-     // copy
-     tmpl1_ = lep1;
-     tmpl2_ = lep2;
-     tmpmet_ = metvec;
+    // copy
+    tmpl1_ = lep1;
+    tmpl2_ = lep2;
+    tmpmet_ = metvec;
 
-     double l1 = metvec.Vect().Dot(lep1.Vect())/metvec.P()/lep1.P();
+    double l1 = metvec.Vect().Dot(lep1.Vect())/metvec.P()/lep1.P();
 
-     arglist[0] = 1;
-     arglist[1] = l1*lep1.Px();
-     gMinuit->mnexcm("SET PAR", arglist, 2, ierflg);
-     arglist[0] = 2;
-     arglist[1] = l1*lep1.Py();
-     gMinuit->mnexcm("SET PAR", arglist, 2, ierflg);
+    arglist[0] = 1;
+    arglist[1] = l1*lep1.Px();
+    gMinuit->mnexcm("SET PAR", arglist, 2, ierflg);
+    arglist[0] = 2;
+    arglist[1] = l1*lep1.Py();
+    gMinuit->mnexcm("SET PAR", arglist, 2, ierflg);
 
-     arglist[0] = 1000;
-     arglist[1] = 1e-3;
-     gMinuit->mnexcm("SIM", arglist, 2, ierflg);
-     arglist[0] = 1000;
-     arglist[1] = 1e-3;
-     gMinuit->mnexcm("MINI", arglist, 2, ierflg);
-     //tm.mnexcm("MINI", arglist, 1, ierflg);
+    arglist[0] = 1000;
+    arglist[1] = 1e-3;
+    gMinuit->mnexcm("SIM", arglist, 2, ierflg);
+    arglist[0] = 1000;
+    arglist[1] = 1e-3;
+    gMinuit->mnexcm("MINI", arglist, 2, ierflg);
+    //tm.mnexcm("MINI", arglist, 1, ierflg);
 
-     //double nu1px, nu2px;
-     //double nu1pxe, nu2pxe;
-     //double nu1py, nu2py;
-     //double nu1pye, nu2pye;
+    //double nu1px, nu2px;
+    //double nu1pxe, nu2pxe;
+    //double nu1py, nu2py;
+    //double nu1pye, nu2pye;
 
-     double nu1px;
-     double nu1pxe;
-     double nu1py;
-     double nu1pye;
+    double nu1px;
+    double nu1pxe;
+    double nu1py;
+    double nu1pye;
 
-     gMinuit->GetParameter(0, nu1px, nu1pxe);
-     gMinuit->GetParameter(1, nu1py, nu1pye);
+    gMinuit->GetParameter(0, nu1px, nu1pxe);
+    gMinuit->GetParameter(1, nu1py, nu1pye);
 
-     Double_t amin,edm,errdef;
-     Int_t nvpar,nparx,icstat;
-     gMinuit->mnstat(amin,edm,errdef,nvpar,nparx,icstat);
+    Double_t amin,edm,errdef;
+    Int_t nvpar,nparx,icstat;
+    gMinuit->mnstat(amin,edm,errdef,nvpar,nparx,icstat);
 
-     tmpnu1_.SetPx(nu1px);
-     tmpnu1_.SetPy(nu1py);
-     tmpnu1_.SetPz(0.0);
-     tmpnu1_.SetE(TMath::Hypot(nu1px, nu1py));
-     tmpnu2_ = metvec-tmpnu1_;
+    tmpnu1_.SetPx(nu1px);
+    tmpnu1_.SetPy(nu1py);
+    tmpnu1_.SetPz(0.0);
+    tmpnu1_.SetE(TMath::Hypot(nu1px, nu1py));
+    tmpnu2_ = metvec-tmpnu1_;
 
-     return amin;
+    return amin;
 }
 
 // use Minuit minimizer
 double Ko::MaosTTbar::MAOS(const TLorentzVector& metvec, const TLorentzVector &lep1,const TLorentzVector &lep2, 
-               double mchi, double mY, bool orig){
-      double mt22 = MT2(metvec, lep1, lep2, mchi);
+                           double mchi, double mY, bool orig){
+    double mt22 = MT2(metvec, lep1, lep2, mchi);
 
-      // add Z componet 
-      tmpnu1_.SetPz(tmpnu1_.Pt()/sqrt(lep1.M()*lep1.M() + lep1.Pt()*lep1.Pt())*lep1.Pz()); //considering the invariant mass of visible particles
-      tmpnu1_.SetE(tmpnu1_.P());
-      tmpnu2_.SetPz(tmpnu2_.Pt()/sqrt(lep2.M()*lep2.M() + lep2.Pt()*lep2.Pt())*lep2.Pz());
-      tmpnu2_.SetE(tmpnu2_.P());
+    // add Z componet 
+    tmpnu1_.SetPz(tmpnu1_.Pt()/sqrt(lep1.M()*lep1.M() + lep1.Pt()*lep1.Pt())*lep1.Pz()); //considering the invariant mass of visible particles
+    tmpnu1_.SetE(tmpnu1_.P());
+    tmpnu2_.SetPz(tmpnu2_.Pt()/sqrt(lep2.M()*lep2.M() + lep2.Pt()*lep2.Pt())*lep2.Pz());
+    tmpnu2_.SetE(tmpnu2_.P());
 
-      return mt22;
+    return mt22;
 }
 
