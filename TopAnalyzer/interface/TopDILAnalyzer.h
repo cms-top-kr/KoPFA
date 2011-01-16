@@ -13,7 +13,7 @@
 //
 // Original Author:  Tae Jeong Kim,40 R-A32,+41227678602,
 //         Created:  Fri Jun  4 17:19:29 CEST 2010
-// $Id: TopDILAnalyzer.h,v 1.13 2011/01/11 16:49:38 tjkim Exp $
+// $Id: TopDILAnalyzer.h,v 1.14 2011/01/15 22:21:32 jhgoh Exp $
 //
 //
 
@@ -252,6 +252,9 @@ class TopDILAnalyzer : public edm::EDAnalyzer {
     EVENT  = iEvent.id().event();
     RUN    = iEvent.id().run();
     LUMI   = iEvent.id().luminosityBlock();
+
+    mao1M = mao1Mt2 = mao1top1M = mao1top2M = -1;
+    mao2M = mao2Mt2 = mao2top1M = mao2top2M = -1;
 
     edm::Handle<std::vector<T1> > muons1_;
     edm::Handle<std::vector<T2> > muons2_;
