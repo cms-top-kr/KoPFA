@@ -13,7 +13,7 @@
 //
 // Original Author:  Tae Jeong Kim,40 R-A32,+41227678602,
 //         Created:  Fri Jun  4 17:19:29 CEST 2010
-// $Id: TopDILAnalyzer.h,v 1.14 2011/01/15 22:21:32 jhgoh Exp $
+// $Id: TopDILAnalyzer.h,v 1.15 2011/01/16 00:35:42 jhgoh Exp $
 //
 //
 
@@ -185,17 +185,16 @@ class TopDILAnalyzer : public edm::EDAnalyzer {
     tree->Branch("MET",&MET,"MET/d");
     tree->Branch("dphimetlepton",&dphimetlepton,"dphimetlepton/d");
 
-    tree->Branch("mao1M",&mao1M,"mao1M/d");
-    tree->Branch("mao1Mt2",&mao1Mt2,"mao1Mt2/d");
+    tree->Branch("maos1ttbarM",&maos1ttbarM,"maos1ttbarM/d");
+    tree->Branch("maos1Mt2",&maos1Mt2,"maos1Mt2/d");
+    tree->Branch("maos1top1M",&maos1top1M,"maos1top1M/d");
+    tree->Branch("maos1top2M",&maos1top2M,"maos1top2M/d");
 
-    tree->Branch("mao2M",&mao2M,"mao2M/d");
-    tree->Branch("mao2Mt2",&mao2Mt2,"mao2Mt2/d");
+    tree->Branch("maos2ttbarM",&maos2ttbarM,"maos2ttbarM/d");
+    tree->Branch("maos2Mt2",&maos2Mt2,"maos2Mt2/d");
+    tree->Branch("maos2top1M",&maos2top1M,"maos2top1M/d");
+    tree->Branch("maos2top2M",&maos2top2M,"maos2top2M/d");
 
-    tree->Branch("mao1top1M",&mao1top1M,"mao1top1M/d");
-    tree->Branch("mao1top2M",&mao1top2M,"mao1top2M/d");
-
-    tree->Branch("mao2top1M",&mao2top1M,"mao2top1M/d");
-    tree->Branch("mao2top2M",&mao2top2M,"mao2top2M/d");
 
     // Jet energy correction for 38X
     if ( doResJec_ )
@@ -253,8 +252,19 @@ class TopDILAnalyzer : public edm::EDAnalyzer {
     RUN    = iEvent.id().run();
     LUMI   = iEvent.id().luminosityBlock();
 
-    mao1M = mao1Mt2 = mao1top1M = mao1top2M = -1;
-    mao2M = mao2Mt2 = mao2top1M = mao2top2M = -1;
+    //clear maos variables
+    {
+      maos1ttbarM = -1;
+      maos1Mt2 = -1;
+      maos1top1M = -1;
+      maos1top2M = -1;
+
+      maos2ttbarM = -1;
+      maos2Mt2 = -1;
+      maos2top1M = -1;
+      maos2top2M = -1;
+    }
+
 
     edm::Handle<std::vector<T1> > muons1_;
     edm::Handle<std::vector<T2> > muons2_;
@@ -423,16 +433,45 @@ class TopDILAnalyzer : public edm::EDAnalyzer {
 
           //Fill tree for ttbar invariant mass and top mass for two different cases
           Ko::MaosTTbar ttbar1;
-          mao1Mt2 = sqrt( ttbar1.MAOS(metvec, lep1op1, lep2op1, 0.0, 0.0, false) );
-          mao1M = ttbar1.M();
-          mao1top1M = ttbar1.top1M();
-          mao1top2M = ttbar1.top2M();
+          double ttbar1Mt2 = sqrt( ttbar1.MAOS(metvec, lep1op1, lep2op1, 0.0, 0.0, false) );
+          //double ttbar1M = ttbar1.M();
+          double ttbar1top1M = ttbar1.top1M();
+          double ttbar1top2M = ttbar1.top2M();
 
           Ko::MaosTTbar ttbar2;
-          mao2Mt2 = sqrt( ttbar2.MAOS(metvec, lep1op2, lep2op2, 0.0, 0.0, false) );
-          mao2M = ttbar2.M();
-          mao2top1M = ttbar2.top1M();
-          mao2top2M = ttbar2.top2M();
+          double ttbar2Mt2 = sqrt( ttbar2.MAOS(metvec, lep1op2, lep2op2, 0.0, 0.0, false) );
+          //double ttbar2M = ttbar2.M();
+          double ttbar2top1M = ttbar2.top1M();
+          double ttbar2top2M = ttbar2.top2M();
+
+          double diffmaos1 = fabs(ttbar1top1M - ttbar1top2M);
+          double diffmaos2 = fabs(ttbar2top1M - ttbar2top2M);
+
+          if( diffmaos1 < diffmaos2 ){
+            maos1Mt2 = ttbar1Mt2;
+            maos1ttbarM = ttbar1.M();
+            maos1top1M = ttbar1.top1M();
+            maos1top2M = ttbar1.top2M();
+          }else{
+            maos1Mt2 = ttbar2Mt2;
+            maos1ttbarM = ttbar2.M();
+            maos1top1M = ttbar2.top1M();
+            maos1top2M = ttbar2.top2M();
+          }
+
+          if( ttbar1Mt2 < ttbar2Mt2 ){
+            maos2Mt2 = ttbar1Mt2;
+            maos2ttbarM = ttbar1.M();
+            maos2top1M = ttbar1.top1M();
+            maos2top2M = ttbar1.top2M();
+          }else{
+            maos2Mt2 = ttbar2Mt2;
+            maos2ttbarM = ttbar2.M();
+            maos2top1M = ttbar2.top1M();
+            maos2top2M = ttbar2.top2M();
+          }
+
+
         }
 
         break;
@@ -562,14 +601,17 @@ class TopDILAnalyzer : public edm::EDAnalyzer {
   double MET;
   double dphimetlepton;
 
-  double mao1M;
-  double mao1Mt2;
-  double mao2M;
-  double mao2Mt2;
-  double mao1top1M;
-  double mao1top2M;
-  double mao2top1M;
-  double mao2top2M;
+  double maos1ttbarM;
+  double maos1Mt2;
+  double maos1top1M;
+  double maos1top2M;
+
+  double maos2ttbarM;
+  double maos2Mt2;
+  double maos2top1M;
+  double maos2top2M;
+
+
 
   // ----------member data ---------------------------
 

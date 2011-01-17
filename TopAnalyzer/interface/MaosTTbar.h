@@ -28,11 +28,34 @@ namespace Ko{
     }
 
     double top1M(){
-      return (Ko::tmpl1_ + tmpnu1_).M();
+      TVector3 l1 = tmpl1_.Vect();
+      TVector3 l2 = tmpnu1_.Vect();
+      l1.SetZ(0.0);
+      l2.SetZ(0.0);
+
+      double El_T = TMath::Hypot(tmpl1_.M(), l1.Mag());
+      double Echi_T = TMath::Hypot(0, l2.Mag());
+      double cosh = TMath::CosH(tmpl1_.Eta() - tmpnu1_.Eta());
+      double m = sqrt( tmpl1_.M()*tmpl1_.M() + 2.0*(El_T*Echi_T*cosh - l1.Dot(l2))) ;
+
+      return m;
+      //return (Ko::tmpl1_ + tmpnu1_).M();
     } 
 
     double top2M(){
-      return (Ko::tmpl2_ + tmpnu2_).M();
+      TVector3 l1 = tmpl2_.Vect();
+      TVector3 l2 = tmpnu2_.Vect();
+      l1.SetZ(0.0);
+      l2.SetZ(0.0);
+
+      double El_T = TMath::Hypot(tmpl2_.M(), l1.Mag());
+      double Echi_T = TMath::Hypot(0, l2.Mag());
+      double cosh = TMath::CosH(tmpl2_.Eta() - tmpnu2_.Eta());
+      double m = sqrt( tmpl2_.M()*tmpl2_.M() + 2.0*(El_T*Echi_T*cosh - l1.Dot(l2))) ;
+
+      return m;
+
+      //return (Ko::tmpl2_ + tmpnu2_).M();
     } 
 
     int findNearestTopM(double& topMass1, double& topMass2)
