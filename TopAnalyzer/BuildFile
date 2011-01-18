@@ -9,6 +9,7 @@
 <use name=PFAnalyses/CommonTools>
 <use name="DQMServices/Core">
 <use name="rootminuit">
+<use name="rootminuit2">
 
 <flags EDM_PLUGIN=1>
 <export>
