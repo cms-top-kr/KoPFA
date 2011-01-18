@@ -1,6 +1,7 @@
 #include "KoPFA/TopAnalyzer/interface/MaosTTbar.h"
-#include <iostream>
+
 using namespace std;
+using namespace Ko;
 
 double Ko::mtsq(const TLorentzVector &ptl, const TLorentzVector &qt, double ml, double mchi)
 {
@@ -118,5 +119,63 @@ double Ko::MaosTTbar::MAOS(const TLorentzVector& metvec, const TLorentzVector &l
     tmpnu2_.SetE(tmpnu2_.P());
 
     return mt22;
+}
+
+void MaxMtsq::set(const TVector2& met, const TLorentzVector& p1, const TLorentzVector& p2)
+{
+  pv1_ = p1.Vect();
+  pv2_ = p2.Vect();
+  metX_ = met.X();
+  metY_ = met.Y();
+
+  msq1_ = p1.M2();
+  msq2_ = p2.M2();
+  et1_ = std::sqrt(msq1_+pv1_.Perp2());
+  et2_ = std::sqrt(msq2_+pv2_.Perp2());
+}
+
+double MaxMtsq::operator()(const double* x)
+{
+  TVector3 q1(x[0], x[1], 0);
+  TVector3 q2(metX_-x[0], metY_-x[1], 0);
+  const double mtsq1 = msq1_ + 2*(et1_*q1.Mag()-q1.Dot(pv1_));
+  const double mtsq2 = msq2_ + 2*(et2_*q2.Mag()-q2.Dot(pv2_));
+
+  return std::max(mtsq1, mtsq2);
+}
+
+TTbarMt2::TTbarMt2():
+  maxMtsq_(), minFn_(maxMtsq_, 2), min_(ROOT::Minuit2::kMigrad)
+{
+  min_.SetMaxFunctionCalls(1000000);
+  min_.SetMaxIterations(100000);
+  min_.SetTolerance(0.001);
+
+  min_.SetFunction(minFn_);
+}
+
+void TTbarMt2::set(const TVector2& met,
+                   const TLorentzVector& p1, const TLorentzVector& p2)
+{
+  met_ = met;
+  p1_ = p1;
+  p2_ = p2;
+
+  maxMtsq_.set(met_, p1_, p2_);
+  min_.SetVariable(0, "nu1Px", 0.001, 0.0001);
+  min_.SetVariable(1, "nu1Py", 0.001, 0.0001);
+
+  min_.Minimize();
+
+  // Update results
+  const double* sol = min_.X();
+  mt2_ = maxMtsq_(sol);
+
+  nu1_.SetXYZT(sol[0], sol[1], 0, 0);
+  nu2_.SetXYZT(met_.X()-sol[0], met_.Y()-sol[1], 0, 0);
+  nu1_.SetPz(nu1_.Pt()*p1.Z()/std::sqrt(p1.M2()+p1.Perp2()));
+  nu2_.SetPz(nu2_.Pt()*p2.Z()/std::sqrt(p2.M2()+p2.Perp2()));
+  nu1_.SetE(nu1_.P());
+  nu2_.SetE(nu2_.P());
 }
 
