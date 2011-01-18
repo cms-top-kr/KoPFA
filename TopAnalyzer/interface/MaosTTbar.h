@@ -2,9 +2,51 @@
 #define KoPFA_TOPAnalyzer_MaosTTbar_h
 
 #include "TLorentzVector.h"
+#include "Math/Functor.h"
 #include "TMinuit.h"
+#include "Minuit2/Minuit2Minimizer.h"
 
-namespace Ko{
+namespace Ko
+{
+  class MaxMtsq : public ROOT::Math::Functor
+  {
+  public:
+    void set(const TVector2& met, const TLorentzVector& p1, const TLorentzVector& p2);
+    double operator()(const double* x);
+    
+  private:
+    double metX_, metY_;
+    double msq1_, msq2_, et1_, et2_;
+    TVector3 pv1_, pv2_;
+  };
+
+  class TTbarMt2
+  {
+  public:
+    TTbarMt2();
+    void set(const TVector2& met, 
+             const TLorentzVector& p1, const TLorentzVector& p2); 
+
+    double getMt2() { return mt2_; };
+    TLorentzVector getTop1() { return p1_+nu1_; };
+    TLorentzVector getTop2() { return p2_+nu2_; };
+    TLorentzVector getNu1() { return nu1_; };
+    TLorentzVector getNu2() { return nu2_; };
+
+  private:
+    TVector2 met_;
+    TLorentzVector p1_, p2_;
+
+    // Caching results
+    double mt2_;
+    TLorentzVector nu1_, nu2_;
+
+    // Minimizer stuffs
+    MaxMtsq maxMtsq_;
+    ROOT::Math::Functor minFn_;
+    ROOT::Minuit2::Minuit2Minimizer min_;
+
+  };
 
   //used for function fo minuit  
   extern TLorentzVector tmpl1_;
@@ -34,33 +76,6 @@ namespace Ko{
     double top2M(){
       return (Ko::tmpl2_ + tmpnu2_).M();
     } 
-
-    int findNearestTopM(double& topMass1, double& topMass2)
-    {
-      const double topMass11 = (Ko::tmpl1_ + tmpnu1_).M();
-      const double topMass12 = (Ko::tmpl1_ + tmpnu2_).M();
-      const double topMass21 = (Ko::tmpl2_ + tmpnu1_).M();
-      const double topMass22 = (Ko::tmpl2_ + tmpnu2_).M();
-
-      // Mass difference with diagonal combination
-      const double dMTop11 = fabs(topMass11 - topMass22);
-      const double dMTop12 = fabs(topMass12 - topMass21);
-
-      if ( dMTop11 < dMTop12 )
-      {
-        topMass1 = topMass11;
-        topMass2 = topMass22;
-
-        return 1;
-      }
-      else
-      {
-        topMass1 = topMass12;
-        topMass2 = topMass21;
-
-        return -1;
-      }
-    }
 
     TLorentzVector nu1(){return tmpnu1_; }
     TLorentzVector nu2(){return tmpnu2_; }
