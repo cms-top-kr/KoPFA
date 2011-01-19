@@ -44,44 +44,75 @@ void setRangeY(TCanvas *c, double min=0, double max=1.1){
   }
 }
 
-void plot2Eff(TFile *f1, TFile* f2, const TString & leg1, const TString & leg2, const TString& dir1, const TString &dir2, const TString& plot1, const TString & plot2, const TString& printName, const TString& hName){
-  gStyle->SetPadTickX(1);
+RooHist* getHist(TFile *f, const TString &dir, const TString &plot, int color, int style){
+  f->cd(dir);
+  TCanvas* c = (TCanvas*) gDirectory->FindKey(plot)->ReadObj();
+  TString obj="";
+  if(dir.Contains("cnt")) obj = "hxy_cnt_eff";
+  else obj = "hxy_fit_eff";
+  RooHist* h = (RooHist*) c->FindObject(obj);
 
+  h->SetLineWidth(2);
+  h->SetLineColor(color);
+  h->SetMarkerColor(color);
+  h->SetMarkerStyle(style);
+  h->SetMarkerSize(0.7);
+
+  return h;
+}
+
+void plotMultiEff(TFile *f1, TFile *f2, const TString & leg1, const TString & leg2, vector<TString> dir, vector<TString> plot, const TString& printName, const TString& hName){
+  gStyle->SetPadTickX(1);
+  f1->cd(dir[0]);
+  TCanvas* c1 = (TCanvas*) gDirectory->FindKey(plot[0])->ReadObj();
+  setRangeY(c1,0.5,1.1);
+  c1->Draw();
+
+  RooHist* h_1[1];
+  RooHist* h_2[1];
+
+  for(int i=0; i < dir.size() ;i++){
+    RooHist* h1 = getHist(f1, dir[i], plot[i], 4, 20);
+    cout << "data-----" << plot[i] << "---" << hName << "----" << endl;
+    printEff(h1);
+
+    RooHist* h2 = getHist(f2, dir[i], plot[i], 2, 20);
+    cout << "MC-----" << plot[i] << "---"<< hName << "---" << endl;
+    printEff(h2);
+
+    h_1[i] = h1;
+    h_2[i] = h2;
+  }
+
+  c1->Draw();
+  for( int i=0; i < dir.size() ; i++){
+    h_1[i]->Draw("P Same");
+    h_2[i]->Draw("P Same");
+  }
+
+  doLegend(h_1[0], h_2[0], leg1, leg2);
+  c1->Print("c_"+printName+"_"+hName+".png");
+  c1->Print("c_"+printName+"_"+hName+".eps");
+}
+
+void plot2Eff(TFile *f1, TFile* f2, const TString & leg1, const TString & leg2, const TString& dir1, const TString &dir2, const TString& plot1, const TString & plot2, const TString& printName, const TString& hName){
+
+  gStyle->SetPadTickX(1);
   f1->cd(dir1);
   TCanvas* c1 = (TCanvas*) gDirectory->FindKey(plot1)->ReadObj();
-  //getObjects(c1);
-  TString obj1="";
-  if(dir1.Contains("cnt")) obj1 = "hxy_cnt_eff";
-  else obj1 = "hxy_fit_eff";
-  RooHist* h1 = (RooHist*) c1->FindObject(obj1);
-
   setRangeY(c1,0.5,1.1);
-  h1->SetLineWidth(2);
-  h1->SetLineColor(4);
-  h1->SetMarkerColor(4);
-  h1->SetMarkerStyle(20);
-  h1->SetMarkerSize(0.7);
+  //getObjects(c1);
+
+  RooHist* h1 = getHist(f1, dir1, plot1, 4, 20);
   cout << "data-----" << plot1 << "---" << hName << "----" << endl;
   printEff(h1);
 
-  f2->cd(dir2);
-  TCanvas* c2 = (TCanvas*) gDirectory->FindKey(plot2)->ReadObj();
-  TString obj2="";
-  if(dir2.Contains("cnt")) obj2 = "hxy_cnt_eff";
-  else obj2 = "hxy_fit_eff";
-  RooHist* h2 = (RooHist*) c2->FindObject(obj2);
-  
-  setRangeY(c2,0.5,1.1); 
-  h2->SetLineWidth(2);
-  h2->SetLineColor(2);
-  h2->SetMarkerColor(2);
-  h2->SetMarkerStyle(20);
-  h2->SetMarkerSize(0.7);
-
+  RooHist* h2 = getHist(f2, dir2, plot2, 2, 20);
   cout << "MC-----" << plot2 << "---"<< hName << "---" << endl;
   printEff(h2);
 
   c1->Draw();
+  h1->Draw("P Same");
   h2->Draw("P Same");
 
   doLegend(h1, h2, leg1, leg2);
@@ -236,11 +267,5 @@ void doLegend(TGraphAsymmErrors *g1, TGraphAsymmErrors *g2, TString lab1, TStrin
     leg->SetLineColor(0);
     leg->Draw();
 }
-
-//void SetStyle(){
-//  compStyle->SetPadTickX(1);  // To get tick marks on the opposite side of the frame
-//  compStyle->SetPadTickY(1);
-//  compStyle->cd();
-//}
 
 
