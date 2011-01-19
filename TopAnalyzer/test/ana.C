@@ -5,21 +5,22 @@ using namespace std;
 
 void defaultStyle();
 
-void ana(string decayMode = "MuEl", string imageOutDir = "")
+void ana(string decayMode = "MuMu", string imageOutDir = "")
 {
   gSystem->Load("libFWCoreFWLite.so");
+  AutoLibraryLoader::enable();
   gSystem->Load("libDataFormatsFWLite.so");
   gSystem->Load("libDataFormatsPatCandidates.so");
 
   gSystem->Load("libPhysicsToolsRooStatsCms.so");
 
-  AutoLibraryLoader::enable();
+  //AutoLibraryLoader::enable();
 
   gSystem->CompileMacro("TopAnalyzerLite.cc", "k");
   TopAnalyzerLite* analyzer = new TopAnalyzerLite(decayMode, imageOutDir);
 
-  const std::string mcPath = "/home/tjkim/ntuple/top/"+decayMode+"/MC/Fall10_jetfixed/";
-  const std::string rdPath = "/home/tjkim/ntuple/top/"+decayMode+"/RD/Nov22_jetfixed/";
+  const std::string mcPath = "/home/bhlee/ntuple/top/"+decayMode+"/MC/Fall10_Nov4ReReco/";
+  const std::string rdPath = "/home/bhlee/ntuple/top/"+decayMode+"/RD/Nov4ReReco/";
 
 
   defaultStyle();
@@ -30,27 +31,40 @@ void ana(string decayMode = "MuEl", string imageOutDir = "")
   //analyzer->addRealData(rdPath+"/vallot_Run2010B_PromptReco.root", 4.0*781/3382);
   analyzer->addRealData(rdPath+"/vallot.root", 36.1);
 
-  analyzer->addMC("TTbar", "t#bar{t}", mcPath+"/vallot_TTbar.root", 157.5, 1000000, 4);
+  //analyzer->addMC("TTbar", "t#bar{t}", mcPath+"/vallot_TTbar.root", 157.5, 1000000, 4);
+  analyzer->addMC("TTbar", "t#bar{t}", mcPath+"/vallot_TTbar_PU.root", 157.5, 1000000, 4);
 
   analyzer->addMC("Wl", "W #rightarrow l#nu", mcPath+"/vallot_We.root", 10438, 2500000, 46);
   analyzer->addMC("Wm", "W #rightarrow l#nu", mcPath+"/vallot_Wmu.root", 10438, 2500000, 46);
   analyzer->addMC("Wt", "W #rightarrow l#nu", mcPath+"/vallot_Wtau.root", 10438, 2500000, 46);
 
-  analyzer->addMC("VV", "Dibosons", mcPath+"/vallot_WW.root", 4.51, 100000, 6);
-  analyzer->addMC("ZW", "Dibosons", mcPath+"/vallot_ZW.root", 0.61, 100000, 6);
-  analyzer->addMC("ZZ", "Dibosons", mcPath+"/vallot_ZZ.root", 7.40, 100000, 6);
+  //analyzer->addMC("VV", "Dibosons", mcPath+"/vallot_WW.root", 4.51, 100000, 6);
+  //analyzer->addMC("ZW", "Dibosons", mcPath+"/vallot_ZW.root", 0.61, 100000, 6);
+  //analyzer->addMC("ZZ", "Dibosons", mcPath+"/vallot_ZZ.root", 7.40, 100000, 6);
+  analyzer->addMC("VV", "Dibosons", mcPath+"/vallot_WW_PU.root", 4.51, 100000, 6);
+  analyzer->addMC("ZW", "Dibosons", mcPath+"/vallot_ZW_PU.root", 0.61, 100000, 6);
+  analyzer->addMC("ZZ", "Dibosons", mcPath+"/vallot_ZZ_PU.root", 7.40, 100000, 6);
 
-  analyzer->addMC("SingleTop", "Single top", mcPath+"/vallot_SingleTop.root", 10.6, 100000, 7);
+  //analyzer->addMC("SingleTop", "Single top", mcPath+"/vallot_SingleTop.root", 10.6, 100000, 7);
+  analyzer->addMC("SingleTop", "Single top", mcPath+"/vallot_SingleTop_PU.root", 10.6, 100000, 7);
 
-  analyzer->addMC("DYtt", "Z/#gamma* #rightarrow #tau#tau", mcPath+"/vallot_DYtautau.root", 3457, 1000000, 5);
-  analyzer->addMC("DYtt_20to50", "Z/#gamma* #rightarrow #tau#tau", mcPath+"/vallot_Ztautau.root", 1666, 1000000, 5);
-  analyzer->addMC("Ztt"        , "Z/#gamma* #rightarrow #tau#tau", mcPath+"/vallot_ZtauDecay.root", 3048, 2500000, 5);
+  //analyzer->addMC("DYtt", "Z/#gamma* #rightarrow #tau#tau", mcPath+"/vallot_DYtautau.root", 3457, 1000000, 5);
+  //analyzer->addMC("DYtt_20to50", "Z/#gamma* #rightarrow #tau#tau", mcPath+"/vallot_Ztautau.root", 1666, 1000000, 5);
+  //analyzer->addMC("Ztt"        , "Z/#gamma* #rightarrow #tau#tau", mcPath+"/vallot_ZtauDecay.root", 3048, 2500000, 5);
+  analyzer->addMC("DYtt", "Z/#gamma* #rightarrow #tau#tau", mcPath+"/vallot_DYtautau_PU.root", 3457, 1000000, 5);
+  analyzer->addMC("DYtt_20to50", "Z/#gamma* #rightarrow #tau#tau", mcPath+"/vallot_Ztautau_PU.root", 1666, 1000000, 5);
+  analyzer->addMC("Ztt"        , "Z/#gamma* #rightarrow #tau#tau", mcPath+"/vallot_ZtauDecay_PU.root", 3048, 2500000, 5);
 
-  analyzer->addMC("DYll",  "Z/#gamma* #rightarrow ll", mcPath+"/vallot_DYee.root", 3457, 1000000, 2);
-  analyzer->addMC("DYmumu","Z/#gamma* #rightarrow ll", mcPath+"/vallot_DYmumu.root", 3457, 1000000, 2);
-  analyzer->addMC("Zee"  , "Z/#gamma* #rightarrow ll", mcPath+"/vallot_Zee.root", 1666, 1000000, 2);
-  analyzer->addMC("Zmumu", "Z/#gamma* #rightarrow ll", mcPath+"/vallot_Zmumu.root", 1666, 1000000, 2);
-  analyzer->addMC("ZJets", "Z/#gamma* #rightarrow ll", mcPath+"/vallot_ZJets.root", 3048, 2500000, 2);
+  //analyzer->addMC("DYll",  "Z/#gamma* #rightarrow ll", mcPath+"/vallot_DYee.root", 3457, 1000000, 2);
+  //analyzer->addMC("DYmumu","Z/#gamma* #rightarrow ll", mcPath+"/vallot_DYmumu.root", 3457, 1000000, 2);
+  //analyzer->addMC("Zee"  , "Z/#gamma* #rightarrow ll", mcPath+"/vallot_Zee.root", 1666, 1000000, 2);
+  //analyzer->addMC("Zmumu", "Z/#gamma* #rightarrow ll", mcPath+"/vallot_Zmumu.root", 1666, 1000000, 2);
+  //analyzer->addMC("ZJets", "Z/#gamma* #rightarrow ll", mcPath+"/vallot_ZJets.root", 3048, 2500000, 2);
+  analyzer->addMC("DYll",  "Z/#gamma* #rightarrow ll", mcPath+"/vallot_DYee_PU.root", 3457, 1000000, 2);
+  analyzer->addMC("DYmumu","Z/#gamma* #rightarrow ll", mcPath+"/vallot_DYmumu_PU.root", 3457, 1000000, 2);
+  analyzer->addMC("Zee"  , "Z/#gamma* #rightarrow ll", mcPath+"/vallot_Zee_PU.root", 1666, 1000000, 2);
+  analyzer->addMC("Zmumu", "Z/#gamma* #rightarrow ll", mcPath+"/vallot_Zmumu_PU.root", 1666, 1000000, 2);
+  analyzer->addMC("ZJets", "Z/#gamma* #rightarrow ll", mcPath+"/vallot_ZJets_PU.root", 3048, 2500000, 2);
 
   analyzer->addMonitorPlot("ZMass", "Z.mass()", "Dilepton mass;Dilepton Mass (GeV/c^{2});Events/5 GeV/c^{2}", 40, 0, 200, 0.1, 1500);
   analyzer->addMonitorPlot("ZMassFinal", "Z.mass()", "Dilepton mass;Dilepton Mass (GeV/c^{2});Events/40 GeV/c^{2}", 5, 0, 200, 0.1, 1500);
@@ -71,7 +85,7 @@ void ana(string decayMode = "MuEl", string imageOutDir = "")
   analyzer->addMonitorPlot("metPhi", "met[0].phi()", "Azimuthal angle of Missing E_{T};Azimuthal angle #phi;Events/0.2 rad", 35, -3.5, 3.5, 0.1, 100);
   analyzer->addMonitorPlot("dphi1", "asin(sin(Z.leg1().phi()-met[0].phi()))", "Azimuthal angle difference between leading lepton - MET;Angle difference;Events/0.2 rad", 20, -2, 2, 0.1, 10000);
   analyzer->addMonitorPlot("dphi2", "asin(sin(Z.leg2().phi()-met[0].phi()))", "Azimuthal angle difference between leading lepton - MET;Angle difference;Events/0.2 rad", 20, -2, 2, 0.1, 10000);
-  analyzer->addMonitorPlot("toptotal", "toptotal.M()", "ttbar invariant mass;t#bar{t} invaraint mass;Events/40 GeV", 20, 200, 1000, 0.1, 0.9, false);
+  analyzer->addMonitorPlot("toptotal", "toptotal.M()", "ttbar invariant mass;t#bar{t} invariant mass;Events/40 GeV", 20, 200, 1000, 0.1, 0.9, false);
   analyzer->addMonitorPlot("mao1M", "mao1M", "ttbar invariant mass;t#bar{t} invaraint mass;Events/20 GeV", 20, 200, 1000, 0.1, 0.9, false);
   analyzer->addMonitorPlot("mao2M", "mao2M", "ttbar invariant mass;t#bar{t} invaraint mass;Events/20 GeV", 20, 200, 1000, 0.1, 0.9, false);
 
