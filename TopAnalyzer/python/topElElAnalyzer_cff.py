@@ -64,6 +64,8 @@ process.ElEl = cms.EDAnalyzer('TopElElAnalyzer',
   muonLabel2 =  cms.InputTag('Electrons'),
   metLabel =  cms.InputTag('patMETsPFlow'),
   jetLabel =  cms.InputTag('selectedPatJetsPFlow'),
+  genParticlesLabel = cms.InputTag('genParticles'),
+  doResJec = cms.untracked.bool( False),
   useEventCounter = cms.bool( True ),
   filters = cms.untracked.vstring(
                               'initialEvents',
@@ -77,10 +79,16 @@ process.ElEl = cms.EDAnalyzer('TopElElAnalyzer',
 
 process.load("HLTrigger.HLTfilters.hltHighLevel_cfi")
 #process.hltHighLevel.HLTPaths = cms.vstring('HLT_Ele10_LW_L1R')
+process.load("KoPFA.TopAnalyzer.triggerFilterByRun_cfi")
+
+process.load("KoPFA.CommonTools.genParticleDecayFilter_cfi")
+
 
 process.p = cms.Path(
                      process.loadHistosFromRunInfo*
 #                     process.hltHighLevel*
+                     process.topWLeptonGenFilter*
+                     process.electronTriggerFilterForMC*
                      process.GenZmassFilter*
                      process.Electrons*
                      process.patElectronFilter*

@@ -20,7 +20,7 @@ process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
 process.load("SimGeneral.HepPDTESSource.pythiapdt_cfi")
 process.printTree = cms.EDAnalyzer("ParticleListDrawer",
                                     src = cms.InputTag("genParticles"),
-                                    maxEventsToPrint  = cms.untracked.int32(40)
+                                    maxEventsToPrint  = cms.untracked.int32(10)
                                     )
 
 # register TFileService
@@ -65,6 +65,8 @@ process.MuEl = cms.EDAnalyzer('TopMuElAnalyzer',
   muonLabel2 =  cms.InputTag('Electrons'),
   metLabel =  cms.InputTag('patMETsPFlow'),
   jetLabel =  cms.InputTag('selectedPatJetsPFlow'),
+  genParticlesLabel = cms.InputTag('genParticles'),
+  doResJec = cms.untracked.bool( False),
   useEventCounter = cms.bool( True ),
   filters = cms.untracked.vstring(
                               'initialEvents',
@@ -73,7 +75,7 @@ process.MuEl = cms.EDAnalyzer('TopMuElAnalyzer',
   looseJetId = myJetId, 
   #for jet cleaning overlapping with isolated epton within 0.4
   relIso1 = cms.untracked.double(0.21),
-  relIso2 = cms.untracked.double(0.20),
+  relIso2 = cms.untracked.double(0.26),
 )
 
 process.removeDuplicate = cms.EDFilter("RemoveDuplicate",
@@ -85,9 +87,13 @@ process.hltHighLevel.HLTPaths = cms.vstring('HLT_Mu9','HLT_Ele10_LW_L1R')
 process.hltHighLevel.throw = cms.bool(False)
 process.load("KoPFA.TopAnalyzer.triggerFilterByRun_cfi")
 
+process.load("KoPFA.CommonTools.genParticleDecayFilter_cfi")
+
 process.p = cms.Path(
+#                     process.printTree*
                      process.loadHistosFromRunInfo*
 #                     process.hltHighLevel*
+                     process.topWLeptonGenFilter*
                      process.emuTriggerFilterForMC*
                      process.removeDuplicate*
                      process.GenZmassFilter*

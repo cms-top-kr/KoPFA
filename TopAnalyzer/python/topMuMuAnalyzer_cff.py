@@ -53,18 +53,22 @@ process.patMuonFilter = cms.EDFilter("CandViewCountFilter",
 from PFAnalyses.CommonTools.Selectors.looseJetIdPSet_cff import looseJetIdPSet
 myJetId = looseJetIdPSet.clone()
 myJetId.verbose = False 
+#from PhysicsTools.SelectorUtils.pfJetIDSelector_cfi import pfJetIDSelector
 
 process.MuMu = cms.EDAnalyzer('TopMuMuAnalyzer',
   muonLabel1 =  cms.InputTag('Muons'),
   muonLabel2 =  cms.InputTag('Muons'),
   metLabel =  cms.InputTag('patMETsPFlow'),
   jetLabel =  cms.InputTag('selectedPatJetsPFlow'),
+  genParticlesLabel = cms.InputTag('genParticles'),
+  doResJec = cms.untracked.bool( True),
   useEventCounter = cms.bool( True ),
   filters = cms.untracked.vstring(
                               'initialEvents',
                               'finalEvents'
                               ),
   looseJetId = myJetId, 
+  #looseJetId = pfJetIDSelector, 
   #for jet cleaning overlapping with isolated epton within 0.4
   relIso1 = cms.untracked.double(0.21),
   relIso2 = cms.untracked.double(0.21),
@@ -80,7 +84,7 @@ process.p = cms.Path(
                      process.loadHistosFromRunInfo*
 #                     process.hltHighLevel*
                      process.muonTriggerFilterForMC*
-					 process.topWLeptonGenFilter*
+       		     process.topWLeptonGenFilter*
                      process.GenZmassFilter*
                      process.Muons*
                      process.patMuonFilter*
