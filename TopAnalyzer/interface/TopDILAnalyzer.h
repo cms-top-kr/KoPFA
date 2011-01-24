@@ -77,6 +77,7 @@ class TopDILAnalyzer : public edm::EDAnalyzer {
     muonLabel2_ = iConfig.getParameter<edm::InputTag>("muonLabel2");
     metLabel_ = iConfig.getParameter<edm::InputTag>("metLabel");
     jetLabel_ = iConfig.getParameter<edm::InputTag>("jetLabel");
+    genParticlesLabel_= iConfig.getParameter<edm::InputTag>("genParticlesLabel");
     useEventCounter_ = iConfig.getParameter<bool>("useEventCounter");
     filters_ = iConfig.getUntrackedParameter<std::vector<std::string> >("filters");
     looseJetIdSelector_.initialize( iConfig.getParameter<edm::ParameterSet> ("looseJetId") );
@@ -185,16 +186,21 @@ class TopDILAnalyzer : public edm::EDAnalyzer {
     tree->Branch("MET",&MET,"MET/d");
     tree->Branch("dphimetlepton",&dphimetlepton,"dphimetlepton/d");
 
-    tree->Branch("maos1ttbarM",&maos1ttbarM,"maos1ttbarM/d");
-    tree->Branch("maos1Mt2",&maos1Mt2,"maos1Mt2/d");
-    tree->Branch("maos1top1M",&maos1top1M,"maos1top1M/d");
-    tree->Branch("maos1top2M",&maos1top2M,"maos1top2M/d");
+    tree->Branch("maosttbarM",&maosttbarM,"maosttbarM/d");
+    tree->Branch("maosMt2",&maosMt2,"maosMt2/d");
+    tree->Branch("maostop1M",&maostop1M,"maostop1M/d");
+    tree->Branch("maostop2M",&maostop2M,"maostop2M/d");
 
-    tree->Branch("maos2ttbarM",&maos2ttbarM,"maos2ttbarM/d");
-    tree->Branch("maos2Mt2",&maos2Mt2,"maos2Mt2/d");
-    tree->Branch("maos2top1M",&maos2top1M,"maos2top1M/d");
-    tree->Branch("maos2top2M",&maos2top2M,"maos2top2M/d");
+    //tree->Branch("maos2ttbarM",&maos2ttbarM,"maos2ttbarM/d");
+    //tree->Branch("maos2Mt2",&maos2Mt2,"maos2Mt2/d");
+    //tree->Branch("maos2top1M",&maos2top1M,"maos2top1M/d");
+    //tree->Branch("maos2top2M",&maos2top2M,"maos2top2M/d");
 
+    tree->Branch("vsumttbarM",&vsumttbarM, "vsumttbarM/d");
+    tree->Branch("genttbarM",&genttbarM,"genttbarM/d");
+    tree->Branch("relmaosM",&relmaosM,"relmaosM/d");
+    tree->Branch("relvsumM",&relvsumM,"relvsumM/d");
+    //tree->Branch("rel3ttbarM",&rel3ttbarM,"rel3ttbarM/d");
 
     // Jet energy correction for 38X
     if ( doResJec_ )
@@ -208,58 +214,11 @@ class TopDILAnalyzer : public edm::EDAnalyzer {
 
   virtual void analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
   {
-    Z->clear();
-    toptotal->clear();
-    met->clear();
-    jets->clear();
-    jetspt30->clear();
-
-    chIso1->clear();
-    phIso1->clear();
-    nhIso1->clear();
-    chIso2->clear();
-    phIso2->clear();
-    nhIso2->clear();
-
-    chIsoOpt1->clear();
-    phIsoOpt1->clear();
-    nhIsoOpt1->clear();
-    chIsoOpt2->clear();
-    phIsoOpt2->clear();
-    nhIsoOpt2->clear();
-
-    relIso03lep1->clear();
-    relIso03lep2->clear();
-    relIso04lep1->clear();
-    relIso04lep2->clear();
-    relIso05lep1->clear();
-    relIso05lep2->clear();
-
-    trackIso1->clear();
-    ecalIso1->clear();
-    hcalIso1->clear();
-    trackIso2->clear();
-    ecalIso2->clear();
-    hcalIso2->clear();
-
+    clear();
 
     EVENT  = iEvent.id().event();
     RUN    = iEvent.id().run();
     LUMI   = iEvent.id().luminosityBlock();
-
-    //clear maos variables
-    {
-      maos1ttbarM = -1;
-      maos1Mt2 = -1;
-      maos1top1M = -1;
-      maos1top2M = -1;
-
-      maos2ttbarM = -1;
-      maos2Mt2 = -1;
-      maos2top1M = -1;
-      maos2top2M = -1;
-    }
-
 
     edm::Handle<std::vector<T1> > muons1_;
     edm::Handle<std::vector<T2> > muons2_;
@@ -275,6 +234,10 @@ class TopDILAnalyzer : public edm::EDAnalyzer {
 
     edm::Handle<pat::JetCollection> Jets;
     iEvent.getByLabel(jetLabel_, Jets);
+
+    edm::Handle<reco::GenParticleCollection> genParticles_;
+    iEvent.getByLabel(genParticlesLabel_,genParticles_);
+
 
     for(unsigned i = 0; i != muons1_->size(); i++){
       for(unsigned j = 0; j != muons2_->size(); j++){
@@ -379,7 +342,7 @@ class TopDILAnalyzer : public edm::EDAnalyzer {
           if(passId){
             const double dRval1 = deltaR(jit->eta(), jit->phi(), it1.eta(), it1.phi());
             const double dRval2 = deltaR(jit->eta(), jit->phi(), it2.eta(), it2.phi());
-            const bool overlap = checkOverlap(jit->eta(), jit->phi(), dRval1, reliso04lep1, dRval2, reliso04lep2);
+            bool overlap = checkOverlap(jit->eta(), jit->phi(), dRval1, reliso04lep1, dRval2, reliso04lep2);
             //jet cleaning
             if( overlap ) continue;
 
@@ -425,44 +388,55 @@ class TopDILAnalyzer : public edm::EDAnalyzer {
 
           //Fill tree for ttbar invariant mass and top mass for two different cases
           Ko::MaosTTbar ttbar1;
-          const double ttbar1Mt2 = sqrt( ttbar1.MAOS(metvec, lep1op1, lep2op1, 0.0, 0.0, false) );
-          //double ttbar1M = ttbar1.M();
-          const double ttbar1top1M = ttbar1.top1M();
-          const double ttbar1top2M = ttbar1.top2M();
-
+          double ttbar1Mt2 = sqrt( ttbar1.MAOS(metvec, lep1op1, lep2op1, 0.0, 0.0, false) );
           Ko::MaosTTbar ttbar2;
-          const double ttbar2Mt2 = sqrt( ttbar2.MAOS(metvec, lep1op2, lep2op2, 0.0, 0.0, false) );
-          //double ttbar2M = ttbar2.M();
-          const double ttbar2top1M = ttbar2.top1M();
-          const double ttbar2top2M = ttbar2.top2M();
+          double ttbar2Mt2 = sqrt( ttbar2.MAOS(metvec, lep1op2, lep2op2, 0.0, 0.0, false) );
 
-          const double diffmaos1 = fabs(ttbar1top1M - ttbar1top2M);
-          const double diffmaos2 = fabs(ttbar2top1M - ttbar2top2M);
-
-          if( diffmaos1 < diffmaos2 ){
-            maos1Mt2 = ttbar1Mt2;
-            maos1ttbarM = ttbar1.M();
-            maos1top1M = ttbar1.top1M();
-            maos1top2M = ttbar1.top2M();
-          }else{
-            maos1Mt2 = ttbar2Mt2;
-            maos1ttbarM = ttbar2.M();
-            maos1top1M = ttbar2.top1M();
-            maos1top2M = ttbar2.top2M();
-          }
+          //double diffmaos1 = fabs(ttbar1top1M - ttbar1top2M);
+          //double diffmaos2 = fabs(ttbar2top1M - ttbar2top2M);
 
           if( ttbar1Mt2 < ttbar2Mt2 ){
-            maos2Mt2 = ttbar1Mt2;
-            maos2ttbarM = ttbar1.M();
-            maos2top1M = ttbar1.top1M();
-            maos2top2M = ttbar1.top2M();
+            maosMt2 = ttbar1Mt2;
+            maosttbarM = ttbar1.M();
+            maostop1M = ttbar1.top1M();
+            maostop2M = ttbar1.top2M();
           }else{
-            maos2Mt2 = ttbar2Mt2;
-            maos2ttbarM = ttbar2.M();
-            maos2top1M = ttbar2.top1M();
-            maos2top2M = ttbar2.top2M();
+            maosMt2 = ttbar2Mt2;
+            maosttbarM = ttbar2.M();
+            maostop1M = ttbar2.top1M();
+            maostop2M = ttbar2.top2M();
           }
 
+          //if( diffmaos1 < diffmaos2 ){
+          //  maos2Mt2 = ttbar1Mt2;
+          //  maos2ttbarM = ttbar1.M();
+          //  maos2top1M = ttbar1.top1M();
+          //  maos2top2M = ttbar1.top2M();
+          //}else{
+          //  maos2Mt2 = ttbar2Mt2;
+          //  maos2ttbarM = ttbar2.M();
+          //  maos2top1M = ttbar2.top1M();
+          //  maos2top2M = ttbar2.top2M();
+          //}
+
+          vsumttbarM = (it1.p4() + it2.p4() + jetspt30->at(0) + jetspt30->at(1) + met->at(0)).M();
+
+          if(genParticles_.isValid()){
+              TLorentzVector ttbar(0,0,0,0);
+
+            for (reco::GenParticleCollection::const_iterator mcIter=genParticles_->begin(); mcIter != genParticles_->end(); mcIter++ ) {
+              int genId = mcIter->pdgId();
+              if( fabs(genId) == 6){ 
+                //double mass = mcIter->p4().M(); 
+                TLorentzVector top(mcIter->p4().Px(), mcIter->p4().Py(), mcIter->p4().Pz(), mcIter->p4().E());
+                ttbar = ttbar+top;
+              }
+          
+            }
+            genttbarM = ttbar.M();
+            relmaosM = ttbar.M() - maosttbarM;
+            relvsumM = ttbar.M() - vsumttbarM;
+          }
         }
 
         break;
@@ -476,7 +450,61 @@ class TopDILAnalyzer : public edm::EDAnalyzer {
 
   }
 
+  void clear(){
 
+    Z->clear();
+    toptotal->clear();
+    met->clear();
+    jets->clear();
+    jetspt30->clear();
+
+    chIso1->clear();
+    phIso1->clear();
+    nhIso1->clear();
+    chIso2->clear();
+    phIso2->clear();
+    nhIso2->clear();
+
+    chIsoOpt1->clear();
+    phIsoOpt1->clear();
+    nhIsoOpt1->clear();
+    chIsoOpt2->clear();
+    phIsoOpt2->clear();
+    nhIsoOpt2->clear();
+
+    relIso03lep1->clear();
+    relIso03lep2->clear();
+    relIso04lep1->clear();
+    relIso04lep2->clear();
+    relIso05lep1->clear();
+    relIso05lep2->clear();
+
+    trackIso1->clear();
+    ecalIso1->clear();
+    hcalIso1->clear();
+    trackIso2->clear();
+    ecalIso2->clear();
+    hcalIso2->clear();
+
+    //clear maos variables
+    maosttbarM = -1;
+    maosMt2 = -1;
+    maostop1M = -1;
+    maostop2M = -1;
+
+    //maos2ttbarM = -1;
+    //maos2Mt2 = -1;
+    //maos2top1M = -1;
+    //maos2top2M = -1;
+
+    vsumttbarM = -1;
+    genttbarM = -1;
+    relmaosM = -999; 
+    relvsumM = -999;
+    //rel3ttbarM = -999;
+ 
+
+  }
 
   virtual void endJob() 
   {
@@ -537,6 +565,8 @@ class TopDILAnalyzer : public edm::EDAnalyzer {
   edm::InputTag muonLabel2_;
   edm::InputTag metLabel_;
   edm::InputTag jetLabel_;
+  edm::InputTag genParticlesLabel_;
+
   std::vector<std::string> filters_;
   bool useEventCounter_;
   /// loose jet ID. 
@@ -592,17 +622,22 @@ class TopDILAnalyzer : public edm::EDAnalyzer {
   double MET;
   double dphimetlepton;
 
-  double maos1ttbarM;
-  double maos1Mt2;
-  double maos1top1M;
-  double maos1top2M;
+  double maosttbarM;
+  double maosMt2;
+  double maostop1M;
+  double maostop2M;
 
-  double maos2ttbarM;
-  double maos2Mt2;
-  double maos2top1M;
-  double maos2top2M;
+  //double maos2ttbarM;
+  //double maos2Mt2;
+  //double maos2top1M;
+  //double maos2top2M;
 
+  double vsumttbarM;
 
+  double genttbarM;
+  double relmaosM;
+  double relvsumM;
+  //double rel3ttbarM;
 
   // ----------member data ---------------------------
 
