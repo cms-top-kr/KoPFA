@@ -13,7 +13,7 @@
 //
 // Original Author:  Tae Jeong Kim,40 R-A32,+41227678602,
 //         Created:  Fri Jun  4 17:19:29 CEST 2010
-// $Id: TopDILAnalyzer.h,v 1.16 2011/01/17 09:00:55 tjkim Exp $
+// $Id: TopDILAnalyzer.h,v 1.18 2011/01/24 17:36:23 tjkim Exp $
 //
 //
 
@@ -197,10 +197,12 @@ class TopDILAnalyzer : public edm::EDAnalyzer {
     //tree->Branch("maos2top2M",&maos2top2M,"maos2top2M/d");
 
     tree->Branch("vsumttbarM",&vsumttbarM, "vsumttbarM/d");
+    tree->Branch("devettbarM",&devettbarM, "devettbarM/d");
     tree->Branch("genttbarM",&genttbarM,"genttbarM/d");
+
     tree->Branch("relmaosM",&relmaosM,"relmaosM/d");
     tree->Branch("relvsumM",&relvsumM,"relvsumM/d");
-    //tree->Branch("rel3ttbarM",&rel3ttbarM,"rel3ttbarM/d");
+    tree->Branch("reldeveM",&reldeveM,"reldeveM/d");
 
     // Jet energy correction for 38X
     if ( doResJec_ )
@@ -420,6 +422,7 @@ class TopDILAnalyzer : public edm::EDAnalyzer {
           //}
 
           vsumttbarM = (it1.p4() + it2.p4() + jetspt30->at(0) + jetspt30->at(1) + met->at(0)).M();
+          devettbarM = newttbarM(jetspt30->at(0), jetspt30->at(1), it1.p4(), it2.p4(), met->at(0));
 
           if(genParticles_.isValid()){
               TLorentzVector ttbar(0,0,0,0);
@@ -436,6 +439,7 @@ class TopDILAnalyzer : public edm::EDAnalyzer {
             genttbarM = ttbar.M();
             relmaosM = ttbar.M() - maosttbarM;
             relvsumM = ttbar.M() - vsumttbarM;
+            reldeveM = ttbar.M() - devettbarM;
           }
         }
 
@@ -498,10 +502,12 @@ class TopDILAnalyzer : public edm::EDAnalyzer {
     //maos2top2M = -1;
 
     vsumttbarM = -1;
+    devettbarM = -1;
+
     genttbarM = -1;
     relmaosM = -999; 
     relvsumM = -999;
-    //rel3ttbarM = -999;
+    reldeveM = -999;
  
 
   }
@@ -520,6 +526,44 @@ class TopDILAnalyzer : public edm::EDAnalyzer {
     }
   }
 
+  double newttbarM( const reco::Candidate::LorentzVector& bq1, const reco::Candidate::LorentzVector& bq2, const reco::Candidate::LorentzVector& le1, const reco::Candidate::LorentzVector& le2, const reco::Candidate::LorentzVector& met){
+
+    double b1 = bq1.E();
+    double bt1 = bq1.Et();
+    double bx1 = bq1.Px();
+    double by1 = bq1.Py();
+    double bz1 = bq1.Pz();
+
+    double b2 = bq2.E();
+    double bt2 = bq2.Et();
+    double bx2 = bq2.Px();
+    double by2 = bq2.Py();
+    double bz2 = bq2.Pz();
+
+
+    double e1 = le1.E();
+    double pt1 = le1.Et();
+    double px1 = le1.Px();
+    double py1 = le1.Py();
+    double pz1 = le1.Pz();
+
+    double e2 = le2.E();
+    //double pt2 = le2.Et();
+    double px2 = le2.Px();
+    double py2 = le2.Py();
+    double pz2 = le2.Pz();
+
+    double Met = met.Et();
+    double Mex = met.Px();
+    double Mey = met.Py();
+
+    double invmass2 = 3*b1*b2 + b2*bt2 - bt2*bz2 - bz1*bz2 + 2*b2*e1 + 4*b1*e2 + 5*e1*e2 + 4*bt2*Met + 4*e1*Met + e2*Met - (bx1 + bx2)*Mex - 2*by2*Mey + bt2*pt1 + by1*px1 - 2*Mex*px1 - (bx1 + bx2)*px2 - 2*Mex*px2 - 3*Mey*py1 - 2*Mey*py2 - 3*((bx1 + bx2)*Mex + by1*py2) + 4*Met*(bt1 - pz1) - bz2*(bz1 + pz1) + (-bz2 - py2)*(bz1 + pz1) + (bz1 + pz1)*(py2 - pz2) - 2*(bz1 + pz1)*pz2 - (bt1 + bz1 + 2*pz1)*pz2;
+
+    double invmass = sqrt(invmass2);
+
+    return invmass;
+
+  }
 
   bool checkOverlap(const double & eta, const double & phi, const double & dRval1,const double & reliso1, const double &dRval2, const double & reliso2)
   {
@@ -633,11 +677,12 @@ class TopDILAnalyzer : public edm::EDAnalyzer {
   //double maos2top2M;
 
   double vsumttbarM;
+  double devettbarM;
 
   double genttbarM;
   double relmaosM;
   double relvsumM;
-  //double rel3ttbarM;
+  double reldeveM;
 
   // ----------member data ---------------------------
 
