@@ -56,7 +56,7 @@ void resolutionPlot(TTree* t, TString var, TCut cut, TString name, bool print){
   prof_relgenM->GetXaxis()->SetTitle("gen M(t#bar{t})");
 
   TCanvas *c_relMt2 = new TCanvas(Form("c_relMt2_%s",name.Data()),Form("c_relMt2_%s",name.Data()),1);
-  t->Project(Form("h2_relMt2_%s",name.Data()),Form("%s:maos2Mt2",var.Data()), cut);
+  t->Project(Form("h2_relMt2_%s",name.Data()),Form("%s:maosMt2",var.Data()), cut);
   h2_relMt2->Draw();
   h2_relMt2->GetYaxis()->SetTitle("gen M(t#bar{t}) - reco M(t#bar{t})");
   h2_relMt2->GetXaxis()->SetTitle("Mt2");
@@ -158,12 +158,13 @@ void unfoldingPlot(TH1* h_gen, TH1* h2, TH2* m, TH1* h_rec, double norm, TString
   }
 }
 
-void massPlot(TH1* h1, TH1* h2, TH1* h3){
+void massPlot(TH1* h1, TH1* h2, TH1* h3, TH1* h4){
 
   TCanvas *c = new TCanvas("c","c", 1);
   h1->SetLineColor(2);
   h2->SetLineColor(3);
   h3->SetLineColor(4);
+  h4->SetLineColor(6);
   //h_data_m->SetMarkerSize(2);
   double L_data = 36.1;
   double L_ttbar = 1000000.0/157.5;
@@ -171,22 +172,27 @@ void massPlot(TH1* h1, TH1* h2, TH1* h3){
   double nh1 = h1->GetEntries();
   double nh2 = h2->GetEntries();
   double nh3 = h3->GetEntries();
+  double nh4 = h4->GetEntries();
   //double nh_data = h_data_m->GetEntries();
   double A2 = nh2/nh1;
   double A3 = nh3/nh1;
-  cout << "Acceptance= " << A2 << "(vsum)" << " " << A3  << "(maos)" << endl;
+  double A4 = nh4/nh1;
+  cout << "Acceptance= " << A2 << "(vsum)" << " " << A3  << "(maos)" << A4 << "(deve)" << endl;
   h2->Scale(1/A2);
   h3->Scale(1/A3);
+  h4->Scale(1/A4);
   //h_data_m->Scale(nh3/nh_data);
 
   //h1->SetMaximum(1000);
   h1->Draw();
   h2->Draw("same");
   h3->Draw("same");
+  h4->Draw("same");
   //h_data_m->Draw("same");
   h1->SetStats(0);
   h2->SetStats(0);
   h3->SetStats(0);
+  h4->SetStats(0);
   //h_data_m->SetStats(0);
   //h_data_m->SetMarkerStyle(20);
   //h_data_m->SetMarkerSize(0.5);
@@ -194,8 +200,9 @@ void massPlot(TH1* h1, TH1* h2, TH1* h3){
 
   TLegend *l= new TLegend(0.55,0.55,0.8,0.8);
   l->AddEntry(h1,"gen ttbar","l");
-  l->AddEntry(h2,"4-vec. sum","l");
+  l->AddEntry(h2,"vsum mass","l");
   l->AddEntry(h3,"maos mass","l");
+  l->AddEntry(h4,"deve mass","l");
   //l->AddEntry(h_data_m,"data M","l");
   l->SetTextSize(0.04);
   l->SetFillColor(0);
@@ -206,51 +213,59 @@ void massPlot(TH1* h1, TH1* h2, TH1* h3){
 
 }
 
-void relttbar(){
+void relttbar(const TString& decayMode = "MuEl"){
 
   bool print = true;
 
   TFile * f_data = new TFile("vallot_data.root");
   TFile * f = new TFile("vallot_TTbar.root");
-  TTree * t_data = (TTree *) f_data->Get("MuMu/tree");
-  TTree * t = (TTree *) f->Get("MuMu/tree");
+  TTree * t_data = (TTree *) f_data->Get(decayMode+"/tree");
+  TTree * t = (TTree *) f->Get(decayMode+"/tree");
 
   int nbin_mt = 20;
   double max_mt = 1200;
   double low_mt = 200;
 
-  TH1 *h1 = new TH1F("h1","h1",nbin_mt,low_mt,max_mt);
+  TH1 *h_gen = new TH1F("h_gen","h_gen",nbin_mt,low_mt,max_mt);
   TH1 *h2 = new TH1F("h2","h2",nbin_mt,low_mt,max_mt);
   TH1 *h3 = new TH1F("h3","h3",nbin_mt,low_mt,max_mt);
+  TH1 *h4 = new TH1F("h4","h4",nbin_mt,low_mt,max_mt);
   TH2 *h2_gen_reco_maos = new TH2F("h2_gen_reco_maos","h2_gen_reco_maos",nbin_mt,low_mt,max_mt,nbin_mt,low_mt,max_mt);
   TH2 *h2_gen_reco_vsum = new TH2F("h2_gen_reco_vsum","h2_gen_reco_vsum",nbin_mt,low_mt,max_mt,nbin_mt,low_mt,max_mt);
+  TH2 *h2_gen_reco_deve = new TH2F("h2_gen_reco_deve","h2_gen_reco_deve",nbin_mt,low_mt,max_mt,nbin_mt,low_mt,max_mt);
 
   TCut precut = "Z.mass() > 12 && relIso04lep1 < 0.21 && relIso04lep2 < 0.21 && Z.sign() < 0 && abs(Z.mass() - 91.2) > 15 && @jetspt30.size() >= 2 && MET >30";
   TCut mt2 = "maos2Mt2 > 140";
   TCut cut = precut; 
 
-  t->Project("h1","genttbarM","genttbarM > 0");
+  t->Project("h_gen","genttbarM","genttbarM > 0");
   t->Project("h2","vsumttbarM",cut);
   t->Project("h3","maosttbarM",cut);
+  t->Project("h4","devettbarM",cut);
 
-  t_data->Project("h_data_m","vsumttbarM",cut);
+  //t_data->Project("h_data_m","vsumttbarM",cut);
 
-  acceptPlot(h1, h2, nbin_mt, "vsum", print);
-  acceptPlot(h1, h3, nbin_mt, "maos", print);
+  acceptPlot(h_gen, h2, nbin_mt, "vsum", print);
+  acceptPlot(h_gen, h3, nbin_mt, "maos", print);
+  acceptPlot(h_gen, h4, nbin_mt, "deve", print);
 
-  massPlot(h1, h2, h3);
+  massPlot(h_gen, h2, h3, h4);
 
-  double nh1 = h1->GetEntries();
+  double nh_gen = h_gen->GetEntries();
   double nh2 = h2->GetEntries();
   double nh3 = h3->GetEntries();
+  double nh4 = h4->GetEntries();
 
   resolutionPlot(t,"relmaosM", cut, "maos", print);
   resolutionPlot(t,"relvsumM", cut, "vsum", print);
+  resolutionPlot(t,"reldeveM", cut, "deve", print);
 
   t->Project("h2_gen_reco_maos","genttbarM:maosttbarM",cut);
   t->Project("h2_gen_reco_vsum","genttbarM:vsumttbarM",cut);
+  t->Project("h2_gen_reco_deve","genttbarM:devettbarM",cut);
 
-  unfoldingPlot(h1, h3, h2_gen_reco_maos, h2, nh2/nh1, "maos", true, print);
-  unfoldingPlot(h1, h2, h2_gen_reco_vsum, h3, nh3/nh1, "vsum", true, print);
+  unfoldingPlot(h_gen, h2, h2_gen_reco_maos, h2, nh2/nh_gen, "maos", true, print);
+  unfoldingPlot(h_gen, h3, h2_gen_reco_vsum, h2, nh3/nh_gen, "vsum", true, print);
+  unfoldingPlot(h_gen, h4, h2_gen_reco_deve, h4, nh4/nh_gen, "deve", true, print);
 
 }
