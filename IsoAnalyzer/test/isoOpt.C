@@ -13,6 +13,7 @@ TGraph* getGraph(TTree *ts, TTree *tb, const TString & var, TCut csig, TCut cbkg
 
   double optsoverb = 0;
   double optval = 0;
+  double opteff = 0;
   for(int i=low ; i < max ; i++){
     double bin = i*1+start;
     double point = h_bkg->GetBinLowEdge(bin)+h_bkg->GetBinWidth(bin);
@@ -28,6 +29,7 @@ TGraph* getGraph(TTree *ts, TTree *tb, const TString & var, TCut csig, TCut cbkg
     if( soverb > optsoverb){
       optsoverb = soverb;
       optval = point;
+      opteff = eff_sig;
     }
   }
 
@@ -42,7 +44,7 @@ TGraph* getGraph(TTree *ts, TTree *tb, const TString & var, TCut csig, TCut cbkg
   TLatex *label= new TLatex;
   label->SetNDC();
   label->SetTextSize(0.05);
-  label->DrawLatex(0.5,0.5,Form("%f at %5.2f",optsoverb,optval));
+  label->DrawLatex(0.5,0.5,Form("%5.2f at %5.2f",opteff,optval));
   
   return gr;
 }
@@ -51,12 +53,13 @@ void isoOpt(){
 
   TFile * fbkg = new TFile("batch/MuMu/test/vallot_QCD.root");
   TFile * fsig = new TFile("batch/MuMu/test/vallot_ZJets.root");
+  //TFile * fsig = new TFile("batch/MuMu/test/vallot_TTbar.root");
 
   TTree * tbkg = (TTree *) fbkg->Get("MuMu/tree");
   TTree * tsig = (TTree *) fsig->Get("MuMu/tree");
 
-  TCut cutsig = "Z.mass() > 12  && Z.sign() < 0";
-  TCut cutbkg = "Z.mass() > 12  && Z.sign() < 0";
+  TCut cutsig = "Z.mass() > 12 && Z.sign() < 0";
+  TCut cutbkg = "Z.mass() > 12 && Z.sign() < 0";
   TString pfiso03 = "relIso03lep1";
   TString pfiso04 = "relIso04lep1";
   TString pfiso05 = "relIso05lep1";
