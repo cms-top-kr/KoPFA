@@ -13,7 +13,7 @@
 //
 // Original Author:  Tae Jeong Kim,40 R-A32,+41227678602,
 //         Created:  Fri Jun  4 17:19:29 CEST 2010
-// $Id: TopDILAnalyzer.h,v 1.18 2011/01/24 17:36:23 tjkim Exp $
+// $Id: TopDILAnalyzer.h,v 1.19 2011/01/25 10:57:38 tjkim Exp $
 //
 //
 
@@ -198,11 +198,13 @@ class TopDILAnalyzer : public edm::EDAnalyzer {
 
     tree->Branch("vsumttbarM",&vsumttbarM, "vsumttbarM/d");
     tree->Branch("devettbarM",&devettbarM, "devettbarM/d");
+    tree->Branch("deve2ttbarM",&deve2ttbarM, "deve2ttbarM/d");
     tree->Branch("genttbarM",&genttbarM,"genttbarM/d");
 
     tree->Branch("relmaosM",&relmaosM,"relmaosM/d");
     tree->Branch("relvsumM",&relvsumM,"relvsumM/d");
     tree->Branch("reldeveM",&reldeveM,"reldeveM/d");
+    tree->Branch("reldeve2M",&reldeve2M,"reldeve2M/d");
 
     // Jet energy correction for 38X
     if ( doResJec_ )
@@ -423,6 +425,7 @@ class TopDILAnalyzer : public edm::EDAnalyzer {
 
           vsumttbarM = (it1.p4() + it2.p4() + jetspt30->at(0) + jetspt30->at(1) + met->at(0)).M();
           devettbarM = newttbarM(jetspt30->at(0), jetspt30->at(1), it1.p4(), it2.p4(), met->at(0));
+          deve2ttbarM = new2ttbarM(jetspt30->at(0), jetspt30->at(1), it1.p4(), it2.p4(), met->at(0));
 
           if(genParticles_.isValid()){
               TLorentzVector ttbar(0,0,0,0);
@@ -440,6 +443,7 @@ class TopDILAnalyzer : public edm::EDAnalyzer {
             relmaosM = ttbar.M() - maosttbarM;
             relvsumM = ttbar.M() - vsumttbarM;
             reldeveM = ttbar.M() - devettbarM;
+            reldeve2M = ttbar.M() - deve2ttbarM;
           }
         }
 
@@ -503,11 +507,13 @@ class TopDILAnalyzer : public edm::EDAnalyzer {
 
     vsumttbarM = -1;
     devettbarM = -1;
+    deve2ttbarM = -1;
 
     genttbarM = -1;
     relmaosM = -999; 
     relvsumM = -999;
     reldeveM = -999;
+    reldeve2M = -999;
  
 
   }
@@ -525,6 +531,44 @@ class TopDILAnalyzer : public edm::EDAnalyzer {
       }
     }
   }
+
+
+  double new2ttbarM( const reco::Candidate::LorentzVector& bq1, const reco::Candidate::LorentzVector& bq2, const reco::Candidate::LorentzVector& le1, const reco::Candidate::LorentzVector& le2, const reco::Candidate::LorentzVector& met){
+    double b1 = bq1.E();
+    //double bt1 = bq1.Et();
+    double bx1 = bq1.Px();
+    double by1 = bq1.Py();
+    double bz1 = bq1.Pz();
+
+    double b2 = bq2.E();
+    //double bt2 = bq2.Et();
+    double bx2 = bq2.Px();
+    double by2 = bq2.Py();
+    double bz2 = bq2.Pz();
+
+
+    double e1 = le1.E();
+    //double pt1 = le1.Et();
+    double px1 = le1.Px();
+    double py1 = le1.Py();
+    double pz1 = le1.Pz();
+
+    double e2 = le2.E();
+    //double pt2 = le2.Et();
+    double px2 = le2.Px();    double py2 = le2.Py();    double pz2 = le2.Pz();
+
+    double Met = met.Et();
+    double Mex = met.Px();
+    double Mey = met.Py();
+
+    double invmass2 = 1.262208073067337*TMath::Power(b1,2) + 1.262208073067337*TMath::Power(b2,2) - 0.11690974715234576*TMath::Power(bx1,2) - 2.325269993670129*bx1*bx2 - 0.11690974715234576*TMath::Power(bx2,2) - 0.11690974715234576*TMath::Power(by1,2) + (-2.325269993670129*by1 - 0.11690974715234576*by2)*by2 - 1.262208073067337*TMath::Power(bz1,2) - 2.524416146134674*bz1*bz2 - 1.262208073067337*TMath::Power(bz2,2) + 0.36094746796490595*bz2*e1 + 1.262208073067337*TMath::Power(e1,2) + 2.4333915254807796*e1*e2 + 1.262208073067337*TMath::Power(e2,2) - 1.262208073067337*bz2*Met + 2.1819625834627003*e1*Met + 2.1819625834627003*e2*Met + TMath::Power(Met,2) + b1*(2.524416146134674*b2 - 0.05845487357617288*bx1 - 0.05845487357617288*by1 + 2.524416146134674*e1 + 2.524416146134674*e2 + 1.9461541091171606*Met) + b2*(-0.05845487357617288*bx2 - 0.05845487357617288*by2 + 2.524416146134674*e1 + 2.524416146134674*e2 + 1.9461541091171606*Met) - 2.642748152984737*bx1*Mex - 2.642748152984737*bx2*Mex - 0.05845487357617288*by1*Mex - 0.05845487357617288*by2*Mex - 0.07888800456670857*TMath::Power(Mex,2) - 0.05845487357617288*bx1*Mey - 0.05845487357617288*bx2*Mey - 2.642748152984737*by1*Mey - 2.642748152984737*by2*Mey - 0.07888800456670857*TMath::Power(Mey,2) - 4.445035641931849*bx1*px1 - 2.4669701406160556*bx2*px1 - 2.6821921552680914*Mex*px1 - 0.7099920411003772*TMath::Power(px1,2) - 2.4669701406160556*bx1*px2 - 4.445035641931849*bx2*px2 - 2.6821921552680914*Mex*px2 - 1.10443206393392*px1*px2 - 0.7099920411003772*TMath::Power(px2,2) - 4.445035641931849*by1*py1 - 2.4669701406160556*by2*py1 - 2.6821921552680914*Mey*py1 - 0.7099920411003772*TMath::Power(py1,2) - 2.4669701406160556*by1*py2 - 4.445035641931849*by2*py2 - 2.6821921552680914*Mey*py2 - 1.10443206393392*py1*py2 - 0.7099920411003772*TMath::Power(py2,2) - 3.0098807896221116*bz2*pz1 - 1.262208073067337*Met*pz1 - 1.262208073067337*TMath::Power(pz1,2) + bz1*(0.36094746796490595*e2 - 1.262208073067337*Met - 2.524416146134674*pz1 - 3.0098807896221116*pz2) - 2.524416146134674*bz2*pz2 - 1.262208073067337*Met*pz2 - 2.524416146134674*pz1*pz2 - 1.262208073067337*TMath::Power(pz2,2);
+
+    double invmass = sqrt(invmass2);
+
+    return invmass;
+
+  }
+
 
   double newttbarM( const reco::Candidate::LorentzVector& bq1, const reco::Candidate::LorentzVector& bq2, const reco::Candidate::LorentzVector& le1, const reco::Candidate::LorentzVector& le2, const reco::Candidate::LorentzVector& met){
 
@@ -678,11 +722,13 @@ class TopDILAnalyzer : public edm::EDAnalyzer {
 
   double vsumttbarM;
   double devettbarM;
+  double deve2ttbarM;
 
   double genttbarM;
   double relmaosM;
   double relvsumM;
   double reldeveM;
+  double reldeve2M;
 
   // ----------member data ---------------------------
 
