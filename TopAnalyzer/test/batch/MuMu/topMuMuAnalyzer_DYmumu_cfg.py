@@ -4,4 +4,4 @@ import FWCore.ParameterSet.Config as cms
 
 process.load("PFAnalyses.TTbarDIL.Sources.MU.MC.Fall10.patTuple_DYmumu_cff")
 process.muonTriggerFilterForMC = process.muonTriggerFilterForMCREDIGI38X
-
+process.topWLeptonGenFilter.applyFilter = False
