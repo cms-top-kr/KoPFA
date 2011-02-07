@@ -1,3 +1,5 @@
+#include "TLatex.h"
+
 void SetLatex(double x, double y){
   TLatex *label= new TLatex;
   label->SetNDC();
@@ -115,4 +117,13 @@ double sigma(double nu, double de, int a){
   }
   return err;
 }
+
+void clearXErrorBar(TGraphAsymmErrors * gr)
+{
+   for (Int_t i=0; i< gr->GetN(); ++i) {
+      gr->SetPointEXhigh(i,0);
+      gr->SetPointEXlow(i,0);
+   }
+}
+
 
