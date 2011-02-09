@@ -10,6 +10,7 @@
 #include "TCut.h"
 #include "TGraphAsymmErrors.h"
 #include "style.h"
+#include "TGraph.h"
 
 #include <iostream>
 #include "TUnfold.h"
@@ -120,113 +121,118 @@ void acceptPlot(TH1* h1, TH1* h2, int nbin_mt, TString name, bool print){
 
 } 
 
-void unfoldingPlot(TH1* h_gen, TH1* h_mea, TH2* m, TH1* h_rec, double scale_ttbar, double norm , TString name, bool scale, bool print){
+void unfoldingPlot(TH1* h_gen, TH1* h_rec, TH2* m, TH1* h_mea, double scale_ttbar, TString name, bool print){
 
   TH1F *hgen = (TH1F*)h_gen->Clone("hgen");
   TH1F *hmea = (TH1F*)h_mea->Clone("hmea");
   TH1F *hrec = (TH1F*)h_rec->Clone("hrec");
+  hgen->SetLineColor(2);
+  hmea->SetLineColor(4);
 
-  TCanvas *c_mat = new TCanvas(Form("c_mat_%s",name.Data()),Form("c_mat_%s",name.Data()),1);
+  TCanvas *c_response = new TCanvas(Form("c_response_%s",name.Data()),Form("c_response_%s",name.Data()),1);
   m->Draw("colz");
+  m->SetStats(0);
 
   TCanvas *c = new TCanvas(Form("c_unfold_%s",name.Data()),Form("c_unfold_%s",name.Data()), 1);
+  c->SetLogy();
   //unfolding
   hgen->Scale(scale_ttbar);
-  //h_mea->Scale(scale_ttbar);
-  //h_rec->Scale(scale_ttbar);
-  RooUnfoldResponse *response = new RooUnfoldResponse(hmea, hgen, m);
+  hgen->SetLineWidth(2);
+  hgen->SetStats(0);
+  hgen->SetTitle(""); 
+  hgen->GetYaxis()->SetTitle("Events");
+
+  RooUnfoldResponse *response = new RooUnfoldResponse(h_rec, h_gen, m);
 
   RooUnfold* unfold = 0;
-  unfold = new RooUnfoldBayes(response, hrec, 4);    // OR
+  unfold = new RooUnfoldBayes(response, h_mea, 4);    // OR
 //RooUnfoldSvd      unfold (&response, hMeas, 20);   // OR
 //RooUnfoldBinByBin unfold (&response, hMeas);
+
   TH1F* h_unfold = (TH1F*) unfold->Hreco();
+  TMatrixD m_unfoldE = unfold->Ereco();
+  TVectorD v_unfoldE = unfold->ErecoV(RooUnfold::kCovariance);
 
-  for(int i=1; i <=  20; i++){
-    cout << h_unfold->GetBinContent(i) << " : " << h_unfold->GetBinError(i) << " : " << h_unfold->GetBinError(i)/h_unfold->GetBinContent(i) << endl;
-  }
-
-  if(scale){
-    h_unfold->Scale(norm);
-  }
-
-  //h_gen->Scale(scale_ttbar);
-  hrec->Scale(scale_ttbar);
   hgen->Draw();
-  hrec->Draw("same");  
+  hmea->Draw("same");  
+  hmea->SetLineStyle(2);
+  hmea->SetLineWidth(2);
+  hmea->SetStats(0);
 
   h_unfold->Draw("Psame");
   h_unfold->SetLineColor(1);
-  h_unfold->SetMarkerSize(3);
+  h_unfold->SetLineWidth(2);
+  h_unfold->SetMarkerStyle(20);
+  h_unfold->SetMarkerSize(1.0);
+  h_unfold->SetStats(0);  
   
-  TLegend *l_unfold= new TLegend(0.60,0.60,0.8,0.8);
-  l_unfold->AddEntry(h_gen,"gen","l");
-  l_unfold->AddEntry(h_mea,Form("meas. %s",name.Data()),"l");
-  l_unfold->AddEntry(h_unfold,"unfolded","p");
+
+  TLegend *l_unfold= new TLegend(0.65,0.60,0.80,0.8);
+  l_unfold->AddEntry(hgen,"true t#bar{t}","l");
+  l_unfold->AddEntry(hmea,"data t#bar{t}","l");
+  l_unfold->AddEntry(h_unfold,"Unfolded t#bar{t}","p");
   l_unfold->SetTextSize(0.04);
   l_unfold->SetFillColor(0);
   l_unfold->SetLineColor(0);
   l_unfold->Draw();
-  
+
+  TCanvas *c_err = new TCanvas(Form("c_err_%s",name.Data()),Form("c_err_%s",name.Data()),1); 
+  int nbins = h_unfold->GetNbinsX();
+  int offset = 0;
+  int size = nbins - offset;
+  TGraph *gerr = new TGraph(size);  
+  for(int i=1+offset; i <=  nbins; i++){
+    if( h_unfold->GetBinContent(i) != 0 ){
+      gerr->SetPoint(i-1-offset, h_unfold->GetBinCenter(i), 100*v_unfoldE(i-1)/h_unfold->GetBinContent(i));
+      cout << "[" << h_unfold->GetBinCenter(i)-h_unfold->GetBinWidth(i)/2 << "," << h_unfold->GetBinCenter(i)+h_unfold->GetBinWidth(i)/2 << "]" ;
+      cout << " : " << h_unfold->GetBinError(i) << "/" <<h_unfold->GetBinContent(i);
+      cout << " : " << v_unfoldE(i-1) << " : " << m_unfoldE(i-1,i-1) << endl;
+    }
+  }
+  gerr->SetMarkerStyle(20);
+  gerr->Draw("ALP");
+  gerr->GetXaxis()->SetTitle("t#bar{t} invariant mass");
+  gerr->GetYaxis()->SetTitle("Statistical Uncertainty (%)");
+
+  TCanvas *c_errmat = new TCanvas(Form("c_errmat_%s",name.Data()),Form("c_errmat_%s",name.Data()),1);
+  m_unfoldE.Draw("colz");
+
   if(print){
-    c_mat->Print(Form("c_mat_%s.eps",name.Data()));
+    c_response->Print(Form("c_response_%s.eps",name.Data()));
     c->Print(Form("c_unfold_%s.eps",name.Data()));
+    c_err->Print(Form("c_err_%s.eps",name.Data()));
+    c_errmat->Print(Form("c_errmat_%s.eps",name.Data()));
   }
 }
 
-void massPlot(TH1* h1, TH1* h2, TH1* h3, TH1* h4, TH1* h5){
+void massPlot(TH1* hgen, TH1* hrec, TH1* hmea, const double scale_ttbar){
+
+  TH1F *h1 = (TH1F*)hgen->Clone("h1");
+  TH1F *h2 = (TH1F*)hrec->Clone("h2");
+  TH1F *h3 = (TH1F*)hmea->Clone("h3");
 
   TCanvas *c = new TCanvas("c","c", 1);
+  c->SetLogy();
   h1->SetLineColor(2);
   h2->SetLineColor(3);
-  h3->SetLineColor(4);
-  h4->SetLineColor(6);
-  h5->SetLineColor(9);
-  //h_data_m->SetMarkerSize(2);
-  double L_data = 1000;
-  double L_ttbar = 1000000.0/157.5;
-  double norm = L_data/L_ttbar;
-  double nh1 = h1->GetEntries();
-  double nh2 = h2->GetEntries();
-  double nh3 = h3->GetEntries();
-  double nh4 = h4->GetEntries();
-  double nh5 = h5->GetEntries();
-  //double nh_data = h_data_m->GetEntries();
-  double A2 = nh2/nh1;
-  double A3 = nh3/nh1;
-  double A4 = nh4/nh1;
-  double A5 = nh5/nh1;
-  cout << "Acceptance= " << A2 << "(vsum)" << " " << A3  << "(maos)" << A4 << "(deve)" << endl;
-  h2->Scale(1/A2);
-  h3->Scale(1/A3);
-  h4->Scale(1/A4);
-  h5->Scale(1/A5);
-  //h_data_m->Scale(nh3/nh_data);
+  h3->SetMarkerSize(1.0);
+  h3->SetMarkerStyle(20);
+
+  h1->Scale(scale_ttbar);
+  h2->Scale(scale_ttbar);
 
   //h1->SetMaximum(1000);
   h1->Draw();
   h2->Draw("same");
-  h3->Draw("same");
-  h4->Draw("same");
-  h5->Draw("same");
-  //h_data_m->Draw("same");
+  h3->Draw("Psame");
   h1->SetStats(0);
   h2->SetStats(0);
   h3->SetStats(0);
-  h4->SetStats(0);
-  h5->SetStats(0);
-  //h_data_m->SetStats(0);
-  //h_data_m->SetMarkerStyle(20);
-  //h_data_m->SetMarkerSize(0.5);
-  //h_data_m->Sumw2();
 
   TLegend *l= new TLegend(0.55,0.55,0.8,0.8);
-  l->AddEntry(h1,"gen ttbar","l");
-  l->AddEntry(h2,"vsum mass","l");
-  l->AddEntry(h3,"maos mass","l");
-  l->AddEntry(h4,"deve mass","l");
-  l->AddEntry(h5,"deve2 mass","l");
-  //l->AddEntry(h_data_m,"data M","l");
+  l->AddEntry(h1,"gen mass","l");
+  l->AddEntry(h2,"reco mass","l");
+  l->AddEntry(h3,"data mass","p");
   l->SetTextSize(0.04);
   l->SetFillColor(0);
   l->SetLineColor(0);
@@ -236,77 +242,50 @@ void massPlot(TH1* h1, TH1* h2, TH1* h3, TH1* h4, TH1* h5){
 
 }
 
-void relttbar(const TString& decayMode = "MuEl"){
+void plot(TTree *t, TTree *t_data, const TString &var, const double &scale_ttbar, TCut cut, bool print){
+  float genBins[] = {0, 350, 400, 450, 500,  550, 600, 650, 700, 750, 800, 900, 1000, 1400};
+  float detBins[] = {0, 350, 400, 450, 500,  550, 600, 650, 700, 750, 800, 900, 1000, 1400};
+  int nGen = sizeof(genBins)/sizeof(float) - 1;
+  int nDet = sizeof(detBins)/sizeof(float) - 1;
 
-  bool print = true;
+  TH1 *h_genMC = new TH1F(Form("h_genMC%s",var.Data()),"h_genMC",nGen,genBins);
+  TH1 *h_recMC = new TH1F(Form("h_recMC%s",var.Data()),"h_recMC",nDet,detBins);
+  TH1 *h_meaData = new TH1F(Form("h_meaData%s",var.Data()),"h_meaData",nDet,detBins);
+  TH2 *h2_gen_reco_vsum = new TH2F(Form("h2_gen_reco_%s",var.Data()),Form("h2_gen_reco_%s",var.Data()),nDet,detBins,nGen,genBins);
+ 
+  t->Project(Form("h_genMC%s",var.Data()),"genttbarM",cut);
+  t->Project(Form("h_recMC%s",var.Data()),Form("%sttbarM",var.Data()),cut);
+  t->Project(Form("h2_gen_reco_%s",var.Data()),Form("genttbarM:%sttbarM",var.Data()),cut);
+  t_data->Project(Form("h_meaData%s",var.Data()),Form("%sttbarM",var.Data()),cut);
 
-  TFile * f_data = new TFile("vallot_data.root");
-  TFile * f = new TFile("vallot_TTbar_MuMu.root");
-  //TFile * f = new TFile("vallot_TTbar.root");
-  TTree * t_data = (TTree *) f_data->Get(decayMode+"/tree");
-  TTree * t = (TTree *) f->Get(decayMode+"/tree");
+  //acceptPlot(h_gen, h2, nbin_mt, "vsum", print);
 
-  int nbin_mt = 20;
-  double max_mt = 1200;
-  double low_mt = 200;
+  massPlot(h_genMC, h_recMC, h_meaData, scale_ttbar);
 
-  TH1 *h_gen = new TH1F("h_gen","h_gen",nbin_mt,low_mt,max_mt);
-  TH1 *h2 = new TH1F("h2","h2",nbin_mt,low_mt,max_mt);
-  TH1 *h3 = new TH1F("h3","h3",nbin_mt,low_mt,max_mt);
-  TH1 *h4 = new TH1F("h4","h4",nbin_mt,low_mt,max_mt);
-  TH1 *h5 = new TH1F("h5","h5",nbin_mt,low_mt,max_mt);
-  TH2 *h2_gen_reco_maos = new TH2F("h2_gen_reco_maos","h2_gen_reco_maos",nbin_mt,low_mt,max_mt,nbin_mt,low_mt,max_mt);
-  TH2 *h2_gen_reco_vsum = new TH2F("h2_gen_reco_vsum","h2_gen_reco_vsum",nbin_mt,low_mt,max_mt,nbin_mt,low_mt,max_mt);
-  TH2 *h2_gen_reco_deve = new TH2F("h2_gen_reco_deve","h2_gen_reco_deve",nbin_mt,low_mt,max_mt,nbin_mt,low_mt,max_mt);
-  TH2 *h2_gen_reco_deve2 = new TH2F("h2_gen_reco_deve2","h2_gen_reco_deve2",nbin_mt,low_mt,max_mt,nbin_mt,low_mt,max_mt);
+  resolutionPlot(t,Form("rel%sM",var.Data()), cut, Form("%s",var.Data()), print);
 
-  TCut precut = "Z.mass() > 12 && relIso04lep1 < 0.21 && relIso04lep2 < 0.21 && Z.sign() < 0 && abs(Z.mass() - 91.2) > 15 && @jetspt30.size() >= 2 && MET >30";
-  TCut mt2 = "maosMt2 > 140";
-  TCut cut = precut; 
-  double lumi = 1000;
-  double lumi_ttbar = 1000000/157.5;
-  double scale_ttbar = lumi/lumi_ttbar;
-
-  cout << "scale= " << scale_ttbar << endl;
-  //h2->Scale(scale_ttbar);
-  //h3->Scale(scale_ttbar);
-  //h4->Scale(scale_ttbar);
-
-  t->Project("h_gen","genttbarM",cut);
-  t->Project("h2","vsumttbarM",cut);
-  t->Project("h3","maosttbarM",cut);
-  t->Project("h4","devettbarM",cut);
-  t->Project("h5","deve2ttbarM",cut);
-
-  //t_data->Project("h_data_m","vsumttbarM",cut);
-
-  acceptPlot(h_gen, h2, nbin_mt, "vsum", print);
-  acceptPlot(h_gen, h3, nbin_mt, "maos", print);
-  acceptPlot(h_gen, h4, nbin_mt, "deve", print);
-  acceptPlot(h_gen, h5, nbin_mt, "deve2", print);
-
-  massPlot(h_gen, h2, h3, h4, h5);
-  massPlot(h_gen, h2, h3, h4, h5);
-
-  double nh_gen = h_gen->GetEntries();
-  double nh2 = h2->GetEntries();
-  double nh3 = h3->GetEntries();
-  double nh4 = h4->GetEntries();
-  double nh5 = h5->GetEntries();
-
-  resolutionPlot(t,"relmaosM", cut, "maos", print);
-  resolutionPlot(t,"relvsumM", cut, "vsum", print);
-  resolutionPlot(t,"reldeveM", cut, "deve", print);
-  resolutionPlot(t,"reldeve2M", cut, "deve2", print);
-
-  t->Project("h2_gen_reco_maos","genttbarM:maosttbarM",cut);
-  t->Project("h2_gen_reco_vsum","genttbarM:vsumttbarM",cut);
-  t->Project("h2_gen_reco_deve","genttbarM:devettbarM",cut);
-  t->Project("h2_gen_reco_deve2","genttbarM:deve2ttbarM",cut);
-
-  unfoldingPlot(h_gen, h2, h2_gen_reco_vsum, h2, scale_ttbar, nh2/nh_gen, "vsum", true, print);
-  unfoldingPlot(h_gen, h3, h2_gen_reco_maos, h3, scale_ttbar, nh3/nh_gen, "maos", true, print);
-  unfoldingPlot(h_gen, h4, h2_gen_reco_deve, h4, scale_ttbar, nh4/nh_gen, "deve", true, print);
-  unfoldingPlot(h_gen, h5, h2_gen_reco_deve2, h5, scale_ttbar, nh5/nh_gen, "deve2", true, print);
+  unfoldingPlot(h_genMC, h_recMC, h2_gen_reco_vsum, h_meaData, scale_ttbar, Form("%s",var.Data()), print);
 
 }
+
+void relttbar(const TString& decayMode = "MuEl"){
+  
+  bool print = true;
+  
+  TFile * f_data = new TFile("vallot_TTbar1fb_MuEl.root");
+  TFile * f = new TFile("vallot_TTbar_MuEl.root");
+  TTree * t_data = (TTree *) f_data->Get(decayMode+"/tree");
+  TTree * t = (TTree *) f->Get(decayMode+"/tree");
+ 
+  TCut precut = "Z.mass() > 12 && relIso04lep1 < 0.21 && relIso04lep2 < 0.26 && Z.sign() < 0 && @jetspt30.size() >= 2";
+  TCut mt2 = "maosMt2 > 140";
+  TCut cut = precut;
+  double lumi = 1000.0; //pb-1
+  double lumi_ttbar = 1000000.0/157.5; //pb-1
+  double scale_ttbar = lumi/lumi_ttbar;
+
+  plot(t,t_data,"vsum",scale_ttbar, cut, true);
+  //plot(t,t_data,"maos",scale_ttbar, cut, true);
+ 
+}
+
