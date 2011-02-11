@@ -13,7 +13,7 @@
 //
 // Original Author:  Tae Jeong Kim
 //         Created:  Mon Dec 14 01:29:35 CET 2009
-// $Id: WmunuFilter.cc,v 1.2 2010/07/23 12:22:52 tjkim Exp $
+// $Id: WmunuFilter.cc,v 1.3 2010/10/23 09:37:17 tjkim Exp $
 //
 //
 
@@ -56,11 +56,13 @@ class WmunuFilter : public edm::EDFilter {
       edm::InputTag muonLabel_;
       edm::InputTag metLabel_;
       edm::InputTag pfCandidateLabel_;
+      double metMin_;
       double minMt_;
       double mindphi_;
       double maxdphi_;
     
       double mt;
+      double MET;
       double delphi;
       unsigned int chargedhadron_size;
       TTree *tree;
@@ -83,6 +85,7 @@ WmunuFilter::WmunuFilter(const edm::ParameterSet& ps)
    //now do what ever initialization is needed
    muonLabel_ = ps.getParameter<edm::InputTag>("muonLabel");
    metLabel_ = ps.getParameter<edm::InputTag>("metLabel");
+   metMin_ = ps.getUntrackedParameter<double>("metMin");
    pfCandidateLabel_= ps.getParameter<edm::InputTag>("pfCandidateLabel");
    minMt_ =   ps.getParameter<double>("minMt"); 
    mindphi_ = ps.getParameter<double>("mindphi");
@@ -111,6 +114,13 @@ WmunuFilter::~WmunuFilter()
 bool
 WmunuFilter::filter(edm::Event& iEvent, const edm::EventSetup& iSetup)
 {
+
+  //clear
+  mt = -9;
+  MET= -9;
+  delphi = -9;
+  chargedhadron_size = -9;
+ 
   bool accepted = false;
   edm::Handle<pat::MuonCollection> pfMuons;
   edm::Handle<pat::METCollection> pfMET;
@@ -133,8 +143,12 @@ WmunuFilter::filter(edm::Event& iEvent, const edm::EventSetup& iSetup)
 
   const pat::Muon& leading = *(sortedMuons.begin()->second);
   mt = transverseMass( leading.p4(), mi->p4() );
+
+  MET = mi->pt();
+  if( mi->p4().pt() <= metMin_ ) return false;
+
   delphi = fabs(deltaPhi(leading.phi(), mi->p4().phi()));
-  
+
   chargedhadron_size = 0;
   for(reco::PFCandidateCollection::const_iterator ci  = pfCandidates_->begin(); ci!=pfCandidates_->end(); ++ci) {
     const reco::PFCandidate& pfc = *ci;
@@ -156,6 +170,7 @@ void
 WmunuFilter::beginJob()
 {
   tree->Branch("mt",&mt,"mt/D");
+  tree->Branch("MET",&MET,"MET/d");
   tree->Branch("delphi",&delphi,"delphi/D");
   tree->Branch("chargedhadron_size",&chargedhadron_size,"chargedhadron_size/i");
 }
