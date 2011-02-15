@@ -21,58 +21,17 @@ process.load("PFAnalyses.TTbarDIL.Sources.MU.MC.Spring10.patTuple_Zmumu_cff")
 
 process.options   = cms.untracked.PSet( wantSummary = cms.untracked.bool(True))
 
-from PFAnalyses.CommonTools.Selectors.muonSelectorPSet_cff import muonSelectorPSet
-muonId = muonSelectorPSet.clone()
-muonId.dxy = 0.02
-muonId.eta = 2.5
-muonId.pt = 20 
-from PFAnalyses.CommonTools.Selectors.muonIsoSelectorPSet_cff import muonIsoSelectorPSet
-muonIso = muonIsoSelectorPSet.clone()
-
-process.taggedMuons = cms.EDProducer(
-    "KoMuonSelector",
-    version = cms.untracked.int32( 4 ),
-    muonLabel  = cms.InputTag("selectedPatMuonsPFlow"),
-    beamSpotLabel = cms.InputTag("offlineBeamSpot"),
-    muonIdSelector = muonId,
-    muonIsoSelector = muonIso,
-)
+process.load("KoPFA.TagProbe.tnpLeptonSelector_cfi")
 
 process.load("KoPFA.DiMuonAnalyzer.triggerMatch_cfi")
 process.patMuonTriggerMatch.src = "taggedMuons"
+process.patMuonTriggerMatch.pathNames = cms.vstring("HLT_Mu9","HLT_Mu11","HLT_Mu15_v1") 
 process.triggeredPatMuons.src = "taggedMuons"
 #PASS_HLT = "!triggerObjectMatchesByPath('%s').empty()" % ("HLT_Mu9",);
 
 process.tagMuons = cms.EDFilter("PATMuonSelector",
     src = cms.InputTag("triggeredPatMuons"),
     cut = cms.string("")
-)
-
-process.PFMuons = cms.EDProducer(
-    "KoMuonRefSelector",
-    version = cms.untracked.int32( 0 ),
-    muonLabel  = cms.InputTag("selectedPatMuonsPFlow"),
-    beamSpotLabel = cms.InputTag("offlineBeamSpot"),
-    muonIdSelector = muonId,
-    muonIsoSelector = muonIso,
-)
-
-process.IDMuons = cms.EDProducer(
-    "KoMuonRefSelector",
-    version = cms.untracked.int32( 1 ),
-    muonLabel  = cms.InputTag("selectedPatMuonsPFlow"),
-    beamSpotLabel = cms.InputTag("offlineBeamSpot"),
-    muonIdSelector = muonId,
-    muonIsoSelector = muonIso,
-)
-
-process.IsoMuons = cms.EDProducer(
-    "KoMuonRefSelector",
-    version = cms.untracked.int32( 4 ),
-    muonLabel  = cms.InputTag("selectedPatMuonsPFlow"),
-    beamSpotLabel = cms.InputTag("offlineBeamSpot"),
-    muonIdSelector = muonId,
-    muonIsoSelector = muonIso,
 )
 
 process.load("SimGeneral.HepPDTESSource.pythiapdt_cfi")
@@ -177,10 +136,11 @@ process.tnpTree = cms.EDAnalyzer("TagProbeFitTreeProducer",
     variables = cms.PSet(
         pt     = cms.string("pt"),
         abseta = cms.string("abs(eta)"),
+        eta    = cms.string("eta"),
+        charge = cms.string("charge"),
     ),
     # choice of what defines a 'passing' probe
     flags = cms.PSet(
-        #isIso = cms.string("(chargedHadronIso + neutralHadronIso/0.33 + photonIso)/pt < 0.21"),
         isPFMuon = cms.InputTag("passingprobesForPFMuons"),
         isIDMuon = cms.InputTag("passingprobesForIDMuons"),
         #isGlobalMuon = cms.string("isGlobalMuon"),
@@ -207,10 +167,35 @@ process.tnpTreeIso = cms.EDAnalyzer("TagProbeFitTreeProducer",
     variables = cms.PSet(
         pt     = cms.string("pt"),
         abseta = cms.string("abs(eta)"),
+        eta    = cms.string("eta"),
+        charge = cms.string("charge"),
     ),
     # choice of what defines a 'passing' probe
     flags = cms.PSet(
         isIso = cms.InputTag("IsoMuons"),
+        isIso06 = cms.string("(chargedHadronIso + neutralHadronIso + photonIso)/pt < 0.06"),
+        isIso07 = cms.string("(chargedHadronIso + neutralHadronIso + photonIso)/pt < 0.07"),
+        isIso08 = cms.string("(chargedHadronIso + neutralHadronIso + photonIso)/pt < 0.08"),
+        isIso09 = cms.string("(chargedHadronIso + neutralHadronIso + photonIso)/pt < 0.09"),
+        isIso10 = cms.string("(chargedHadronIso + neutralHadronIso + photonIso)/pt < 0.10"),
+        isIso11 = cms.string("(chargedHadronIso + neutralHadronIso + photonIso)/pt < 0.11"),
+        isIso12 = cms.string("(chargedHadronIso + neutralHadronIso + photonIso)/pt < 0.12"),
+        isIso13 = cms.string("(chargedHadronIso + neutralHadronIso + photonIso)/pt < 0.13"),
+        isIso14 = cms.string("(chargedHadronIso + neutralHadronIso + photonIso)/pt < 0.14"),
+        isIso15 = cms.string("(chargedHadronIso + neutralHadronIso + photonIso)/pt < 0.15"),
+        isIso16 = cms.string("(chargedHadronIso + neutralHadronIso + photonIso)/pt < 0.16"),
+        isIso17 = cms.string("(chargedHadronIso + neutralHadronIso + photonIso)/pt < 0.17"),
+        isIso18 = cms.string("(chargedHadronIso + neutralHadronIso + photonIso)/pt < 0.18"),
+        isIso19 = cms.string("(chargedHadronIso + neutralHadronIso + photonIso)/pt < 0.19"),
+        isIso20 = cms.string("(chargedHadronIso + neutralHadronIso + photonIso)/pt < 0.20"),
+        isIso21 = cms.string("(chargedHadronIso + neutralHadronIso + photonIso)/pt < 0.21"),
+        isIso22 = cms.string("(chargedHadronIso + neutralHadronIso + photonIso)/pt < 0.22"),
+        isIso23 = cms.string("(chargedHadronIso + neutralHadronIso + photonIso)/pt < 0.23"),
+        isIso24 = cms.string("(chargedHadronIso + neutralHadronIso + photonIso)/pt < 0.24"),
+        isIso25 = cms.string("(chargedHadronIso + neutralHadronIso + photonIso)/pt < 0.25"),
+        isIso26 = cms.string("(chargedHadronIso + neutralHadronIso + photonIso)/pt < 0.26"),
+        isIso27 = cms.string("(chargedHadronIso + neutralHadronIso + photonIso)/pt < 0.27"),
+        isIso28 = cms.string("(chargedHadronIso + neutralHadronIso + photonIso)/pt < 0.28"),
     ),
     ## DATA-related info
     addRunLumiInfo = cms.bool(True),
@@ -225,7 +210,8 @@ process.tnpTreeIso = cms.EDAnalyzer("TagProbeFitTreeProducer",
 )
 
 MC = False 
-#print process.tnpTree.isMC.value()
+#MC = process.tnpTree.isMC.value()
+print MC
 
 if MC== True: 
    process.p = cms.Path(
