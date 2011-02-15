@@ -33,15 +33,16 @@ process.load("PFAnalyses.CommonTools.countingSequences_cfi")
 
 from PFAnalyses.CommonTools.Selectors.muonSelectorPSet_cff import muonSelectorPSet
 muonId = muonSelectorPSet.clone()
-muonId.dxy = 0.02
-muonId.eta = 2.5
-muonId.pt = 20
+muonId.dxy = 999 #0.02
+muonId.eta = 2.4
+muonId.pt = 5 #20
 from PFAnalyses.CommonTools.Selectors.muonIsoSelectorPSet_cff import muonIsoSelectorPSet
 muonIso = muonIsoSelectorPSet.clone()
 
-process.Muons = cms.EDProducer(
+process.Muons1 = cms.EDProducer(
     "KoMuonSelector",
-    version = cms.untracked.int32( 1 ),#TOP
+    cut = cms.vstring("pt","dxy","eta"),
+    isocut = cms.vstring(),
     muonLabel  = cms.InputTag("selectedPatMuonsPFlow"),
     beamSpotLabel = cms.InputTag("offlineBeamSpot"),
     muonIdSelector = muonId,
@@ -49,20 +50,32 @@ process.Muons = cms.EDProducer(
 
 )
 
-process.patMuonFilter = cms.EDFilter("CandViewCountFilter",
-  src = cms.InputTag('Muons'),
-  minNumber = cms.uint32(1)
+process.Muons2 = cms.EDProducer(
+    "KoMuonSelector",
+    cut = cms.vstring("pt","dxy","eta"),
+    isocut = cms.vstring(),
+    muonLabel  = cms.InputTag("selectedPatMuonsPFlow"),
+    beamSpotLabel = cms.InputTag("offlineBeamSpot"),
+    muonIdSelector = muonId,
+    muonIsoSelector = muonIso,
+
 )
+
+#process.patMuonFilter = cms.EDFilter("CandViewCountFilter",
+#  src = cms.InputTag('Muons'),
+#  minNumber = cms.uint32(1)
+#)
 
 from PFAnalyses.CommonTools.Selectors.looseJetIdPSet_cff import looseJetIdPSet
 myJetId = looseJetIdPSet.clone()
 myJetId.verbose = False 
 
 process.DiMuon = cms.EDAnalyzer('DiMuonAnalyzer',
-  muonLabel =  cms.InputTag('Muons'),
+  muonLabel1 =  cms.InputTag('Muons1'),
+  muonLabel2 =  cms.InputTag('Muons2'),
   metLabel =  cms.InputTag('patMETsPFlow'),
   jetLabel =  cms.InputTag('selectedPatJetsPFlow'),
-  useEventCounter = cms.bool( True ),
+  useEventCounter = cms.bool( False ),
   filters = cms.untracked.vstring(
                               'initialEvents',
                               'finalEvents'
@@ -70,22 +83,23 @@ process.DiMuon = cms.EDAnalyzer('DiMuonAnalyzer',
   looseJetId = myJetId, 
 )
 
-process.load("HLTrigger.HLTfilters.hltHighLevel_cfi")
-process.hltHighLevel.HLTPaths = cms.vstring('HLT_Mu9')
-process.load("KoPFA.IsoAnalyzer.Isolation_cfi")
-process.MuonIso.collectionLabel = "Muons"
-process.MuonAna = cms.EDAnalyzer('MuonIsoAna',
-    collectionLabel =  cms.InputTag('Muons'),
-)
+#process.load("HLTrigger.HLTfilters.hltHighLevel_cfi")
+#process.hltHighLevel.HLTPaths = cms.vstring('HLT_Mu9')
+#process.load("KoPFA.IsoAnalyzer.Isolation_cfi")
+#process.MuonIso.collectionLabel = "Muons"
+#process.MuonAna = cms.EDAnalyzer('MuonIsoAna',
+#    collectionLabel =  cms.InputTag('Muons'),
+#)
 
 process.p = cms.Path(
-                     process.loadHistosFromRunInfo*
-                     process.hltHighLevel*
-                     process.Muons*
-                     process.patMuonFilter*
+#                     process.loadHistosFromRunInfo*
+#                     process.hltHighLevel*
+                     process.Muons1*
+                     process.Muons2*
+#                     process.patMuonFilter*
                      process.VertexFilter*
-                     process.MuonIso*
-                     process.MuonAna*
+#                     process.MuonIso*
+#                     process.MuonAna*
                      process.DiMuon
                     )
 
