@@ -33,7 +33,7 @@ process.load("PFAnalyses.CommonTools.countingSequences_cfi")
 
 from PFAnalyses.CommonTools.Selectors.muonSelectorPSet_cff import muonSelectorPSet
 muonId = muonSelectorPSet.clone()
-muonId.dxy = 999 #0.02
+muonId.dxy = 0.02
 muonId.eta = 2.4
 muonId.pt = 5 #20
 from PFAnalyses.CommonTools.Selectors.muonIsoSelectorPSet_cff import muonIsoSelectorPSet
