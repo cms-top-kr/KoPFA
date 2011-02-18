@@ -66,6 +66,13 @@ void printEff(RooHist* h1, RooHist* h2, vector<double>& data, vector<double>& mc
     cout << "MC---[" << x2-xerrlo2  << "," << x2+xerrhi2 << "] "  << " eff= " << y2 << "(+" << yerrhi2 << " -" << yerrlo2 << ")" << endl;
     cout << "scale= " << scalefactor << endl;
     tmps->SetPoint(i,x1,scalefactor);
+    tmps->SetPointEXhigh(i, xerrhi1);
+    tmps->SetPointEXlow(i, xerrlo1);
+    double errh = yerrhi1/y2;
+    double errl = yerrlo1/y2;
+    tmps->SetPointEYhigh(i, errh);
+    tmps->SetPointEYlow(i, errl);
+
   }
   data = tmpdata;
   mc = tmpmc;
@@ -167,10 +174,11 @@ void plotNewEff(TFile *f1, TFile *f2, const TString & leg1, const TString & leg2
     setRangeY(c1,0.5,1.1);
 
   }
-  c1->Draw();
 
-  TLegend *isolabel = new TLegend(.55,.15 ,.65,.45 );
+  c1->Draw();
+  TLegend *isolabel = new TLegend(.55,.20 ,.65,.45 );
   isolabel->SetHeader("rel. iso.");
+  TCanvas * c = new TCanvas("c","c",800,300);
 
   for(int i=0; i < dir.size() ; i++){
     RooHist* h1 = getHist(f1, dir[i], plot[i], i+2, 2);
@@ -185,7 +193,7 @@ void plotNewEff(TFile *f1, TFile *f2, const TString & leg1, const TString & leg2
     h2->Draw("PSame");
     isolabel->AddEntry(h1, Form("%s",lname[i].Data()), "LP");
     if(i==0) doLegend(h1, h2, leg1, leg2);
-
+    //htemp->Draw("PSame");
     //scale factor
     for(int j=0; j < h1->GetMaxSize(); j++){
       double x;
@@ -193,9 +201,19 @@ void plotNewEff(TFile *f1, TFile *f2, const TString & leg1, const TString & leg2
       htemp->GetPoint(j,x,y);
       cout << "x= " << x << " y= " << y << endl;
     }
-
+    c->cd();
+    c->Draw();
+    htemp->SetLineColor(i+2);
+    htemp->SetMarkerColor(i+2);
+    htemp->SetLineWidth(1.5);
+    if(i == 0) {
+      htemp->GetYaxis()->SetTitle("Scale Factor");
+      htemp->GetXaxis()->SetTitle("p_{T} (GeV)");
+      htemp->Draw("ALP");
+    }
+    else htemp->Draw("LPSame"); 
   }
- 
+  c1->cd(); 
   cout << "data" << " " ;
   for(int i=0; i < dataPT20_50.size() ;i++) cout << dataPT20_50[i] << ", " ;
   cout << endl;
@@ -209,9 +227,13 @@ void plotNewEff(TFile *f1, TFile *f2, const TString & leg1, const TString & leg2
   if(print){
     isolabel->Draw();
   }
+  
+  SetLatex(0.50,0.60);
 
-  SetLatex(0.50,0.65);
-
+  c->cd();
+  isolabel->Draw();
+  c1->Print(Form("c_eff_%s_%s",printName.Data(),hName.Data()));
+  c1->Print(Form("c_sf_%s_%s",printName.Data(),hName.Data()));
 }
 
 void plot2Eff(TFile *f1, TFile* f2, const TString & leg1, const TString & leg2, const TString& dir1, const TString &dir2, const TString& plot1, const TString & plot2, const TString& printName, const TString& hName){
@@ -380,7 +402,7 @@ void getObjects( TCanvas *c){
 
 
 void doLegend(TGraphAsymmErrors *g1, TGraphAsymmErrors *g2, const TString& lab1, const TString& lab2) {
-    TLegend *leg = new TLegend(.68,.20 ,.88,.40 );
+    TLegend *leg = new TLegend(.68,.25 ,.88,.40 );
     leg->AddEntry(g1, Form("%s",lab1.Data()), "LP");
     leg->AddEntry(g2, Form("%s",lab2.Data()), "LP");
     leg->SetFillColor(0);
