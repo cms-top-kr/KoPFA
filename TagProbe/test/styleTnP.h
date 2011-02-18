@@ -7,7 +7,10 @@
 #include "TGraphAsymmErrors.h"
 #include <iomanip>
 #include <iostream>
-//#include "TStyle.h"
+#include <map>
+#include <sstream>
+#include "TGraph.h"
+
 using namespace std;
 
 string int2string(int i){
@@ -37,6 +40,53 @@ void printEff(RooHist* h){
   }
 }
 
+void printEff(RooHist* h1, RooHist* h2, vector<double>& data, vector<double>& mc, TGraphAsymmErrors *&h_s){
+  vector<double> tmpdata;
+  vector<double> tmpmc;
+  TGraphAsymmErrors *tmps = new TGraphAsymmErrors();
+  for(int i=0 ; i < h1->GetMaxSize() ; i++){
+    double x1;
+    double y1;
+    double xerrhi1 = h1->GetErrorXhigh(i);
+    double xerrlo1 = h1->GetErrorXlow(i);
+    double yerrhi1 = h1->GetErrorYhigh(i);
+    double yerrlo1 = h1->GetErrorYlow(i);
+    double eff1 =  h1->GetPoint(i,x1,y1);
+    double x2;
+    double y2;
+    double xerrhi2 = h2->GetErrorXhigh(i);
+    double xerrlo2 = h2->GetErrorXlow(i);
+    double yerrhi2 = h2->GetErrorYhigh(i);
+    double yerrlo2 = h2->GetErrorYlow(i);
+    double eff2 =  h2->GetPoint(i,x2,y2);
+    tmpdata.push_back(y1);
+    tmpmc.push_back(y2);
+    double scalefactor = y1/y2;
+    cout << "data-[" << x1-xerrlo1  << "," << x1+xerrhi1 << "] "  << " eff= " << y1 << "(+" << yerrhi1 << " -" << yerrlo1 << ")" << endl;
+    cout << "MC---[" << x2-xerrlo2  << "," << x2+xerrhi2 << "] "  << " eff= " << y2 << "(+" << yerrhi2 << " -" << yerrlo2 << ")" << endl;
+    cout << "scale= " << scalefactor << endl;
+    tmps->SetPoint(i,x1,scalefactor);
+  }
+  data = tmpdata;
+  mc = tmpmc;
+  h_s = tmps;
+}
+
+//vector<string> printEff(RooHist* h, map<int,vector<double> > seff){
+//   for(int i=0 ; i < h->GetMaxSize() ; i++){
+//    double x;
+//    double y;
+//    double xerrhi = h->GetErrorXhigh(i);
+//    double xerrlo = h->GetErrorXlow(i);
+//    double yerrhi = h->GetErrorYhigh(i);
+//    double yerrlo = h->GetErrorYlow(i);
+//    double eff =  h->GetPoint(i,x,y);
+//    seff[i].push_back(y);
+//    cout << "[" << x-xerrlo  << "," << x+xerrhi << "] "  << " eff= " << y << "(+" << yerrhi << " -" << yerrlo << ")" << endl;
+//  }
+//  return seff;
+//}
+
 void setRangeY(TCanvas *c, double min=0, double max=1.1){
   for(size_t i=0, n = c->GetListOfPrimitives()->GetSize(); i <n; ++i){
     TObject *o = c->GetListOfPrimitives()->At(i);
@@ -44,55 +94,124 @@ void setRangeY(TCanvas *c, double min=0, double max=1.1){
   }
 }
 
+void setRangeY(TPad *c, double min=0, double max=1.1){
+  for(size_t i=0, n = c->GetListOfPrimitives()->GetSize(); i <n; ++i){
+    TObject *o = c->GetListOfPrimitives()->At(i);
+    if(o->InheritsFrom("TH1")) ((TH1*)o)->GetYaxis()->SetRangeUser(min,max);
+  }
+}
+
+void setTitleY(TCanvas *c, TString title){
+  for(size_t i=0, n = c->GetListOfPrimitives()->GetSize(); i <n; ++i){
+    TObject *o = c->GetListOfPrimitives()->At(i);
+    if(o->InheritsFrom("TH1")) ((TH1*)o)->GetYaxis()->SetTitle(Form("%s",title.Data()));
+  }
+}
+
+void setTitleY(TPad *c, TString title){
+  for(size_t i=0, n = c->GetListOfPrimitives()->GetSize(); i <n; ++i){
+    TObject *o = c->GetListOfPrimitives()->At(i);
+    if(o->InheritsFrom("TH1")) ((TH1*)o)->GetYaxis()->SetTitle(Form("%s",title.Data()));
+  }
+}
+
 RooHist* getHist(TFile *f, const TString &dir, const TString &plot, int color, int style){
-  f->cd(dir);
+  cout << "getHist" << endl;
+  cout << dir.Data() << endl;
+  f->cd(dir.Data());
   TCanvas* c = (TCanvas*) gDirectory->FindKey(plot)->ReadObj();
   TString obj="";
   if(dir.Contains("cnt")) obj = "hxy_cnt_eff";
   else obj = "hxy_fit_eff";
   RooHist* h = (RooHist*) c->FindObject(obj);
+  TH1D* hf= (TH1D*) c->FindObject("frame_202425112");
 
   h->SetLineWidth(2);
   h->SetLineColor(color);
+  h->SetLineStyle(style);
   h->SetMarkerColor(color);
-  h->SetMarkerStyle(style);
+  h->SetMarkerStyle(20);
   h->SetMarkerSize(0.7);
+  h->GetYaxis()->SetTitleSize(0.0);
+  delete c;
+  return h;
+}
+
+RooHist* getHist(TCanvas* ctmp, const TString &dir, int color, int style){
+  cout << "getHist" << endl;
+  TString obj="";
+  if(dir.Contains("cnt")) obj = "hxy_cnt_eff";
+  else obj = "hxy_fit_eff";
+  RooHist* h = (RooHist*) ctmp->FindObject(obj);
+
+  h->SetLineWidth(2);
+  h->SetLineColor(color);
+  h->SetLineStyle(style);
+  h->SetMarkerColor(color);
+  h->SetMarkerStyle(20);
+  h->SetMarkerSize(0.7);
+  h->GetYaxis()->SetTitleSize(0.0);
 
   return h;
 }
 
-void plotMultiEff(TFile *f1, TFile *f2, const TString & leg1, const TString & leg2, vector<TString> dir, vector<TString> plot, const TString& printName, const TString& hName){
-  gStyle->SetPadTickX(1);
+void plotNewEff(TFile *f1, TFile *f2, const TString & leg1, const TString & leg2, const vector<TString>& dir, const vector<TString>& plot, const TString& printName, const TString& hName, const vector<TString>& lname, bool print=true){
+  vector<double> dataPT20_50;
+  vector<double> mcPT20_50;
   f1->cd(dir[0]);
   TCanvas* c1 = (TCanvas*) gDirectory->FindKey(plot[0])->ReadObj();
-  setRangeY(c1,0.5,1.1);
+  setTitleY(c1,"Isolation Efficiency"); 
+  if(plot[0].Contains("eta")){
+    setRangeY(c1,0.7,1.1);
+  }else{
+    setRangeY(c1,0.5,1.1);
+
+  }
   c1->Draw();
 
-  RooHist* h_1[1];
-  RooHist* h_2[1];
+  TLegend *isolabel = new TLegend(.55,.15 ,.65,.45 );
+  isolabel->SetHeader("rel. iso.");
 
-  for(int i=0; i < dir.size() ;i++){
-    RooHist* h1 = getHist(f1, dir[i], plot[i], 4, 20);
-    cout << "data-----" << plot[i] << "---" << hName << "----" << endl;
-    printEff(h1);
+  for(int i=0; i < dir.size() ; i++){
+    RooHist* h1 = getHist(f1, dir[i], plot[i], i+2, 2);
+    RooHist* h2 = getHist(f2, dir[i], plot[i], i+2, 1);
+    TGraphAsymmErrors* htemp = new TGraphAsymmErrors();
+    vector<double> & data( h1->GetMaxSize() );
+    vector<double> & mc( h2->GetMaxSize() );
+    printEff(h1,h2,data,mc,htemp);
+    dataPT20_50.push_back(data[3]);
+    mcPT20_50.push_back(mc[3]);
+    h1->Draw("PSame");
+    h2->Draw("PSame");
+    isolabel->AddEntry(h1, Form("%s",lname[i].Data()), "LP");
+    if(i==0) doLegend(h1, h2, leg1, leg2);
 
-    RooHist* h2 = getHist(f2, dir[i], plot[i], 2, 20);
-    cout << "MC-----" << plot[i] << "---"<< hName << "---" << endl;
-    printEff(h2);
+    //scale factor
+    for(int j=0; j < h1->GetMaxSize(); j++){
+      double x;
+      double y;
+      htemp->GetPoint(j,x,y);
+      cout << "x= " << x << " y= " << y << endl;
+    }
 
-    h_1[i] = h1;
-    h_2[i] = h2;
+  }
+ 
+  cout << "data" << " " ;
+  for(int i=0; i < dataPT20_50.size() ;i++) cout << dataPT20_50[i] << ", " ;
+  cout << endl;
+  cout << "mc  " << " " ;
+  for(int i=0; i < mcPT20_50.size() ;i++) cout << mcPT20_50[i] << ", " ;
+  cout << endl;
+
+  isolabel->SetFillColor(0);
+  isolabel->SetTextSize(0.04);
+  isolabel->SetLineColor(0);
+  if(print){
+    isolabel->Draw();
   }
 
-  c1->Draw();
-  for( int i=0; i < dir.size() ; i++){
-    h_1[i]->Draw("P Same");
-    h_2[i]->Draw("P Same");
-  }
+  SetLatex(0.50,0.65);
 
-  doLegend(h_1[0], h_2[0], leg1, leg2);
-  c1->Print("c_"+printName+"_"+hName+".png");
-  c1->Print("c_"+printName+"_"+hName+".eps");
 }
 
 void plot2Eff(TFile *f1, TFile* f2, const TString & leg1, const TString & leg2, const TString& dir1, const TString &dir2, const TString& plot1, const TString & plot2, const TString& printName, const TString& hName){
@@ -244,28 +363,38 @@ void getObjects( TCanvas *c){
   TIter next(c->GetListOfPrimitives());
   while ((obj=next())) {
     cout << "Reading: " << obj->GetName() << endl;
-    if (obj->InheritsFrom("TH1")) {
-      cout << "histo: " << obj->GetName() << endl;
-    }
-    if (obj->InheritsFrom("RooHist")) {
+    if (obj->InheritsFrom("TH1F")) {
+      cout << "TH1F: " << obj->GetName() << endl;
+    }else if (obj->InheritsFrom("TH1D")) {
+      cout << "TH1D: " << obj->GetName() << endl;
+    }else if (obj->InheritsFrom("RooHist")) {
       cout << "RooHisto: " << obj->GetName() << endl;
-    }
-    if (obj->InheritsFrom("RooPlot")) {
+    }else if (obj->InheritsFrom("RooPlot")) {
       cout << "RooPlot: " << obj->GetName() << endl;
+    }else{
+      cout << "Ohter: " << obj->GetName() << endl;
     }
 
   }
 }
 
 
-void doLegend(TGraphAsymmErrors *g1, TGraphAsymmErrors *g2, TString lab1, TString lab2) {
-    TLegend *leg = new TLegend(.55,.15 ,.85,.45 );
-    leg->AddEntry(g1, lab1, "LP");
-    leg->AddEntry(g2, lab2, "LP");
+void doLegend(TGraphAsymmErrors *g1, TGraphAsymmErrors *g2, const TString& lab1, const TString& lab2) {
+    TLegend *leg = new TLegend(.68,.20 ,.88,.40 );
+    leg->AddEntry(g1, Form("%s",lab1.Data()), "LP");
+    leg->AddEntry(g2, Form("%s",lab2.Data()), "LP");
     leg->SetFillColor(0);
     leg->SetTextSize(0.04);
     leg->SetLineColor(0);
     leg->Draw();
 }
 
+void SetLatex(double x, double y){
+  TLatex *label= new TLatex;
+  label->SetNDC();
+  label->SetTextSize(0.04);
+  //label->DrawLatex(x,y,"CMS Preliminary 2010");
+  label->DrawLatex(x,y-0.05,"36.1 pb^{-1} at #sqrt{s} = 7 TeV");
+  label->DrawLatex(x,y-0.1,"#DeltaR=0.4");
+}
 
