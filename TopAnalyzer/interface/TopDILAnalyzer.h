@@ -13,7 +13,7 @@
 //
 // Original Author:  Tae Jeong Kim,40 R-A32,+41227678602,
 //         Created:  Fri Jun  4 17:19:29 CEST 2010
-// $Id: TopDILAnalyzer.h,v 1.21 2011/02/16 00:32:36 bhlee Exp $
+// $Id: TopDILAnalyzer.h,v 1.22 2011/02/16 10:38:50 tjkim Exp $
 //
 //
 
@@ -83,6 +83,9 @@ class TopDILAnalyzer : public edm::EDAnalyzer {
     looseJetIdSelector_.initialize( iConfig.getParameter<edm::ParameterSet> ("looseJetId") );
     relIso1_ = iConfig.getUntrackedParameter<double>("relIso1");
     relIso2_ = iConfig.getUntrackedParameter<double>("relIso2");
+		minBTagValue_TC_ = iConfig.getUntrackedParameter<double>("minBTagValue_TC");
+		minBTagValue_SSV_ = iConfig.getUntrackedParameter<double>("minBTagValue_SSV");
+		minBTagValue_CSV_ = iConfig.getUntrackedParameter<double>("minBTagValue_CSV");
 
     // Residual Jet energy correction for 38X
     doResJec_ = iConfig.getUntrackedParameter<bool>("doResJec", false);
@@ -98,12 +101,18 @@ class TopDILAnalyzer : public edm::EDAnalyzer {
     h_MET       = fs->make<TH1F>( "h_MET", "MET", 40, 0, 80);
     h_jet_multi = fs->make<TH1F>( "h_jet_multi", "jet_multi", 10, 0, 10);
     h_jetpt30_multi = fs->make<TH1F>( "h_jetpt30_multi", "jet30pt_multi", 10, 0, 10);
+    h_bjet_TC_multi = fs->make<TH1F>( "h_bjet_TC_multi", "bjet_TC_multi", 10, 0, 10);
+    h_bjet_SSV_multi = fs->make<TH1F>( "h_bjet_SSV_multi", "bjet_SSV_multi", 10, 0, 10);
+    h_bjet_CSV_multi = fs->make<TH1F>( "h_bjet_CSV_multi", "bjet_CSV_multi", 10, 0, 10);
 
     Z = new std::vector<Ko::ZCandidate>();
     toptotal = new std::vector<math::XYZTLorentzVector>();
     met = new std::vector<math::XYZTLorentzVector>();
     jets = new std::vector<math::XYZTLorentzVector>();
     jetspt30 = new std::vector<math::XYZTLorentzVector>();
+    bjets_TC = new std::vector<math::XYZTLorentzVector>();
+    bjets_SSV = new std::vector<math::XYZTLorentzVector>();
+    bjets_CSV = new std::vector<math::XYZTLorentzVector>();
 
     chIso1 = new std::vector<double>;
     phIso1 = new std::vector<double>;
@@ -133,10 +142,6 @@ class TopDILAnalyzer : public edm::EDAnalyzer {
     ecalIso2 = new std::vector<double>;
     hcalIso2 = new std::vector<double>;
   
-    discrTC = new std::vector<double>;
-    discrSSV = new std::vector<double>;
-    discrCSV = new std::vector<double>;
-
   }
 
 
@@ -158,6 +163,9 @@ class TopDILAnalyzer : public edm::EDAnalyzer {
     tree->Branch("met","std::vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >", &met);
     tree->Branch("jets","std::vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >", &jets);
     tree->Branch("jetspt30","std::vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >", &jetspt30);
+    tree->Branch("bjets_TC","std::vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >", &bjets_TC);
+    tree->Branch("bjets_SSV","std::vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >", &bjets_SSV);
+    tree->Branch("bjets_CSV","std::vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >", &bjets_CSV);
 
     tree->Branch("chIso1","std::vector<double>", &chIso1);
     tree->Branch("phIso1","std::vector<double>", &phIso1);
@@ -190,9 +198,6 @@ class TopDILAnalyzer : public edm::EDAnalyzer {
     tree->Branch("MET",&MET,"MET/d");
     tree->Branch("dphimetlepton",&dphimetlepton,"dphimetlepton/d");
 
-    tree->Branch("discrTC","std::vector<double>", &discrTC);
-    tree->Branch("discrSSV","std::vector<double>", &discrSSV);
-    tree->Branch("discrCVS","std::vector<double>", &discrCSV);
     tree->Branch("maosttbarM",&maosttbarM,"maosttbarM/d");
     tree->Branch("maosMt2",&maosMt2,"maosMt2/d");
     tree->Branch("maostop1M",&maostop1M,"maostop1M/d");
@@ -370,9 +375,18 @@ class TopDILAnalyzer : public edm::EDAnalyzer {
             jets->push_back(corrjet);
             if( corrjet.pt() > 30){
               jetspt30->push_back(corrjet);
-              discrTC->push_back(jit->bDiscriminator("trackCountingHighEffBJetTags"));
-              discrSSV->push_back(jit->bDiscriminator("simpleSecondaryVertexBJetTags"));
-              discrCSV->push_back(jit->bDiscriminator("combinedSecondaryVertexBJetTags"));
+              discrTC = jit->bDiscriminator("trackCountingHighEffBJetTags");
+              discrSSV = jit->bDiscriminator("simpleSecondaryVertexBJetTags");
+              discrCSV = jit->bDiscriminator("combinedSecondaryVertexBJetTags");
+							if (discrTC > minBTagValue_TC_){
+								bjets_TC->push_back(corrjet);
+							}
+							if (discrSSV > minBTagValue_SSV_){
+								bjets_SSV->push_back(corrjet);
+							}
+							if (discrCSV > minBTagValue_CSV_){
+								bjets_CSV->push_back(corrjet);
+							}
             }
 
           }
@@ -381,6 +395,9 @@ class TopDILAnalyzer : public edm::EDAnalyzer {
 
         h_jet_multi->Fill(jets->size());
         h_jetpt30_multi->Fill(jetspt30->size());
+        h_bjet_TC_multi->Fill(bjets_TC->size());
+        h_bjet_SSV_multi->Fill(bjets_SSV->size());
+        h_bjet_CSV_multi->Fill(bjets_CSV->size());
 
 
         if(jetspt30->size() >= 2){
@@ -477,6 +494,9 @@ class TopDILAnalyzer : public edm::EDAnalyzer {
     met->clear();
     jets->clear();
     jetspt30->clear();
+    bjets_TC->clear();
+    bjets_SSV->clear();
+    bjets_CSV->clear();
 
     chIso1->clear();
     phIso1->clear();
@@ -506,10 +526,6 @@ class TopDILAnalyzer : public edm::EDAnalyzer {
     ecalIso2->clear();
     hcalIso2->clear();
 
-    //clear btag variables
-    discrTC->clear();
-    discrSSV->clear();
-    discrCSV->clear();
     //clear maos variables
     maosttbarM = -1;
     maosMt2 = -1;
@@ -674,18 +690,14 @@ class TopDILAnalyzer : public edm::EDAnalyzer {
   bool useEventCounter_;
   // loose jet ID. 
   PatJetIdSelector looseJetIdSelector_;
-  // jet flavour constants
-  enum Flavour {
-    ALL_JETS = 0,
-    UDSG_JETS,
-    C_JETS,
-    B_JETS,
-    NONID_JETS,
-    N_JET_TYPES
-  };
-  // relIso
+  
+	// relIso
   double relIso1_;
   double relIso2_;
+	// btag Discriminator
+	double minBTagValue_TC_;
+	double minBTagValue_SSV_;
+	double minBTagValue_CSV_;
 
   TTree* tree;
 
@@ -696,12 +708,18 @@ class TopDILAnalyzer : public edm::EDAnalyzer {
   TH1F * h_MET;
   TH1F * h_jet_multi;
   TH1F * h_jetpt30_multi;
+  TH1F * h_bjet_TC_multi;
+  TH1F * h_bjet_SSV_multi;
+  TH1F * h_bjet_CSV_multi;
 
   std::vector<Ko::ZCandidate>* Z;
   std::vector<math::XYZTLorentzVector>* toptotal;
   std::vector<math::XYZTLorentzVector>* met;
   std::vector<math::XYZTLorentzVector>* jets;
   std::vector<math::XYZTLorentzVector>* jetspt30;
+  std::vector<math::XYZTLorentzVector>* bjets_TC;
+  std::vector<math::XYZTLorentzVector>* bjets_SSV;
+  std::vector<math::XYZTLorentzVector>* bjets_CSV;
 
   std::vector<double>* chIso1;
   std::vector<double>* phIso1;
@@ -734,9 +752,9 @@ class TopDILAnalyzer : public edm::EDAnalyzer {
   double MET;
   double dphimetlepton;
 
-  vector<double>* discrTC;
-  vector<double>* discrSSV;
-  vector<double>* discrCSV;
+  double discrTC;
+  double discrSSV;
+  double discrCSV;
 
   double maosttbarM;
   double maosMt2;
