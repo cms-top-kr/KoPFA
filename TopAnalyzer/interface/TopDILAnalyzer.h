@@ -13,7 +13,7 @@
 //
 // Original Author:  Tae Jeong Kim,40 R-A32,+41227678602,
 //         Created:  Fri Jun  4 17:19:29 CEST 2010
-// $Id: TopDILAnalyzer.h,v 1.22 2011/02/16 10:38:50 tjkim Exp $
+// $Id: TopDILAnalyzer.h,v 1.23 2011/02/19 12:59:13 bhlee Exp $
 //
 //
 
@@ -350,7 +350,7 @@ class TopDILAnalyzer : public edm::EDAnalyzer {
         for (JI jit = Jets->begin(); jit != Jets->end(); ++jit) {
 
           //geometric acceptance
-          if(abs(jit->eta()) >= 2.5) continue;
+          if(fabs(jit->eta()) >= 2.5) continue;
 
           pat::strbitset looseJetIdSel = looseJetIdSelector_.getBitTemplate();
           bool passId = looseJetIdSelector_( *jit, looseJetIdSel);
