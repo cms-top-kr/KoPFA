@@ -75,6 +75,8 @@ process.ElEl = cms.EDAnalyzer('TopElElAnalyzer',
   #for jet cleaning overlapping with isolated epton within 0.4
   relIso1 = cms.untracked.double(0.20),
   relIso2 = cms.untracked.double(0.20),
+	bTagAlgo = cms.untracked.string("trackCountingHighEffBJetTags"),
+	minBTagValue = cms.untracked.double(1.7),
 )
 
 process.load("HLTrigger.HLTfilters.hltHighLevel_cfi")

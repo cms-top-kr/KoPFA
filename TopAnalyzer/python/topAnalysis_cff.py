@@ -53,6 +53,8 @@ ElEl = cms.EDAnalyzer('TopElElAnalyzer',
     looseJetId = myJetId,
     relIso1 = cms.untracked.double(0.20),
     relIso2 = cms.untracked.double(0.20),
+		bTagAlgo = cms.untracked.string("trackCountingHighEffBJetTags"),
+		minBTagValue = cms.untracked.double(1.7),
 )
 
 MuMu = cms.EDAnalyzer('TopMuMuAnalyzer',
@@ -69,6 +71,8 @@ MuMu = cms.EDAnalyzer('TopMuMuAnalyzer',
     #for jet cleaning overlapping with isolated epton within 0.4
     relIso1 = cms.untracked.double(0.21),
     relIso2 = cms.untracked.double(0.21),
+		bTagAlgo = cms.untracked.string("trackCountingHighEffBJetTags"),
+		minBTagValue = cms.untracked.double(1.7),
 )
 
 removeDuplicate = cms.EDFilter("RemoveDuplicate",

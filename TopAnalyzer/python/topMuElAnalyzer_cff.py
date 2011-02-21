@@ -76,6 +76,8 @@ process.MuEl = cms.EDAnalyzer('TopMuElAnalyzer',
   #for jet cleaning overlapping with isolated epton within 0.4
   relIso1 = cms.untracked.double(0.21),
   relIso2 = cms.untracked.double(0.26),
+	bTagAlgo = cms.untracked.string("trackCountingHighEffBJetTags"),
+	minBTagValue = cms.untracked.double(1.7),
 )
 
 process.removeDuplicate = cms.EDFilter("RemoveDuplicate",
