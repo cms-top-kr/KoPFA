@@ -13,7 +13,7 @@
 //
 // Original Author:  Tae Jeong Kim,40 R-A32,+41227678602,
 //         Created:  Fri Jun  4 17:19:29 CEST 2010
-// $Id: TopDILAnalyzer.h,v 1.25 2011/02/21 11:43:58 bhlee Exp $
+// $Id: TopDILAnalyzer.h,v 1.26 2011/02/21 16:34:42 bhlee Exp $
 //
 //
 
@@ -369,9 +369,9 @@ class TopDILAnalyzer : public edm::EDAnalyzer {
             if( corrjet.pt() > 30){
               jetspt30->push_back(corrjet);
               discr = jit->bDiscriminator(bTagAlgo_);
-				if (discr > minBTagValue_){
-				bjets->push_back(corrjet);
-				}
+				      if (discr > minBTagValue_){
+				      bjets->push_back(corrjet);
+				      }
             }
 
           }
