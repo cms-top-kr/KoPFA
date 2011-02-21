@@ -8,6 +8,7 @@
 <use name=CondFormats/JetMETObjects>
 <use name=PFAnalyses/CommonTools>
 <use name="DQMServices/Core">
+<use name="KoPFA/DataFormats">
 <use name="rootminuit">
 <use name="rootminuit2">
 
