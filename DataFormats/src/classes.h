@@ -1,6 +1,8 @@
 #include "DataFormats/Common/interface/Wrapper.h"
 
 #include "KoPFA/DataFormats/interface/ZCandidate.h"
+#include "KoPFA/DataFormats/interface/TTbarEvent.h"
+#include "KoPFA/DataFormats/interface/TTbarGenEvent.h"
 
 #include <vector>
 
@@ -13,5 +15,18 @@ namespace {
     edm::Wrapper<std::vector<Ko::ZCandidate> > dummyZCandidateCollectionWrapper;
     edm::Ptr<Ko::ZCandidate> dummyZCandidatePtr;
 
+    Ko::TTbarEvent dummyTTbarEvent;
+    edm::Wrapper<Ko::TTbarEvent> dummyTTbarEventWrapper;
+    std::vector<Ko::TTbarEvent> dummyTTbarEventCollection;
+    edm::Wrapper<std::vector<Ko::TTbarEvent> > dummyTTbarEventCollectionWrapper;
+    edm::Ptr<Ko::TTbarEvent> dummyTTbarEventPtr;
+
+    Ko::TTbarGenEvent dummyTTbarGenEvent;
+    edm::Wrapper<Ko::TTbarGenEvent> dummyTTbarGenEventWrapper;
+    std::vector<Ko::TTbarGenEvent> dummyTTbarGenEventCollection;
+    edm::Wrapper<std::vector<Ko::TTbarGenEvent> > dummyTTbarGenEventCollectionWrapper;
+    edm::Ptr<Ko::TTbarGenEvent> dummyTTbarGenEventPtr;
+
   };
+
 }

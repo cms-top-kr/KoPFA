@@ -6,5 +6,17 @@
   <class name="edm::Wrapper<std::vector<Ko::ZCandidate> >"/>
   <class name="edm::Ptr<Ko::ZCandidate>"/>
 
+  <class name="Ko::TTbarEvent" />
+  <class name="std::vector<Ko::TTbarEvent>" />
+  <class name="edm::Wrapper<Ko::TTbarEvent>"/>
+  <class name="edm::Wrapper<std::vector<Ko::TTbarEvent> >"/>
+  <class name="edm::Ptr<Ko::TTbarEvent>"/>
+
+  <class name="Ko::TTbarGenEvent" />
+  <class name="std::vector<Ko::TTbarGenEvent>" />
+  <class name="edm::Wrapper<Ko::TTbarGenEvent>"/>
+  <class name="edm::Wrapper<std::vector<Ko::TTbarGenEvent> >"/>
+  <class name="edm::Ptr<Ko::TTbarGenEvent>"/>
+
 </lcgdict>
 
