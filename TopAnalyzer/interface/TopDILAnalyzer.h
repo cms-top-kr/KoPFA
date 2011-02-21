@@ -13,7 +13,7 @@
 //
 // Original Author:  Tae Jeong Kim,40 R-A32,+41227678602,
 //         Created:  Fri Jun  4 17:19:29 CEST 2010
-// $Id: TopDILAnalyzer.h,v 1.26 2011/02/21 16:34:42 bhlee Exp $
+// $Id: TopDILAnalyzer.h,v 1.27 2011/02/21 16:36:15 bhlee Exp $
 //
 //
 
@@ -83,8 +83,8 @@ class TopDILAnalyzer : public edm::EDAnalyzer {
     looseJetIdSelector_.initialize( iConfig.getParameter<edm::ParameterSet> ("looseJetId") );
     relIso1_ = iConfig.getUntrackedParameter<double>("relIso1");
     relIso2_ = iConfig.getUntrackedParameter<double>("relIso2");
-		bTagAlgo_ = iConfig.getUntrackedParameter<std::string>("bTagAlgo");
-		minBTagValue_ = iConfig.getUntrackedParameter<double>("minBTagValue");
+	bTagAlgo_ = iConfig.getUntrackedParameter<std::string>("bTagAlgo");
+	minBTagValue_ = iConfig.getUntrackedParameter<double>("minBTagValue");
 
     // Residual Jet energy correction for 38X
     doResJec_ = iConfig.getUntrackedParameter<bool>("doResJec", false);
@@ -672,12 +672,12 @@ class TopDILAnalyzer : public edm::EDAnalyzer {
   // loose jet ID. 
   PatJetIdSelector looseJetIdSelector_;
   
-	// relIso
+  // relIso
   double relIso1_;
   double relIso2_;
-	// btag Discriminator
-	std::string bTagAlgo_;
-	double minBTagValue_;
+  // btag Discriminator
+  std::string bTagAlgo_;
+  double minBTagValue_;
 
   TTree* tree;
 
