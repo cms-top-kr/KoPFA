@@ -109,7 +109,7 @@ process.load("HLTrigger.HLTfilters.hltHighLevel_cfi")
 process.hltHighLevel.HLTPaths = cms.vstring()
 process.hltHighLevel.throw = cms.bool(False)
 process.load("KoPFA.TopAnalyzer.triggerFilterByRun_cfi")
-process.load("KoPFA.CommonTools.recoPFCandCountFilter_cfi")
+#process.load("KoPFA.CommonTools.recoPFCandCountFilter_cfi")
 
 process.p = cms.Path(
 #    process.startupSequence*
