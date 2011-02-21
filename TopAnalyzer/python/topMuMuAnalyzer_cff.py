@@ -72,8 +72,8 @@ process.MuMu = cms.EDAnalyzer('TopMuMuAnalyzer',
   #for jet cleaning overlapping with isolated epton within 0.4
   relIso1 = cms.untracked.double(0.21),
   relIso2 = cms.untracked.double(0.21),
-	bTagAlgo = cms.untracked.string("trackCountingHighEffBJetTags"),
-	minBTagValue = cms.untracked.double(1.7),
+  bTagAlgo = cms.untracked.string("trackCountingHighEffBJetTags"),
+  minBTagValue = cms.untracked.double(1.7),
 )
 
 #process.load("HLTrigger.HLTfilters.hltHighLevel_cfi")
@@ -86,7 +86,7 @@ process.p = cms.Path(
                      	process.loadHistosFromRunInfo*
 #                     process.hltHighLevel*
                      	process.muonTriggerFilterForMC*
-        		     			process.topWLeptonGenFilter*
+        		process.topWLeptonGenFilter*
                      	process.GenZmassFilter*
                      	process.Muons*
                      	process.patMuonFilter*
