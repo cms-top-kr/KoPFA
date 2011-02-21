@@ -40,6 +40,11 @@ patElectronFilter = cms.EDFilter("CandViewCountFilter",
   minNumber = cms.uint32(2)
 )
 
+patMuonFilterForElMu = patMuonFilter.clone()
+patElectronFilterForElMu = patElectronFilter.clone()
+patMuonFilterForElMu.minNumber = 1
+patElectronFilterForElMu.minNumber = 1
+
 ElEl = cms.EDAnalyzer('TopElElAnalyzer',
     muonLabel1 =  cms.InputTag('Electrons'),
     muonLabel2 =  cms.InputTag('Electrons'),
@@ -70,6 +75,24 @@ MuMu = cms.EDAnalyzer('TopMuMuAnalyzer',
     looseJetId = myJetId, 
     #for jet cleaning overlapping with isolated epton within 0.4
     relIso1 = cms.untracked.double(0.21),
+    relIso2 = cms.untracked.double(0.21),
+		bTagAlgo = cms.untracked.string("trackCountingHighEffBJetTags"),
+		minBTagValue = cms.untracked.double(1.7),
+)
+
+ElMu = cms.EDAnalyzer('TopElMuAnalyzer',
+    muonLabel1 =  cms.InputTag('Electrons'),
+    muonLabel2 =  cms.InputTag('Muons'),
+    metLabel =  cms.InputTag('patMETsPFlow'),
+    jetLabel =  cms.InputTag('selectedPatJetsPFlow'),
+    useEventCounter = cms.bool( True ),
+    filters = cms.untracked.vstring(
+        'initialEvents',
+        'finalEvents'
+    ),
+    looseJetId = myJetId, 
+    #for jet cleaning overlapping with isolated epton within 0.4
+    relIso1 = cms.untracked.double(0.26),
     relIso2 = cms.untracked.double(0.21),
 		bTagAlgo = cms.untracked.string("trackCountingHighEffBJetTags"),
 		minBTagValue = cms.untracked.double(1.7),
@@ -116,4 +139,24 @@ topMuMuAnalysisRealDataSequence = cms.Sequence(
     patMuonFilter*
     MuMu
 )
+
+topElMuAnalysisMCSequence = cms.Sequence(
+    loadHistosFromRunInfo*
+    GenZmassFilter*
+    VertexFilter*
+    Muons * Electrons *
+    patMuonFilterForElMu * patElectronFilterForElMu *
+    ElMu
+)
+
+topElMuAnalysisRealDataSequence = cms.Sequence(
+    loadHistosFromRunInfo*
+    muonTriggerFilterByRun*
+    removeDuplicate*
+    VertexFilter*
+    Muons * Electrons *
+    patMuonFilterForElMu * patElectronFilterForElMu *
+    ElMu
+)
+
 
