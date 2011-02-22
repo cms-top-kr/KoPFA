@@ -22,6 +22,7 @@ public:
   TTbarEvent();
 
   const double m() const { return mass_; };
+  const double mass() const { return m(); };
   const double zM() const { return zM_; };
   const int zSign() const { return l1Sign_ + l2Sign_; };
   const double met() const { return met_; };

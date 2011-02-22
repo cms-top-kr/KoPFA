@@ -16,7 +16,8 @@ public:
   TTbarGenEvent() {};
   ~TTbarGenEvent() {};
 
-  double mass() const { return tt_.M(); };
+  double m() const { return tt_.M(); };
+  double mass() const { return m(); };
   
   void clear();
   void set(reco::GenParticleCollection::const_iterator begin,
