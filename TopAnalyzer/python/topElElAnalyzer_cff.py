@@ -79,10 +79,10 @@ process.ElEl = cms.EDAnalyzer('TopElElAnalyzer',
   minBTagValue = cms.untracked.double(1.7),
 )
 
-process.load("HLTrigger.HLTfilters.hltHighLevel_cfi")
+process.load("KoPFA.TopAnalyzer.ttbarNtupleProducer_cfi")
+#process.load("HLTrigger.HLTfilters.hltHighLevel_cfi")
 #process.hltHighLevel.HLTPaths = cms.vstring('HLT_Ele10_LW_L1R')
 process.load("KoPFA.TopAnalyzer.triggerFilterByRun_cfi")
-
 process.load("KoPFA.CommonTools.genParticleDecayFilter_cfi")
 
 
@@ -95,6 +95,7 @@ process.p = cms.Path(
                      process.Electrons*
                      process.patElectronFilter*
                      process.VertexFilter*
-                     process.ElEl
+                     process.ElEl*
+					 process.ee
                     )
 

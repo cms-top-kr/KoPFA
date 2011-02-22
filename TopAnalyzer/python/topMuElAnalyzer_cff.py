@@ -84,6 +84,7 @@ process.removeDuplicate = cms.EDFilter("RemoveDuplicate",
   applyFilter = cms.untracked.bool( True )
 )
 
+process.load("KoPFA.TopAnalyzer.ttbarNtupleProducer_cfi")
 process.load("HLTrigger.HLTfilters.hltHighLevel_cfi")
 process.hltHighLevel.HLTPaths = cms.vstring('HLT_Mu9','HLT_Ele10_LW_L1R')
 process.hltHighLevel.throw = cms.bool(False)
@@ -104,6 +105,7 @@ process.p = cms.Path(
                      process.Muons*
                      process.patMuonFilter*
                      process.VertexFilter*
-                     process.MuEl
+                     process.MuEl*
+					 process.emu
                     )
 
