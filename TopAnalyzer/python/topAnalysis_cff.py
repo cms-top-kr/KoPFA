@@ -101,6 +101,8 @@ ElMu = cms.EDAnalyzer('TopElMuAnalyzer',
     minBTagValue = cms.untracked.double(1.7),
 )
 
+from KoPFA.TopAnalyzer.ttbarNtupleProducer_cfi import *
+
 removeDuplicate = cms.EDFilter("RemoveDuplicate",
     applyFilter = cms.untracked.bool( True )
 )
@@ -111,7 +113,8 @@ topElElAnalysisMCSequence = cms.Sequence(
     VertexFilter*
     Electrons*
     patElectronFilter*
-    ElEl
+    ElEl*
+    ee
 )
 
 topElElAnalysisRealDataSequence = cms.Sequence(
@@ -121,7 +124,8 @@ topElElAnalysisRealDataSequence = cms.Sequence(
     VertexFilter*
     Electrons*
     patElectronFilter*
-    ElEl
+    ElEl*
+    ee
 )
 
 topMuMuAnalysisMCSequence = cms.Sequence(
@@ -130,7 +134,8 @@ topMuMuAnalysisMCSequence = cms.Sequence(
     VertexFilter*
     Muons*
     patMuonFilter*
-    MuMu
+    MuMu*
+    mumu
 )
 
 topMuMuAnalysisRealDataSequence = cms.Sequence(
@@ -140,7 +145,8 @@ topMuMuAnalysisRealDataSequence = cms.Sequence(
     VertexFilter*
     Muons*
     patMuonFilter*
-    MuMu
+    MuMu*
+    mumu
 )
 
 topElMuAnalysisMCSequence = cms.Sequence(
@@ -149,7 +155,8 @@ topElMuAnalysisMCSequence = cms.Sequence(
     VertexFilter*
     Muons * Electrons *
     patMuonFilterForElMu * patElectronFilterForElMu *
-    ElMu
+    ElMu*
+    emu
 )
 
 topElMuAnalysisRealDataSequence = cms.Sequence(
@@ -159,6 +166,7 @@ topElMuAnalysisRealDataSequence = cms.Sequence(
     VertexFilter*
     Muons * Electrons *
     patMuonFilterForElMu * patElectronFilterForElMu *
-    ElMu
+    ElMu*
+    emu
 )
 
