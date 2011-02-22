@@ -18,6 +18,7 @@ public:
 
   double m() const { return tt_.M(); };
   double mass() const { return m(); };
+  double met() const { return met_; };
   
   void clear();
   void set(reco::GenParticleCollection::const_iterator begin,
