@@ -46,6 +46,7 @@ patMuonFilterForElMu.minNumber = 1
 patElectronFilterForElMu.minNumber = 1
 
 ElEl = cms.EDAnalyzer('TopElElAnalyzer',
+    genParticlesLabel = cms.InputTag('genParticles'),
     muonLabel1 =  cms.InputTag('Electrons'),
     muonLabel2 =  cms.InputTag('Electrons'),
     metLabel =  cms.InputTag('patMETsPFlow'),
@@ -63,6 +64,7 @@ ElEl = cms.EDAnalyzer('TopElElAnalyzer',
 )
 
 MuMu = cms.EDAnalyzer('TopMuMuAnalyzer',
+    genParticlesLabel = cms.InputTag('genParticles'),
     muonLabel1 =  cms.InputTag('Muons'),
     muonLabel2 =  cms.InputTag('Muons'),
     metLabel =  cms.InputTag('patMETsPFlow'),
@@ -81,6 +83,7 @@ MuMu = cms.EDAnalyzer('TopMuMuAnalyzer',
 )
 
 ElMu = cms.EDAnalyzer('TopElMuAnalyzer',
+    genParticlesLabel = cms.InputTag('genParticles'),
     muonLabel1 =  cms.InputTag('Electrons'),
     muonLabel2 =  cms.InputTag('Muons'),
     metLabel =  cms.InputTag('patMETsPFlow'),
