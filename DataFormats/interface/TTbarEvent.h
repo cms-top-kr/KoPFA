@@ -21,15 +21,17 @@ class TTbarEvent
 public:
   TTbarEvent();
 
-  const double m() const { return mass_; };
-  const double mass() const { return m(); };
-  const double zM() const { return zM_; };
-  const int zSign() const { return l1Sign_ + l2Sign_; };
-  const double met() const { return met_; };
-  const double relPFIso1() const { return relPFIso1_; };
-  const double relPFIso2() const { return relPFIso2_; };
-  const double relDetIso1() const { return relDetIso1_; };
-  const double relDetIso2() const { return relDetIso2_; };
+  double m() const { return mass_; };
+  double mass() const { return m(); };
+  double m(const int massAlgoNum) const;
+  double mass(const int massAlgoNum) const { return m(massAlgoNum); };
+  double zM() const { return zM_; };
+  int zSign() const { return l1Sign_ + l2Sign_; };
+  double met() const { return met_; };
+  double relPFIso1() const { return relPFIso1_; };
+  double relPFIso2() const { return relPFIso2_; };
+  double relDetIso1() const { return relDetIso1_; };
+  double relDetIso2() const { return relDetIso2_; };
   int numberOfJets() const { return jets_.size(); };
   int numberOfJets(const double minEt) const;
   int numberOfJets(const double minEt, const double minBTag, const unsigned int algoNum) const;
@@ -39,8 +41,6 @@ public:
 
   void clear(); // Initialize variables, must be called in every events
   void setEvent(const edm::EventID& eventId); // Set event number, etc
-  //template<typename Lepton1, typename Lepton2>
-  //void setLepton(const Lepton1* l1, const Lepton2* l2);
   void setLepton(const reco::Candidate* l1, const reco::Candidate* l2);
   void setMET(const pat::MET* met);
   void addJet(const pat::Jet* jet, const double scaleFactor);
@@ -69,6 +69,9 @@ private:
   // Composites
   double zM_;
   double mass_;
+
+  // Mass variables with various algorithms
+  double massWithMAOS_, massUser1_, massUser2_;
 
 };
 

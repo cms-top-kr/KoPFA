@@ -27,6 +27,9 @@ void TTbarEvent::clear()
   met_ = metX_ = metY_ = 0;
 
   zM_ = mass_ = -999;
+  massWithMAOS_ = -999;
+  massUser1_ = -999;
+  massUser2_ = -999;
 }
 
 void TTbarEvent::addJet(const pat::Jet* jet, const double scaleFactor = 1.0)
@@ -193,5 +196,17 @@ std::string TTbarEvent::algoName(const unsigned int algoNum) const
 {
   if ( algoNames_.size() <= algoNum ) return "";
   return algoNames_[algoNum];
+}
+
+double TTbarEvent::m(const int massAlgoNum) const
+{
+  switch ( massAlgoNum )
+  {
+  case 0: return mass_; break;
+  case 1: return massWithMAOS_; break;
+  case 2: return massUser1_; break;
+  case 3: return massUser2_; break;
+  }
+  return -999;
 }
 
