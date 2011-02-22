@@ -31,13 +31,13 @@ GenZmassFilter = cms.EDFilter('GenZmassFilter',
 )
 
 patMuonFilter = cms.EDFilter("CandViewCountFilter",
-  src = cms.InputTag('Muons'),
-  minNumber = cms.uint32(2)
+    src = cms.InputTag('Muons'),
+    minNumber = cms.uint32(2)
 )
 
 patElectronFilter = cms.EDFilter("CandViewCountFilter",
-  src = cms.InputTag('Electrons'),
-  minNumber = cms.uint32(2)
+    src = cms.InputTag('Electrons'),
+    minNumber = cms.uint32(2)
 )
 
 patMuonFilterForElMu = patMuonFilter.clone()
@@ -59,8 +59,8 @@ ElEl = cms.EDAnalyzer('TopElElAnalyzer',
     looseJetId = myJetId,
     relIso1 = cms.untracked.double(0.20),
     relIso2 = cms.untracked.double(0.20),
-		bTagAlgo = cms.untracked.string("trackCountingHighEffBJetTags"),
-		minBTagValue = cms.untracked.double(1.7),
+    bTagAlgo = cms.untracked.string("trackCountingHighEffBJetTags"),
+    minBTagValue = cms.untracked.double(1.7),
 )
 
 MuMu = cms.EDAnalyzer('TopMuMuAnalyzer',
@@ -78,8 +78,8 @@ MuMu = cms.EDAnalyzer('TopMuMuAnalyzer',
     #for jet cleaning overlapping with isolated epton within 0.4
     relIso1 = cms.untracked.double(0.21),
     relIso2 = cms.untracked.double(0.21),
-		bTagAlgo = cms.untracked.string("trackCountingHighEffBJetTags"),
-		minBTagValue = cms.untracked.double(1.7),
+    bTagAlgo = cms.untracked.string("trackCountingHighEffBJetTags"),
+    minBTagValue = cms.untracked.double(1.7),
 )
 
 ElMu = cms.EDAnalyzer('TopElMuAnalyzer',
@@ -97,8 +97,8 @@ ElMu = cms.EDAnalyzer('TopElMuAnalyzer',
     #for jet cleaning overlapping with isolated epton within 0.4
     relIso1 = cms.untracked.double(0.26),
     relIso2 = cms.untracked.double(0.21),
-		bTagAlgo = cms.untracked.string("trackCountingHighEffBJetTags"),
-		minBTagValue = cms.untracked.double(1.7),
+    bTagAlgo = cms.untracked.string("trackCountingHighEffBJetTags"),
+    minBTagValue = cms.untracked.double(1.7),
 )
 
 removeDuplicate = cms.EDFilter("RemoveDuplicate",
@@ -161,5 +161,4 @@ topElMuAnalysisRealDataSequence = cms.Sequence(
     patMuonFilterForElMu * patElectronFilterForElMu *
     ElMu
 )
-
 

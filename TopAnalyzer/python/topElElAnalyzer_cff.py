@@ -50,8 +50,8 @@ muonIso = muonIsoSelectorPSet.clone()
 process.load("KoPFA.TopAnalyzer.topLeptonSelector_cfi") 
 
 process.patElectronFilter = cms.EDFilter("CandViewCountFilter",
-  src = cms.InputTag('Electrons'),
-  minNumber = cms.uint32(2)
+    src = cms.InputTag('Electrons'),
+    minNumber = cms.uint32(2)
 )
 
 
@@ -60,23 +60,23 @@ myJetId = looseJetIdPSet.clone()
 myJetId.verbose = False 
 
 process.ElEl = cms.EDAnalyzer('TopElElAnalyzer',
-  muonLabel1 =  cms.InputTag('Electrons'),
-  muonLabel2 =  cms.InputTag('Electrons'),
-  metLabel =  cms.InputTag('patMETsPFlow'),
-  jetLabel =  cms.InputTag('selectedPatJetsPFlow'),
-  genParticlesLabel = cms.InputTag('genParticles'),
-  doResJec = cms.untracked.bool( False),
-  useEventCounter = cms.bool( True ),
-  filters = cms.untracked.vstring(
+    muonLabel1 =  cms.InputTag('Electrons'),
+    muonLabel2 =  cms.InputTag('Electrons'),
+    metLabel =  cms.InputTag('patMETsPFlow'),
+    jetLabel =  cms.InputTag('selectedPatJetsPFlow'),
+    genParticlesLabel = cms.InputTag('genParticles'),
+    doResJec = cms.untracked.bool( False),
+    useEventCounter = cms.bool( True ),
+    filters = cms.untracked.vstring(
                               'initialEvents',
                               'finalEvents'
                               ),
-  looseJetId = myJetId, 
-  #for jet cleaning overlapping with isolated epton within 0.4
-  relIso1 = cms.untracked.double(0.20),
-  relIso2 = cms.untracked.double(0.20),
-  bTagAlgo = cms.untracked.string("trackCountingHighEffBJetTags"),
-  minBTagValue = cms.untracked.double(1.7),
+    looseJetId = myJetId, 
+    #for jet cleaning overlapping with isolated epton within 0.4
+    relIso1 = cms.untracked.double(0.20),
+    relIso2 = cms.untracked.double(0.20),
+    bTagAlgo = cms.untracked.string("trackCountingHighEffBJetTags"),
+    minBTagValue = cms.untracked.double(1.7),
 )
 
 process.load("KoPFA.TopAnalyzer.ttbarNtupleProducer_cfi")
@@ -87,15 +87,15 @@ process.load("KoPFA.CommonTools.genParticleDecayFilter_cfi")
 
 
 process.p = cms.Path(
-                     process.loadHistosFromRunInfo*
-#                     process.hltHighLevel*
-                     process.topWLeptonGenFilter*
-                     process.electronTriggerFilterForMC*
-                     process.GenZmassFilter*
-                     process.Electrons*
-                     process.patElectronFilter*
-                     process.VertexFilter*
-                     process.ElEl*
-					 process.ee
-                    )
+    process.loadHistosFromRunInfo*
+#    process.hltHighLevel*
+    process.topWLeptonGenFilter*
+    process.electronTriggerFilterForMC*
+    process.GenZmassFilter*
+    process.Electrons*
+    process.patElectronFilter*
+    process.VertexFilter*
+    process.ElEl*
+    process.ee
+)
 

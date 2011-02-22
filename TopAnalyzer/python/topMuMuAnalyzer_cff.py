@@ -46,8 +46,8 @@ process.load("PFAnalyses.CommonTools.countingSequences_cfi")
 process.load("KoPFA.TopAnalyzer.topLeptonSelector_cfi")
 
 process.patMuonFilter = cms.EDFilter("CandViewCountFilter",
-  src = cms.InputTag('Muons'),
-  minNumber = cms.uint32(2)
+    src = cms.InputTag('Muons'),
+    minNumber = cms.uint32(2)
 )
 
 from PFAnalyses.CommonTools.Selectors.looseJetIdPSet_cff import looseJetIdPSet
@@ -56,24 +56,24 @@ myJetId.verbose = False
 #from PhysicsTools.SelectorUtils.pfJetIDSelector_cfi import pfJetIDSelector
 
 process.MuMu = cms.EDAnalyzer('TopMuMuAnalyzer',
-  muonLabel1 =  cms.InputTag('Muons'),
-  muonLabel2 =  cms.InputTag('Muons'),
-  metLabel =  cms.InputTag('patMETsPFlow'),
-  jetLabel =  cms.InputTag('selectedPatJetsPFlow'),
-  genParticlesLabel = cms.InputTag('genParticles'),
-  doResJec = cms.untracked.bool( True),
-  useEventCounter = cms.bool( True ),
-  filters = cms.untracked.vstring(
+    muonLabel1 =  cms.InputTag('Muons'),
+    muonLabel2 =  cms.InputTag('Muons'),
+    metLabel =  cms.InputTag('patMETsPFlow'),
+    jetLabel =  cms.InputTag('selectedPatJetsPFlow'),
+    genParticlesLabel = cms.InputTag('genParticles'),
+    doResJec = cms.untracked.bool( True),
+    useEventCounter = cms.bool( True ),
+    filters = cms.untracked.vstring(
                               'initialEvents',
                               'finalEvents'
                               ),
-  looseJetId = myJetId, 
-  #looseJetId = pfJetIDSelector, 
-  #for jet cleaning overlapping with isolated epton within 0.4
-  relIso1 = cms.untracked.double(0.21),
-  relIso2 = cms.untracked.double(0.21),
-  bTagAlgo = cms.untracked.string("trackCountingHighEffBJetTags"),
-  minBTagValue = cms.untracked.double(1.7),
+    looseJetId = myJetId, 
+    #looseJetId = pfJetIDSelector, 
+    #for jet cleaning overlapping with isolated epton within 0.4
+    relIso1 = cms.untracked.double(0.21),
+    relIso2 = cms.untracked.double(0.21),
+    bTagAlgo = cms.untracked.string("trackCountingHighEffBJetTags"),
+    minBTagValue = cms.untracked.double(1.7),
 )
 
 process.load("KoPFA.TopAnalyzer.ttbarNtupleProducer_cfi")
@@ -83,16 +83,16 @@ process.load("KoPFA.TopAnalyzer.triggerFilterByRun_cfi")
 process.load("KoPFA.CommonTools.genParticleDecayFilter_cfi")
 
 process.p = cms.Path(
-#                     process.printTree*
-                     	process.loadHistosFromRunInfo*
-#                     process.hltHighLevel*
-                     	process.muonTriggerFilterForMC*
-                        process.topWLeptonGenFilter*
-                     	process.GenZmassFilter*
-                     	process.Muons*
-                     	process.patMuonFilter*
-                     	process.VertexFilter*
-                     	process.MuMu*
-						process.mumu
-                    )
+#    process.printTree*
+    process.loadHistosFromRunInfo*
+#    process.hltHighLevel*
+    process.muonTriggerFilterForMC*
+    process.topWLeptonGenFilter*
+    process.GenZmassFilter*
+    process.Muons*
+    process.patMuonFilter*
+    process.VertexFilter*
+    process.MuMu*
+    process.mumu
+)
 
