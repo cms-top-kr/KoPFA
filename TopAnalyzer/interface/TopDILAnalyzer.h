@@ -13,7 +13,7 @@
 //
 // Original Author:  Tae Jeong Kim,40 R-A32,+41227678602,
 //         Created:  Fri Jun  4 17:19:29 CEST 2010
-// $Id: TopDILAnalyzer.h,v 1.29 2011/02/21 16:43:46 bhlee Exp $
+// $Id: TopDILAnalyzer.h,v 1.30 2011/02/21 16:45:21 bhlee Exp $
 //
 //
 
@@ -54,6 +54,7 @@
 
 #include "CondFormats/JetMETObjects/interface/JetCorrectorParameters.h"
 #include "CondFormats/JetMETObjects/interface/FactorizedJetCorrector.h"
+#include "CondFormats/JetMETObjects/interface/JetCorrectionUncertainty.h"
 #include "KoPFA/TopAnalyzer/interface/MaosTTbar.h"
 #include "TFile.h"
 #include "TTree.h"
@@ -88,7 +89,10 @@ class TopDILAnalyzer : public edm::EDAnalyzer {
 
     // Residual Jet energy correction for 38X
     doResJec_ = iConfig.getUntrackedParameter<bool>("doResJec", false);
+    doJecUnc_ = iConfig.getUntrackedParameter<bool>("doJecUnc", false);
+    up_ = iConfig.getUntrackedParameter<bool>("up", true); // uncertainty up
     resJetCorrector_ = 0;
+    jecUnc_ = 0;
 
     edm::Service<TFileService> fs;
     tree = fs->make<TTree>("tree", "Tree for Top quark study");
@@ -143,6 +147,7 @@ class TopDILAnalyzer : public edm::EDAnalyzer {
   ~TopDILAnalyzer()
   {
     if ( resJetCorrector_ ) delete resJetCorrector_;
+    if ( jecUnc_ ) delete jecUnc_;
   }
 
  private:
@@ -220,6 +225,12 @@ class TopDILAnalyzer : public edm::EDAnalyzer {
       resJetCorrector_ = new FactorizedJetCorrector(jecParams);
     }
 
+    if ( doJecUnc_){
+        edm::FileInPath jecUncFile("CondFormats/JetMETObjects/data/Spring10_Uncertainty_AK5PF.txt");
+        jecUnc_ = new JetCorrectionUncertainty(jecUncFile.fullPath());
+    }
+ 
+
  } 
 
   virtual void analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
@@ -238,9 +249,9 @@ class TopDILAnalyzer : public edm::EDAnalyzer {
     iEvent.getByLabel(metLabel_,MET_);
 
     pat::METCollection::const_iterator mi = MET_->begin();
-    MET = mi->pt();
-    met->push_back(mi->p4());
-    h_MET->Fill(MET);
+    //MET = mi->pt();
+    //met->push_back(mi->p4());
+    //h_MET->Fill(MET);
 
     edm::Handle<pat::JetCollection> Jets;
     iEvent.getByLabel(jetLabel_, Jets);
@@ -339,6 +350,9 @@ class TopDILAnalyzer : public edm::EDAnalyzer {
         ecalIso2->push_back(it2.ecalIso());
         hcalIso2->push_back(it2.hcalIso());
 
+        double met_x = mi->px();
+        double met_y = mi->py();
+        
         //Jet selection by checking overlap with selected leptons
         for (JI jit = Jets->begin(); jit != Jets->end(); ++jit) {
 
@@ -363,8 +377,31 @@ class TopDILAnalyzer : public edm::EDAnalyzer {
               resJetCorrector_->setJetPt(jit->pt());
               const double scaleF = resJetCorrector_->getCorrection();
               corrjet *= scaleF;
+
+              jecUnc_->setJetEta(jit->eta());
+              jecUnc_->setJetPt(scaleF*jit->pt());
             }
-            
+          
+            if(doJecUnc_){
+                met_x += corrjet.px();
+                met_y += corrjet.py();
+                double unc = jecUnc_->getUncertainty(up_);
+                double c_sw = 0.015; //for release differences and calibration changes
+                double c_pu = 0.2*0.8*2.2/(corrjet.pt()); // PU uncertainty
+                double c_bjets = 0; // bjet uncertainty
+                if(corrjet.pt() > 50 && corrjet.pt() < 200 && fabs(corrjet.eta()) < 2.0) {
+                  c_bjets = 0.02;
+                }else c_bjets = 0.03;
+                double cor = sqrt(c_sw*c_sw + c_pu*c_pu+c_bjets*c_bjets);
+                unc = sqrt(unc*unc + cor*cor);
+                double ptscaleunc = 0; 
+                if(up_) ptscaleunc = 1 + unc;
+                else ptscaleunc = 1 - unc;
+                corrjet *= ptscaleunc;
+                met_x -= corrjet.px();
+                met_y -= corrjet.py();
+            }
+ 
             jets->push_back(corrjet);
             if(corrjet.pt() > 30){
               jetspt30->push_back(corrjet);
@@ -382,6 +419,11 @@ class TopDILAnalyzer : public edm::EDAnalyzer {
         h_jetpt30_multi->Fill(jetspt30->size());
         h_bjet_multi->Fill(bjets->size());
 
+        ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > corrmet;
+        corrmet.SetPxPyPzE(met_x,met_y,0,sqrt(met_x*met_x + met_y*met_y));
+        MET = sqrt(met_x*met_x + met_y*met_y);
+        met->push_back(corrmet);
+        h_MET->Fill(MET);
 
         if(jetspt30->size() >= 2){
           toptotal->push_back(it1.p4() + it2.p4() + jetspt30->at(0) + jetspt30->at(1) + met->at(0));
@@ -759,6 +801,9 @@ class TopDILAnalyzer : public edm::EDAnalyzer {
 
   // Residual Jet energy correction for 38X
   bool doResJec_;
+  bool doJecUnc_;
+  bool up_;
   FactorizedJetCorrector* resJetCorrector_;
+  JetCorrectionUncertainty *jecUnc_;
 };
 
