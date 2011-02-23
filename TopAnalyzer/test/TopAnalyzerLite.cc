@@ -35,6 +35,7 @@ public:
   void addMonitorPlot(const string name, const string varexp, const string title,
                       const int nBins, const double xmin, const double xmax,
                       const double ymin = 0, const double ymax = 0, const bool doLogy = true);
+  void setScanVariables(const string scanVariables);
 
   void applyCutSteps();
   void applySingleCut(const TCut cut, const TString monitirPlotNamesStr);
@@ -92,6 +93,7 @@ private:
   TObjArray histograms_;
   ofstream fout_;
   bool writeSummary_;
+  string scanVariables_;
 
   TDirectory* baseRootDir_;
 };
@@ -112,6 +114,8 @@ TopAnalyzerLite::TopAnalyzerLite(const string subDirName, const string imageOutD
     writeSummary_ = true;
   }
   else writeSummary_ = false;
+
+  scanVariables_ = "RUN:LUMI:EVENT:Z.mass():@jetspt30.size():MET";
 }
 
 TopAnalyzerLite::~TopAnalyzerLite()
@@ -234,7 +238,7 @@ void TopAnalyzerLite::applyCutSteps()
   }
   if ( realDataChain_ )
   {
-    realDataChain_->Scan("RUN:LUMI:EVENT:Z.mass():@jetspt30.size():MET",finalCut);
+    realDataChain_->Scan(scanVariables_.c_str() ,finalCut);
     cout << "Number of entries after final selection = " << realDataChain_->GetEntries(finalCut) << endl;
   }
 
@@ -537,3 +541,7 @@ void TopAnalyzerLite::saveHistograms(TString fileName)
   f->Close();
 }
 
+void TopAnalyzerLite::setScanVariables(const string scanVariables)
+{
+  scanVariables_ = scanVariables;
+}
