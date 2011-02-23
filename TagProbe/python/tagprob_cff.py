@@ -17,9 +17,11 @@ process.TFileService = cms.Service("TFileService",
 #    )
 #)
 
-process.load("PFAnalyses.TTbarDIL.Sources.MU.MC.Spring10.patTuple_Zmumu_cff")
+process.load("PFAnalyses.TTbarDIL.Sources.MU.MC.Fall10.patTuple_Zmumu_cff")
 
 process.options   = cms.untracked.PSet( wantSummary = cms.untracked.bool(True))
+
+#process.PUweight = cms.EDProducer("EventWeightProducer")
 
 process.load("KoPFA.TagProbe.tnpLeptonSelector_cfi")
 
@@ -199,6 +201,7 @@ process.tnpTreeIso = cms.EDAnalyzer("TagProbeFitTreeProducer",
     ),
     ## DATA-related info
     addRunLumiInfo = cms.bool(True),
+    addEventVariablesInfo = cms.bool(True),
     ## MC-related info
     isMC = cms.bool(False),
     motherPdgId = cms.vint32(22,23),
@@ -207,6 +210,7 @@ process.tnpTreeIso = cms.EDAnalyzer("TagProbeFitTreeProducer",
     tagMatches = cms.InputTag("muMcMatchTag"),
     probeMatches  = cms.InputTag("muMcMatchIDMuonProbe"),
     allProbes     = cms.InputTag("IDMuons"),
+    #eventWeight = cms.InputTag("PUweight")
 )
 
 MC = False 
@@ -231,6 +235,7 @@ if MC== True:
                      *process.muMcMatchTag
                      *process.muMcMatchTrackProbe
                      *process.muMcMatchIDMuonProbe
+                    # *process.PUweight
                      *process.tagProbes
                      *process.tnpTree
                      *process.tagProbesIso
@@ -255,6 +260,7 @@ else:
 #                     *process.muMcMatchTag
 #                     *process.muMcMatchTrackProbe
 #                     *process.muMcMatchIDMuonProbe
+                     #*process.PUweight
                      *process.tagProbes
                      *process.tnpTree
                      *process.tagProbesIso
