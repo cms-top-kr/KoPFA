@@ -17,7 +17,7 @@ muonIso = muonIsoSelectorPSet.clone()
 
 taggedMuons = cms.EDProducer(
     "KoMuonSelector",
-    cut = cms.vstring("TOPDIL"),
+    cut = cms.vstring("pt","eta","dxy"),
     isocut = cms.vstring(),
     muonLabel  = cms.InputTag("selectedPatMuonsPFlow"),
     beamSpotLabel = cms.InputTag("offlineBeamSpot"),
