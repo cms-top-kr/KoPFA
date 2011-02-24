@@ -138,11 +138,11 @@ void TTbarEvent::setLepton(const reco::Candidate* l1, const reco::Candidate* l2)
   }
   else if ( mu1 ) 
   {
-    l2Sign_ = mu1->charge();
+    l1Sign_ = mu1->charge();
 
-    tkIso2_ = mu1->trackIso();
-    ecIso2_ = mu1->ecalIso();
-    hcIso2_ = mu1->hcalIso();
+    tkIso1_ = mu1->trackIso();
+    ecIso1_ = mu1->ecalIso();
+    hcIso1_ = mu1->hcalIso();
 
     l1_ = mu1->pfCandidateRef()->p4();
 
