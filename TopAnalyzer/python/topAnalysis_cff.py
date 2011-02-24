@@ -135,7 +135,7 @@ topMuMuAnalysisMCSequence = cms.Sequence(
     Muons*
     patMuonFilter*
     MuMu*
-    mumu
+    mm
 )
 
 topMuMuAnalysisRealDataSequence = cms.Sequence(
@@ -146,7 +146,7 @@ topMuMuAnalysisRealDataSequence = cms.Sequence(
     Muons*
     patMuonFilter*
     MuMu*
-    mumu
+    mm
 )
 
 topElMuAnalysisMCSequence = cms.Sequence(
@@ -156,7 +156,7 @@ topElMuAnalysisMCSequence = cms.Sequence(
     Muons * Electrons *
     patMuonFilterForElMu * patElectronFilterForElMu *
     ElMu*
-    emu
+    em
 )
 
 topElMuAnalysisRealDataSequence = cms.Sequence(
@@ -167,6 +167,6 @@ topElMuAnalysisRealDataSequence = cms.Sequence(
     Muons * Electrons *
     patMuonFilterForElMu * patElectronFilterForElMu *
     ElMu*
-    emu
+    em
 )
 

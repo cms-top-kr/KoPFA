@@ -81,6 +81,7 @@ process.MuMu = cms.EDAnalyzer('TopMuMuAnalyzer',
 process.load("KoPFA.TopAnalyzer.triggerFilterByRun_cfi")
 process.load("KoPFA.CommonTools.genParticleDecayFilter_cfi")
 process.load("KoPFA.TopAnalyzer.ttbarNtupleProducer_cfi")
+process.load("KoPFA.TopAnalyzer.ttbarGenLevelAnalyzer_cfi")
 
 process.p = cms.Path(
 #                     process.printTree*
