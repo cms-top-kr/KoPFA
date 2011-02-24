@@ -4,7 +4,7 @@ from PFAnalyses.CommonTools.Selectors.looseJetIdPSet_cff import looseJetIdPSet
 jetIdForTTbar = looseJetIdPSet.clone()
 jetIdForTTbar.verbose = False
 
-mumu = cms.EDAnalyzer("TTbarMuMuEventNtupleProducer",
+mm = cms.EDAnalyzer("TTbarMuMuEventNtupleProducer",
     genParticle = cms.InputTag("genParticles"),
 
     lepton1 = cms.InputTag("Muons"),
@@ -34,7 +34,7 @@ ee = cms.EDAnalyzer("TTbarElElEventNtupleProducer",
     minJetIso2 = cms.double(0.26),
 )
 
-emu = cms.EDAnalyzer("TTbarElMuEventNtupleProducer",
+em = cms.EDAnalyzer("TTbarElMuEventNtupleProducer",
     genParticle = cms.InputTag("genParticles"),
 
     lepton1 = cms.InputTag("Electrons"),

@@ -76,23 +76,23 @@ process.MuMu = cms.EDAnalyzer('TopMuMuAnalyzer',
     minBTagValue = cms.untracked.double(1.7),
 )
 
-process.load("KoPFA.TopAnalyzer.ttbarNtupleProducer_cfi")
 #process.load("HLTrigger.HLTfilters.hltHighLevel_cfi")
 #process.hltHighLevel.HLTPaths = cms.vstring('HLT_Mu9')
 process.load("KoPFA.TopAnalyzer.triggerFilterByRun_cfi")
 process.load("KoPFA.CommonTools.genParticleDecayFilter_cfi")
+process.load("KoPFA.TopAnalyzer.ttbarNtupleProducer_cfi")
 
 process.p = cms.Path(
-#    process.printTree*
-    process.loadHistosFromRunInfo*
-#    process.hltHighLevel*
-    process.muonTriggerFilterForMC*
-    process.topWLeptonGenFilter*
-    process.GenZmassFilter*
-    process.Muons*
-    process.patMuonFilter*
-    process.VertexFilter*
-    process.MuMu*
-    process.mumu
-)
+#                     process.printTree*
+                     	process.loadHistosFromRunInfo*
+#                     process.hltHighLevel*
+                     	process.muonTriggerFilterForMC*
+                        process.topWLeptonGenFilter*
+                     	process.GenZmassFilter*
+                     	process.Muons*
+                     	process.patMuonFilter*
+                     	process.VertexFilter*
+                     	process.MuMu*
+						process.mm
+                    )
 

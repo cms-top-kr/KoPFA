@@ -84,13 +84,12 @@ process.removeDuplicate = cms.EDFilter("RemoveDuplicate",
     applyFilter = cms.untracked.bool( True )
 )
 
-process.load("KoPFA.TopAnalyzer.ttbarNtupleProducer_cfi")
 process.load("HLTrigger.HLTfilters.hltHighLevel_cfi")
 process.hltHighLevel.HLTPaths = cms.vstring('HLT_Mu9','HLT_Ele10_LW_L1R')
 process.hltHighLevel.throw = cms.bool(False)
 process.load("KoPFA.TopAnalyzer.triggerFilterByRun_cfi")
-
 process.load("KoPFA.CommonTools.genParticleDecayFilter_cfi")
+process.load("KoPFA.TopAnalyzer.ttbarNtupleProducer_cfi")
 
 process.p = cms.Path(
 #    process.printTree*
@@ -106,6 +105,6 @@ process.p = cms.Path(
     process.patMuonFilter*
     process.VertexFilter*
     process.MuEl*
-    process.emu
+    process.em
 )
 
