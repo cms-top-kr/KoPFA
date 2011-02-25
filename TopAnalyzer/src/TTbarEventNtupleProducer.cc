@@ -19,6 +19,7 @@
 #include "PFAnalyses/CommonTools/interface/PatJetIdSelector.h"
 #include "CondFormats/JetMETObjects/interface/JetCorrectorParameters.h"
 #include "CondFormats/JetMETObjects/interface/FactorizedJetCorrector.h"
+#include "CondFormats/JetMETObjects/interface/JetCorrectionUncertainty.h"
 
 #include "KoPFA/DataFormats/interface/TTbarEvent.h"
 #include "KoPFA/DataFormats/interface/TTbarGenEvent.h"
@@ -49,7 +50,6 @@ private:
   edm::InputTag jetLabel_;
 
   PatJetIdSelector looseJetIdSelector_;
-  bool doResJec_;
   double minJetIso1_, minJetIso2_;
 
   bool isLeptonsFromSameCollection_;
@@ -59,6 +59,8 @@ private:
   TTree* tree_;
 
   FactorizedJetCorrector* resJetCorrector_;
+  JetCorrectionUncertainty* jecUncert_;
+
 };
 
 template <typename Lepton1, typename Lepton2>
@@ -72,8 +74,8 @@ TTbarEventNtupleProducer<Lepton1, Lepton2>::TTbarEventNtupleProducer(const edm::
   jetLabel_ = pset.getParameter<edm::InputTag>("jet");
 
   looseJetIdSelector_.initialize(pset.getParameter<edm::ParameterSet> ("jetId"));
-  doResJec_ = pset.getUntrackedParameter<bool>("doResJec", false);
   resJetCorrector_ = 0;
+  jecUncert_ = 0;
   minJetIso1_ = pset.getParameter<double>("minJetIso1");
   minJetIso2_ = pset.getParameter<double>("minJetIso2");
 
@@ -90,6 +92,7 @@ template <typename Lepton1, typename Lepton2>
 TTbarEventNtupleProducer<Lepton1, Lepton2>::~TTbarEventNtupleProducer()
 {
   if ( resJetCorrector_ ) delete resJetCorrector_;
+  if ( jecUncert_ ) delete jecUncert_;
 }
 
 template <typename Lepton1, typename Lepton2>
@@ -102,17 +105,17 @@ void TTbarEventNtupleProducer<Lepton1, Lepton2>::beginJob()
   tree_->Branch("ttbarGen", "Ko::TTbarGenEvent", &ttbarGenEvent_);
 
   // Jet energy correction for 38X
-  if ( doResJec_ )
-  {
-    edm::FileInPath jecFile("CondFormats/JetMETObjects/data/Spring10DataV2_L2L3Residual_AK5PF.txt");
-    std::vector<JetCorrectorParameters> jecParams;
-    jecParams.push_back(JetCorrectorParameters(jecFile.fullPath()));
-    resJetCorrector_ = new FactorizedJetCorrector(jecParams);
-  }
+  edm::FileInPath jecFile("CondFormats/JetMETObjects/data/Spring10DataV2_L2L3Residual_AK5PF.txt");
+  std::vector<JetCorrectorParameters> jecParams;
+  jecParams.push_back(JetCorrectorParameters(jecFile.fullPath()));
+  resJetCorrector_ = new FactorizedJetCorrector(jecParams);
+
+  edm::FileInPath jecUncFile("CondFormats/JetMETObjects/data/Spring10_Uncertainty_AK5PF.txt");
+  jecUncert_ = new JetCorrectionUncertainty(jecUncFile.fullPath());
 
 }
 
-template <typename Lepton1, typename Lepton2>
+  template <typename Lepton1, typename Lepton2>
 void TTbarEventNtupleProducer<Lepton1, Lepton2>::analyze(const edm::Event& event, const edm::EventSetup& eventSetup)
 {
   // Start from the generator level info
@@ -125,48 +128,68 @@ void TTbarEventNtupleProducer<Lepton1, Lepton2>::analyze(const edm::Event& event
   }
 
   // Find pair of leading leptons
-  const Lepton1* leadingLepton1 = 0;
-  const Lepton2* leadingLepton2 = 0;
-
   edm::Handle<edm::View<Lepton1> > lepton1Handle;
   edm::Handle<edm::View<Lepton2> > lepton2Handle;
   event.getByLabel(lepton1Label_, lepton1Handle);
   event.getByLabel(lepton2Label_, lepton2Handle);
-  for ( typename edm::View<Lepton1>::const_iterator lepton1 = lepton1Handle->begin();
-        lepton1 != lepton1Handle->end(); ++lepton1 )
+
+  double leadingLepton1Pt = 0;
+  int leadingLepton1Index = -1;
+  const int lepton1Size(lepton1Handle->size());
+  for ( int i = 0; i < lepton1Size; ++i )
   {
-    if ( leadingLepton1 == 0 or
-         lepton1->pfCandidateRef()->pt() > leadingLepton1->pfCandidateRef()->pt() )
+    const Lepton1& lepton1 = lepton1Handle->at(i);
+    const double lepton1Pt = lepton1.pfCandidateRef()->pt();
+
+    if ( lepton1Pt > leadingLepton1Pt )
     {
-      leadingLepton1 = &*lepton1;
+      leadingLepton1Index = i;
+      leadingLepton1Pt = lepton1Pt;
     }
   }
 
-  if ( !leadingLepton1 ) return;
+  if ( leadingLepton1Index < 0 ) return;
 
-  for ( typename edm::View<Lepton2>::const_iterator lepton2 = lepton2Handle->begin();
-        lepton2 != lepton2Handle->end(); ++lepton2 )
+  double leadingLepton2Pt = 0;
+  int leadingLepton2Index = -1;
+  const int lepton2Size(lepton2Handle->size());
+  for ( int i = 0; i < lepton2Size; ++i )
   {
-    if ( leadingLepton2 == 0 or
-         lepton2->pfCandidateRef()->pt() > leadingLepton2->pfCandidateRef()->pt() )
-    {
-      if ( isLeptonsFromSameCollection_ and
-           leadingLepton1->pt() == lepton2->pt() and
-           leadingLepton1->eta() == lepton2->eta() and
-           leadingLepton1->phi() == lepton2->phi() ) continue;
+    // Check duplication if leptons are from the same collection
+    if ( isLeptonsFromSameCollection_ and leadingLepton1Index == i ) continue;
 
-      leadingLepton2 = &*lepton2;
+    const Lepton2& lepton2 = lepton2Handle->at(i);
+    const double lepton2Pt = lepton2.pfCandidateRef()->pt();
+
+    if ( lepton2Pt > leadingLepton2Pt )
+    {
+      leadingLepton2Index = i;
+      leadingLepton2Pt = lepton2Pt;
     }
   }
 
   // Skip event if # of leptons < 2
-  if ( !leadingLepton1 or !leadingLepton2 ) return;
+  if ( leadingLepton2Index < 0 ) return;
+
+  const Lepton1& leadingLepton1 = lepton1Handle->at(leadingLepton1Index);
+  const Lepton2& leadingLepton2 = lepton2Handle->at(leadingLepton2Index);
 
   ttbarEvent_->clear();
   ttbarEvent_->setEvent(event.id());
-  ttbarEvent_->setLepton(leadingLepton1, leadingLepton2);
+  ttbarEvent_->setLepton(&leadingLepton1, &leadingLepton2);
   const double relIso1 = ttbarEvent_->relPFIso1();
   const double relIso2 = ttbarEvent_->relPFIso2();
+
+  // Read MET
+  edm::Handle<pat::METCollection> metHandle;
+  event.getByLabel(metLabel_, metHandle);
+  const pat::MET& met = *(metHandle->begin());
+
+  double metX = met.px(), metY = met.py();
+  double metXUpper = metX, metXLower = metX;
+  double metYUpper = metY, metYLower = metY;
+
+  ttbarEvent_->setMET(metX, metY);
 
   // Read jets
   edm::Handle<pat::JetCollection> jetHandle;
@@ -175,14 +198,47 @@ void TTbarEventNtupleProducer<Lepton1, Lepton2>::analyze(const edm::Event& event
   for ( pat::JetCollection::const_iterator jet = jetHandle->begin();
       jet != jetHandle->end(); ++jet )
   {
+    // Jet and MET correction
+    const double jetEta = jet->eta();
+    const double jetPt = jet->pt();
+
+    resJetCorrector_->setJetEta(jetEta);
+    resJetCorrector_->setJetPt(jetPt);
+    const double scaleFactor = resJetCorrector_->getCorrection();
+    const reco::Candidate::LorentzVector corrJetLVec = jet->p4()*scaleFactor;
+    const double corrJetPt = corrJetLVec.pt();
+
+    jecUncert_->setJetEta(jetEta);
+    jecUncert_->setJetPt(corrJetPt);
+
+    metX += jet->px()*scaleFactor;
+    metY += jet->py()*scaleFactor;
+
+    // Calculate jec error sources
+    double jecErr2 = 0;
+    const double jecErrSelf = jecUncert_->getUncertainty(true);
+    jecErr2 += jecErrSelf* jecErrSelf;
+    jecErr2 += 0.015*0.015; // Release differences and calibration changes
+    jecErr2 += (0.2*0.8*2.2)*(0.2*0.8*2.2)/corrJetPt/corrJetPt; // Pileup
+    // BJet uncertainty
+    if ( corrJetPt > 50 && corrJetPt < 200 && fabs(jetEta < 2.0) ) jecErr2 += 0.02*0.02;
+    else jecErr2 += 0.03*0.03;
+    const double jecErr = sqrt(jecErr2);
+
+    const double metCorrFactor = scaleFactor*jecErr;
+    metXUpper -= jet->px()*metCorrFactor;
+    metXLower += jet->px()*metCorrFactor;
+    metYUpper -= jet->py()*metCorrFactor;
+    metYLower += jet->py()*metCorrFactor;
+
+    // Cut on jet quality
     if ( fabs(jet->eta()) >= 2.5 ) continue;
-    if ( jet->et() < 5 ) continue;
 
     pat::strbitset looseJetIdSel = looseJetIdSelector_.getBitTemplate();
     if ( !looseJetIdSelector_(*jet, looseJetIdSel) ) continue;
 
-    const double dR1 = deltaR(*jet, *leadingLepton1);
-    const double dR2 = deltaR(*jet, *leadingLepton2);
+    const double dR1 = deltaR(*jet, leadingLepton1);
+    const double dR2 = deltaR(*jet, leadingLepton2);
 
     // jet cleaning
     bool isOverlap = false;
@@ -190,21 +246,11 @@ void TTbarEventNtupleProducer<Lepton1, Lepton2>::analyze(const edm::Event& event
     if ( relIso2 < minJetIso2_ and dR2 < 0.4 ) isOverlap = true;
     if ( isOverlap ) continue;
 
-    // Jet correction
-    double scaleFactor = 1.0;
-    if ( doResJec_ )
-    {
-      resJetCorrector_->setJetEta(jet->eta());
-      resJetCorrector_->setJetPt(jet->pt());
-      scaleFactor = resJetCorrector_->getCorrection();
-    }
-
-    ttbarEvent_->addJet(&*jet, scaleFactor);
+    ttbarEvent_->addJet(&*jet);
+    ttbarEvent_->addCorrJet(corrJetLVec, jecErr);
   }
 
-  edm::Handle<pat::METCollection> metHandle;
-  event.getByLabel(metLabel_, metHandle);
-  ttbarEvent_->setMET(&*metHandle->begin());
+  ttbarEvent_->setCorrMET(metX, metXLower, metXUpper, metY, metYLower, metYUpper);
 
   ttbarEvent_->update();
 
