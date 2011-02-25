@@ -51,14 +51,14 @@ ElEl = cms.EDAnalyzer('TopElElAnalyzer',
     muonLabel2 =  cms.InputTag('Electrons'),
     metLabel =  cms.InputTag('patMETsPFlow'),
     jetLabel =  cms.InputTag('selectedPatJetsPFlow'),
-    useEventCounter = cms.bool( True ),
+    useEventCounter = cms.bool( False ),
     filters = cms.untracked.vstring(
         'initialEvents',
         'finalEvents'
     ),
     looseJetId = myJetId,
-    relIso1 = cms.untracked.double(0.20),
-    relIso2 = cms.untracked.double(0.20),
+    relIso1 = cms.untracked.double(0.26),
+    relIso2 = cms.untracked.double(0.26),
     bTagAlgo = cms.untracked.string("trackCountingHighEffBJetTags"),
     minBTagValue = cms.untracked.double(1.7),
 )
@@ -69,7 +69,7 @@ MuMu = cms.EDAnalyzer('TopMuMuAnalyzer',
     muonLabel2 =  cms.InputTag('Muons'),
     metLabel =  cms.InputTag('patMETsPFlow'),
     jetLabel =  cms.InputTag('selectedPatJetsPFlow'),
-    useEventCounter = cms.bool( True ),
+    useEventCounter = cms.bool( False ),
     filters = cms.untracked.vstring(
         'initialEvents',
         'finalEvents'
@@ -88,7 +88,7 @@ ElMu = cms.EDAnalyzer('TopElMuAnalyzer',
     muonLabel2 =  cms.InputTag('Muons'),
     metLabel =  cms.InputTag('patMETsPFlow'),
     jetLabel =  cms.InputTag('selectedPatJetsPFlow'),
-    useEventCounter = cms.bool( True ),
+    useEventCounter = cms.bool( False ),
     filters = cms.untracked.vstring(
         'initialEvents',
         'finalEvents'
