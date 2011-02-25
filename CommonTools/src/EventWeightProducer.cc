@@ -45,7 +45,7 @@ void EventWeightProducer::produce(edm::Event& iEvent, const edm::EventSetup& es)
   double PUweight[] = {1.56,1.05,0.83,0.758,0.74,0.8};
 
   double w = 1.0;
-  if(mNPV <= 6) w = PUweight[mNPV];
+  if(mNPV <= 6) w = PUweight[mNPV-1];
 
   std::auto_ptr<double> weight( new double(w) );
 
