@@ -22,9 +22,12 @@ void TTbarEvent::clear()
   tkIso2_ = ecIso2_ = hcIso2_ = relDetIso2_ = -999;
 
   jets_.clear();
+  unCorrJets_.clear();
   bTag_.clear();
   
   met_ = metX_ = metY_ = 0;
+  unCorrMet_ = unCorrMetX_ = unCorrMetY_ = 0;
+  metXUpper_ = metXLower_ = metYUpper_ = metYLower_ = 0;
 
   zM_ = mass_ = -999;
   massWithMAOS_ = -999;
@@ -32,7 +35,7 @@ void TTbarEvent::clear()
   massUser2_ = -999;
 }
 
-void TTbarEvent::addJet(const pat::Jet* jet, const double scaleFactor = 1.0)
+void TTbarEvent::addJet(const pat::Jet* jet)
 {
   const int nAlgo = algoNames_.size();
   std::vector<double> bTagVars(nAlgo);
@@ -41,15 +44,34 @@ void TTbarEvent::addJet(const pat::Jet* jet, const double scaleFactor = 1.0)
     bTagVars[i] = jet->bDiscriminator(algoNames_[i]);
   }
 
-  jets_.push_back(jet->p4()*scaleFactor);
+  unCorrJets_.push_back(jet->p4());
   bTag_.push_back(bTagVars);
 }
 
-void TTbarEvent::setMET(const pat::MET* met)
+void TTbarEvent::addCorrJet(const reco::Candidate::LorentzVector corrJetLVec, const double jecErr)
 {
-  met_ = met->pt();
-  metX_ = met->px();
-  metY_ = met->py();
+  jets_.push_back(corrJetLVec);
+  jecErrs_.push_back(jecErr);
+}
+
+void TTbarEvent::setMET(const double metX, const double metY)
+{
+  unCorrMetX_ = metX;
+  unCorrMetY_ = metY;
+  unCorrMet_ = hypot(metX, metY);
+}
+
+void TTbarEvent::setCorrMET(const double metX, const double metXLower, const double metXUpper,
+                            const double metY, const double metYLower, const double metYUpper)
+{
+  metX_ = metX;
+  metY_ = metY;
+  metXLower_ = metXLower;
+  metXUpper_ = metXUpper;
+  metYLower_ = metYLower;
+  metYUpper_ = metYUpper;
+
+  met_ = hypot(metX, metY);
 }
 
 void TTbarEvent::setEvent(const edm::EventID& eventId)
@@ -78,9 +100,9 @@ void TTbarEvent::update()
   }
 }
 
-int TTbarEvent::numberOfJets(const double minEt) const
+int TTbarEvent::nJets(const double minEt) const
 {
-  const int nJet = numberOfJets();
+  const int nJet = nJets();
   int nGoodJet = 0;
   for ( int i=0; i<nJet; ++i )
   {
@@ -91,9 +113,9 @@ int TTbarEvent::numberOfJets(const double minEt) const
   return nGoodJet;
 }
 
-int TTbarEvent::numberOfJets(const double minEt, const double minBTag, const int unsigned algoNum) const
+int TTbarEvent::nJets(const double minEt, const double minBTag, const int unsigned algoNum) const
 {
-  const int nJet = numberOfJets();
+  const int nJet = nJets();
   int nGoodJet = 0;
   for ( int i=0; i<nJet; ++i )
   {
