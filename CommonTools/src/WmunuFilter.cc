@@ -13,7 +13,7 @@
 //
 // Original Author:  Tae Jeong Kim
 //         Created:  Mon Dec 14 01:29:35 CET 2009
-// $Id: WmunuFilter.cc,v 1.3 2010/10/23 09:37:17 tjkim Exp $
+// $Id: WmunuFilter.cc,v 1.4 2011/02/11 11:40:19 taeyeon Exp $
 //
 //
 
@@ -85,7 +85,7 @@ WmunuFilter::WmunuFilter(const edm::ParameterSet& ps)
    //now do what ever initialization is needed
    muonLabel_ = ps.getParameter<edm::InputTag>("muonLabel");
    metLabel_ = ps.getParameter<edm::InputTag>("metLabel");
-   metMin_ = ps.getUntrackedParameter<double>("metMin");
+   metMin_ = ps.getUntrackedParameter<double>("metMin",-999);
    pfCandidateLabel_= ps.getParameter<edm::InputTag>("pfCandidateLabel");
    minMt_ =   ps.getParameter<double>("minMt"); 
    mindphi_ = ps.getParameter<double>("mindphi");
