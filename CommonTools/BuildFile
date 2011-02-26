@@ -6,6 +6,7 @@
 <use name=FWCore/ServiceRegistry>
 <use name=PFAnalyses/CommonTools>
 <use name="DQMServices/Core">
+<use name=CondFormats/JetMETObjects>
 
 <flags EDM_PLUGIN=1>
 <export>
