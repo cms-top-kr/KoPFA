@@ -65,10 +65,12 @@ private:
 
   // Jets
   std::vector<reco::Candidate::LorentzVector> jets_, unCorrJets_;
-  std::vector<reco::Candidate::LorentzVector> corrJets_;
   std::vector<double> jecErrs_;
   std::vector<std::vector<double> > bTag_;
   std::vector<std::string> algoNames_;
+
+  // Cached variables
+  double nGoodJetsEt_, nGoodJetsEtBtag_;
   
   // MET
   double met_, metX_, metY_;
@@ -83,6 +85,7 @@ private:
   double massWithMAOS_, massUser1_, massUser2_;
 
 };
+
 
 }
 
