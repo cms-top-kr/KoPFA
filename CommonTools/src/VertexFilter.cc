@@ -13,7 +13,7 @@
 //
 // Original Author:  Tae Jeong Kim
 //         Created:  Mon Dec 14 01:29:35 CET 2009
-// $Id: VertexFilter.cc,v 1.1 2010/06/22 14:44:25 tjkim Exp $
+// $Id: VertexFilter.cc,v 1.1 2010/07/22 20:10:20 tjkim Exp $
 //
 //
 
@@ -152,9 +152,13 @@ VertexFilter::filter(edm::Event& iEvent, const edm::EventSetup& iSetup)
   edm::Handle<reco::VertexCollection> recVtxs_;
   iEvent.getByLabel(vertexLabel_,recVtxs_);
 
-  multiplicity = (int) recVtxs_->size();
+  multiplicity = 0 ;
 
   for(reco::VertexCollection::const_iterator v=recVtxs_->begin();  v!=recVtxs_->end(); ++v){
+    if (!(v->isFake()) && (v->ndof()>4) && (fabs(v->z())<=24.0) && (v->position().Rho()<=2.0) ) {
+            multiplicity++;
+    }
+
     ntrk->push_back(v->tracksSize());
     chi2->push_back(v->chi2());
     ndof->push_back(v->ndof());
