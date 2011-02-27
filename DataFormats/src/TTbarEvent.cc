@@ -2,11 +2,15 @@
 
 using namespace Ko;
 
+const double cacheJetMinEt = 30;
+const double cacheJetMinBtag = 1.70;
+
 TTbarEvent::TTbarEvent()
 {
   algoNames_.push_back("trackCountingHighEffBJetTags");
   algoNames_.push_back("simpleSecondaryVertexBJetTags");
   algoNames_.push_back("combinedSecondaryVertexBJetTags");
+
 }
 
 void TTbarEvent::clear()
@@ -23,7 +27,10 @@ void TTbarEvent::clear()
 
   jets_.clear();
   unCorrJets_.clear();
+  jecErrs_.clear();
   bTag_.clear();
+
+  nGoodJetsEt_ = nGoodJetsEtBtag_ = 0;
   
   met_ = metX_ = metY_ = 0;
   unCorrMet_ = unCorrMetX_ = unCorrMetY_ = 0;
@@ -83,20 +90,54 @@ void TTbarEvent::setEvent(const edm::EventID& eventId)
 
 void TTbarEvent::update()
 {
+  // Calculate number of jets with Et, btag cuts
+  const unsigned int nJet = jets_.size();
+  for ( unsigned int i = 0; i < nJet; ++i )
+  {
+    const reco::Candidate::LorentzVector& jet = jets_[i];
+    const double jetEt = jet.Et();
+
+    if ( jetEt >= cacheJetMinEt )
+    {
+      ++nGoodJetsEt_;
+      if ( bTag(i, 0) > cacheJetMinBtag )
+      {
+        ++nGoodJetsEtBtag_;
+      }
+    }
+  }
+
   // Calculate M(llbbmet) if nJet >= 2
-  if ( jets_.size() >= 2 )
+  if ( nJet >= 2 )
   {
     // Find 2 leading jets
-    reco::Candidate::LorentzVector j1, j2;
-    for ( std::vector<reco::Candidate::LorentzVector>::const_iterator jet = jets_.begin();
-          jet != jets_.end(); ++jet )
+    int j1Index = -1, j2Index = -1;
+    double j1Et = 0, j2Et = 0;
+    for ( unsigned int i = 0; i < nJet; ++i )
     {
-      if ( j2.Et() < jet->Et() ) j2 = *jet;
-      if ( j1.Et() < j2.Et() ) std::swap(j1, j2);
+      const reco::Candidate::LorentzVector& jet = jets_[i];
+      const double jetEt = jet.Et();
+
+      if ( j2Et < jetEt ) 
+      {
+        j2Index = int(i);
+        j2Et = jetEt;
+      }
+      if ( j1Et < j2Et ) 
+      {
+        std::swap(j1Et, j2Et);
+        std::swap(j1Index, j2Index);
+      }
     }
 
-    const reco::Candidate::LorentzVector met(metX_, metY_, 0, hypot(metX_, metY_));
-    mass_ = (l1_+l2_+j1+j2+met).M();
+    if ( j1Index >= 0 and j2Index >= 0 )
+    {
+      const reco::Candidate::LorentzVector& j1 = jets_[j1Index];
+      const reco::Candidate::LorentzVector& j2 = jets_[j2Index];
+
+      const reco::Candidate::LorentzVector met(metX_, metY_, 0, hypot(metX_, metY_));
+      mass_ = (l1_+l2_+j1+j2+met).M();
+    }
   }
 }
 
