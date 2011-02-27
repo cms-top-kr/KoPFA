@@ -9,9 +9,8 @@ using namespace std;
 
 KoMuonRefSelector::KoMuonRefSelector(const edm::ParameterSet& cfg)
 {
-  version_ = cfg.getUntrackedParameter<int>("version", 1);
-  //IdCuts_ = cfg.getUntrackedParameter< std::vector<string> >("IdCuts");
-  //IsoCut_ = cfg.getUntrackedParameter<string>("IsoCut");
+  cut_ = cfg.getParameter< std::vector<string> >("cut");
+  isocut_ = cfg.getParameter< std::vector<string> >("isocut");
   muonLabel_ = cfg.getParameter<edm::InputTag>("muonLabel");
   muonIdSelector_.initialize( cfg.getParameter<edm::ParameterSet>("muonIdSelector") );
   muonIsoSelector_.initialize( cfg.getParameter<edm::ParameterSet>("muonIsoSelector") );
@@ -90,17 +89,17 @@ void KoMuonRefSelector::produce(edm::Event& iEvent, const edm::EventSetup& es)
     Ptr<pat::Muon> muonRef = muons_->ptrAt(i);
     const pat::Muon & muon = *muonRef;
 
-    pat::strbitset muonIdSel = muonIdSelector_.getBitTemplate();
+    pat::strbitset muonIDSel = muonIdSelector_.getBitTemplate();
     pat::strbitset muonIsoSel = muonIsoSelector_.getBitTemplate();
-    muonIdSelector_( muon, beamSpot_, muonIdSel );
+    muonIdSelector_( muon, beamSpot_, muonIDSel );
     muonIsoSelector_( muon, muonIsoSel );
 
-    bool C1 = muonIdSel.test("eta") && muonIdSel.test("pt");
-    bool C2 = C1 && muonIdSel.test("dxy");
-    bool C3 = C2 && muonIdSel.test("isGlobalMuon");
-    bool C4 = C3 && muonIdSel.test("isTrackerMuon");
-    bool C5 = C4 && muonIdSel.test("trackerHits");
-    bool C6 = C5 && muonIdSel.test("globalNormChi2");
+    bool C1 = muonIDSel.test("eta") && muonIDSel.test("pt");
+    bool C2 = C1 && muonIDSel.test("dxy");
+    bool C3 = C2 && muonIDSel.test("isGlobalMuon");
+    bool C4 = C3 && muonIDSel.test("isTrackerMuon");
+    bool C5 = C4 && muonIDSel.test("trackerHits");
+    bool C6 = C5 && muonIDSel.test("globalNormChi2");
   
     if(C1) cut[0]++;
     if(C2) cut[1]++;
@@ -109,38 +108,21 @@ void KoMuonRefSelector::produce(edm::Event& iEvent, const edm::EventSetup& es)
     if(C5) cut[4]++;
     if(C6) cut[5]++;    
 
-    //bool passIso = muonIsoSel.test("pfOptimizedRel");
-    //bool passedId = true;
-    //bool passedIso = true;
-    //bool pfpass = muonIdSel.test("dxy") && muonIdSel.test("eta") && muonIdSel.test("pt");
+    bool passed = true;
 
-    //if(!IsoCut_.empty()){
-    //  passedIso = muonIsoSel.test(IsoCut_);
-    //}
+    for(size_t i =0 ; i < cut_.size() ; i++){
+      if( !muonIDSel.test(cut_[i]) ){
+        passed = false;
+        break;
+      }
+    } 
 
-    //if(!IsoCut_.empty()){
-    //  if(version_ ==0) passedId = muonIdSel.test("eta") && muonIdSel.test("pt");
-    //  else if(version_==1) passedId = pfpass;
-    //  else if(version_==2) passedId = muonIdSel.test("VBTF") && pfpass;
-    //  else if(version_==3) passedId = C6;
-    //} else{
-    //  for(size_t i =0 ; i < IdCuts_.size() ; i++){
-    //    passedId = muonIdSel.test(IdCuts_[i]);
-    //    if(!passedId) break;
-    //  }
-    //}
-    bool passIso = muonIsoSel.test("pfOptimizedRel");
-
-    bool passed = false;
-
-    bool pfpass = muonIdSel.test("dxy") && muonIdSel.test("eta") && muonIdSel.test("pt");
-
-    if(version_==0) passed = muonIdSel.test("eta") && muonIdSel.test("pt");
-    else if(version_==1) passed = pfpass;
-    else if(version_==2) passed = muonIdSel.test("VBTF") && pfpass;
-    else if(version_==3) passed = C6;
-    else if(version_==4) passed = pfpass && passIso;
-
+    for(size_t i =0 ; i < isocut_.size() ; i++){
+      if( !muonIsoSel.test(isocut_[i]) ){
+        passed = false;
+        break;
+      }
+    }
 
     if(passed){
       pos->push_back(muonRef);
