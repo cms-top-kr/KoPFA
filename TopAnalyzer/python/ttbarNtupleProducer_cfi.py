@@ -14,6 +14,8 @@ mm = cms.EDAnalyzer("TTbarMuMuEventNtupleProducer",
 
     jetId = jetIdForTTbar,
     doResJec = cms.untracked.bool(False),
+    resJecFileName = cms.untracked.string("CondFormats/JetMETObjects/data/Spring10DataV2_L2L3Residual_AK5PF.txt"),
+    jecUncertFileName = cms.untracked.string("CondFormats/JetMETObjects/data/Spring10_Uncertainty_AK5PF.txt"),
 
     minJetIso1 = cms.double(0.21),
     minJetIso2 = cms.double(0.21),
@@ -29,6 +31,8 @@ ee = cms.EDAnalyzer("TTbarElElEventNtupleProducer",
 
     jetId = jetIdForTTbar,
     doResJec = cms.untracked.bool(False),
+    resJecFileName = cms.untracked.string("CondFormats/JetMETObjects/data/Spring10DataV2_L2L3Residual_AK5PF.txt"),
+    jecUncertFileName = cms.untracked.string("CondFormats/JetMETObjects/data/Spring10_Uncertainty_AK5PF.txt"),
 
     minJetIso1 = cms.double(0.26),
     minJetIso2 = cms.double(0.26),
@@ -44,6 +48,8 @@ em = cms.EDAnalyzer("TTbarElMuEventNtupleProducer",
 
     jetId = jetIdForTTbar,
     doResJec = cms.untracked.bool(False),
+    resJecFileName = cms.untracked.string("CondFormats/JetMETObjects/data/Spring10DataV2_L2L3Residual_AK5PF.txt"),
+    jecUncertFileName = cms.untracked.string("CondFormats/JetMETObjects/data/Spring10_Uncertainty_AK5PF.txt"),
 
     minJetIso1 = cms.double(0.26),
     minJetIso2 = cms.double(0.21),
