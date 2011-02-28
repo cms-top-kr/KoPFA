@@ -11,16 +11,16 @@ input = sys.argv[1]
 type = sys.argv[2]
 
 if type == "MuMu":
-  mclist = ["ZJets", "ZtauDecay", "Ztautau", "Zmumu","Zee", "Wmu","We","Wtau", "ZZ","WW","ZW","TTbar", "SingleTop","DYmumu","DYee","DYtautau"]
-  #mclist = ["ZJetsi_PU", "ZtauDecay_PU", "Ztautau_PU", "Zmumu_PU","Zee_PU", "ZZ_PU","WW_PU","ZW_PU","TTbar_PU", "SingleTop_PU","DYmumu_PU","DYee_PU","DYtautau_PU"]
+  mclist = ["ZJets", "ZtauDecay", "Ztautau", "Zmumu", "Zee", "Wmu", "We", "Wtau", "ZZ", "WW", "ZW", "TTbar", "SingleTop", "DYmumu", "DYee", "DYtautau"]
+  #mclist = ["ZJets_PU", "ZtauDecay_PU", "Ztautau_PU", "Zmumu_PU", "Zee_PU", "ZZ_PU", "WW_PU", "ZW_PU", "TTbar_PU", "SingleTop_PU", "DYmumu_PU", "DYee_PU", "DYtautau_PU"]
   qcdlist =[""]
 elif type == "ElEl":
-  mclist = ["ZJets", "ZtauDecay", "Ztautau", "Zmumu","Zee", "Wmu","We","Wtau", "ZZ","WW","ZW","TTbar", "SingleTop","DYmumu","DYee","DYtautau"]
-  #mclist = ["ZJetsi_PU", "ZtauDecay_PU", "Ztautau_PU", "Zmumu_PU","Zee_PU", "ZZ_PU","WW_PU","ZW_PU","TTbar_PU", "SingleTop_PU","DYmumu_PU","DYee_PU","DYtautau_PU"]
+  mclist = ["ZJets", "ZtauDecay", "Ztautau", "Zmumu", "Zee", "Wmu", "We", "Wtau", "ZZ", "WW", "ZW", "TTbar", "SingleTop", "DYmumu", "DYee", "DYtautau"]
+  #mclist = ["ZJets_PU", "ZtauDecay_PU", "Ztautau_PU", "Zmumu_PU", "Zee_PU", "ZZ_PU", "WW_PU", "ZW_PU", "TTbar_PU", "SingleTop_PU", "DYmumu_PU", "DYee_PU", "DYtautau_PU"]
   qcdlist =[""]
 elif type == "MuEl":
-  mclist = ["ZJets", "ZtauDecay", "Ztautau", "Zmumu","Zee", "Wmu","We","Wtau", "ZZ","WW","ZW","TTbar", "SingleTop","DYmumu","DYee","DYtautau"]
-  #mclist = ["ZJetsi_PU", "ZtauDecay_PU", "Ztautau_PU", "Zmumu_PU","Zee_PU", "ZZ_PU","WW_PU","ZW_PU","TTbar_PU", "SingleTop_PU","DYmumu_PU","DYee_PU","DYtautau_PU"]
+  mclist = ["ZJets", "ZtauDecay", "Ztautau", "Zmumu", "Zee", "Wmu", "We", "Wtau", "ZZ", "WW", "ZW", "TTbar", "SingleTop", "DYmumu", "DYee", "DYtautau"]
+  #mclist = ["ZJets_PU", "ZtauDecay_PU", "Ztautau_PU", "Zmumu_PU", "Zee_PU", "ZZ_PU", "WW_PU", "ZW_PU", "TTbar_PU", "SingleTop_PU", "DYmumu_PU", "DYee_PU", "DYtautau_PU"]
   qcdlist =[""]
 
 datalist = ["data_1","data_2"]
