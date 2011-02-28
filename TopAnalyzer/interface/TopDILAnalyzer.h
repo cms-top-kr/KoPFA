@@ -13,7 +13,7 @@
 //
 // Original Author:  Tae Jeong Kim,40 R-A32,+41227678602,
 //         Created:  Fri Jun  4 17:19:29 CEST 2010
-// $Id: TopDILAnalyzer.h,v 1.31 2011/02/23 14:04:28 tjkim Exp $
+// $Id: TopDILAnalyzer.h,v 1.32 2011/02/25 10:59:26 tjkim Exp $
 //
 //
 
@@ -359,33 +359,35 @@ class TopDILAnalyzer : public edm::EDAnalyzer {
           ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > corrjet;
           corrjet.SetPxPyPzE(jit->px(),jit->py(),jit->pz(),jit->energy());
 
-         if(doResJec_){
-           resJetCorrector_->setJetEta(jit->eta());
-           resJetCorrector_->setJetPt(jit->pt());
-           const double scaleF = resJetCorrector_->getCorrection();
-           corrjet *= scaleF;
-           jecUnc_->setJetEta(jit->eta());
-           jecUnc_->setJetPt(scaleF*jit->pt());
-         }
+          double scaleF = 1.0;
+          if(doResJec_){
+            resJetCorrector_->setJetEta(jit->eta());
+            resJetCorrector_->setJetPt(jit->pt());
+            scaleF = resJetCorrector_->getCorrection();
+            corrjet *= scaleF;
+          }
 
-         if(doJecUnc_){
-           met_x += corrjet.px();
-           met_y += corrjet.py();
-           double unc = jecUnc_->getUncertainty(up_);
-           double c_sw = 0.015; //for release differences and calibration changes
-           double c_pu = 0.2*0.8*2.2/(corrjet.pt()); // PU uncertainty
-           double c_bjets = 0; // bjet uncertainty
-           if(corrjet.pt() > 50 && corrjet.pt() < 200 && fabs(corrjet.eta()) < 2.0) {
-             c_bjets = 0.02;
-           }else c_bjets = 0.03;
-             double cor = sqrt(c_sw*c_sw + c_pu*c_pu+c_bjets*c_bjets);
-             unc = sqrt(unc*unc + cor*cor);
-             double ptscaleunc = 0;
-             if(up_) ptscaleunc = 1 + unc;
-             else ptscaleunc = 1 - unc;
-             corrjet *= ptscaleunc;
-             met_x -= corrjet.px();
-             met_y -= corrjet.py();
+          if(doJecUnc_){
+            jecUnc_->setJetEta(jit->eta());
+            jecUnc_->setJetPt(scaleF*jit->pt());
+            met_x += corrjet.px();
+            met_y += corrjet.py();
+            double unc = jecUnc_->getUncertainty(up_);
+            double c_sw = 0.015; //for release differences and calibration changes
+            double c_pu = 0.2*0.8*2.2/(corrjet.pt()); // PU uncertainty
+            double c_bjets = 0; // bjet uncertainty
+            if(corrjet.pt() > 50 && corrjet.pt() < 200 && fabs(corrjet.eta()) < 2.0) {
+              c_bjets = 0.02;
+            }else c_bjets = 0.03;
+
+            double cor = sqrt(c_sw*c_sw + c_pu*c_pu+c_bjets*c_bjets);
+            unc = sqrt(unc*unc + cor*cor);
+            double ptscaleunc = 0;
+            if(up_) ptscaleunc = 1 + unc;
+            else ptscaleunc = 1 - unc;
+            corrjet *= ptscaleunc;
+            met_x -= corrjet.px();
+            met_y -= corrjet.py();
           }
 
           //geometric acceptance
