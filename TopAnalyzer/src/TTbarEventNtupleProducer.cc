@@ -58,8 +58,11 @@ private:
   Ko::TTbarEvent* ttbarEvent_;
   TTree* tree_;
 
+  bool doResJec_;
   FactorizedJetCorrector* resJetCorrector_;
   JetCorrectionUncertainty* jecUncert_;
+  std::string resJecFileName_;
+  std::string jecUncertFileName_;
 
 };
 
@@ -76,6 +79,9 @@ TTbarEventNtupleProducer<Lepton1, Lepton2>::TTbarEventNtupleProducer(const edm::
   looseJetIdSelector_.initialize(pset.getParameter<edm::ParameterSet> ("jetId"));
   resJetCorrector_ = 0;
   jecUncert_ = 0;
+  doResJec_ = pset.getUntrackedParameter<bool>("doResJec");
+  resJecFileName_ = pset.getUntrackedParameter<std::string>("resJecFileName");
+  jecUncertFileName_ = pset.getUntrackedParameter<std::string>("jecUncertFileName");
   minJetIso1_ = pset.getParameter<double>("minJetIso1");
   minJetIso2_ = pset.getParameter<double>("minJetIso2");
 
@@ -105,17 +111,20 @@ void TTbarEventNtupleProducer<Lepton1, Lepton2>::beginJob()
   tree_->Branch("ttbarGen", "Ko::TTbarGenEvent", &ttbarGenEvent_);
 
   // Jet energy correction for 38X
-  edm::FileInPath jecFile("CondFormats/JetMETObjects/data/Spring10DataV2_L2L3Residual_AK5PF.txt");
-  std::vector<JetCorrectorParameters> jecParams;
-  jecParams.push_back(JetCorrectorParameters(jecFile.fullPath()));
-  resJetCorrector_ = new FactorizedJetCorrector(jecParams);
+  if ( doResJec_ )
+  {
+    edm::FileInPath jecFile(resJecFileName_);
+    std::vector<JetCorrectorParameters> jecParams;
+    jecParams.push_back(JetCorrectorParameters(jecFile.fullPath()));
+    resJetCorrector_ = new FactorizedJetCorrector(jecParams);
+  }
 
-  edm::FileInPath jecUncFile("CondFormats/JetMETObjects/data/Spring10_Uncertainty_AK5PF.txt");
+  edm::FileInPath jecUncFile(jecUncertFileName_);
   jecUncert_ = new JetCorrectionUncertainty(jecUncFile.fullPath());
 
 }
 
-  template <typename Lepton1, typename Lepton2>
+template <typename Lepton1, typename Lepton2>
 void TTbarEventNtupleProducer<Lepton1, Lepton2>::analyze(const edm::Event& event, const edm::EventSetup& eventSetup)
 {
   // Start from the generator level info
@@ -202,9 +211,13 @@ void TTbarEventNtupleProducer<Lepton1, Lepton2>::analyze(const edm::Event& event
     const double jetEta = jet->eta();
     const double jetPt = jet->pt();
 
-    resJetCorrector_->setJetEta(jetEta);
-    resJetCorrector_->setJetPt(jetPt);
-    const double scaleFactor = resJetCorrector_->getCorrection();
+    double scaleFactor = 1.0;
+    if ( doResJec_ )
+    {
+      resJetCorrector_->setJetEta(jetEta);
+      resJetCorrector_->setJetPt(jetPt);
+      scaleFactor = resJetCorrector_->getCorrection();
+    }
     const reco::Candidate::LorentzVector corrJetLVec = jet->p4()*scaleFactor;
     const double corrJetPt = corrJetLVec.pt();
 
