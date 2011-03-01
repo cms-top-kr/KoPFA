@@ -238,7 +238,7 @@ void TopAnalyzerLite::applyCutSteps()
   }
   if ( realDataChain_ )
   {
-    realDataChain_->Scan(scanVariables_.c_str() ,finalCut);
+    realDataChain_->Scan(scanVariables_.c_str(), finalCut);
     cout << "Number of entries after final selection = " << realDataChain_->GetEntries(finalCut) << endl;
   }
 
@@ -248,7 +248,7 @@ void TopAnalyzerLite::applyCutSteps()
 
     ((TTreePlayer*)(realDataChain_->GetPlayer()))->SetScanRedirect(true);
     ((TTreePlayer*)(realDataChain_->GetPlayer()))->SetScanFileName(tmpFileName.c_str());
-    realDataChain_->Scan("RUN:LUMI:EVENT:Z.mass():@jetspt30.size():MET",finalCut);
+    realDataChain_->Scan(scanVariables_.c_str(), finalCut);
     ((TTreePlayer*)(realDataChain_->GetPlayer()))->SetScanRedirect(false);
 
     ifstream tmpFile(tmpFileName.c_str());
