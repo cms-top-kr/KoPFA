@@ -1,13 +1,6 @@
 import FWCore.ParameterSet.Config as cms
 
 from PFAnalyses.CommonTools.countingSequences_cfi import *
-from PFAnalyses.CommonTools.Selectors.muonSelectorPSet_cff import muonSelectorPSet
-muonId = muonSelectorPSet.clone()
-muonId.dxy = 0.02
-muonId.eta = 2.5
-muonId.pt = 20
-from PFAnalyses.CommonTools.Selectors.muonIsoSelectorPSet_cff import muonIsoSelectorPSet
-muonIso = muonIsoSelectorPSet.clone()
 
 from PFAnalyses.CommonTools.Selectors.looseJetIdPSet_cff import looseJetIdPSet
 myJetId = looseJetIdPSet.clone()
