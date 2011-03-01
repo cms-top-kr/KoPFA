@@ -27,9 +27,11 @@ public:
   TopAnalyzerLite(const string subDirName = "", const string imageOutDir = "");
   ~TopAnalyzerLite();
 
-  void addMC(const string mcSampleName, const string mcSampleLabel,
-             const string fileName, const double xsec, const double nEvents,
-             const Color_t color);
+  void setMCSig(const string fileName, const double xsec, const double nEvents,
+                const Color_t color);
+  void addMCBkg(const string mcSampleName, const string mcSampleLabel,
+                const string fileName, const double xsec, const double nEvents,
+                const Color_t color);
   void addRealData(const string fileName, const double lumi);
   void addCutStep(const TCut cut, const TString monitorPlotNamesStr, const double plotScale = 1.0);
   void addMonitorPlot(const string name, const string varexp, const string title,
@@ -79,7 +81,8 @@ private:
 
   double lumi_;
   string subDirName_;
-  vector<MCSample> mcSamples_;
+  MCSample mcSig_;
+  vector<MCSample> mcBkgs_;
   TChain* realDataChain_;
 
   map<const string, MonitorPlot> monitorPlots_;
@@ -116,6 +119,11 @@ TopAnalyzerLite::TopAnalyzerLite(const string subDirName, const string imageOutD
   else writeSummary_ = false;
 
   scanVariables_ = "RUN:LUMI:EVENT:Z.mass():@jetspt30.size():MET";
+
+  mcSig_.name = "TTbar";
+  mcSig_.label = "t#bar{t}";
+  mcSig_.nEvents = 0;
+  mcSig_.chain = 0;
 }
 
 TopAnalyzerLite::~TopAnalyzerLite()
@@ -123,14 +131,28 @@ TopAnalyzerLite::~TopAnalyzerLite()
   if ( writeSummary_ ) fout_.close();
 }
 
-void TopAnalyzerLite::addMC(const string mcSampleName, const string mcSampleLabel,
-                            const string fileName, const double xsec, const double nEvents,
-                            const Color_t color)
+void TopAnalyzerLite::setMCSig(const string fileName, const double xsec, const double nEvents,
+                               const Color_t color)
+{
+  mcSig_.nEvents += nEvents;
+  mcSig_.xsec = xsec;
+  mcSig_.color = color;
+
+  if ( !mcSig_.chain )
+  {
+    mcSig_.chain = new TChain((subDirName_+"/tree").c_str(), (subDirName_+"/tree").c_str());
+  }
+  mcSig_.chain->Add(fileName.c_str());
+}
+
+void TopAnalyzerLite::addMCBkg(const string mcSampleName, const string mcSampleLabel,
+                               const string fileName, const double xsec, const double nEvents,
+                               const Color_t color)
 {
   int mcSampleIndex = -1;
-  for ( unsigned int i = 0; i < mcSamples_.size(); ++i )
+  for ( unsigned int i = 0; i < mcBkgs_.size(); ++i )
   {
-    if ( mcSamples_[i].name == mcSampleName )
+    if ( mcBkgs_[i].name == mcSampleName )
     {
       mcSampleIndex = i;
       break;
@@ -142,11 +164,11 @@ void TopAnalyzerLite::addMC(const string mcSampleName, const string mcSampleLabe
     MCSample mcSample = {mcSampleName, 0, xsec, 0, mcSampleLabel, color};
     baseRootDir_->cd();
     mcSample.chain = new TChain((subDirName_+"/tree").c_str(), (subDirName_+"/tree").c_str());
-    mcSamples_.push_back(mcSample);
-    mcSampleIndex = mcSamples_.size()-1;
+    mcBkgs_.push_back(mcSample);
+    mcSampleIndex = mcBkgs_.size()-1;
   }
 
-  MCSample& mcSample = mcSamples_[mcSampleIndex];
+  MCSample& mcSample = mcBkgs_[mcSampleIndex];
 
   mcSample.nEvents += nEvents;
   mcSample.chain->Add(fileName.c_str());
@@ -202,9 +224,11 @@ void TopAnalyzerLite::applyCutSteps()
     fout_ << "--------------------------------------\n";
     fout_ << " Cross sections and sample statistics \n";
   }
-  for ( unsigned int i=0; i<mcSamples_.size(); ++i )
+  cout << " * " << mcSig_.name << "\t" << mcSig_.xsec << " /pb (" << mcSig_.nEvents << ")\n";
+  if ( writeSummary_ ) fout_ << " * " << mcSig_.name << "\t" << mcSig_.xsec << " /pb (" << mcSig_.nEvents << ")\n";
+  for ( unsigned int i=0; i<mcBkgs_.size(); ++i )
   {
-    MCSample& mcSample = mcSamples_[i];
+    MCSample& mcSample = mcBkgs_[i];
     cout << " * " << mcSample.name << "\t" << mcSample.xsec << " /pb (" << mcSample.nEvents << ")\n";
     if ( writeSummary_ ) fout_ << " * " << mcSample.name << "\t" << mcSample.xsec << " /pb (" << mcSample.nEvents << ")\n";
   }
@@ -295,9 +319,21 @@ void TopAnalyzerLite::plot(const string name, const TCut cut, MonitorPlot& monit
   THStack* hStack = new THStack("hStack", title.c_str());
   typedef vector<pair<string, TH1F*> > LabeledPlots;
   LabeledPlots stackedPlots;
-  for ( unsigned int i=0; i<mcSamples_.size(); ++i )
+  TString mcSigHistName = Form("hMCSig_%s_%s", mcSig_.name.c_str(), name.c_str());
+  TH1F* hMCSig = new TH1F(mcSigHistName, title.c_str(), nBins, xmin, doAutoBin ? xmin+nBins : xmax);
+
+  mcSig_.chain->Project(mcSigHistName, varexp.c_str(), cut);
+  hMCSig->AddBinContent(nBins, hMCSig->GetBinContent(nBins+1));
+  hMCSig->Scale(lumi_*mcSig_.xsec/mcSig_.nEvents);
+  hMCSig->SetFillColor(mcSig_.color);
+
+  stackedPlots.push_back(make_pair(mcSig_.label, hMCSig));
+  hStack->Add(hMCSig);
+  histograms_.Add(hMCSig);
+
+  for ( unsigned int i=0; i<mcBkgs_.size(); ++i )
   {
-    MCSample& mcSample = mcSamples_[i];
+    MCSample& mcSample = mcBkgs_[i];
     //TString mcHistName = Form("hMC_%s_%s_%s", subDirName_.c_str(), mcSample.name.c_str(), name.c_str());
     TString mcHistName = Form("hMC_%s_%s", mcSample.name.c_str(), name.c_str());
     TH1F* hMC = new TH1F(mcHistName, title.c_str(), nBins, xmin, doAutoBin ? xmin+nBins : xmax);
@@ -417,9 +453,15 @@ void TopAnalyzerLite::printStat(const string& name, TCut cut)
   double nTotalErr2 = 0;
 
   vector<Stat> stats;
-  for ( unsigned int i=0; i<mcSamples_.size(); ++i )
+  const double normSig = lumi_*mcSig_.xsec/mcSig_.nEvents;
+  const double nEventsSig = mcSig_.chain->GetEntries(cut)*normSig;
+  const double nEventsErr2Sig = nEventsSig*normSig;
+  Stat statSig = {mcSig_.name, mcSig_.label, nEventsSig, nEventsErr2Sig};
+  stats.push_back(statSig);
+
+  for ( unsigned int i=0; i<mcBkgs_.size(); ++i )
   {
-    MCSample& mcSample = mcSamples_[i];
+    MCSample& mcSample = mcBkgs_[i];
 
     const double norm = lumi_*mcSample.xsec/mcSample.nEvents;
     const double nEvents = mcSample.chain->GetEntries(cut)*norm;
@@ -466,7 +508,7 @@ void TopAnalyzerLite::printStat(const string& name, TCut cut)
     cout << label << " = " << stat.nEvents << " +- " << sqrt(stat.nEventsErr2) << endl;
     if ( writeSummary_ ) fout_ << label << " = " << stat.nEvents << " +- " << sqrt(stat.nEventsErr2) << endl;
 
-    if ( stat.name == "TTbar" )
+    if ( stat.name == mcSig_.name )
     {
       nSignal = stat.nEvents;
     }
