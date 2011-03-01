@@ -18,6 +18,7 @@
 #include <fstream>
 #include <set>
 #include <algorithm>
+#include <sstream>
 
 using namespace std;
 
@@ -36,6 +37,9 @@ public:
   void addCutStep(const TCut cut, const TString monitorPlotNamesStr, const double plotScale = 1.0);
   void addMonitorPlot(const string name, const string varexp, const string title,
                       const int nBins, const double xmin, const double xmax,
+                      const double ymin = 0, const double ymax = 0, const bool doLogy = true);
+  void addMonitorPlot(const string name, const string varexp, const string title,
+                      const string xBinsStr,
                       const double ymin = 0, const double ymax = 0, const bool doLogy = true);
   void setScanVariables(const string scanVariables);
 
@@ -60,8 +64,7 @@ private:
   {
     string varexp;
     string title;
-    int nBins;
-    double xmin, xmax;
+    std::vector<double> xBins;
     bool doLogy;
     double ymin, ymax;
   };
@@ -211,7 +214,27 @@ void TopAnalyzerLite::addMonitorPlot(const string name, const string varexp, con
                                      const int nBins, const double xmin, const double xmax,
                                      const double ymin, const double ymax, const bool doLogy)
 {
-  MonitorPlot monitorPlot = {varexp, title, nBins, xmin, xmax, doLogy, ymin, ymax};
+  std::vector<double> xBins;
+  const double dX = (xmax-xmin)/nBins;
+  for ( int i=0; i<=nBins; ++i )
+  {
+    xBins.push_back(xmin+dX*i);
+  }
+
+  MonitorPlot monitorPlot = {varexp, title, xBins, doLogy, ymin, ymax};
+  monitorPlots_[name] = monitorPlot;
+}
+
+void TopAnalyzerLite::addMonitorPlot(const string name, const string varexp, const string title,
+                                     const string xBinsStr,
+                                     const double ymin, const double ymax, const bool doLogy)
+{
+  stringstream ss(xBinsStr);
+  std::vector<double> xBins;
+  double x;
+  while(ss >> x ) xBins.push_back(x);
+
+  MonitorPlot monitorPlot = {varexp, title, xBins, doLogy, ymin, ymax};
   monitorPlots_[name] = monitorPlot;
 }
 
@@ -287,13 +310,10 @@ void TopAnalyzerLite::plot(const string name, const TCut cut, MonitorPlot& monit
 {
   const string& varexp = monitorPlot.varexp;
   const string& title = monitorPlot.title;
-  const int nBins = monitorPlot.nBins;
-  const double xmin = monitorPlot.xmin;
-  const double xmax = monitorPlot.xmax;
+  const int nBins = monitorPlot.xBins.size()-1;
+  const double* xBins = &(monitorPlot.xBins[0]);
   double ymin = monitorPlot.ymin;
   double ymax = monitorPlot.ymax*plotScale;
-
-  const bool doAutoBin = xmin == xmax;
 
   baseRootDir_->cd();
   TLegend* legend = new TLegend(0.73,0.57,0.88,0.88);
@@ -303,7 +323,7 @@ void TopAnalyzerLite::plot(const string name, const TCut cut, MonitorPlot& monit
 
   //TString dataHistName = Form("hData_%s_%s", subDirName_.c_str(), name.c_str());
   TString dataHistName = Form("hData_%s", name.c_str());
-  TH1F* hData = new TH1F(dataHistName, title.c_str(), nBins, xmin, doAutoBin ? xmin+nBins : xmax);
+  TH1F* hData = new TH1F(dataHistName, title.c_str(), nBins, xBins);
   histograms_.Add(hData);
 
   if ( realDataChain_ ) realDataChain_->Project(dataHistName, varexp.c_str(), cut);
@@ -320,7 +340,7 @@ void TopAnalyzerLite::plot(const string name, const TCut cut, MonitorPlot& monit
   typedef vector<pair<string, TH1F*> > LabeledPlots;
   LabeledPlots stackedPlots;
   TString mcSigHistName = Form("hMCSig_%s_%s", mcSig_.name.c_str(), name.c_str());
-  TH1F* hMCSig = new TH1F(mcSigHistName, title.c_str(), nBins, xmin, doAutoBin ? xmin+nBins : xmax);
+  TH1F* hMCSig = new TH1F(mcSigHistName, title.c_str(), nBins, xBins);
 
   mcSig_.chain->Project(mcSigHistName, varexp.c_str(), cut);
   hMCSig->AddBinContent(nBins, hMCSig->GetBinContent(nBins+1));
@@ -336,7 +356,7 @@ void TopAnalyzerLite::plot(const string name, const TCut cut, MonitorPlot& monit
     MCSample& mcSample = mcBkgs_[i];
     //TString mcHistName = Form("hMC_%s_%s_%s", subDirName_.c_str(), mcSample.name.c_str(), name.c_str());
     TString mcHistName = Form("hMC_%s_%s", mcSample.name.c_str(), name.c_str());
-    TH1F* hMC = new TH1F(mcHistName, title.c_str(), nBins, xmin, doAutoBin ? xmin+nBins : xmax);
+    TH1F* hMC = new TH1F(mcHistName, title.c_str(), nBins, xBins);
 
     mcSample.chain->Project(mcHistName, varexp.c_str(), cut);
     hMC->AddBinContent(nBins, hMC->GetBinContent(nBins+1));
@@ -374,8 +394,10 @@ void TopAnalyzerLite::plot(const string name, const TCut cut, MonitorPlot& monit
   }
 
   // Do automatic bin labels
-  if ( doAutoBin )
+  if ( (xBins[nBins] - xBins[0]) == nBins && nBins < 20 )
   {
+    const int xmin = xBins[0];
+
     TList* hList = hStack->GetHists();
     for ( int bin=1; bin<nBins; ++bin )
     {
@@ -394,7 +416,7 @@ void TopAnalyzerLite::plot(const string name, const TCut cut, MonitorPlot& monit
       }
       h->GetXaxis()->SetBinLabel(nBins, Form(">=%d", int(xmin+nBins-1)));
     }
-
+ 
   }
 
   // Build legend, legend should be added in reversed order of THStack
