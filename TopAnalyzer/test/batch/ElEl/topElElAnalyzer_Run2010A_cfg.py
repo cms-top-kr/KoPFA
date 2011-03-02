@@ -16,9 +16,14 @@ process.TFileService = cms.Service("TFileService",
     fileName = cms.string('vallot_Run2010A.root')
 )
 
-process.load("PFAnalyses.TTbarDIL.Sources.ELE.RD.patTuple_Run2010A_Sep17ReReco_cff")
+#process.load("PFAnalyses.TTbarDIL.Sources.ELE.RD.patTuple_Run2010A_Nov4ReReco_cff")
+process.source.fileNames = [
+    'rfio:/castor/cern.ch/user/j/jhgoh/TopAnalysis/pf2pat/ElEl/RD/20101209/EG_Run2010A-Nov4ReReco_v1.root',
+]
 
 process.load("KoPFA.TopAnalyzer.topAnalysis_cff")
+process.ElEl.doResJec = cms.untracked.bool(True)
+process.ee.doResJec = True
 
 process.p = cms.Path(
     process.topElElAnalysisRealDataSequence
