@@ -14,6 +14,8 @@
 
 #include "TMath.h"
 
+#include "TPRegexp.h"
+
 #include <iostream>
 #include <fstream>
 #include <set>
@@ -394,7 +396,7 @@ void TopAnalyzerLite::plot(const string name, const TCut cut, MonitorPlot& monit
   }
 
   // Do automatic bin labels
-  if ( (xBins[nBins] - xBins[0]) == nBins && nBins < 20 )
+  if ( xBins[0] == 0 and xBins[nBins] == nBins and nBins < 20 )
   {
     const int xmin = xBins[0];
 
