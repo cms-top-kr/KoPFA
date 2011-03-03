@@ -405,8 +405,7 @@ void TopAnalyzerLite::plot(const string name, const TCut cut, MonitorPlot& monit
     {
       hData->GetXaxis()->SetBinLabel(bin, Form("%d", int(xmin+bin-1)));
     }
-    hData->GetXaxis()->SetBinLabel(nBins, Form(">=%d", int(xmin+nBins-1)));
-//    hStack->GetXaxis()->SetBinLabel(nBins, Form(">=%d", nBins-1));
+    hData->GetXaxis()->SetBinLabel(nBins, Form("#geq%d", int(xmin+nBins-1)));
 
     for ( int i=0; i<hList->GetSize(); ++i )
     {
@@ -416,7 +415,7 @@ void TopAnalyzerLite::plot(const string name, const TCut cut, MonitorPlot& monit
       {
         h->GetXaxis()->SetBinLabel(bin, Form("%d", int(xmin+bin-1)));
       }
-      h->GetXaxis()->SetBinLabel(nBins, Form(">=%d", int(xmin+nBins-1)));
+      h->GetXaxis()->SetBinLabel(nBins, Form("#geq%d", int(xmin+nBins-1)));
     }
  
   }
@@ -601,8 +600,28 @@ void TopAnalyzerLite::saveHistograms(TString fileName)
   }
 
   TFile* f = TFile::Open(fileName, "recreate");
+  TPRegexp stepPattern("Step_[0-9]+");
   TObjArray histograms = getHistograms();
-  histograms.Write();
+  for ( int i=0; i<histograms.GetSize(); ++i )
+  {
+    TH1F* h = (TH1F*)histograms.At(i);
+    if ( !h ) continue;
+    TString hName = h->GetName();
+    TString dirName = hName(stepPattern);
+
+    if ( dirName == "" )
+    {
+      f->cd();
+    }
+    else
+    {
+      TDirectory* dir = f->GetDirectory(dirName);
+      if ( !dir ) dir = f->mkdir(dirName);
+      dir->cd();
+    }
+
+    h->Write();
+  }
   f->Write();
   f->Close();
 }
