@@ -2,6 +2,7 @@
 #include "TSystem.h"
 
 #include "TCut.h"
+#include "TObjString.h"
 #include "TFile.h"
 #include "TChain.h"
 #include "TTreePlayer.h"
@@ -600,6 +601,17 @@ void TopAnalyzerLite::saveHistograms(TString fileName)
   }
 
   TFile* f = TFile::Open(fileName, "recreate");
+  TCut cut;
+  for ( int i=0; i<cuts_.size(); ++i )
+  {
+    cut += cuts_[i].cut;
+
+    TDirectory* dir = f->mkdir(Form("Step_%d", i+1));
+    dir->cd();
+    TObjString cutStr(cut);
+    cutStr.Write();
+  }
+
   TPRegexp stepPattern("Step_[0-9]+");
   TObjArray histograms = getHistograms();
   for ( int i=0; i<histograms.GetSize(); ++i )
