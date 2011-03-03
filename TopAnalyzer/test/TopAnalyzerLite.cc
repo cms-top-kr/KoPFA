@@ -3,6 +3,7 @@
 
 #include "TCut.h"
 #include "TObjString.h"
+#include "TParameter.h"
 #include "TFile.h"
 #include "TChain.h"
 #include "TTreePlayer.h"
@@ -601,14 +602,25 @@ void TopAnalyzerLite::saveHistograms(TString fileName)
   }
 
   TFile* f = TFile::Open(fileName, "recreate");
-  TCut cut;
-  for ( int i=0; i<cuts_.size(); ++i )
-  {
-    cut += cuts_[i].cut;
 
+  TParameter<double> lumi("lumi", lumi_);
+  lumi.Write();
+
+  TH1F* hScale = new TH1F("hScale", "Scale factors for each samples", mcBkgs_.size()+1, 0, mcBkgs_.size()+1);
+  hScale->Fill(mcSig_.name.c_str(), lumi_*mcSig_.xsec/mcSig_.nEvents);
+  for ( unsigned int i=0; i<mcBkgs_.size(); ++i )
+  {
+    hScale->Fill(mcBkgs_[i].name.c_str(), lumi_*mcBkgs_[i].xsec/mcBkgs_[i].nEvents);
+  }
+
+  TCut cut;
+  for ( unsigned int i=0; i<cuts_.size(); ++i )
+  {
     TDirectory* dir = f->mkdir(Form("Step_%d", i+1));
     dir->cd();
-    TObjString cutStr(cut);
+
+    cut += cuts_[i].cut;
+    TNamed cutStr("cut", cut);
     cutStr.Write();
   }
 
