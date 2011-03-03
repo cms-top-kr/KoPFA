@@ -23,6 +23,14 @@ GenZmassFilter = cms.EDFilter('GenZmassFilter',
     max = cms.untracked.int32(999),
 )
 
+topWLeptonGenFilter = cms.EDFilter("GenParticleDecayFilter",
+    applyFilter = cms.untracked.bool( False ),
+    motherPdgId = cms.untracked.uint32(6),
+    pdgId = cms.untracked.uint32(24),
+    daughterPdgIds = cms.untracked.vuint32(11, 13, 15),
+    minCount = cms.untracked.uint32(2),
+)
+
 patMuonFilter = cms.EDFilter("CandViewCountFilter",
     src = cms.InputTag('Muons'),
     minNumber = cms.uint32(2)
@@ -102,6 +110,7 @@ removeDuplicate = cms.EDFilter("RemoveDuplicate",
 
 topElElAnalysisMCSequence = cms.Sequence(
     loadHistosFromRunInfo*
+    topWLeptonGenFilter*
     GenZmassFilter*
     VertexFilter*
     Electrons*
@@ -123,6 +132,7 @@ topElElAnalysisRealDataSequence = cms.Sequence(
 
 topMuMuAnalysisMCSequence = cms.Sequence(
     loadHistosFromRunInfo*
+    topWLeptonGenFilter*
     GenZmassFilter*
     VertexFilter*
     Muons*
@@ -144,6 +154,7 @@ topMuMuAnalysisRealDataSequence = cms.Sequence(
 
 topElMuAnalysisMCSequence = cms.Sequence(
     loadHistosFromRunInfo*
+    topWLeptonGenFilter*
     GenZmassFilter*
     VertexFilter*
     Muons * Electrons *
