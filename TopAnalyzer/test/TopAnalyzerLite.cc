@@ -342,6 +342,11 @@ void TopAnalyzerLite::plot(const string name, const TCut cut, MonitorPlot& monit
 
   legend->AddEntry(hData, "Data", "p");
 
+  TString dataSubHistName = Form("hDataSub_%s", name.c_str());
+  TH1F* hDataSub = (TH1F*)hData->Clone(dataSubHistName);
+  hDataSub->SetTitle(hData->GetTitle()+TString(" background subtracted"));
+  histograms_.Add(hDataSub);
+
   THStack* hStack = new THStack("hStack", title.c_str());
   typedef vector<pair<string, TH1F*> > LabeledPlots;
   LabeledPlots stackedPlots;
@@ -368,6 +373,9 @@ void TopAnalyzerLite::plot(const string name, const TCut cut, MonitorPlot& monit
     hMC->AddBinContent(nBins, hMC->GetBinContent(nBins+1));
     hMC->Scale(lumi_*mcSample.xsec/mcSample.nEvents);
     hMC->SetFillColor(mcSample.color);
+
+    // Subtract background from the hDataSub histogram
+    hDataSub->Add(hMC, -1);
 
     // Add to the HStack if there's no duplicated label
     // If duplicated label exists, call TH1::Add
