@@ -74,7 +74,7 @@ void unfoldingPlot(TH1* h_gen, TH1* h_rec, TH2* m, TH1* h_mea, TH1* h_genTTbar, 
   
 
   TLegend *l_unfold= new TLegend(0.65,0.60,0.80,0.8);
-  l_unfold->AddEntry(hgen,"true t#bar{t}","l");
+  l_unfold->AddEntry(hgen,"True t#bar{t}","l");
   //l_unfold->AddEntry(hmea,"data t#bar{t}","l");
   l_unfold->AddEntry(h_unfold,"Unfolded t#bar{t}","p");
   l_unfold->SetTextSize(0.04);
@@ -105,10 +105,10 @@ void unfoldingPlot(TH1* h_gen, TH1* h_rec, TH2* m, TH1* h_mea, TH1* h_genTTbar, 
   gerr->GetXaxis()->SetTitle("t#bar{t} invariant mass");
   gerr->GetYaxis()->SetTitle("Statistical Uncertainty (%)");
 
-  TCanvas *c_meaerr = new TCanvas(Form("c_meaerr_%s",name.Data()),Form("c_meaerr_%s",name.Data()),1);
-  gerrbefore->Draw("ALP");
-  gerrbefore->SetLineStyle(2);
-  gerrbefore->SetMarkerStyle(20);
+  //TCanvas *c_meaerr = new TCanvas(Form("c_meaerr_%s",name.Data()),Form("c_meaerr_%s",name.Data()),1);
+  //gerrbefore->Draw("ALP");
+  //gerrbefore->SetLineStyle(2);
+  //gerrbefore->SetMarkerStyle(20);
   
 
   //TCanvas *c_errmat = new TCanvas(Form("c_errmat_%s",name.Data()),Form("c_errmat_%s",name.Data()),1);
@@ -162,7 +162,7 @@ void massPlot(TH1* hgen, TH1* hrec, TH1* hmea, const double scale_ttbar){
   }
 
 
-  TLegend *l= new TLegend(0.55,0.55,0.8,0.8);
+  TLegend *l= new TLegend(0.60,0.60,0.8,0.8);
   l->AddEntry(h1,"gen mass","l");
   l->AddEntry(h2,"reco mass","l");
   l->AddEntry(h3,"data mass","p");
@@ -193,7 +193,7 @@ void plot(TTree *t_response, TH1 *hData, TTree *t_compare, const TString &var, c
   TH2 *h2_response_m = new TH2F(Form("h2_response_m_%s",var.Data()),Form("h2_response_m_%s",var.Data()),nDet,detBins,nGen,genBins);
   t_response->Project(Form("h_genMC%s",var.Data()),"genttbarM",cut, "",entries/2, 0);
   t_response->Project(Form("h_recMC%s",var.Data()),Form("%sttbarM",var.Data()),cut, "",entries/2, 0);
-  t_response->Project(Form("h2_response_m_%s",var.Data()),Form("genttbarM:%sttbarM",var.Data()),cut, "", entries/2,0);
+  t_response->Project(Form("h2_response_m_%s",var.Data()),Form("genttbarM:%sttbarM",var.Data()),cut, "", entries/2, 0);
 
   //For comparison
   TH1 *h_genTTbar = new TH1F(Form("h_genTTbar%s",var.Data()),"h_genTTbar",nGen,genBins);
@@ -201,11 +201,13 @@ void plot(TTree *t_response, TH1 *hData, TTree *t_compare, const TString &var, c
   t_compare->Project(Form("h_genTTbar%s",var.Data()),"genttbarM", cut,"",entries/2, entries/2);
   t_compare->Project(Form("h_recTTbar%s",var.Data()),Form("%sttbarM",var.Data()), cut,"",entries/2, entries/2);
 
-  massPlot(h_genTTbar, h_recTTbar, hData, scale);
+  //comparison before unfolding
+  //massPlot(h_genTTbar, h_recTTbar, hData, scale*2);
 
   //resolutionPlot(t,Form("rel%sM",var.Data()), cut, Form("%s",var.Data()), print);
 
-  unfoldingPlot(h_genMC, h_recMC, h2_response_m,  hData, h_genTTbar, scale, Form("%s",var.Data()), print);
+  //comparison after unfolding
+  unfoldingPlot(h_genMC, h_recMC, h2_response_m,  hData, h_genTTbar, scale*2, Form("%s",var.Data()), print);
 
 }
 
