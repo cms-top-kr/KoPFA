@@ -32,7 +32,8 @@ public:
   TopAnalyzerLite(const string subDirName = "", const string imageOutDir = "");
   ~TopAnalyzerLite();
 
-  void setMCSig(const string fileName, const double xsec, const double nEvents,
+  void addMCSig(const string mcSampleName, const string mcSampleLabel,
+                const string fileName, const double xsec, const double nEvents,
                 const Color_t color);
   void addMCBkg(const string mcSampleName, const string mcSampleLabel,
                 const string fileName, const double xsec, const double nEvents,
@@ -127,8 +128,6 @@ TopAnalyzerLite::TopAnalyzerLite(const string subDirName, const string imageOutD
 
   scanVariables_ = "RUN:LUMI:EVENT:Z.mass():@jetspt30.size():MET";
 
-  mcSig_.name = "TTbar";
-  mcSig_.label = "t#bar{t}";
   mcSig_.nEvents = 0;
   mcSig_.chain = 0;
 }
@@ -138,9 +137,12 @@ TopAnalyzerLite::~TopAnalyzerLite()
   if ( writeSummary_ ) fout_.close();
 }
 
-void TopAnalyzerLite::setMCSig(const string fileName, const double xsec, const double nEvents,
+void TopAnalyzerLite::addMCSig(const string mcSampleName, const string mcSampleLabel,
+                               const string fileName, const double xsec, const double nEvents,
                                const Color_t color)
 {
+  mcSig_.name = mcSampleName;
+  mcSig_.label = mcSampleLabel;
   mcSig_.nEvents += nEvents;
   mcSig_.xsec = xsec;
   mcSig_.color = color;
