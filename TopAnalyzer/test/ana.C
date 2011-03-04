@@ -31,8 +31,8 @@ void ana(string decayMode = "MuMu", string imageOutDir = "")
   //analyzer->addRealData(rdPath+"/vallot_Run2010B_PromptReco.root", 4.0*781/3382);
   analyzer->addRealData(rdPath+"/vallot.root", 36.1);
 
-  //analyzer->addMCSig(mcPath+"/vallot_TTbar.root", 157.5, 1000000, 4);
-  analyzer->addMCSig(mcPath+"/vallot_TTbar_PU.root", 157.5, 1000000, 4);
+  //analyzer->addMCSig("TTbar", "t#bar{t}", mcPath+"/vallot_TTbar.root", 157.5, 1000000, 4);
+  analyzer->addMCSig("TTbar", "t#bar{t}", mcPath+"/vallot_TTbar_PU.root", 157.5, 1000000, 4);
 
   analyzer->addMCBkg("Wl", "W #rightarrow l#nu", mcPath+"/vallot_We.root", 10438, 2500000, 46);
   analyzer->addMCBkg("Wm", "W #rightarrow l#nu", mcPath+"/vallot_Wmu.root", 10438, 2500000, 46);
