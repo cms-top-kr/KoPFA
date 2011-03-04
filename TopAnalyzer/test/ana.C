@@ -85,8 +85,8 @@ void ana(string decayMode = "MuMu", string imageOutDir = "")
   analyzer->addMonitorPlot("metPhi", "met[0].phi()", "Azimuthal angle of Missing E_{T};Azimuthal angle #phi;Events/0.2 rad", 35, -3.5, 3.5, 0.1, 100);
   analyzer->addMonitorPlot("dphi1", "asin(sin(Z.leg1().phi()-met[0].phi()))", "Azimuthal angle difference between leading lepton - MET;Angle difference;Events/0.2 rad", 20, -2, 2, 0.1, 10000);
   analyzer->addMonitorPlot("dphi2", "asin(sin(Z.leg2().phi()-met[0].phi()))", "Azimuthal angle difference between leading lepton - MET;Angle difference;Events/0.2 rad", 20, -2, 2, 0.1, 10000);
-  analyzer->addMonitorPlot("vsumM", "vsumM.M()", "ttbar invariant mass;t#bar{t} invariant mass;Events/40 GeV", 20, 200, 1000, 0, 0.5, false);
-  analyzer->addMonitorPlot("vsumMAlt", "vsumM.M()", "ttbar invariant mass;t#bar{t} invariant mass;Events/40 GeV", "0 300 350 400 450 500 550 600 700 800 1400", 0, 0.5, false);
+  analyzer->addMonitorPlot("vsumM", "toptotal.M()", "ttbar invariant mass;t#bar{t} invariant mass;Events/40 GeV", 20, 200, 1000, 0, 0.5, false);
+  analyzer->addMonitorPlot("vsumMAlt", "toptotal.M()", "ttbar invariant mass;t#bar{t} invariant mass;Events/40 GeV", "0 300 350 400 450 500 550 600 700 800 1400", 0, 0.5, false);
   analyzer->addMonitorPlot("mao1M", "mao1M", "ttbar invariant mass;t#bar{t} invaraint mass;Events/20 GeV", 20, 200, 1000, 0.1, 0.9, false);
   analyzer->addMonitorPlot("mao2M", "mao2M", "ttbar invariant mass;t#bar{t} invaraint mass;Events/20 GeV", 20, 200, 1000, 0.1, 0.9, false);
 
