@@ -31,8 +31,8 @@ void ana(string decayMode = "MuMu", string imageOutDir = "")
   //analyzer->addRealData(rdPath+"/vallot_Run2010B_PromptReco.root", 4.0*781/3382);
   analyzer->addRealData(rdPath+"/vallot.root", 36.1);
 
-  //analyzer->setMCSig(mcPath+"/vallot_TTbar.root", 157.5, 1000000, 4);
-  analyzer->setMCSig(mcPath+"/vallot_TTbar_PU.root", 157.5, 1000000, 4);
+  //analyzer->addMCSig(mcPath+"/vallot_TTbar.root", 157.5, 1000000, 4);
+  analyzer->addMCSig(mcPath+"/vallot_TTbar_PU.root", 157.5, 1000000, 4);
 
   analyzer->addMCBkg("Wl", "W #rightarrow l#nu", mcPath+"/vallot_We.root", 10438, 2500000, 46);
   analyzer->addMCBkg("Wm", "W #rightarrow l#nu", mcPath+"/vallot_Wmu.root", 10438, 2500000, 46);
@@ -85,7 +85,8 @@ void ana(string decayMode = "MuMu", string imageOutDir = "")
   analyzer->addMonitorPlot("metPhi", "met[0].phi()", "Azimuthal angle of Missing E_{T};Azimuthal angle #phi;Events/0.2 rad", 35, -3.5, 3.5, 0.1, 100);
   analyzer->addMonitorPlot("dphi1", "asin(sin(Z.leg1().phi()-met[0].phi()))", "Azimuthal angle difference between leading lepton - MET;Angle difference;Events/0.2 rad", 20, -2, 2, 0.1, 10000);
   analyzer->addMonitorPlot("dphi2", "asin(sin(Z.leg2().phi()-met[0].phi()))", "Azimuthal angle difference between leading lepton - MET;Angle difference;Events/0.2 rad", 20, -2, 2, 0.1, 10000);
-  analyzer->addMonitorPlot("toptotal", "toptotal.M()", "ttbar invariant mass;t#bar{t} invariant mass;Events/40 GeV", 20, 200, 1000, 0.1, 0.9, false);
+  analyzer->addMonitorPlot("vsumM", "vsumM.M()", "ttbar invariant mass;t#bar{t} invariant mass;Events/40 GeV", 20, 200, 1000, 0, 0.5, false);
+  analyzer->addMonitorPlot("vsumMAlt", "vsumM.M()", "ttbar invariant mass;t#bar{t} invariant mass;Events/40 GeV", "0 300 350 400 450 500 550 600 700 800 1400", 0, 0.5, false);
   analyzer->addMonitorPlot("mao1M", "mao1M", "ttbar invariant mass;t#bar{t} invaraint mass;Events/20 GeV", 20, 200, 1000, 0.1, 0.9, false);
   analyzer->addMonitorPlot("mao2M", "mao2M", "ttbar invariant mass;t#bar{t} invaraint mass;Events/20 GeV", 20, 200, 1000, 0.1, 0.9, false);
 
@@ -97,7 +98,8 @@ void ana(string decayMode = "MuMu", string imageOutDir = "")
   else if ( decayMode == "ElEl" )
   {
     analyzer->addCutStep("(chIso1+nhIso1+phIso1)/Z.leg1().pt() < 0.26 && (chIso2+nhIso2+phIso2)/Z.leg2().pt() < 0.26", "");
-  }else if ( decayMode == "MuEl" )
+  }
+  else if ( decayMode == "MuEl" )
   {
     cout << "DEBUG: MuEl" << endl;
     analyzer->addCutStep("(chIso1+nhIso1+phIso1)/Z.leg1().pt() < 0.21 && (chIso2+nhIso2+phIso2)/Z.leg2().pt() < 0.26", "");
@@ -113,9 +115,9 @@ void ana(string decayMode = "MuMu", string imageOutDir = "")
   analyzer->addCutStep("@jetspt30.size() >= 2", "MET", 0.5);
   if ( decayMode == "MuEl")
   {
-    analyzer->addCutStep("MET > 20", "nJet,toptotal", 0.5);
+    analyzer->addCutStep("MET > 20", "nJet,vsumM,vsumMAlt", 0.5);
   }else{
-    analyzer->addCutStep("MET > 30", "nJet,toptotal", 0.5);
+    analyzer->addCutStep("MET > 30", "nJet,vsumM,vsumMAlt", 0.5);
   }
   analyzer->applyCutSteps();
 
