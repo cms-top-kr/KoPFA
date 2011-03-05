@@ -39,7 +39,7 @@ void unfolding(const TString& decayMode = "MuEl"){
   TTree * tree = (TTree *) file->Get(decayMode+"/tree");
 
   TFile * f_data = new TFile(rdPath.c_str());
-  TH1F *hData = (TH1F*) f_data->Get("Step_6/hData_Step_6_vsumMAlt");
+  TH1F *hData = (TH1F*) f_data->Get("Step_6/hDataSub_Step_6_vsumMAlt");
 
   TCut precut = "Z.mass() > 12 && relIso04lep1 < 0.21 && relIso04lep2 < 0.26 && Z.sign() < 0 && @jetspt30.size() >= 2";
   TCut mt2 = "maosMt2 > 140";
