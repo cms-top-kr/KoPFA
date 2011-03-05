@@ -11,6 +11,7 @@
 #include "TGraphAsymmErrors.h"
 #include "style.h"
 #include "TGraph.h"
+#include "TMatrixD.h"
 
 #include <iostream>
 #include "TUnfold.h"
@@ -23,6 +24,8 @@
 #include "unfold/RooUnfold-1.0.3/src/RooUnfoldInvert.h"
 
 void unfoldingPlot(TH1* h_gen, TH1* h_rec, TH2* m, TH1* h_mea, TH1* h_genTTbar, double scale_ttbar, TString name, bool print){
+
+  RooUnfoldResponse *response = new RooUnfoldResponse(h_rec, h_gen, m);
 
   TH1F *hgen = (TH1F*)h_genTTbar->Clone("hgen");
   TH1F *hmea = (TH1F*)h_mea->Clone("hmea");
@@ -44,8 +47,6 @@ void unfoldingPlot(TH1* h_gen, TH1* h_rec, TH2* m, TH1* h_mea, TH1* h_genTTbar, 
   hgen->SetTitle(""); 
   hgen->GetYaxis()->SetTitle("Events");
 
-  RooUnfoldResponse *response = new RooUnfoldResponse(h_rec, h_gen, m);
-
   RooUnfold* unfold = 0;
   //unfold = new RooUnfoldBayes(response, h_mea, 4);    // OR
   unfold = new RooUnfoldSvd(response, h_mea, 3);   // OR
@@ -60,6 +61,7 @@ void unfoldingPlot(TH1* h_gen, TH1* h_rec, TH2* m, TH1* h_mea, TH1* h_genTTbar, 
   //TVectorD v_unfoldE = unfold->ErecoV(RooUnfold::kCovariance);
 
   hgen->Draw();
+  hgen->SetFillColor(6);
   //hmea->SetLineStyle(2);
   //hmea->SetLineWidth(2);
   //hmea->Draw("LSame");  
@@ -71,39 +73,48 @@ void unfoldingPlot(TH1* h_gen, TH1* h_rec, TH2* m, TH1* h_mea, TH1* h_genTTbar, 
   h_unfold->SetMarkerStyle(20);
   h_unfold->SetMarkerSize(1.0);
   h_unfold->SetStats(0);  
-  
 
-  TLegend *l_unfold= new TLegend(0.65,0.60,0.80,0.8);
-  l_unfold->AddEntry(hgen,"True t#bar{t}","l");
+  TLegend *l_unfold= new TLegend(0.65,0.65,0.80,0.8);
+  l_unfold->AddEntry(hgen,"True t#bar{t}","F");
   //l_unfold->AddEntry(hmea,"data t#bar{t}","l");
   l_unfold->AddEntry(h_unfold,"Unfolded t#bar{t}","p");
-  l_unfold->SetTextSize(0.04);
+  l_unfold->SetTextSize(0.05);
   l_unfold->SetFillColor(0);
   l_unfold->SetLineColor(0);
   l_unfold->Draw();
 
-  TCanvas *c_err = new TCanvas(Form("c_err_%s",name.Data()),Form("c_err_%s",name.Data()),1); 
-  int nbins = h_unfold->GetNbinsX();
-  int offset = 0;
-  int size = nbins - offset;
-  TGraph *gerr = new TGraph(size);  
-  TGraph *gerrbefore = new TGraph(size);  
+  TLatex *label= new TLatex;
+  label->SetNDC();
+  label->SetTextSize(0.05);
+  //label->DrawLatex(x,y,"CMS Preliminary 2010");
+  label->DrawLatex(0.50,0.88,"36.1 pb^{-1} at #sqrt{s} = 7 TeV");
 
-  for(int i=1+offset; i <=  nbins; i++){
+  int nbins = h_unfold->GetNbinsX();
+
+  TCanvas *c_err = new TCanvas(Form("c_err_%s",name.Data()),Form("c_err_%s",name.Data()),1); 
+
+  TGraph *gerr = new TGraph(nbins);  
+  TGraph *gerrbefore = new TGraph(nbins);  
+
+  for(int i=1; i <=  nbins; i++){
     if( h_unfold->GetBinContent(i) != 0 ){
-      gerr->SetPoint(i-1-offset, h_unfold->GetBinCenter(i), 100*h_unfold->GetBinError(i)/h_unfold->GetBinContent(i));
-//      cout << "[" << h_unfold->GetBinCenter(i)-h_unfold->GetBinWidth(i)/2 << "," << h_unfold->GetBinCenter(i)+h_unfold->GetBinWidth(i)/2 << "]" ;
-//      cout << " : " << h_unfold->GetBinError(i) << "/" <<h_unfold->GetBinContent(i);
-//      cout << " : " << v_unfoldE(i-1) << " : " << m_unfoldE(i-1,i-1) << endl;
+      gerr->SetPoint(i-1, h_unfold->GetBinCenter(i), 100*h_unfold->GetBinError(i)/h_unfold->GetBinContent(i));
+      cout << "[" << h_unfold->GetBinCenter(i)-h_unfold->GetBinWidth(i)/2 << "," << h_unfold->GetBinCenter(i)+h_unfold->GetBinWidth(i)/2 << "]" ;
+      cout << h_unfold->GetBinContent(i) << " $/\pm$ " << h_unfold->GetBinError(i) << " " ; 
+      cout << hgen->GetBinContent(i) << " $/\pm$ " << sqrt(hgen->GetBinContent(i))*sqrt(scale_ttbar) << endl;
+//    cout << " : " << v_unfoldE(i-1) << " : " << m_unfoldE(i-1,i-1) << endl;
     }
+
     if( hmea->GetBinContent(i) != 0){
-      gerrbefore->SetPoint(i-1-offset, hmea->GetBinCenter(i), 100*hmea->GetBinError(i)/hmea->GetBinContent(i));
+      gerrbefore->SetPoint(i-1, hmea->GetBinCenter(i), 100*hmea->GetBinError(i)/hmea->GetBinContent(i));
     }
   }
+
   gerr->SetMarkerStyle(20);
   gerr->Draw("ALP");
   gerr->GetXaxis()->SetTitle("t#bar{t} invariant mass");
   gerr->GetYaxis()->SetTitle("Statistical Uncertainty (%)");
+  label->DrawLatex(0.30,0.88,"36.1 pb^{-1} at #sqrt{s} = 7 TeV");
 
   //TCanvas *c_meaerr = new TCanvas(Form("c_meaerr_%s",name.Data()),Form("c_meaerr_%s",name.Data()),1);
   //gerrbefore->Draw("ALP");
@@ -115,9 +126,9 @@ void unfoldingPlot(TH1* h_gen, TH1* h_rec, TH2* m, TH1* h_mea, TH1* h_genTTbar, 
   //m_unfoldE.Draw("colz");
 
  
-  //TCanvas *c_d = new TCanvas(Form("c_d_%s",name.Data()),Form("c_d_%s",name.Data()));
-  //TH1D* h_d = unfold->RooUnfoldSvd::Impl()->GetD();
-  //h_d->Draw();
+  TCanvas *c_d = new TCanvas(Form("c_d_%s",name.Data()),Form("c_d_%s",name.Data()));
+  TH1D* h_d = unfold->RooUnfoldSvd::Impl()->GetD();
+  h_d->Draw();
 
   cout << "chi2 : " << unfold->Chi2(hgen, RooUnfold::kErrors) << endl;
   //cout << "2 " << unfold->Chi2(hgen, RooUnfold::kCovariance) << endl;
