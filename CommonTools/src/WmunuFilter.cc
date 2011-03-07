@@ -13,7 +13,7 @@
 //
 // Original Author:  Tae Jeong Kim
 //         Created:  Mon Dec 14 01:29:35 CET 2009
-// $Id: WmunuFilter.cc,v 1.4 2011/02/11 11:40:19 taeyeon Exp $
+// $Id: WmunuFilter.cc,v 1.5 2011/02/26 13:16:46 tjkim Exp $
 //
 //
 
@@ -58,6 +58,7 @@ class WmunuFilter : public edm::EDFilter {
       edm::InputTag pfCandidateLabel_;
       double metMin_;
       double minMt_;
+      double maxMt_;
       double mindphi_;
       double maxdphi_;
     
@@ -88,6 +89,7 @@ WmunuFilter::WmunuFilter(const edm::ParameterSet& ps)
    metMin_ = ps.getUntrackedParameter<double>("metMin",-999);
    pfCandidateLabel_= ps.getParameter<edm::InputTag>("pfCandidateLabel");
    minMt_ =   ps.getParameter<double>("minMt"); 
+   maxMt_ =   ps.getParameter<double>("maxMt");
    mindphi_ = ps.getParameter<double>("mindphi");
    maxdphi_ = ps.getParameter<double>("maxdphi");
 
@@ -157,7 +159,7 @@ WmunuFilter::filter(edm::Event& iEvent, const edm::EventSetup& iSetup)
  
   //cout << "mt= " << mt << " delphi= " << delphi << "chargedhadron size= " << chargedhadron_size << endl;
  
-  if (mt > minMt_ && (delphi < maxdphi_ && delphi > mindphi_) ) {
+  if (( mt < maxMt_ && mt > minMt_) && (delphi < maxdphi_ && delphi > mindphi_) ) {
     accepted = true;
   }
 
