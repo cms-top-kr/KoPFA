@@ -29,14 +29,16 @@ public:
   int zSign() const { return l1Sign_ + l2Sign_; };
   double met() const { return met_; };
 
+  double mLLBB() const { return (l1_+l2_+jets_[0]+jets_[1]).M(); };
+
   double relPFIso1() const { return relPFIso1_; };
   double relPFIso2() const { return relPFIso2_; };
   double relDetIso1() const { return relDetIso1_; };
   double relDetIso2() const { return relDetIso2_; };
 
   int nJets() const { return jets_.size(); };
-  int nJets(const double minEt) const;
-  int nJets(const double minEt, const double minBTag, const unsigned int algoNum) const;
+  int nJets(const double minPt) const;
+  int nJets(const double minPt, const double minBTag, const unsigned int algoNum) const;
   double bTag() const { return -999; }; // dummy function to the next function to be visible
   double bTag(const unsigned int i, const unsigned int algoNum) const;
   std::string algoName(const unsigned int algoNum) const;
@@ -70,7 +72,7 @@ private:
   std::vector<std::string> algoNames_;
 
   // Cached variables
-  double nGoodJetsEt_, nGoodJetsEtBtag_;
+  double nGoodJetsPt_, nGoodJetsPtBtag_;
   
   // MET
   double met_, metX_, metY_;

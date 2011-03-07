@@ -2,7 +2,7 @@
 
 using namespace Ko;
 
-const double cacheJetMinEt = 30;
+const double cacheJetMinPt = 30;
 const double cacheJetMinBtag = 1.70;
 
 TTbarEvent::TTbarEvent()
@@ -30,7 +30,7 @@ void TTbarEvent::clear()
   jecErrs_.clear();
   bTag_.clear();
 
-  nGoodJetsEt_ = nGoodJetsEtBtag_ = 0;
+  nGoodJetsPt_ = nGoodJetsPtBtag_ = 0;
   
   met_ = metX_ = metY_ = 0;
   unCorrMet_ = unCorrMetX_ = unCorrMetY_ = 0;
@@ -90,19 +90,19 @@ void TTbarEvent::setEvent(const edm::EventID& eventId)
 
 void TTbarEvent::update()
 {
-  // Calculate number of jets with Et, btag cuts
+  // Calculate number of jets with Pt, btag cuts
   const unsigned int nJet = jets_.size();
   for ( unsigned int i = 0; i < nJet; ++i )
   {
     const reco::Candidate::LorentzVector& jet = jets_[i];
-    const double jetEt = jet.Et();
+    const double jetPt = jet.Pt();
 
-    if ( jetEt >= cacheJetMinEt )
+    if ( jetPt >= cacheJetMinPt )
     {
-      ++nGoodJetsEt_;
+      ++nGoodJetsPt_;
       if ( bTag(i, 0) > cacheJetMinBtag )
       {
-        ++nGoodJetsEtBtag_;
+        ++nGoodJetsPtBtag_;
       }
     }
   }
@@ -112,20 +112,20 @@ void TTbarEvent::update()
   {
     // Find 2 leading jets
     int j1Index = -1, j2Index = -1;
-    double j1Et = 0, j2Et = 0;
+    double j1Pt = 0, j2Pt = 0;
     for ( unsigned int i = 0; i < nJet; ++i )
     {
       const reco::Candidate::LorentzVector& jet = jets_[i];
-      const double jetEt = jet.Et();
+      const double jetPt = jet.Pt();
 
-      if ( j2Et < jetEt ) 
+      if ( j2Pt < jetPt ) 
       {
         j2Index = int(i);
-        j2Et = jetEt;
+        j2Pt = jetPt;
       }
-      if ( j1Et < j2Et ) 
+      if ( j1Pt < j2Pt ) 
       {
-        std::swap(j1Et, j2Et);
+        std::swap(j1Pt, j2Pt);
         std::swap(j1Index, j2Index);
       }
     }
@@ -141,26 +141,26 @@ void TTbarEvent::update()
   }
 }
 
-int TTbarEvent::nJets(const double minEt) const
+int TTbarEvent::nJets(const double minPt) const
 {
   const int nJet = nJets();
   int nGoodJet = 0;
   for ( int i=0; i<nJet; ++i )
   {
-    const double et = jets_[i].Et();
-    if ( et < minEt ) continue;
+    const double et = jets_[i].Pt();
+    if ( et < minPt ) continue;
     ++nGoodJet;
   }
   return nGoodJet;
 }
 
-int TTbarEvent::nJets(const double minEt, const double minBTag, const int unsigned algoNum) const
+int TTbarEvent::nJets(const double minPt, const double minBTag, const int unsigned algoNum) const
 {
   const int nJet = nJets();
   int nGoodJet = 0;
   for ( int i=0; i<nJet; ++i )
   {
-    if ( jets_[i].Et() < minEt ) continue;
+    if ( jets_[i].Pt() < minPt ) continue;
     if ( bTag(i, algoNum) < minBTag) continue;
 
     ++nGoodJet;
