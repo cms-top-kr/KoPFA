@@ -22,7 +22,7 @@
 #include "unfold/RooUnfold-1.0.3/src/RooUnfoldBinByBin.h"
 #include "unfold/RooUnfold-1.0.3/src/RooUnfoldInvert.h"
 
-#include "unfold.h"
+#include "unfolding.h"
 
 void unfolding(const TString& decayMode = "MuEl"){
 
@@ -34,6 +34,7 @@ void unfolding(const TString& decayMode = "MuEl"){
 
   const std::string mcPath = "/home/tjkim/ntuple/top/"+decayMode+"/MC/Fall10_bugfixed/vallot_TTbar.root";
   const std::string rdPath = "MuEl.root";
+  const std::string pseudoPath = "vallot_TTbar1fb_MuEl.root";
 
   TFile * file = new TFile(mcPath.c_str());
   TTree * tree = (TTree *) file->Get(decayMode+"/tree");
@@ -44,13 +45,23 @@ void unfolding(const TString& decayMode = "MuEl"){
   TCut precut = "Z.mass() > 12 && relIso04lep1 < 0.21 && relIso04lep2 < 0.26 && Z.sign() < 0 && @jetspt30.size() >= 2";
   TCut mt2 = "maosMt2 > 140";
   TCut cut = precut;
+
+  //to make pesudo data
+  TFile * pseudofile = new TFile(pseudoPath.c_str());
+  TTree * pseudotree = (TTree *) pseudofile->Get(decayMode+"/tree");
+  float detBins[] = {0, 350, 400, 450, 500,  550, 600, 700, 800, 1400};
+  int nDet = sizeof(detBins)/sizeof(float) - 1;
+  TH1F *hDataPseudo = new TH1F("hDataPseudo","hDataPseudo",nDet, detBins);
+  pseudotree->Project("hDataPseudo","vsumttbarM",cut);
+  
+  //for sclae factor
   double lumi = 36.1; //pb-1
-  //double lumi = 1000; //pb-1
+  //double lumi = 1000; //pb-1 // for pseudo data
   double lumi_ttbar = 1000000/157.5; //pb-1
   double scale_ttbar = lumi/lumi_ttbar;
 
-  plot(tree, hData, tree, "vsum", scale_ttbar, cut, true);
-  //plot(t,t_data,t_ttbar1fb, "maos",scale_ttbar, cut, true);
- 
+  //plot(tree, hData, tree, "vsum", scale_ttbar, cut, true);
+  plot(tree, f_data, tree, "vsum", scale_ttbar, cut, true);
+
 }
 
