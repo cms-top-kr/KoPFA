@@ -190,3 +190,74 @@ void massPlot(TH1* hgen, TH1* hrec, TH1* hmea, const double scale_ttbar){
 
 }
 
+TH1F* getMeasuredHisto( vector<std::string> rdPath, string cutStep){
+
+  float detBins[] = {0, 350, 400, 450, 500,  550, 600, 700, 800, 1400};
+
+  int nDet = sizeof(detBins)/sizeof(float) - 1;
+
+  TH1F *hData = new TH1F("hData","hData",nDet,detBins);
+
+  for(int i = 0; i < rdPath.size() ; i++){
+    TFile * f_data = new TFile(rdPath[i].c_str());
+    TH1F *hTemp = (TH1F*) f_data->Get(Form("%s/hDataSub_%s_vsumMAlt", cutStep.c_str(), cutStep.c_str()));
+    hData->Add(hTemp);
+  }
+
+  return hData;
+}
+
+TH2F* getResponseM( vector<std::string> mcPath, vector<std::string> rdPath, string cutStep, TString var,  vector<TString> decayMode ){
+
+  float genBins[] = {0, 350, 400, 450, 500,  550, 600, 700, 800, 1400};
+  float detBins[] = {0, 350, 400, 450, 500,  550, 600, 700, 800, 1400};
+
+  int nGen = sizeof(genBins)/sizeof(float) - 1;
+  int nDet = sizeof(detBins)/sizeof(float) - 1;
+
+  TH2F *h2_response_m = new TH2F(Form("h2_response_m_%s_%s",var.Data(),decayMode[0].Data()),Form("h2_response_m_%s",var.Data()),nDet,detBins,nGen,genBins);
+
+  for(int i = 0; i < mcPath.size() ; i++){
+    TFile * f_data = new TFile(rdPath[i].c_str());
+    TCut cut((f_data->Get(Form("%s/cut", cutStep.c_str())))->GetTitle());
+
+    TFile * file = new TFile(mcPath[i].c_str());
+    TTree * tree = (TTree *) file->Get(decayMode[i]+"/tree");
+
+    int entries = tree->GetEntries();
+
+    TH2F *h2Temp = new TH2F(Form("h2_response_m_%s_%s",var.Data(),decayMode[i].Data()),Form("h2_response_m_%s",var.Data()),nDet,detBins,nGen,genBins);
+    tree->Project(Form("h2_response_m_%s_%s",var.Data(),decayMode[i].Data()),Form("genttbarM:%sttbarM",var.Data()),cut, "", entries/2, 0);
+    h2_response_m->Add(h2Temp);
+  }
+
+  return h2_response_m;
+}
+
+TH1F* getGenDistHisto( vector<std::string> mcPath, vector<std::string> rdPath, string cutStep, TString var, vector<TString> decayMode ){
+
+  float genBins[] = {0, 350, 400, 450, 500,  550, 600, 700, 800, 1400};
+
+  int nGen = sizeof(genBins)/sizeof(float) - 1;
+
+  TH1F *h_genTTbar = new TH1F(Form("h_genTTbar%s_%s",var.Data(),decayMode[0].Data()),"h_genTTbar",nGen,genBins);
+
+  for(int i = 0; i< mcPath.size() ; i++){
+    TFile * f_data = new TFile(rdPath[i].c_str());
+    TCut cut((f_data->Get(Form("%s/cut", cutStep.c_str())))->GetTitle());
+
+    TFile * file = new TFile(mcPath[i].c_str());
+    TTree * tree = (TTree *) file->Get(decayMode[i]+"/tree");
+
+    int entries = tree->GetEntries();
+
+    hGenDistTemp = new TH1F(Form("hGenDisTemp_%s_%s",var.Data(),decayMode[i].Data()),"h_genTTbar",nGen,genBins);
+    tree->Project(Form("hGenDisTemp_%s_%s",var.Data(),decayMode[i].Data()),"genttbarM", cut,"",entries/2, entries/2);  
+    cout << "temp= " << hGenDistTemp->GetBinContent(2) << endl;
+    h_genTTbar->Add(hGenDistTemp);
+  }
+
+  return h_genTTbar;
+
+}
+
