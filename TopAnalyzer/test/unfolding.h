@@ -90,7 +90,7 @@ void unfoldingPlot(TH1* h_gen, TH1* h_rec, TH2* m, TH1* h_mea, TH1* h_genTTbar, 
   label->SetNDC();
   label->SetTextSize(0.05);
   //label->DrawLatex(x,y,"CMS Preliminary 2010");
-  label->DrawLatex(0.50,0.88,"36.1 pb^{-1} at #sqrt{s} = 7 TeV");
+  label->DrawLatex(0.50,0.88,"35.9 pb^{-1} at #sqrt{s} = 7 TeV");
 
   int nbins = h_unfold->GetNbinsX();
 
@@ -118,7 +118,7 @@ void unfoldingPlot(TH1* h_gen, TH1* h_rec, TH2* m, TH1* h_mea, TH1* h_genTTbar, 
   gerr->Draw("ALP");
   gerr->GetXaxis()->SetTitle("t#bar{t} invariant mass");
   gerr->GetYaxis()->SetTitle("Statistical Uncertainty (%)");
-  label->DrawLatex(0.30,0.88,"36.1 pb^{-1} at #sqrt{s} = 7 TeV");
+  label->DrawLatex(0.30,0.88,"35.9 pb^{-1} at #sqrt{s} = 7 TeV");
 
   //TCanvas *c_meaerr = new TCanvas(Form("c_meaerr_%s",name.Data()),Form("c_meaerr_%s",name.Data()),1);
   //gerrbefore->Draw("ALP");
