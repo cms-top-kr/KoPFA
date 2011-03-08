@@ -32,7 +32,8 @@ void unfolding(const TString& decayMode = "MuEl"){
   
   bool print = true;
 
-  const std::string mcPath = "/home/tjkim/ntuple/top/"+decayMode+"/MC/Fall10_bugfixed/vallot_TTbar.root";
+  //const std::string mcPath = "/home/tjkim/ntuple/top/"+decayMode+"/MC/Fall10_bugfixed/vallot_TTbar.root";
+  const std::string mcPath = "/data/common/Top/ntuple/"+decayMode+"/MC/v0/vallot_TTbar.root";
   const std::string rdPath = "MuEl.root";
   const std::string pseudoPath = "vallot_TTbar1fb_MuEl.root";
 
@@ -54,14 +55,48 @@ void unfolding(const TString& decayMode = "MuEl"){
   TH1F *hDataPseudo = new TH1F("hDataPseudo","hDataPseudo",nDet, detBins);
   pseudotree->Project("hDataPseudo","vsumttbarM",cut);
   
-  //for sclae factor
-  double lumi = 36.1; //pb-1
-  //double lumi = 1000; //pb-1 // for pseudo data
-  double lumi_ttbar = 1000000/157.5; //pb-1
-  double scale_ttbar = lumi/lumi_ttbar;
+  plot(tree, hData, tree, "vsum", 1000000, 35.9, cut, true, false); //response tree, data, compared tree, variable, gen events, lumi, cut ,print, pseudo
 
-  //plot(tree, hData, tree, "vsum", scale_ttbar, cut, true);
-  plot(tree, f_data, tree, "vsum", scale_ttbar, cut, true);
+  //plot(tree, hDataPseudo, tree, "vsum", 1000000, 1000, cut, true, true); //response tree, data, compared tree, variable, gen events, lumi, cut ,print, pseudo
+
+}
+
+void plot(TTree *t_response, TH1F* hData, TTree *t_compare, const TString &var, const double & genEvt, const double &lumi, TCut cut, bool print, bool pseudo){
+
+  double lumiTTbar = genEvt/157.5; //pb-1
+  double scale = lumi/lumiTTbar;
+
+  float genBins[] = {0, 350, 400, 450, 500,  550, 600, 700, 800, 1400};
+  float detBins[] = {0, 350, 400, 450, 500,  550, 600, 700, 800, 1400};
+
+  int nGen = sizeof(genBins)/sizeof(float) - 1;
+  int nDet = sizeof(detBins)/sizeof(float) - 1;
+
+  int entries = t_response->GetEntries();
+
+  cout << "Entries= " << entries << endl;
+
+  //For response matrix 
+  TH1 *h_genMC = new TH1F(Form("h_genMC%s",var.Data()),"h_genMC",nGen,genBins);
+  TH1 *h_recMC = new TH1F(Form("h_recMC%s",var.Data()),"h_recMC",nDet,detBins);
+  TH2 *h2_response_m = new TH2F(Form("h2_response_m_%s",var.Data()),Form("h2_response_m_%s",var.Data()),nDet,detBins,nGen,genBins);
+  t_response->Project(Form("h_genMC%s",var.Data()),"genttbarM",cut, "",entries/2, 0);
+  t_response->Project(Form("h_recMC%s",var.Data()),Form("%sttbarM",var.Data()),cut, "",entries/2, 0);
+  t_response->Project(Form("h2_response_m_%s",var.Data()),Form("genttbarM:%sttbarM",var.Data()),cut, "", entries/2, 0);
+
+  //For comparison
+  TH1 *h_genTTbar = new TH1F(Form("h_genTTbar%s",var.Data()),"h_genTTbar",nGen,genBins);
+  TH1 *h_recTTbar = new TH1F(Form("h_recTTbar%s",var.Data()),"h_recTTbar",nDet,detBins);
+  t_compare->Project(Form("h_genTTbar%s",var.Data()),"genttbarM", cut,"",entries/2, entries/2);
+  t_compare->Project(Form("h_recTTbar%s",var.Data()),Form("%sttbarM",var.Data()), cut,"",entries/2, entries/2);
+
+  //comparison before unfolding
+  massPlot(h_genTTbar, h_recTTbar, hData, scale*2);
+
+  //resolutionPlot(t,Form("rel%sM",var.Data()), cut, Form("%s",var.Data()), print);
+
+  //comparison after unfolding
+  unfoldingPlot(h_genMC, h_recMC, h2_response_m,  hData, h_genTTbar, scale*2, Form("%s",var.Data()), print, pseudo);
 
 }
 

@@ -23,7 +23,7 @@
 #include "unfold/RooUnfold-1.0.3/src/RooUnfoldBinByBin.h"
 #include "unfold/RooUnfold-1.0.3/src/RooUnfoldInvert.h"
 
-void unfoldingPlot(TH1* h_gen, TH1* h_rec, TH2* m, TH1* h_mea, TH1* h_genTTbar, double scale_ttbar, TString name, bool print){
+void unfoldingPlot(TH1* h_gen, TH1* h_rec, TH2* m, TH1* h_mea, TH1* h_genTTbar, double scale_ttbar, TString name, bool print, bool pseudo){
 
   RooUnfoldResponse *response = new RooUnfoldResponse(h_rec, h_gen, m);
 
@@ -62,11 +62,12 @@ void unfoldingPlot(TH1* h_gen, TH1* h_rec, TH2* m, TH1* h_mea, TH1* h_genTTbar, 
 
   hgen->Draw();
   hgen->SetFillColor(6);
-  //hmea->SetLineStyle(2);
-  //hmea->SetLineWidth(2);
-  //hmea->Draw("Same");  
-  //hmea->SetStats(0);
-
+  if(pseudo){
+    hmea->SetLineStyle(2);
+    hmea->SetLineWidth(2);
+    hmea->Draw("Same");  
+    hmea->SetStats(0);
+  }
   h_unfold->Draw("Psame");
   h_unfold->SetLineColor(1);
   h_unfold->SetLineWidth(2);
@@ -76,7 +77,9 @@ void unfoldingPlot(TH1* h_gen, TH1* h_rec, TH2* m, TH1* h_mea, TH1* h_genTTbar, 
 
   TLegend *l_unfold= new TLegend(0.58,0.68,0.80,0.8);
   l_unfold->AddEntry(hgen,"True t#bar{t}","F");
-  l_unfold->AddEntry(hmea,"Pseudo-Data t#bar{t}","l");
+  if(pseudo){
+    l_unfold->AddEntry(hmea,"Pseudo-Data t#bar{t}","l");
+  }
   l_unfold->AddEntry(h_unfold,"Unfolded t#bar{t}","p");
   l_unfold->SetTextSize(0.05);
   l_unfold->SetFillColor(0);
@@ -96,6 +99,7 @@ void unfoldingPlot(TH1* h_gen, TH1* h_rec, TH2* m, TH1* h_mea, TH1* h_genTTbar, 
   TGraph *gerr = new TGraph(nbins);  
   TGraph *gerrbefore = new TGraph(nbins);  
 
+  cout << "[bin range] / unfolded number / truth number " << endl;
   for(int i=1; i <=  nbins; i++){
     if( h_unfold->GetBinContent(i) != 0 ){
       gerr->SetPoint(i-1, h_unfold->GetBinCenter(i), 100*h_unfold->GetBinError(i)/h_unfold->GetBinContent(i));
@@ -183,45 +187,6 @@ void massPlot(TH1* hgen, TH1* hrec, TH1* hmea, const double scale_ttbar){
   l->Draw();
  
   c->Print("c_massPlot.eps");
-
-}
-
-void plot(TTree *t_response, TFile* f_data, TTree *t_compare, const TString &var, const double &scale, TCut cut, bool print){
-
-  float genBins[] = {0, 350, 400, 450, 500,  550, 600, 700, 800, 1400};
-  float detBins[] = {0, 350, 400, 450, 500,  550, 600, 700, 800, 1400};
-
-  int nGen = sizeof(genBins)/sizeof(float) - 1;
-  int nDet = sizeof(detBins)/sizeof(float) - 1;
-
-  int entries = t_response->GetEntries();
- 
-  cout << "Entries= " << entries << endl;
-
-  //For response matrix 
-  TH1 *h_genMC = new TH1F(Form("h_genMC%s",var.Data()),"h_genMC",nGen,genBins);
-  TH1 *h_recMC = new TH1F(Form("h_recMC%s",var.Data()),"h_recMC",nDet,detBins);
-  TH2 *h2_response_m = new TH2F(Form("h2_response_m_%s",var.Data()),Form("h2_response_m_%s",var.Data()),nDet,detBins,nGen,genBins);
-  t_response->Project(Form("h_genMC%s",var.Data()),"genttbarM",cut, "",entries/2, 0);
-  t_response->Project(Form("h_recMC%s",var.Data()),Form("%sttbarM",var.Data()),cut, "",entries/2, 0);
-  t_response->Project(Form("h2_response_m_%s",var.Data()),Form("genttbarM:%sttbarM",var.Data()),cut, "", entries/2, 0);
-
-  //For comparison
-  TH1 *h_genTTbar = new TH1F(Form("h_genTTbar%s",var.Data()),"h_genTTbar",nGen,genBins);
-  TH1 *h_recTTbar = new TH1F(Form("h_recTTbar%s",var.Data()),"h_recTTbar",nDet,detBins);
-  t_compare->Project(Form("h_genTTbar%s",var.Data()),"genttbarM", cut,"",entries/2, entries/2);
-  t_compare->Project(Form("h_recTTbar%s",var.Data()),Form("%sttbarM",var.Data()), cut,"",entries/2, entries/2);
-
-  //input to be unfoled
-  TH1F *hData = (TH1F*) f_data->Get("Step_6/hDataSub_Step_6_vsumMAlt");
-
-  //comparison before unfolding
-  massPlot(h_genTTbar, h_recTTbar, hData, scale*2);
-
-  //resolutionPlot(t,Form("rel%sM",var.Data()), cut, Form("%s",var.Data()), print);
-
-  //comparison after unfolding
-  unfoldingPlot(h_genMC, h_recMC, h2_response_m,  hData, h_genTTbar, scale*2, Form("%s",var.Data()), print);
 
 }
 
