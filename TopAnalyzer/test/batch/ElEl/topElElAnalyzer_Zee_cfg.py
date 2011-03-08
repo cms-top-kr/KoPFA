@@ -16,7 +16,7 @@ process.TFileService = cms.Service("TFileService",
     fileName = cms.string('vallot_Zee.root')
 )
 
-process.load("PFAnalyses.TTbarDIL.Sources.ELE.MC.Fall10.patTuple_ZJets50_cff")
+process.load("PFAnalyses.TTbarDIL.Sources.ELE.MC.Fall10.patTuple_ZJets_Z2_cff")
 process.load("KoPFA.TopAnalyzer.topAnalysis_cff")
 
 process.GenZmassFilter.applyFilter = True

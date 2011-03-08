@@ -36,7 +36,7 @@ void mergeChannel (TString filename, TString step, TString histname, bool logsca
   TString hist = TString("_Step_")+ TString(step) + TString("_") + TString(histname);
   TString data = TString("hData") + TString(hist);
   TString mc[n];
-  mc[0] = TString("hMC_TTbar") + TString(hist);
+  mc[0] = TString("hMCSig_TTbar") + TString(hist);
   mc[1] = TString("hMC_Wl") + TString(hist);
   mc[2] = TString("hMC_VV") + TString(hist);
   mc[3] = TString("hMC_SingleTop") + TString(hist);

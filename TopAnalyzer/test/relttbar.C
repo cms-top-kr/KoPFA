@@ -293,7 +293,7 @@ void plot(TTree *t, TTree *t_data, const TString &var, const double &scale_ttbar
 
 }
 
-void relttbar(const TString& decayMode = "MuEl"){
+void relttbar(const TString& decayMode = "ElEl"){
   
   bool print = true;
   
@@ -303,12 +303,13 @@ void relttbar(const TString& decayMode = "MuEl"){
   TTree * t_data = (TTree *) f_data->Get(decayMode+"/tree");
   TTree * t = (TTree *) f->Get(decayMode+"/tree");
  
-  TCut precut = "Z.mass() > 12 && relIso04lep1 < 0.21 && relIso04lep2 < 0.26 && Z.sign() < 0 && @jetspt30.size() >= 2";
+  TCut precut = "Z.mass() > 12 && relIso04lep1 < 0.26 && relIso04lep2 < 0.26 && Z.sign() < 0 && @jetspt30.size() >= 2 && abs(Z.mass() - 91 ) > 15 && MET > 30";
   TCut mt2 = "maosMt2 > 140";
   TCut cut = precut;
   //double lumi = 36.1; //pb-1
   double lumi = 1000; //pb-1
   double lumi_ttbar = 1000000.0/157.5; //pb-1
+  //double lumi_ttbar = 853741/157.5; //pb-1
   double scale_ttbar = lumi/lumi_ttbar;
 
   plot(t,t_data,"vsum",scale_ttbar, cut, true);

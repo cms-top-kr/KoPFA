@@ -37,13 +37,15 @@ void unfolding(const TString& decayMode = "MuEl"){
   const std::string rdPath = "MuEl.root";
   const std::string pseudoPath = "vallot_TTbar1fb_MuEl.root";
 
+  const std::string cutStep = "Step_6";
+
   TFile * file = new TFile(mcPath.c_str());
   TTree * tree = (TTree *) file->Get(decayMode+"/tree");
 
   TFile * f_data = new TFile(rdPath.c_str());
-  TH1F *hData = (TH1F*) f_data->Get("Step_6/hDataSub_Step_6_vsumMAlt");
+  TH1F *hData = (TH1F*) f_data->Get(Form("%s/hDataSub_%s_vsumMAlt", cutStep.c_str(), cutStep.c_str()));
 
-  TCut precut = "Z.mass() > 12 && relIso04lep1 < 0.21 && relIso04lep2 < 0.26 && Z.sign() < 0 && @jetspt30.size() >= 2";
+  TCut precut((f_data->Get(Form("%s/cut", cutStep.c_str())))->GetTitle());
   TCut mt2 = "maosMt2 > 140";
   TCut cut = precut;
 
