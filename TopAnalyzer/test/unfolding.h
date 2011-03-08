@@ -49,7 +49,7 @@ void unfoldingPlot(TH1* h_gen, TH1* h_rec, TH2* m, TH1* h_mea, TH1* h_genTTbar, 
 
   RooUnfold* unfold = 0;
   //unfold = new RooUnfoldBayes(response, h_mea, 4);    // OR
-  unfold = new RooUnfoldSvd(response, h_mea, 3);   // OR
+  unfold = new RooUnfoldSvd(response, h_mea, 2);   // OR
   //unfold = new RooUnfoldBinByBin(response, h_mea);
   //unfold = new RooUnfoldInvert(response, h_mea);
 
