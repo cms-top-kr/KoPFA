@@ -34,7 +34,7 @@ public:
 
   void addMCSig(const string mcSampleName, const string mcSampleLabel,
                 const string fileName, const double xsec, const double nEvents,
-                const Color_t color);
+                const Color_t color, const bool doStackSignal = true);
   void addMCBkg(const string mcSampleName, const string mcSampleLabel,
                 const string fileName, const double xsec, const double nEvents,
                 const Color_t color);
@@ -90,6 +90,7 @@ private:
   double lumi_;
   string subDirName_;
   MCSample mcSig_;
+  bool doStackSignal_;
   vector<MCSample> mcBkgs_;
   TChain* realDataChain_;
 
@@ -130,6 +131,7 @@ TopAnalyzerLite::TopAnalyzerLite(const string subDirName, const string imageOutD
 
   mcSig_.nEvents = 0;
   mcSig_.chain = 0;
+  doStackSignal_ = true;
 }
 
 TopAnalyzerLite::~TopAnalyzerLite()
@@ -139,13 +141,14 @@ TopAnalyzerLite::~TopAnalyzerLite()
 
 void TopAnalyzerLite::addMCSig(const string mcSampleName, const string mcSampleLabel,
                                const string fileName, const double xsec, const double nEvents,
-                               const Color_t color)
+                               const Color_t color, const bool doStackSignal)
 {
   mcSig_.name = mcSampleName;
   mcSig_.label = mcSampleLabel;
   mcSig_.nEvents += nEvents;
   mcSig_.xsec = xsec;
   mcSig_.color = color;
+  doStackSignal_ = doStackSignal;
 
   if ( !mcSig_.chain )
   {
@@ -358,10 +361,19 @@ void TopAnalyzerLite::plot(const string name, const TCut cut, MonitorPlot& monit
   mcSig_.chain->Project(mcSigHistName, varexp.c_str(), cut);
   hMCSig->AddBinContent(nBins, hMCSig->GetBinContent(nBins+1));
   hMCSig->Scale(lumi_*mcSig_.xsec/mcSig_.nEvents);
-  hMCSig->SetFillColor(mcSig_.color);
+  
+  if ( doStackSignal_ )
+  {
+    hMCSig->SetFillColor(mcSig_.color);
 
-  stackedPlots.push_back(make_pair(mcSig_.label, hMCSig));
-  hStack->Add(hMCSig);
+    stackedPlots.push_back(make_pair(mcSig_.label, hMCSig));
+    hStack->Add(hMCSig);
+  }
+  else
+  {
+    hMCSig->SetLineWidth(2);
+    hMCSig->SetLineColor(mcSig_.color);
+  }
   histograms_.Add(hMCSig);
 
   for ( unsigned int i=0; i<mcBkgs_.size(); ++i )
@@ -442,6 +454,12 @@ void TopAnalyzerLite::plot(const string name, const TCut cut, MonitorPlot& monit
     legend->AddEntry(h, label, "f");
   }
 
+  if ( !doStackSignal_ )
+  {
+    const char* label = mcSig_.label.c_str();
+    legend->AddEntry(hMCSig, label, "f");
+  }
+
   TCanvas* c = new TCanvas(Form("c_%s", name.c_str()), name.c_str(), 1);
   if ( ymax == 0 )
   {
@@ -463,6 +481,7 @@ void TopAnalyzerLite::plot(const string name, const TCut cut, MonitorPlot& monit
 
   hStack->Draw();
   hData->Draw("same");
+  if ( !doStackSignal_ ) hMCSig->Draw("same");
   legend->Draw();
 
   if ( imageOutDir_ != "" )
