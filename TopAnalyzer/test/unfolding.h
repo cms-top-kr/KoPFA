@@ -37,6 +37,9 @@ void unfoldingPlot(TH1* h_gen, TH1* h_rec, TH2* m, TH1* h_mea, TH1* h_genTTbar, 
   m->Draw("colz");
   m->SetStats(0);
   m->SetTitle("");
+  m->GetYaxis()->SetTitle("M_{t#bar{t}} True Mass");
+  m->GetXaxis()->SetTitle("M_{t#bar{t}} Reco Mass");
+
 
   TCanvas *c = new TCanvas(Form("c_unfold_%s",name.Data()),Form("c_unfold_%s",name.Data()), 1);
   c->SetLogy();
@@ -135,8 +138,11 @@ void unfoldingPlot(TH1* h_gen, TH1* h_rec, TH2* m, TH1* h_mea, TH1* h_genTTbar, 
   m_unfoldE.Draw("colz");
 
   TCanvas *c_d = new TCanvas(Form("c_d_%s",name.Data()),Form("c_d_%s",name.Data()));
+  c_d->SetLogy();
   TH1D* h_d = unfold->RooUnfoldSvd::Impl()->GetD();
-  h_d->Draw();
+  h_d->Draw("PC");
+  h_d->GetYaxis()->SetTitle("log|d_{i}|");
+  h_d->GetXaxis()->SetTitle("i");
 
   TCanvas *c_dsigma = new TCanvas(Form("c_dsigma_%s",name.Data()),Form("c_dsigma_%s",name.Data()));
   c_dsigma->SetLogy();
@@ -173,6 +179,14 @@ void unfoldingPlot(TH1* h_gen, TH1* h_rec, TH2* m, TH1* h_mea, TH1* h_genTTbar, 
     c_meaerr->Print(Form("c_meaerr_%s.eps",name.Data()));
     c_errmat->Print(Form("c_errmat_%s.eps",name.Data()));
     c_dsigma->Print(Form("c_dsigma_%s.eps",name.Data()));
+
+    c_response->Print(Form("c_response_%s.png",name.Data()));
+    c->Print(Form("c_unfold_%s.png",name.Data()));
+    c_err->Print(Form("c_err_%s.png",name.Data()));
+    c_meaerr->Print(Form("c_meaerr_%s.png",name.Data()));
+    c_errmat->Print(Form("c_errmat_%s.png",name.Data()));
+    c_dsigma->Print(Form("c_dsigma_%s.png",name.Data()));
+
   }
 }
 
