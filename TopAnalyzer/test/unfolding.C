@@ -30,7 +30,7 @@ void unfolding(){
   gROOT->LoadMacro("tdrstyle.C");
   setTDRStyle();
   
-  bool print = true;
+  bool print = false;
 
   vector<TString> decayMode;
   decayMode.push_back("MuEl");
@@ -56,12 +56,14 @@ void unfolding(){
   TH2F * h2ResponseM = getResponseM(mcPath, rdPath, cutStep,  "vsum", decayMode);
   TH1F * hGenDist = getGenDistHisto(mcPath, rdPath, cutStep,  "vsum", decayMode);
 
+  TGraphAsymmErrors* accept =  getAcceptance(mcPath, rdPath, cutStep,  "vsum", decayMode);
+  
   //response tree, data, compared histo, variable, gen events, lumi, print, pseudo
-  plot(h2ResponseM, hData, hGenDist, "vsum", 1000000, 35.9, true, false); 
+  plot(h2ResponseM, hData, hGenDist, accept, "vsum", 1000000, 35.9, true, false); 
 
 }
 
-void plot(TH2F* h2_response_m, TH1F* hData, TH1F* h_genTTbar, const TString &var, const double & genEvt, const double &lumi, bool print, bool pseudo){
+void plot(TH2F* h2_response_m, TH1F* hData, TH1F* hGenDist, TGraphAsymmErrors* accept, const TString &var, const double & genEvt, const double &lumi, bool print, bool pseudo){
 
   double lumiTTbar = genEvt/157.5; //pb-1
   double scale = lumi/lumiTTbar;
@@ -69,7 +71,7 @@ void plot(TH2F* h2_response_m, TH1F* hData, TH1F* h_genTTbar, const TString &var
   h_genMC = h2_response_m->ProjectionY();
   h_recMC = h2_response_m->ProjectionX();
 
-  unfoldingPlot(h_genMC, h_recMC, h2_response_m,  hData, h_genTTbar, scale*2, Form("%s",var.Data()), print, pseudo);
+  unfoldingPlot(h_genMC, h_recMC, h2_response_m,  hData, hGenDist, accept, scale*2, Form("%s",var.Data()), print, pseudo);
 
 }
 

@@ -23,7 +23,7 @@
 #include "unfold/RooUnfold-1.0.3/src/RooUnfoldBinByBin.h"
 #include "unfold/RooUnfold-1.0.3/src/RooUnfoldInvert.h"
 
-void unfoldingPlot(TH1* h_gen, TH1* h_rec, TH2* m, TH1* h_mea, TH1* h_genTTbar, double scale_ttbar, TString name, bool print, bool pseudo){
+void unfoldingPlot(TH1* h_gen, TH1* h_rec, TH2* m, TH1* h_mea, TH1* h_genTTbar, TGraphAsymmErrors* accept, double scale_ttbar, TString name, bool print, bool pseudo){
 
   RooUnfoldResponse *response = new RooUnfoldResponse(h_rec, h_gen, m);
 
@@ -57,7 +57,7 @@ void unfoldingPlot(TH1* h_gen, TH1* h_rec, TH2* m, TH1* h_mea, TH1* h_genTTbar, 
   //TH1F* h_unfold = (TH1F*) unfold->Hreco(RooUnfold::kCovariance);
   //TH1F* h_unfold = (TH1F*) unfold->Hreco(RooUnfold::kErrors);
   
-  //TMatrixD m_unfoldE = unfold->Ereco();
+  TMatrixD m_unfoldE = unfold->Ereco();
   //TVectorD v_unfoldE = unfold->ErecoV(RooUnfold::kCovariance);
 
   hgen->Draw();
@@ -99,20 +99,25 @@ void unfoldingPlot(TH1* h_gen, TH1* h_rec, TH2* m, TH1* h_mea, TH1* h_genTTbar, 
   TGraph *gerr = new TGraph(nbins);  
   TGraph *gerrbefore = new TGraph(nbins);  
 
-  cout << "[bin range] / unfolded number / truth number " << endl;
   for(int i=1; i <=  nbins; i++){
     if( h_unfold->GetBinContent(i) != 0 ){
       gerr->SetPoint(i-1, h_unfold->GetBinCenter(i), 100*h_unfold->GetBinError(i)/h_unfold->GetBinContent(i));
-      cout << "[" << h_unfold->GetBinCenter(i)-h_unfold->GetBinWidth(i)/2 << "," << h_unfold->GetBinCenter(i)+h_unfold->GetBinWidth(i)/2 << "]" ;
-      cout << h_unfold->GetBinContent(i) << " $/\pm$ " << h_unfold->GetBinError(i) << " " ; 
-      cout << hgen->GetBinContent(i) << " $/\pm$ " << sqrt(hgen->GetBinContent(i))*sqrt(scale_ttbar) << endl;
-//    cout << " : " << v_unfoldE(i-1) << " : " << m_unfoldE(i-1,i-1) << endl;
+    } else{
+      gerr->SetPoint(i-1, h_unfold->GetBinCenter(i), -1);
     }
 
     if( hmea->GetBinContent(i) != 0){
       gerrbefore->SetPoint(i-1, hmea->GetBinCenter(i), 100*hmea->GetBinError(i)/hmea->GetBinContent(i));
+    } else {
+      gerrbefore->SetPoint(i-1, hmea->GetBinCenter(i), -1);
     }
   }
+
+  cout << "Unfolded: evt number / sigma (fb)" << endl;  
+  TGraphAsymmErrors* dsigmaData = printFinal(nbins, h_unfold, accept, 1, false);
+  cout << "Truth: evt number / sigma (fb)" << endl;
+  TGraphAsymmErrors* dsigmaTruth = printFinal(nbins, hgen, accept, scale_ttbar, true);
+  TH1* hSigmaTruth = getSigmaTruth(hgen, accept);
 
   gerr->SetMarkerStyle(20);
   gerr->Draw("ALP");
@@ -120,20 +125,46 @@ void unfoldingPlot(TH1* h_gen, TH1* h_rec, TH2* m, TH1* h_mea, TH1* h_genTTbar, 
   gerr->GetYaxis()->SetTitle("Statistical Uncertainty (%)");
   label->DrawLatex(0.30,0.88,"35.9 pb^{-1} at #sqrt{s} = 7 TeV");
 
-  //TCanvas *c_meaerr = new TCanvas(Form("c_meaerr_%s",name.Data()),Form("c_meaerr_%s",name.Data()),1);
-  //gerrbefore->Draw("ALP");
-  //gerrbefore->SetLineStyle(2);
-  //gerrbefore->SetMarkerStyle(20);
-  
+  TCanvas *c_meaerr = new TCanvas(Form("c_meaerr_%s",name.Data()),Form("c_meaerr_%s",name.Data()),1);
+  gerrbefore->Draw("ALP");
+  gerrbefore->SetMarkerStyle(20);
+  gerrbefore->GetXaxis()->SetTitle("t#bar{t} invariant mass");
+  gerrbefore->GetYaxis()->SetTitle("Statistical Uncertainty (%)");
 
-  //TCanvas *c_errmat = new TCanvas(Form("c_errmat_%s",name.Data()),Form("c_errmat_%s",name.Data()),1);
-  //m_unfoldE.Draw("colz");
+  TCanvas *c_errmat = new TCanvas(Form("c_errmat_%s",name.Data()),Form("c_errmat_%s",name.Data()),1);
+  m_unfoldE.Draw("colz");
 
- 
   TCanvas *c_d = new TCanvas(Form("c_d_%s",name.Data()),Form("c_d_%s",name.Data()));
   TH1D* h_d = unfold->RooUnfoldSvd::Impl()->GetD();
   h_d->Draw();
 
+  TCanvas *c_test = new TCanvas("c_test","c_test",1);
+  hSigmaTruth->Draw();
+
+  TCanvas *c_dsigma = new TCanvas(Form("c_dsigma_%s",name.Data()),Form("c_dsigma_%s",name.Data()));
+  c_dsigma->SetLogy();
+  dsigmaData->Draw("AP");
+  dsigmaData->GetXaxis()->SetTitle("t#bar{t} invariant mass (GeV/c^2)");
+  dsigmaData->GetYaxis()->SetTitle("d#sigma/dM_{t#bar{t}}");
+  hSigmaTruth->SetLineWidth(1);
+  hSigmaTruth->SetLineStyle(1);
+  hSigmaTruth->Draw("same");
+  dsigmaTruth->SetFillColor(30);
+  dsigmaTruth->SetFillStyle(3001);
+  dsigmaTruth->SetLineColor(0);
+  dsigmaTruth->Draw("2same");
+
+  TLegend *l_dsigma= new TLegend(0.58,0.68,0.80,0.8);
+  l_dsigma->AddEntry(hSigmaTruth, "SM Expectation","L");
+  l_dsigma->AddEntry(dsigmaTruth, "SM Uncertainties","F");
+  l_dsigma->AddEntry(dsigmaData, "Unfolded Data","P");
+  l_dsigma->SetTextSize(0.04);
+  l_dsigma->SetFillColor(0);
+  l_dsigma->SetLineColor(0);
+  l_dsigma->Draw();
+
+  label->DrawLatex(0.47,0.88,"35.9 pb^{-1} at #sqrt{s} = 7 TeV");
+  
   cout << "chi2 : " << unfold->Chi2(hgen, RooUnfold::kErrors) << endl;
   //cout << "2 " << unfold->Chi2(hgen, RooUnfold::kCovariance) << endl;
 
@@ -141,7 +172,9 @@ void unfoldingPlot(TH1* h_gen, TH1* h_rec, TH2* m, TH1* h_mea, TH1* h_genTTbar, 
     c_response->Print(Form("c_response_%s.eps",name.Data()));
     c->Print(Form("c_unfold_%s.eps",name.Data()));
     c_err->Print(Form("c_err_%s.eps",name.Data()));
-    //c_errmat->Print(Form("c_errmat_%s.eps",name.Data()));
+    c_meaerr->Print(Form("c_meaerr_%s.eps",name.Data()));
+    c_errmat->Print(Form("c_errmat_%s.eps",name.Data()));
+    c_dsigma->Print(Form("c_dsigma_%s.eps",name.Data()));
   }
 }
 
@@ -253,7 +286,7 @@ TH1F* getGenDistHisto( vector<std::string> mcPath, vector<std::string> rdPath, s
 
     hGenDistTemp = new TH1F(Form("hGenDisTemp_%s_%s",var.Data(),decayMode[i].Data()),"h_genTTbar",nGen,genBins);
     tree->Project(Form("hGenDisTemp_%s_%s",var.Data(),decayMode[i].Data()),"genttbarM", cut,"",entries/2, entries/2);  
-    cout << "temp= " << hGenDistTemp->GetBinContent(2) << endl;
+
     h_genTTbar->Add(hGenDistTemp);
   }
 
@@ -261,3 +294,104 @@ TH1F* getGenDistHisto( vector<std::string> mcPath, vector<std::string> rdPath, s
 
 }
 
+TGraphAsymmErrors* getAcceptance(vector<std::string> mcPath, vector<std::string> rdPath, string cutStep, TString var, vector<TString> decayMode ){
+
+  TFile * fDen = new TFile("/home/tjkim/ntuple/top/genTTbar/ttbarGen.root");
+  TTree* genTreeDen = (TTree*)fDen->Get("ttbarGenAna/tree");
+
+  double binsMass[] = {0, 350, 400, 450, 500, 550, 600, 700, 800, 1400};
+  const int nBinsMass = sizeof(binsMass)/sizeof(binsMass[0]) - 1;
+
+  TH1F* hDen = new TH1F("hDen", "Denominator", nBinsMass, binsMass);
+  TH1F* hNum = new TH1F("hNum", "Numerator", nBinsMass, binsMass);
+
+  genTreeDen->Project("hDen", "tt.M()");
+
+  for(int i = 0; i < mcPath.size() ; i++){
+
+    TFile * f_data = new TFile(rdPath[i].c_str());
+    TCut cut((f_data->Get(Form("%s/cut", cutStep.c_str())))->GetTitle());
+
+    TFile * file = new TFile(mcPath[i].c_str());
+    TTree * tree = (TTree *) file->Get(decayMode[i]+"/tree");
+
+    TH1F* hNumTemp = new TH1F(Form("hNumTemp_%s_%s",var.Data(), decayMode[i].Data()), "Numerator", nBinsMass, binsMass);
+    tree->Project(Form("hNumTemp_%s_%s",var.Data(), decayMode[i].Data()), "genttbarM", cut);
+    hNum->Add(hNumTemp);
+
+  }
+
+  TGraphAsymmErrors* grpAccept = new TGraphAsymmErrors;
+
+  for(int i=0; i < nBinsMass; i++){
+    int bin = i+1;
+    double acc = hNum->GetBinContent(bin)/hDen->GetBinContent(bin);
+    double center = hNum->GetBinCenter(bin);
+    double width = hNum->GetBinWidth(bin);
+    double err = sqrt(hNum->GetBinContent(bin))/hDen->GetBinContent(bin);
+    grpAccept->SetPoint(i, center, acc );
+    grpAccept->SetPointEXhigh(i, width/2);
+    grpAccept->SetPointEXlow(i, width/2);
+    grpAccept->SetPointEYhigh(i, err);
+    grpAccept->SetPointEYlow(i, err);
+    cout << "accept= " << acc << endl;
+  }
+
+  return grpAccept;
+
+}
+
+TGraphAsymmErrors* printFinal( int nbins, TH1F* hgen, TGraphAsymmErrors* accept, double scale, bool truth ){
+
+  TGraphAsymmErrors* dsigma = new TGraphAsymmErrors;
+
+  for(int i=1; i <=  nbins; i++){
+    double x;
+    double y;
+    accept->GetPoint(i-1,x,y);
+   
+    double unfolded = hgen->GetBinContent(i);
+    double err = 0;
+    if(truth) err = sqrt(hgen->GetBinContent(i))*sqrt(scale) ;
+    else err = hgen->GetBinError(i);
+
+    double sigma = 1000*unfolded/( y * 35.9 * hgen->GetBinWidth(i) ) ;
+    double sigmaErr = sigma*err/unfolded;
+
+    cout << "$" << hgen->GetBinCenter(i)-hgen->GetBinWidth(i)/2 << "-" << hgen->GetBinCenter(i)+hgen->GetBinWidth(i)/2 << "$   ~&~ "
+         << hgen->GetBinContent(i) << " $\\pm$ " << err << " ~&~ "
+         << sigma << " $\\pm$ " << sigmaErr  
+         << " \\\\" <<  endl;
+
+    double width = hgen->GetBinWidth(i);
+
+    dsigma->SetPoint(i-1, x, sigma );
+    dsigma->SetPointEXhigh(i-1, width/2);
+    dsigma->SetPointEXlow(i-1, width/2);
+    dsigma->SetPointEYhigh(i-1, sigmaErr);
+    dsigma->SetPointEYlow(i-1, sigmaErr);
+
+  }
+
+  return dsigma;
+}
+
+TH1* getSigmaTruth(TH1F* hgen, TGraphAsymmErrors* accept ){
+
+  double binsMass[] = {0, 350, 400, 450, 500, 550, 600, 700, 800, 1400};
+  const int nBinsMass = sizeof(binsMass)/sizeof(binsMass[0]) - 1;
+
+  TH1* dsigma = new TH1F("dsigma","dsigma", nBinsMass, binsMass);
+
+  for(int i=1; i <=  nBinsMass; i++){
+    double x;
+    double y;
+    accept->GetPoint(i-1,x,y);
+    double unfolded = hgen->GetBinContent(i);
+    double sigma = 1000*unfolded/( y * 35.9 * hgen->GetBinWidth(i) ) ;
+    dsigma->SetBinContent(i, sigma);
+  }
+
+  return dsigma;
+
+}
