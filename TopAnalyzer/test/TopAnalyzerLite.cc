@@ -186,6 +186,8 @@ void TopAnalyzerLite::addMCBkg(const string mcSampleName, const string mcSampleL
 void TopAnalyzerLite::addRealData(const string fileName, const double lumi)
 {
   lumi_ += lumi;
+  if ( fileName == "" ) return;
+
   if ( !realDataChain_ )
   {
     const string chainName = subDirName_+"/tree";
