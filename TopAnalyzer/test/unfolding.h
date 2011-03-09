@@ -138,17 +138,15 @@ void unfoldingPlot(TH1* h_gen, TH1* h_rec, TH2* m, TH1* h_mea, TH1* h_genTTbar, 
   TH1D* h_d = unfold->RooUnfoldSvd::Impl()->GetD();
   h_d->Draw();
 
-  TCanvas *c_test = new TCanvas("c_test","c_test",1);
-  hSigmaTruth->Draw();
-
   TCanvas *c_dsigma = new TCanvas(Form("c_dsigma_%s",name.Data()),Form("c_dsigma_%s",name.Data()));
   c_dsigma->SetLogy();
-  dsigmaData->Draw("AP");
-  dsigmaData->GetXaxis()->SetTitle("t#bar{t} invariant mass (GeV/c^2)");
-  dsigmaData->GetYaxis()->SetTitle("d#sigma/dM_{t#bar{t}}");
   hSigmaTruth->SetLineWidth(1);
   hSigmaTruth->SetLineStyle(1);
-  hSigmaTruth->Draw("same");
+  hSigmaTruth->Draw();
+  hSigmaTruth->SetMaximum(3000);
+  hSigmaTruth->GetXaxis()->SetTitle("Unfolded t#bar{t} invariant mass (GeV/c^{2})");
+  hSigmaTruth->GetYaxis()->SetTitle("d#sigma/dM_{t#bar{t}}");
+  dsigmaData->Draw("Psame");
   dsigmaTruth->SetFillColor(30);
   dsigmaTruth->SetFillStyle(3001);
   dsigmaTruth->SetLineColor(0);
