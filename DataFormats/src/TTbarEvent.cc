@@ -252,7 +252,7 @@ void TTbarEvent::setLepton(const reco::Candidate* l1, const reco::Candidate* l2)
     relDetIso2_ = (tkIso2_+ecIso2_+hcIso2_)/mu2->pfCandidateRef()->pt();
   }
 
-  zM_ = (l1_+l2_).mag();
+  zM_ = (l1_+l2_).M();
 }
 
 std::string TTbarEvent::algoName(const unsigned int algoNum) const
