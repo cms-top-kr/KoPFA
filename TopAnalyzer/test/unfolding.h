@@ -13,6 +13,7 @@
 #include "TGraph.h"
 #include "TMatrixD.h"
 
+#include <iomanip>
 #include <iostream>
 #include "TUnfold.h"
 #include "unfold/RooUnfold-1.0.3/src/TSVDUnfold.h"
@@ -23,7 +24,9 @@
 #include "unfold/RooUnfold-1.0.3/src/RooUnfoldBinByBin.h"
 #include "unfold/RooUnfold-1.0.3/src/RooUnfoldInvert.h"
 
-void unfoldingPlot(TH1* h_gen, TH1* h_rec, TH2* m, TH1* h_mea, TH1* h_genTTbar, TGraphAsymmErrors* accept, double scale_ttbar, TString name, bool print, bool pseudo){
+void unfoldingPlot(TH1* h_gen, TH1* h_rec, TH2* m, TH1* h_mea, TH1* h_genTTbar, TGraphAsymmErrors* accept, double scale_ttbar, TString name, double lumi, bool print, bool pseudo){
+
+  string intlumi = double2string(lumi);
 
   RooUnfoldResponse *response = new RooUnfoldResponse(h_rec, h_gen, m);
 
@@ -34,12 +37,11 @@ void unfoldingPlot(TH1* h_gen, TH1* h_rec, TH2* m, TH1* h_mea, TH1* h_genTTbar, 
   hmea->SetLineColor(4);
 
   TCanvas *c_response = new TCanvas(Form("c_response_%s",name.Data()),Form("c_response_%s",name.Data()),1);
-  m->Draw("colz");
+  m->Draw("box");
   m->SetStats(0);
   m->SetTitle("");
   m->GetYaxis()->SetTitle("M_{t#bar{t}} True Mass");
   m->GetXaxis()->SetTitle("M_{t#bar{t}} Reco Mass");
-
 
   TCanvas *c = new TCanvas(Form("c_unfold_%s",name.Data()),Form("c_unfold_%s",name.Data()), 1);
   c->SetLogy();
@@ -93,7 +95,7 @@ void unfoldingPlot(TH1* h_gen, TH1* h_rec, TH2* m, TH1* h_mea, TH1* h_genTTbar, 
   label->SetNDC();
   label->SetTextSize(0.05);
   //label->DrawLatex(x,y,"CMS Preliminary 2010");
-  label->DrawLatex(0.50,0.88,"35.9 pb^{-1} at #sqrt{s} = 7 TeV");
+  label->DrawLatex(0.50,0.88,Form("%s pb^{-1} at #sqrt{s} = 7 TeV",intlumi));
 
   int nbins = h_unfold->GetNbinsX();
 
@@ -117,16 +119,16 @@ void unfoldingPlot(TH1* h_gen, TH1* h_rec, TH2* m, TH1* h_mea, TH1* h_genTTbar, 
   }
 
   cout << "Unfolded: evt number / sigma (fb)" << endl;  
-  TGraphAsymmErrors* dsigmaData = printFinal(nbins, h_unfold, accept, 1, false);
+  TGraphAsymmErrors* dsigmaData = printFinal(nbins, h_unfold, accept, lumi, 1, false);
   cout << "Truth: evt number / sigma (fb)" << endl;
-  TGraphAsymmErrors* dsigmaTruth = printFinal(nbins, hgen, accept, scale_ttbar, true);
-  TH1* hSigmaTruth = getSigmaTruth(hgen, accept);
+  TGraphAsymmErrors* dsigmaTruth = printFinal(nbins, hgen, accept, lumi, scale_ttbar, true);
+  TH1* hSigmaTruth = getSigmaTruth(hgen, accept, lumi);
 
   gerr->SetMarkerStyle(20);
   gerr->Draw("ALP");
   gerr->GetXaxis()->SetTitle("t#bar{t} invariant mass");
   gerr->GetYaxis()->SetTitle("Statistical Uncertainty (%)");
-  label->DrawLatex(0.30,0.88,"35.9 pb^{-1} at #sqrt{s} = 7 TeV");
+  label->DrawLatex(0.30,0.88,Form("%s pb^{-1} at #sqrt{s} = 7 TeV",intlumi));
 
   TCanvas *c_meaerr = new TCanvas(Form("c_meaerr_%s",name.Data()),Form("c_meaerr_%s",name.Data()),1);
   gerrbefore->Draw("ALP");
@@ -167,7 +169,7 @@ void unfoldingPlot(TH1* h_gen, TH1* h_rec, TH2* m, TH1* h_mea, TH1* h_genTTbar, 
   l_dsigma->SetLineColor(0);
   l_dsigma->Draw();
 
-  label->DrawLatex(0.47,0.88,"35.9 pb^{-1} at #sqrt{s} = 7 TeV");
+  label->DrawLatex(0.47,0.88,Form("%s pb^{-1} at #sqrt{s} = 7 TeV",intlumi));
   
   cout << "chi2 : " << unfold->Chi2(hgen, RooUnfold::kErrors) << endl;
   //cout << "2 " << unfold->Chi2(hgen, RooUnfold::kCovariance) << endl;
@@ -179,6 +181,7 @@ void unfoldingPlot(TH1* h_gen, TH1* h_rec, TH2* m, TH1* h_mea, TH1* h_genTTbar, 
     c_meaerr->Print(Form("c_meaerr_%s.eps",name.Data()));
     c_errmat->Print(Form("c_errmat_%s.eps",name.Data()));
     c_dsigma->Print(Form("c_dsigma_%s.eps",name.Data()));
+    c_d->Print(Form("c_d_%s.eps",name.Data()));
 
     c_response->Print(Form("c_response_%s.png",name.Data()));
     c->Print(Form("c_unfold_%s.png",name.Data()));
@@ -186,6 +189,15 @@ void unfoldingPlot(TH1* h_gen, TH1* h_rec, TH2* m, TH1* h_mea, TH1* h_genTTbar, 
     c_meaerr->Print(Form("c_meaerr_%s.png",name.Data()));
     c_errmat->Print(Form("c_errmat_%s.png",name.Data()));
     c_dsigma->Print(Form("c_dsigma_%s.png",name.Data()));
+    c_d->Print(Form("c_d_%s.png",name.Data()));
+
+    c_response->Print(Form("c_response_%s.pdf",name.Data()));
+    c->Print(Form("c_unfold_%s.pdf",name.Data()));
+    c_err->Print(Form("c_err_%s.pdf",name.Data()));
+    c_meaerr->Print(Form("c_meaerr_%s.pdf",name.Data()));
+    c_errmat->Print(Form("c_errmat_%s.pdf",name.Data()));
+    c_dsigma->Print(Form("c_dsigma_%s.pdf",name.Data()));
+    c_d->Print(Form("c_d_%s.pdf",name.Data()));
 
   }
 }
@@ -233,6 +245,32 @@ void massPlot(TH1* hgen, TH1* hrec, TH1* hmea, const double scale_ttbar){
  
   c->Print("c_massPlot.eps");
 
+}
+
+TH1F* getMeasuredHistoPseudo( vector<std::string> mcPath, vector<std::string> rdPath, string cutStep, TString var,  vector<TString> decayMode , double frac){
+
+  float detBins[] = {0, 350, 400, 450, 500,  550, 600, 700, 800, 1400};
+
+  int nDet = sizeof(detBins)/sizeof(float) - 1;
+
+  TH1F *hData = new TH1F("hData","hData",nDet,detBins);
+
+  for(int i = 0; i< mcPath.size() ; i++){
+    TFile * f_data = new TFile(rdPath[i].c_str());
+    TCut cut((f_data->Get(Form("%s/cut", cutStep.c_str())))->GetTitle());
+
+    TFile * file = new TFile(mcPath[i].c_str());
+    TTree * tree = (TTree *) file->Get(decayMode[i]+"/tree");
+
+    int entries = tree->GetEntries();
+
+    hDataTemp = new TH1F(Form("hDataTemp_%s_%s",var.Data(),decayMode[i].Data()),"hDataTemp",nDet,detBins);
+    tree->Project(Form("hDataTemp_%s_%s",var.Data(),decayMode[i].Data()),Form("%sttbarM",var.Data()), cut,"",entries*frac, 0);
+
+    hData->Add(hDataTemp);
+  }
+
+  return hData;
 }
 
 TH1F* getMeasuredHisto( vector<std::string> rdPath, string cutStep){
@@ -330,8 +368,9 @@ TGraphAsymmErrors* getAcceptance(vector<std::string> mcPath, vector<std::string>
     TH1F* hNumTemp = new TH1F(Form("hNumTemp_%s_%s",var.Data(), decayMode[i].Data()), "Numerator", nBinsMass, binsMass);
     tree->Project(Form("hNumTemp_%s_%s",var.Data(), decayMode[i].Data()), "genttbarM", cut);
     hNum->Add(hNumTemp);
-
+    cout << hNum->GetBinContent(1) << endl;
   }
+  cout << hDen->GetBinContent(1) << endl;
 
   TGraphAsymmErrors* grpAccept = new TGraphAsymmErrors;
 
@@ -346,14 +385,14 @@ TGraphAsymmErrors* getAcceptance(vector<std::string> mcPath, vector<std::string>
     grpAccept->SetPointEXlow(i, width/2);
     grpAccept->SetPointEYhigh(i, err);
     grpAccept->SetPointEYlow(i, err);
-    cout << "accept= " << acc << endl;
+    cout << "accept= " << setprecision(4) << acc*100 << " +- " << err*100 << endl;
   }
-
+  cout << "all bins= " << setprecision(4) << 100*hNum->GetEntries()/hDen->GetEntries() << " +- " << 100*sqrt(hNum->GetEntries())/hDen->GetEntries() << endl;
   return grpAccept;
 
 }
 
-TGraphAsymmErrors* printFinal( int nbins, TH1F* hgen, TGraphAsymmErrors* accept, double scale, bool truth ){
+TGraphAsymmErrors* printFinal( int nbins, TH1F* hgen, TGraphAsymmErrors* accept, double lumi, double scale, bool truth ){
 
   TGraphAsymmErrors* dsigma = new TGraphAsymmErrors;
 
@@ -367,11 +406,11 @@ TGraphAsymmErrors* printFinal( int nbins, TH1F* hgen, TGraphAsymmErrors* accept,
     if(truth) err = sqrt(hgen->GetBinContent(i))*sqrt(scale) ;
     else err = hgen->GetBinError(i);
 
-    double sigma = 1000*unfolded/( y * 35.9 * hgen->GetBinWidth(i) ) ;
+    double sigma = 1000*unfolded/( y * lumi * hgen->GetBinWidth(i) ) ;
     double sigmaErr = sigma*err/unfolded;
 
     cout << "$" << hgen->GetBinCenter(i)-hgen->GetBinWidth(i)/2 << "-" << hgen->GetBinCenter(i)+hgen->GetBinWidth(i)/2 << "$   ~&~ "
-         << hgen->GetBinContent(i) << " $\\pm$ " << err << " ~&~ "
+         << setprecision (4) << hgen->GetBinContent(i) << " $\\pm$ " << err << " ~&~ "
          << sigma << " $\\pm$ " << sigmaErr  
          << " \\\\" <<  endl;
 
@@ -388,7 +427,7 @@ TGraphAsymmErrors* printFinal( int nbins, TH1F* hgen, TGraphAsymmErrors* accept,
   return dsigma;
 }
 
-TH1* getSigmaTruth(TH1F* hgen, TGraphAsymmErrors* accept ){
+TH1* getSigmaTruth(TH1F* hgen, TGraphAsymmErrors* accept, double lumi ){
 
   double binsMass[] = {0, 350, 400, 450, 500, 550, 600, 700, 800, 1400};
   const int nBinsMass = sizeof(binsMass)/sizeof(binsMass[0]) - 1;
@@ -400,10 +439,18 @@ TH1* getSigmaTruth(TH1F* hgen, TGraphAsymmErrors* accept ){
     double y;
     accept->GetPoint(i-1,x,y);
     double unfolded = hgen->GetBinContent(i);
-    double sigma = 1000*unfolded/( y * 35.9 * hgen->GetBinWidth(i) ) ;
+    double sigma = 1000*unfolded/( y * lumi * hgen->GetBinWidth(i) ) ;
     dsigma->SetBinContent(i, sigma);
   }
 
   return dsigma;
-
 }
+
+string double2string(double i){
+  stringstream ss;
+  ss << i;
+  string s= ss.str();
+  return s;
+}
+
+
