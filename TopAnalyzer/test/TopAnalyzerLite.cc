@@ -89,8 +89,8 @@ private:
 
   double lumi_;
   string subDirName_;
-  MCSample mcSig_;
   bool doStackSignal_;
+  vector<MCSample> mcSigs_;
   vector<MCSample> mcBkgs_;
   TChain* realDataChain_;
 
@@ -101,6 +101,10 @@ private:
 
   void plot(const string name, TCut cut, MonitorPlot& monitorPlot, const double plotScale = 1.0);
   void printStat(const string& name, TCut cut);
+  void addMC(vector<MCSample>& mcSetup,
+             const string name, const string label,
+             const string fileName, const double xsec, const double nEvents,
+             const Color_t color);
 
   TObjArray histograms_;
   ofstream fout_;
@@ -129,8 +133,6 @@ TopAnalyzerLite::TopAnalyzerLite(const string subDirName, const string imageOutD
 
   scanVariables_ = "RUN:LUMI:EVENT:Z.mass():@jetspt30.size():MET";
 
-  mcSig_.nEvents = 0;
-  mcSig_.chain = 0;
   doStackSignal_ = true;
 }
 
@@ -139,51 +141,48 @@ TopAnalyzerLite::~TopAnalyzerLite()
   if ( writeSummary_ ) fout_.close();
 }
 
-void TopAnalyzerLite::addMCSig(const string mcSampleName, const string mcSampleLabel,
-                               const string fileName, const double xsec, const double nEvents,
-                               const Color_t color, const bool doStackSignal)
+void TopAnalyzerLite::addMC(vector<MCSample>& mcSetup,
+                            const string name, const string label,
+                            const string fileName, const double xsec, const double nEvents,
+                            const Color_t color)
 {
-  mcSig_.name = mcSampleName;
-  mcSig_.label = mcSampleLabel;
-  mcSig_.nEvents += nEvents;
-  mcSig_.xsec = xsec;
-  mcSig_.color = color;
-  doStackSignal_ = doStackSignal;
-
-  if ( !mcSig_.chain )
+  int index = -1;
+  for ( unsigned int i=0; i<mcSetup.size(); ++i )
   {
-    mcSig_.chain = new TChain((subDirName_+"/tree").c_str(), (subDirName_+"/tree").c_str());
-  }
-  mcSig_.chain->Add(fileName.c_str());
-}
-
-void TopAnalyzerLite::addMCBkg(const string mcSampleName, const string mcSampleLabel,
-                               const string fileName, const double xsec, const double nEvents,
-                               const Color_t color)
-{
-  int mcSampleIndex = -1;
-  for ( unsigned int i = 0; i < mcBkgs_.size(); ++i )
-  {
-    if ( mcBkgs_[i].name == mcSampleName )
+    if ( mcSetup[i].name == name )
     {
-      mcSampleIndex = i;
+      index = i;
       break;
     }
   }
 
-  if ( mcSampleIndex == -1 )
+  if ( index == -1 )
   {
-    MCSample mcSample = {mcSampleName, 0, xsec, 0, mcSampleLabel, color};
+    MCSample mc = {name, 0, xsec, 0, label, color};
     baseRootDir_->cd();
-    mcSample.chain = new TChain((subDirName_+"/tree").c_str(), (subDirName_+"/tree").c_str());
-    mcBkgs_.push_back(mcSample);
-    mcSampleIndex = mcBkgs_.size()-1;
+    mc.chain = new TChain((subDirName_+"/tree").c_str(), (subDirName_+"/tree").c_str());
+    mcSetup.push_back(mc);
+    index = mcSetup.size()-1;
   }
 
-  MCSample& mcSample = mcBkgs_[mcSampleIndex];
+  MCSample& mc = mcSetup[index];
+  mc.nEvents += nEvents;
+  mc.chain->Add(fileName.c_str());
+}
 
-  mcSample.nEvents += nEvents;
-  mcSample.chain->Add(fileName.c_str());
+void TopAnalyzerLite::addMCSig(const string name, const string label,
+                               const string fileName, const double xsec, const double nEvents,
+                               const Color_t color, const bool doStackSignal)
+{
+  doStackSignal_ = doStackSignal;
+  addMC(mcSigs_, name, label, fileName, xsec, nEvents, color);
+}
+
+void TopAnalyzerLite::addMCBkg(const string name, const string label,
+                               const string fileName, const double xsec, const double nEvents,
+                               const Color_t color)
+{
+  addMC(mcBkgs_, name, label, fileName, xsec, nEvents, color);
 }
 
 void TopAnalyzerLite::addRealData(const string fileName, const double lumi)
@@ -258,8 +257,12 @@ void TopAnalyzerLite::applyCutSteps()
     fout_ << "--------------------------------------\n";
     fout_ << " Cross sections and sample statistics \n";
   }
-  cout << " * " << mcSig_.name << "\t" << mcSig_.xsec << " /pb (" << mcSig_.nEvents << ")\n";
-  if ( writeSummary_ ) fout_ << " * " << mcSig_.name << "\t" << mcSig_.xsec << " /pb (" << mcSig_.nEvents << ")\n";
+  for ( unsigned int i=0; i<mcSigs_.size(); ++i )
+  {
+    MCSample& mcSample = mcSigs_[i];
+    cout << " * " << mcSample.name << "\t" << mcSample.xsec << " /pb (" << mcSample.nEvents << ")\n";
+    if ( writeSummary_ ) fout_ << " * " << mcSample.name << "\t" << mcSample.xsec << " /pb (" << mcSample.nEvents << ")\n";
+  }
   for ( unsigned int i=0; i<mcBkgs_.size(); ++i )
   {
     MCSample& mcSample = mcBkgs_[i];
@@ -355,26 +358,58 @@ void TopAnalyzerLite::plot(const string name, const TCut cut, MonitorPlot& monit
   THStack* hStack = new THStack("hStack", title.c_str());
   typedef vector<pair<string, TH1F*> > LabeledPlots;
   LabeledPlots stackedPlots;
-  TString mcSigHistName = Form("hMCSig_%s_%s", mcSig_.name.c_str(), name.c_str());
-  TH1F* hMCSig = new TH1F(mcSigHistName, title.c_str(), nBins, xBins);
+  LabeledPlots sigPlots; // Keep list of signal plots if doStackSignal == false
 
-  mcSig_.chain->Project(mcSigHistName, varexp.c_str(), cut);
-  hMCSig->AddBinContent(nBins, hMCSig->GetBinContent(nBins+1));
-  hMCSig->Scale(lumi_*mcSig_.xsec/mcSig_.nEvents);
-  
-  if ( doStackSignal_ )
+  for ( unsigned int i=0; i<mcSigs_.size(); ++i )
   {
-    hMCSig->SetFillColor(mcSig_.color);
+    MCSample& mcSample = mcSigs_[i];
+    TString mcSigHistName = Form("hMCSig_%s_%s", mcSample.name.c_str(), name.c_str());
+    TH1F* hMCSig = new TH1F(mcSigHistName, title.c_str(), nBins, xBins);
 
-    stackedPlots.push_back(make_pair(mcSig_.label, hMCSig));
-    hStack->Add(hMCSig);
+    mcSample.chain->Project(mcSigHistName, varexp.c_str(), cut);
+    hMCSig->AddBinContent(nBins, hMCSig->GetBinContent(nBins+1));
+    hMCSig->Scale(lumi_*mcSample.xsec/mcSample.nEvents);
+
+    if ( doStackSignal_ )
+    {
+      hMCSig->SetFillColor(mcSample.color);
+
+      stackedPlots.push_back(make_pair(mcSample.label, hMCSig));
+      hStack->Add(hMCSig);
+
+      histograms_.Add(hMCSig);
+    }
+    else
+    {
+      LabeledPlots::const_iterator matchedPlot = sigPlots.end();
+      for ( LabeledPlots::const_iterator plotIter = sigPlots.begin();
+            plotIter != sigPlots.end(); ++plotIter )
+      {
+        if ( plotIter->first == mcSample.label )
+        {
+          matchedPlot = plotIter;
+          break;
+        }
+      }
+
+      if ( matchedPlot == sigPlots.end() )
+      {
+        sigPlots.push_back(make_pair(mcSample.label, hMCSig));
+
+        hMCSig->SetLineWidth(2);
+        hMCSig->SetLineColor(mcSample.color);
+
+        histograms_.Add(hMCSig);
+      }
+      else
+      {
+        TH1F* h = matchedPlot->second;
+        if ( h ) h->Add(hMCSig);
+        delete hMCSig;
+      }
+
+    }
   }
-  else
-  {
-    hMCSig->SetLineWidth(2);
-    hMCSig->SetLineColor(mcSig_.color);
-  }
-  histograms_.Add(hMCSig);
 
   for ( unsigned int i=0; i<mcBkgs_.size(); ++i )
   {
@@ -396,7 +431,7 @@ void TopAnalyzerLite::plot(const string name, const TCut cut, MonitorPlot& monit
     // First, find if plot with same label already in the THStack
     LabeledPlots::const_iterator matchedPlot = stackedPlots.end();
     for ( LabeledPlots::const_iterator plotIter = stackedPlots.begin();
-          plotIter != stackedPlots.end(); ++plotIter )
+        plotIter != stackedPlots.end(); ++plotIter )
     {
       if ( plotIter->first == mcSample.label )
       {
@@ -411,7 +446,7 @@ void TopAnalyzerLite::plot(const string name, const TCut cut, MonitorPlot& monit
       hStack->Add(hMC);
       histograms_.Add(hMC);
     }
-    // If tehre's plot with same label, sum entries
+    // If there's plot with same label, sum entries
     else
     {
       TH1F* h = matchedPlot->second;
@@ -443,7 +478,7 @@ void TopAnalyzerLite::plot(const string name, const TCut cut, MonitorPlot& monit
       }
       h->GetXaxis()->SetBinLabel(nBins, Form("#geq%d", int(xmin+nBins-1)));
     }
- 
+
   }
 
   // Build legend, legend should be added in reversed order of THStack
@@ -456,8 +491,12 @@ void TopAnalyzerLite::plot(const string name, const TCut cut, MonitorPlot& monit
 
   if ( !doStackSignal_ )
   {
-    const char* label = mcSig_.label.c_str();
-    legend->AddEntry(hMCSig, label, "f");
+    for ( unsigned int i=0; i<sigPlots.size(); ++i )
+    {
+      const char* label = sigPlots[i].first.c_str();
+      TH1F* h = sigPlots[i].second;
+      legend->AddEntry(h, label, "f");
+    }
   }
 
   TCanvas* c = new TCanvas(Form("c_%s", name.c_str()), name.c_str(), 1);
@@ -481,7 +520,13 @@ void TopAnalyzerLite::plot(const string name, const TCut cut, MonitorPlot& monit
 
   hStack->Draw();
   hData->Draw("same");
-  if ( !doStackSignal_ ) hMCSig->Draw("same");
+  if ( !doStackSignal_ )
+  {
+    for ( unsigned int i=0; i<sigPlots.size(); ++i )
+    {
+      sigPlots[i].second->Draw("same");
+    }
+  }
   legend->Draw();
 
   if ( imageOutDir_ != "" )
@@ -509,11 +554,31 @@ void TopAnalyzerLite::printStat(const string& name, TCut cut)
   double nTotalErr2 = 0;
 
   vector<Stat> stats;
-  const double normSig = lumi_*mcSig_.xsec/mcSig_.nEvents;
-  const double nEventsSig = mcSig_.chain->GetEntries(cut)*normSig;
-  const double nEventsErr2Sig = nEventsSig*normSig;
-  Stat statSig = {mcSig_.name, mcSig_.label, nEventsSig, nEventsErr2Sig};
-  stats.push_back(statSig);
+  for ( unsigned int i=0; i<mcSigs_.size(); ++i )
+  {
+    MCSample& mcSample = mcSigs_[i];
+
+    const double norm = lumi_*mcSample.xsec/mcSample.nEvents;
+    const double nEvents = mcSample.chain->GetEntries(cut)*norm;
+    const double nEventsErr2 = nEvents*norm;
+
+    // Merge statistics with same labels
+    vector<Stat>::iterator matchedStatObj = stats.end();
+    for ( vector<Stat>::iterator statObj = stats.begin();
+        statObj != stats.end(); ++statObj )
+    {
+      if ( statObj->label == mcSample.label )
+      {
+        matchedStatObj = statObj;
+        break;
+      }
+    }
+    if ( matchedStatObj == stats.end() )
+    {
+      Stat stat = {mcSample.name, mcSample.label, nEvents, nEventsErr2};
+      stats.push_back(stat);
+    }
+  }
 
   for ( unsigned int i=0; i<mcBkgs_.size(); ++i )
   {
@@ -526,7 +591,7 @@ void TopAnalyzerLite::printStat(const string& name, TCut cut)
     // Merge statistics with same labels
     vector<Stat>::iterator matchedStatObj = stats.end();
     for ( vector<Stat>::iterator statObj = stats.begin();
-          statObj != stats.end(); ++statObj )
+        statObj != stats.end(); ++statObj )
     {
       if ( statObj->label == mcSample.label )
       {
@@ -564,10 +629,16 @@ void TopAnalyzerLite::printStat(const string& name, TCut cut)
     cout << label << " = " << stat.nEvents << " +- " << sqrt(stat.nEventsErr2) << endl;
     if ( writeSummary_ ) fout_ << label << " = " << stat.nEvents << " +- " << sqrt(stat.nEventsErr2) << endl;
 
-    if ( stat.name == mcSig_.name )
+    bool isSignal = false;
+    for ( unsigned int j=0; j<mcSigs_.size(); ++j )
     {
-      nSignal = stat.nEvents;
+      if ( stat.name == mcSigs_[j].name )
+      {
+        isSignal = true;
+        break;
+      }
     }
+    if ( isSignal ) nSignal = stat.nEvents;
 
     nTotal += stat.nEvents;
     nTotalErr2 += stat.nEventsErr2;
@@ -638,7 +709,10 @@ void TopAnalyzerLite::saveHistograms(TString fileName)
   lumi.Write();
 
   TH1F* hScale = new TH1F("hScale", "Scale factors for each samples", mcBkgs_.size()+1, 0, mcBkgs_.size()+1);
-  hScale->Fill(mcSig_.name.c_str(), lumi_*mcSig_.xsec/mcSig_.nEvents);
+  for ( unsigned int i=0; i<mcSigs_.size(); ++i )
+  {
+    hScale->Fill(mcSigs_[i].name.c_str(), lumi_*mcSigs_[i].xsec/mcSigs_[i].nEvents);
+  }
   for ( unsigned int i=0; i<mcBkgs_.size(); ++i )
   {
     hScale->Fill(mcBkgs_[i].name.c_str(), lumi_*mcBkgs_[i].xsec/mcBkgs_[i].nEvents);
