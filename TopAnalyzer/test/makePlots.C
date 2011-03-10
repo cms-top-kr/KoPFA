@@ -22,7 +22,6 @@ void makePlots(TString noteNumber = "AN-11-076")
   cutStepPlots("Step_4", "MET", "Missing E_{T}", 0.1, 1e6, true);
   cutStepPlots("Step_5", "MET", "Missing E_{T}", 0.1, 1e6, true);
   cutStepPlots("Step_6", "nJet", "Jet multiplicity", 0.1, 1e6, true);
-  cutStepPlots("Step_7", "nbJet", "b-Jet multiplicity", 0.1, 1e5, true);
   cutStepPlots("Step_6", "vsumM", "t#bar{t} invariant mass", 0, 30, false);
   cutStepPlots("Step_7", "nbJet", "b-Jet multiplicity", 0.1, 1e5, true);
   cutStepPlots("Step_7", "vsumM", "t#bar{t} invariant mass", 0, 30, false);
