@@ -122,6 +122,13 @@ void setTitleY(TPad *c, TString title){
   }
 }
 
+void setMarker(TCanvas *c, int s){
+  for(size_t i=0, n = c->GetListOfPrimitives()->GetSize(); i <n; ++i){
+    TObject *o = c->GetListOfPrimitives()->At(i);
+    if(o->InheritsFrom("RooHist")) ((RooHist*)o)->SetMarkerSize(s);
+  }
+}
+
 RooHist* getHist(TFile *f, const TString &dir, const TString &plot, int color, int style){
   cout << "getHist" << endl;
   cout << dir.Data() << endl;
@@ -137,7 +144,7 @@ RooHist* getHist(TFile *f, const TString &dir, const TString &plot, int color, i
   h->SetLineColor(color);
   h->SetLineStyle(style);
   h->SetMarkerColor(color);
-  h->SetMarkerStyle(20);
+  h->SetMarkerStyle(color+19);
   h->SetMarkerSize(0.7);
   h->GetYaxis()->SetTitleSize(0.0);
   delete c;
@@ -156,7 +163,7 @@ RooHist* getHist(TCanvas* ctmp, const TString &dir, int color, int style){
   h->SetLineStyle(style);
   h->SetMarkerColor(color);
   h->SetMarkerStyle(20);
-  h->SetMarkerSize(0.7);
+  h->SetMarkerSize(1.2);
   h->GetYaxis()->SetTitleSize(0.0);
 
   return h;
@@ -164,21 +171,32 @@ RooHist* getHist(TCanvas* ctmp, const TString &dir, int color, int style){
 
 void plotNewEff(TFile *f1, TFile *f2, const TString & leg1, const TString & leg2, const vector<TString>& dir, const vector<TString>& plot, const TString& printName, const TString& hName, const vector<TString>& lname, bool print=true){
   vector<double> dataPT20_50;
+  vector<double> dataPT20_50Errh;
+  vector<double> dataPT20_50Errl;
   vector<double> mcPT20_50;
-  f1->cd(dir[0]);
+  vector<double> mcPT20_50Errh;
+  vector<double> mcPT20_50Errl;
+  f2->cd(dir[0]);
   TCanvas* c1 = (TCanvas*) gDirectory->FindKey(plot[0])->ReadObj();
   setTitleY(c1,"Isolation Efficiency"); 
+  setMarker(c1,0); 
   if(plot[0].Contains("eta")){
     setRangeY(c1,0.7,1.1);
   }else{
     setRangeY(c1,0.5,1.1);
 
   }
-
   c1->Draw();
   TLegend *isolabel = new TLegend(.55,.20 ,.65,.45 );
-  isolabel->SetHeader("rel. iso.");
+  TLegend *sflabel = new TLegend(.55,.20 ,.65,.45 );
+  if(plot[0].Contains("eta")) {
+    sflabel = new TLegend(.20,.20 ,.30,.45 );
+  }
+  isolabel->SetHeader("Rel. Iso.");
+  sflabel->SetHeader("Rel. Iso.");
   TCanvas * c = new TCanvas("c","c",800,300);
+
+  int k = 2;
 
   for(int i=0; i < dir.size() ; i++){
     RooHist* h1 = getHist(f1, dir[i], plot[i], i+2, 2);
@@ -187,11 +205,12 @@ void plotNewEff(TFile *f1, TFile *f2, const TString & leg1, const TString & leg2
     vector<double> & data( h1->GetMaxSize() );
     vector<double> & mc( h2->GetMaxSize() );
     printEff(h1,h2,data,mc,htemp);
-    dataPT20_50.push_back(data[3]);
-    mcPT20_50.push_back(mc[3]);
+    dataPT20_50.push_back(data[k]);
+    mcPT20_50.push_back(mc[k]);
     h1->Draw("PSame");
     h2->Draw("PSame");
     isolabel->AddEntry(h1, Form("%s",lname[i].Data()), "LP");
+    sflabel->AddEntry(h1, Form("%s",lname[i].Data()), "LP");
     if(i==0) doLegend(h1, h2, leg1, leg2);
     //htemp->Draw("PSame");
     //scale factor
@@ -200,40 +219,76 @@ void plotNewEff(TFile *f1, TFile *f2, const TString & leg1, const TString & leg2
       double y;
       htemp->GetPoint(j,x,y);
       cout << "x= " << x << " y= " << y << endl;
+      double eff1;
+      double x1;
+      double yerrhi1 = h1->GetErrorYhigh(j);
+      double yerrlo1 = h1->GetErrorYlow(j);
+      double test1 =  h1->GetPoint(j,x1,eff1);
+      double eff2;
+      double x2;
+      double yerrhi2 = h2->GetErrorYhigh(j);
+      double yerrlo2 = h2->GetErrorYlow(j);
+      double test2 =  h2->GetPoint(j,x2,eff2);
+      if(j== k){
+        dataPT20_50Errh.push_back(yerrhi1);
+        dataPT20_50Errl.push_back(yerrlo1);
+        mcPT20_50Errh.push_back(yerrhi2);
+        mcPT20_50Errl.push_back(yerrlo2);
+      }
     }
     c->cd();
     c->Draw();
     htemp->SetLineColor(i+2);
     htemp->SetMarkerColor(i+2);
+    htemp->SetMarkerStyle(i+2+19);
     htemp->SetLineWidth(1.5);
     if(i == 0) {
       htemp->GetYaxis()->SetTitle("Scale Factor");
-      htemp->GetXaxis()->SetTitle("p_{T} (GeV)");
+      if(plot[0].Contains("eta")) {
+        htemp->GetXaxis()->SetTitle("#eta");
+      }
+      else htemp->GetXaxis()->SetTitle("p_{T} (GeV)");
       htemp->Draw("ALP");
     }
     else htemp->Draw("LPSame"); 
+    sflabel->Draw();
   }
   c1->cd(); 
-  cout << "data" << " " ;
+  cout << "double eff_sig_data[] = {" << " " ;
   for(int i=0; i < dataPT20_50.size() ;i++) cout << dataPT20_50[i] << ", " ;
-  cout << endl;
-  cout << "mc  " << " " ;
+  cout << " };" << endl;
+  cout << "double data_errY_high[] = {" << " " ;
+  for(int i=0; i < dataPT20_50Errh.size() ;i++) cout << dataPT20_50Errh[i] << ", " ;
+  cout << " };" << endl;
+  cout << "double data_errY_low[] = {" << " " ;
+  for(int i=0; i < dataPT20_50Errl.size() ;i++) cout << dataPT20_50Errl[i] << ", " ;
+  cout << " };" <<endl;
+
+  cout << "double eff_sig_mc[] = {" << " " ;
   for(int i=0; i < mcPT20_50.size() ;i++) cout << mcPT20_50[i] << ", " ;
-  cout << endl;
+  cout << " };" << endl;
+  cout << "double mc_errY_high[] ={" << " " ;
+  for(int i=0; i < mcPT20_50Errh.size() ;i++) cout << mcPT20_50Errh[i] << ", " ;
+  cout << " };" << endl;
+  cout << "double mc_errY_low[] ={" << " " ;
+  for(int i=0; i < mcPT20_50Errl.size() ;i++) cout << mcPT20_50Errl[i] << ", " ;
+  cout << " };" << endl;
+
 
   isolabel->SetFillColor(0);
   isolabel->SetTextSize(0.04);
   isolabel->SetLineColor(0);
-  if(print){
-    isolabel->Draw();
-  }
-  
-  SetLatex(0.50,0.60);
+  sflabel->SetFillColor(0);
+  sflabel->SetTextSize(0.04);
+  sflabel->SetLineColor(0);
 
-  c->cd();
   isolabel->Draw();
-  c1->Print(Form("c_eff_%s_%s",printName.Data(),hName.Data()));
-  c1->Print(Form("c_sf_%s_%s",printName.Data(),hName.Data()));
+  
+  SetLatex(0.60,0.60);
+
+  c1->Print(Form("c_eff_%s_%s.eps",printName.Data(),hName.Data()));
+  c->Print(Form("c_sf_%s_%s.eps",printName.Data(),hName.Data()));
+  
 }
 
 void plot2Eff(TFile *f1, TFile* f2, const TString & leg1, const TString & leg2, const TString& dir1, const TString &dir2, const TString& plot1, const TString & plot2, const TString& printName, const TString& hName){

@@ -1,8 +1,7 @@
 #include "TStyle.h"
 void setTDRStyle() {
-
+ 
   TStyle *tdrStyle = new TStyle("Plain","Style for P-TDR");
-
 // For the canvas:
   tdrStyle->SetCanvasBorderMode(0);
   tdrStyle->SetCanvasColor(kWhite);
@@ -59,8 +58,10 @@ void setTDRStyle() {
   // tdrStyle->SetDateY(Float_t y = 0.01);
 
 // For the statistics box:
+  
   tdrStyle->SetOptFile(0);
   //  tdrStyle->SetOptStat("mr"); // To display the mean and RMS:   SetOptStat("mr");
+  tdrStyle->SetOptStat(0);
   tdrStyle->SetStatColor(kWhite);
   tdrStyle->SetStatFont(42);
   tdrStyle->SetStatFontSize(0.025);
@@ -141,6 +142,7 @@ void setTDRStyle() {
   // tdrStyle->SetTimeOffset(Double_t toffset);
   // tdrStyle->SetHistMinimumZero(kTRUE);
 
+  gROOT->ForceStyle();
   tdrStyle->cd();
 }
 
