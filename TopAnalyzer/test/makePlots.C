@@ -8,11 +8,6 @@ TPaveText* getHeader(double lumi, TString channelName = "");
 
 void makePlots(TString noteNumber = "AN-11-076")
 {
-  if ( noteNumber == "AN-11-076") makePlots_AN_11_076();
-}
-
-void makePlots_AN_11_076()
-{
   setTDRStyle();
 
   fEE = TFile::Open("/data/cmskr-top/common/Top/finalHisto/v0/ElEl.root");
@@ -21,8 +16,17 @@ void makePlots_AN_11_076()
 
   if ( !fEE || !fME || !fMM ) return;
 
+  cutStepPlots("Step_3", "MET", "Missing E_{T}", 0.1, 1e6, true);
+  cutStepPlots("Step_3", "nJet", "Jet multiplicity", 0.1, 1e6, true);
   cutStepPlots("Step_3", "ZMass", "Z mass", 0.1, 1e6, true);
+  cutStepPlots("Step_4", "MET", "Missing E_{T}", 0.1, 1e6, true);
+  cutStepPlots("Step_5", "MET", "Missing E_{T}", 0.1, 1e6, true);
   cutStepPlots("Step_6", "nJet", "Jet multiplicity", 0.1, 1e6, true);
+  cutStepPlots("Step_7", "nbJet", "b-Jet multiplicity", 0.1, 1e5, true);
+  cutStepPlots("Step_6", "vsumM", "t#bar{t} invariant mass", 0, 30, false);
+  cutStepPlots("Step_7", "nbJet", "b-Jet multiplicity", 0.1, 1e5, true);
+  cutStepPlots("Step_7", "vsumM", "t#bar{t} invariant mass", 0, 30, false);
+  cutStepPlots("Step_7", "MET", "Missing E_{T}", 0, 50, false);
 }
 
 // Function to draw EE, ME, MM channel and all channel merged plot
@@ -33,7 +37,7 @@ void cutStepPlots(const char* cutStep, const char* histName, const char* histTit
   TH1F* hDataME = (TH1F*)fME->Get(Form("%s/hData_%s_%s", cutStep, cutStep, histName));
   TH1F* hDataMM = (TH1F*)fMM->Get(Form("%s/hData_%s_%s", cutStep, cutStep, histName));
 
-  if ( !hDataEE || !hDataME || !hDataMM ) { cout << "No data hist\n"; return; }
+  if ( !hDataEE || !hDataME || !hDataMM ) { cout << "No data hist for " << histName << "\n"; return; }
 
   TH1F* hDataLL = (TH1F*)hDataEE->Clone(Form("hData_%s_%s", cutStep, histName));
   hDataLL->Reset();
@@ -50,7 +54,7 @@ void cutStepPlots(const char* cutStep, const char* histName, const char* histTit
   TH1F* hSigME = (TH1F*)fME->Get(Form("%s/hMCSig_TTbar_%s_%s", cutStep, cutStep, histName));
   TH1F* hSigMM = (TH1F*)fMM->Get(Form("%s/hMCSig_TTbar_%s_%s", cutStep, cutStep, histName));
 
-  if ( !hSigEE || !hSigME || !hSigMM ) { cout << "No signal hist\n"; return; }
+  if ( !hSigEE || !hSigME || !hSigMM ) { cout << "No signal hist for " << histName << "\n"; return; }
 
   TH1F* hSigLL = (TH1F*)hSigEE->Clone(Form("hMCSig_TTbar_%s_%s", cutStep, histName));
   hSigLL->Reset();
