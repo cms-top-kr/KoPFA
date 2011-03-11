@@ -13,6 +13,7 @@
 #include "TLegend.h"
 #include "TH1F.h"
 #include "THStack.h"
+#include "TGraph.h"
 
 #include "TMath.h"
 
@@ -39,6 +40,7 @@ public:
                 const string fileName, const double xsec, const double nEvents,
                 const Color_t color);
   void addRealData(const string fileName, const double lumi);
+
   void addCutStep(const TCut cut, const TString monitorPlotNamesStr, const double plotScale = 1.0);
   void addMonitorPlot(const string name, const string varexp, const string title,
                       const int nBins, const double xmin, const double xmax,
@@ -50,6 +52,10 @@ public:
 
   void applyCutSteps();
   void applySingleCut(const TCut cut, const TString monitirPlotNamesStr);
+
+  void drawEffCurve(const TCut cut, const string varexp, const string scanPoints);
+  void drawEffCurve(const TCut cut, const string varexp, std::vector<double>& scanPoints);
+
   void saveHistograms(TString fileName = "");
 
 private:
@@ -759,3 +765,96 @@ void TopAnalyzerLite::setScanVariables(const string scanVariables)
 {
   scanVariables_ = scanVariables;
 }
+
+void TopAnalyzerLite::drawEffCurve(const TCut cut, const string varexp, const string scanPoints)
+{
+  stringstream ss(scanPoints);
+
+  double x;
+  std::vector<double> xarr;
+  while ( ss >> x ) xarr.push_back(x);
+
+  drawEffCurve(cut, varexp, xarr);
+}
+
+void TopAnalyzerLite::drawEffCurve(const TCut cut, const string varexp, std::vector<double>& scanPoints)
+{
+  // Check scan points are monotonically ordered
+  const int nPoint = scanPoints.size();
+  const bool isIncreasing = scanPoints[0] < scanPoints[nPoint-1];
+  for ( int i=1; i<nPoint; ++i )
+  {
+    // if ( x[0] > x[N] and x[i] < x[i+1] ) or ( x[0] < x[N] and x[i] > x[i+1] )
+    // this sequence is not well-ordered : do not consider the input
+    if ( isIncreasing xor (scanPoints[i-1] < scanPoints[i]) )
+    {
+      cout << "Error : Scan point should be monotonically increasing/decreasing\n";
+      return;
+    }
+  }
+
+  TGraph* grpSigEff = new TGraph();
+  TGraph* grpBkgEff = new TGraph();
+  TGraph* grpSignif = new TGraph();
+  TGraph* grpResponse = new TGraph();
+
+  // Get the total # of signal entries and background entries
+  double nTotalSig = 0, nTotalBkg = 0;
+  for ( unsigned int i=0; i<mcSigs_.size(); ++i )
+  {
+    nTotalSig += mcSigs_[i].nEvents*mcSigs_[i].xsec*lumi_;
+  }
+
+  for ( unsigned int i=0; i<mcBkgs_.size(); ++i )
+  {
+    nTotalBkg += mcBkgs_[i].nEvents*mcBkgs_[i].xsec*lumi_;
+  }
+
+  for ( int i=0; i<nPoint; ++i )
+  {
+    TCut iCut = cut;
+    if ( isIncreasing ) iCut += Form("%s > %f", varexp.c_str(), scanPoints[i]);
+    else iCut += Form("%s < %f", varexp.c_str(), scanPoints[i]);
+
+    double nSig = 0, nBkg = 0;
+    for ( unsigned int j=0; j<mcSigs_.size(); ++j )
+    {
+      nSig += mcSigs_[j].chain->GetEntries(iCut)*mcSigs_[j].xsec*lumi_;
+    }
+
+    for ( unsigned int j=0; j<mcBkgs_.size(); ++j )
+    {
+      nBkg += mcBkgs_[j].chain->GetEntries(iCut)*mcBkgs_[j].xsec*lumi_;
+    }
+
+    const double sigEff = nSig/nTotalSig;
+    const double bkgEff = nBkg/nTotalBkg;
+
+    grpSigEff->SetPoint(i, scanPoints[i], 100*sigEff);
+    grpBkgEff->SetPoint(i, scanPoints[i], 100*bkgEff);
+    grpSignif->SetPoint(i, scanPoints[i], nSig/sqrt(nSig+nBkg));
+    grpResponse->SetPoint(i, 100*bkgEff, 100*sigEff);
+  }
+
+  TCanvas* cEff = new TCanvas;
+  cEff->cd();
+  grpSigEff->SetTitle(("Efficiency curve for "+varexp+";"+varexp+";Efficiency #epsilon [\%]").c_str());
+  grpBkgEff->SetTitle(("Efficiency curve for "+varexp+";"+varexp+";Efficiency #epsilon [\%]").c_str());
+  grpSigEff->SetLineColor(kBlue);
+  grpBkgEff->SetLineColor(kRed);
+  grpSigEff->SetMinimum(0);
+  grpSigEff->Draw("AL*");
+  grpBkgEff->Draw("sameL*");
+
+  TCanvas* cSignif = new TCanvas;
+  cSignif->cd();
+  grpSignif->SetTitle(("S/#sqrt{S+B} curve for "+varexp+";"+varexp+";S/#sqrt{S+B}").c_str());
+  grpSignif->SetMinimum(0);
+  grpSignif->Draw("AL*");
+
+  TCanvas* cEffVsEff = new TCanvas;
+  cEffVsEff->cd();
+  grpResponse->SetTitle(("Response curve for "+varexp+";Background #epsilon [\%];Signal #epsilon [\%]").c_str());
+  grpResponse->Draw("AL*");
+}
+
