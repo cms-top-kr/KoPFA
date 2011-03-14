@@ -1,5 +1,6 @@
 #include "tdrstyle.C"
 TFile* fEE, * fME, * fMM;
+TString outDirName = ".";
 
 void cutStepPlots(const char* cutStep, const char* histName, const char* histTitle,
                   double minY, double maxY, bool doLogY);
@@ -10,11 +11,14 @@ void makePlots(TString noteNumber = "AN-11-076")
 {
   setTDRStyle();
 
-  fEE = TFile::Open("/data/cmskr-top/common/Top/finalHisto/v0/ElEl.root");
-  fME = TFile::Open("/data/cmskr-top/common/Top/finalHisto/v0/MuEl.root");
-  fMM = TFile::Open("/data/cmskr-top/common/Top/finalHisto/v0/MuMu.root");
+  fEE = TFile::Open("/data/cmskr-top/common/Top/finalHisto/v1/ElEl.root");
+  fME = TFile::Open("/data/cmskr-top/common/Top/finalHisto/v1/MuEl.root");
+  fMM = TFile::Open("/data/cmskr-top/common/Top/finalHisto/v1/MuMu.root");
 
   if ( !fEE || !fME || !fMM ) return;
+
+  outDirName += "/"+noteNumber;
+  gSystem->Exec("mkdir "+outDirName);
 
   cutStepPlots("Step_3", "MET", "Missing E_{T}", 0.1, 1e6, true);
   cutStepPlots("Step_3", "nJet", "Jet multiplicity", 0.1, 1e6, true);
@@ -146,7 +150,7 @@ void cutStepPlots(const char* cutStep, const char* histName, const char* histTit
   hStackEE->Draw("same");
   hDataEE->Draw("same");
   hDataEE->Draw("sameaxis");
-  cEE->Print(Form("cEE_%s_%s.eps", cutStep, histName));
+  cEE->Print(Form("%s/cEE_%s_%s.eps", outDirName.Data(), cutStep, histName));
 
   TCanvas* cME = new TCanvas(TString("cME_")+cutStep+"_"+histName, TString("cME_")+cutStep+"_"+histName, 1);
   if ( doLogY ) cME->SetLogy();
@@ -156,7 +160,7 @@ void cutStepPlots(const char* cutStep, const char* histName, const char* histTit
   hStackME->Draw("same");
   hDataME->Draw("same");
   hDataME->Draw("sameaxis");
-  cME->Print(Form("cME_%s_%s.eps", cutStep, histName));
+  cME->Print(Form("%s/cME_%s_%s.eps", outDirName.Data(), cutStep, histName));
 
   TCanvas* cMM = new TCanvas(TString("cMM_")+cutStep+"_"+histName, TString("cMM_")+cutStep+"_"+histName, 1);
   if ( doLogY ) cMM->SetLogy();
@@ -166,7 +170,7 @@ void cutStepPlots(const char* cutStep, const char* histName, const char* histTit
   hStackMM->Draw("same");
   hDataMM->Draw("same");
   hDataMM->Draw("sameaxis");
-  cMM->Print(Form("cMM_%s_%s.eps", cutStep, histName));
+  cMM->Print(Form("%s/cMM_%s_%s.eps", outDirName.Data(), cutStep, histName));
 
   TCanvas* cLL = new TCanvas(TString("cLL_")+cutStep+"_"+histName, TString("cLL_")+cutStep+"_"+histName, 1);
   if ( doLogY ) cLL->SetLogy();
@@ -176,7 +180,7 @@ void cutStepPlots(const char* cutStep, const char* histName, const char* histTit
   hStackLL->Draw("same");
   hDataLL->Draw("same");
   hDataLL->Draw("sameaxis");
-  cLL->Print(Form("cLL_%s_%s.eps", cutStep, histName));
+  cLL->Print(Form("%s/cLL_%s_%s.eps", outDirName.Data(), cutStep, histName));
 
 }
 
