@@ -3,40 +3,17 @@ void ROCTnP(){
   setTDRStyle();
 
 
-  //TFile * fbkg1 = new TFile("vallot_QCD.root");
-  //TFile * fbkg1 = new TFile("/home/tjkim/ntuple/iso/data/QCD_MC_single/vallot.root");
-  //TFile * fbkg2 = new TFile("/home/tjkim/ntuple/iso/data/QCD_mu2/vallot.root");
   TFile * fbkg3 = new TFile("/home/tjkim/ntuple/iso/data/QCD_new/vallot.root");
-  //TTree * tbkg1 = (TTree *) fbkg1->Get("MuMu/tree");
-  //TTree * tbkg1 = (TTree *) fbkg1->Get("MuonAna/tree");
-  //TTree * tbkg2 = (TTree *) fbkg2->Get("DiMuon/tree");
   TTree * tbkg3 = (TTree *) fbkg3->Get("MuonAna/tree");
-  //TCut cutbkg1 = "Z.leg1().pt() > 20 && Z.leg1().pt() < 50";
-  //TCut cutbkg1 = "pt > 20 && pt <50";
-  TCut cutbkg1 = "pt > 20 && pt <150";
-  //TCut cutbkg2 = "Z.mass() > 12 && abs(Z.mass()-91) > 30 && (chIsoOpt2R04+phIsoOpt2R04+nhIsoOpt2R04)/Z.leg2().pt() > 0.26 && Z.leg1().pt() > 20 && Z.leg1().pt() < 50";
-  //TCut cutbkg2 = "Z.mass() > 12 && abs(Z.mass()-91) > 30 && (chIsoOpt2R04+phIsoOpt2R04+nhIsoOpt2R04)/Z.leg2().pt() > 0.26 ";
-  //TCut cutbkg3 = "pt > 20 && pt <50"; 
-  TCut cutbkg3 = "pt > 20 && pt < 150 && multiplicity == 1 && @jetspt30.size() >= 1 && delphi < 1.5 && mt < 20"; 
-  //TCut cutbkg3 ; 
 
-  //TH1* h_bkg1 = new TH1F("h_bkg1","h_bkg",50,0,0.5);
-  //TH1* h_bkg2 = new TH1F("h_bkg2","h_bkg",50,0,0.5);
+  TCut cutbkg3 = "pt > 20 && pt < 50 && multiplicity == 1 && @jetspt30.size() >= 1 && delphi < 1.5 && mt < 20"; 
+  
   TH1* h_bkg3 = new TH1F("h_bkg3","h_bkg",50,0,0.5);
-  //tbkg1->Project("h_bkg1","relIso04lep1", cutbkg1);
-  //tbkg1->Project("h_bkg1","(chIsoOpt04+phIsoOpt04+nhIsoOpt04)/pt", cutbkg3);
-  //tbkg2->Project("h_bkg2","(chIsoOpt1R04+phIsoOpt1R04+nhIsoOpt1R04)/Z.leg1().pt()", cutbkg2);
   tbkg3->Project("h_bkg3","(chIsoOpt04+phIsoOpt04+nhIsoOpt04)/pt", cutbkg3);
 
+  //Data vs PU
   plot(h_bkg3, "Data", "MC (PU)" , "QCD_MC_pt20_50_PU" , "p_{T}=20-50 GeV" );
-  //plot(h_bkg3, "Data", "Data (No Sub.)" , "QCD_Wcut_pt20_50_Disable" , "p_{T}=20-50 GeV" );
-  //plot(h_bkg3, "Data", "MC " , "QCD_Wcut_pt20_50" , "p_{T}=20-50 GeV" );
-
-  //plot(h_bkg1, "Data", "MC (PU)" , "QCD_MC_pt20_150_PU" , "p_{T}=20-150 GeV" );
-  //plot(h_bkg3, "Data", "MC (PU)" , "QCD_Wcut_pt20_150_PU" , "p_{T}=20-150 GeV" );
-  //plot(h_bkg3, "Data", "MC  " , "QCD_Wcut_pt20_150" , "p_{T}=20-150 GeV" );
-
-
+  
 }
 
 void plot(TH1* h_bkg, const TString& leg1, const TString& leg2, const TString& name, const TString &header){
@@ -62,7 +39,7 @@ void plot(TH1* h_bkg, const TString& leg1, const TString& leg2, const TString& n
 //  double data_errY_low[] = { 0.00305564, 0.00282421, 0.00260647, 0.00243107, 0.0022605, 0.00212408, 0.00200424, 0.00188964, 0.00176292, 0.00168155, 0.00160969, 0.00153518, 0.00147538, 0.00142713, 0.00136821, 0.00132521, 0.00128328, 0.00123444, 0.00119643, 0.00115899, 0.00113148, 0.00109593, 0.00107}; 
   //new
   double eff_sig_data[] = { 0.854278, 0.882006, 0.904698, 0.921771, 0.934692, 0.945063, 0.952763, 0.959916, 0.965438, 0.969068, 0.972388, 0.975373, 0.977695, 0.979406, 0.981525, 0.98277, 0.984248, 0.985752, 0.986893, 0.988057, 0.988947, 0.98956, 0.990327 };
- double data_errY_high[] = { 0.00258889, 0.00239578, 0.00221409, 0.00228838, 0.00191174, 0.00179234, 0.00168477, 0.00158011, 0.00148129, 0.00141319, 0.00138971, 0.00128441, 0.00123691, 0.00119217, 0.00113906, 0.00110401, 0.00106734, 0.00102511, 0.000991171, 0.000955544, 0.000933315, 0.000914105, 0.000885432 };
+  double data_errY_high[] = { 0.00258889, 0.00239578, 0.00221409, 0.00228838, 0.00191174, 0.00179234, 0.00168477, 0.00158011, 0.00148129, 0.00141319, 0.00138971, 0.00128441, 0.00123691, 0.00119217, 0.00113906, 0.00110401, 0.00106734, 0.00102511, 0.000991171, 0.000955544, 0.000933315, 0.000914105, 0.000885432 };
   double data_errY_low[] = { 0.00259572, 0.00241887, 0.00223474, 0.00242084, 0.00193662, 0.00181665, 0.00171027, 0.00161287, 0.00151149, 0.00144113, 0.00143174, 0.0013114, 0.00125811, 0.00121253, 0.00116, 0.00112402, 0.00108772, 0.00104577, 0.00101604, 0.000988753, 0.000960771, 0.000933588, 0.000916392 };
 
 
@@ -72,9 +49,9 @@ void plot(TH1* h_bkg, const TString& leg1, const TString& leg2, const TString& n
   //double mc_errY_low[] ={ 0.00232636, 0.00211623, 0.00195119, 0.00180292, 0.00166338, 0.00156111, 0.00146925, 0.00137134, 0.00127559, 0.00120994, 0.00113344, 0.00106846, 0.00101436, 0.000973547, 0.000931645, 0.000889717, 0.000854591, 0.000840649, 0.00079682, 0.000781843, 0.000761704, 0.000734842, 0.000707864};
  
   //PU
-  //double eff_sig_mc[] = { 0.863671, 0.891931, 0.912327, 0.92809, 0.941113, 0.950261, 0.957942, 0.964278, 0.968983, 0.973555, 0.976774, 0.979176, 0.981454, 0.98226, 0.984897, 0.986644, 0.988112, 0.989, 0.989802, 0.990395, 0.991323, 0.991785, 0.992222 }; 
-  //double mc_errY_high[] ={ 0.00244652, 0.00223015, 0.00206387, 0.0019187, 0.0017636, 0.00163899, 0.00153817, 0.0014449, 0.00136296, 0.00126888, 0.00119982, 0.0011426, 0.00108433, 0.00570291, 0.000983534, 0.000932786, 0.000883148, 0.000846843, 0.000816589, 0.000794136, 0.000756715, 0.000727642, 0.00070662 }; 
-  //double mc_errY_low[] ={ 0.00245753, 0.00227668, 0.00208199, 0.00193148, 0.00180322, 0.00167872, 0.00155891, 0.00146565, 0.00138626, 0.00129328, 0.00122968, 0.00117314, 0.00111699, 0.00483786, 0.001009, 0.000955494, 0.000911435, 0.000871955, 0.000842384, 0.000812678, 0.000781107, 0.000756909, 0.000729905 }; 
+  //double eff_sig_data[] = { 0.863671, 0.891931, 0.912327, 0.92809, 0.941113, 0.950261, 0.957942, 0.964278, 0.968983, 0.973555, 0.976774, 0.979176, 0.981454, 0.98226, 0.984897, 0.986644, 0.988112, 0.989, 0.989802, 0.990395, 0.991323, 0.991785, 0.992222 }; 
+  //double data_errY_high[] ={ 0.00244652, 0.00223015, 0.00206387, 0.0019187, 0.0017636, 0.00163899, 0.00153817, 0.0014449, 0.00136296, 0.00126888, 0.00119982, 0.0011426, 0.00108433, 0.00570291, 0.000983534, 0.000932786, 0.000883148, 0.000846843, 0.000816589, 0.000794136, 0.000756715, 0.000727642, 0.00070662 }; 
+  //double data_errY_low[] ={ 0.00245753, 0.00227668, 0.00208199, 0.00193148, 0.00180322, 0.00167872, 0.00155891, 0.00146565, 0.00138626, 0.00129328, 0.00122968, 0.00117314, 0.00111699, 0.00483786, 0.001009, 0.000955494, 0.000911435, 0.000871955, 0.000842384, 0.000812678, 0.000781107, 0.000756909, 0.000729905 }; 
 
   //PU reweighting
   double eff_sig_mc[] = { 0.867079, 0.89499, 0.915219, 0.930813, 0.943367, 0.951977, 0.959214, 0.965226, 0.969838, 0.974225, 0.977315, 0.979737, 0.981951, 0.983382, 0.985175, 0.986739, 0.988274, 0.989187, 0.989997, 0.990575, 0.99152, 0.991946, 0.992353  };
@@ -187,6 +164,8 @@ void plot(TH1* h_bkg, const TString& leg1, const TString& leg2, const TString& n
   l_eff->SetLineColor(0);
   l_eff->Draw();
   c_eff->Print(Form("c_eff_%s.eps",name.Data()));
+  c_eff->Print(Form("c_eff_%s.C",name.Data()));
+  c_eff->Print(Form("c_eff_%s.png",name.Data()));
 
   TCanvas* c= new TCanvas(Form("c_%s",name.Data()),Form("c_%s",name.Data()),1);
   gr_data->GetYaxis()->SetTitle("Signal Efficiency");
@@ -219,6 +198,8 @@ void plot(TH1* h_bkg, const TString& leg1, const TString& leg2, const TString& n
   l->SetLineColor(0);
   l->Draw();
   c->Print(Form("c_ROCtnp_%s.eps",name.Data()));
+  c->Print(Form("c_ROCtnp_%s.C",name.Data()));
+  c->Print(Form("c_ROCtnp_%s.png",name.Data()));
 
   //TCanvas *c_opt = new TCanvas(Form("c_opt_%s",name.Data()),Form("c_opt_%s",name.Data()),1);
   //gr_opt_mc->Draw("ACP");
