@@ -3,6 +3,8 @@ import FWCore.ParameterSet.Config as cms
 process = cms.Process("TagProbe")
 
 process.load("FWCore.MessageService.MessageLogger_cfi")
+process.MessageLogger.destinations = ['cout', 'cerr']
+process.MessageLogger.cerr.FwkReport.reportEvery = 1000
 
 process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
 
@@ -19,10 +21,11 @@ process.TFileService = cms.Service("TFileService",
 
 process.load("PFAnalyses.TTbarDIL.Sources.MU.MC.Fall10.patTuple_Zmumu_cff")
 
+from KoPFA.TagProbe.common_variables_cff import *
+
 process.options   = cms.untracked.PSet( wantSummary = cms.untracked.bool(True))
 
 process.PUweight = cms.EDProducer("EventWeightProducer")
-
 process.load("KoPFA.TagProbe.tnpLeptonSelector_cfi")
 
 process.load("KoPFA.DiMuonAnalyzer.triggerMatch_cfi")
@@ -136,10 +139,7 @@ process.tnpTree = cms.EDAnalyzer("TagProbeFitTreeProducer",
     arbitration   = cms.string("OneProbe"), ## that is, use only tags associated to a single probe.
     # probe variables
     variables = cms.PSet(
-        pt     = cms.string("pt"),
-        abseta = cms.string("abs(eta)"),
-        eta    = cms.string("eta"),
-        charge = cms.string("charge"),
+      KinematicVariables
     ),
     # choice of what defines a 'passing' probe
     flags = cms.PSet(
@@ -167,37 +167,12 @@ process.tnpTreeIso = cms.EDAnalyzer("TagProbeFitTreeProducer",
     arbitration   = cms.string("OneProbe"), ## that is, use only tags associated to a single probe.
     # probe variables
     variables = cms.PSet(
-        pt     = cms.string("pt"),
-        abseta = cms.string("abs(eta)"),
-        eta    = cms.string("eta"),
-        charge = cms.string("charge"),
+      KinematicVariables
     ),
     # choice of what defines a 'passing' probe
     flags = cms.PSet(
-        isIso = cms.InputTag("IsoMuons"),
-        isIso06 = cms.string("(chargedHadronIso + neutralHadronIso + photonIso)/pt < 0.06"),
-        isIso07 = cms.string("(chargedHadronIso + neutralHadronIso + photonIso)/pt < 0.07"),
-        isIso08 = cms.string("(chargedHadronIso + neutralHadronIso + photonIso)/pt < 0.08"),
-        isIso09 = cms.string("(chargedHadronIso + neutralHadronIso + photonIso)/pt < 0.09"),
-        isIso10 = cms.string("(chargedHadronIso + neutralHadronIso + photonIso)/pt < 0.10"),
-        isIso11 = cms.string("(chargedHadronIso + neutralHadronIso + photonIso)/pt < 0.11"),
-        isIso12 = cms.string("(chargedHadronIso + neutralHadronIso + photonIso)/pt < 0.12"),
-        isIso13 = cms.string("(chargedHadronIso + neutralHadronIso + photonIso)/pt < 0.13"),
-        isIso14 = cms.string("(chargedHadronIso + neutralHadronIso + photonIso)/pt < 0.14"),
-        isIso15 = cms.string("(chargedHadronIso + neutralHadronIso + photonIso)/pt < 0.15"),
-        isIso16 = cms.string("(chargedHadronIso + neutralHadronIso + photonIso)/pt < 0.16"),
-        isIso17 = cms.string("(chargedHadronIso + neutralHadronIso + photonIso)/pt < 0.17"),
-        isIso18 = cms.string("(chargedHadronIso + neutralHadronIso + photonIso)/pt < 0.18"),
-        isIso19 = cms.string("(chargedHadronIso + neutralHadronIso + photonIso)/pt < 0.19"),
-        isIso20 = cms.string("(chargedHadronIso + neutralHadronIso + photonIso)/pt < 0.20"),
-        isIso21 = cms.string("(chargedHadronIso + neutralHadronIso + photonIso)/pt < 0.21"),
-        isIso22 = cms.string("(chargedHadronIso + neutralHadronIso + photonIso)/pt < 0.22"),
-        isIso23 = cms.string("(chargedHadronIso + neutralHadronIso + photonIso)/pt < 0.23"),
-        isIso24 = cms.string("(chargedHadronIso + neutralHadronIso + photonIso)/pt < 0.24"),
-        isIso25 = cms.string("(chargedHadronIso + neutralHadronIso + photonIso)/pt < 0.25"),
-        isIso26 = cms.string("(chargedHadronIso + neutralHadronIso + photonIso)/pt < 0.26"),
-        isIso27 = cms.string("(chargedHadronIso + neutralHadronIso + photonIso)/pt < 0.27"),
-        isIso28 = cms.string("(chargedHadronIso + neutralHadronIso + photonIso)/pt < 0.28"),
+        PFIsoMultiFlags,
+        DETIsoMultiFlags,
     ),
     ## DATA-related info
     addRunLumiInfo = cms.bool(True),
@@ -211,15 +186,9 @@ process.tnpTreeIso = cms.EDAnalyzer("TagProbeFitTreeProducer",
     probeMatches  = cms.InputTag("muMcMatchIDMuonProbe"),
     allProbes     = cms.InputTag("IDMuons"),
     eventWeight = cms.InputTag("PUweight")
-    #eventWeight = cms.double(0.5)
 )
 
-MC = True 
-#MC = process.tnpTree.isMC.value()
-print MC
-
-if MC== True: 
-   process.p = cms.Path(
+process.p = cms.Path(
                      process.taggedMuons
                      *process.triggerMatch
                      *process.tagMuons
@@ -236,35 +205,10 @@ if MC== True:
                      *process.muMcMatchTag
                      *process.muMcMatchTrackProbe
                      *process.muMcMatchIDMuonProbe
-                     *process.PUweight
-                     *process.tagProbes
-                     *process.tnpTree
-                     *process.tagProbesIso
-                     *process.tnpTreeIso
-  )
-
-else:
-   process.p = cms.Path(
-                     process.taggedMuons
-                     *process.triggerMatch
-                     *process.tagMuons
-                     *process.PFMuons
-                     *process.IDMuons
-                     *process.IsoMuons
-                     *process.goodTracks
-                     *process.trackCands
-                     *process.trackProbes
-                     *process.tkToPFMuons
-                     *process.tkToIDMuons
-                     *process.passingprobesForPFMuons
-                     *process.passingprobesForIDMuons
-#                     *process.muMcMatchTag
-#                     *process.muMcMatchTrackProbe
-#                     *process.muMcMatchIDMuonProbe
-                     #*process.PUweight
-                     *process.tagProbes
-                     *process.tnpTree
-                     *process.tagProbesIso
-                     *process.tnpTreeIso
-  )
+                     *process.PUweight #new to reweight MC for pileup
+                     *process.tagProbes # make pair for ID
+                     *process.tnpTree # ID
+                     *process.tagProbesIso # make pair for Iso
+                     *process.tnpTreeIso # Iso
+)
 

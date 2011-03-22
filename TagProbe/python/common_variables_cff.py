@@ -1,0 +1,60 @@
+import FWCore.ParameterSet.Config as cms
+
+KinematicVariables = cms.PSet(
+    pt  = cms.string("pt"),
+    eta = cms.string("eta"),
+    abseta = cms.string("abs(eta)"),
+)
+
+
+PFIsoMultiFlags = cms.PSet(
+        isIso06 = cms.string("(chargedHadronIso + neutralHadronIso + photonIso)/pt < 0.06"),
+        isIso07 = cms.string("(chargedHadronIso + neutralHadronIso + photonIso)/pt < 0.07"),
+        isIso08 = cms.string("(chargedHadronIso + neutralHadronIso + photonIso)/pt < 0.08"),
+        isIso09 = cms.string("(chargedHadronIso + neutralHadronIso + photonIso)/pt < 0.09"),
+        isIso10 = cms.string("(chargedHadronIso + neutralHadronIso + photonIso)/pt < 0.10"),
+        isIso11 = cms.string("(chargedHadronIso + neutralHadronIso + photonIso)/pt < 0.11"),
+        isIso12 = cms.string("(chargedHadronIso + neutralHadronIso + photonIso)/pt < 0.12"),
+        isIso13 = cms.string("(chargedHadronIso + neutralHadronIso + photonIso)/pt < 0.13"),
+        isIso14 = cms.string("(chargedHadronIso + neutralHadronIso + photonIso)/pt < 0.14"),
+        isIso15 = cms.string("(chargedHadronIso + neutralHadronIso + photonIso)/pt < 0.15"),
+        isIso16 = cms.string("(chargedHadronIso + neutralHadronIso + photonIso)/pt < 0.16"),
+        isIso17 = cms.string("(chargedHadronIso + neutralHadronIso + photonIso)/pt < 0.17"),
+        isIso18 = cms.string("(chargedHadronIso + neutralHadronIso + photonIso)/pt < 0.18"),
+        isIso19 = cms.string("(chargedHadronIso + neutralHadronIso + photonIso)/pt < 0.19"),
+        isIso20 = cms.string("(chargedHadronIso + neutralHadronIso + photonIso)/pt < 0.20"),
+        isIso21 = cms.string("(chargedHadronIso + neutralHadronIso + photonIso)/pt < 0.21"),
+        isIso22 = cms.string("(chargedHadronIso + neutralHadronIso + photonIso)/pt < 0.22"),
+        isIso23 = cms.string("(chargedHadronIso + neutralHadronIso + photonIso)/pt < 0.23"),
+        isIso24 = cms.string("(chargedHadronIso + neutralHadronIso + photonIso)/pt < 0.24"),
+        isIso25 = cms.string("(chargedHadronIso + neutralHadronIso + photonIso)/pt < 0.25"),
+        isIso26 = cms.string("(chargedHadronIso + neutralHadronIso + photonIso)/pt < 0.26"),
+        isIso27 = cms.string("(chargedHadronIso + neutralHadronIso + photonIso)/pt < 0.27"),
+        isIso28 = cms.string("(chargedHadronIso + neutralHadronIso + photonIso)/pt < 0.28"),
+)
+
+DETIsoMultiFlags = cms.PSet(
+        isDetIso06 = cms.string("(trackIso + hcalIso + ecalIso)/pt < 0.06"),
+        isDetIso07 = cms.string("(trackIso + hcalIso + ecalIso)/pt < 0.07"),
+        isDetIso08 = cms.string("(trackIso + hcalIso + ecalIso)/pt < 0.08"),
+        isDetIso09 = cms.string("(trackIso + hcalIso + ecalIso)/pt < 0.09"),
+        isDetIso10 = cms.string("(trackIso + hcalIso + ecalIso)/pt < 0.10"),
+        isDetIso11 = cms.string("(trackIso + hcalIso + ecalIso)/pt < 0.11"),
+        isDetIso12 = cms.string("(trackIso + hcalIso + ecalIso)/pt < 0.12"),
+        isDetIso13 = cms.string("(trackIso + hcalIso + ecalIso)/pt < 0.13"),
+        isDetIso14 = cms.string("(trackIso + hcalIso + ecalIso)/pt < 0.14"),
+        isDetIso15 = cms.string("(trackIso + hcalIso + ecalIso)/pt < 0.15"),
+        isDetIso16 = cms.string("(trackIso + hcalIso + ecalIso)/pt < 0.16"),
+        isDetIso17 = cms.string("(trackIso + hcalIso + ecalIso)/pt < 0.17"),
+        isDetIso18 = cms.string("(trackIso + hcalIso + ecalIso)/pt < 0.18"),
+        isDetIso19 = cms.string("(trackIso + hcalIso + ecalIso)/pt < 0.19"),
+        isDetIso20 = cms.string("(trackIso + hcalIso + ecalIso)/pt < 0.20"),
+        isDetIso21 = cms.string("(trackIso + hcalIso + ecalIso)/pt < 0.21"),
+        isDetIso22 = cms.string("(trackIso + hcalIso + ecalIso)/pt < 0.22"),
+        isDetIso23 = cms.string("(trackIso + hcalIso + ecalIso)/pt < 0.23"),
+        isDetIso24 = cms.string("(trackIso + hcalIso + ecalIso)/pt < 0.24"),
+        isDetIso25 = cms.string("(trackIso + hcalIso + ecalIso)/pt < 0.25"),
+        isDetIso26 = cms.string("(trackIso + hcalIso + ecalIso)/pt < 0.26"),
+        isDetIso27 = cms.string("(trackIso + hcalIso + ecalIso)/pt < 0.27"),
+        isDetIso28 = cms.string("(trackIso + hcalIso + ecalIso)/pt < 0.28"),
+)
