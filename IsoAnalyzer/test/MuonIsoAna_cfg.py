@@ -20,13 +20,14 @@ process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
 #process.load("PFAnalyses.TTbarDIL.Sources.MU.MC.Spring10.patTuple_WJets_cff")
 #process.load("PFAnalyses.TTbarDIL.Sources.MU.MC.Spring10.patTuple_Zmumu_cff")
 #process.load("PFAnalyses.TTbarDIL.Sources.MU.MC.Spring10.patTuple_InclusiveMu15_cff")
+process.load("KoPFA.DiMuonAnalyzer.RD.patTuple_Run2010A_SingleMU_cff")
 #process.load("KoPFA.DiMuonAnalyzer.MC.Fall10_Single_MUSKIM.patTuple_Zmm_cff")
 #process.load("KoPFA.DiMuonAnalyzer.MC.Fall10_Single_MUSKIM.patTuple_QCD_Pt_30to50_cff")
 #process.load("KoPFA.DiMuonAnalyzer.MC.Fall10_Single_MUSKIM.patTuple_QCD_Pt_50to80_cff")
 #process.load("KoPFA.DiMuonAnalyzer.MC.Fall10_Single_MUSKIM.patTuple_QCD_Pt_80to120_cff")
 #process.load("KoPFA.DiMuonAnalyzer.MC.Fall10_Single_MUSKIM.patTuple_QCD_Pt_120to170_cff")
 #process.load("KoPFA.DiMuonAnalyzer.MC.Fall10_Single_MUSKIM.patTuple_QCD_Pt_170to300_cff")
-process.load("KoPFA.DiMuonAnalyzer.MC.Fall10_Single_MUSKIM.patTuple_QCD_Pt_300to470_cff")
+#process.load("KoPFA.DiMuonAnalyzer.MC.Fall10_Single_MUSKIM.patTuple_QCD_Pt_300to470_cff")
 
 # register TFileService
 process.TFileService = cms.Service("TFileService",
@@ -87,6 +88,7 @@ process.MuonAna = cms.EDAnalyzer('MuonIsolationAnalyzer',
 process.load("KoPFA.IsoAnalyzer.WFilter_cff")
 process.WmunuMtCut.muonLabel = "Muons"
 process.WmunuMtCut.minMt = 0 #70 
+process.WmunuMtCut.maxMt = 20 #70 
 process.WmunuMtCut.maxdphi =  1.5 #999 #1.5
 
 process.p = cms.Path(
