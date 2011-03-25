@@ -93,7 +93,7 @@ process.acceptedElectrons = cms.EDFilter("PATElectronSelector",
 #Here we define the muon selectors
 process.acceptedMuons = cms.EDFilter("PATMuonSelector",
     src = cms.InputTag("selectedPatMuonsPFlow"),
-    cut =cms.string("pt > 5 && abs(eta) < 2.4")
+    cut =cms.string("pt > 20 && abs(eta) < 2.4")
 )
 
 process.patMuonFilter = cms.EDFilter("CandViewCountFilter",
@@ -115,7 +115,7 @@ process.p = cms.Path(
 #    process.startupSequence*
     process.noscraping*
     process.primaryVertexFilter*
-    process.HBHENoiseFilter *
+#    process.HBHENoiseFilter *
 #    process.hltHighLevel*
     process.muonTriggerFilterByRun*
 #    process.patDefaultSequence*
@@ -141,8 +141,8 @@ process.out.outputCommands.extend(cms.untracked.vstring(
 #    'keep *_acceptedElectrons_*_*',
     'drop *_selectedPatPhotons*_*_*',
     'drop *_selectedPatElectrons*_*_*',
-    'drop *_selectedPatMuons*_*_*',
-    'drop *_selectedPatTaus*_*_*',
+    'keep *_selectedPatMuons*_*_*',
+    'keep *_selectedPatTaus*_*_*',
     'keep *_selectedPatJets*_*_*',
     'keep *_patMETs*_*_*',
     'drop *_selectedPatPFParticles*_*_*',
