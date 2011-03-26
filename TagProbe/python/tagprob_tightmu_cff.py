@@ -187,7 +187,7 @@ process.tnpTreeIso = cms.EDAnalyzer("TagProbeFitTreeProducer",
 )
 
 process.p = cms.Path(
-                     process.taggedMuons*process.triggerMatch*process.tagMuons
+                     process.taggedTightMuons*process.triggerMatch*process.tagMuons
      #                *process.PFMuons
      #                *process.IDMuons
                      *process.TightMuons

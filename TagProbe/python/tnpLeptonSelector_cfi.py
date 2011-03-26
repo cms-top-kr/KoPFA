@@ -27,7 +27,7 @@ taggedMuons = cms.EDProducer(
 
 taggedTightMuons = cms.EDFilter("PATMuonSelector",
     src = cms.InputTag("selectedPatMuons"),
-    cut =cms.string("isGlobalMuon && pt > 20 && abs(eta) < 2.4 && globalTrack.normalizedChi2 < 10.0 && globalTrack.hitPattern.numberOfValidMuonHits > 0 && abs(dB) < 0.2 && innerTrack.hitPattern.numberOfValidPixelHits > 0 && innerTrack.hitPattern.numberOfValidTrackerHits > 10 && numberOfMatchedStations() > 1 (trackIso+ecalIso+hcalIso)/pt < 0.15")
+    cut =cms.string("isGlobalMuon && pt > 20 && abs(eta) < 2.4 && globalTrack.normalizedChi2 < 10.0 && globalTrack.hitPattern.numberOfValidMuonHits > 0 && abs(dB) < 0.2 && innerTrack.hitPattern.numberOfValidPixelHits > 0 && innerTrack.hitPattern.numberOfValidTrackerHits > 10 && numberOfMatchedStations() > 1 && (trackIso+ecalIso+hcalIso)/pt < 0.15")
 )
 
 PFMuons = cms.EDProducer(
