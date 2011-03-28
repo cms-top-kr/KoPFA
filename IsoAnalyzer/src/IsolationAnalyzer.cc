@@ -8,7 +8,6 @@
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/Framework/interface/MakerMacros.h"
 #include "FWCore/ServiceRegistry/interface/Service.h"
-#include "DQMServices/Core/interface/MonitorElement.h"
 #include "CommonTools/UtilAlgos/interface/TFileService.h"
 
 #include "DataFormats/PatCandidates/interface/Muon.h"
@@ -28,7 +27,6 @@
 #include "CommonTools/Utils/interface/StringObjectFunction.h"
 #include "DataFormats/PatCandidates/interface/LookupTableRecord.h"
 
-#include "DQMServices/Core/interface/DQMStore.h"
 #include "DataFormats/RecoCandidate/interface/IsoDepositDirection.h"
 #include "DataFormats/RecoCandidate/interface/IsoDeposit.h"
 #include "DataFormats/RecoCandidate/interface/IsoDepositVetos.h"
