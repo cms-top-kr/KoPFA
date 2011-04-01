@@ -4,6 +4,7 @@
 #include "DataFormats/Candidate/interface/CandidateFwd.h"
 #include "DataFormats/Candidate/interface/Candidate.h"
 #include "DataFormats/PatCandidates/interface/Lepton.h"
+#include "TLorentzVector.h"
 
 namespace Ko{
 
@@ -21,6 +22,8 @@ namespace Ko{
     const reco::Candidate::LorentzVector& leg2() const { return leg2_; }
     float mass() const { return mass_; }
     float sign() const { return sign_; }
+    float deltaR() const; 
+    float deltaPhi() const;
   private:
 
     reco::Candidate::LorentzVector leg1_;
