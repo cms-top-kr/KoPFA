@@ -45,9 +45,10 @@ process.out = cms.OutputModule("PoolOutputModule",
 process.load("PhysicsTools.PatAlgos.patSequences_cff")
 from PhysicsTools.PatAlgos.tools.pfTools import *
 
-postfix = "PFlow"
-jetAlgo="AK5"
-usePF2PAT(process,runPF2PAT=True, jetAlgo=jetAlgo, runOnMC=False, postfix=postfix)
+#postfix = "PFlow"
+#jetAlgo="AK5"
+#runOnMC=False
+#usePF2PAT(process,runPF2PAT=True, jetAlgo=jetAlgo, runOnMC=runOnMC, postfix=postfix)
 #removeMCMatching(process, ['All'] )
 
 process.primaryVertexFilter = cms.EDFilter("VertexSelector",
@@ -77,10 +78,8 @@ process.patElectronsPFlow.electronIDSources = cms.PSet(
 )
 
 #REMOVE ISOLATION FROM PF2PAT!!!
-process.pfIsolatedMuonsPFlow.isolationCuts        = cms.vdouble(9999.,9999.,9999.)
-process.pfIsolatedMuonsPFlow.combinedIsolationCut = cms.double(9999.)
-process.pfIsolatedElectronsPFlow.isolationCuts        = cms.vdouble(9999.,9999.,9999.)
-process.pfIsolatedElectronsPFlow.combinedIsolationCut = cms.double(9999.)
+#process.pfIsolatedMuonsPFlow.combinedIsolationCut = cms.double(999)
+#process.pfIsolatedElectronsPFlow.combinedIsolationCut = cms.double(999)
 
 ##################################################################
 process.load("PFAnalyses.CommonTools.countingSequences_cfi")
@@ -96,11 +95,11 @@ process.p = cms.Path(
 )
 
 # top projections in PF2PAT:
-getattr(process,"pfNoPileUp"+postfix).enable = True
-getattr(process,"pfNoMuon"+postfix).enable = True
-getattr(process,"pfNoElectron"+postfix).enable = True
-getattr(process,"pfNoTau"+postfix).enable = False # to use tau-cleaned jet collection : True
-getattr(process,"pfNoJet"+postfix).enable = True
+#getattr(process,"pfNoPileUp"+postfix).enable = True
+#getattr(process,"pfNoMuon"+postfix).enable = True
+#getattr(process,"pfNoElectron"+postfix).enable = True
+#getattr(process,"pfNoTau"+postfix).enable = False # to use tau-cleaned jet collection : True
+#getattr(process,"pfNoJet"+postfix).enable = True
 
 from PhysicsTools.PatAlgos.patEventContent_cff import *
 process.out.outputCommands += patTriggerEventContent
