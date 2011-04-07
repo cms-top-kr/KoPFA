@@ -68,7 +68,7 @@ process.load('CommonTools.RecoAlgos.HBHENoiseFilter_cfi')
 
 #Electron ID
 process.load('RecoEgamma.ElectronIdentification.cutsInCategoriesElectronIdentificationV06_cfi')
-process.patElectronsPFlow.electronIDSources = cms.PSet(
+process.patElectrons.electronIDSources = cms.PSet(
     eidVeryLoose = cms.InputTag("eidVeryLoose"),
     eidLoose = cms.InputTag("eidLoose"),
     eidMedium = cms.InputTag("eidMedium"),
@@ -92,6 +92,8 @@ process.p = cms.Path(
     process.noscraping*
     process.primaryVertexFilter
 #    process.HBHENoiseFilter *
+  * process.eidVeryLoose * process.eidLoose * process.eidMedium
+  * process.eidTight * process.eidSuperTight * process.eidHyperTight1
 )
 
 # top projections in PF2PAT:
