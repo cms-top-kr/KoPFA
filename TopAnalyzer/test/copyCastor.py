@@ -26,7 +26,8 @@ if dataormc == "mc":
 elif dataormc == "data":
   dir = "/castor/cern.ch/user/b/bhlee/ntuple/top/"+type+"/RD/Mar29PromptReco"
   destination = "/home/bhlee/ntuple/top/"+type+"/RD/Mar29PromptReco"
-  list = ["data_1","data_2"]
+  #list = ["data_1","data_2"]
+  list = ["Run2011A","Run2011A_MuonPhysics"]
 else:
   print "data or mc?"  
 
@@ -50,7 +51,7 @@ elif input == "merge":
     for s in list:
       os.system("hadd -f "+destination+"/vallot_"+s+".root "+destination+"/"+s+"/vallot_*.root")
   if dataormc == "data":
-    os.system("hadd -f "+destination+"/vallot.root "+destination+"/data*/vallot_*.root")
+    os.system("hadd -f "+destination+"/vallot.root "+destination+"/Run2011*/vallot_*.root")
 elif input =="remove":
   for s in list:
     os.system("rm -r "+destination+"/"+s)
