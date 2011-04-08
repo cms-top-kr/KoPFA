@@ -66,17 +66,6 @@ process.noscraping = cms.EDFilter("FilterOutScraping",
 
 process.load('CommonTools.RecoAlgos.HBHENoiseFilter_cfi')
 
-#Electron ID
-process.load('RecoEgamma.ElectronIdentification.cutsInCategoriesElectronIdentificationV06_cfi')
-process.patElectrons.electronIDSources = cms.PSet(
-    eidVeryLoose = cms.InputTag("eidVeryLoose"),
-    eidLoose = cms.InputTag("eidLoose"),
-    eidMedium = cms.InputTag("eidMedium"),
-    eidTight = cms.InputTag("eidTight"),
-    eidSuperTight = cms.InputTag("eidSuperTight"),
-    eidHyperTight1 = cms.InputTag("eidHyperTight")
-)
-
 #REMOVE ISOLATION FROM PF2PAT!!!
 #process.pfIsolatedMuonsPFlow.combinedIsolationCut = cms.double(999)
 #process.pfIsolatedElectronsPFlow.combinedIsolationCut = cms.double(999)
@@ -92,8 +81,6 @@ process.p = cms.Path(
     process.noscraping*
     process.primaryVertexFilter
 #    process.HBHENoiseFilter *
-  * process.eidVeryLoose * process.eidLoose * process.eidMedium
-  * process.eidTight * process.eidSuperTight * process.eidHyperTight1
 )
 
 # top projections in PF2PAT:
