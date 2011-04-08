@@ -13,7 +13,7 @@ process.source = cms.Source("PoolSource",
 )
 
 process.TFileService = cms.Service("TFileService",
-    fileName = cms.string('vallot_data_1.root')
+    fileName = cms.string('vallot_Run2011A.root')
 )
 
 process.load("KoPFA.TopAnalyzer.Sources.MU.RD.patTuple_Run2011A_PromptReco_DoubleMu_official_cff")
