@@ -91,13 +91,23 @@ process.p = cms.Path(
 #getattr(process,"pfNoJet"+postfix).enable = True
 
 from PhysicsTools.PatAlgos.patEventContent_cff import *
-process.out.outputCommands += patTriggerEventContent
-process.out.outputCommands += patExtraAodEventContent
-process.out.outputCommands += patEventContentNoCleaning
+def updateEventContent(p):
+    l = p.out.outputCommands[:]
+    p.out.outputCommands = ['drop *']
 
-process.out.outputCommands.extend(cms.untracked.vstring(
-    'keep *_MEtoEDMConverter_*_PAT',
-    'keep *_particleFlow_*_*',
-    'keep *_acceptedMuons_*_*',
-    'keep *_acceptedElectrons_*_*',
-))
+    l.extend(patTriggerEventContent)
+    l.extend(patExtraAodEventContent)
+    l.extend(patEventContentNoCleaning)
+    l.extend([
+        'keep *_MEtoEDMConverter_*_PAT',
+        'keep *_particleFlow_*_*',
+        'keep *_acceptedMuons_*_*',
+        'keep *_acceptedElectrons_*_*',
+    ])
+
+    # Uniquify outputCommands
+    s = set()
+    for item in l:
+        if item not in s:
+            s.add(item)
+            p.out.outputCommands.append(item)
