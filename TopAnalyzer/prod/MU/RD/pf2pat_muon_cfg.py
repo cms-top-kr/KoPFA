@@ -6,6 +6,8 @@ postfix = "PFlow"
 jetAlgo="AK5"
 usePF2PAT(process,runPF2PAT=True, jetAlgo=jetAlgo, runOnMC=False, postfix=postfix)
 
+updateEventContent(process)
+
 #REMOVE ISOLATION FROM PF2PAT!!!
 process.pfIsolatedMuonsPFlow.combinedIsolationCut = cms.double(999)
 process.pfIsolatedElectronsPFlow.combinedIsolationCut = cms.double(999)
@@ -38,7 +40,6 @@ process.p += process.muonTriggerFilterByRun
 process.p += getattr(process,"patPF2PATSequence"+postfix)
 process.p += process.acceptedMuons
 process.p += process.patMuonFilter
-process.out.outputCommands += cms.untracked.vstring(*patExtraAodEventContent)
 
 # top projections in PF2PAT:
 getattr(process,"pfNoPileUp"+postfix).enable = True

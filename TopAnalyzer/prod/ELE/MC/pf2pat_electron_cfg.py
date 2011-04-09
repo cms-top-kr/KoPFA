@@ -25,6 +25,8 @@ postfix = "PFlow"
 jetAlgo="AK5"
 usePF2PAT(process,runPF2PAT=True, jetAlgo=jetAlgo, runOnMC=True, postfix=postfix)
 
+updateEventContent(process)
+
 #REMOVE ISOLATION FROM PF2PAT!!!
 process.pfIsolatedMuonsPFlow.combinedIsolationCut = cms.double(999)
 process.pfIsolatedElectronsPFlow.combinedIsolationCut = cms.double(999)
