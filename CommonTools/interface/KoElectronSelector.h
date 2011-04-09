@@ -44,8 +44,10 @@ class KoElectronSelector : public edm::EDProducer
   edm::InputTag electronLabel_;
   double ptcut_;
   double etacut_;
-  PatElectronSelector   electronIdSelector_;
-  PatElectronIsolationSelector electronIsoSelector_;
+  
+  std::string eidName_;
+  int eidBitMask_;
+  
   edm::InputTag beamSpotLabel_;
  
   typedef pat::ElectronCollection::const_iterator MI;
