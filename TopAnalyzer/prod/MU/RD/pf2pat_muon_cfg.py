@@ -17,7 +17,7 @@ process.source = cms.Source("PoolSource",
   )
 )
 
-process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
+process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(1) )
 
 process.load("HLTrigger.HLTfilters.hltHighLevel_cfi")
 process.hltHighLevel.HLTPaths = cms.vstring()
@@ -34,10 +34,11 @@ process.patMuonFilter = cms.EDFilter("CandViewCountFilter",
   minNumber = cms.uint32(2)
 )
 
-#process.p += process.muonTriggerFilterByRun 
+process.p += process.muonTriggerFilterByRun 
 process.p += getattr(process,"patPF2PATSequence"+postfix)
 process.p += process.acceptedMuons
 process.p += process.patMuonFilter
+process.out.outputCommands += cms.untracked.vstring(*patExtraAodEventContent)
 
 # top projections in PF2PAT:
 getattr(process,"pfNoPileUp"+postfix).enable = True
