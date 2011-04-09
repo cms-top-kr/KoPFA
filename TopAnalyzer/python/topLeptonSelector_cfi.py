@@ -20,15 +20,12 @@ Muons = cms.EDProducer(
 
 )
 
-from PFAnalyses.CommonTools.Selectors.electronSelectorPSet_cff import electronSelectorPSet
-from PFAnalyses.CommonTools.Selectors.newElectronIsoSelectorPSet_cff import electronIsoSelectorPSet
-
 Electrons = cms.EDProducer(
     "KoElectronSelector",
     version = cms.untracked.int32( 5 ),# 10 = MVA, 5 = WP90?
     electronLabel  = cms.InputTag("acceptedElectrons"),
     beamSpotLabel = cms.InputTag("offlineBeamSpot"),
-    electronIdSelector = electronSelectorPSet,
-    electronIsoSelector = electronIsoSelectorPSet,
+    eidName = cms.untracked.string("eidTight"),
+    eidBitMask = cms.untracked.int32(5), # = 101, ID and cms.Conversion
 )
 
