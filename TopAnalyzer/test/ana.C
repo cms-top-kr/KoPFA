@@ -20,51 +20,50 @@ void ana(string decayMode = "MuMu", string imageOutDir = "")
   TopAnalyzerLite* analyzer = new TopAnalyzerLite(decayMode, imageOutDir);
 
   const std::string mcPath = "/home/bhlee/ntuple/top/"+decayMode+"/MC/Fall10_Nov4ReReco/";
-  const std::string rdPath = "/home/bhlee/ntuple/top/"+decayMode+"/RD/Nov4ReReco/";
+  const std::string rdPath = "/home/bhlee/ntuple/top/"+decayMode+"/RD/Mar29PromptReco/";
 
 
   defaultStyle();
 
   //analyzer->addRealData(rdPath+"/vallot_Run2010A_Sep17ReReco.root", 3.1);
-  //analyzer->addRealData(rdPath+"/vallot_Run2010A_Sep17ReReco.root", 3.1*1047/2850);
   //analyzer->addRealData(rdPath+"/vallot_Run2010B_PromptReco.root", 4.0);
-  //analyzer->addRealData(rdPath+"/vallot_Run2010B_PromptReco.root", 4.0*781/3382);
-  analyzer->addRealData(rdPath+"/vallot.root", 36.1);
+  //analyzer->addRealData(rdPath+"/vallot.root", 5.06671);
+  analyzer->addRealData(rdPath+"/vallot.root", 19.50160);
 
-  //analyzer->addMCSig("TTbar", "t#bar{t}", mcPath+"/vallot_TTbar.root", 157.5, 1000000, 4);
-  analyzer->addMCSig("TTbar", "t#bar{t}", mcPath+"/vallot_TTbar_PU.root", 157.5, 1000000, 4);
+  analyzer->addMCSig("TTbar", "t#bar{t}", mcPath+"/vallot_TTbar.root", 157.5, 1000000, 4);
+  //analyzer->addMCSig("TTbar", "t#bar{t}", mcPath+"/vallot_TTbar_PU.root", 157.5, 1000000, 4);
 
   analyzer->addMCBkg("Wl", "W #rightarrow l#nu", mcPath+"/vallot_We.root", 10438, 2500000, 46);
   analyzer->addMCBkg("Wm", "W #rightarrow l#nu", mcPath+"/vallot_Wmu.root", 10438, 2500000, 46);
   analyzer->addMCBkg("Wt", "W #rightarrow l#nu", mcPath+"/vallot_Wtau.root", 10438, 2500000, 46);
 
-  //analyzer->addMCBkg("VV", "Dibosons", mcPath+"/vallot_WW.root", 4.51, 100000, 6);
-  //analyzer->addMCBkg("ZW", "Dibosons", mcPath+"/vallot_ZW.root", 0.61, 100000, 6);
-  //analyzer->addMCBkg("ZZ", "Dibosons", mcPath+"/vallot_ZZ.root", 7.40, 100000, 6);
-  analyzer->addMCBkg("VV", "Dibosons", mcPath+"/vallot_WW_PU.root", 4.51, 100000, 6);
-  analyzer->addMCBkg("ZW", "Dibosons", mcPath+"/vallot_ZW_PU.root", 0.61, 100000, 6);
-  analyzer->addMCBkg("ZZ", "Dibosons", mcPath+"/vallot_ZZ_PU.root", 7.40, 100000, 6);
+  analyzer->addMCBkg("VV", "Dibosons", mcPath+"/vallot_WW.root", 4.51, 100000, 6);
+  analyzer->addMCBkg("ZW", "Dibosons", mcPath+"/vallot_ZW.root", 0.61, 100000, 6);
+  analyzer->addMCBkg("ZZ", "Dibosons", mcPath+"/vallot_ZZ.root", 7.40, 100000, 6);
+  //analyzer->addMCBkg("VV", "Dibosons", mcPath+"/vallot_WW_PU.root", 4.51, 100000, 6);
+  //analyzer->addMCBkg("ZW", "Dibosons", mcPath+"/vallot_ZW_PU.root", 0.61, 100000, 6);
+  //analyzer->addMCBkg("ZZ", "Dibosons", mcPath+"/vallot_ZZ_PU.root", 7.40, 100000, 6);
 
-  //analyzer->addMCBkg("SingleTop", "Single top", mcPath+"/vallot_SingleTop.root", 10.6, 100000, 7);
-  analyzer->addMCBkg("SingleTop", "Single top", mcPath+"/vallot_SingleTop_PU.root", 10.6, 100000, 7);
+  analyzer->addMCBkg("SingleTop", "Single top", mcPath+"/vallot_SingleTop.root", 10.6, 100000, 7);
+  //analyzer->addMCBkg("SingleTop", "Single top", mcPath+"/vallot_SingleTop_PU.root", 10.6, 100000, 7);
 
-  //analyzer->addMCBkg("DYtt", "Z/#gamma* #rightarrow #tau#tau", mcPath+"/vallot_DYtautau.root", 3457, 1000000, 5);
-  //analyzer->addMCBkg("DYtt_20to50", "Z/#gamma* #rightarrow #tau#tau", mcPath+"/vallot_Ztautau.root", 1666, 1000000, 5);
-  //analyzer->addMCBkg("Ztt"        , "Z/#gamma* #rightarrow #tau#tau", mcPath+"/vallot_ZtauDecay.root", 3048, 2500000, 5);
-  analyzer->addMCBkg("DYtt", "Z/#gamma* #rightarrow #tau#tau", mcPath+"/vallot_DYtautau_PU.root", 3457, 1000000, 5);
-  analyzer->addMCBkg("DYtt_20to50", "Z/#gamma* #rightarrow #tau#tau", mcPath+"/vallot_Ztautau_PU.root", 1666, 1000000, 5);
-  analyzer->addMCBkg("Ztt"        , "Z/#gamma* #rightarrow #tau#tau", mcPath+"/vallot_ZtauDecay_PU.root", 3048, 2500000, 5);
+  analyzer->addMCBkg("DYtt", "Z/#gamma* #rightarrow #tau#tau", mcPath+"/vallot_DYtautau.root", 3457, 1000000, 5);
+  analyzer->addMCBkg("DYtt_20to50", "Z/#gamma* #rightarrow #tau#tau", mcPath+"/vallot_Ztautau.root", 1666, 1000000, 5);
+  analyzer->addMCBkg("Ztt"        , "Z/#gamma* #rightarrow #tau#tau", mcPath+"/vallot_ZtauDecay.root", 3048, 2500000, 5);
+  //analyzer->addMCBkg("DYtt", "Z/#gamma* #rightarrow #tau#tau", mcPath+"/vallot_DYtautau_PU.root", 3457, 1000000, 5);
+  //analyzer->addMCBkg("DYtt_20to50", "Z/#gamma* #rightarrow #tau#tau", mcPath+"/vallot_Ztautau_PU.root", 1666, 1000000, 5);
+  //analyzer->addMCBkg("Ztt"        , "Z/#gamma* #rightarrow #tau#tau", mcPath+"/vallot_ZtauDecay_PU.root", 3048, 2500000, 5);
 
-  //analyzer->addMCBkg("DYll",  "Z/#gamma* #rightarrow ll", mcPath+"/vallot_DYee.root", 3457, 1000000, 2);
-  //analyzer->addMCBkg("DYmumu","Z/#gamma* #rightarrow ll", mcPath+"/vallot_DYmumu.root", 3457, 1000000, 2);
-  //analyzer->addMCBkg("Zee"  , "Z/#gamma* #rightarrow ll", mcPath+"/vallot_Zee.root", 1666, 1000000, 2);
-  //analyzer->addMCBkg("Zmumu", "Z/#gamma* #rightarrow ll", mcPath+"/vallot_Zmumu.root", 1666, 1000000, 2);
-  //analyzer->addMCBkg("ZJets", "Z/#gamma* #rightarrow ll", mcPath+"/vallot_ZJets.root", 3048, 2500000, 2);
-  analyzer->addMCBkg("DYll",  "Z/#gamma* #rightarrow ll", mcPath+"/vallot_DYee_PU.root", 3457, 1000000, 2);
-  analyzer->addMCBkg("DYmumu","Z/#gamma* #rightarrow ll", mcPath+"/vallot_DYmumu_PU.root", 3457, 1000000, 2);
-  analyzer->addMCBkg("Zee"  , "Z/#gamma* #rightarrow ll", mcPath+"/vallot_Zee_PU.root", 1666, 1000000, 2);
-  analyzer->addMCBkg("Zmumu", "Z/#gamma* #rightarrow ll", mcPath+"/vallot_Zmumu_PU.root", 1666, 1000000, 2);
-  analyzer->addMCBkg("ZJets", "Z/#gamma* #rightarrow ll", mcPath+"/vallot_ZJets_PU.root", 3048, 2500000, 2);
+  analyzer->addMCBkg("DYll",  "Z/#gamma* #rightarrow ll", mcPath+"/vallot_DYee.root", 3457, 1000000, 2);
+  analyzer->addMCBkg("DYmumu","Z/#gamma* #rightarrow ll", mcPath+"/vallot_DYmumu.root", 3457, 1000000, 2);
+  analyzer->addMCBkg("Zee"  , "Z/#gamma* #rightarrow ll", mcPath+"/vallot_Zee.root", 1666, 1000000, 2);
+  analyzer->addMCBkg("Zmumu", "Z/#gamma* #rightarrow ll", mcPath+"/vallot_Zmumu.root", 1666, 1000000, 2);
+  analyzer->addMCBkg("ZJets", "Z/#gamma* #rightarrow ll", mcPath+"/vallot_ZJets.root", 3048, 2500000, 2);
+  //analyzer->addMCBkg("DYll",  "Z/#gamma* #rightarrow ll", mcPath+"/vallot_DYee_PU.root", 3457, 1000000, 2);
+  //analyzer->addMCBkg("DYmumu","Z/#gamma* #rightarrow ll", mcPath+"/vallot_DYmumu_PU.root", 3457, 1000000, 2);
+  //analyzer->addMCBkg("Zee"  , "Z/#gamma* #rightarrow ll", mcPath+"/vallot_Zee_PU.root", 1666, 1000000, 2);
+  //analyzer->addMCBkg("Zmumu", "Z/#gamma* #rightarrow ll", mcPath+"/vallot_Zmumu_PU.root", 1666, 1000000, 2);
+  //analyzer->addMCBkg("ZJets", "Z/#gamma* #rightarrow ll", mcPath+"/vallot_ZJets_PU.root", 3048, 2500000, 2);
 
   analyzer->addMonitorPlot("ZMass", "Z.mass()", "Dilepton mass;Dilepton Mass (GeV/c^{2});Events/5 GeV/c^{2}", 40, 0, 200, 0.1, 1500);
   analyzer->addMonitorPlot("ZMassFinal", "Z.mass()", "Dilepton mass;Dilepton Mass (GeV/c^{2});Events/40 GeV/c^{2}", 5, 0, 200, 0.1, 1500);
@@ -72,6 +71,7 @@ void ana(string decayMode = "MuMu", string imageOutDir = "")
   analyzer->addMonitorPlot("METlog", "MET", "Missing E_{T};Missing E_{T} (GeV);Events", 10, 0, 100, 0.1, 400);
   analyzer->addMonitorPlot("nJet", "@jetspt30.size()", "Jet Multiplicity;Jet Multiplicity;Events", 5, -0.5, 4.5, 0.1, 3,false);
   analyzer->addMonitorPlot("MET", "MET", "Missing E_{T};Missing E_{T} (GeV);Events", 10, 0, 100, 0.1, 1.5, false);
+  analyzer->addMonitorPlot("nbJet", "@bjets.size()", "b-Jet Multiplicity;b-Jet Multiplicity;Events", 5, -0.5, 4.5, 0.1, 3,false);
 
   analyzer->addMonitorPlot("pt1", "Z.leg1().pt()", "Leading p_{T};p_{T} (GeV/c);Events/5 GeV/c", 20, 0, 100, 0.1, 1500);
   analyzer->addMonitorPlot("pt2", "Z.leg2().pt()", "Leading p_{T};p_{T} (GeV/c);Events/5 GeV/c", 20, 0, 100, 0.1, 1500);
@@ -119,6 +119,7 @@ void ana(string decayMode = "MuMu", string imageOutDir = "")
   }else{
     analyzer->addCutStep("MET > 30", "nJet,vsumM,vsumMAlt", 0.5);
   }
+  analyzer->addCutStep("@bjets.size() >= 1", "nbjet,MET,vsumM,vsumMAlt", 0.5);
   analyzer->applyCutSteps();
 
   //analyzer->applySingleCut("Z.mass() > 12 && (chIso1+phIso1)/Z.leg1().pt() < 0.21 && (chIso2+phIso2)/Z.leg2().pt() < 0.21 && Z.sign() < 0 && abs(Z.mass() - 91) > 15 && @jetspt30.size() >= 2 && MET > 30", "nJet,MET,ZMass");
