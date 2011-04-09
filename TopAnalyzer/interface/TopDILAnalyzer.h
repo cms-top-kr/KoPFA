@@ -13,7 +13,7 @@
 //
 // Original Author:  Tae Jeong Kim,40 R-A32,+41227678602,
 //         Created:  Fri Jun  4 17:19:29 CEST 2010
-// $Id: TopDILAnalyzer.h,v 1.32 2011/02/25 10:59:26 tjkim Exp $
+// $Id: TopDILAnalyzer.h,v 1.33 2011/02/28 15:08:39 jhgoh Exp $
 //
 //
 
@@ -36,11 +36,13 @@
 #include "DataFormats/PatCandidates/interface/LookupTableRecord.h"
 #include "DataFormats/PatCandidates/interface/Muon.h"
 #include "DataFormats/PatCandidates/interface/MET.h"
+#include "DataFormats/METReco/interface/PFMET.h"
 #include "DataFormats/PatCandidates/interface/Jet.h"
 
 #include "DataFormats/Math/interface/deltaR.h"
 #include "DataFormats/Math/interface/LorentzVector.h"
 #include "KoPFA/DataFormats/interface/ZCandidate.h"
+#include "KoPFA/DataFormats/interface/METCandidate.h"
 #include "PFAnalyses/CommonTools/interface/CandidateSelector.h"
 #include "PFAnalyses/CommonTools/interface/PatJetIdSelector.h"
 
@@ -79,6 +81,7 @@ class TopDILAnalyzer : public edm::EDAnalyzer {
     metLabel_ = iConfig.getParameter<edm::InputTag>("metLabel");
     jetLabel_ = iConfig.getParameter<edm::InputTag>("jetLabel");
     genParticlesLabel_= iConfig.getParameter<edm::InputTag>("genParticlesLabel");
+    metStudy_ = iConfig.getParameter<bool>("metStudy");
     useEventCounter_ = iConfig.getParameter<bool>("useEventCounter");
     filters_ = iConfig.getUntrackedParameter<std::vector<std::string> >("filters");
     looseJetIdSelector_.initialize( iConfig.getParameter<edm::ParameterSet> ("looseJetId") );
@@ -107,6 +110,7 @@ class TopDILAnalyzer : public edm::EDAnalyzer {
     h_bjet_multi = fs->make<TH1F>( "h_bjet_multi", "bjet_multi", 10, 0, 10);
 
     Z = new std::vector<Ko::ZCandidate>();
+    pfMet = new std::vector<Ko::METCandidate>();
     toptotal = new std::vector<math::XYZTLorentzVector>();
     met = new std::vector<math::XYZTLorentzVector>();
     jets = new std::vector<math::XYZTLorentzVector>();
@@ -158,6 +162,7 @@ class TopDILAnalyzer : public edm::EDAnalyzer {
     tree->Branch("LUMI",&LUMI,"LUMI/i");
 
     tree->Branch("Z","std::vector<Ko::ZCandidate>", &Z);
+    tree->Branch("pfMet","std::vector<Ko::METCandidate>", &pfMet);
     tree->Branch("toptotal","std::vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >", &toptotal);
 
     tree->Branch("met","std::vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >", &met);
@@ -216,6 +221,11 @@ class TopDILAnalyzer : public edm::EDAnalyzer {
     tree->Branch("reldeveM",&reldeveM,"reldeveM/d");
     tree->Branch("reldeve2M",&reldeve2M,"reldeve2M/d");
 
+    tree->Branch("sumEt",&sumEt,"sumEt/d");
+    tree->Branch("photonEt",&photonEt,"photonEt/d");
+    tree->Branch("chargedHadronEt",&chargedHadronEt,"chargedHadronEt/d");
+    tree->Branch("neutralHadronEt",&neutralHadronEt,"neutralHadronEt/d");
+
     // Jet energy correction for 38X
     if ( doResJec_ )
     {
@@ -252,6 +262,27 @@ class TopDILAnalyzer : public edm::EDAnalyzer {
     //MET = mi->pt();
     //met->push_back(mi->p4());
     //h_MET->Fill(MET);
+    edm::Handle< reco::PFCandidateCollection > pfCandidates_;
+    typedef reco::PFCandidateCollection::const_iterator CI;
+    iEvent.getByLabel("particleFlow",pfCandidates_);
+
+    sumEt = 0;
+    photonEt = 0;
+    chargedHadronEt = 0;
+    neutralHadronEt = 0;
+
+    for(CI ci = pfCandidates_->begin(); ci!=pfCandidates_->end(); ++ci) {
+      const reco::PFCandidate& pfc = *ci;
+      double E = pfc.energy();
+      double theta = pfc.theta();
+      double sintheta = sin(theta);
+      double et = E*sintheta;
+      sumEt += et;
+      if( pfc.particleId() == 1 ) chargedHadronEt += et;
+      if( pfc.particleId() == 5 ) neutralHadronEt += et;
+      if( pfc.particleId() == 4 ) photonEt += et; 
+    } 
+
 
     edm::Handle<pat::JetCollection> Jets;
     iEvent.getByLabel(jetLabel_, Jets);
@@ -349,7 +380,7 @@ class TopDILAnalyzer : public edm::EDAnalyzer {
         trackIso2->push_back(it2.trackIso());
         ecalIso2->push_back(it2.ecalIso());
         hcalIso2->push_back(it2.hcalIso());
-
+     
         double met_x = mi->px();
         double met_y = mi->py();
         
@@ -424,6 +455,12 @@ class TopDILAnalyzer : public edm::EDAnalyzer {
         corrmet.SetPxPyPzE(met_x,met_y,0,sqrt(met_x*met_x + met_y*met_y));
         MET = sqrt(met_x*met_x + met_y*met_y);
         met->push_back(corrmet);
+
+        if(metStudy_){
+          const Ko::METCandidate pfmet(MET, mi->sumEt(), mi->NeutralEMFraction(),mi->NeutralHadEtFraction(),mi->ChargedHadEtFraction(),mi->ChargedEMEtFraction(),mi->MuonEtFraction() );
+          pfMet->push_back(pfmet);
+        }
+
         h_MET->Fill(MET);
 
         if(jetspt30->size() >= 2){
@@ -516,6 +553,7 @@ class TopDILAnalyzer : public edm::EDAnalyzer {
   void clear(){
 
     Z->clear();
+    pfMet->clear();
     toptotal->clear();
     met->clear();
     jets->clear();
@@ -570,7 +608,11 @@ class TopDILAnalyzer : public edm::EDAnalyzer {
     relvsumM = -999;
     reldeveM = -999;
     reldeve2M = -999;
- 
+
+    sumEt = -1;
+    photonEt = -1;
+    chargedHadronEt = -1;
+    neutralHadronEt = -1;
 
   }
 
@@ -711,6 +753,7 @@ class TopDILAnalyzer : public edm::EDAnalyzer {
   edm::InputTag genParticlesLabel_;
 
   std::vector<std::string> filters_;
+  bool metStudy_;
   bool useEventCounter_;
   // loose jet ID. 
   PatJetIdSelector looseJetIdSelector_;
@@ -734,6 +777,7 @@ class TopDILAnalyzer : public edm::EDAnalyzer {
   TH1F * h_bjet_multi;
 
   std::vector<Ko::ZCandidate>* Z;
+  std::vector<Ko::METCandidate>* pfMet;
   std::vector<math::XYZTLorentzVector>* toptotal;
   std::vector<math::XYZTLorentzVector>* met;
   std::vector<math::XYZTLorentzVector>* jets;
@@ -792,6 +836,12 @@ class TopDILAnalyzer : public edm::EDAnalyzer {
   double relvsumM;
   double reldeveM;
   double reldeve2M;
+
+  double sumEt;
+  double photonEt;
+  double chargedHadronEt;
+  double neutralHadronEt;
+
 
   // ----------member data ---------------------------
 
