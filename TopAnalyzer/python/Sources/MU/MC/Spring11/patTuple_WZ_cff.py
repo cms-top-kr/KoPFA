@@ -8,7 +8,7 @@ source = cms.Source("PoolSource",
 		     fileNames = readFiles
                     )
 readFiles.extend([
-	'rfio:///castor/cern.ch/user/t/tjkim/DIMUSKIM/MC/Spring11/WZ/patTuple_skim_1_1_Vki.root',
-	'rfio:///castor/cern.ch/user/t/tjkim/DIMUSKIM/MC/Spring11/WZ/patTuple_skim_2_1_iiv.root',
+	'rfio:///castor/cern.ch/user/t/tjkim/DIMUSKIM/MC/Spring11/WZ_v3/patTuple_skim_1_1_GAa.root',
+	'rfio:///castor/cern.ch/user/t/tjkim/DIMUSKIM/MC/Spring11/WZ_v3/patTuple_skim_2_1_AQg.root',
 ]
         )
