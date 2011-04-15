@@ -12,8 +12,8 @@ dataormc =sys.argv[2]
 type = sys.argv[3]
 
 if dataormc == "mc":
-  dir = "/castor/cern.ch/user/t/tjkim/ntuple/top/"+type+"/MC/Spring10"
-  destination = "/home/tjkim/ntuple/top/"+type+"/MC/Spring10"
+  dir = "/castor/cern.ch/user/b/bhlee/ntuple/top/"+type+"/MC/Spring11_Mar29PromptReco"
+  destination = "/home/bhlee/ntuple/top/"+type+"/MC/Spring11_Mar29PromptReco"
 
   if type == "MuMu":
     list = ["ZJets", "Ztautau", "WJets", "VVJets", "TTbar", "SingleTop", "Zmumu", "DYmumu","InclusiveMu15"]
@@ -24,9 +24,10 @@ if dataormc == "mc":
   else: 
     print "wrong type"
 elif dataormc == "data":
-  dir = "/castor/cern.ch/user/t/tjkim/ntuple/top/"+type+"/RD/Oct6"
-  destination = "/home/tjkim/ntuple/top/"+type+"/RD/Oct6"
-  list = ["data_1","data_2"]
+  dir = "/castor/cern.ch/user/b/bhlee/ntuple/top/"+type+"/RD/Mar29PromptReco"
+  destination = "/home/bhlee/ntuple/top/"+type+"/RD/Mar29PromptReco"
+  #list = ["data_1","data_2"]
+  list = ["Run2011A_official","Run2011A_MuonPhysics"]
 else:
   print "data or mc?"  
 
@@ -50,7 +51,7 @@ elif input == "merge":
     for s in list:
       os.system("hadd -f "+destination+"/vallot_"+s+".root "+destination+"/"+s+"/vallot_*.root")
   if dataormc == "data":
-    os.system("hadd -f "+destination+"/vallot.root "+destination+"/data*/vallot_*.root")
+    os.system("hadd -f "+destination+"/vallot.root "+destination+"/Run2011*/vallot_*.root")
 elif input =="remove":
   for s in list:
     os.system("rm -r "+destination+"/"+s)
