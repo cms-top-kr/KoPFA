@@ -13,7 +13,7 @@
 //
 // Original Author:  Tae Jeong Kim,40 R-A32,+41227678602,
 //         Created:  Fri Jun  4 17:19:29 CEST 2010
-// $Id: TopDILAnalyzer.h,v 1.33 2011/02/28 15:08:39 jhgoh Exp $
+// $Id: TopDILAnalyzer.h,v 1.34 2011/04/09 00:13:33 tjkim Exp $
 //
 //
 
@@ -160,6 +160,7 @@ class TopDILAnalyzer : public edm::EDAnalyzer {
     tree->Branch("EVENT",&EVENT,"EVENT/i");
     tree->Branch("RUN",&RUN,"RUN/i");
     tree->Branch("LUMI",&LUMI,"LUMI/i");
+    tree->Branch("weight",&weight, "weight/d");
 
     tree->Branch("Z","std::vector<Ko::ZCandidate>", &Z);
     tree->Branch("pfMet","std::vector<Ko::METCandidate>", &pfMet);
@@ -250,6 +251,15 @@ class TopDILAnalyzer : public edm::EDAnalyzer {
     EVENT  = iEvent.id().event();
     RUN    = iEvent.id().run();
     LUMI   = iEvent.id().luminosityBlock();
+
+    edm::Handle<double> weight_;
+    iEvent.getByLabel("PUweight", weight_);
+
+    if(weight_.isValid()){
+      weight = *weight_;
+    }else{
+      weight = 1.0;
+    }
 
     edm::Handle<std::vector<T1> > muons1_;
     edm::Handle<std::vector<T2> > muons2_;
@@ -755,6 +765,8 @@ class TopDILAnalyzer : public edm::EDAnalyzer {
   std::vector<std::string> filters_;
   bool metStudy_;
   bool useEventCounter_;
+  //bool applyPUweight_;
+  //edm::InputTag weightLabel_;
   // loose jet ID. 
   PatJetIdSelector looseJetIdSelector_;
   
@@ -850,6 +862,7 @@ class TopDILAnalyzer : public edm::EDAnalyzer {
   unsigned int RUN;
   unsigned int LUMI;
 
+  double weight;
   // Residual Jet energy correction for 38X
   bool doResJec_;
   bool doJecUnc_;
