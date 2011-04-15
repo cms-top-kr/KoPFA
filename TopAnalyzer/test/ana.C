@@ -65,32 +65,16 @@ void ana(string decayMode = "MuMu", string imageOutDir = "")
   //analyzer->addMCBkg("Zmumu", "Z/#gamma* #rightarrow ll", mcPath+"/vallot_Zmumu_PU.root", 1666, 1000000, 2);
   //analyzer->addMCBkg("ZJets", "Z/#gamma* #rightarrow ll", mcPath+"/vallot_ZJets_PU.root", 3048, 2500000, 2);
 
-  analyzer->addMonitorPlot("ZMass", "Z.mass()", "Dilepton mass;Dilepton Mass (GeV/c^{2});Events/5 GeV/c^{2}", 40, 0, 200, 0.1, 1500);
-  analyzer->addMonitorPlot("ZMassFinal", "Z.mass()", "Dilepton mass;Dilepton Mass (GeV/c^{2});Events/40 GeV/c^{2}", 5, 0, 200, 0.1, 1500);
-  analyzer->addMonitorPlot("nJetlog", "@jetspt30.size()", "Jet Multiplicity;Jet Multiplicity;Events", 5, -0.5, 4.5, 0.05, 600);
-  analyzer->addMonitorPlot("METlog", "MET", "Missing E_{T};Missing E_{T} (GeV);Events", 10, 0, 100, 0.1, 400);
-  analyzer->addMonitorPlot("nJet", "@jetspt30.size()", "Jet Multiplicity;Jet Multiplicity;Events", 5, -0.5, 4.5, 0.1, 3,false);
-  analyzer->addMonitorPlot("MET", "MET", "Missing E_{T};Missing E_{T} (GeV);Events", 10, 0, 100, 0.1, 1.5, false);
-  analyzer->addMonitorPlot("nbJet", "@bjets.size()", "b-Jet Multiplicity;b-Jet Multiplicity;Events", 5, -0.5, 4.5, 0.1, 3,false);
+  //addMonitorPlot
+  //analyzer->addMonitorPlot("nbJet", "@bjets.size()", "b-Jet Multiplicity;b-Jet Multiplicity;Events", 5, 0, 5, 0.1, 3,false);
+  //use common histogram names for top analysis
+  gROOT->ProcessLine(".L addVariables.h");
+  addTopVariables(analyzer); //add Top analysis related variables for plotting
 
-  analyzer->addMonitorPlot("pt1", "Z.leg1().pt()", "Leading p_{T};p_{T} (GeV/c);Events/5 GeV/c", 20, 0, 100, 0.1, 1500);
-  analyzer->addMonitorPlot("pt2", "Z.leg2().pt()", "Leading p_{T};p_{T} (GeV/c);Events/5 GeV/c", 20, 0, 100, 0.1, 1500);
-  analyzer->addMonitorPlot("eta1", "Z.leg1().eta()", "Leading #eta;#eta (Radian);Events/0.2 rad.", 35, -3.5, 3.5, 0.1, 5000);
-  analyzer->addMonitorPlot("eta2", "Z.leg2().eta()", "Leading #eta;#eta (Radian);Events/0.2 rad.", 35, -3.5, 3.5, 0.1, 5000);
-  analyzer->addMonitorPlot("phi1", "Z.leg1().phi()", "Leading #phi;#phi (Radian);Events/0.2 rad.", 35, -3.5, 3.5, 0.1, 5000);
-  analyzer->addMonitorPlot("phi2", "Z.leg2().phi()", "Leading #phi;#phi (Radian);Events/0.2 rad.", 35, -3.5, 3.5, 0.1, 5000);
-  analyzer->addMonitorPlot("jet1pt", "jetspt30[0].pt()", "Leading p_{T};p_{T} (GeV/c);Events/5 GeV/c",20, 30, 130, 0.1, 5000);
-  analyzer->addMonitorPlot("jet2pt", "jetspt30[1].pt()", "Leading p_{T};p_{T} (GeV/c);Events/5 GeV/c",20, 30, 130, 0.1, 5000);
-
-  analyzer->addMonitorPlot("metPhi", "met[0].phi()", "Azimuthal angle of Missing E_{T};Azimuthal angle #phi;Events/0.2 rad", 35, -3.5, 3.5, 0.1, 100);
-  analyzer->addMonitorPlot("dphi1", "asin(sin(Z.leg1().phi()-met[0].phi()))", "Azimuthal angle difference between leading lepton - MET;Angle difference;Events/0.2 rad", 20, -2, 2, 0.1, 10000);
-  analyzer->addMonitorPlot("dphi2", "asin(sin(Z.leg2().phi()-met[0].phi()))", "Azimuthal angle difference between leading lepton - MET;Angle difference;Events/0.2 rad", 20, -2, 2, 0.1, 10000);
-  analyzer->addMonitorPlot("vsumM", "toptotal.M()", "ttbar invariant mass;t#bar{t} invariant mass;Events/40 GeV", 20, 200, 1000, 0, 0.5, false);
-  analyzer->addMonitorPlot("vsumMAlt", "toptotal.M()", "ttbar invariant mass;t#bar{t} invariant mass;Events/40 GeV", "0 300 350 400 450 500 550 600 700 800 1400", 0, 0.5, false);
-  analyzer->addMonitorPlot("mao1M", "mao1M", "ttbar invariant mass;t#bar{t} invaraint mass;Events/20 GeV", 20, 200, 1000, 0.1, 0.9, false);
-  analyzer->addMonitorPlot("mao2M", "mao2M", "ttbar invariant mass;t#bar{t} invaraint mass;Events/20 GeV", 20, 200, 1000, 0.1, 0.9, false);
-
+  //STEP1 : low invariant mass cut
   analyzer->addCutStep("Z.mass() > 12", "", 1.5);
+
+  //STEP2 : isolation
   if ( decayMode == "MuMu" )
   {
     analyzer->addCutStep("(chIso1+nhIso1+phIso1)/Z.leg1().pt() < 0.21 && (chIso2+nhIso2+phIso2)/Z.leg2().pt() < 0.21", "");
@@ -105,21 +89,31 @@ void ana(string decayMode = "MuMu", string imageOutDir = "")
     analyzer->addCutStep("(chIso1+nhIso1+phIso1)/Z.leg1().pt() < 0.21 && (chIso2+nhIso2+phIso2)/Z.leg2().pt() < 0.26", "");
   }
 
+  //STEP3 : opposite sign
   analyzer->addCutStep("Z.sign() < 0", "ZMass,nJetlog,METlog");
+
+  //STEP4 : Z veto
   if ( decayMode == "MuEl") 
   {
     analyzer->addCutStep("abs(Z.mass() - 91.2) > -1", "nJetlog,METlog", 0.5);
   }else{
     analyzer->addCutStep("abs(Z.mass() - 91.2) > 15", "nJetlog,METlog", 0.5);
   }
+
+  //STEP5 : two jets requirement 
   analyzer->addCutStep("@jetspt30.size() >= 2", "MET", 0.5);
+
+  //STEP6: MET cut
   if ( decayMode == "MuEl")
   {
-    analyzer->addCutStep("MET > 20", "nJet,vsumM,vsumMAlt", 0.5);
+    analyzer->addCutStep("MET > -999", "nJet,vsumM,vsumMAlt", 0.5);
   }else{
     analyzer->addCutStep("MET > 30", "nJet,vsumM,vsumMAlt", 0.5);
   }
-  analyzer->addCutStep("@bjets.size() >= 1", "nbjet,MET,vsumM,vsumMAlt", 0.5);
+
+  //STEP7 : b-tagging
+  analyzer->addCutStep("@bjets.size() >= 1", "MET,nbJet,vsumM,vsumMAlt,genttbarM", 0.5);  
+
   analyzer->applyCutSteps();
 
   //analyzer->applySingleCut("Z.mass() > 12 && (chIso1+phIso1)/Z.leg1().pt() < 0.21 && (chIso2+phIso2)/Z.leg2().pt() < 0.21 && Z.sign() < 0 && abs(Z.mass() - 91) > 15 && @jetspt30.size() >= 2 && MET > 30", "nJet,MET,ZMass");
