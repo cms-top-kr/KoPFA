@@ -30,40 +30,33 @@ void ana(string decayMode = "MuMu", string imageOutDir = "")
   //analyzer->addRealData(rdPath+"/vallot.root", 5.06671);
   analyzer->addRealData(rdPath+"/vallot.root", 19.50160);
 
+  //TTbar
   analyzer->addMCSig("TTbar", "t#bar{t}", mcPath+"/vallot_TTbar.root", 157.5, 1000000, 4);
-  //analyzer->addMCSig("TTbar", "t#bar{t}", mcPath+"/vallot_TTbar_PU.root", 157.5, 1000000, 4);
 
+  //W+jets
   analyzer->addMCBkg("Wl", "W #rightarrow l#nu", mcPath+"/vallot_We.root", 10438, 2500000, 46);
   analyzer->addMCBkg("Wm", "W #rightarrow l#nu", mcPath+"/vallot_Wmu.root", 10438, 2500000, 46);
   analyzer->addMCBkg("Wt", "W #rightarrow l#nu", mcPath+"/vallot_Wtau.root", 10438, 2500000, 46);
 
+  //Dibosons
   analyzer->addMCBkg("VV", "Dibosons", mcPath+"/vallot_WW.root", 4.51, 100000, 6);
   analyzer->addMCBkg("ZW", "Dibosons", mcPath+"/vallot_ZW.root", 0.61, 100000, 6);
   analyzer->addMCBkg("ZZ", "Dibosons", mcPath+"/vallot_ZZ.root", 7.40, 100000, 6);
-  //analyzer->addMCBkg("VV", "Dibosons", mcPath+"/vallot_WW_PU.root", 4.51, 100000, 6);
-  //analyzer->addMCBkg("ZW", "Dibosons", mcPath+"/vallot_ZW_PU.root", 0.61, 100000, 6);
-  //analyzer->addMCBkg("ZZ", "Dibosons", mcPath+"/vallot_ZZ_PU.root", 7.40, 100000, 6);
 
+  //Signle top
   analyzer->addMCBkg("SingleTop", "Single top", mcPath+"/vallot_SingleTop.root", 10.6, 100000, 7);
-  //analyzer->addMCBkg("SingleTop", "Single top", mcPath+"/vallot_SingleTop_PU.root", 10.6, 100000, 7);
 
+  //Ztotautau
   analyzer->addMCBkg("DYtt", "Z/#gamma* #rightarrow #tau#tau", mcPath+"/vallot_DYtautau.root", 3457, 1000000, 5);
   analyzer->addMCBkg("DYtt_20to50", "Z/#gamma* #rightarrow #tau#tau", mcPath+"/vallot_Ztautau.root", 1666, 1000000, 5);
   analyzer->addMCBkg("Ztt"        , "Z/#gamma* #rightarrow #tau#tau", mcPath+"/vallot_ZtauDecay.root", 3048, 2500000, 5);
-  //analyzer->addMCBkg("DYtt", "Z/#gamma* #rightarrow #tau#tau", mcPath+"/vallot_DYtautau_PU.root", 3457, 1000000, 5);
-  //analyzer->addMCBkg("DYtt_20to50", "Z/#gamma* #rightarrow #tau#tau", mcPath+"/vallot_Ztautau_PU.root", 1666, 1000000, 5);
-  //analyzer->addMCBkg("Ztt"        , "Z/#gamma* #rightarrow #tau#tau", mcPath+"/vallot_ZtauDecay_PU.root", 3048, 2500000, 5);
 
+  //Ztoll
   analyzer->addMCBkg("DYll",  "Z/#gamma* #rightarrow ll", mcPath+"/vallot_DYee.root", 3457, 1000000, 2);
   analyzer->addMCBkg("DYmumu","Z/#gamma* #rightarrow ll", mcPath+"/vallot_DYmumu.root", 3457, 1000000, 2);
   analyzer->addMCBkg("Zee"  , "Z/#gamma* #rightarrow ll", mcPath+"/vallot_Zee.root", 1666, 1000000, 2);
   analyzer->addMCBkg("Zmumu", "Z/#gamma* #rightarrow ll", mcPath+"/vallot_Zmumu.root", 1666, 1000000, 2);
   analyzer->addMCBkg("ZJets", "Z/#gamma* #rightarrow ll", mcPath+"/vallot_ZJets.root", 3048, 2500000, 2);
-  //analyzer->addMCBkg("DYll",  "Z/#gamma* #rightarrow ll", mcPath+"/vallot_DYee_PU.root", 3457, 1000000, 2);
-  //analyzer->addMCBkg("DYmumu","Z/#gamma* #rightarrow ll", mcPath+"/vallot_DYmumu_PU.root", 3457, 1000000, 2);
-  //analyzer->addMCBkg("Zee"  , "Z/#gamma* #rightarrow ll", mcPath+"/vallot_Zee_PU.root", 1666, 1000000, 2);
-  //analyzer->addMCBkg("Zmumu", "Z/#gamma* #rightarrow ll", mcPath+"/vallot_Zmumu_PU.root", 1666, 1000000, 2);
-  //analyzer->addMCBkg("ZJets", "Z/#gamma* #rightarrow ll", mcPath+"/vallot_ZJets_PU.root", 3048, 2500000, 2);
 
   //addMonitorPlot
   //analyzer->addMonitorPlot("nbJet", "@bjets.size()", "b-Jet Multiplicity;b-Jet Multiplicity;Events", 5, 0, 5, 0.1, 3,false);
