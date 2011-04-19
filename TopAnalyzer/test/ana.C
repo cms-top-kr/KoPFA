@@ -107,6 +107,8 @@ void ana(string decayMode = "MuMu", string imageOutDir = "")
   //STEP7 : b-tagging
   analyzer->addCutStep("@bjets.size() >= 1", "MET,nbJet,vsumM,vsumMAlt,genttbarM", 0.5);  
 
+  analyzer->setEventWeightVar("weight");
+
   analyzer->applyCutSteps();
 
   //analyzer->applySingleCut("Z.mass() > 12 && (chIso1+phIso1)/Z.leg1().pt() < 0.21 && (chIso2+phIso2)/Z.leg2().pt() < 0.21 && Z.sign() < 0 && abs(Z.mass() - 91) > 15 && @jetspt30.size() >= 2 && MET > 30", "nJet,MET,ZMass");

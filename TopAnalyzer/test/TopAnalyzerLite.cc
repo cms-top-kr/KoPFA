@@ -48,6 +48,7 @@ public:
   void addMonitorPlot(const string name, const string varexp, const string title,
                       const string xBinsStr,
                       const double ymin = 0, const double ymax = 0, const bool doLogy = true);
+  void setEventWeightVar(const string eventWeightVar = "weight");
   void setScanVariables(const string scanVariables);
 
   void applyCutSteps();
@@ -116,6 +117,7 @@ private:
   ofstream fout_;
   bool writeSummary_;
   string scanVariables_;
+  string eventWeightVar_;
 
   TDirectory* baseRootDir_;
 };
@@ -138,6 +140,7 @@ TopAnalyzerLite::TopAnalyzerLite(const string subDirName, const string imageOutD
   else writeSummary_ = false;
 
   scanVariables_ = "RUN:LUMI:EVENT:Z.mass():@jetspt30.size():MET";
+  eventWeightVar_ = "";
 
   doStackSignal_ = true;
 }
@@ -366,13 +369,17 @@ void TopAnalyzerLite::plot(const string name, const TCut cut, MonitorPlot& monit
   LabeledPlots stackedPlots;
   LabeledPlots sigPlots; // Keep list of signal plots if doStackSignal == false
 
+  TCut mcCutStr = "";
+  if ( eventWeightVar_.empty() ) mcCutStr = cut;
+  else mcCutStr = Form("%s*(%s)", eventWeightVar_.c_str(), (const char*)(cut));
+
   for ( unsigned int i=0; i<mcSigs_.size(); ++i )
   {
     MCSample& mcSample = mcSigs_[i];
     TString mcSigHistName = Form("hMCSig_%s_%s", mcSample.name.c_str(), name.c_str());
     TH1F* hMCSig = new TH1F(mcSigHistName, title.c_str(), nBins, xBins);
 
-    mcSample.chain->Project(mcSigHistName, varexp.c_str(), cut);
+    mcSample.chain->Project(mcSigHistName, varexp.c_str(), mcCutStr);
     hMCSig->AddBinContent(nBins, hMCSig->GetBinContent(nBins+1));
     hMCSig->Scale(lumi_*mcSample.xsec/mcSample.nEvents);
 
@@ -424,7 +431,7 @@ void TopAnalyzerLite::plot(const string name, const TCut cut, MonitorPlot& monit
     TString mcHistName = Form("hMC_%s_%s", mcSample.name.c_str(), name.c_str());
     TH1F* hMC = new TH1F(mcHistName, title.c_str(), nBins, xBins);
 
-    mcSample.chain->Project(mcHistName, varexp.c_str(), cut);
+    mcSample.chain->Project(mcHistName, varexp.c_str(), mcCutStr);
     hMC->AddBinContent(nBins, hMC->GetBinContent(nBins+1));
     hMC->Scale(lumi_*mcSample.xsec/mcSample.nEvents);
     hMC->SetFillColor(mcSample.color);
@@ -764,6 +771,11 @@ void TopAnalyzerLite::saveHistograms(TString fileName)
 void TopAnalyzerLite::setScanVariables(const string scanVariables)
 {
   scanVariables_ = scanVariables;
+}
+
+void TopAnalyzerLite::setEventWeightVar(const string eventWeightVar)
+{
+  eventWeightVar_ = eventWeightVar;
 }
 
 void TopAnalyzerLite::drawEffCurve(const TCut cut, const string varexp, const string scanPoints)
