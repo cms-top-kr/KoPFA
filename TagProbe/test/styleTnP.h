@@ -148,6 +148,7 @@ RooHist* getHist(TFile *f, const TString &dir, const TString &plot, int color, i
   h->SetMarkerSize(0.7);
   h->GetYaxis()->SetTitleSize(0.0);
   delete c;
+
   return h;
 }
 
@@ -187,6 +188,7 @@ void plotNewEff(TFile *f1, TFile *f2, const TString & leg1, const TString & leg2
 
   }
   c1->Draw();
+
   TLegend *isolabel = new TLegend(.55,.20 ,.65,.45 );
   TLegend *sflabel = new TLegend(.55,.20 ,.65,.45 );
   if(plot[0].Contains("eta")) {
@@ -194,13 +196,15 @@ void plotNewEff(TFile *f1, TFile *f2, const TString & leg1, const TString & leg2
   }
   isolabel->SetHeader("Rel. Iso.");
   sflabel->SetHeader("Rel. Iso.");
+   
   TCanvas * c = new TCanvas("c","c",800,300);
 
-  int k = 2;
+  int k = 0;
 
   for(int i=0; i < dir.size() ; i++){
     RooHist* h1 = getHist(f1, dir[i], plot[i], i+2, 2);
     RooHist* h2 = getHist(f2, dir[i], plot[i], i+2, 1);
+
     TGraphAsymmErrors* htemp = new TGraphAsymmErrors();
     vector<double> & data( h1->GetMaxSize() );
     vector<double> & mc( h2->GetMaxSize() );
@@ -254,6 +258,21 @@ void plotNewEff(TFile *f1, TFile *f2, const TString & leg1, const TString & leg2
     sflabel->Draw();
   }
   c1->cd(); 
+
+  cout << "void Eff" <<  hName.Data() << "Data(TGraphAsymmErrors* grae){" << endl;
+  for(int i=0; i < dataPT20_50.size() ;i++){
+    cout << "  grae->SetPoint(" << i << "," << lname[i] << "," << dataPT20_50[i] << "); " << endl;
+    cout << "  grae->SetPointError(" << i << ",0,0," << dataPT20_50Errl[i] << "," << dataPT20_50Errh[i] << "); " << endl;
+  }
+  cout << "}" << endl;
+
+  cout << "void Eff" << hName.Data() << "MC(TGraphAsymmErrors* grae){" << endl;
+  for(int i=0; i < mcPT20_50.size() ;i++){
+    cout << "  grae->SetPoint(" << i << "," << lname[i] << "," << mcPT20_50[i] << "); " << endl;
+    cout << "  grae->SetPointError(" << i << ",0,0," << mcPT20_50Errl[i] << "," << mcPT20_50Errh[i] << "); " << endl;
+  }
+  cout << "}" << endl;
+
   cout << "double eff_sig_data[] = {" << " " ;
   for(int i=0; i < dataPT20_50.size() ;i++) cout << dataPT20_50[i] << ", " ;
   cout << " };" << endl;
@@ -275,6 +294,7 @@ void plotNewEff(TFile *f1, TFile *f2, const TString & leg1, const TString & leg2
   cout << " };" << endl;
 
 
+
   isolabel->SetFillColor(0);
   isolabel->SetTextSize(0.04);
   isolabel->SetLineColor(0);
@@ -287,6 +307,8 @@ void plotNewEff(TFile *f1, TFile *f2, const TString & leg1, const TString & leg2
   SetLatex(0.60,0.60);
 
   c1->Print(Form("c_eff_%s_%s.eps",printName.Data(),hName.Data()));
+  c1->Print(Form("c_eff_%s_%s.C",printName.Data(),hName.Data()));
+  c1->Print(Form("c_eff_%s_%s.png",printName.Data(),hName.Data()));
   c->Print(Form("c_sf_%s_%s.eps",printName.Data(),hName.Data()));
   
 }
@@ -471,7 +493,7 @@ void SetLatex(double x, double y){
   label->SetNDC();
   label->SetTextSize(0.04);
   //label->DrawLatex(x,y,"CMS Preliminary 2010");
-  label->DrawLatex(x,y-0.05,"36.1 pb^{-1} at #sqrt{s} = 7 TeV");
+  //label->DrawLatex(x,y-0.05,"36 pb^{-1} at #sqrt{s} = 7 TeV");
   label->DrawLatex(x,y-0.1,"#DeltaR=0.4");
 }
 
