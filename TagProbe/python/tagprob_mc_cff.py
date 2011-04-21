@@ -25,7 +25,15 @@ from KoPFA.TagProbe.common_variables_cff import *
 
 process.options   = cms.untracked.PSet( wantSummary = cms.untracked.bool(True))
 
-process.PUweight = cms.EDProducer("EventWeightProducer")
+process.PUweight = cms.EDProducer("EventWeightProducer",
+    #PUweight = cms.vdouble(0.24698,0.878399,1.62972,1.74644,1.48563,0.999695,0.740525,0.457214,0.268234,0.184943,0.127889,0.0274048,0.0959167,0.383667), # represent 19 pb-1
+    #PUdefault = cms.double(0.0), 
+    PUweight = cms.vdouble(0.300586,1.03171,1.81867,1.76647,1.38431,0.96799,0.589611,0.344905,0.166193,0.132321), # represent 5 pb-1
+    PUdefault = cms.double(0.0),
+    #PUweight = cms.vdouble(1.56,1.05,0.83,0.758,0.74,0.8), //Fall10 MC
+    #PUdefault = cms.double(1.0),
+)
+
 process.load("KoPFA.TagProbe.tnpLeptonSelector_cfi")
 
 process.load("KoPFA.DiMuonAnalyzer.triggerMatch_cfi")
