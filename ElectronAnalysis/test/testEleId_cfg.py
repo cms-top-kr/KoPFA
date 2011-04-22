@@ -57,7 +57,7 @@ process.eidSequence = cms.Sequence(
 
 process.electronsCiCLoose = cms.EDFilter("EleIdCutBasedRef",
     src = cms.InputTag("gsfElectrons"),
-    algorithm = cms.string("eIDClassBased"),
+    algorithm = cms.string("eIDCB"),
     threshold = cms.double(1),
     electronIDType = process.eidLooseMC.electronIDType,
     electronQuality = process.eidLooseMC.electronQuality,
@@ -66,7 +66,9 @@ process.electronsCiCLoose = cms.EDFilter("EleIdCutBasedRef",
     classbasedlooseEleIDCutsV06 = process.eidLooseMC.classbasedlooseEleIDCutsV06,
     etBinning = cms.bool(False),
     version = cms.string(""),
-    verticesCollection = cms.InputTag("offlineBeamSpot"),
+    verticesCollection = cms.InputTag('offlinePrimaryVertices'),
+    reducedBarrelRecHitCollection = cms.InputTag("reducedEcalRecHitsEB"),
+    reducedEndcapRecHitCollection = cms.InputTag("recucedEcalRecHitsEE"),
 )
 
 process.load("RecoParticleFlow.PFProducer.particleFlow_cfi")
