@@ -29,7 +29,6 @@ process.source = cms.Source("PoolSource",
         '/store/relval/CMSSW_4_2_0/RelValZEE/GEN-SIM-DIGI-RAW-HLTDEBUG/MC_42_V9-v1/0055/EEBE4886-AC5E-E011-8252-001A9281172E.root',
     )
 )
-print process.source.fileNames
 
 process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(100) )
 
@@ -44,7 +43,10 @@ process.load("Configuration.StandardSequences.MagneticField_cff")
 process.out = cms.OutputModule("PoolOutputModule",
     fileName = cms.untracked.string('rerecoPF.root'),
     SelectEvents   = cms.untracked.PSet( SelectEvents = cms.vstring('p') ),
-    outputCommands = cms.untracked.vstring('drop *')
+    outputCommands = cms.untracked.vstring(
+        'drop *',
+        'keep *_*_*_RERECOPF',
+    )
 )
 
 process.outpath = cms.EndPath(process.out)
@@ -55,7 +57,7 @@ process.eidSequence = cms.Sequence(
     process.eidLooseMC
 )
 
-process.electronsCiCLoose = cms.EDFilter("EleIdCutBasedRef",
+process.electronsCiCLoose = cms.EDFilter("EleIdCutBased",
     src = cms.InputTag("gsfElectrons"),
     algorithm = cms.string("eIDCB"),
     threshold = cms.double(1),
@@ -80,6 +82,6 @@ process.particleFlow.egammaElectrons = cms.InputTag('electronsCiCLoose')
 process.p = cms.Path(
     process.eidSequence
   * process.electronsCiCLoose
-#  * process.particleFlow
+  * process.particleFlow
 )
 
