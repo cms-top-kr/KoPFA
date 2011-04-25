@@ -12,27 +12,28 @@ process.options   = cms.untracked.PSet( wantSummary = cms.untracked.bool(True) )
 from PhysicsTools.PatAlgos.tools.cmsswVersionTools import pickRelValInputFiles
 process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(
-        '/store/relval/CMSSW_4_2_0/RelValZEE/GEN-SIM-RECO/MC_42_V9-v1/0055/087B1717-C25E-E011-B225-00248C0BE018.root',
-        '/store/relval/CMSSW_4_2_0/RelValZEE/GEN-SIM-RECO/MC_42_V9-v1/0055/C4D5AA13-AD5E-E011-89A6-001A92810AB8.root',
-        '/store/relval/CMSSW_4_2_0/RelValZEE/GEN-SIM-RECO/MC_42_V9-v1/0055/E0005583-AB5E-E011-8E39-003048678BB8.root',
+        '/store/relval/CMSSW_4_2_1/RelValZEE/GEN-SIM-RECO/MC_42_V10-v1/0027/F0807B18-4D67-E011-8AAB-00304867BFA8.root',
+        '/store/relval/CMSSW_4_2_1/RelValZEE/GEN-SIM-RECO/MC_42_V10-v1/0026/641CFA1D-D366-E011-832B-002618943980.root',
+        '/store/relval/CMSSW_4_2_1/RelValZEE/GEN-SIM-RECO/MC_42_V10-v1/0026/44C50AD1-CC66-E011-8694-001A9281174A.root',
     ),
     secondaryFileNames = cms.untracked.vstring(
-        '/store/relval/CMSSW_4_2_0/RelValZEE/GEN-SIM-DIGI-RAW-HLTDEBUG/MC_42_V9-v1/0055/02F697F7-AA5E-E011-858F-002618943854.root',
-        '/store/relval/CMSSW_4_2_0/RelValZEE/GEN-SIM-DIGI-RAW-HLTDEBUG/MC_42_V9-v1/0055/2817AD81-AB5E-E011-AA06-003048678F0C.root',
-        '/store/relval/CMSSW_4_2_0/RelValZEE/GEN-SIM-DIGI-RAW-HLTDEBUG/MC_42_V9-v1/0055/2A3C63C9-B35E-E011-B094-002618FDA237.root',
-        '/store/relval/CMSSW_4_2_0/RelValZEE/GEN-SIM-DIGI-RAW-HLTDEBUG/MC_42_V9-v1/0055/56668601-AD5E-E011-BD2D-0026189437FE.root',
-        '/store/relval/CMSSW_4_2_0/RelValZEE/GEN-SIM-DIGI-RAW-HLTDEBUG/MC_42_V9-v1/0055/5AA45C81-AB5E-E011-BDB1-003048678B38.root',
-        '/store/relval/CMSSW_4_2_0/RelValZEE/GEN-SIM-DIGI-RAW-HLTDEBUG/MC_42_V9-v1/0055/6E194E0E-C25E-E011-A302-00261894389F.root',
-        '/store/relval/CMSSW_4_2_0/RelValZEE/GEN-SIM-DIGI-RAW-HLTDEBUG/MC_42_V9-v1/0055/B877CE0D-AE5E-E011-8806-003048678B06.root',
-        '/store/relval/CMSSW_4_2_0/RelValZEE/GEN-SIM-DIGI-RAW-HLTDEBUG/MC_42_V9-v1/0055/D630698A-AB5E-E011-901E-00261894387C.root',
-        '/store/relval/CMSSW_4_2_0/RelValZEE/GEN-SIM-DIGI-RAW-HLTDEBUG/MC_42_V9-v1/0055/E05C9A81-AC5E-E011-AF94-003048678BEA.root',
-        '/store/relval/CMSSW_4_2_0/RelValZEE/GEN-SIM-DIGI-RAW-HLTDEBUG/MC_42_V9-v1/0055/EEBE4886-AC5E-E011-8252-001A9281172E.root',
+        '/store/relval/CMSSW_4_2_1/RelValZEE/GEN-SIM-DIGI-RAW-HLTDEBUG/MC_42_V10-v1/0029/7E2F3EC6-6D67-E011-9A96-0018F3D0965C.root',
+        '/store/relval/CMSSW_4_2_1/RelValZEE/GEN-SIM-DIGI-RAW-HLTDEBUG/MC_42_V10-v1/0026/F20E47C0-CC66-E011-ACDB-0018F3D0962E.root',
+        '/store/relval/CMSSW_4_2_1/RelValZEE/GEN-SIM-DIGI-RAW-HLTDEBUG/MC_42_V10-v1/0026/C67D109D-D466-E011-B662-003048678D6C.root',
+        '/store/relval/CMSSW_4_2_1/RelValZEE/GEN-SIM-DIGI-RAW-HLTDEBUG/MC_42_V10-v1/0026/96405E32-CD66-E011-9EF0-003048678C9A.root',
+        '/store/relval/CMSSW_4_2_1/RelValZEE/GEN-SIM-DIGI-RAW-HLTDEBUG/MC_42_V10-v1/0026/76F9F7B1-CA66-E011-BAD1-002618943927.root',
+        '/store/relval/CMSSW_4_2_1/RelValZEE/GEN-SIM-DIGI-RAW-HLTDEBUG/MC_42_V10-v1/0026/6C02719A-D366-E011-9205-00261894385D.root',
+        '/store/relval/CMSSW_4_2_1/RelValZEE/GEN-SIM-DIGI-RAW-HLTDEBUG/MC_42_V10-v1/0026/5E38332E-CE66-E011-A07A-0018F3D09636.root',
+        '/store/relval/CMSSW_4_2_1/RelValZEE/GEN-SIM-DIGI-RAW-HLTDEBUG/MC_42_V10-v1/0026/562BC414-DA66-E011-AF4C-003048679168.root',
+        '/store/relval/CMSSW_4_2_1/RelValZEE/GEN-SIM-DIGI-RAW-HLTDEBUG/MC_42_V10-v1/0026/2E8965BE-CC66-E011-963B-001A92971B36.root',
+        '/store/relval/CMSSW_4_2_1/RelValZEE/GEN-SIM-DIGI-RAW-HLTDEBUG/MC_42_V10-v1/0026/14E770B1-CB66-E011-82DC-001A92810AE0.root',
     )
 )
 
 process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(100) )
 
-## Geometry and Detector Conditions (needed for a few patTuple production steps)
+process.load("Configuration.StandardSequences.RawToDigi_cff")
+process.load("Configuration.StandardSequences.Reconstruction_cff")
 process.load("Configuration.StandardSequences.Geometry_cff")
 process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_cff")
 from Configuration.PyReleaseValidation.autoCond import autoCond
@@ -45,9 +46,10 @@ process.out = cms.OutputModule("PoolOutputModule",
     SelectEvents   = cms.untracked.PSet( SelectEvents = cms.vstring('p') ),
     outputCommands = cms.untracked.vstring(
         'drop *',
-        'keep *_*_*_RERECOPF',
     )
 )
+from RecoParticleFlow.Configuration.RecoParticleFlow_EventContent_cff import *
+process.out.outputCommands.extend(RecoParticleFlowRECO.outputCommands)
 
 process.outpath = cms.EndPath(process.out)
 
@@ -73,15 +75,16 @@ process.electronsCiCLoose = cms.EDFilter("EleIdCutBased",
     reducedEndcapRecHitCollection = cms.InputTag("recucedEcalRecHitsEE"),
 )
 
-process.load("RecoParticleFlow.PFProducer.particleFlow_cfi")
+#process.load("RecoParticleFlow.PFProducer.particleFlow_cfi")
 process.particleFlow.useEGammaElectrons = True
 process.particleFlow.egammaElectrons = cms.InputTag('electronsCiCLoose')
 
 ## Paths
 
 process.p = cms.Path(
-    process.eidSequence
+    process.RawToDigi
+  * process.eidSequence
   * process.electronsCiCLoose
-  * process.particleFlow
+  * process.reconstruction
 )
 
