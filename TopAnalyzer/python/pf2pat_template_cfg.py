@@ -103,6 +103,7 @@ def updateEventContent(p):
         'keep *_particleFlow_*_*',
         'keep *_acceptedMuons_*_*',
         'keep *_acceptedElectrons_*_*',
+        'keep *_*_rho_*',
     ])
 
     # Uniquify outputCommands
