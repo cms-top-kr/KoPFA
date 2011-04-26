@@ -9,6 +9,11 @@ myJetId.verbose = False
 from KoPFA.TopAnalyzer.topLeptonSelector_cfi import *
 from KoPFA.TopAnalyzer.triggerFilterByRun_cfi import *
 
+PUweight = cms.EDProducer("EventWeightProducer",
+    PUweight = cms.vdouble(0.24698,0.878399,1.62972,1.74644,1.48563,0.999695,0.740525,0.457214,0.268234,0.184943,0.127889,0.0274048,0.0959167,0.383667),
+    PUdefault = cms.double(0.0),
+)
+
 VertexFilter = cms.EDFilter('VertexFilter',
     vertexLabel =  cms.InputTag('offlinePrimaryVertices'),
     min = cms.untracked.int32(1),
@@ -52,6 +57,7 @@ ElEl = cms.EDAnalyzer('TopElElAnalyzer',
     muonLabel2 =  cms.InputTag('Electrons'),
     metLabel =  cms.InputTag('patMETsPFlow'),
     jetLabel =  cms.InputTag('selectedPatJetsPFlow'),
+    metStudy = cms.bool( False),
     useEventCounter = cms.bool( False ),
     filters = cms.untracked.vstring(
         'initialEvents',
@@ -70,6 +76,7 @@ MuMu = cms.EDAnalyzer('TopMuMuAnalyzer',
     muonLabel2 =  cms.InputTag('Muons'),
     metLabel =  cms.InputTag('patMETsPFlow'),
     jetLabel =  cms.InputTag('selectedPatJetsPFlow'),
+    metStudy = cms.bool( True ),
     useEventCounter = cms.bool( False ),
     filters = cms.untracked.vstring(
         'initialEvents',
@@ -135,6 +142,7 @@ topMuMuAnalysisMCSequence = cms.Sequence(
     topWLeptonGenFilter*
     GenZmassFilter*
     VertexFilter*
+    PUweight*
     Muons*
     patMuonFilter*
     MuMu*
@@ -143,7 +151,7 @@ topMuMuAnalysisMCSequence = cms.Sequence(
 
 topMuMuAnalysisRealDataSequence = cms.Sequence(
     loadHistosFromRunInfo*
-    muonTriggerFilterByRun*
+#    muonTriggerFilterByRun*
     removeDuplicate*
     VertexFilter*
     Muons*
