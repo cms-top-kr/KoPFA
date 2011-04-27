@@ -77,15 +77,24 @@ process.electronsCiCLoose = cms.EDFilter("EleIdCutBased",
     reducedEndcapRecHitCollection = cms.InputTag("recucedEcalRecHitsEE"),
 )
 
+# PF-rereco
+process.pfLocalReReco = cms.Sequence(process.particleFlowCluster)
+process.pfReReco = cms.Sequence(
+    process.particleFlowReco
+  + process.recoPFJets
+  + process.recoPFMET
+  + process.PFTau
+)
+
 process.particleFlow.useEGammaElectrons = True
 process.particleFlow.egammaElectrons = cms.InputTag('electronsCiCLoose')
 
 ## Paths
 
 process.p = cms.Path(
-    process.RawToDigi
-  * process.eidSequence
+    process.eidSequence
   * process.electronsCiCLoose
-  * process.reconstruction
+  * process.pfLocalReReco
+  * process.pfReReco
 )
 
