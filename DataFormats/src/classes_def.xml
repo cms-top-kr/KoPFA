@@ -24,5 +24,11 @@
   <class name="edm::Wrapper<std::vector<Ko::TTbarGenEvent> >"/>
   <class name="edm::Ptr<Ko::TTbarGenEvent>"/>
 
+  <class name="Ko::TTbarMass" />
+  <class name="std::vector<Ko::TTbarMass>" />
+  <class name="edm::Wrapper<Ko::TTbarMass>"/>
+  <class name="edm::Wrapper<std::vector<Ko::TTbarMass> >"/>
+  <class name="edm::Ptr<Ko::TTbarMass>"/>
+
 </lcgdict>
 

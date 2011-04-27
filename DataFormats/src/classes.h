@@ -4,6 +4,7 @@
 #include "KoPFA/DataFormats/interface/METCandidate.h"
 #include "KoPFA/DataFormats/interface/TTbarEvent.h"
 #include "KoPFA/DataFormats/interface/TTbarGenEvent.h"
+#include "KoPFA/DataFormats/interface/TTbarMass.h"
 
 #include <vector>
 
@@ -33,6 +34,12 @@ namespace {
     std::vector<Ko::TTbarGenEvent> dummyTTbarGenEventCollection;
     edm::Wrapper<std::vector<Ko::TTbarGenEvent> > dummyTTbarGenEventCollectionWrapper;
     edm::Ptr<Ko::TTbarGenEvent> dummyTTbarGenEventPtr;
+
+    Ko::TTbarMass dummyTTbarMass;
+    edm::Wrapper<Ko::TTbarMass> dummyTTbarMassWrapper;
+    std::vector<Ko::TTbarMass> dummyTTbarMassCollection;
+    edm::Wrapper<std::vector<Ko::TTbarMass> > dummyTTbarMassCollectionWrapper;
+    edm::Ptr<Ko::TTbarMass> dummyTTbarMassPtr;
 
   };
 

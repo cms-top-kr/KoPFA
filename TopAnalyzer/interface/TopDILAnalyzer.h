@@ -42,6 +42,8 @@
 #include "DataFormats/Math/interface/deltaR.h"
 #include "DataFormats/Math/interface/LorentzVector.h"
 #include "KoPFA/DataFormats/interface/ZCandidate.h"
+#include "KoPFA/DataFormats/interface/TTbarGenEvent.h"
+#include "KoPFA/DataFormats/interface/TTbarMass.h"
 #include "KoPFA/DataFormats/interface/METCandidate.h"
 #include "PFAnalyses/CommonTools/interface/CandidateSelector.h"
 #include "PFAnalyses/CommonTools/interface/PatJetIdSelector.h"
@@ -57,7 +59,8 @@
 #include "CondFormats/JetMETObjects/interface/JetCorrectorParameters.h"
 #include "CondFormats/JetMETObjects/interface/FactorizedJetCorrector.h"
 #include "CondFormats/JetMETObjects/interface/JetCorrectionUncertainty.h"
-#include "KoPFA/TopAnalyzer/interface/MaosTTbar.h"
+//#include "KoPFA/TopAnalyzer/interface/MaosTTbar.h"
+#include "KoPFA/DataFormats/interface/Maos.h"
 #include "TFile.h"
 #include "TTree.h"
 #include "TH1.h"
@@ -111,7 +114,7 @@ class TopDILAnalyzer : public edm::EDAnalyzer {
 
     Z = new std::vector<Ko::ZCandidate>();
     pfMet = new std::vector<Ko::METCandidate>();
-    toptotal = new std::vector<math::XYZTLorentzVector>();
+    ttbar = new std::vector<Ko::TTbarMass>();
     met = new std::vector<math::XYZTLorentzVector>();
     jets = new std::vector<math::XYZTLorentzVector>();
     jetspt30 = new std::vector<math::XYZTLorentzVector>();
@@ -164,7 +167,7 @@ class TopDILAnalyzer : public edm::EDAnalyzer {
 
     tree->Branch("Z","std::vector<Ko::ZCandidate>", &Z);
     tree->Branch("pfMet","std::vector<Ko::METCandidate>", &pfMet);
-    tree->Branch("toptotal","std::vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >", &toptotal);
+    tree->Branch("ttbar","std::vector<Ko::TTbarMass>", &ttbar);
 
     tree->Branch("met","std::vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >", &met);
     tree->Branch("jets","std::vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >", &jets);
@@ -202,25 +205,11 @@ class TopDILAnalyzer : public edm::EDAnalyzer {
     tree->Branch("MET",&MET,"MET/d");
     tree->Branch("dphimetlepton",&dphimetlepton,"dphimetlepton/d");
 
-    tree->Branch("maosttbarM",&maosttbarM,"maosttbarM/d");
-    tree->Branch("maosMt2",&maosMt2,"maosMt2/d");
-    tree->Branch("maostop1M",&maostop1M,"maostop1M/d");
-    tree->Branch("maostop2M",&maostop2M,"maostop2M/d");
-
-    //tree->Branch("maos2ttbarM",&maos2ttbarM,"maos2ttbarM/d");
-    //tree->Branch("maos2Mt2",&maos2Mt2,"maos2Mt2/d");
-    //tree->Branch("maos2top1M",&maos2top1M,"maos2top1M/d");
-    //tree->Branch("maos2top2M",&maos2top2M,"maos2top2M/d");
-
-    tree->Branch("vsumttbarM",&vsumttbarM, "vsumttbarM/d");
-    tree->Branch("devettbarM",&devettbarM, "devettbarM/d");
-    tree->Branch("deve2ttbarM",&deve2ttbarM, "deve2ttbarM/d");
     tree->Branch("genttbarM",&genttbarM,"genttbarM/d");
-
-    tree->Branch("relmaosM",&relmaosM,"relmaosM/d");
-    tree->Branch("relvsumM",&relvsumM,"relvsumM/d");
-    tree->Branch("reldeveM",&reldeveM,"reldeveM/d");
-    tree->Branch("reldeve2M",&reldeve2M,"reldeve2M/d");
+    tree->Branch("resmaosM",&resmaosM,"resmaosM/d");
+    tree->Branch("resvsumM",&resvsumM,"resvsumM/d");
+    tree->Branch("resuser1M",&resuser1M,"resuser1M/d");
+    tree->Branch("resuser2M",&resuser2M,"resuser2M/d");
 
     tree->Branch("sumEt",&sumEt,"sumEt/d");
     tree->Branch("photonEt",&photonEt,"photonEt/d");
@@ -474,78 +463,27 @@ class TopDILAnalyzer : public edm::EDAnalyzer {
         h_MET->Fill(MET);
 
         if(jetspt30->size() >= 2){
-          toptotal->push_back(it1.p4() + it2.p4() + jetspt30->at(0) + jetspt30->at(1) + met->at(0));
-
-          //case 1
-          const math::XYZTLorentzVector vis1op1 = it1.p4()+jetspt30->at(0);
-          const math::XYZTLorentzVector vis2op1 = it2.p4()+jetspt30->at(1);
-          const TLorentzVector lep1op1(vis1op1.Px(), vis1op1.Py(), vis1op1.Pz(), vis1op1.E());
-          const TLorentzVector lep2op1(vis2op1.Px(), vis2op1.Py(), vis2op1.Pz(), vis2op1.E());
-
-          //case 2
-          const math::XYZTLorentzVector vis1op2 = it2.p4()+jetspt30->at(0);
-          const math::XYZTLorentzVector vis2op2 = it1.p4()+jetspt30->at(1);
-          const TLorentzVector lep1op2(vis1op2.Px(), vis1op2.Py(), vis1op2.Pz(), vis1op2.E());
-          const TLorentzVector lep2op2(vis2op2.Px(), vis2op2.Py(), vis2op2.Pz(), vis2op2.E());
-
-          //missing et
-          const math::XYZTLorentzVector invis = met->at(0);
-          const TLorentzVector metvec(invis.Px(), invis.Py(), 0, invis.Pt());
-
-          //Fill tree for ttbar invariant mass and top mass for two different cases
-          Ko::MaosTTbar ttbar1;
-          double ttbar1Mt2 = sqrt( ttbar1.MAOS(metvec, lep1op1, lep2op1, 0.0, 0.0, false) );
-          Ko::MaosTTbar ttbar2;
-          double ttbar2Mt2 = sqrt( ttbar2.MAOS(metvec, lep1op2, lep2op2, 0.0, 0.0, false) );
-
-          //double diffmaos1 = fabs(ttbar1top1M - ttbar1top2M);
-          //double diffmaos2 = fabs(ttbar2top1M - ttbar2top2M);
-
-          if( ttbar1Mt2 < ttbar2Mt2 ){
-            maosMt2 = ttbar1Mt2;
-            maosttbarM = ttbar1.M();
-            maostop1M = ttbar1.top1M();
-            maostop2M = ttbar1.top2M();
-          }else{
-            maosMt2 = ttbar2Mt2;
-            maosttbarM = ttbar2.M();
-            maostop1M = ttbar2.top1M();
-            maostop2M = ttbar2.top2M();
-          }
-
-          //if( diffmaos1 < diffmaos2 ){
-          //  maos2Mt2 = ttbar1Mt2;
-          //  maos2ttbarM = ttbar1.M();
-          //  maos2top1M = ttbar1.top1M();
-          //  maos2top2M = ttbar1.top2M();
-          //}else{
-          //  maos2Mt2 = ttbar2Mt2;
-          //  maos2ttbarM = ttbar2.M();
-          //  maos2top1M = ttbar2.top1M();
-          //  maos2top2M = ttbar2.top2M();
-          //}
-
-          vsumttbarM = (it1.p4() + it2.p4() + jetspt30->at(0) + jetspt30->at(1) + met->at(0)).M();
-          devettbarM = newttbarM(jetspt30->at(0), jetspt30->at(1), it1.p4(), it2.p4(), met->at(0));
-          deve2ttbarM = new2ttbarM(jetspt30->at(0), jetspt30->at(1), it1.p4(), it2.p4(), met->at(0));
+          const Ko::TTbarMass ttbarMass(it1.p4(), it2.p4(), jetspt30->at(0), jetspt30->at(1), met->at(0));
+          ttbar->push_back(ttbarMass);
 
           if(genParticles_.isValid()){
-              TLorentzVector ttbar(0,0,0,0);
+            TLorentzVector ttbarGen(0,0,0,0);
 
             for (reco::GenParticleCollection::const_iterator mcIter=genParticles_->begin(); mcIter != genParticles_->end(); mcIter++ ) {
               int genId = mcIter->pdgId();
               if( fabs(genId) == 6){ 
                 //double mass = mcIter->p4().M(); 
                 TLorentzVector top(mcIter->p4().Px(), mcIter->p4().Py(), mcIter->p4().Pz(), mcIter->p4().E());
-                ttbar = ttbar+top;
+                ttbarGen = ttbarGen+top;
               }
           
             }
-            genttbarM = ttbar.M();
-            relmaosM = ttbar.M() - maosttbarM;
-            relvsumM = ttbar.M() - vsumttbarM;
-            reldeveM = ttbar.M() - devettbarM;
-            reldeve2M = ttbar.M() - deve2ttbarM;
+
+            genttbarM = ttbarGen.M();
+            resmaosM = ttbar->back().maosM() - ttbarGen.M();
+            resvsumM = ttbar->back().M() - ttbarGen.M();
+            resuser1M = ttbar->back().user1M() - ttbarGen.M();
+            resuser2M = ttbar->back().user2M() - ttbarGen.M();
           }
         }
 
@@ -564,7 +502,7 @@ class TopDILAnalyzer : public edm::EDAnalyzer {
 
     Z->clear();
     pfMet->clear();
-    toptotal->clear();
+    ttbar->clear();
     met->clear();
     jets->clear();
     jetspt30->clear();
@@ -598,26 +536,11 @@ class TopDILAnalyzer : public edm::EDAnalyzer {
     ecalIso2->clear();
     hcalIso2->clear();
 
-    //clear maos variables
-    maosttbarM = -1;
-    maosMt2 = -1;
-    maostop1M = -1;
-    maostop2M = -1;
-
-    //maos2ttbarM = -1;
-    //maos2Mt2 = -1;
-    //maos2top1M = -1;
-    //maos2top2M = -1;
-
-    vsumttbarM = -1;
-    devettbarM = -1;
-    deve2ttbarM = -1;
-
-    genttbarM = -1;
-    relmaosM = -999; 
-    relvsumM = -999;
-    reldeveM = -999;
-    reldeve2M = -999;
+    genttbarM = -999;
+    resmaosM = -999; 
+    resvsumM = -999;
+    resuser1M = -999;
+    resuser2M = -999;
 
     sumEt = -1;
     photonEt = -1;
@@ -638,82 +561,6 @@ class TopDILAnalyzer : public edm::EDAnalyzer {
         }
       }
     }
-  }
-
-  double new2ttbarM( const reco::Candidate::LorentzVector& bq1, const reco::Candidate::LorentzVector& bq2, const reco::Candidate::LorentzVector& le1, const reco::Candidate::LorentzVector& le2, const reco::Candidate::LorentzVector& met){
-    double b1 = bq1.E();
-    //double bt1 = bq1.Et();
-    double bx1 = bq1.Px();
-    double by1 = bq1.Py();
-    double bz1 = bq1.Pz();
-
-    double b2 = bq2.E();
-    //double bt2 = bq2.Et();
-    double bx2 = bq2.Px();
-    double by2 = bq2.Py();
-    double bz2 = bq2.Pz();
-
-
-    double e1 = le1.E();
-    //double pt1 = le1.Et();
-    double px1 = le1.Px();
-    double py1 = le1.Py();
-    double pz1 = le1.Pz();
-
-    double e2 = le2.E();
-    //double pt2 = le2.Et();
-    double px2 = le2.Px();    double py2 = le2.Py();    double pz2 = le2.Pz();
-
-    double Met = met.Et();
-    double Mex = met.Px();
-    double Mey = met.Py();
-
-    double invmass2 = 1.262208073067337*TMath::Power(b1,2) + 1.262208073067337*TMath::Power(b2,2) - 0.11690974715234576*TMath::Power(bx1,2) - 2.325269993670129*bx1*bx2 - 0.11690974715234576*TMath::Power(bx2,2) - 0.11690974715234576*TMath::Power(by1,2) + (-2.325269993670129*by1 - 0.11690974715234576*by2)*by2 - 1.262208073067337*TMath::Power(bz1,2) - 2.524416146134674*bz1*bz2 - 1.262208073067337*TMath::Power(bz2,2) + 0.36094746796490595*bz2*e1 + 1.262208073067337*TMath::Power(e1,2) + 2.4333915254807796*e1*e2 + 1.262208073067337*TMath::Power(e2,2) - 1.262208073067337*bz2*Met + 2.1819625834627003*e1*Met + 2.1819625834627003*e2*Met + TMath::Power(Met,2) + b1*(2.524416146134674*b2 - 0.05845487357617288*bx1 - 0.05845487357617288*by1 + 2.524416146134674*e1 + 2.524416146134674*e2 + 1.9461541091171606*Met) + b2*(-0.05845487357617288*bx2 - 0.05845487357617288*by2 + 2.524416146134674*e1 + 2.524416146134674*e2 + 1.9461541091171606*Met) - 2.642748152984737*bx1*Mex - 2.642748152984737*bx2*Mex - 0.05845487357617288*by1*Mex - 0.05845487357617288*by2*Mex - 0.07888800456670857*TMath::Power(Mex,2) - 0.05845487357617288*bx1*Mey - 0.05845487357617288*bx2*Mey - 2.642748152984737*by1*Mey - 2.642748152984737*by2*Mey - 0.07888800456670857*TMath::Power(Mey,2) - 4.445035641931849*bx1*px1 - 2.4669701406160556*bx2*px1 - 2.6821921552680914*Mex*px1 - 0.7099920411003772*TMath::Power(px1,2) - 2.4669701406160556*bx1*px2 - 4.445035641931849*bx2*px2 - 2.6821921552680914*Mex*px2 - 1.10443206393392*px1*px2 - 0.7099920411003772*TMath::Power(px2,2) - 4.445035641931849*by1*py1 - 2.4669701406160556*by2*py1 - 2.6821921552680914*Mey*py1 - 0.7099920411003772*TMath::Power(py1,2) - 2.4669701406160556*by1*py2 - 4.445035641931849*by2*py2 - 2.6821921552680914*Mey*py2 - 1.10443206393392*py1*py2 - 0.7099920411003772*TMath::Power(py2,2) - 3.0098807896221116*bz2*pz1 - 1.262208073067337*Met*pz1 - 1.262208073067337*TMath::Power(pz1,2) + bz1*(0.36094746796490595*e2 - 1.262208073067337*Met - 2.524416146134674*pz1 - 3.0098807896221116*pz2) - 2.524416146134674*bz2*pz2 - 1.262208073067337*Met*pz2 - 2.524416146134674*pz1*pz2 - 1.262208073067337*TMath::Power(pz2,2);
-
-    double invmass = sqrt(invmass2);
-
-    return invmass;
-
-  }
-
-
-  double newttbarM( const reco::Candidate::LorentzVector& bq1, const reco::Candidate::LorentzVector& bq2, const reco::Candidate::LorentzVector& le1, const reco::Candidate::LorentzVector& le2, const reco::Candidate::LorentzVector& met){
-
-    double b1 = bq1.E();
-    double bt1 = bq1.Et();
-    double bx1 = bq1.Px();
-    double by1 = bq1.Py();
-    double bz1 = bq1.Pz();
-
-    double b2 = bq2.E();
-    double bt2 = bq2.Et();
-    double bx2 = bq2.Px();
-    double by2 = bq2.Py();
-    double bz2 = bq2.Pz();
-
-
-    double e1 = le1.E();
-    double pt1 = le1.Et();
-    double px1 = le1.Px();
-    double py1 = le1.Py();
-    double pz1 = le1.Pz();
-
-    double e2 = le2.E();
-    //double pt2 = le2.Et();
-    double px2 = le2.Px();
-    double py2 = le2.Py();
-    double pz2 = le2.Pz();
-
-    double Met = met.Et();
-    double Mex = met.Px();
-    double Mey = met.Py();
-
-    double invmass2 = 3*b1*b2 + b2*bt2 - bt2*bz2 - bz1*bz2 + 2*b2*e1 + 4*b1*e2 + 5*e1*e2 + 4*bt2*Met + 4*e1*Met + e2*Met - (bx1 + bx2)*Mex - 2*by2*Mey + bt2*pt1 + by1*px1 - 2*Mex*px1 - (bx1 + bx2)*px2 - 2*Mex*px2 - 3*Mey*py1 - 2*Mey*py2 - 3*((bx1 + bx2)*Mex + by1*py2) + 4*Met*(bt1 - pz1) - bz2*(bz1 + pz1) + (-bz2 - py2)*(bz1 + pz1) + (bz1 + pz1)*(py2 - pz2) - 2*(bz1 + pz1)*pz2 - (bt1 + bz1 + 2*pz1)*pz2;
-
-    double invmass = sqrt(invmass2);
-
-    return invmass;
-
   }
 
   bool checkOverlap(const double & eta, const double & phi, const double & dRval1,const double & reliso1, const double &dRval2, const double & reliso2)
@@ -790,7 +637,7 @@ class TopDILAnalyzer : public edm::EDAnalyzer {
 
   std::vector<Ko::ZCandidate>* Z;
   std::vector<Ko::METCandidate>* pfMet;
-  std::vector<math::XYZTLorentzVector>* toptotal;
+  std::vector<Ko::TTbarMass>* ttbar;
   std::vector<math::XYZTLorentzVector>* met;
   std::vector<math::XYZTLorentzVector>* jets;
   std::vector<math::XYZTLorentzVector>* jetspt30;
@@ -829,25 +676,11 @@ class TopDILAnalyzer : public edm::EDAnalyzer {
 
   double discr;
 
-  double maosttbarM;
-  double maosMt2;
-  double maostop1M;
-  double maostop2M;
-
-  //double maos2ttbarM;
-  //double maos2Mt2;
-  //double maos2top1M;
-  //double maos2top2M;
-
-  double vsumttbarM;
-  double devettbarM;
-  double deve2ttbarM;
-
   double genttbarM;
-  double relmaosM;
-  double relvsumM;
-  double reldeveM;
-  double reldeve2M;
+  double resmaosM;
+  double resvsumM;
+  double resuser1M;
+  double resuser2M;
 
   double sumEt;
   double photonEt;
