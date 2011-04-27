@@ -19,7 +19,7 @@ def tnpEffPSet(categories):
             EfficiencyCategoryAndState = cms.vstring(category, "pass"),
             UnbinnedVariables = cms.vstring("mass"),
             BinnedVariables = cms.PSet(
-                pt = cms.vdouble(20, 30, 40, 50, 150)
+                pt = cms.vdouble(20, 30, 40, 50, 100, 200)
             ),
             BinToPDFmap = cms.vstring("bgaussPlusExp")
         ))
@@ -33,31 +33,12 @@ def tnpEffPSet(categories):
             BinToPDFmap = cms.vstring("bgaussPlusExp")
         ))
 
-        setattr(effSet, category+"_abseta", cms.PSet(
-            EfficiencyCategoryAndState = cms.vstring(category, "pass"),
-            UnbinnedVariables = cms.vstring("mass"),
-            BinnedVariables = cms.PSet(
-                abseta = cms.vdouble(0.0, 1.5, 2.5)
-            ),
-            BinToPDFmap = cms.vstring("bgaussPlusExp")
-        ))
-
         setattr(effSet, category+"_pt_eta", cms.PSet(
             EfficiencyCategoryAndState = cms.vstring(category, "pass"),
             UnbinnedVariables = cms.vstring("mass"),
             BinnedVariables = cms.PSet(
-                pt = cms.vdouble(20, 30, 40, 50, 150),
+                pt = cms.vdouble(20, 30, 40, 50, 100, 200),
                 eta = cms.vdouble(-2.5, -1.5, 0.0, 1.5, 2.5)
-            ),
-            BinToPDFmap = cms.vstring("bgaussPlusExp")
-        ))
-
-        setattr(effSet, category+"_pt_abseta", cms.PSet(
-            EfficiencyCategoryAndState = cms.vstring(category, "pass"),
-            UnbinnedVariables = cms.vstring("mass"),
-            BinnedVariables = cms.PSet(
-                pt = cms.vdouble(20, 30, 40, 50, 150),
-                abseta = cms.vdouble(0.0, 1.5, 2.5)
             ),
             BinToPDFmap = cms.vstring("bgaussPlusExp")
         ))
@@ -76,7 +57,6 @@ process.tnpId = cms.EDAnalyzer("TagProbeFitTreeAnalyzer",
         mass = cms.vstring("Tag-Probe mass", "70.0", "110.0", "GeV/c^{2}"),
         pt = cms.vstring("Probe p_{T}", "0", "1000", "GeV/c"),
         eta = cms.vstring("Probe #eta", "-2.5", "2.5", "Radian"),
-        abseta = cms.vstring("Probe |#eta|", "0", "2.5", "Radian"),
     ),
 
     Categories = cms.PSet(
@@ -114,7 +94,6 @@ process.tnpIdIso = cms.EDAnalyzer("TagProbeFitTreeAnalyzer",
         mass = cms.vstring("Tag-Probe mass", "70.0", "110.0", "GeV/c^{2}"),
         pt = cms.vstring("Probe p_{T}", "0", "1000", "GeV/c"),
         eta = cms.vstring("Probe #eta", "-2.5", "2.5", "Radian"),
-        abseta = cms.vstring("Probe |#eta|", "0", "2.5", "Radian"),
     ),
 
     Categories = cms.PSet(
@@ -143,12 +122,11 @@ process.tnpIdIso = cms.EDAnalyzer("TagProbeFitTreeAnalyzer",
         )
     ),
 
-    #Efficiencies = tnpEffPSet(["IdIso20", "IdIso22", "IdIso24", "IdIso26", "IdIso30", "IdIso50"]),
-    Efficiencies = tnpEffPSet(["IdIso26"]),
+    Efficiencies = tnpEffPSet(["IdIso20", "IdIso22", "IdIso24", "IdIso26", "IdIso30", "IdIso50"]),
 )
 
 process.p = cms.Path(
-    process.tnpId * 
+#    process.tnpId * 
     process.tnpIdIso
 )
 

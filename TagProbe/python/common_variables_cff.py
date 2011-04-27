@@ -8,9 +8,6 @@ KinematicVariables = cms.PSet(
 
 
 PFIsoMultiFlags = cms.PSet(
-        isIso03 = cms.string("(chargedHadronIso + neutralHadronIso + photonIso)/pt < 0.03"),
-        isIso04 = cms.string("(chargedHadronIso + neutralHadronIso + photonIso)/pt < 0.04"),
-        isIso05 = cms.string("(chargedHadronIso + neutralHadronIso + photonIso)/pt < 0.05"),
         isIso06 = cms.string("(chargedHadronIso + neutralHadronIso + photonIso)/pt < 0.06"),
         isIso07 = cms.string("(chargedHadronIso + neutralHadronIso + photonIso)/pt < 0.07"),
         isIso08 = cms.string("(chargedHadronIso + neutralHadronIso + photonIso)/pt < 0.08"),
@@ -37,9 +34,6 @@ PFIsoMultiFlags = cms.PSet(
 )
 
 DETIsoMultiFlags = cms.PSet(
-        isDetIso03 = cms.string("(trackIso + hcalIso + ecalIso)/pt < 0.03"),
-        isDetIso04 = cms.string("(trackIso + hcalIso + ecalIso)/pt < 0.04"),
-        isDetIso05 = cms.string("(trackIso + hcalIso + ecalIso)/pt < 0.05"),
         isDetIso06 = cms.string("(trackIso + hcalIso + ecalIso)/pt < 0.06"),
         isDetIso07 = cms.string("(trackIso + hcalIso + ecalIso)/pt < 0.07"),
         isDetIso08 = cms.string("(trackIso + hcalIso + ecalIso)/pt < 0.08"),

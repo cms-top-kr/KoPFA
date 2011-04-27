@@ -28,8 +28,7 @@ class EventWeightProducer : public edm::EDProducer
   void endJob();
 
  private:
-  vector<double> PUweight_;
-  double PUdefault_;
+
 
 };
 
