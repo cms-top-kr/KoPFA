@@ -46,6 +46,8 @@ process.out = cms.OutputModule("PoolOutputModule",
     SelectEvents   = cms.untracked.PSet( SelectEvents = cms.vstring('p') ),
     outputCommands = cms.untracked.vstring(
         'drop *',
+        'keep *_eid*_*_*',
+        'keep *_electronsCiC*_*_*',
     )
 )
 from RecoParticleFlow.Configuration.RecoParticleFlow_EventContent_cff import *
@@ -75,7 +77,6 @@ process.electronsCiCLoose = cms.EDFilter("EleIdCutBased",
     reducedEndcapRecHitCollection = cms.InputTag("recucedEcalRecHitsEE"),
 )
 
-#process.load("RecoParticleFlow.PFProducer.particleFlow_cfi")
 process.particleFlow.useEGammaElectrons = True
 process.particleFlow.egammaElectrons = cms.InputTag('electronsCiCLoose')
 
