@@ -50,6 +50,14 @@ private:
 
   double idMVA_;
   int idCiCLoose_, idCiCMedium_, idCiCTight_;
+
+  TH1F * h_gsf_pt;
+  TH1F * h_gsf_eta;
+  TH1F * h_gsf_mva;
+
+  TH1F * h_pf_pt;
+  TH1F * h_pf_eta;
+  TH1F * h_pf_mva;
 };
 
 ElectronAnalyzer::ElectronAnalyzer(const edm::ParameterSet& pset)
@@ -93,6 +101,16 @@ void ElectronAnalyzer::beginJob()
   tree_->Branch("idCiCLoose", &idCiCLoose_, "idCiCLoose/i");
   tree_->Branch("idCiCMedium", &idCiCMedium_, "idCiCMedium/i");
   tree_->Branch("idCiCTight", &idCiCTight_, "idCiCTight/i");
+
+  //quick analysis
+  h_gsf_pt = fs->make<TH1F>( "h_gsf_pt","h_gsf_pt", 50, 0,100);
+  h_gsf_eta = fs->make<TH1F>( "h_gsf_eta","h_gsf_eta", 70, -3.5,3.5);
+  h_gsf_mva = fs->make<TH1F>( "h_gsf_mva","h_gsf_mva", 70, -3.5,3.5);
+
+  h_pf_pt = fs->make<TH1F>( "h_pf_pt","h_pf_pt", 50, 0,100);
+  h_pf_eta = fs->make<TH1F>( "h_pf_eta","h_pf_eta", 70, -3.5,3.5);
+  h_pf_mva = fs->make<TH1F>( "h_pf_mva","h_pf_mva", 70, -3.5,3.5);
+  
 }
 
 void ElectronAnalyzer::endJob()
@@ -121,8 +139,11 @@ void ElectronAnalyzer::analyze(const edm::Event& event, const edm::EventSetup& e
   for ( edm::View<reco::GsfElectron>::const_iterator iEle = electronHandle->begin();
         iEle != electronHandle->end(); ++iEle )
   {
+    //Fill histograms
+    h_gsf_pt->Fill(iEle->pt());
+    h_gsf_eta->Fill(iEle->eta());
+    h_gsf_mva->Fill(iEle->mva());
     if ( leadingGsfElePt >= iEle->pt() ) continue;
-
     leadingGsfElePt = iEle->pt();
     leadingGsfEle = iEle;
   }
@@ -139,6 +160,10 @@ void ElectronAnalyzer::analyze(const edm::Event& event, const edm::EventSetup& e
         iPFCand != pfCandHandle->end(); ++iPFCand )
   {
     if ( abs(iPFCand->pdgId()) != 11 ) continue;
+    //Fill histograms
+    h_pf_pt->Fill(iPFCand->pt());
+    h_pf_eta->Fill(iPFCand->eta());
+    h_pf_mva->Fill(iPFCand->mva_e_pi());
     if ( leadingPFElePt >= iPFCand->pt() ) continue;
 
     leadingPFElePt = iPFCand->pt();
