@@ -46,6 +46,7 @@ process.out = cms.OutputModule("PoolOutputModule",
     SelectEvents   = cms.untracked.PSet( SelectEvents = cms.vstring('p') ),
     outputCommands = cms.untracked.vstring(
         'drop *',
+        'keep *_genParticles_*_*',
         'keep *_eid*_*_*',
         'keep *_electronsCiC*_*_*',
     )
@@ -61,8 +62,13 @@ process.eidSequence = cms.Sequence(
     process.eidLooseMC
 )
 
-process.electronsCiCLoose = cms.EDFilter("EleIdCutBased",
+process.electronsWithPresel = cms.EDFilter("GsfElectronSelector",
     src = cms.InputTag("gsfElectrons"),
+    cut = cms.string("pt > 10 && ecalDrivenSeed"),
+)
+
+process.electronsCiCLoose = cms.EDFilter("EleIdCutBased",
+    src = cms.InputTag("electronsWithPresel"),
     algorithm = cms.string("eIDCB"),
     threshold = cms.double(1),
     electronIDType = process.eidLooseMC.electronIDType,
@@ -93,6 +99,7 @@ process.particleFlow.egammaElectrons = cms.InputTag('electronsCiCLoose')
 
 process.p = cms.Path(
     process.eidSequence
+  * process.electronsWithPresel
   * process.electronsCiCLoose
   * process.pfLocalReReco
   * process.pfReReco
