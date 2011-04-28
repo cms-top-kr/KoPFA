@@ -14,6 +14,7 @@
 #include "FWCore/ServiceRegistry/interface/Service.h"
 #include "CommonTools/UtilAlgos/interface/TFileService.h"
 
+#include "DataFormats/HepMCCandidate/interface/GenParticle.h"
 #include "DataFormats/EgammaCandidates/interface/GsfElectron.h"
 #include "DataFormats/ParticleFlowCandidate/interface/PFCandidate.h"
 
@@ -34,6 +35,7 @@ public:
   void endJob();
 
 private:
+  edm::InputTag genParticleLabel_;
   edm::InputTag electronLabel_;  
   edm::InputTag pfCandLabel_;
 
@@ -42,8 +44,9 @@ private:
 
   int event_, run_, lumi_;
 
+  double genElePt_, genEleEta_, genElePhi_;
   double gsfElePt_, gsfEleEta_, gsfElePhi_;
-  double pfElePt_, pfEleEta_, pfElePhi_;
+  double pfaElePt_, pfaEleEta_, pfaElePhi_;
 
   double chIso_, nhIso_, phIso_, pfaRelIso_;
   double tkIso_, ecIso_, hcIso_, detRelIso_;
@@ -64,6 +67,7 @@ ElectronAnalyzer::ElectronAnalyzer(const edm::ParameterSet& pset)
 {
   electronLabel_ = pset.getParameter<edm::InputTag>("electron");
   pfCandLabel_ = pset.getParameter<edm::InputTag>("pfCandidate");
+  genParticleLabel_ = pset.getParameter<edm::InputTag>("genParticles");
 }
 
 ElectronAnalyzer::~ElectronAnalyzer()
@@ -79,13 +83,17 @@ void ElectronAnalyzer::beginJob()
   tree_->Branch("run", &run_, "run/i");
   tree_->Branch("lumi", &lumi_, "lumi/i");
 
+  tree_->Branch("genElePt", &genElePt_, "genElePt/d");
+  tree_->Branch("genEleEta", &genEleEta_, "genEleEta/d");
+  tree_->Branch("genElePhi", &genElePhi_, "genElePhi/d");
+
   tree_->Branch("gsfElePt", &gsfElePt_, "gsfElePt/d");
   tree_->Branch("gsfEleEta", &gsfEleEta_, "gsfEleEta/d");
   tree_->Branch("gsfElePhi", &gsfElePhi_, "gsfElePhi/d");
 
-  tree_->Branch("pfElePt", &pfElePt_, "pfElePt/d");
-  tree_->Branch("pfEleEta", &pfEleEta_, "pfEleEta/d");
-  tree_->Branch("pfElePhi", &pfElePhi_, "pfElePhi/d");
+  tree_->Branch("pfaElePt", &pfaElePt_, "pfaElePt/d");
+  tree_->Branch("pfaEleEta", &pfaEleEta_, "pfaEleEta/d");
+  tree_->Branch("pfaElePhi", &pfaElePhi_, "pfaElePhi/d");
 
   tree_->Branch("chIso", &chIso_, "chIso/d");
   tree_->Branch("phIso", &phIso_, "phIso/d");
@@ -127,62 +135,86 @@ void ElectronAnalyzer::analyze(const edm::Event& event, const edm::EventSetup& e
   run_ = event.id().run();
   lumi_ = event.id().luminosityBlock();
 
+  edm::Handle<edm::View<reco::GenParticle> > genParticleHandle;
+  event.getByLabel(genParticleLabel_, genParticleHandle);
+
   edm::Handle<edm::View<reco::GsfElectron> > electronHandle;
   event.getByLabel(electronLabel_, electronHandle);
 
   edm::Handle<edm::View<reco::PFCandidate> > pfCandHandle;
   event.getByLabel(pfCandLabel_, pfCandHandle);
 
+  // Set default values
+  genElePt_ = genEleEta_ = genElePhi_ = -999;
+  gsfElePt_ = gsfEleEta_ = gsfElePhi_ = -999;
+  pfaElePt_ = pfaEleEta_ = pfaElePhi_ = -999;
+
+  // Choose leading gen electron
+  if ( genParticleHandle.isValid() )
+  {
+    edm::View<reco::GenParticle>::const_iterator leadingGenEle = genParticleHandle->end();
+    double leadingGenElePt = 0;
+    for ( edm::View<reco::GenParticle>::const_iterator iGen = genParticleHandle->begin();
+          iGen != genParticleHandle->end(); ++iGen )
+    {
+      if ( abs(iGen->pdgId()) != 11 or iGen->status() != 3 ) continue;
+
+      if ( leadingGenElePt >= iGen->pt() ) continue;      
+      leadingGenEle = iGen;
+      leadingGenElePt = iGen->pt();
+    }
+    if ( leadingGenEle != genParticleHandle->end() )
+    {
+      genElePt_ = leadingGenEle->pt();
+      genEleEta_ = leadingGenEle->eta();
+      genElePhi_ = leadingGenEle->phi();
+    }
+  }
+
   // Choose leading electron
   edm::View<reco::GsfElectron>::const_iterator leadingGsfEle = electronHandle->end();
   double leadingGsfElePt = 0;
   for ( edm::View<reco::GsfElectron>::const_iterator iEle = electronHandle->begin();
-        iEle != electronHandle->end(); ++iEle )
+      iEle != electronHandle->end(); ++iEle )
   {
     //Fill histograms
     h_gsf_pt->Fill(iEle->pt());
     h_gsf_eta->Fill(iEle->eta());
     h_gsf_mva->Fill(iEle->mva());
+
     if ( leadingGsfElePt >= iEle->pt() ) continue;
     leadingGsfElePt = iEle->pt();
     leadingGsfEle = iEle;
   }
-  if ( leadingGsfEle == electronHandle->end() )
+  if ( leadingGsfEle != electronHandle->end() )
   {
-    cout << "Cannot set leading electron" << endl;
-    return;
+    gsfElePt_ = leadingGsfEle->pt();
+    gsfEleEta_ = leadingGsfEle->eta();
+    gsfElePhi_ = leadingGsfEle->phi();
   }
 
   // Choose leading PF electron
   edm::View<reco::PFCandidate>::const_iterator leadingPFEle = pfCandHandle->end();
   double leadingPFElePt = 0;
   for ( edm::View<reco::PFCandidate>::const_iterator iPFCand = pfCandHandle->begin();
-        iPFCand != pfCandHandle->end(); ++iPFCand )
+      iPFCand != pfCandHandle->end(); ++iPFCand )
   {
     if ( abs(iPFCand->pdgId()) != 11 ) continue;
     //Fill histograms
     h_pf_pt->Fill(iPFCand->pt());
     h_pf_eta->Fill(iPFCand->eta());
     h_pf_mva->Fill(iPFCand->mva_e_pi());
-    if ( leadingPFElePt >= iPFCand->pt() ) continue;
 
+    if ( leadingPFElePt >= iPFCand->pt() ) continue;
     leadingPFElePt = iPFCand->pt();
     leadingPFEle = iPFCand;
   }
-  if ( leadingPFEle == pfCandHandle->end() )
+  if ( leadingPFEle != pfCandHandle->end() )
   {
-    cout << "Cannot match PFCand to electron" << endl;
-    return;
+    pfaElePt_ = leadingPFEle->pt();
+    pfaEleEta_ = leadingPFEle->eta();
+    pfaElePhi_ = leadingPFEle->phi();
   }
-
-  // Fill up tree entries
-  gsfElePt_ = leadingGsfEle->pt();
-  gsfEleEta_ = leadingGsfEle->eta();
-  gsfElePhi_ = leadingGsfEle->phi();
-
-  pfElePt_ = leadingPFEle->pt();
-  pfEleEta_ = leadingPFEle->eta();
-  pfElePhi_ = leadingPFEle->phi();
 
   tree_->Fill();
 }
