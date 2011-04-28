@@ -22,12 +22,19 @@ process.source = cms.Source("PoolSource",
 )
 
 ## User defined modules and sequences
+process.genElectrons = cms.EDFilter("GenParticleSelector",
+    src = cms.InputTag("genParticles"),
+    cut = cms.string("abs(pdgId) == 11 && abs(eta) < 2.4"),
+)
+
 process.e = cms.EDAnalyzer("ElectronAnalyzer",
+    genParticles = cms.InputTag("genElectrons"),
     electron = cms.InputTag("electronsCiCLoose"),
     pfCandidate = cms.InputTag("particleFlow", "", "RERECOPF"),
 )
 
 process.p = cms.Path(
-    process.e
+    process.genElectrons
+  * process.e
 )
 
