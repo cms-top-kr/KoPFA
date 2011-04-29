@@ -30,5 +30,11 @@
   <class name="edm::Wrapper<std::vector<Ko::TTbarMass> >"/>
   <class name="edm::Ptr<Ko::TTbarMass>"/>
 
+  <class name="Ko::H2WWMass" />
+  <class name="std::vector<Ko::H2WWMass>" />
+  <class name="edm::Wrapper<Ko::H2WWMass>"/>
+  <class name="edm::Wrapper<std::vector<Ko::H2WWMass> >"/>
+  <class name="edm::Ptr<Ko::H2WWMass>"/>
+
 </lcgdict>
 
