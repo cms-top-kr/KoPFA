@@ -13,7 +13,7 @@
 //
 // Original Author:  Tae Jeong Kim,40 R-A32,+41227678602,
 //         Created:  Fri Jun  4 17:19:29 CEST 2010
-// $Id: TopDILAnalyzer.h,v 1.34 2011/04/09 00:13:33 tjkim Exp $
+// $Id: TopDILAnalyzer.h,v 1.36 2011/04/27 13:43:06 tjkim Exp $
 //
 //
 
@@ -44,6 +44,7 @@
 #include "KoPFA/DataFormats/interface/ZCandidate.h"
 #include "KoPFA/DataFormats/interface/TTbarGenEvent.h"
 #include "KoPFA/DataFormats/interface/TTbarMass.h"
+#include "KoPFA/DataFormats/interface/H2WWMass.h"
 #include "KoPFA/DataFormats/interface/METCandidate.h"
 #include "PFAnalyses/CommonTools/interface/CandidateSelector.h"
 #include "PFAnalyses/CommonTools/interface/PatJetIdSelector.h"
@@ -115,6 +116,7 @@ class TopDILAnalyzer : public edm::EDAnalyzer {
     Z = new std::vector<Ko::ZCandidate>();
     pfMet = new std::vector<Ko::METCandidate>();
     ttbar = new std::vector<Ko::TTbarMass>();
+    h2ww = new std::vector<Ko::H2WWMass>();
     met = new std::vector<math::XYZTLorentzVector>();
     jets = new std::vector<math::XYZTLorentzVector>();
     jetspt30 = new std::vector<math::XYZTLorentzVector>();
@@ -168,6 +170,7 @@ class TopDILAnalyzer : public edm::EDAnalyzer {
     tree->Branch("Z","std::vector<Ko::ZCandidate>", &Z);
     tree->Branch("pfMet","std::vector<Ko::METCandidate>", &pfMet);
     tree->Branch("ttbar","std::vector<Ko::TTbarMass>", &ttbar);
+    tree->Branch("h2ww","std::vector<Ko::H2WWMass>", &h2ww);
 
     tree->Branch("met","std::vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >", &met);
     tree->Branch("jets","std::vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >", &jets);
@@ -304,6 +307,11 @@ class TopDILAnalyzer : public edm::EDAnalyzer {
         const Ko::ZCandidate dimuon(it1.p4(), it2.p4(), sign);
 
         Z->push_back(dimuon);
+
+        ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > met_;
+        met_.SetPxPyPzE(mi->px(),mi->py(),0,mi->energy());
+        const Ko::H2WWMass h2wwMass(it1.p4(), it2.p4(), met_,  it1.charge(),it2.charge());
+        h2ww->push_back(h2wwMass);
 
         h_leadingpt->Fill(it1.pt());
         h_secondpt->Fill(it2.pt());
@@ -503,6 +511,7 @@ class TopDILAnalyzer : public edm::EDAnalyzer {
     Z->clear();
     pfMet->clear();
     ttbar->clear();
+    h2ww->clear();
     met->clear();
     jets->clear();
     jetspt30->clear();
@@ -638,6 +647,7 @@ class TopDILAnalyzer : public edm::EDAnalyzer {
   std::vector<Ko::ZCandidate>* Z;
   std::vector<Ko::METCandidate>* pfMet;
   std::vector<Ko::TTbarMass>* ttbar;
+  std::vector<Ko::H2WWMass>* h2ww;
   std::vector<math::XYZTLorentzVector>* met;
   std::vector<math::XYZTLorentzVector>* jets;
   std::vector<math::XYZTLorentzVector>* jetspt30;
