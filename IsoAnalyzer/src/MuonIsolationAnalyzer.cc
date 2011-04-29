@@ -8,16 +8,27 @@
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/Framework/interface/MakerMacros.h"
 #include "FWCore/ServiceRegistry/interface/Service.h"
+#include "DQMServices/Core/interface/MonitorElement.h"
 #include "CommonTools/UtilAlgos/interface/TFileService.h"
 
 #include "DataFormats/PatCandidates/interface/Muon.h"
 #include "DataFormats/PatCandidates/interface/Electron.h"
+#include "DataFormats/PatCandidates/interface/Jet.h"
+#include "DataFormats/PatCandidates/interface/MET.h"
+
+#include "DataFormats/Math/interface/LorentzVector.h"
+#include "PFAnalyses/CommonTools/interface/CandidateSelector.h"
+#include "PFAnalyses/CommonTools/interface/PatJetIdSelector.h"
+
+#include "CondFormats/JetMETObjects/interface/JetCorrectorParameters.h"
+#include "CondFormats/JetMETObjects/interface/FactorizedJetCorrector.h"
 
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "DataFormats/Candidate/interface/Candidate.h"
 #include "CommonTools/Utils/interface/StringObjectFunction.h"
 #include "DataFormats/PatCandidates/interface/LookupTableRecord.h"
 
+#include "DQMServices/Core/interface/DQMStore.h"
 #include "DataFormats/RecoCandidate/interface/IsoDepositDirection.h"
 #include "DataFormats/RecoCandidate/interface/IsoDeposit.h"
 #include "DataFormats/RecoCandidate/interface/IsoDepositVetos.h"
@@ -39,9 +50,28 @@ private:
   virtual void beginJob() ;
   virtual void analyze(const edm::Event&, const edm::EventSetup&);
   virtual void endJob() ;
+  double transverseMass( const reco::Candidate::LorentzVector& lepton, const reco::Candidate::LorentzVector& met);
 
  // ----------member data ---------------------------
+
+  typedef pat::MuonCollection::const_iterator MI;
+  typedef pat::JetCollection::const_iterator JI;
+
   edm::InputTag collectionLabel_;
+  edm::InputTag jetLabel_;
+
+  PatJetIdSelector looseJetIdSelector_;
+
+  // Residual Jet energy correction for 38X
+  FactorizedJetCorrector* resJetCorrector_;
+  bool doResJec_;
+
+  // For Mt cut
+  edm::InputTag metLabel_;
+  edm::InputTag pfCandidateLabel_;
+  double MET; 
+  double mt;
+  double delphi;
 
   TTree *tree;
 
@@ -56,6 +86,7 @@ private:
   std::vector<double>* chi2dof;
 
   int multiplicity;
+  int jetmultiplicity;
 
   std::vector<double>* chIso;
   std::vector<double>* nhIso;
@@ -78,13 +109,29 @@ private:
   std::vector<double>* ecalIso;
   std::vector<double>* hcalIso;
 
+  std::vector<math::XYZTLorentzVector>* jets;
+  std::vector<math::XYZTLorentzVector>* jetspt30;
+
 };
 
 MuonIsolationAnalyzer::MuonIsolationAnalyzer(const edm::ParameterSet& iConfig)
 {
    collectionLabel_ =  iConfig.getParameter<edm::InputTag>("collectionLabel");
+   jetLabel_ = iConfig.getParameter<edm::InputTag>("jetLabel");
+   looseJetIdSelector_.initialize( iConfig.getParameter<edm::ParameterSet> ("looseJetId") );
+   // Residual Jet energy correction for 38X
+   doResJec_ = iConfig.getUntrackedParameter<bool>("doResJec", false);
+   resJetCorrector_ = 0;
+
+   // For mt cut
+   metLabel_ = iConfig.getParameter<edm::InputTag>("metLabel");
+   pfCandidateLabel_= iConfig.getParameter<edm::InputTag>("pfCandidateLabel");
+
    edm::Service<TFileService> fs;
    tree = fs->make<TTree>("tree", "Tree for isolation study");
+
+   jets = new std::vector<math::XYZTLorentzVector>();
+   jetspt30 = new std::vector<math::XYZTLorentzVector>();
 
    pt = new std::vector<double>();
    eta = new std::vector<double>();
@@ -122,13 +169,15 @@ MuonIsolationAnalyzer::~MuonIsolationAnalyzer()
 
 }
 
-
-
 void MuonIsolationAnalyzer::beginJob(){
    //Add event and RUN BRANCHING         
+
    tree->Branch("EVENT",&EVENT,"EVENT/i");
    tree->Branch("RUN",&RUN,"RUN/i");
    tree->Branch("LUMI",&LUMI,"LUMI/i");
+
+   tree->Branch("jets","std::vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >", &jets);
+   tree->Branch("jetspt30","std::vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >", &jetspt30);
    
    tree->Branch("pt","std::vector<double>",&pt);
    tree->Branch("eta","std::vector<double>",&eta);
@@ -136,6 +185,7 @@ void MuonIsolationAnalyzer::beginJob(){
    tree->Branch("chi2dof","std::vector<double>",&chi2dof);
 
    tree->Branch("multiplicity",&multiplicity,"multiplicity/i");
+   tree->Branch("jetmultiplicity",&jetmultiplicity,"jetmultiplicity/i");
 
    tree->Branch("chIso","std::vector<double>",&chIso);
    tree->Branch("nhIso","std::vector<double>",&nhIso);
@@ -156,6 +206,10 @@ void MuonIsolationAnalyzer::beginJob(){
    tree->Branch("trackIso","std::vector<double>",&trackIso);
    tree->Branch("ecalIso","std::vector<double>",&ecalIso);
    tree->Branch("hcalIso","std::vector<double>",&hcalIso);
+
+   tree->Branch("MET",&MET,"MET/d");
+   tree->Branch("mt",&mt,"mt/D");
+   tree->Branch("delphi",&delphi,"delphi/D");
  
 }
 
@@ -169,6 +223,14 @@ void MuonIsolationAnalyzer::analyze( const edm::Event& iEvent, const edm::EventS
     using namespace std;
     using namespace reco;
     using namespace isodeposit;
+
+  //clear for MET
+    MET= -9;
+    mt = -9;
+    delphi = -9;
+
+    jets->clear();
+    jetspt30->clear();
 
     pt->clear();
     eta->clear();
@@ -204,10 +266,50 @@ void MuonIsolationAnalyzer::analyze( const edm::Event& iEvent, const edm::EventS
     edm::Handle<pat::MuonCollection> collection_;
     iEvent.getByLabel(collectionLabel_,collection_);
 
+    edm::Handle<pat::JetCollection> Jets;
+    iEvent.getByLabel(jetLabel_, Jets);
+
+    edm::Handle<pat::METCollection> pfMET;
+    edm::Handle< reco::PFCandidateCollection > pfCandidates_;
+    iEvent.getByLabel(metLabel_,pfMET);
+    iEvent.getByLabel(pfCandidateLabel_,pfCandidates_);
+
+    pat::METCollection::const_iterator meti = pfMET->begin();
+
+////// for Jet
+   for (JI it = Jets->begin(); it != Jets->end(); ++it) {
+
+     if(abs(it->eta()) >= 2.4) continue; 
+
+     pat::strbitset looseJetIdSel = looseJetIdSelector_.getBitTemplate();
+     bool passId = looseJetIdSelector_( *it, looseJetIdSel);
+
+     if(passId){
+      jets->push_back(it->p4());
+      if( it->pt() > 30)
+        jetspt30->push_back(it->p4());
+      }
+   }
+    jetmultiplicity = (int) jetspt30->size();
+////// for Muon multiplicity
     multiplicity = (int) collection_->size();
 
-    typedef pat::MuonCollection::const_iterator MI;
+////// for MET
+  typedef map< double, MI, greater<double> > PtMap;
+  typedef PtMap::const_iterator IM;
+  PtMap sortedMuons; 
+  // muons passing identification criteria are sorted by decreasing pT
+  for(MI ei = collection_->begin(); ei!=collection_->end(); ++ei)  {    
+    sortedMuons.insert( make_pair(ei->pt(), ei) );
+  }
 
+  const pat::Muon& leading = *(sortedMuons.begin()->second);
+
+  MET = meti->pt();
+  mt = transverseMass( leading.p4(), meti->p4() );
+  delphi = fabs(deltaPhi(leading.phi(), meti->p4().phi()));
+
+////// for Muon 
     for(MI mi = collection_->begin() ; mi != collection_->end(); mi++){
 
       pt->push_back(mi->pt());
@@ -254,6 +356,14 @@ void MuonIsolationAnalyzer::analyze( const edm::Event& iEvent, const edm::EventS
     tree->Fill();
 }
 
+  double MuonIsolationAnalyzer::transverseMass( const reco::Candidate::LorentzVector& lepton, 
+				     const reco::Candidate::LorentzVector& met) {  
+  reco::Candidate::LorentzVector leptonT(lepton.Px(),lepton.Py(),0.,lepton.E()*sin(lepton.Theta()));
+  reco::Candidate::LorentzVector sumT=leptonT+met;
+  return std::sqrt(sumT.M2());
+}
+
 
 //define this as a plug-in
 DEFINE_FWK_MODULE(MuonIsolationAnalyzer);
+
