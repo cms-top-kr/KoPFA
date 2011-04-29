@@ -44,15 +44,9 @@ muonId.dxy = 0.02
 muonId.eta = 2.4
 muonId.pt = 20 
 
-process.Muons = cms.EDProducer(
-    "KoMuonSelector",
-    #version = cms.untracked.int32( -1 ),#TOP
-    cut = cms.vstring("pt","eta","dxy"),
-    isocut = cms.vstring(),
-    muonLabel  = cms.InputTag("selectedPatMuonsPFlow"),
-    beamSpotLabel = cms.InputTag("offlineBeamSpot"),
-    muonIdSelector = muonId,
-    muonIsoSelector = muonIsoSelectorPSet,
+process.Muons = cms.EDFilter("PATMuonSelector",
+    src = cms.InputTag("selectedPatMuons"),
+    cut =cms.string("isGlobalMuon && pt > 20 && abs(eta) < 2.4 && globalTrack.normalizedChi2 < 10.0 && globalTrack.hitPattern.numberOfValidMuonHits > 0 && abs(dB) < 0.2 && innerTrack.hitPattern.numberOfValidPixelHits > 0 && innerTrack.hitPattern.numberOfValidTrackerHits > 10 && numberOfMatchedStations() >1")
 )
 
 process.patMuonFilter = cms.EDFilter("PATCandViewCountFilter",
@@ -76,8 +70,15 @@ process.JetFilter = cms.EDFilter('JetFilter',
 
 process.load("HLTrigger.HLTfilters.hltHighLevel_cfi")
 process.hltHighLevel.HLTPaths = cms.vstring('HLT_Mu9')
+process.hltHighLevel.TriggerResultsTag = cms.InputTag("TriggerResults","","REDIGI38X")
+process.hltHighLevel.throw = False
+
 process.MuonAna = cms.EDAnalyzer('MuonIsolationAnalyzer',
     collectionLabel =  cms.InputTag('Muons'),
+    jetLabel = cms.InputTag("selectedPatJetsPFlow"),
+    metLabel =  cms.InputTag('patMETsPFlow'),
+    pfCandidateLabel = cms.InputTag('particleFlow'),
+    looseJetId = myJetId,
 )
 
 process.load("KoPFA.IsoAnalyzer.WFilter_cff")
@@ -88,11 +89,11 @@ process.WmunuMtCut.maxdphi =  1.5 #999 #1.5
 
 process.p = cms.Path(
 #                     process.loadHistosFromRunInfo*
-#                     process.hltHighLevel*
-                     process.JetFilter*
+                     process.hltHighLevel*
+#                     process.JetFilter*
                      process.Muons*
                      process.patMuonFilter*
-                     process.WmunuMtCut*
+#                     process.WmunuMtCut*
 #                     process.VertexFilter*
                      process.MuonAna
                     )
