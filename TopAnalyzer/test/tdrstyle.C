@@ -6,8 +6,8 @@ void setTDRStyle() {
 // For the canvas:
   tdrStyle->SetCanvasBorderMode(0);
   tdrStyle->SetCanvasColor(kWhite);
-  tdrStyle->SetCanvasDefH(400); //Height of canvas
-  tdrStyle->SetCanvasDefW(400); //Width of canvas
+  //tdrStyle->SetCanvasDefH(400); //Height of canvas
+  //tdrStyle->SetCanvasDefW(400); //Width of canvas
   tdrStyle->SetCanvasDefX(0);   //POsition on screen
   tdrStyle->SetCanvasDefY(0);
 
@@ -59,7 +59,7 @@ void setTDRStyle() {
 
 // For the statistics box:
   tdrStyle->SetOptFile(0);
-  //  tdrStyle->SetOptStat("mr"); // To display the mean and RMS:   SetOptStat("mr");
+  tdrStyle->SetOptStat("mr"); // To display the mean and RMS:   SetOptStat("mr");
   tdrStyle->SetStatColor(kWhite);
   tdrStyle->SetStatFont(42);
   tdrStyle->SetStatFontSize(0.025);
@@ -80,7 +80,7 @@ void setTDRStyle() {
 
 // For the Global title:
 
-  tdrStyle->SetOptTitle(0);
+  //tdrStyle->SetOptTitle(0);
   tdrStyle->SetTitleFont(42);
   tdrStyle->SetTitleColor(1);
   tdrStyle->SetTitleTextColor(1);
@@ -101,7 +101,7 @@ void setTDRStyle() {
   // tdrStyle->SetTitleXSize(Float_t size = 0.02); // Another way to set the size?
   // tdrStyle->SetTitleYSize(Float_t size = 0.02);
   tdrStyle->SetTitleXOffset(0.9);
-  tdrStyle->SetTitleYOffset(1.30);
+  tdrStyle->SetTitleYOffset(1.25);
   // tdrStyle->SetTitleOffset(1.1, "Y"); // Another way to set the Offset
 
 // For the axis labels:
