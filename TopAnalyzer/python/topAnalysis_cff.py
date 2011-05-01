@@ -23,9 +23,9 @@ VertexFilter = cms.EDFilter('VertexFilter',
 GenZmassFilter = cms.EDFilter('GenZmassFilter',
     genParticlesLabel = cms.InputTag('genParticles'),
     applyFilter = cms.untracked.bool( False ),
-    decayMode = cms.untracked.vint32(11, 13),
+    decayMode = cms.untracked.vint32(11, 13, 15),
     min = cms.untracked.int32(0),
-    max = cms.untracked.int32(50),
+    max = cms.untracked.int32(999),
 )
 
 topWLeptonGenFilter = cms.EDFilter("GenParticleDecayFilter",
@@ -46,10 +46,10 @@ patElectronFilter = cms.EDFilter("CandViewCountFilter",
     minNumber = cms.uint32(2)
 )
 
-patMuonFilterForMuEl = patMuonFilter.clone()
-patElectronFilterForMuEl = patElectronFilter.clone()
-patMuonFilterForMuEl.minNumber = 1
-patElectronFilterForMuEl.minNumber = 1
+patMuonFilterForElMu = patMuonFilter.clone()
+patElectronFilterForElMu = patElectronFilter.clone()
+patMuonFilterForElMu.minNumber = 1
+patElectronFilterForElMu.minNumber = 1
 
 ElEl = cms.EDAnalyzer('TopElElAnalyzer',
     genParticlesLabel = cms.InputTag('genParticles'),
@@ -90,21 +90,21 @@ MuMu = cms.EDAnalyzer('TopMuMuAnalyzer',
     minBTagValue = cms.untracked.double(1.7),
 )
 
-MuEl = cms.EDAnalyzer('TopMuElAnalyzer',
+ElMu = cms.EDAnalyzer('TopElMuAnalyzer',
     genParticlesLabel = cms.InputTag('genParticles'),
-    muonLabel1 =  cms.InputTag('Muons'),
-    muonLabel2 =  cms.InputTag('Electrons'),
+    muonLabel1 =  cms.InputTag('Electrons'),
+    muonLabel2 =  cms.InputTag('Muons'),
     metLabel =  cms.InputTag('patMETsPFlow'),
     jetLabel =  cms.InputTag('selectedPatJetsPFlow'),
-    useEventCounter = cms.bool( True ),
+    useEventCounter = cms.bool( False ),
     filters = cms.untracked.vstring(
         'initialEvents',
-    #    'finalEvents'
+        'finalEvents'
     ),
     looseJetId = myJetId, 
     #for jet cleaning overlapping with isolated epton within 0.4
-    relIso1 = cms.untracked.double(0.20),
-    relIso2 = cms.untracked.double(0.20),
+    relIso1 = cms.untracked.double(0.26),
+    relIso2 = cms.untracked.double(0.21),
     bTagAlgo = cms.untracked.string("trackCountingHighEffBJetTags"),
     minBTagValue = cms.untracked.double(1.7),
 )
@@ -160,25 +160,25 @@ topMuMuAnalysisRealDataSequence = cms.Sequence(
     mm
 )
 
-topMuElAnalysisMCSequence = cms.Sequence(
+topElMuAnalysisMCSequence = cms.Sequence(
     loadHistosFromRunInfo*
     topWLeptonGenFilter*
     GenZmassFilter*
     VertexFilter*
     Muons * Electrons *
-    patMuonFilterForMuEl * patElectronFilterForMuEl *
-    MuEl
-#    em
+    patMuonFilterForElMu * patElectronFilterForElMu *
+    ElMu*
+    em
 )
 
-topMuElAnalysisRealDataSequence = cms.Sequence(
+topElMuAnalysisRealDataSequence = cms.Sequence(
     loadHistosFromRunInfo*
     muonTriggerFilterByRun*
     removeDuplicate*
     VertexFilter*
     Muons * Electrons *
-    patMuonFilterForMuEl * patElectronFilterForMuEl *
-    MuEl
-#    em
+    patMuonFilterForElMu * patElectronFilterForElMu *
+    ElMu*
+    em
 )
 
