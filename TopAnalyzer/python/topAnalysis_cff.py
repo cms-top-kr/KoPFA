@@ -23,9 +23,9 @@ VertexFilter = cms.EDFilter('VertexFilter',
 GenZmassFilter = cms.EDFilter('GenZmassFilter',
     genParticlesLabel = cms.InputTag('genParticles'),
     applyFilter = cms.untracked.bool( False ),
-    decayMode = cms.untracked.vint32(11, 13),
+    decayMode = cms.untracked.vint32(11, 13, 15),
     min = cms.untracked.int32(0),
-    max = cms.untracked.int32(50),
+    max = cms.untracked.int32(999),
 )
 
 topWLeptonGenFilter = cms.EDFilter("GenParticleDecayFilter",
@@ -50,6 +50,43 @@ patMuonFilterForMuEl = patMuonFilter.clone()
 patElectronFilterForMuEl = patElectronFilter.clone()
 patMuonFilterForMuEl.minNumber = 1
 patElectronFilterForMuEl.minNumber = 1
+
+from HLTrigger.HLTfilters.hltHighLevel_cfi import *
+#for MuEG dataset
+#MC
+hltHighLevelMuEGMC = hltHighLevel.clone()
+hltHighLevelMuEGMC.TriggerResultsTag = cms.InputTag("TriggerResults","","REDIGI311X")
+hltHighLevelMuEGMC.HLTPaths = cms.vstring('HLT_Mu8_Ele8_v1','HLT_Mu11_Ele8_v1')
+hltHighLevelMuEGMC.throw = cms.bool(False)
+#RD
+hltHighLevelMuEGRD = hltHighLevel.clone()
+hltHighLevelMuEGRD.TriggerResultsTag = cms.InputTag("TriggerResults","","HLT")
+hltHighLevelMuEGRD.HLTPaths = cms.vstring('HLT_Mu10_Ele10_CaloIdL_v1')
+hltHighLevelMuEGRD.throw = cms.bool(False)
+
+#for DoubleElectron dataset
+#MC
+hltHighLevelElElMC = hltHighLevel.clone()
+hltHighLevelElElMC.TriggerResultsTag = cms.InputTag("TriggerResults","","REDIGI311X")
+hltHighLevelElElMC.HLTPaths = cms.vstring('HLT_Ele17_SW_TightCaloEleId_Ele8HE_L1R_v2')
+hltHighLevelElElMC.throw = cms.bool(False)
+#RD
+hltHighLevelElElRD = hltHighLevel.clone()
+hltHighLevelElElRD.TriggerResultsTag = cms.InputTag("TriggerResults","","HLT")
+hltHighLevelElElRD.HLTPaths = cms.vstring('HLT_Ele17_CaloIdT_TrkIdVL_CaloIsoVL_TrkIsoVL_Ele8_CaloIdT_TrkIdVL_CaloIsoVL_TrkIsoVL_v2')
+hltHighLevelElElRD.throw = cms.bool(False)
+
+#for DoubleElectron dataset
+#MC
+hltHighLevelMuMuMC = hltHighLevel.clone()
+hltHighLevelMuMuMC.TriggerResultsTag = cms.InputTag("TriggerResults","","REDIGI311X")
+hltHighLevelMuMuMC.HLTPaths = cms.vstring('HLT_DoubleMu5_v1')
+hltHighLevelMuMuMC.throw = cms.bool(False)
+#RD
+hltHighLevelMuMuRD = hltHighLevel.clone()
+hltHighLevelMuMuRD.TriggerResultsTag = cms.InputTag("TriggerResults","","HLT")
+hltHighLevelMuMuRD.HLTPaths = cms.vstring('HLT_DoubleMu6_v1')
+hltHighLevelMuMuRD.throw = cms.bool(False)
 
 ElEl = cms.EDAnalyzer('TopElElAnalyzer',
     genParticlesLabel = cms.InputTag('genParticles'),
@@ -117,6 +154,7 @@ removeDuplicate = cms.EDFilter("RemoveDuplicate",
 
 topElElAnalysisMCSequence = cms.Sequence(
     loadHistosFromRunInfo*
+    hltHighLevelElElMC*
     topWLeptonGenFilter*
     GenZmassFilter*
     VertexFilter*
@@ -128,7 +166,8 @@ topElElAnalysisMCSequence = cms.Sequence(
 
 topElElAnalysisRealDataSequence = cms.Sequence(
     loadHistosFromRunInfo*
-    electronTriggerFilterByRun*
+    hltHighLevelElElMC*
+#    electronTriggerFilterByRun*
     removeDuplicate*
     VertexFilter*
     Electrons*
@@ -139,6 +178,7 @@ topElElAnalysisRealDataSequence = cms.Sequence(
 
 topMuMuAnalysisMCSequence = cms.Sequence(
     loadHistosFromRunInfo*
+    hltHighLevelMuMuMC*
     topWLeptonGenFilter*
     GenZmassFilter*
     VertexFilter*
@@ -151,6 +191,7 @@ topMuMuAnalysisMCSequence = cms.Sequence(
 
 topMuMuAnalysisRealDataSequence = cms.Sequence(
     loadHistosFromRunInfo*
+    hltHighLevelMuMuRD*
 #    muonTriggerFilterByRun*
     removeDuplicate*
     VertexFilter*
@@ -162,6 +203,7 @@ topMuMuAnalysisRealDataSequence = cms.Sequence(
 
 topMuElAnalysisMCSequence = cms.Sequence(
     loadHistosFromRunInfo*
+    hltHighLevelMuEGMC*
     topWLeptonGenFilter*
     GenZmassFilter*
     VertexFilter*
@@ -173,7 +215,8 @@ topMuElAnalysisMCSequence = cms.Sequence(
 
 topMuElAnalysisRealDataSequence = cms.Sequence(
     loadHistosFromRunInfo*
-    muonTriggerFilterByRun*
+    hltHighLevelMuEGRD*
+#    muonTriggerFilterByRun*
     removeDuplicate*
     VertexFilter*
     Muons * Electrons *
