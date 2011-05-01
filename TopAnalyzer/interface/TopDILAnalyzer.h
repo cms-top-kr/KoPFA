@@ -75,7 +75,7 @@ using namespace std;
 using namespace reco;
 using namespace isodeposit;
 
-template<typename T1, typename T2>
+template<typename T1, typename T2,typename T3>
 class TopDILAnalyzer : public edm::EDAnalyzer {
  public:
   explicit TopDILAnalyzer(const edm::ParameterSet& iConfig){
@@ -255,12 +255,12 @@ class TopDILAnalyzer : public edm::EDAnalyzer {
 
     edm::Handle<std::vector<T1> > muons1_;
     edm::Handle<std::vector<T2> > muons2_;
-    edm::Handle<pat::METCollection> MET_;
+    edm::Handle<std::vector<T3> > MET_;
     iEvent.getByLabel(muonLabel1_,muons1_);
     iEvent.getByLabel(muonLabel2_,muons2_);
     iEvent.getByLabel(metLabel_,MET_);
 
-    pat::METCollection::const_iterator mi = MET_->begin();
+    T3  mi = MET_->at(0);
     //MET = mi->pt();
     //met->push_back(mi->p4());
     //h_MET->Fill(MET);
@@ -301,16 +301,14 @@ class TopDILAnalyzer : public edm::EDAnalyzer {
 
         const bool match = MatchObjects( it1.p4(), it2.p4(), true);
         if(match) continue;
-        dphimetlepton = fabs(deltaPhi(mi->phi(),it1.phi()));
+        dphimetlepton = fabs(deltaPhi(mi.phi(),it1.phi()));
 
         const int sign = it1.charge() * it2.charge();
         const Ko::ZCandidate dimuon(it1.p4(), it2.p4(), sign);
 
         Z->push_back(dimuon);
 
-        ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > met_;
-        met_.SetPxPyPzE(mi->px(),mi->py(),0,mi->energy());
-        const Ko::H2WWMass h2wwMass(it1.p4(), it2.p4(), met_,  it1.charge(),it2.charge());
+        const Ko::H2WWMass h2wwMass(it1.p4(), it2.p4(), mi.p4(),  it1.charge(),it2.charge());
         h2ww->push_back(h2wwMass);
 
         h_leadingpt->Fill(it1.pt());
@@ -388,8 +386,8 @@ class TopDILAnalyzer : public edm::EDAnalyzer {
         ecalIso2->push_back(it2.ecalIso());
         hcalIso2->push_back(it2.hcalIso());
      
-        double met_x = mi->px();
-        double met_y = mi->py();
+        double met_x = mi.px();
+        double met_y = mi.py();
         
         //Jet selection by checking overlap with selected leptons
         for (JI jit = Jets->begin(); jit != Jets->end(); ++jit) {
@@ -464,7 +462,7 @@ class TopDILAnalyzer : public edm::EDAnalyzer {
         met->push_back(corrmet);
 
         if(metStudy_){
-          const Ko::METCandidate pfmet(MET, mi->sumEt(), mi->NeutralEMFraction(),mi->NeutralHadEtFraction(),mi->ChargedHadEtFraction(),mi->ChargedEMEtFraction(),mi->MuonEtFraction() );
+          const Ko::METCandidate pfmet(MET, mi.sumEt(), mi.NeutralEMFraction(),mi.NeutralHadEtFraction(),mi.ChargedHadEtFraction(),mi.ChargedEMEtFraction(),mi.MuonEtFraction() );
           pfMet->push_back(pfmet);
         }
 
