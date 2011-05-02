@@ -30,7 +30,7 @@ process.genElectrons = cms.EDFilter("GenParticleSelector",
 process.e = cms.EDAnalyzer("ElectronAnalyzer",
     genParticles = cms.InputTag("genElectrons"),
     electron = cms.InputTag("electronsCiCLoose"),
-    pfCandidate = cms.InputTag("particleFlow", "", "RERECOPF"),
+    pfCandidate = cms.InputTag("pfElectronsID", "", "RERECOPF"),
 )
 
 process.p = cms.Path(
