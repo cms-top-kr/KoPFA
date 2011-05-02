@@ -30,7 +30,7 @@ process.source = cms.Source("PoolSource",
     )
 )
 
-process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(100) )
+process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(1000) )
 
 process.load("Configuration.StandardSequences.RawToDigi_cff")
 process.load("Configuration.StandardSequences.Reconstruction_cff")
@@ -49,6 +49,7 @@ process.out = cms.OutputModule("PoolOutputModule",
         'keep *_genParticles_*_*',
         'keep *_eid*_*_*',
         'keep *_electronsCiC*_*_*',
+        'keep *_pfElectronsID_*_*',
     )
 )
 from RecoParticleFlow.Configuration.RecoParticleFlow_EventContent_cff import *
@@ -95,6 +96,29 @@ process.pfReReco = cms.Sequence(
 process.particleFlow.useEGammaElectrons = True
 process.particleFlow.egammaElectrons = cms.InputTag('electronsCiCLoose')
 
+#select pf-electron
+process.pfAllElectrons = cms.EDFilter("PdgIdPFCandidateSelector",
+    src = cms.InputTag("particleFlow"),
+    pdgId = cms.vint32(11,-11)
+)
+
+process.pfElectronsFromVertex = cms.EDFilter(
+    "IPCutPFCandidateSelector",
+    src = cms.InputTag("pfAllElectrons"),  # PFCandidate source
+    vertices = cms.InputTag("offlinePrimaryVertices"),  # vertices source
+    d0Cut = cms.double(0.2),  # transverse IP
+    dzCut = cms.double(0.5),  # longitudinal IP
+    d0SigCut = cms.double(99.),  # transverse IP significance
+    dzSigCut = cms.double(99.),  # longitudinal IP significance
+)
+
+process.pfElectronsID = cms.EDFilter("ElectronIDPFCandidateSelector",
+  src = cms.InputTag("pfElectronsFromVertex"),
+  recoGsfElectrons = cms.InputTag('gsfElectrons'),
+  electronIdMap = cms.InputTag('eidLooseMC'),
+  bitsToCheck = cms.vstring('id'),
+) 
+
 ## Paths
 
 process.p = cms.Path(
@@ -103,5 +127,6 @@ process.p = cms.Path(
   * process.electronsCiCLoose
   * process.pfLocalReReco
   * process.pfReReco
+  * process.pfAllElectrons * process.pfElectronsFromVertex * process.pfElectronsID
 )
 
