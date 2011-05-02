@@ -25,7 +25,7 @@ Electrons = cms.EDProducer(
     version = cms.untracked.int32( 5 ),# 10 = MVA, 5 = WP90?
     electronLabel  = cms.InputTag("acceptedElectrons"),
     beamSpotLabel = cms.InputTag("offlineBeamSpot"),
-    eidName = cms.untracked.string("eidTight"),
+    eidName = cms.untracked.string("eidTightMC"),
     eidBitMask = cms.untracked.int32(5), # = 101, ID and cms.Conversion
 )
 
