@@ -113,11 +113,11 @@ void ElectronAnalyzer::beginJob()
   //quick analysis
   h_gsf_pt = fs->make<TH1F>( "h_gsf_pt","h_gsf_pt", 50, 0,100);
   h_gsf_eta = fs->make<TH1F>( "h_gsf_eta","h_gsf_eta", 70, -3.5,3.5);
-  h_gsf_mva = fs->make<TH1F>( "h_gsf_mva","h_gsf_mva", 70, -3.5,3.5);
+  h_gsf_mva = fs->make<TH1F>( "h_gsf_mva","h_gsf_mva", 40, -1,1);
 
   h_pf_pt = fs->make<TH1F>( "h_pf_pt","h_pf_pt", 50, 0,100);
   h_pf_eta = fs->make<TH1F>( "h_pf_eta","h_pf_eta", 70, -3.5,3.5);
-  h_pf_mva = fs->make<TH1F>( "h_pf_mva","h_pf_mva", 70, -3.5,3.5);
+  h_pf_mva = fs->make<TH1F>( "h_pf_mva","h_pf_mva", 40, -1,1);
   
 }
 
