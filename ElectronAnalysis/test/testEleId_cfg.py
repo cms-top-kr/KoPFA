@@ -30,7 +30,7 @@ process.source = cms.Source("PoolSource",
     )
 )
 
-process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(1000) )
+process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(2000) )
 
 process.load("Configuration.StandardSequences.RawToDigi_cff")
 process.load("Configuration.StandardSequences.Reconstruction_cff")
@@ -49,6 +49,7 @@ process.out = cms.OutputModule("PoolOutputModule",
         'keep *_genParticles_*_*',
         'keep *_eid*_*_*',
         'keep *_electronsCiC*_*_*',
+        'keep *_electronsHZZ*_*_*',
         'keep *_pfElectronsID_*_*',
     )
 )
@@ -59,8 +60,11 @@ process.outpath = cms.EndPath(process.out)
 
 ## User defined modules and sequences
 process.load("RecoEgamma.ElectronIdentification.cutsInCategoriesElectronIdentificationV06_cfi")
+process.load("KoPFA.ElectronAnalysis.cutsInCategoriesHZZElectronIdentificationV06_cfi")
 process.eidSequence = cms.Sequence(
-    process.eidLooseMC
+    process.eidLooseMC*
+    process.eidHZZVeryLoose*
+    process.eidHZZLoose
 )
 
 process.electronsWithPresel = cms.EDFilter("GsfElectronSelector",
@@ -71,12 +75,28 @@ process.electronsWithPresel = cms.EDFilter("GsfElectronSelector",
 process.electronsCiCLoose = cms.EDFilter("EleIdCutBased",
     src = cms.InputTag("electronsWithPresel"),
     algorithm = cms.string("eIDCB"),
-    threshold = cms.double(1),
+    threshold = cms.double(14.5),
     electronIDType = process.eidLooseMC.electronIDType,
     electronQuality = process.eidLooseMC.electronQuality,
     electronVersion = process.eidLooseMC.electronVersion,
     additionalCategories = process.eidLooseMC.additionalCategories,
     classbasedlooseEleIDCutsV06 = process.eidLooseMC.classbasedlooseEleIDCutsV06,
+    etBinning = cms.bool(False),
+    version = cms.string(""),
+    verticesCollection = cms.InputTag('offlinePrimaryVertices'),
+    reducedBarrelRecHitCollection = cms.InputTag("reducedEcalRecHitsEB"),
+    reducedEndcapRecHitCollection = cms.InputTag("recucedEcalRecHitsEE"),
+)
+
+process.electronsHZZVeryLoose = cms.EDFilter("EleIdCutBased",
+    src = cms.InputTag("electronsWithPresel"),
+    algorithm = cms.string("eIDCB"),
+    threshold = cms.double(14.5),
+    electronIDType = process.eidHZZVeryLoose.electronIDType,
+    electronQuality = process.eidHZZVeryLoose.electronQuality,
+    electronVersion = process.eidHZZVeryLoose.electronVersion,
+    additionalCategories = process.eidHZZVeryLoose.additionalCategories,
+    classbasedverylooseEleIDCutsV06 = process.eidHZZVeryLoose.classbasedverylooseEleIDCutsV06,
     etBinning = cms.bool(False),
     version = cms.string(""),
     verticesCollection = cms.InputTag('offlinePrimaryVertices'),
@@ -93,18 +113,26 @@ process.pfReReco = cms.Sequence(
   + process.PFTau
 )
 
-process.particleFlow.useEGammaElectrons = True
-process.particleFlow.egammaElectrons = cms.InputTag('electronsCiCLoose')
 
-#select pf-electron
+##### re-run particle flow with adding electronsHZZVeryLoose electron collection
+process.particleFlow.useEGammaElectrons = True
+#process.particleFlow.egammaElectrons = cms.InputTag('electronsCiCLoose')
+process.particleFlow.egammaElectrons = cms.InputTag('electronsHZZVeryLoose')
+
+#select pf-electron 
 process.pfAllElectrons = cms.EDFilter("PdgIdPFCandidateSelector",
     src = cms.InputTag("particleFlow"),
     pdgId = cms.vint32(11,-11)
 )
 
+process.pfElectronsPtGt10 = cms.EDFilter("PtMinPFCandidateSelector",
+    src = cms.InputTag("pfAllElectrons"),
+    ptMin = cms.double(10.0)
+)
+
 process.pfElectronsFromVertex = cms.EDFilter(
     "IPCutPFCandidateSelector",
-    src = cms.InputTag("pfAllElectrons"),  # PFCandidate source
+    src = cms.InputTag("pfElectronsPtGt10"),  # PFCandidate source
     vertices = cms.InputTag("offlinePrimaryVertices"),  # vertices source
     d0Cut = cms.double(0.2),  # transverse IP
     dzCut = cms.double(0.5),  # longitudinal IP
@@ -112,12 +140,22 @@ process.pfElectronsFromVertex = cms.EDFilter(
     dzSigCut = cms.double(99.),  # longitudinal IP significance
 )
 
+##### eidHZZVeryLoose
 process.pfElectronsID = cms.EDFilter("ElectronIDPFCandidateSelector",
   src = cms.InputTag("pfElectronsFromVertex"),
   recoGsfElectrons = cms.InputTag('gsfElectrons'),
-  electronIdMap = cms.InputTag('eidLooseMC'),
-  bitsToCheck = cms.vstring('id'),
+  electronIdMap = cms.InputTag('eidHZZVeryLoose'),
+  #bitsToCheck = cms.vstring('id'),
+  #bitsToCheck = cms.uint32(5), # 5 = 1(id) + 4(conv)
+  electronIdCut = cms.double(14.5), # 1(id)+2(iso)+4(conv)+8(ip)
 ) 
+
+process.pfElectron = cms.Sequence(
+  process.pfAllElectrons*
+  process.pfElectronsPtGt10*
+  process.pfElectronsFromVertex*
+  process.pfElectronsID
+)
 
 ## Paths
 
@@ -125,8 +163,9 @@ process.p = cms.Path(
     process.eidSequence
   * process.electronsWithPresel
   * process.electronsCiCLoose
+  * process.electronsHZZVeryLoose
   * process.pfLocalReReco
   * process.pfReReco
-  * process.pfAllElectrons * process.pfElectronsFromVertex * process.pfElectronsID
+  * process.pfElectron
 )
 

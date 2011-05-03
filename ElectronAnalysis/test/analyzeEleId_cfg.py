@@ -11,13 +11,13 @@ process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
 
 # register TFileService
 process.TFileService = cms.Service("TFileService",
-    fileName = cms.string('analyzeEleId.root')
+    fileName = cms.string('analyzeEleId_default.root')
 )
 
 ## Source
 process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(
-        'file:rerecoPF.root',
+        'file:recoPF.root',
     )
 )
 
@@ -29,7 +29,7 @@ process.genElectrons = cms.EDFilter("GenParticleSelector",
 
 process.e = cms.EDAnalyzer("ElectronAnalyzer",
     genParticles = cms.InputTag("genElectrons"),
-    electron = cms.InputTag("electronsCiCLoose"),
+    electron = cms.InputTag("electronsHZZVeryLoose"),
     pfCandidate = cms.InputTag("pfElectronsID", "", "RERECOPF"),
 )
 
