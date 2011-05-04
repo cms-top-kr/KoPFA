@@ -15,7 +15,7 @@
 #include <iomanip>
 #include <iostream>
 
-void unfoldingPlot(TH1* h_gen, TH1* h_rec, TH2* m, TH1* h_mea, TH1* h_genTTbar, TGraphAsymmErrors* accept, double scale_ttbar, TString name, double lumi, bool print, bool pseudo){
+void unfoldingPlot(TH1* h_gen, TH1* h_rec, TH2* m, TH1* h_mea, TH1* h_genTTbar, TH1F* accept, double scale_ttbar, TString name, double lumi, bool print, bool pseudo){
 
   string intlumi = double2string(lumi);
 
@@ -418,15 +418,18 @@ TGraphAsymmErrors* getAcceptance(vector<std::string> mcPath, vector<std::string>
 
 }
 
-TGraphAsymmErrors* printFinal( int nbins, TH1F* hgen, TGraphAsymmErrors* accept, double lumi, double scale, bool truth ){
+TGraphAsymmErrors* printFinal( int nbins, TH1F* hgen, TH1F* accept, double lumi, double scale, bool truth ){
 
   TGraphAsymmErrors* dsigma = new TGraphAsymmErrors;
 
   for(int i=1; i <=  nbins; i++){
     double x;
     double y;
-    accept->GetPoint(i-1,x,y);
-   
+    //accept->GetPoint(i-1,x,y);
+      
+    x = accept->GetBinCenter(i);
+    y = accept->GetBinContent(i); 
+ 
     double unfolded = hgen->GetBinContent(i);
     double err = 0;
     if(truth) err = sqrt(hgen->GetBinContent(i))*sqrt(scale) ;
@@ -453,7 +456,7 @@ TGraphAsymmErrors* printFinal( int nbins, TH1F* hgen, TGraphAsymmErrors* accept,
   return dsigma;
 }
 
-TH1* getSigmaTruth(TH1F* hgen, TGraphAsymmErrors* accept, double lumi ){
+TH1* getSigmaTruth(TH1F* hgen, TH1F* accept, double lumi ){
 
   double binsMass[] = {0, 350, 400, 450, 500, 550, 600, 700, 800, 1400};
   const int nBinsMass = sizeof(binsMass)/sizeof(binsMass[0]) - 1;
@@ -463,7 +466,10 @@ TH1* getSigmaTruth(TH1F* hgen, TGraphAsymmErrors* accept, double lumi ){
   for(int i=1; i <=  nBinsMass; i++){
     double x;
     double y;
-    accept->GetPoint(i-1,x,y);
+    //accept->GetPoint(i-1,x,y);
+    x = accept->GetBinCenter(i);
+    y = accept->GetBinContent(i);
+
     double unfolded = hgen->GetBinContent(i);
     double sigma = 1000*unfolded/( y * lumi * hgen->GetBinWidth(i) ) ;
     dsigma->SetBinContent(i, sigma);
