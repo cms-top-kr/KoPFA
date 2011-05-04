@@ -13,17 +13,14 @@ process.source = cms.Source("PoolSource",
 )
 
 process.TFileService = cms.Service("TFileService",
-    fileName = cms.string('vallot_ZJets.root')
+    fileName = cms.string('vallot_QCD.root')
 )
 
-process.load("KoPFA.TopAnalyzer.Sources.EMU.MC.Spring11.patTuple_DYJetsToLL_cff")
+process.load("KoPFA.TopAnalyzer.Sources.EMU.MC.Spring11.patTuple_QCD_cff")
 process.load("KoPFA.TopAnalyzer.topAnalysis_cff")
 
-process.muonTriggerFilterForMC.triggerResults = "TriggerResults::HLT"
+process.muonTriggerFilterForMC.triggerResults = "TriggerResults::REDIGI38X"
 process.muonTriggerFilterForMC.matchTriggerPath = cms.untracked.string('HLT_Mu9')
-
-process.GenZmassFilter.applyFilter = True
-process.GenZmassFilter.decayMode = [11, 13]
 
 process.p = cms.Path(
     process.topMuElAnalysisMCSequence
