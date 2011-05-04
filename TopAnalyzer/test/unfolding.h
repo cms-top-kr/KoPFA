@@ -12,17 +12,8 @@
 #include "style.h"
 #include "TGraph.h"
 #include "TMatrixD.h"
-
 #include <iomanip>
 #include <iostream>
-#include "TUnfold.h"
-#include "unfold/RooUnfold-1.0.3/src/TSVDUnfold.h"
-#include "unfold/RooUnfold-1.0.3/src/RooUnfold.h"
-#include "unfold/RooUnfold-1.0.3/src/RooUnfoldResponse.h"
-#include "unfold/RooUnfold-1.0.3/src/RooUnfoldBayes.h"
-#include "unfold/RooUnfold-1.0.3/src/RooUnfoldSvd.h"
-#include "unfold/RooUnfold-1.0.3/src/RooUnfoldBinByBin.h"
-#include "unfold/RooUnfold-1.0.3/src/RooUnfoldInvert.h"
 
 void unfoldingPlot(TH1* h_gen, TH1* h_rec, TH2* m, TH1* h_mea, TH1* h_genTTbar, TGraphAsymmErrors* accept, double scale_ttbar, TString name, double lumi, bool print, bool pseudo){
 
@@ -37,11 +28,11 @@ void unfoldingPlot(TH1* h_gen, TH1* h_rec, TH2* m, TH1* h_mea, TH1* h_genTTbar, 
   hmea->SetLineColor(4);
 
   TCanvas *c_response = new TCanvas(Form("c_response_%s",name.Data()),Form("c_response_%s",name.Data()),1);
-  m->Draw("box");
-  m->SetStats(0);
-  m->SetTitle("");
-  m->GetYaxis()->SetTitle("M_{t#bar{t}} True Mass");
-  m->GetXaxis()->SetTitle("M_{t#bar{t}} Reco Mass");
+  TMatrixD * Mres = (TMatrixD *) response->Mresponse();
+  TH2D* hResponse = new TH2D(*Mres);
+  hResponse->GetXaxis()->SetTitle("Generated M_{t#bar{t}} bin number");
+  hResponse->GetYaxis()->SetTitle("Reconstructed M_{t#bar{t}} bin number");
+  hResponse->Draw("box");
 
   TCanvas *c = new TCanvas(Form("c_unfold_%s",name.Data()),Form("c_unfold_%s",name.Data()), 1);
   c->SetLogy();
@@ -58,8 +49,8 @@ void unfoldingPlot(TH1* h_gen, TH1* h_rec, TH2* m, TH1* h_mea, TH1* h_genTTbar, 
   //unfold = new RooUnfoldBinByBin(response, h_mea);
   //unfold = new RooUnfoldInvert(response, h_mea);
 
-  TH1F* h_unfold = (TH1F*) unfold->Hreco(RooUnfold::kCovToy);
-  //TH1F* h_unfold = (TH1F*) unfold->Hreco(RooUnfold::kCovariance);
+  //TH1F* h_unfold = (TH1F*) unfold->Hreco(RooUnfold::kCovToy);
+  TH1F* h_unfold = (TH1F*) unfold->Hreco(RooUnfold::kCovariance);
   //TH1F* h_unfold = (TH1F*) unfold->Hreco(RooUnfold::kErrors);
   
   TMatrixD m_unfoldE = unfold->Ereco();
@@ -81,7 +72,7 @@ void unfoldingPlot(TH1* h_gen, TH1* h_rec, TH2* m, TH1* h_mea, TH1* h_genTTbar, 
   h_unfold->SetStats(0);  
 
   TLegend *l_unfold= new TLegend(0.58,0.68,0.80,0.8);
-  l_unfold->AddEntry(hgen,"True t#bar{t}","F");
+  l_unfold->AddEntry(hgen,"MC Truth t#bar{t}","F");
   if(pseudo){
     l_unfold->AddEntry(hmea,"Pseudo-Data t#bar{t}","l");
   }
@@ -137,7 +128,12 @@ void unfoldingPlot(TH1* h_gen, TH1* h_rec, TH2* m, TH1* h_mea, TH1* h_genTTbar, 
   gerrbefore->GetYaxis()->SetTitle("Statistical Uncertainty (%)");
 
   TCanvas *c_errmat = new TCanvas(Form("c_errmat_%s",name.Data()),Form("c_errmat_%s",name.Data()),1);
-  m_unfoldE.Draw("colz");
+  //m_unfoldE.Draw("colz");
+  TH2D* hErrMat = new TH2D(m_unfoldE);
+  hErrMat->GetXaxis()->SetTitle("Generated M_{t#bar{t}} bin number");
+  hErrMat->GetYaxis()->SetTitle("Reconstructed M_{t#bar{t}} bin number");
+  hErrMat->Draw("colz");
+
 
   TCanvas *c_d = new TCanvas(Form("c_d_%s",name.Data()),Form("c_d_%s",name.Data()));
   c_d->SetLogy();
@@ -191,13 +187,13 @@ void unfoldingPlot(TH1* h_gen, TH1* h_rec, TH2* m, TH1* h_mea, TH1* h_genTTbar, 
     c_dsigma->Print(Form("c_dsigma_%s.png",name.Data()));
     c_d->Print(Form("c_d_%s.png",name.Data()));
 
-    c_response->Print(Form("c_response_%s.pdf",name.Data()));
-    c->Print(Form("c_unfold_%s.pdf",name.Data()));
-    c_err->Print(Form("c_err_%s.pdf",name.Data()));
-    c_meaerr->Print(Form("c_meaerr_%s.pdf",name.Data()));
-    c_errmat->Print(Form("c_errmat_%s.pdf",name.Data()));
-    c_dsigma->Print(Form("c_dsigma_%s.pdf",name.Data()));
-    c_d->Print(Form("c_d_%s.pdf",name.Data()));
+    //c_response->Print(Form("c_response_%s.pdf",name.Data()));
+    //c->Print(Form("c_unfold_%s.pdf",name.Data()));
+    //c_err->Print(Form("c_err_%s.pdf",name.Data()));
+    //c_meaerr->Print(Form("c_meaerr_%s.pdf",name.Data()));
+    //c_errmat->Print(Form("c_errmat_%s.pdf",name.Data()));
+    //c_dsigma->Print(Form("c_dsigma_%s.pdf",name.Data()));
+    //c_d->Print(Form("c_d_%s.pdf",name.Data()));
 
   }
 }
@@ -290,7 +286,7 @@ TH1F* getMeasuredHisto( vector<std::string> rdPath, string cutStep){
   return hData;
 }
 
-TH2F* getResponseM( vector<std::string> mcPath, vector<std::string> rdPath, string cutStep, TString var,  vector<TString> decayMode ){
+TH2* getResponseM( vector<std::string> mcPath, vector<std::string> rdPath, string cutStep, TString var,  vector<TString> decayMode, bool usefull = false ){
 
   float genBins[] = {0, 350, 400, 450, 500,  550, 600, 700, 800, 1400};
   float detBins[] = {0, 350, 400, 450, 500,  550, 600, 700, 800, 1400};
@@ -298,7 +294,7 @@ TH2F* getResponseM( vector<std::string> mcPath, vector<std::string> rdPath, stri
   int nGen = sizeof(genBins)/sizeof(float) - 1;
   int nDet = sizeof(detBins)/sizeof(float) - 1;
 
-  TH2F *h2_response_m = new TH2F(Form("h2_response_m_%s_%s",var.Data(),decayMode[0].Data()),Form("h2_response_m_%s",var.Data()),nDet,detBins,nGen,genBins);
+  TH2 *h2_response_m = new TH2F(Form("h2_response_m_%s_%s",var.Data(),decayMode[0].Data()),Form("h2_response_m_%s",var.Data()),nDet,detBins,nGen,genBins);
 
   for(int i = 0; i < mcPath.size() ; i++){
     TFile * f_data = new TFile(rdPath[i].c_str());
@@ -309,15 +305,19 @@ TH2F* getResponseM( vector<std::string> mcPath, vector<std::string> rdPath, stri
 
     int entries = tree->GetEntries();
 
-    TH2F *h2Temp = new TH2F(Form("h2_response_m_%s_%s",var.Data(),decayMode[i].Data()),Form("h2_response_m_%s",var.Data()),nDet,detBins,nGen,genBins);
-    tree->Project(Form("h2_response_m_%s_%s",var.Data(),decayMode[i].Data()),Form("genttbarM:%sttbarM",var.Data()),cut, "", entries/2, 0);
+    TH2 *h2Temp = new TH2F(Form("h2_response_m_%s_%s",var.Data(),decayMode[i].Data()),Form("h2_response_m_%s",var.Data()),nDet,detBins,nGen,genBins);
+    if(usefull){
+      tree->Project(Form("h2_response_m_%s_%s",var.Data(),decayMode[i].Data()),Form("genttbarM:%sttbarM",var.Data()),cut);
+    } else{
+      tree->Project(Form("h2_response_m_%s_%s",var.Data(),decayMode[i].Data()),Form("genttbarM:%sttbarM",var.Data()),cut, "", entries/2, 0);
+    }
     h2_response_m->Add(h2Temp);
   }
 
   return h2_response_m;
 }
 
-TH1F* getGenDistHisto( vector<std::string> mcPath, vector<std::string> rdPath, string cutStep, TString var, vector<TString> decayMode ){
+TH1F* getGenDistHisto( vector<std::string> mcPath, vector<std::string> rdPath, string cutStep, TString var, vector<TString> decayMode, bool usefull = false ){
 
   float genBins[] = {0, 350, 400, 450, 500,  550, 600, 700, 800, 1400};
 
@@ -335,8 +335,11 @@ TH1F* getGenDistHisto( vector<std::string> mcPath, vector<std::string> rdPath, s
     int entries = tree->GetEntries();
 
     hGenDistTemp = new TH1F(Form("hGenDisTemp_%s_%s",var.Data(),decayMode[i].Data()),"h_genTTbar",nGen,genBins);
-    tree->Project(Form("hGenDisTemp_%s_%s",var.Data(),decayMode[i].Data()),"genttbarM", cut,"",entries/2, entries/2);  
-
+    if(usefull){
+      tree->Project(Form("hGenDisTemp_%s_%s",var.Data(),decayMode[i].Data()),"genttbarM", cut);  
+    }else{
+      tree->Project(Form("hGenDisTemp_%s_%s",var.Data(),decayMode[i].Data()),"genttbarM", cut,"",entries/2, entries/2);  
+    }
     h_genTTbar->Add(hGenDistTemp);
   }
 
@@ -368,9 +371,7 @@ TGraphAsymmErrors* getAcceptance(vector<std::string> mcPath, vector<std::string>
     TH1F* hNumTemp = new TH1F(Form("hNumTemp_%s_%s",var.Data(), decayMode[i].Data()), "Numerator", nBinsMass, binsMass);
     tree->Project(Form("hNumTemp_%s_%s",var.Data(), decayMode[i].Data()), "genttbarM", cut);
     hNum->Add(hNumTemp);
-    cout << hNum->GetBinContent(1) << endl;
   }
-  cout << hDen->GetBinContent(1) << endl;
 
   TGraphAsymmErrors* grpAccept = new TGraphAsymmErrors;
 
@@ -387,6 +388,31 @@ TGraphAsymmErrors* getAcceptance(vector<std::string> mcPath, vector<std::string>
     grpAccept->SetPointEYlow(i, err);
     cout << "accept= " << setprecision(4) << acc*100 << " +- " << err*100 << endl;
   }
+
+  TCanvas *c_acc = new TCanvas(Form("c_acc_%s",var.Data()),"acceptance",1);
+  grpAccept->Draw("2AP");
+  grpAccept->SetFillColor(4);
+  grpAccept->SetFillStyle(3001);
+  grpAccept->SetTitle("Acceptance ;Generator level M(t#bar{t});Acceptance ");
+  grpAccept->SetMinimum(0);
+  
+  TLatex *label= new TLatex;
+  label->SetNDC();
+  label->SetTextSize(0.05);
+
+  if( decayMode.size() == 1){
+    if( decayMode[0].Contains("MuEl") )
+      label->DrawLatex(0.70,0.68,"e#mu");
+    if( decayMode[0].Contains("MuMu") )
+      label->DrawLatex(0.70,0.68,"#mu#mu");
+    if( decayMode[0].Contains("ElEl") )
+      label->DrawLatex(0.70,0.68,"ee");
+    c_acc->Print(Form("c_accept_%s_%s.eps",decayMode[0].Data(),var.Data()));
+  } else {
+    label->DrawLatex(0.70,0.68,"ee/#mu#mu/e#mu");
+    c_acc->Print(Form("c_accept_all_%s.eps",var.Data()));
+  }
+
   cout << "all bins= " << setprecision(4) << 100*hNum->GetEntries()/hDen->GetEntries() << " +- " << 100*sqrt(hNum->GetEntries())/hDen->GetEntries() << endl;
   return grpAccept;
 
