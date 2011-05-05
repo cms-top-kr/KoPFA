@@ -48,11 +48,15 @@ private:
   double gsfElePt_, gsfEleEta_, gsfElePhi_;
   double pfaElePt_, pfaEleEta_, pfaElePhi_;
 
+  double gsfEleEcalE_, pfaEleEcalE_;
+
   double chIso_, nhIso_, phIso_, pfaRelIso_;
   double tkIso_, ecIso_, hcIso_, detRelIso_;
 
   double idMVA_;
   int idCiCLoose_, idCiCMedium_, idCiCTight_;
+
+  int isMatching_;
 
   TH1F * h_gsf_pt;
   TH1F * h_gsf_eta;
@@ -61,6 +65,13 @@ private:
   TH1F * h_pf_pt;
   TH1F * h_pf_eta;
   TH1F * h_pf_mva;
+
+private:
+  typedef edm::View<reco::PFCandidate>::const_iterator PFCandIter;
+  typedef edm::View<reco::GsfElectron>::const_iterator GsfEleIter;
+
+  PFCandIter findElectron(const GsfEleIter gsfEle, edm::View<reco::PFCandidate> pfCandColl);
+  GsfEleIter findElectron(const PFCandIter pfaEle, edm::View<reco::GsfElectron> gsfEleColl);
 };
 
 ElectronAnalyzer::ElectronAnalyzer(const edm::ParameterSet& pset)
@@ -95,6 +106,9 @@ void ElectronAnalyzer::beginJob()
   tree_->Branch("pfaEleEta", &pfaEleEta_, "pfaEleEta/d");
   tree_->Branch("pfaElePhi", &pfaElePhi_, "pfaElePhi/d");
 
+  tree_->Branch("gsfEleEcalE", &gsfEleEcalE_, "gsfEleEcalE/d");
+  tree_->Branch("pfaEleEcalE", &pfaEleEcalE_, "pfaEleEcalE/d");
+
   tree_->Branch("chIso", &chIso_, "chIso/d");
   tree_->Branch("phIso", &phIso_, "phIso/d");
   tree_->Branch("nhIso", &nhIso_, "nhIso/d");
@@ -110,6 +124,8 @@ void ElectronAnalyzer::beginJob()
   tree_->Branch("idCiCMedium", &idCiCMedium_, "idCiCMedium/i");
   tree_->Branch("idCiCTight", &idCiCTight_, "idCiCTight/i");
 
+  tree_->Branch("isMatching", &isMatching_, "isMatching/i");
+
   //quick analysis
   h_gsf_pt = fs->make<TH1F>( "h_gsf_pt","h_gsf_pt", 50, 0,100);
   h_gsf_eta = fs->make<TH1F>( "h_gsf_eta","h_gsf_eta", 70, -3.5,3.5);
@@ -124,6 +140,46 @@ void ElectronAnalyzer::beginJob()
 void ElectronAnalyzer::endJob()
 {
 
+}
+
+ElectronAnalyzer::PFCandIter ElectronAnalyzer::findElectron(const GsfEleIter gsfEle, edm::View<reco::PFCandidate> pfaEleCollection)
+{
+  reco::GsfTrackRef refTrk = gsfEle->gsfTrack();
+  if ( refTrk.isNull() ) return pfaEleCollection.end();
+
+  PFCandIter matchedEle = pfaEleCollection.end();
+
+  for ( PFCandIter pfaEle = pfaEleCollection.begin(); 
+        pfaEle != pfaEleCollection.end(); ++pfaEle )
+  {
+    if ( refTrk == pfaEle->gsfTrackRef() )
+    {
+      matchedEle = pfaEle;
+      break;
+    }
+  }
+
+  return matchedEle;
+}
+
+ElectronAnalyzer::GsfEleIter ElectronAnalyzer::findElectron(const PFCandIter pfaEle, edm::View<reco::GsfElectron> gsfEleCollection)
+{
+  reco::GsfTrackRef refTrk = pfaEle->gsfTrackRef();
+  if ( refTrk.isNull() ) return gsfEleCollection.end();
+
+  GsfEleIter matchedEle = gsfEleCollection.end();
+
+  for ( GsfEleIter gsfEle = gsfEleCollection.begin();
+      gsfEle != gsfEleCollection.end(); ++gsfEle )
+  {
+    if ( refTrk == gsfEle->gsfTrack() )
+    {
+      matchedEle = gsfEle;
+      break;
+    }
+  }
+
+  return matchedEle;
 }
 
 void ElectronAnalyzer::analyze(const edm::Event& event, const edm::EventSetup& eventSetup)
@@ -148,6 +204,9 @@ void ElectronAnalyzer::analyze(const edm::Event& event, const edm::EventSetup& e
   genElePt_ = genEleEta_ = genElePhi_ = -999;
   gsfElePt_ = gsfEleEta_ = gsfElePhi_ = -999;
   pfaElePt_ = pfaEleEta_ = pfaElePhi_ = -999;
+
+  gsfEleEcalE_ = pfaEleEcalE_ = -999;
+  isMatching_ = 0;
 
   // Choose leading gen electron
   if ( genParticleHandle.isValid() )
@@ -191,6 +250,8 @@ void ElectronAnalyzer::analyze(const edm::Event& event, const edm::EventSetup& e
     gsfElePt_ = leadingGsfEle->pt();
     gsfEleEta_ = leadingGsfEle->eta();
     gsfElePhi_ = leadingGsfEle->phi();
+
+    gsfEleEcalE_ = leadingGsfEle->ecalEnergy();
   }
 
   // Choose leading PF electron
@@ -214,6 +275,8 @@ void ElectronAnalyzer::analyze(const edm::Event& event, const edm::EventSetup& e
     pfaElePt_ = leadingPFEle->pt();
     pfaEleEta_ = leadingPFEle->eta();
     pfaElePhi_ = leadingPFEle->phi();
+
+    pfaEleEcalE_ = leadingPFEle->ecalEnergy();
   }
 
   tree_->Fill();
