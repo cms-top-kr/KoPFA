@@ -48,9 +48,10 @@ process.out = cms.OutputModule("PoolOutputModule",
         'drop *',
         'keep *_genParticles_*_*',
         'keep *_eid*_*_*',
-        'keep *_electronsCiC*_*_*',
-        'keep *_electronsHZZ*_*_*',
+        'keep *_electrons*_*_RERECOPF',
         'keep *_pfElectronsID_*_*',
+        'keep *_offlinePrimaryVertices_*_*',
+        'keep *_gsfElectron*_*_*',
     )
 )
 from RecoParticleFlow.Configuration.RecoParticleFlow_EventContent_cff import *
@@ -121,14 +122,18 @@ process.particleFlow.egammaElectrons = cms.InputTag('electronsHZZVeryLoose')
 
 #select pf-electron 
 process.pfAllElectrons = cms.EDFilter("PdgIdPFCandidateSelector",
-    src = cms.InputTag("particleFlow"),
+    src = cms.InputTag("particleFlow", "", "RERECOPF"),
     pdgId = cms.vint32(11,-11)
 )
+process.pfAllElectronsDefault = process.pfAllElectrons.clone()
+process.pfAllElectronsDefault.src = "particleFlow::RECO"
 
 process.pfElectronsPtGt10 = cms.EDFilter("PtMinPFCandidateSelector",
     src = cms.InputTag("pfAllElectrons"),
     ptMin = cms.double(10.0)
 )
+process.pfElectronsPtGt10Default = process.pfElectronsPtGt10.clone()
+process.pfElectronsPtGt10Default.src = "pfAllElectronsDefault"
 
 process.pfElectronsFromVertex = cms.EDFilter(
     "IPCutPFCandidateSelector",
@@ -139,6 +144,8 @@ process.pfElectronsFromVertex = cms.EDFilter(
     d0SigCut = cms.double(99.),  # transverse IP significance
     dzSigCut = cms.double(99.),  # longitudinal IP significance
 )
+process.pfElectronsFromVertexDefault = process.pfElectronsFromVertex.clone()
+process.pfElectronsFromVertexDefault.src = "pfElectronsPtGt10Default"
 
 ##### eidHZZVeryLoose
 process.pfElectronsID = cms.EDFilter("ElectronIDPFCandidateSelector",
@@ -149,12 +156,21 @@ process.pfElectronsID = cms.EDFilter("ElectronIDPFCandidateSelector",
   #bitsToCheck = cms.uint32(5), # 5 = 1(id) + 4(conv)
   electronIdCut = cms.double(14.5), # 1(id)+2(iso)+4(conv)+8(ip)
 ) 
+process.pfElectronsIDDefault = process.pfElectronsID.clone()
+process.pfElectronsIDDefault.src = "pfElectronsFromVertexDefault"
 
 process.pfElectron = cms.Sequence(
   process.pfAllElectrons*
   process.pfElectronsPtGt10*
   process.pfElectronsFromVertex*
   process.pfElectronsID
+)
+
+process.pfElectronDefault = cms.Sequence(
+    process.pfAllElectronsDefault
+  * process.pfElectronsPtGt10Default
+  * process.pfElectronsFromVertexDefault
+  * process.pfElectronsIDDefault
 )
 
 ## Paths
@@ -164,6 +180,7 @@ process.p = cms.Path(
   * process.electronsWithPresel
   * process.electronsCiCLoose
   * process.electronsHZZVeryLoose
+  * process.pfElectronDefault
   * process.pfLocalReReco
   * process.pfReReco
   * process.pfElectron
