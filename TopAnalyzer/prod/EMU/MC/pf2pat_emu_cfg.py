@@ -1,10 +1,6 @@
 import FWCore.ParameterSet.Config as cms
 
-from KoPFA.TopAnalyzer.patTop_Template_cfg import *
-
-#PF2PAT
-process.load("PhysicsTools.PatAlgos.patSequences_cff")
-from PhysicsTools.PatAlgos.tools.pfTools import *
+from KoPFA.TopAnalyzer.pf2pat_template_cfg import *
 
 #Electron ID
 process.load('RecoEgamma.ElectronIdentification.cutsInCategoriesElectronIdentificationV06_cfi')
@@ -22,17 +18,25 @@ process.eidCiCSequence = cms.Sequence(
   * process.eidTightMC * process.eidSuperTightMC * process.eidHyperTight1MC
 )
 
+process.p += process.eidCiCSequence
 
+#Apply PF2PAT
 postfix = "PFlow"
 jetAlgo="AK5"
-usePF2PAT(process,runPF2PAT=True, jetAlgo=jetAlgo, runOnMC=True, postfix=postfix)
+usePF2PAT(process,runPF2PAT=True, jetAlgo=jetAlgo, runOnMC=False, postfix=postfix)
+
+updateEventContent(process)
 
 #REMOVE ISOLATION FROM PF2PAT!!!
 process.pfIsolatedMuonsPFlow.combinedIsolationCut = cms.double(999)
 process.pfIsolatedElectronsPFlow.combinedIsolationCut = cms.double(999)
 
 ## Source
-# MC sample will be taken automatically from template file
+process.source = cms.Source("PoolSource",
+                                fileNames = cms.untracked.vstring(
+  '/store/data/Run2011A/MuEG/RECO/PromptReco-v1/000/161/312/C69F1A78-0958-E011-AC6B-003048F118C4.root'
+  )
+)
 
 process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
 
@@ -62,7 +66,6 @@ process.patMuonFilter = cms.EDFilter("CandViewCountFilter",
 )
 
 #process.p += process.muonTriggerFilterByRun 
-process.p += process.eidCiCSequence
 process.p += getattr(process,"patPF2PATSequence"+postfix)
 process.p += process.acceptedElectrons
 process.p += process.acceptedMuons
@@ -75,18 +78,5 @@ getattr(process,"pfNoMuon"+postfix).enable = True
 getattr(process,"pfNoElectron"+postfix).enable = True
 getattr(process,"pfNoTau"+postfix).enable = False # to use tau-cleaned jet collection : True
 getattr(process,"pfNoJet"+postfix).enable = True
-
-from PhysicsTools.PatAlgos.patEventContent_cff import *
-process.out.outputCommands += patTriggerEventContent
-process.out.outputCommands += patExtraAodEventContent
-process.out.outputCommands += patEventContentNoCleaning
-
-process.out.outputCommands.extend(cms.untracked.vstring(
-    'keep *_MEtoEDMConverter_*_PAT',
-    'keep *_particleFlow_*_*',
-    'keep *_acceptedMuons_*_*',
-    'keep *_acceptedElectrons_*_*',
-    'keep *_*_rho_*',
-))
 
 process.MessageLogger.cerr.FwkReport.reportEvery = 100
