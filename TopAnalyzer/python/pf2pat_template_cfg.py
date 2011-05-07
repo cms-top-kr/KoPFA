@@ -58,6 +58,26 @@ process.noscraping = cms.EDFilter("FilterOutScraping",
    thresh = cms.untracked.double(0.25)
 )
 
+process.acceptedElectrons = cms.EDFilter("PATElectronSelector",
+    src = cms.InputTag("selectedPatElectronsPFlow"),
+    cut = cms.string("pt > 20 && abs(eta) < 2.5 && ecalDrivenSeed")
+)
+
+process.patElectronFilter = cms.EDFilter("CandViewCountFilter",
+    src = cms.InputTag('acceptedElectrons'),
+    minNumber = cms.uint32(1)
+)
+
+process.acceptedMuons = cms.EDFilter("PATMuonSelector",
+    src = cms.InputTag("selectedPatMuonsPFlow"),
+    cut =cms.string("pt > 20 && abs(eta) < 2.5")
+)
+
+process.patMuonFilter = cms.EDFilter("CandViewCountFilter",
+  src = cms.InputTag('acceptedMuons'),
+  minNumber = cms.uint32(1)
+)
+
 process.load('CommonTools.RecoAlgos.HBHENoiseFilter_cfi')
 
 ##################################################################
