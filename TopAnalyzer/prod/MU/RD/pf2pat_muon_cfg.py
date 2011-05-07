@@ -38,7 +38,7 @@ process.hltHighLevel.HLTPaths = cms.vstring("HLT_DoubleMu6_v1")
 process.hltHighLevel.throw = cms.bool(False)
 process.load("KoPFA.TopAnalyzer.triggerFilterByRun_cfi")
 
-process.p += process.hltHighLevel
+#process.p += process.hltHighLevel
 process.p += getattr(process,"patPF2PATSequence"+postfix)
 process.p += process.acceptedMuons
 process.p += process.patMuonFilter
