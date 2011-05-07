@@ -45,12 +45,6 @@ process.out = cms.OutputModule("PoolOutputModule",
 process.load("PhysicsTools.PatAlgos.patSequences_cff")
 from PhysicsTools.PatAlgos.tools.pfTools import *
 
-#postfix = "PFlow"
-#jetAlgo="AK5"
-#runOnMC=False
-#usePF2PAT(process,runPF2PAT=True, jetAlgo=jetAlgo, runOnMC=runOnMC, postfix=postfix)
-#removeMCMatching(process, ['All'] )
-
 process.primaryVertexFilter = cms.EDFilter("VertexSelector",
    src = cms.InputTag("offlinePrimaryVertices"),
    cut = cms.string("!isFake && ndof > 4 && abs(z) < 24 && position.Rho < 2"), # tracksSize() > 3 for the older cut
@@ -66,10 +60,6 @@ process.noscraping = cms.EDFilter("FilterOutScraping",
 
 process.load('CommonTools.RecoAlgos.HBHENoiseFilter_cfi')
 
-#REMOVE ISOLATION FROM PF2PAT!!!
-#process.pfIsolatedMuonsPFlow.combinedIsolationCut = cms.double(999)
-#process.pfIsolatedElectronsPFlow.combinedIsolationCut = cms.double(999)
-
 ##################################################################
 process.load("PFAnalyses.CommonTools.countingSequences_cfi")
 
@@ -77,18 +67,11 @@ process.outpath = cms.EndPath(process.saveHistosInRunInfo*process.out)
 #process.load("KoPFA.CommonTools.recoPFCandCountFilter_cfi")
 
 process.p = cms.Path(
-#    process.startupSequence*
+    process.startupSequence*
     process.noscraping*
     process.primaryVertexFilter
 #    process.HBHENoiseFilter *
 )
-
-# top projections in PF2PAT:
-#getattr(process,"pfNoPileUp"+postfix).enable = True
-#getattr(process,"pfNoMuon"+postfix).enable = True
-#getattr(process,"pfNoElectron"+postfix).enable = True
-#getattr(process,"pfNoTau"+postfix).enable = False # to use tau-cleaned jet collection : True
-#getattr(process,"pfNoJet"+postfix).enable = True
 
 from PhysicsTools.PatAlgos.patEventContent_cff import *
 def updateEventContent(p):
