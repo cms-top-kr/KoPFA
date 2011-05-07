@@ -1,10 +1,10 @@
 import FWCore.ParameterSet.Config as cms
 
-from KoPFA.TopAnalyzer.patTop_Template_cfg import *
+from KoPFA.TopAnalyzer.pf2pat_template_cfg import *
 
 #PF2PAT
-process.load("PhysicsTools.PatAlgos.patSequences_cff")
-from PhysicsTools.PatAlgos.tools.pfTools import *
+#process.load("PhysicsTools.PatAlgos.patSequences_cff")
+#from PhysicsTools.PatAlgos.tools.pfTools import *
 
 postfix = "PFlow"
 jetAlgo="AK5"

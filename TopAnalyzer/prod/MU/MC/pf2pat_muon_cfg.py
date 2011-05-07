@@ -1,10 +1,10 @@
 import FWCore.ParameterSet.Config as cms
 
-from KoPFA.TopAnalyzer.patTop_Template_cfg import *
+from KoPFA.TopAnalyzer.pf2pat_template_cfg import *
 
 #PF2PAT
-process.load("PhysicsTools.PatAlgos.patSequences_cff")
-from PhysicsTools.PatAlgos.tools.pfTools import *
+#process.load("PhysicsTools.PatAlgos.patSequences_cff")
+#from PhysicsTools.PatAlgos.tools.pfTools import *
 
 postfix = "PFlow"
 jetAlgo="AK5"
@@ -15,7 +15,11 @@ process.pfIsolatedMuonsPFlow.combinedIsolationCut = cms.double(999)
 process.pfIsolatedElectronsPFlow.combinedIsolationCut = cms.double(999)
 
 ## Source
-# MC sample will be taken automatically from template file
+#process.source = cms.Source("PoolSource",
+#                                fileNames = cms.untracked.vstring(
+#  '/store/data/Run2011A/DoubleMu/RECO/PromptReco-v1/000/161/312/9CD2FBA7-E557-E011-B433-001D09F29849.root'
+#  )
+#)
 
 process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
 
