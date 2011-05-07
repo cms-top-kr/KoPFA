@@ -78,6 +78,22 @@ process.patMuonFilter = cms.EDFilter("CandViewCountFilter",
   minNumber = cms.uint32(1)
 )
 
+#Electron ID
+process.load('RecoEgamma.ElectronIdentification.cutsInCategoriesElectronIdentificationV06_cfi')
+process.patElectrons.electronIDSources = cms.PSet(
+    eidVeryLooseMC = cms.InputTag("eidVeryLooseMC"),
+    eidLooseMC = cms.InputTag("eidLooseMC"),
+    eidMediumMC = cms.InputTag("eidMediumMC"),
+    eidTightMC = cms.InputTag("eidTightMC"),
+    eidSuperTightMC = cms.InputTag("eidSuperTightMC"),
+    eidHyperTight1MC = cms.InputTag("eidHyperTight1MC")
+)
+
+process.eidCiCSequence = cms.Sequence(
+    process.eidVeryLooseMC * process.eidLooseMC * process.eidMediumMC
+  * process.eidTightMC * process.eidSuperTightMC * process.eidHyperTight1MC
+)
+
 process.load('CommonTools.RecoAlgos.HBHENoiseFilter_cfi')
 
 ##################################################################
