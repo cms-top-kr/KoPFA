@@ -4,15 +4,15 @@ from HLTrigger.HLTfilters.hltHighLevel_cfi import *
 
 #for MuEG dataset
 #MC
-hltHighLevelMuEGMC = hltHighLevel.clone()
-hltHighLevelMuEGMC.TriggerResultsTag = cms.InputTag("TriggerResults","","REDIGI311X")
-hltHighLevelMuEGMC.HLTPaths = cms.vstring('HLT_Mu8_Ele8_v1','HLT_Mu11_Ele8_v1')
-hltHighLevelMuEGMC.throw = cms.bool(False)
+hltHighLevelMuElMC = hltHighLevel.clone()
+hltHighLevelMuElMC.TriggerResultsTag = cms.InputTag("TriggerResults","","REDIGI311X")
+hltHighLevelMuElMC.HLTPaths = cms.vstring('HLT_Mu8_Ele8_v1','HLT_Mu11_Ele8_v1')
+hltHighLevelMuElMC.throw = cms.bool(False)
 #RD
-hltHighLevelMuEGRD = hltHighLevel.clone()
-hltHighLevelMuEGRD.TriggerResultsTag = cms.InputTag("TriggerResults","","HLT")
-hltHighLevelMuEGRD.HLTPaths = cms.vstring('HLT_Mu10_Ele10_CaloIdL_v1')
-hltHighLevelMuEGRD.throw = cms.bool(False)
+hltHighLevelMuElRD = hltHighLevel.clone()
+hltHighLevelMuElRD.TriggerResultsTag = cms.InputTag("TriggerResults","","HLT")
+hltHighLevelMuElRD.HLTPaths = cms.vstring('HLT_Mu10_Ele10_CaloIdL_v1')
+hltHighLevelMuElRD.throw = cms.bool(False)
 
 #for DoubleElectron dataset
 #MC
