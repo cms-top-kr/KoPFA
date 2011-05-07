@@ -82,6 +82,7 @@ process.load('CommonTools.RecoAlgos.HBHENoiseFilter_cfi')
 
 ##################################################################
 process.load("PFAnalyses.CommonTools.countingSequences_cfi")
+process.load("KoPFA.TopAnalyzer.topHLTfilter_cfi")
 
 process.outpath = cms.EndPath(process.saveHistosInRunInfo*process.out)
 #process.load("KoPFA.CommonTools.recoPFCandCountFilter_cfi")
