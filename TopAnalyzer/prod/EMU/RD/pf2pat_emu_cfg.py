@@ -2,24 +2,6 @@ import FWCore.ParameterSet.Config as cms
 
 from KoPFA.TopAnalyzer.pf2pat_template_cfg import *
 
-#Electron ID
-process.load('RecoEgamma.ElectronIdentification.cutsInCategoriesElectronIdentificationV06_cfi')
-process.patElectrons.electronIDSources = cms.PSet(
-    eidVeryLooseMC = cms.InputTag("eidVeryLooseMC"),
-    eidLooseMC = cms.InputTag("eidLooseMC"),
-    eidMediumMC = cms.InputTag("eidMediumMC"),
-    eidTightMC = cms.InputTag("eidTightMC"),
-    eidSuperTightMC = cms.InputTag("eidSuperTightMC"),
-    eidHyperTight1MC = cms.InputTag("eidHyperTight1MC")
-)
-
-process.eidCiCSequence = cms.Sequence(
-    process.eidVeryLooseMC * process.eidLooseMC * process.eidMediumMC
-  * process.eidTightMC * process.eidSuperTightMC * process.eidHyperTight1MC
-)
-
-process.p += process.eidCiCSequence
-
 #Apply PF2PAT
 postfix = "PFlow"
 jetAlgo="AK5"
@@ -41,6 +23,7 @@ process.source = cms.Source("PoolSource",
 process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
 
 #process.p += process.hltHighLevelMuElRD 
+process.p += process.eidCiCSequence
 process.p += getattr(process,"patPF2PATSequence"+postfix)
 process.p += process.acceptedElectrons
 process.p += process.acceptedMuons

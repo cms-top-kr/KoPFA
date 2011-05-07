@@ -2,24 +2,6 @@ import FWCore.ParameterSet.Config as cms
 
 from KoPFA.TopAnalyzer.pf2pat_template_cfg import *
 
-#Electron ID
-process.load('RecoEgamma.ElectronIdentification.cutsInCategoriesElectronIdentificationV06_cfi')
-process.patElectrons.electronIDSources = cms.PSet(
-    eidVeryLooseMC = cms.InputTag("eidVeryLooseMC"),
-    eidLooseMC = cms.InputTag("eidLooseMC"),
-    eidMediumMC = cms.InputTag("eidMediumMC"),
-    eidTightMC = cms.InputTag("eidTightMC"),
-    eidSuperTightMC = cms.InputTag("eidSuperTightMC"),
-    eidHyperTight1MC = cms.InputTag("eidHyperTight1MC")
-)
-
-process.eidCiCSequence = cms.Sequence(
-    process.eidVeryLooseMC * process.eidLooseMC * process.eidMediumMC
-  * process.eidTightMC * process.eidSuperTightMC * process.eidHyperTight1MC
-)
-
-process.p += process.eidCiCSequence
-
 #Apply PF2PAT
 postfix = "PFlow"
 jetAlgo="AK5"
@@ -40,22 +22,8 @@ process.source = cms.Source("PoolSource",
 
 process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
 
-process.load("HLTrigger.HLTfilters.hltHighLevel_cfi")
-process.hltHighLevel.HLTPaths = cms.vstring()
-process.hltHighLevel.throw = cms.bool(False)
-process.load("KoPFA.TopAnalyzer.triggerFilterByRun_cfi")
-
-process.acceptedElectrons = cms.EDFilter("PATElectronSelector",
-    src = cms.InputTag("selectedPatElectronsPFlow"),
-    cut = cms.string("pt > 20 && abs(eta) < 2.5 && ecalDrivenSeed")
-)
-
-process.patElectronFilter = cms.EDFilter("CandViewCountFilter",
-    src = cms.InputTag('acceptedElectrons'),
-    minNumber = cms.uint32(2)
-)
-
-#process.p += process.electronTriggerFilterByRun
+#process.p += process.hltHighLevelElElRD
+process.p += process.eidCiCSequence
 process.p += getattr(process,"patPF2PATSequence"+postfix)
 process.p += process.acceptedElectrons
 process.p += process.patElectronFilter
