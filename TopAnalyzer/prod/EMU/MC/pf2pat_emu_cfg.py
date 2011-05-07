@@ -23,18 +23,18 @@ process.p += process.eidCiCSequence
 #Apply PF2PAT
 postfix = "PFlow"
 jetAlgo="AK5"
-usePF2PAT(process,runPF2PAT=True, jetAlgo=jetAlgo, runOnMC=False, postfix=postfix)
+usePF2PAT(process,runPF2PAT=True, jetAlgo=jetAlgo, runOnMC=True, postfix=postfix)
 
 #REMOVE ISOLATION FROM PF2PAT!!!
 process.pfIsolatedMuonsPFlow.combinedIsolationCut = cms.double(999)
 process.pfIsolatedElectronsPFlow.combinedIsolationCut = cms.double(999)
 
 ## Source
-process.source = cms.Source("PoolSource",
-                                fileNames = cms.untracked.vstring(
-  '/store/data/Run2011A/MuEG/RECO/PromptReco-v1/000/161/312/C69F1A78-0958-E011-AC6B-003048F118C4.root'
-  )
-)
+#process.source = cms.Source("PoolSource",
+#                                fileNames = cms.untracked.vstring(
+#  '/store/data/Run2011A/MuEG/RECO/PromptReco-v1/000/161/312/C69F1A78-0958-E011-AC6B-003048F118C4.root'
+#  )
+#)
 
 process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
 
