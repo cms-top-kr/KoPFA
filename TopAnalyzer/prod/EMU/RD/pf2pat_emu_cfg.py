@@ -40,12 +40,7 @@ process.source = cms.Source("PoolSource",
 
 process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
 
-process.load("HLTrigger.HLTfilters.hltHighLevel_cfi")
-process.hltHighLevel.HLTPaths = cms.vstring()
-process.hltHighLevel.throw = cms.bool(False)
-process.load("KoPFA.TopAnalyzer.triggerFilterByRun_cfi")
-
-#process.p += process.muonTriggerFilterByRun 
+#process.p += process.hltHighLevelMuElRD 
 process.p += getattr(process,"patPF2PATSequence"+postfix)
 process.p += process.acceptedElectrons
 process.p += process.acceptedMuons
