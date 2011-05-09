@@ -33,11 +33,17 @@ process.load("KoPFA.TopAnalyzer.topAnalysis_cff")
   return script
 
 def mcsample(src):
+  dir = ""
+  if( decay == "MuEl"):
+    dir = "EMU"
+  elif( decay == "MuMu"):
+    dir = "MU"
+  elif( decay == "ElEl"):
+    dir = "ELE"
   script = """
-process.load("KoPFA.TopAnalyzer.Sources.EMU.MC.Spring11.patTuple_%s_cff")
-""" % src
+process.load("KoPFA.TopAnalyzer.Sources.%s.MC.Spring11.patTuple_%s_cff")
+""" % (dir,src)
   return script
-
 
 def mcpath():
   script = """
@@ -48,9 +54,16 @@ process.p = cms.Path(
   return script
 
 def rdsample(src):
+  dir = ""
+  if( decay == "MuEl"):
+    dir = "EMU"
+  elif( decay == "MuMu"):
+    dir = "MU"
+  elif( decay == "ElEl"):
+    dir = "ELE"
   script = """
-process.load("KoPFA.TopAnalyzer.Sources.MU.RD.patTuple_%s_cff")
-""" % src
+process.load("KoPFA.TopAnalyzer.Sources.%s.RD.patTuple_%s_cff")
+""" % (dir,src)
   return script
 
 
