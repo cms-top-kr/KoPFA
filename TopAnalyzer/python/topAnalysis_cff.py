@@ -8,6 +8,7 @@ myJetId.verbose = False
 
 from KoPFA.TopAnalyzer.topLeptonSelector_cfi import *
 from KoPFA.TopAnalyzer.triggerFilterByRun_cfi import *
+from KoPFA.TopAnalyzer.topHLTfilter_cfi import *
 
 PUweight = cms.EDProducer("EventWeightProducer",
     PUweight = cms.vdouble(0.24698,0.878399,1.62972,1.74644,1.48563,0.999695,0.740525,0.457214,0.268234,0.184943,0.127889,0.0274048,0.0959167,0.383667),
@@ -50,43 +51,6 @@ patMuonFilterForMuEl = patMuonFilter.clone()
 patElectronFilterForMuEl = patElectronFilter.clone()
 patMuonFilterForMuEl.minNumber = 1
 patElectronFilterForMuEl.minNumber = 1
-
-from HLTrigger.HLTfilters.hltHighLevel_cfi import *
-#for MuEG dataset
-#MC
-hltHighLevelMuEGMC = hltHighLevel.clone()
-hltHighLevelMuEGMC.TriggerResultsTag = cms.InputTag("TriggerResults","","REDIGI311X")
-hltHighLevelMuEGMC.HLTPaths = cms.vstring('HLT_Mu8_Ele8_v1','HLT_Mu11_Ele8_v1')
-hltHighLevelMuEGMC.throw = cms.bool(False)
-#RD
-hltHighLevelMuEGRD = hltHighLevel.clone()
-hltHighLevelMuEGRD.TriggerResultsTag = cms.InputTag("TriggerResults","","HLT")
-hltHighLevelMuEGRD.HLTPaths = cms.vstring('HLT_Mu10_Ele10_CaloIdL_v1')
-hltHighLevelMuEGRD.throw = cms.bool(False)
-
-#for DoubleElectron dataset
-#MC
-hltHighLevelElElMC = hltHighLevel.clone()
-hltHighLevelElElMC.TriggerResultsTag = cms.InputTag("TriggerResults","","REDIGI311X")
-hltHighLevelElElMC.HLTPaths = cms.vstring('HLT_Ele17_SW_TightCaloEleId_Ele8HE_L1R_v2')
-hltHighLevelElElMC.throw = cms.bool(False)
-#RD
-hltHighLevelElElRD = hltHighLevel.clone()
-hltHighLevelElElRD.TriggerResultsTag = cms.InputTag("TriggerResults","","HLT")
-hltHighLevelElElRD.HLTPaths = cms.vstring('HLT_Ele17_CaloIdT_TrkIdVL_CaloIsoVL_TrkIsoVL_Ele8_CaloIdT_TrkIdVL_CaloIsoVL_TrkIsoVL_v2')
-hltHighLevelElElRD.throw = cms.bool(False)
-
-#for DoubleElectron dataset
-#MC
-hltHighLevelMuMuMC = hltHighLevel.clone()
-hltHighLevelMuMuMC.TriggerResultsTag = cms.InputTag("TriggerResults","","REDIGI311X")
-hltHighLevelMuMuMC.HLTPaths = cms.vstring('HLT_DoubleMu5_v1')
-hltHighLevelMuMuMC.throw = cms.bool(False)
-#RD
-hltHighLevelMuMuRD = hltHighLevel.clone()
-hltHighLevelMuMuRD.TriggerResultsTag = cms.InputTag("TriggerResults","","HLT")
-hltHighLevelMuMuRD.HLTPaths = cms.vstring('HLT_DoubleMu6_v1')
-hltHighLevelMuMuRD.throw = cms.bool(False)
 
 ElEl = cms.EDAnalyzer('TopElElAnalyzer',
     genParticlesLabel = cms.InputTag('genParticles'),
@@ -160,8 +124,8 @@ topElElAnalysisMCSequence = cms.Sequence(
     VertexFilter*
     Electrons*
     patElectronFilter*
-    ElEl*
-    ee
+    ElEl
+#    ee
 )
 
 topElElAnalysisRealDataSequence = cms.Sequence(
@@ -172,8 +136,8 @@ topElElAnalysisRealDataSequence = cms.Sequence(
     VertexFilter*
     Electrons*
     patElectronFilter*
-    ElEl*
-    ee
+    ElEl
+#    ee
 )
 
 topMuMuAnalysisMCSequence = cms.Sequence(

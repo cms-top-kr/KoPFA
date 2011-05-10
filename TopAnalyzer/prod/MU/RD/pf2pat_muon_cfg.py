@@ -19,24 +19,9 @@ process.source = cms.Source("PoolSource",
   )
 )
 
-process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(1) )
+process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
 
-process.load("HLTrigger.HLTfilters.hltHighLevel_cfi")
-process.hltHighLevel.HLTPaths = cms.vstring()
-process.hltHighLevel.throw = cms.bool(False)
-process.load("KoPFA.TopAnalyzer.triggerFilterByRun_cfi")
-
-process.acceptedMuons = cms.EDFilter("PATMuonSelector",
-    src = cms.InputTag("selectedPatMuonsPFlow"),
-    cut =cms.string("pt > 20 && abs(eta) < 2.4")
-)
-
-process.patMuonFilter = cms.EDFilter("CandViewCountFilter",
-  src = cms.InputTag('acceptedMuons'),
-  minNumber = cms.uint32(2)
-)
-
-process.p += process.muonTriggerFilterByRun 
+#process.p += process.hltHighLevelMuMuRD
 process.p += getattr(process,"patPF2PATSequence"+postfix)
 process.p += process.acceptedMuons
 process.p += process.patMuonFilter
@@ -49,3 +34,4 @@ getattr(process,"pfNoTau"+postfix).enable = False # to use tau-cleaned jet colle
 getattr(process,"pfNoJet"+postfix).enable = True
 
 process.MessageLogger.cerr.FwkReport.reportEvery = 100
+
