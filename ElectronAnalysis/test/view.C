@@ -29,44 +29,60 @@ void view(TString dirName)
   TH1F* hGsfMva = new TH1F(dirName+"_hGsfMva", "Mva;MVA;Entries", 100, -2, 1.5);
   TH1F* hPfaMva = new TH1F(dirName+"_hPfaMva", "Mva;MVA;Entries", 100, -2, 1.5);
 
+  TH1F* hGsfEoverP = new TH1F(dirName+"_hGsfEoverP", "EoverP;E/P;Entries", 100, 0, 2);
+  TH1F* hPfaEoverP = new TH1F(dirName+"_hPfaEoverP", "EoverP;E/P;Entries", 100, 0, 2);
+
   tree->Project(dirName+"_hGenPt", "genPt");
-  tree->Project(dirName+"_hGsfPt", "gsfPt", "gsfPt>0&&gsfMva>-999");
+  tree->Project(dirName+"_hGsfPt", "gsfPt", "gsfPt>0");
   tree->Project(dirName+"_hPfaPt", "pfaPt", "pfaPt>0&&pfaMva>-999");
 
   tree->Project(dirName+"_hGenEta", "genEta", "genPt>0");
-  tree->Project(dirName+"_hGsfEta", "gsfEta", "gsfPt>0&&gsfMva>-999");
+  tree->Project(dirName+"_hGsfEta", "gsfEta", "gsfPt>0");
   tree->Project(dirName+"_hPfaEta", "pfaEta", "pfaPt>0&&pfaMva>-999");
 
   tree->Project(dirName+"_hGenPhi", "genPhi", "genPt>0");
-  tree->Project(dirName+"_hGsfPhi", "gsfPhi", "gsfPt>0&&gsfMva>-999");
+  tree->Project(dirName+"_hGsfPhi", "gsfPhi", "gsfPt>0");
   tree->Project(dirName+"_hPfaPhi", "pfaPhi", "pfaPt>0&&pfaMva>-999");
 
   tree->Project(dirName+"_hGsfPtRes", "(gsfPt-genPt)/genPt", "gsfPt>0&&genPt>0&&gsfMva>-999");
   tree->Project(dirName+"_hPfaPtRes", "(pfaPt-genPt)/genPt", "pfaPt>0&&genPt>0&&pfaMva>-999");
 
-  tree->Project(dirName+"_hGsfMva", "gsfMva", "gsfPt>0&&gsfMva>-999");
+  tree->Project(dirName+"_hGsfMva", "gsfMva", "gsfPt>0");
   tree->Project(dirName+"_hPfaMva", "pfaMva", "pfaPt>0&&pfaMva>-999");
 
-  tree->Scan("gsfPt:pfaPt:gsfE:pfaE:gsfEcalE:pfaEcalE:gsfMva:pfaMva:gsfToPfaMatch", "gsfPt>0 && gsfMva<-2 && gsfMva>-999");
+  tree->Project(dirName+"_hGsfEoverP", "gsfEcalE/gsfP", "gsfPt>0");
+  tree->Project(dirName+"_hPfaEoverP", "pfaEcalE/pfaP", "pfaPt>0&&pfaMva>-999");
+  //tree->Project(dirName+"_hGsfEoverP", "gsfEcalE/gsfP", "gsfPt>0&&gsfMva<-0.1");
+  //tree->Project(dirName+"_hPfaEoverP", "pfaEcalE/pfaP", "pfaPt>0&&pfaMva>-999&&pfaMva<-0.1");
 
-  overlay(dirName+"_Pt", hGenPt, hGsfPt, hPfaPt);
-  overlay(dirName+"_Eta", hGenEta, hGsfEta, hPfaEta);
-  overlay(dirName+"_Phi", hGenPhi, hGsfPhi, hPfaPhi);
-  overlay(dirName+"_Res", 0, hGsfPtRes, hPfaPtRes);
-  overlay(dirName+"_Mva", 0, hGsfMva, hPfaMva);
+  tree->Scan("gsfPt:pfaPt:gsfEcalE:pfaEcalE:gsfMva:pfaMva:gsfToPfaMatch", "gsfPt>0 && gsfMva<-0.1 && gsfMva>-1e9");
+
+  //overlay(dirName+"_Pt", hGenPt, hGsfPt, hPfaPt);
+  //overlay(dirName+"_Eta", hGenEta, hGsfEta, hPfaEta);
+  //overlay(dirName+"_Phi", hGenPhi, hGsfPhi, hPfaPhi);
+  //overlay(dirName+"_Res", 0, hGsfPtRes, hPfaPtRes);
+  overlay(dirName+"_Mva", 0, hGsfMva, hPfaMva, "log");
+  overlay(dirName+"_EoverP", 0, hGsfEoverP, hPfaEoverP, "log");
 
 }
 
-void overlay(TString name, TH1* h1, TH1* h2, TH1* h3)
+void overlay(TString name, TH1* h1, TH1* h2, TH1* h3, TString opt = "")
 {
   TCanvas* c = new TCanvas("c"+name, name, 600, 600);
-  TString opt = "";
+  double ymin = 0;
+  if ( opt.Contains("log") )
+  {
+    ymin = 0.5;
+    c->SetLogy();
+    opt.ReplaceAll("log", "");
+  }
+
   double statPosY = 0.98;
   const double dY = 0.25;
   if ( h1 ) 
   {
     h1->SetLineColor(kBlack);
-    h1->SetMinimum(0);
+    h1->SetMinimum(ymin);
     h1->Draw(opt);
 
     c->Update();
@@ -86,7 +102,7 @@ void overlay(TString name, TH1* h1, TH1* h2, TH1* h3)
   if ( h2 )
   {
     h2->SetLineColor(kRed);
-    h2->SetMinimum(0);
+    h2->SetMinimum(ymin);
     h2->Draw(opt);
 
     c->Update();
@@ -106,7 +122,7 @@ void overlay(TString name, TH1* h1, TH1* h2, TH1* h3)
   if ( h3 )
   {
     h3->SetLineColor(kBlue);
-    h3->SetMinimum(0);
+    h3->SetMinimum(ymin);
     h3->Draw(opt);
 
     c->Update();
@@ -125,3 +141,4 @@ void overlay(TString name, TH1* h1, TH1* h2, TH1* h3)
 
   c->Print(name+".png");
 }
+
