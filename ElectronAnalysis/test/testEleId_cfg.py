@@ -49,7 +49,7 @@ process.out = cms.OutputModule("PoolOutputModule",
         'keep *_genParticles_*_*',
         'keep *_eid*_*_*',
         'keep *_electrons*_*_RERECOPF',
-        'keep *_pfElectronsID_*_*',
+        'keep *_pfElectronsID*_*_*',
         'keep *_offlinePrimaryVertices_*_*',
         'keep *_gsfElectron*_*_*',
     )
