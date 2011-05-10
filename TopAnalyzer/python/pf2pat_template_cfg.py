@@ -106,8 +106,9 @@ process.outpath = cms.EndPath(process.saveHistosInRunInfo*process.out)
 process.p = cms.Path(
     process.startupSequence*
     process.noscraping*
-    process.primaryVertexFilter
+    process.primaryVertexFilter*
 #    process.HBHENoiseFilter *
+    process.eidCiCSequence
 )
 
 from PhysicsTools.PatAlgos.patEventContent_cff import *

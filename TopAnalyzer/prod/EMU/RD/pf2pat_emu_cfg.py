@@ -23,7 +23,6 @@ process.source = cms.Source("PoolSource",
 process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
 
 #process.p += process.hltHighLevelMuElRD 
-process.p += process.eidCiCSequence
 process.p += getattr(process,"patPF2PATSequence"+postfix)
 process.p += process.acceptedElectrons
 process.p += process.acceptedMuons
