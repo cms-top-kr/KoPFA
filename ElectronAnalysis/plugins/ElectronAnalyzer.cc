@@ -270,6 +270,8 @@ void ElectronAnalyzer::analyze(const edm::Event& event, const edm::EventSetup& e
   gsfMva_->clear();
   pfaMva_->clear();
 
+  gsfToPfaMatch_->clear();
+
   umPfaPt_->clear();
   umPfaEta_->clear();
   umPfaPhi_->clear();
