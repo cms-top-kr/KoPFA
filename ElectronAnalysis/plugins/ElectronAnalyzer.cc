@@ -45,15 +45,15 @@ private:
   int event_, run_, lumi_;
 
   typedef std::vector<double>* VDP;
-  VDP genPt_, genEta_, genPhi_, genE_;
-  VDP gsfPt_, gsfEta_, gsfPhi_, gsfE_;
-  VDP pfaPt_, pfaEta_, pfaPhi_, pfaE_;
+  VDP genPt_, genEta_, genPhi_, genE_, genP_;
+  VDP gsfPt_, gsfEta_, gsfPhi_, gsfE_, gsfP_;
+  VDP pfaPt_, pfaEta_, pfaPhi_, pfaE_, pfaP_;
   std::vector<bool>* gsfToPfaMatch_;
 
   VDP gsfEcalE_, pfaEcalE_;
   VDP gsfMva_, pfaMva_;
 
-  VDP umPfaPt_, umPfaEta_, umPfaPhi_, umPfaE_;
+  VDP umPfaPt_, umPfaEta_, umPfaPhi_, umPfaE_, umPfaP_;
   VDP umPfaEcalE_;
   VDP umPfaMva_;
 
@@ -75,16 +75,19 @@ ElectronAnalyzer::ElectronAnalyzer(const edm::ParameterSet& pset)
   genEta_ = new std::vector<double>;
   genPhi_ = new std::vector<double>;
   genE_   = new std::vector<double>;
+  genP_   = new std::vector<double>;
 
   gsfPt_  = new std::vector<double>;
   gsfEta_ = new std::vector<double>;
   gsfPhi_ = new std::vector<double>;
   gsfE_   = new std::vector<double>;
+  gsfP_   = new std::vector<double>;
 
   pfaPt_  = new std::vector<double>;
   pfaEta_ = new std::vector<double>;
   pfaPhi_ = new std::vector<double>;
   pfaE_   = new std::vector<double>;
+  pfaP_   = new std::vector<double>;
 
   gsfEcalE_ = new std::vector<double>;
   pfaEcalE_ = new std::vector<double>;
@@ -98,6 +101,7 @@ ElectronAnalyzer::ElectronAnalyzer(const edm::ParameterSet& pset)
   umPfaEta_ = new std::vector<double>;
   umPfaPhi_ = new std::vector<double>;
   umPfaE_   = new std::vector<double>;
+  umPfaP_   = new std::vector<double>;
 
   umPfaEcalE_ = new std::vector<double>;
   umPfaMva_ = new std::vector<double>;
@@ -120,16 +124,19 @@ void ElectronAnalyzer::beginJob()
   tree_->Branch("genEta", "std::vector<double>", &genEta_);
   tree_->Branch("genPhi", "std::vector<double>", &genPhi_);
   tree_->Branch("genE"  , "std::vector<double>", &genE_  );
+  tree_->Branch("genP"  , "std::vector<double>", &genP_  );
 
   tree_->Branch("gsfPt" , "std::vector<double>", &gsfPt_ );
   tree_->Branch("gsfEta", "std::vector<double>", &gsfEta_);
   tree_->Branch("gsfPhi", "std::vector<double>", &gsfPhi_);
   tree_->Branch("gsfE"  , "std::vector<double>", &gsfE_  );
+  tree_->Branch("gsfP"  , "std::vector<double>", &gsfP_  );
 
   tree_->Branch("pfaPt" , "std::vector<double>", &pfaPt_ );
   tree_->Branch("pfaEta", "std::vector<double>", &pfaEta_);
   tree_->Branch("pfaPhi", "std::vector<double>", &pfaPhi_);
   tree_->Branch("pfaE"  , "std::vector<double>", &pfaE_  );
+  tree_->Branch("pfaP"  , "std::vector<double>", &pfaP_  );
 
   tree_->Branch("gsfMva", "std::vector<double>", &gsfMva_);
   tree_->Branch("pfaMva", "std::vector<double>", &pfaMva_);
@@ -143,6 +150,7 @@ void ElectronAnalyzer::beginJob()
   tree_->Branch("umPfaEta", "std::vector<double>", &umPfaEta_);
   tree_->Branch("umPfaPhi", "std::vector<double>", &umPfaPhi_);
   tree_->Branch("umPfaE"  , "std::vector<double>", &umPfaE_  );
+  tree_->Branch("umPfaP"  , "std::vector<double>", &umPfaP_  );
 
   tree_->Branch("umPfaEcalE", "std::vector<double>", &umPfaEcalE_);
   tree_->Branch("umPfaMva", "std::vector<double>", & umPfaMva_);
@@ -253,16 +261,19 @@ void ElectronAnalyzer::analyze(const edm::Event& event, const edm::EventSetup& e
   genEta_->clear();
   genPhi_->clear();
   genE_  ->clear();
+  genP_  ->clear();
 
   gsfPt_ ->clear();
   gsfEta_->clear();
   gsfPhi_->clear();
   gsfE_  ->clear();
+  gsfP_  ->clear();
 
   pfaPt_ ->clear();
   pfaEta_->clear();
   pfaPhi_->clear();
   pfaE_  ->clear();
+  pfaP_  ->clear();
 
   gsfEcalE_->clear();
   pfaEcalE_->clear();
@@ -276,6 +287,7 @@ void ElectronAnalyzer::analyze(const edm::Event& event, const edm::EventSetup& e
   umPfaEta_->clear();
   umPfaPhi_->clear();
   umPfaE_->clear();
+  umPfaP_->clear();
 
   umPfaEcalE_->clear();
   umPfaMva_->clear();
@@ -292,6 +304,7 @@ void ElectronAnalyzer::analyze(const edm::Event& event, const edm::EventSetup& e
       genEta_->push_back(p4.eta());
       genPhi_->push_back(p4.phi());
       genE_->push_back(p4.e());
+      genP_->push_back(p4.P());
     }
   }
 
@@ -303,6 +316,7 @@ void ElectronAnalyzer::analyze(const edm::Event& event, const edm::EventSetup& e
     gsfEta_->push_back(p4.eta());
     gsfPhi_->push_back(p4.phi());
     gsfE_->push_back(p4.e());
+    gsfP_->push_back(p4.P());
 
     gsfEcalE_->push_back(iEle->ecalEnergy());
     gsfMva_->push_back(iEle->mva());
@@ -314,6 +328,7 @@ void ElectronAnalyzer::analyze(const edm::Event& event, const edm::EventSetup& e
       pfaEta_->push_back(matched->eta());
       pfaPhi_->push_back(matched->phi());
       pfaE_->push_back(matched->p4().e());
+      pfaP_->push_back(matched->p4().P());
 
       pfaEcalE_->push_back(matched->ecalEnergy());
       pfaMva_->push_back(matched->mva_e_pi());
@@ -326,6 +341,7 @@ void ElectronAnalyzer::analyze(const edm::Event& event, const edm::EventSetup& e
       pfaEta_->push_back(-999);
       pfaPhi_->push_back(-999);
       pfaE_->push_back(-999);
+      pfaP_->push_back(-999);
 
       pfaEcalE_->push_back(-999);
       pfaMva_->push_back(-999);
@@ -347,6 +363,7 @@ void ElectronAnalyzer::analyze(const edm::Event& event, const edm::EventSetup& e
       umPfaEta_->push_back(p4.eta());
       umPfaPhi_->push_back(p4.phi());
       umPfaE_->push_back(p4.e());
+      umPfaP_->push_back(p4.P());
 
       umPfaEcalE_->push_back(iPFCand->ecalEnergy());
       umPfaMva_->push_back(iPFCand->mva_e_pi());
