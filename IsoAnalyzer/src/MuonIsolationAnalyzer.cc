@@ -72,6 +72,7 @@ private:
   double MET; 
   double mt;
   double delphi;
+  unsigned int ncharged;
 
   TTree *tree;
 
@@ -210,6 +211,7 @@ void MuonIsolationAnalyzer::beginJob(){
    tree->Branch("MET",&MET,"MET/d");
    tree->Branch("mt",&mt,"mt/D");
    tree->Branch("delphi",&delphi,"delphi/D");
+   tree->Branch("ncharged",&ncharged,"ncharged/i");
  
 }
 
@@ -228,6 +230,7 @@ void MuonIsolationAnalyzer::analyze( const edm::Event& iEvent, const edm::EventS
     MET= -9;
     mt = -9;
     delphi = -9;
+    ncharged = 0;
 
     jets->clear();
     jetspt30->clear();
@@ -352,6 +355,12 @@ void MuonIsolationAnalyzer::analyze( const edm::Event& iEvent, const edm::EventS
       hcalIso->push_back(mi->hcalIso());
 
     }
+
+    for(reco::PFCandidateCollection::const_iterator ci  = pfCandidates_->begin(); ci!=pfCandidates_->end(); ++ci) {
+      const reco::PFCandidate& pfc = *ci;
+      if( pfc.particleId() ==  1) ncharged++;
+    }
+
 
     tree->Fill();
 }
