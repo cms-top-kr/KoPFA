@@ -30,24 +30,24 @@ void view(TString dirName)
   TH1F* hPfaMva = new TH1F(dirName+"_hPfaMva", "Mva;MVA;Entries", 100, -2, 1.5);
 
   tree->Project(dirName+"_hGenPt", "genPt");
-  tree->Project(dirName+"_hGsfPt", "gsfPt", "gsfPt>0");
-  tree->Project(dirName+"_hPfaPt", "pfaPt", "pfaPt>0");
+  tree->Project(dirName+"_hGsfPt", "gsfPt", "gsfPt>0&&gsfMva>-999");
+  tree->Project(dirName+"_hPfaPt", "pfaPt", "pfaPt>0&&pfaMva>-999");
 
   tree->Project(dirName+"_hGenEta", "genEta", "genPt>0");
-  tree->Project(dirName+"_hGsfEta", "gsfEta", "gsfPt>0");
-  tree->Project(dirName+"_hPfaEta", "pfaEta", "pfaPt>0");
+  tree->Project(dirName+"_hGsfEta", "gsfEta", "gsfPt>0&&gsfMva>-999");
+  tree->Project(dirName+"_hPfaEta", "pfaEta", "pfaPt>0&&pfaMva>-999");
 
   tree->Project(dirName+"_hGenPhi", "genPhi", "genPt>0");
-  tree->Project(dirName+"_hGsfPhi", "gsfPhi", "gsfPt>0");
-  tree->Project(dirName+"_hPfaPhi", "pfaPhi", "pfaPt>0");
+  tree->Project(dirName+"_hGsfPhi", "gsfPhi", "gsfPt>0&&gsfMva>-999");
+  tree->Project(dirName+"_hPfaPhi", "pfaPhi", "pfaPt>0&&pfaMva>-999");
 
-  tree->Project(dirName+"_hGsfPtRes", "(gsfPt-genPt)/genPt", "gsfPt>0&&genPt>0");
-  tree->Project(dirName+"_hPfaPtRes", "(pfaPt-genPt)/genPt", "pfaPt>0&&genPt>0");
+  tree->Project(dirName+"_hGsfPtRes", "(gsfPt-genPt)/genPt", "gsfPt>0&&genPt>0&&gsfMva>-999");
+  tree->Project(dirName+"_hPfaPtRes", "(pfaPt-genPt)/genPt", "pfaPt>0&&genPt>0&&pfaMva>-999");
 
-  tree->Project(dirName+"_hGsfMva", "gsfMva", "gsfPt>0");
-  tree->Project(dirName+"_hPfaMva", "pfaMva", "pfaPt>0");
+  tree->Project(dirName+"_hGsfMva", "gsfMva", "gsfPt>0&&gsfMva>-999");
+  tree->Project(dirName+"_hPfaMva", "pfaMva", "pfaPt>0&&pfaMva>-999");
 
-  tree->Scan("gsfPt:pfaPt:gsfE:pfaE:gsfEcalE:pfaEcalE:gsfMva:pfaMva:gsfToPfaMatch", "gsfPt>0 && gsfMva<-2");
+  tree->Scan("gsfPt:pfaPt:gsfE:pfaE:gsfEcalE:pfaEcalE:gsfMva:pfaMva:gsfToPfaMatch", "gsfPt>0 && gsfMva<-2 && gsfMva>-999");
 
   overlay(dirName+"_Pt", hGenPt, hGsfPt, hPfaPt);
   overlay(dirName+"_Eta", hGenEta, hGsfEta, hPfaEta);
