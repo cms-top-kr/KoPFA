@@ -36,7 +36,7 @@ public:
 
 private:
   edm::InputTag genParticleLabel_;
-  edm::InputTag electronLabel_;  
+  edm::InputTag electronLabel_;
   edm::InputTag pfCandLabel_;
 
 private:
@@ -44,51 +44,25 @@ private:
 
   int event_, run_, lumi_;
 
-  std::vector<double>* genElePt_;
-  std::vector<double>* gsfElePt_;
-  std::vector<double>* pfaElePt_;
-
-  std::vector<double>* genEleEta_;
-  std::vector<double>* gsfEleEta_;
-  std::vector<double>* pfaEleEta_;
-
-  std::vector<double>* genElePhi_;
-  std::vector<double>* gsfElePhi_;
-  std::vector<double>* pfaElePhi_;
-
-  std::vector<double>* genEleE_;
-  std::vector<double>* gsfEleE_;
-  std::vector<double>* pfaEleE_;
-
-  std::vector<double>* matchedPfaElePt_;
-  std::vector<double>* matchedPfaEleEta_;
-  std::vector<double>* matchedPfaElePhi_;
-  std::vector<double>* matchedPfaEleE_;
-
-  std::vector<double>* gsfEleEcalE_;
-  std::vector<double>* pfaEleEcalE_;
-
-  std::vector<double>* idGsfMva_;
-  std::vector<double>* idPfaMva_;
-  std::vector<double>* idCiC_;
-
+  typedef std::vector<double>* VDP;
+  VDP genPt_, genEta_, genPhi_, genE_;
+  VDP gsfPt_, gsfEta_, gsfPhi_, gsfE_;
+  VDP pfaPt_, pfaEta_, pfaPhi_, pfaE_;
   std::vector<bool>* gsfToPfaMatch_;
-  std::vector<bool>* pfaToGsfMatch_;
 
-  TH1F * h_gsf_pt;
-  TH1F * h_gsf_eta;
-  TH1F * h_gsf_mva;
+  VDP gsfEcalE_, pfaEcalE_;
+  VDP gsfMva_, pfaMva_;
 
-  TH1F * h_pf_pt;
-  TH1F * h_pf_eta;
-  TH1F * h_pf_mva;
+  VDP umPfaPt_, umPfaEta_, umPfaPhi_, umPfaE_;
+  VDP umPfaEcalE_;
+  VDP umPfaMva_;
 
 private:
   typedef edm::View<reco::PFCandidate>::const_iterator PFCandIter;
   typedef edm::View<reco::GsfElectron>::const_iterator GsfEleIter;
 
-  PFCandIter findElectron(const GsfEleIter gsfEle, PFCandIter begin, PFCandIter end);
-  GsfEleIter findElectron(const PFCandIter pfaEle, GsfEleIter begin, GsfEleIter end);
+  PFCandIter findElectron(const GsfEleIter gsf, PFCandIter begin, PFCandIter end);
+  GsfEleIter findElectron(const PFCandIter pfa, GsfEleIter begin, GsfEleIter end);
 };
 
 ElectronAnalyzer::ElectronAnalyzer(const edm::ParameterSet& pset)
@@ -97,36 +71,36 @@ ElectronAnalyzer::ElectronAnalyzer(const edm::ParameterSet& pset)
   pfCandLabel_ = pset.getParameter<edm::InputTag>("pfCandidate");
   genParticleLabel_ = pset.getParameter<edm::InputTag>("genParticles");
 
-  genElePt_ = new std::vector<double>;
-  gsfElePt_ = new std::vector<double>;
-  pfaElePt_ = new std::vector<double>;
+  genPt_  = new std::vector<double>;
+  genEta_ = new std::vector<double>;
+  genPhi_ = new std::vector<double>;
+  genE_   = new std::vector<double>;
 
-  genEleEta_ = new std::vector<double>;
-  gsfEleEta_ = new std::vector<double>;
-  pfaEleEta_ = new std::vector<double>;
+  gsfPt_  = new std::vector<double>;
+  gsfEta_ = new std::vector<double>;
+  gsfPhi_ = new std::vector<double>;
+  gsfE_   = new std::vector<double>;
 
-  genElePhi_ = new std::vector<double>;
-  gsfElePhi_ = new std::vector<double>;
-  pfaElePhi_ = new std::vector<double>;
+  pfaPt_  = new std::vector<double>;
+  pfaEta_ = new std::vector<double>;
+  pfaPhi_ = new std::vector<double>;
+  pfaE_   = new std::vector<double>;
 
-  genEleE_ = new std::vector<double>;
-  gsfEleE_ = new std::vector<double>;
-  pfaEleE_ = new std::vector<double>;
+  gsfEcalE_ = new std::vector<double>;
+  pfaEcalE_ = new std::vector<double>;
 
-  matchedPfaElePt_ = new std::vector<double>;
-  matchedPfaEleEta_ = new std::vector<double>;
-  matchedPfaElePhi_ = new std::vector<double>;
-  matchedPfaEleE_ = new std::vector<double>;
-
-  gsfEleEcalE_ = new std::vector<double>;
-  pfaEleEcalE_ = new std::vector<double>;
-
-  idGsfMva_ = new std::vector<double>;
-  idPfaMva_ = new std::vector<double>;
-  idCiC_ = new std::vector<double>;
+  gsfMva_ = new std::vector<double>;
+  pfaMva_ = new std::vector<double>;
 
   gsfToPfaMatch_ = new std::vector<bool>;
-  pfaToGsfMatch_ = new std::vector<bool>;
+
+  umPfaPt_  = new std::vector<double>;
+  umPfaEta_ = new std::vector<double>;
+  umPfaPhi_ = new std::vector<double>;
+  umPfaE_   = new std::vector<double>;
+
+  umPfaEcalE_ = new std::vector<double>;
+  umPfaMva_ = new std::vector<double>;
 }
 
 ElectronAnalyzer::~ElectronAnalyzer()
@@ -142,46 +116,36 @@ void ElectronAnalyzer::beginJob()
   tree_->Branch("run", &run_, "run/i");
   tree_->Branch("lumi", &lumi_, "lumi/i");
 
-  tree_->Branch("genElePt", "std::vector<double>", &genElePt_);
-  tree_->Branch("gsfElePt", "std::vector<double>", &gsfElePt_);
-  tree_->Branch("pfaElePt", "std::vector<double>", &pfaElePt_);
+  tree_->Branch("genPt" , "std::vector<double>", &genPt_ );
+  tree_->Branch("genEta", "std::vector<double>", &genEta_);
+  tree_->Branch("genPhi", "std::vector<double>", &genPhi_);
+  tree_->Branch("genE"  , "std::vector<double>", &genE_  );
 
-  tree_->Branch("genEleEta", "std::vector<double>", &genEleEta_);
-  tree_->Branch("gsfEleEta", "std::vector<double>", &gsfEleEta_);
-  tree_->Branch("pfaEleEta", "std::vector<double>", &pfaEleEta_);
+  tree_->Branch("gsfPt" , "std::vector<double>", &gsfPt_ );
+  tree_->Branch("gsfEta", "std::vector<double>", &gsfEta_);
+  tree_->Branch("gsfPhi", "std::vector<double>", &gsfPhi_);
+  tree_->Branch("gsfE"  , "std::vector<double>", &gsfE_  );
 
-  tree_->Branch("genElePhi", "std::vector<double>", &genElePhi_);
-  tree_->Branch("gsfElePhi", "std::vector<double>", &gsfElePhi_);
-  tree_->Branch("pfaElePhi", "std::vector<double>", &pfaElePhi_);
+  tree_->Branch("pfaPt" , "std::vector<double>", &pfaPt_ );
+  tree_->Branch("pfaEta", "std::vector<double>", &pfaEta_);
+  tree_->Branch("pfaPhi", "std::vector<double>", &pfaPhi_);
+  tree_->Branch("pfaE"  , "std::vector<double>", &pfaE_  );
 
-  tree_->Branch("genEleE", "std::vector<double>", &genEleE_);
-  tree_->Branch("gsfEleE", "std::vector<double>", &gsfEleE_);
-  tree_->Branch("pfaEleE", "std::vector<double>", &pfaEleE_);
+  tree_->Branch("gsfMva", "std::vector<double>", &gsfMva_);
+  tree_->Branch("pfaMva", "std::vector<double>", &pfaMva_);
 
-  tree_->Branch("matchedPfaElePt", "std::vector<double>", &matchedPfaElePt_);
-  tree_->Branch("matchedPfaEleEta", "std::vector<double>", &matchedPfaEleEta_);
-  tree_->Branch("matchedPfaElePhi", "std::vector<double>", &matchedPfaElePhi_);
-  tree_->Branch("matchedPfaEleE", "std::vector<double>", &matchedPfaEleE_);
-
-  tree_->Branch("gsfEleEcalE", "std::vector<double>", &gsfEleEcalE_);
-  tree_->Branch("pfaEleEcalE", "std::vector<double>", &pfaEleEcalE_);
-
-  tree_->Branch("idGsfMva", "std::vector<double>", &idGsfMva_);
-  tree_->Branch("idPfaMva", "std::vector<double>", &idPfaMva_);
-  tree_->Branch("idCiC", "std::vector<double>", &idCiC_);
+  tree_->Branch("gsfEcalE", "std::vector<double>", &gsfEcalE_);
+  tree_->Branch("pfaEcalE", "std::vector<double>", &pfaEcalE_);
 
   tree_->Branch("gsfToPfaMatch", "std::vector<bool>", &gsfToPfaMatch_);
-  tree_->Branch("pfaToGsfMatch", "std::vector<bool>", &pfaToGsfMatch_);
 
-  //quick analysis
-  h_gsf_pt = fs->make<TH1F>( "h_gsf_pt","h_gsf_pt", 50, 0,100);
-  h_gsf_eta = fs->make<TH1F>( "h_gsf_eta","h_gsf_eta", 70, -3.5,3.5);
-  h_gsf_mva = fs->make<TH1F>( "h_gsf_mva","h_gsf_mva", 40, -1,1);
+  tree_->Branch("umPfaPt" , "std::vector<double>", &umPfaPt_ );
+  tree_->Branch("umPfaEta", "std::vector<double>", &umPfaEta_);
+  tree_->Branch("umPfaPhi", "std::vector<double>", &umPfaPhi_);
+  tree_->Branch("umPfaE"  , "std::vector<double>", &umPfaE_  );
 
-  h_pf_pt = fs->make<TH1F>( "h_pf_pt","h_pf_pt", 50, 0,100);
-  h_pf_eta = fs->make<TH1F>( "h_pf_eta","h_pf_eta", 70, -3.5,3.5);
-  h_pf_mva = fs->make<TH1F>( "h_pf_mva","h_pf_mva", 40, -1,1);
-  
+  tree_->Branch("umPfaEcalE", "std::vector<double>", &umPfaEcalE_);
+  tree_->Branch("umPfaMva", "std::vector<double>", & umPfaMva_);
 }
 
 void ElectronAnalyzer::endJob()
@@ -189,19 +153,38 @@ void ElectronAnalyzer::endJob()
 
 }
 
-ElectronAnalyzer::PFCandIter ElectronAnalyzer::findElectron(const GsfEleIter gsfEle, 
-                                                            ElectronAnalyzer::PFCandIter begin, 
+ElectronAnalyzer::PFCandIter ElectronAnalyzer::findElectron(const GsfEleIter gsf,
+                                                            ElectronAnalyzer::PFCandIter begin,
                                                             ElectronAnalyzer::PFCandIter end)
 {
-  reco::GsfTrackRef refTrk = gsfEle->gsfTrack();
+  reco::GsfTrackRef refTrk = gsf->gsfTrack();
   if ( refTrk.isNull() ) return end;
 
   PFCandIter matchedEle = end;
-  for ( PFCandIter pfaEle = begin; pfaEle != end; ++pfaEle )
+  for ( PFCandIter pfa = begin; pfa != end; ++pfa )
   {
-    if ( refTrk == pfaEle->gsfTrackRef() )
+    bool matched = false;
+
+    if ( refTrk == pfa->gsfTrackRef() )
     {
-      matchedEle = pfaEle;
+      matched = true;
+    }
+    else
+    {
+      for ( reco::GsfTrackRefVector::const_iterator ambTrk = gsf->ambiguousGsfTracksBegin();
+            ambTrk != gsf->ambiguousGsfTracksEnd(); ++ambTrk )
+      {
+        if ( refTrk == *ambTrk )
+        {
+          matched = true;
+          break;
+        }
+      }
+    }
+
+    if ( matched )
+    {
+      matchedEle = pfa;
       break;
     }
   }
@@ -209,23 +192,41 @@ ElectronAnalyzer::PFCandIter ElectronAnalyzer::findElectron(const GsfEleIter gsf
   return matchedEle;
 }
 
-ElectronAnalyzer::GsfEleIter ElectronAnalyzer::findElectron(const PFCandIter pfaEle, 
-                                                            ElectronAnalyzer::GsfEleIter begin, 
+ElectronAnalyzer::GsfEleIter ElectronAnalyzer::findElectron(const PFCandIter pfa,
+                                                            ElectronAnalyzer::GsfEleIter begin,
                                                             ElectronAnalyzer::GsfEleIter end)
 {
-  reco::GsfTrackRef refTrk = pfaEle->gsfTrackRef();
+  reco::GsfTrackRef refTrk = pfa->gsfTrackRef();
   if ( refTrk.isNull() ) return end;
 
   GsfEleIter matchedEle = end;
-  for ( GsfEleIter gsfEle = begin; gsfEle != end; ++gsfEle )
+  for ( GsfEleIter gsf = begin; gsf != end; ++gsf )
   {
-    if ( refTrk == gsfEle->gsfTrack() )
+    bool matched = false;
+
+    if ( refTrk == gsf->gsfTrack() )
     {
-      matchedEle = gsfEle;
+      matched = true;
+    }
+    else
+    {
+      for ( reco::GsfTrackRefVector::const_iterator ambTrk = gsf->ambiguousGsfTracksBegin();
+            ambTrk != gsf->ambiguousGsfTracksEnd(); ++ambTrk )
+      {
+        if ( refTrk == *ambTrk )
+        {
+          matched = true;
+          break;
+        }
+      }
+    }
+
+    if ( matched )
+    {
+      matchedEle = gsf;
       break;
     }
   }
-
   return matchedEle;
 }
 
@@ -248,36 +249,34 @@ void ElectronAnalyzer::analyze(const edm::Event& event, const edm::EventSetup& e
   event.getByLabel(pfCandLabel_, pfCandHandle);
 
   // Set default values
-  genElePt_->clear();
-  gsfElePt_->clear();
-  pfaElePt_->clear();
+  genPt_ ->clear();
+  genEta_->clear();
+  genPhi_->clear();
+  genE_  ->clear();
 
-  genEleEta_->clear();
-  gsfEleEta_->clear();
-  pfaEleEta_->clear();
+  gsfPt_ ->clear();
+  gsfEta_->clear();
+  gsfPhi_->clear();
+  gsfE_  ->clear();
 
-  genElePhi_->clear();
-  gsfElePhi_->clear();
-  pfaElePhi_->clear();
+  pfaPt_ ->clear();
+  pfaEta_->clear();
+  pfaPhi_->clear();
+  pfaE_  ->clear();
 
-  genEleE_->clear();
-  gsfEleE_->clear();
-  pfaEleE_->clear();
+  gsfEcalE_->clear();
+  pfaEcalE_->clear();
 
-  matchedPfaElePt_->clear();
-  matchedPfaEleEta_->clear();
-  matchedPfaElePhi_->clear();
-  matchedPfaEleE_->clear();
+  gsfMva_->clear();
+  pfaMva_->clear();
 
-  gsfEleEcalE_->clear();
-  pfaEleEcalE_->clear();
+  umPfaPt_->clear();
+  umPfaEta_->clear();
+  umPfaPhi_->clear();
+  umPfaE_->clear();
 
-  idGsfMva_->clear();
-  idPfaMva_->clear();
-  idCiC_->clear();
-
-  gsfToPfaMatch_->clear();
-  pfaToGsfMatch_->clear();
+  umPfaEcalE_->clear();
+  umPfaMva_->clear();
 
   if ( genParticleHandle.isValid() )
   {
@@ -287,72 +286,68 @@ void ElectronAnalyzer::analyze(const edm::Event& event, const edm::EventSetup& e
       if ( abs(iGen->pdgId()) != 11 or iGen->status() != 3 ) continue;
 
       const reco::Candidate::LorentzVector p4 = iGen->p4();
-      genElePt_->push_back(p4.pt());
-      genEleEta_->push_back(p4.eta());
-      genElePhi_->push_back(p4.phi());
-      genEleE_->push_back(p4.e());
+      genPt_->push_back(p4.pt());
+      genEta_->push_back(p4.eta());
+      genPhi_->push_back(p4.phi());
+      genE_->push_back(p4.e());
     }
   }
 
   for ( edm::View<reco::GsfElectron>::const_iterator iEle = electronHandle->begin();
         iEle != electronHandle->end(); ++iEle )
   {
-    //Fill histograms
-    h_gsf_pt->Fill(iEle->pt());
-    h_gsf_eta->Fill(iEle->eta());
-    h_gsf_mva->Fill(iEle->mva());
-
     const reco::Candidate::LorentzVector p4 = iEle->p4();
-    gsfElePt_->push_back(p4.pt());
-    gsfEleEta_->push_back(p4.eta());
-    gsfElePhi_->push_back(p4.phi());
-    gsfEleE_->push_back(p4.e());
+    gsfPt_->push_back(p4.pt());
+    gsfEta_->push_back(p4.eta());
+    gsfPhi_->push_back(p4.phi());
+    gsfE_->push_back(p4.e());
 
-    gsfEleEcalE_->push_back(iEle->ecalEnergy());
-    idGsfMva_->push_back(iEle->mva());
+    gsfEcalE_->push_back(iEle->ecalEnergy());
+    gsfMva_->push_back(iEle->mva());
 
     PFCandIter matched = findElectron(iEle, pfCandHandle->begin(), pfCandHandle->end());
     if ( matched != pfCandHandle->end() )
     {
-      gsfToPfaMatch_->push_back(true);
+      pfaPt_->push_back(matched->pt());
+      pfaEta_->push_back(matched->eta());
+      pfaPhi_->push_back(matched->phi());
+      pfaE_->push_back(matched->p4().e());
 
-      matchedPfaElePt_->push_back(matched->pt());
-      matchedPfaEleEta_->push_back(matched->eta());
-      matchedPfaElePhi_->push_back(matched->phi());
-      matchedPfaEleE_->push_back(matched->p4().e());
+      pfaEcalE_->push_back(matched->ecalEnergy());
+      pfaMva_->push_back(matched->mva_e_pi());
+
+      gsfToPfaMatch_->push_back(true);
     }
     else
     {
+      pfaPt_->push_back(-999);
+      pfaEta_->push_back(-999);
+      pfaPhi_->push_back(-999);
+      pfaE_->push_back(-999);
+
+      pfaEcalE_->push_back(-999);
+      pfaMva_->push_back(-999);
+
       gsfToPfaMatch_->push_back(false);
     }
   }
 
   for ( edm::View<reco::PFCandidate>::const_iterator iPFCand = pfCandHandle->begin();
-      iPFCand != pfCandHandle->end(); ++iPFCand )
+        iPFCand != pfCandHandle->end(); ++iPFCand )
   {
     if ( abs(iPFCand->pdgId()) != 11 ) continue;
-    //Fill histograms
-    h_pf_pt->Fill(iPFCand->pt());
-    h_pf_eta->Fill(iPFCand->eta());
-    h_pf_mva->Fill(iPFCand->mva_e_pi());
-
+    
     const reco::Candidate::LorentzVector p4 = iPFCand->p4();
-    pfaElePt_->push_back(p4.pt());
-    pfaEleEta_->push_back(p4.eta());
-    pfaElePhi_->push_back(p4.phi());
-    pfaEleE_->push_back(p4.e());
-
-    pfaEleEcalE_->push_back(iPFCand->ecalEnergy());
-    idPfaMva_->push_back(iPFCand->mva_e_pi());
-
     GsfEleIter matched = findElectron(iPFCand, electronHandle->begin(), electronHandle->end());
-    if ( matched != electronHandle->end() )
+    if ( matched == electronHandle->end() )
     {
-      pfaToGsfMatch_->push_back(true);
-    }
-    else
-    {
-      pfaToGsfMatch_->push_back(false);
+      umPfaPt_->push_back(p4.pt());
+      umPfaEta_->push_back(p4.eta());
+      umPfaPhi_->push_back(p4.phi());
+      umPfaE_->push_back(p4.e());
+
+      umPfaEcalE_->push_back(iPFCand->ecalEnergy());
+      umPfaMva_->push_back(iPFCand->mva_e_pi());
     }
   }
 
