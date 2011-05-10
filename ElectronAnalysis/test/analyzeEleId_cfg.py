@@ -29,14 +29,16 @@ process.genElectrons = cms.EDFilter("GenParticleSelector",
 
 process.Default = cms.EDAnalyzer("ElectronAnalyzer",
     genParticles = cms.InputTag("genElectrons"),
-    electron = cms.InputTag("electronsWithPresel"),
-    pfCandidate = cms.InputTag("particleFlow", "", "RECO"),
+    electron = cms.InputTag("electronsHZZVeryLoose"),
+    #electron = cms.InputTag("gsfElectrons"),
+    pfCandidate = cms.InputTag("pfElectronsIDDefault"),
 )
 
 process.HZZVeryLoose = cms.EDAnalyzer("ElectronAnalyzer",
     genParticles = cms.InputTag("genElectrons"),
     electron = cms.InputTag("electronsHZZVeryLoose"),
-    pfCandidate = cms.InputTag("pfElectronsID", "", "RERECOPF"),
+    #electron = cms.InputTag("gsfElectrons"),
+    pfCandidate = cms.InputTag("pfElectronsID"),
 )
 
 process.p = cms.Path(
