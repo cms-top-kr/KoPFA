@@ -8,10 +8,10 @@ source = cms.Source("PoolSource",
 		     fileNames = readFiles
                     )
 readFiles.extend([
-	'rfio:///castor/cern.ch/user/t/tjkim/EMUSKIM/MC/Spring11/SingleTop_tW/patTuple_skim_1_1_T7m.root',
-	'rfio:///castor/cern.ch/user/t/tjkim/EMUSKIM/MC/Spring11/SingleTop_tW/patTuple_skim_2_1_EqN.root',
-	'rfio:///castor/cern.ch/user/t/tjkim/EMUSKIM/MC/Spring11/SingleTop_tW/patTuple_skim_3_1_jQX.root',
-	'rfio:///castor/cern.ch/user/t/tjkim/EMUSKIM/MC/Spring11/SingleTop_tW/patTuple_skim_4_1_OPq.root',
-	'rfio:///castor/cern.ch/user/t/tjkim/EMUSKIM/MC/Spring11/SingleTop_tW/patTuple_skim_5_1_haG.root',
+	'rfio:///castor/cern.ch/user/t/tjkim/EMUSKIM/MC/Spring11_v2/SingleTop_tW/patTuple_skim_1_2_Pmi.root',
+	'rfio:///castor/cern.ch/user/t/tjkim/EMUSKIM/MC/Spring11_v2/SingleTop_tW/patTuple_skim_2_1_cE5.root',
+	'rfio:///castor/cern.ch/user/t/tjkim/EMUSKIM/MC/Spring11_v2/SingleTop_tW/patTuple_skim_3_1_Ciw.root',
+	'rfio:///castor/cern.ch/user/t/tjkim/EMUSKIM/MC/Spring11_v2/SingleTop_tW/patTuple_skim_4_1_Jty.root',
+	'rfio:///castor/cern.ch/user/t/tjkim/EMUSKIM/MC/Spring11_v2/SingleTop_tW/patTuple_skim_5_1_1q1.root',
 ]
         )
