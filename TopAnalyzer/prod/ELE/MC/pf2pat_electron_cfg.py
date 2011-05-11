@@ -13,12 +13,15 @@ updateEventContent(process)
 process.pfIsolatedMuonsPFlow.combinedIsolationCut = cms.double(999)
 process.pfIsolatedElectronsPFlow.combinedIsolationCut = cms.double(999)
 
+process.patElectronFilter.minNumber = 2
+
 ## Source
 # MC sample will be taken automatically from template file
 
 process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
 
 #process.p += process.hltHighLevelElElMC
+process.p += process.eidCiCSequence
 process.p += getattr(process,"patPF2PATSequence"+postfix)
 process.p += process.acceptedElectrons
 process.p += process.patElectronFilter

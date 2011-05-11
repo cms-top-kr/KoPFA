@@ -13,6 +13,8 @@ updateEventContent(process)
 process.pfIsolatedMuonsPFlow.combinedIsolationCut = cms.double(999)
 process.pfIsolatedElectronsPFlow.combinedIsolationCut = cms.double(999)
 
+process.patElectronFilter.minNumber = 2
+
 ## Source
 process.source = cms.Source("PoolSource",
                                 fileNames = cms.untracked.vstring(
@@ -23,6 +25,7 @@ process.source = cms.Source("PoolSource",
 process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
 
 #process.p += process.hltHighLevelElElRD
+process.p += process.eidCiCSequence
 process.p += getattr(process,"patPF2PATSequence"+postfix)
 process.p += process.acceptedElectrons
 process.p += process.patElectronFilter
