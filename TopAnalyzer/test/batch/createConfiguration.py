@@ -127,7 +127,7 @@ for src in mclist:
       out.write(genzmassfilter())
     if src.find("ZtauDecay") != -1:
       out.write(genzmasstaudecayfilter())
-    if src.find("DY20to50") != -1:
+    if src.find("20to50") != -1:
       out.write(genzlowmassfilter())
     out.close()
 
