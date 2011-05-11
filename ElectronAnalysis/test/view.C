@@ -1,6 +1,7 @@
 void view()
 {
   gStyle->SetOptStat(111111);
+  gStyle->SetCanvasColor(kWhite);
   view("HZZVeryLoose");
   view("Default");
 }
@@ -32,6 +33,9 @@ void view(TString dirName)
   TH1F* hGsfEoverP = new TH1F(dirName+"_hGsfEoverP", "EoverP;E/P;Entries", 100, 0, 2);
   TH1F* hPfaEoverP = new TH1F(dirName+"_hPfaEoverP", "EoverP;E/P;Entries", 100, 0, 2);
 
+  TH1F* hGsfEoverP_n01 = new TH1F(dirName+"_hGsfEoverP_n01", "EoverP;E/P;Entries", 100, 0, 2);
+  TH1F* hPfaEoverP_n01 = new TH1F(dirName+"_hPfaEoverP_n01", "EoverP;E/P;Entries", 100, 0, 2);
+
   tree->Project(dirName+"_hGenPt", "genPt");
   tree->Project(dirName+"_hGsfPt", "gsfPt", "gsfPt>0");
   tree->Project(dirName+"_hPfaPt", "pfaPt", "pfaPt>0&&pfaMva>-999");
@@ -52,17 +56,19 @@ void view(TString dirName)
 
   tree->Project(dirName+"_hGsfEoverP", "gsfEcalE/gsfP", "gsfPt>0");
   tree->Project(dirName+"_hPfaEoverP", "pfaEcalE/pfaP", "pfaPt>0&&pfaMva>-999");
-  //tree->Project(dirName+"_hGsfEoverP", "gsfEcalE/gsfP", "gsfPt>0&&gsfMva<-0.1");
-  //tree->Project(dirName+"_hPfaEoverP", "pfaEcalE/pfaP", "pfaPt>0&&pfaMva>-999&&pfaMva<-0.1");
+
+  tree->Project(dirName+"_hGsfEoverP_n01", "gsfEcalE/gsfP", "gsfPt>0&&gsfMva<-0.1");
+  tree->Project(dirName+"_hPfaEoverP_n01", "pfaEcalE/pfaP", "pfaPt>0&&pfaMva>-999&&pfaMva<-0.1");
 
   tree->Scan("gsfPt:pfaPt:gsfEcalE:pfaEcalE:gsfMva:pfaMva:gsfToPfaMatch", "gsfPt>0 && gsfMva<-0.1 && gsfMva>-1e9");
 
-  //overlay(dirName+"_Pt", hGenPt, hGsfPt, hPfaPt);
-  //overlay(dirName+"_Eta", hGenEta, hGsfEta, hPfaEta);
-  //overlay(dirName+"_Phi", hGenPhi, hGsfPhi, hPfaPhi);
-  //overlay(dirName+"_Res", 0, hGsfPtRes, hPfaPtRes);
+  overlay(dirName+"_Pt", hGenPt, hGsfPt, hPfaPt);
+  overlay(dirName+"_Eta", hGenEta, hGsfEta, hPfaEta);
+  overlay(dirName+"_Phi", hGenPhi, hGsfPhi, hPfaPhi);
+  overlay(dirName+"_Res", 0, hGsfPtRes, hPfaPtRes);
   overlay(dirName+"_Mva", 0, hGsfMva, hPfaMva, "log");
   overlay(dirName+"_EoverP", 0, hGsfEoverP, hPfaEoverP, "log");
+  overlay(dirName+"_EoverP_n01", 0, hGsfEoverP_n01, hPfaEoverP_n01, "log");
 
 }
 
