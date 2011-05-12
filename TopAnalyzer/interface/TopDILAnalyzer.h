@@ -13,7 +13,7 @@
 //
 // Original Author:  Tae Jeong Kim,40 R-A32,+41227678602,
 //         Created:  Fri Jun  4 17:19:29 CEST 2010
-// $Id: TopDILAnalyzer.h,v 1.38 2011/05/01 01:09:27 youngjo Exp $
+// $Id: TopDILAnalyzer.h,v 1.36 2011/04/27 13:43:06 tjkim Exp $
 //
 //
 
@@ -44,7 +44,6 @@
 #include "KoPFA/DataFormats/interface/ZCandidate.h"
 #include "KoPFA/DataFormats/interface/TTbarGenEvent.h"
 #include "KoPFA/DataFormats/interface/TTbarMass.h"
-#include "KoPFA/DataFormats/interface/H2WWMass.h"
 #include "KoPFA/DataFormats/interface/METCandidate.h"
 #include "PFAnalyses/CommonTools/interface/CandidateSelector.h"
 #include "PFAnalyses/CommonTools/interface/PatJetIdSelector.h"
@@ -76,7 +75,7 @@ using namespace std;
 using namespace reco;
 using namespace isodeposit;
 
-template<typename T1, typename T2,typename T3>
+template<typename T1, typename T2>
 class TopDILAnalyzer : public edm::EDAnalyzer {
  public:
   explicit TopDILAnalyzer(const edm::ParameterSet& iConfig){
@@ -118,7 +117,6 @@ class TopDILAnalyzer : public edm::EDAnalyzer {
     Z = new std::vector<Ko::ZCandidate>();
     pfMet = new std::vector<Ko::METCandidate>();
     ttbar = new std::vector<Ko::TTbarMass>();
-    h2ww = new std::vector<Ko::H2WWMass>();
     met = new std::vector<math::XYZTLorentzVector>();
     jets = new std::vector<math::XYZTLorentzVector>();
     jetspt30 = new std::vector<math::XYZTLorentzVector>();
@@ -172,7 +170,6 @@ class TopDILAnalyzer : public edm::EDAnalyzer {
     tree->Branch("Z","std::vector<Ko::ZCandidate>", &Z);
     tree->Branch("pfMet","std::vector<Ko::METCandidate>", &pfMet);
     tree->Branch("ttbar","std::vector<Ko::TTbarMass>", &ttbar);
-    tree->Branch("h2ww","std::vector<Ko::H2WWMass>", &h2ww);
 
     tree->Branch("met","std::vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >", &met);
     tree->Branch("jets","std::vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >", &jets);
@@ -257,12 +254,12 @@ class TopDILAnalyzer : public edm::EDAnalyzer {
 
     edm::Handle<std::vector<T1> > muons1_;
     edm::Handle<std::vector<T2> > muons2_;
-    edm::Handle<std::vector<T3> > MET_;
+    edm::Handle<pat::METCollection> MET_;
     iEvent.getByLabel(muonLabel1_,muons1_);
     iEvent.getByLabel(muonLabel2_,muons2_);
     iEvent.getByLabel(metLabel_,MET_);
 
-    T3  mi = MET_->at(0);
+    pat::METCollection::const_iterator mi = MET_->begin();
     //MET = mi->pt();
     //met->push_back(mi->p4());
     //h_MET->Fill(MET);
@@ -305,15 +302,12 @@ class TopDILAnalyzer : public edm::EDAnalyzer {
 
         const bool match = MatchObjects( it1.p4(), it2.p4(), true);
         if(match) continue;
-        dphimetlepton = fabs(deltaPhi(mi.phi(),it1.phi()));
+        dphimetlepton = fabs(deltaPhi(mi->phi(),it1.phi()));
 
         const int sign = it1.charge() * it2.charge();
         const Ko::ZCandidate dimuon(it1.p4(), it2.p4(), sign);
 
         Z->push_back(dimuon);
-
-        const Ko::H2WWMass h2wwMass(it1.p4(), it2.p4(), mi.p4(),  it1.charge(),it2.charge());
-        h2ww->push_back(h2wwMass);
 
         h_leadingpt->Fill(it1.pt());
         h_secondpt->Fill(it2.pt());
@@ -390,8 +384,8 @@ class TopDILAnalyzer : public edm::EDAnalyzer {
         ecalIso2->push_back(it2.ecalIso());
         hcalIso2->push_back(it2.hcalIso());
      
-        double met_x = mi.px();
-        double met_y = mi.py();
+        double met_x = mi->px();
+        double met_y = mi->py();
         
         //Jet selection by checking overlap with selected leptons
         for (JI jit = Jets->begin(); jit != Jets->end(); ++jit) {
@@ -466,7 +460,7 @@ class TopDILAnalyzer : public edm::EDAnalyzer {
         met->push_back(corrmet);
 
         if(metStudy_){
-          const Ko::METCandidate pfmet(MET, mi.sumEt(), mi.NeutralEMFraction(),mi.NeutralHadEtFraction(),mi.ChargedHadEtFraction(),mi.ChargedEMEtFraction(),mi.MuonEtFraction() );
+          const Ko::METCandidate pfmet(MET, mi->sumEt(), mi->NeutralEMFraction(),mi->NeutralHadEtFraction(),mi->ChargedHadEtFraction(),mi->ChargedEMEtFraction(),mi->MuonEtFraction() );
           pfMet->push_back(pfmet);
         }
 
@@ -513,7 +507,6 @@ class TopDILAnalyzer : public edm::EDAnalyzer {
     Z->clear();
     pfMet->clear();
     ttbar->clear();
-    h2ww->clear();
     met->clear();
     jets->clear();
     jetspt30->clear();
@@ -650,7 +643,6 @@ class TopDILAnalyzer : public edm::EDAnalyzer {
   std::vector<Ko::ZCandidate>* Z;
   std::vector<Ko::METCandidate>* pfMet;
   std::vector<Ko::TTbarMass>* ttbar;
-  std::vector<Ko::H2WWMass>* h2ww;
   std::vector<math::XYZTLorentzVector>* met;
   std::vector<math::XYZTLorentzVector>* jets;
   std::vector<math::XYZTLorentzVector>* jetspt30;
