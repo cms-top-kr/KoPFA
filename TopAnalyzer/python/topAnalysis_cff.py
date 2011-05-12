@@ -1,14 +1,17 @@
 import FWCore.ParameterSet.Config as cms
 
-from PFAnalyses.CommonTools.countingSequences_cfi import *
+#from PFAnalyses.CommonTools.countingSequences_cfi import *
+#from PFAnalyses.CommonTools.Selectors.looseJetIdPSet_cff import looseJetIdPSet
+#myJetId = looseJetIdPSet.clone()
+#myJetId.verbose = False
 
-from PFAnalyses.CommonTools.Selectors.looseJetIdPSet_cff import looseJetIdPSet
-myJetId = looseJetIdPSet.clone()
-myJetId.verbose = False
+from KoPFA.CommonTools.countingSequences_cfi import *
+from PhysicsTools.SelectorUtils.pfJetIDSelector_cfi import pfJetIDSelector
+myJetId = pfJetIDSelector.clone()
 
 from KoPFA.TopAnalyzer.topLeptonSelector_cfi import *
 from KoPFA.TopAnalyzer.triggerFilterByRun_cfi import *
-from KoPFA.TopAnalyzer.topHLTfilter_cfi import *
+from KoPFA.TopAnalyzer.topHLTfilter_cff import *
 
 PUweight = cms.EDProducer("EventWeightProducer",
    # PUweight = cms.vdouble(0.24698,0.878399,1.62972,1.74644,1.48563,0.999695,0.740525,0.457214,0.268234,0.184943,0.127889,0.0274048,0.0959167,0.383667),
@@ -98,7 +101,7 @@ MuEl = cms.EDAnalyzer('TopMuElAnalyzer',
     muonLabel2 =  cms.InputTag('Electrons'),
     metLabel =  cms.InputTag('patMETsPFlow'),
     jetLabel =  cms.InputTag('selectedPatJetsPFlow'),
-    useEventCounter = cms.bool( True ),
+    useEventCounter = cms.bool( False ),
     filters = cms.untracked.vstring(
         'initialEvents',
     #    'finalEvents'
@@ -123,6 +126,7 @@ topElElAnalysisMCSequence = cms.Sequence(
     topWLeptonGenFilter*
     GenZmassFilter*
     VertexFilter*
+    PUweight*
     Electrons*
     patElectronFilter*
     ElEl
@@ -156,7 +160,7 @@ topMuMuAnalysisMCSequence = cms.Sequence(
 
 topMuMuAnalysisRealDataSequence = cms.Sequence(
     loadHistosFromRunInfo*
-    hltHighLevelMuMuRD*
+#    hltHighLevelMuMuRD*
 #    muonTriggerFilterByRun*
     removeDuplicate*
     VertexFilter*
@@ -168,10 +172,11 @@ topMuMuAnalysisRealDataSequence = cms.Sequence(
 
 topMuElAnalysisMCSequence = cms.Sequence(
     loadHistosFromRunInfo*
-    hltHighLevelMuElMC*
+#    hltHighLevelMuElMC*
     topWLeptonGenFilter*
     GenZmassFilter*
     VertexFilter*
+    PUweight*
     Muons * Electrons *
     patMuonFilterForMuEl * patElectronFilterForMuEl *
     MuEl
@@ -180,7 +185,7 @@ topMuElAnalysisMCSequence = cms.Sequence(
 
 topMuElAnalysisRealDataSequence = cms.Sequence(
     loadHistosFromRunInfo*
-    hltHighLevelMuElRD*
+#    hltHighLevelMuElRD*
 #    muonTriggerFilterByRun*
     removeDuplicate*
     VertexFilter*
