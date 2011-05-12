@@ -13,7 +13,7 @@
 //
 // Original Author:  Tae Jeong Kim,40 R-A32,+41227678602,
 //         Created:  Fri Jun  4 17:19:29 CEST 2010
-// $Id: TopDILAnalyzer.h,v 1.36 2011/04/27 13:43:06 tjkim Exp $
+// $Id: TopDILAnalyzer.h,v 1.38 2011/05/01 01:09:27 youngjo Exp $
 //
 //
 
@@ -48,6 +48,7 @@
 #include "KoPFA/DataFormats/interface/METCandidate.h"
 #include "PFAnalyses/CommonTools/interface/CandidateSelector.h"
 #include "PFAnalyses/CommonTools/interface/PatJetIdSelector.h"
+#include "PhysicsTools/SelectorUtils/interface/PFJetIDSelectionFunctor.h"
 
 #include "DQMServices/Core/interface/MonitorElement.h"
 #include "DQMServices/Core/interface/DQMStore.h"
@@ -85,10 +86,11 @@ class TopDILAnalyzer : public edm::EDAnalyzer {
     metLabel_ = iConfig.getParameter<edm::InputTag>("metLabel");
     jetLabel_ = iConfig.getParameter<edm::InputTag>("jetLabel");
     genParticlesLabel_= iConfig.getParameter<edm::InputTag>("genParticlesLabel");
-    metStudy_ = iConfig.getParameter<bool>("metStudy");
+    metStudy_ = iConfig.getUntrackedParameter<bool>("metStudy",false);
     useEventCounter_ = iConfig.getParameter<bool>("useEventCounter");
     filters_ = iConfig.getUntrackedParameter<std::vector<std::string> >("filters");
-    looseJetIdSelector_.initialize( iConfig.getParameter<edm::ParameterSet> ("looseJetId") );
+    //looseJetIdSelector_.initialize( iConfig.getParameter<edm::ParameterSet> ("looseJetId") );
+    pfJetIdParams_ = iConfig.getParameter<edm::ParameterSet> ("looseJetId");
     relIso1_ = iConfig.getUntrackedParameter<double>("relIso1");
     relIso2_ = iConfig.getUntrackedParameter<double>("relIso2");
     bTagAlgo_ = iConfig.getUntrackedParameter<std::string>("bTagAlgo");
@@ -291,6 +293,8 @@ class TopDILAnalyzer : public edm::EDAnalyzer {
 
     edm::Handle<reco::GenParticleCollection> genParticles_;
     iEvent.getByLabel(genParticlesLabel_,genParticles_);
+
+    PFJetIDSelectionFunctor looseJetIdSelector_(pfJetIdParams_);
 
     for(unsigned i = 0; i != muons1_->size(); i++){
       for(unsigned j = 0; j != muons2_->size(); j++){
@@ -622,7 +626,8 @@ class TopDILAnalyzer : public edm::EDAnalyzer {
   //bool applyPUweight_;
   //edm::InputTag weightLabel_;
   // loose jet ID. 
-  PatJetIdSelector looseJetIdSelector_;
+  //PatJetIdSelector looseJetIdSelector_;
+  //PFJetIDSelectionFunctor looseJetIdSelector_;
   
   // relIso
   double relIso1_;
@@ -710,5 +715,8 @@ class TopDILAnalyzer : public edm::EDAnalyzer {
   bool up_;
   FactorizedJetCorrector* resJetCorrector_;
   JetCorrectionUncertainty *jecUnc_;
+
+  edm::ParameterSet pfJetIdParams_;
+
 };
 
