@@ -104,7 +104,7 @@ process.outpath = cms.EndPath(process.saveHistosInRunInfo*process.out)
 #process.load("KoPFA.CommonTools.recoPFCandCountFilter_cfi")
 
 process.p = cms.Path(
-    process.startupSequence*
+#    process.startupSequence*
     process.noscraping*
     process.primaryVertexFilter*
 #    process.HBHENoiseFilter *
