@@ -13,9 +13,6 @@ updateEventContent(process)
 process.pfIsolatedMuonsPFlow.combinedIsolationCut = cms.double(999)
 process.pfIsolatedElectronsPFlow.combinedIsolationCut = cms.double(999)
 
-process.patElectronFilter.minNumber = 1
-process.patMuonFilter.minNumber = 1
-
 ## Source
 process.source = cms.Source("PoolSource",
                                 fileNames = cms.untracked.vstring(
