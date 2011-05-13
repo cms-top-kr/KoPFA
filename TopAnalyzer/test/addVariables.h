@@ -29,18 +29,18 @@ void addTopVariables(TopAnalyzerLite* analyzer){
   analyzer->addMonitorPlot("nhIso2","nhIso2","nhIso2;Neutral Hadron #Sigma p_{T} (GeV);Events/0.2 GeV", 20, 0, 4, 0.1, 20000);
   analyzer->addMonitorPlot("phIso2","phIso2","phIso2;Photon #Sigma p_{T} (GeV);Events/0.2 GeV", 20, 0, 4, 0.1, 20000);
 
-  analyzer->addMonitorPlot("sumet", "pfMet.sumEt()", "#Sigma E_{T};#Sigma E_{T} (GeV);Events/20 GeV", 50, 0, 1000, 0.1, 20000);
+  analyzer->addMonitorPlot("sumet", "sumEt", "#Sigma E_{T};#Sigma E_{T} (GeV);Events/20 GeV", 50, 0, 1000, 0.1, 20000);
   analyzer->addMonitorPlot("chargedhadet", "pfMet.chargedHadEt()", "#Sigma E_{T};Charged Hadron #Sigma E_{T} (GeV);Events/5 GeV", 40, 0, 200, 0.1, 20000);
   analyzer->addMonitorPlot("neutralhadet", "pfMet.neutralHadEt()", "#Sigma E_{T};Neutral Hadron #Sigma E_{T} (GeV);Events/5 GeV", 40, 0, 200, 0.1, 20000);
   analyzer->addMonitorPlot("photonet", "pfMet.photonEt()", "#Sigma E_{T};Photon #Sigma E_{T} (GeV);Events/5 GeV", 40, 0, 200, 0.1, 20000);
-  analyzer->addMonitorPlot("HT","Z.leg1().pt()+Z.leg2().pt()+jetspt30[0].pt() + jetspt30[1].pt() + MET","HT; Events; H_{T} (GeV)", 40,0,1000,0.1,20000);
+  analyzer->addMonitorPlot("HT","Z.leg1().pt()+Z.leg2().pt()+jetspt30[0].pt() + jetspt30[1].pt() + MET","HT; H_{T} (GeV); Events", 40,0,1000,0.1,20000);
 
   analyzer->addMonitorPlot("metPhi", "met[0].phi()", "Azimuthal angle of Missing E_{T};Azimuthal angle #phi;Events/0.2 rad", 35, -3.5, 3.5, 0.1, 100);
   analyzer->addMonitorPlot("dphi1", "asin(sin(Z.leg1().phi()-met[0].phi()))", "Azimuthal angle difference between leading lepton - MET;Angle difference;Events/0.2 rad", 20, -2, 2, 0.1, 10000);
   analyzer->addMonitorPlot("dphi2", "asin(sin(Z.leg2().phi()-met[0].phi()))", "Azimuthal angle difference between leading lepton - MET;Angle difference;Events/0.2 rad", 20, -2, 2, 0.1, 10000);
   analyzer->addMonitorPlot("vsumM", "ttbar.M()", "ttbar invariant mass;t#bar{t} invaraint mass;Events/40 GeV", 20, 200, 1000, 0.1, 0.9, false);
-  analyzer->addMonitorPlot("vsumMAlt", "ttbar.M()", "ttbar invariant mass;t#bar{t} invaraint mass;Events", "0 350 400 450 500 550 600 700 800 1400", 0.1, 1.1, false);
-  analyzer->addMonitorPlot("genttbarM", "genttbarM", "ttbar invariant mass;t#bar{t} invaraint mass;Events", "0 350 400 450 500 550 600 700 800 1400", 0.1, 1.1, false);
+  analyzer->addMonitorPlot("vsumMAlt", "ttbar.M()", "ttbar invariant mass;t#bar{t} invaraint mass;Events", "0 350 400 450 500 550 600 700 800 1400", 0.1, 1.8, false);
+  analyzer->addMonitorPlot("genttbarM", "genttbarM", "ttbar invariant mass;t#bar{t} invaraint mass;Events", "0 350 400 450 500 550 600 700 800 1400", 0.1, 1.8, false);
   analyzer->addMonitorPlot("maosM", "ttbar.maosM()", "ttbar invariant mass;t#bar{t} invaraint mass;Events/40 GeV", 20, 200, 1000, 0.1, 0.9, false);
   analyzer->addMonitorPlot("nbJet", "@bjets.size()", "b-Jet Multiplicity;b-Jet Multiplicity;Events", 5, 0, 5, 0.1, 3,false);
 }
