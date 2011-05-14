@@ -13,13 +13,13 @@ namespace Ko{
     H2WWMass(){}
     virtual ~H2WWMass(){}
 
-    H2WWMass(const reco::Candidate::LorentzVector& lep1, const reco::Candidate::LorentzVector& lep2, const reco::Candidate::LorentzVector& met, const float& charge1, const float& charge2);
+    H2WWMass(const reco::Candidate::LorentzVector& lep1, const reco::Candidate::LorentzVector& lep2, const TLorentzVector& met, const float& charge1, const float& charge2);
 
     const TLorentzVector& leg1() const { return leg1_; }
     const TLorentzVector& leg2() const { return leg2_; }
     const TLorentzVector& nu1() { return nu1_; };
     const TLorentzVector& nu2() { return nu2_; };
-    const TLorentzVector& met() { return met__; };
+    const TLorentzVector& met() { return met_; };
 
     float M() const { return M_; }
     float charge1() const { return charge1_; }
@@ -36,13 +36,12 @@ namespace Ko{
 
     reco::Candidate::LorentzVector lep1_;
     reco::Candidate::LorentzVector lep2_;
-    reco::Candidate::LorentzVector met_;
 
     TLorentzVector leg1_;
     TLorentzVector leg2_;
     TLorentzVector nu1_;
     TLorentzVector nu2_;
-    TLorentzVector met__;
+    TLorentzVector met_;
 
     float M_;
     float Mt2_;    
