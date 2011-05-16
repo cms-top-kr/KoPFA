@@ -38,7 +38,7 @@ void unfolding(){
   TH1F * hGenDist = (TH1F*) file->Get("hGen");
   TH1F * hAcceptDist = (TH1F*) file->Get("hAccept");
 
-  plot(h2ResponseM, hDataDist, hGenDist, hAcceptDist, "vsum", 500000, 36, true, true); 
+  plot(h2ResponseM, hDataDist, hGenDist, hAcceptDist, "vsum", 500000, 191.0, true, false); 
 
 }
 
