@@ -9,7 +9,7 @@ import commands
 
 decay = sys.argv[1]
 
-mclist = ["ZJets", "ZtauDecay", "DYmm20to50", "DYee20to50", "DYtt20to50", "WJetsToLNu", "VVJets", "TTbarTuneZ2","SingleToptW","QCD"]
+mclist = ["ZJets", "ZtauDecay", "DYmm20to50", "DYee20to50", "DYtt20to50", "DYee10to20", "WJetsToLNu", "VVJets", "TTbarTuneZ2","SingleToptW","QCD"]
 datalist = ["Run2011A"]
 
 def common():
