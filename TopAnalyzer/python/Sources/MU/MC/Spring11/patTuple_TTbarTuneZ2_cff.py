@@ -1,24 +1,11 @@
+/castor/cern.ch/user/b/bhlee/2011mc/Spring11/Mar29PromptReco_v8/TTbarTuneZ2/patTuple_skim_1_1_zHS.root
+/castor/cern.ch/user/b/bhlee/2011mc/Spring11/Mar29PromptReco_v8/TTbarTuneZ2/patTuple_skim_2_1_tzm.root
+/castor/cern.ch/user/b/bhlee/2011mc/Spring11/Mar29PromptReco_v8/TTbarTuneZ2/patTuple_skim_3_1_mhB.root
+/castor/cern.ch/user/b/bhlee/2011mc/Spring11/Mar29PromptReco_v8/TTbarTuneZ2/patTuple_skim_4_1_8eP.root
+/castor/cern.ch/user/b/bhlee/2011mc/Spring11/Mar29PromptReco_v8/TTbarTuneZ2/patTuple_skim_5_1_1r6.root
+/castor/cern.ch/user/b/bhlee/2011mc/Spring11/Mar29PromptReco_v8/TTbarTuneZ2/patTuple_skim_6_1_oyH.root
+/castor/cern.ch/user/b/bhlee/2011mc/Spring11/Mar29PromptReco_v8/TTbarTuneZ2/patTuple_skim_7_1_WoD.root
+/castor/cern.ch/user/b/bhlee/2011mc/Spring11/Mar29PromptReco_v8/TTbarTuneZ2/patTuple_skim_8_1_IRC.root
+/castor/cern.ch/user/b/bhlee/2011mc/Spring11/Mar29PromptReco_v8/TTbarTuneZ2/patTuple_skim_9_1_0ga.root
+/castor/cern.ch/user/b/bhlee/2011mc/Spring11/Mar29PromptReco_v8/TTbarTuneZ2/patTuple_skim_10_1_vcM.root
 
-import FWCore.ParameterSet.Config as cms
-
-readFiles = cms.untracked.vstring()
-source = cms.Source("PoolSource",
-		     noEventSort = cms.untracked.bool(True),
-		     duplicateCheckMode = cms.untracked.string("noDuplicateCheck"),
-		     fileNames = readFiles
-                    )
-readFiles.extend([
-	'rfio:///castor/cern.ch/user/t/tjkim/DIMUSKIM/MC/Spring11/TTbar/patTuple_skim_10_3_XM9.root',
-	'rfio:///castor/cern.ch/user/t/tjkim/DIMUSKIM/MC/Spring11/TTbar/patTuple_skim_11_3_Ho7.root',
-	'rfio:///castor/cern.ch/user/t/tjkim/DIMUSKIM/MC/Spring11/TTbar/patTuple_skim_12_3_sdE.root',
-	'rfio:///castor/cern.ch/user/t/tjkim/DIMUSKIM/MC/Spring11/TTbar/patTuple_skim_1_3_Ycd.root',
-	'rfio:///castor/cern.ch/user/t/tjkim/DIMUSKIM/MC/Spring11/TTbar/patTuple_skim_2_3_Hn4.root',
-	'rfio:///castor/cern.ch/user/t/tjkim/DIMUSKIM/MC/Spring11/TTbar/patTuple_skim_3_3_yyY.root',
-	'rfio:///castor/cern.ch/user/t/tjkim/DIMUSKIM/MC/Spring11/TTbar/patTuple_skim_4_3_AyC.root',
-	'rfio:///castor/cern.ch/user/t/tjkim/DIMUSKIM/MC/Spring11/TTbar/patTuple_skim_5_3_fip.root',
-	'rfio:///castor/cern.ch/user/t/tjkim/DIMUSKIM/MC/Spring11/TTbar/patTuple_skim_6_3_hAn.root',
-	'rfio:///castor/cern.ch/user/t/tjkim/DIMUSKIM/MC/Spring11/TTbar/patTuple_skim_7_3_goK.root',
-	'rfio:///castor/cern.ch/user/t/tjkim/DIMUSKIM/MC/Spring11/TTbar/patTuple_skim_8_3_xzL.root',
-	'rfio:///castor/cern.ch/user/t/tjkim/DIMUSKIM/MC/Spring11/TTbar/patTuple_skim_9_3_9k0.root',
-]
-        )

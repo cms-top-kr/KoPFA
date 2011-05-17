@@ -1,165 +1,152 @@
+/castor/cern.ch/user/b/bhlee/2011mc/Spring11/Mar29PromptReco_v8/WJetsToLNu/patTuple_skim_1_1_Wv4.root
+/castor/cern.ch/user/b/bhlee/2011mc/Spring11/Mar29PromptReco_v8/WJetsToLNu/patTuple_skim_2_2_ZvY.root
+/castor/cern.ch/user/b/bhlee/2011mc/Spring11/Mar29PromptReco_v8/WJetsToLNu/patTuple_skim_3_2_iGs.root
+/castor/cern.ch/user/b/bhlee/2011mc/Spring11/Mar29PromptReco_v8/WJetsToLNu/patTuple_skim_4_1_Six.root
+/castor/cern.ch/user/b/bhlee/2011mc/Spring11/Mar29PromptReco_v8/WJetsToLNu/patTuple_skim_5_1_YYw.root
+/castor/cern.ch/user/b/bhlee/2011mc/Spring11/Mar29PromptReco_v8/WJetsToLNu/patTuple_skim_6_1_N9Q.root
+/castor/cern.ch/user/b/bhlee/2011mc/Spring11/Mar29PromptReco_v8/WJetsToLNu/patTuple_skim_7_1_7Cg.root
+/castor/cern.ch/user/b/bhlee/2011mc/Spring11/Mar29PromptReco_v8/WJetsToLNu/patTuple_skim_8_2_F7i.root
+/castor/cern.ch/user/b/bhlee/2011mc/Spring11/Mar29PromptReco_v8/WJetsToLNu/patTuple_skim_9_1_KoB.root
+/castor/cern.ch/user/b/bhlee/2011mc/Spring11/Mar29PromptReco_v8/WJetsToLNu/patTuple_skim_10_1_rVl.root
+/castor/cern.ch/user/b/bhlee/2011mc/Spring11/Mar29PromptReco_v8/WJetsToLNu/patTuple_skim_11_2_KHI.root
+/castor/cern.ch/user/b/bhlee/2011mc/Spring11/Mar29PromptReco_v8/WJetsToLNu/patTuple_skim_12_2_FKc.root
+/castor/cern.ch/user/b/bhlee/2011mc/Spring11/Mar29PromptReco_v8/WJetsToLNu/patTuple_skim_13_2_9pW.root
+/castor/cern.ch/user/b/bhlee/2011mc/Spring11/Mar29PromptReco_v8/WJetsToLNu/patTuple_skim_14_2_DDJ.root
+/castor/cern.ch/user/b/bhlee/2011mc/Spring11/Mar29PromptReco_v8/WJetsToLNu/patTuple_skim_15_1_FjM.root
+/castor/cern.ch/user/b/bhlee/2011mc/Spring11/Mar29PromptReco_v8/WJetsToLNu/patTuple_skim_16_2_6QO.root
+/castor/cern.ch/user/b/bhlee/2011mc/Spring11/Mar29PromptReco_v8/WJetsToLNu/patTuple_skim_17_2_yjc.root
+/castor/cern.ch/user/b/bhlee/2011mc/Spring11/Mar29PromptReco_v8/WJetsToLNu/patTuple_skim_18_2_Bbu.root
+/castor/cern.ch/user/b/bhlee/2011mc/Spring11/Mar29PromptReco_v8/WJetsToLNu/patTuple_skim_19_2_v4B.root
+/castor/cern.ch/user/b/bhlee/2011mc/Spring11/Mar29PromptReco_v8/WJetsToLNu/patTuple_skim_20_1_6A7.root
+/castor/cern.ch/user/b/bhlee/2011mc/Spring11/Mar29PromptReco_v8/WJetsToLNu/patTuple_skim_21_1_dSK.root
+/castor/cern.ch/user/b/bhlee/2011mc/Spring11/Mar29PromptReco_v8/WJetsToLNu/patTuple_skim_22_1_xCs.root
+/castor/cern.ch/user/b/bhlee/2011mc/Spring11/Mar29PromptReco_v8/WJetsToLNu/patTuple_skim_23_2_7G5.root
+/castor/cern.ch/user/b/bhlee/2011mc/Spring11/Mar29PromptReco_v8/WJetsToLNu/patTuple_skim_24_1_zz6.root
+/castor/cern.ch/user/b/bhlee/2011mc/Spring11/Mar29PromptReco_v8/WJetsToLNu/patTuple_skim_25_1_noh.root
+/castor/cern.ch/user/b/bhlee/2011mc/Spring11/Mar29PromptReco_v8/WJetsToLNu/patTuple_skim_26_1_4VO.root
+/castor/cern.ch/user/b/bhlee/2011mc/Spring11/Mar29PromptReco_v8/WJetsToLNu/patTuple_skim_27_1_3nu.root
+/castor/cern.ch/user/b/bhlee/2011mc/Spring11/Mar29PromptReco_v8/WJetsToLNu/patTuple_skim_28_2_SCk.root
+/castor/cern.ch/user/b/bhlee/2011mc/Spring11/Mar29PromptReco_v8/WJetsToLNu/patTuple_skim_29_2_yqO.root
+/castor/cern.ch/user/b/bhlee/2011mc/Spring11/Mar29PromptReco_v8/WJetsToLNu/patTuple_skim_30_2_vPo.root
+/castor/cern.ch/user/b/bhlee/2011mc/Spring11/Mar29PromptReco_v8/WJetsToLNu/patTuple_skim_31_2_0ye.root
+/castor/cern.ch/user/b/bhlee/2011mc/Spring11/Mar29PromptReco_v8/WJetsToLNu/patTuple_skim_32_2_mys.root
+/castor/cern.ch/user/b/bhlee/2011mc/Spring11/Mar29PromptReco_v8/WJetsToLNu/patTuple_skim_33_2_j7U.root
+/castor/cern.ch/user/b/bhlee/2011mc/Spring11/Mar29PromptReco_v8/WJetsToLNu/patTuple_skim_34_1_7wg.root
+/castor/cern.ch/user/b/bhlee/2011mc/Spring11/Mar29PromptReco_v8/WJetsToLNu/patTuple_skim_35_2_naf.root
+/castor/cern.ch/user/b/bhlee/2011mc/Spring11/Mar29PromptReco_v8/WJetsToLNu/patTuple_skim_36_2_Vyi.root
+/castor/cern.ch/user/b/bhlee/2011mc/Spring11/Mar29PromptReco_v8/WJetsToLNu/patTuple_skim_37_2_SQW.root
+/castor/cern.ch/user/b/bhlee/2011mc/Spring11/Mar29PromptReco_v8/WJetsToLNu/patTuple_skim_38_1_29j.root
+/castor/cern.ch/user/b/bhlee/2011mc/Spring11/Mar29PromptReco_v8/WJetsToLNu/patTuple_skim_39_2_l9E.root
+/castor/cern.ch/user/b/bhlee/2011mc/Spring11/Mar29PromptReco_v8/WJetsToLNu/patTuple_skim_40_2_ak4.root
+/castor/cern.ch/user/b/bhlee/2011mc/Spring11/Mar29PromptReco_v8/WJetsToLNu/patTuple_skim_41_1_2ox.root
+/castor/cern.ch/user/b/bhlee/2011mc/Spring11/Mar29PromptReco_v8/WJetsToLNu/patTuple_skim_42_1_Ild.root
+/castor/cern.ch/user/b/bhlee/2011mc/Spring11/Mar29PromptReco_v8/WJetsToLNu/patTuple_skim_43_1_LYz.root
+/castor/cern.ch/user/b/bhlee/2011mc/Spring11/Mar29PromptReco_v8/WJetsToLNu/patTuple_skim_44_1_aDT.root
+/castor/cern.ch/user/b/bhlee/2011mc/Spring11/Mar29PromptReco_v8/WJetsToLNu/patTuple_skim_45_2_yCI.root
+/castor/cern.ch/user/b/bhlee/2011mc/Spring11/Mar29PromptReco_v8/WJetsToLNu/patTuple_skim_46_2_n9W.root
+/castor/cern.ch/user/b/bhlee/2011mc/Spring11/Mar29PromptReco_v8/WJetsToLNu/patTuple_skim_47_1_1Ec.root
+/castor/cern.ch/user/b/bhlee/2011mc/Spring11/Mar29PromptReco_v8/WJetsToLNu/patTuple_skim_48_2_FZw.root
+/castor/cern.ch/user/b/bhlee/2011mc/Spring11/Mar29PromptReco_v8/WJetsToLNu/patTuple_skim_49_1_i8m.root
+/castor/cern.ch/user/b/bhlee/2011mc/Spring11/Mar29PromptReco_v8/WJetsToLNu/patTuple_skim_50_1_EEQ.root
+/castor/cern.ch/user/b/bhlee/2011mc/Spring11/Mar29PromptReco_v8/WJetsToLNu/patTuple_skim_51_1_Aon.root
+/castor/cern.ch/user/b/bhlee/2011mc/Spring11/Mar29PromptReco_v8/WJetsToLNu/patTuple_skim_52_1_ueo.root
+/castor/cern.ch/user/b/bhlee/2011mc/Spring11/Mar29PromptReco_v8/WJetsToLNu/patTuple_skim_53_1_Vsh.root
+/castor/cern.ch/user/b/bhlee/2011mc/Spring11/Mar29PromptReco_v8/WJetsToLNu/patTuple_skim_54_0_u2c.root
+/castor/cern.ch/user/b/bhlee/2011mc/Spring11/Mar29PromptReco_v8/WJetsToLNu/patTuple_skim_55_0_5cU.root
+/castor/cern.ch/user/b/bhlee/2011mc/Spring11/Mar29PromptReco_v8/WJetsToLNu/patTuple_skim_56_1_lzQ.root
+/castor/cern.ch/user/b/bhlee/2011mc/Spring11/Mar29PromptReco_v8/WJetsToLNu/patTuple_skim_57_0_aSV.root
+/castor/cern.ch/user/b/bhlee/2011mc/Spring11/Mar29PromptReco_v8/WJetsToLNu/patTuple_skim_58_1_UHt.root
+/castor/cern.ch/user/b/bhlee/2011mc/Spring11/Mar29PromptReco_v8/WJetsToLNu/patTuple_skim_59_0_E7Z.root
+/castor/cern.ch/user/b/bhlee/2011mc/Spring11/Mar29PromptReco_v8/WJetsToLNu/patTuple_skim_60_0_AFt.root
+/castor/cern.ch/user/b/bhlee/2011mc/Spring11/Mar29PromptReco_v8/WJetsToLNu/patTuple_skim_61_0_iSz.root
+/castor/cern.ch/user/b/bhlee/2011mc/Spring11/Mar29PromptReco_v8/WJetsToLNu/patTuple_skim_62_1_Dt3.root
+/castor/cern.ch/user/b/bhlee/2011mc/Spring11/Mar29PromptReco_v8/WJetsToLNu/patTuple_skim_63_0_bF7.root
+/castor/cern.ch/user/b/bhlee/2011mc/Spring11/Mar29PromptReco_v8/WJetsToLNu/patTuple_skim_64_0_jIZ.root
+/castor/cern.ch/user/b/bhlee/2011mc/Spring11/Mar29PromptReco_v8/WJetsToLNu/patTuple_skim_65_0_lrO.root
+/castor/cern.ch/user/b/bhlee/2011mc/Spring11/Mar29PromptReco_v8/WJetsToLNu/patTuple_skim_66_0_GIy.root
+/castor/cern.ch/user/b/bhlee/2011mc/Spring11/Mar29PromptReco_v8/WJetsToLNu/patTuple_skim_67_0_YTU.root
+/castor/cern.ch/user/b/bhlee/2011mc/Spring11/Mar29PromptReco_v8/WJetsToLNu/patTuple_skim_68_0_UdU.root
+/castor/cern.ch/user/b/bhlee/2011mc/Spring11/Mar29PromptReco_v8/WJetsToLNu/patTuple_skim_69_1_Q3W.root
+/castor/cern.ch/user/b/bhlee/2011mc/Spring11/Mar29PromptReco_v8/WJetsToLNu/patTuple_skim_70_0_hmm.root
+/castor/cern.ch/user/b/bhlee/2011mc/Spring11/Mar29PromptReco_v8/WJetsToLNu/patTuple_skim_71_0_I5y.root
+/castor/cern.ch/user/b/bhlee/2011mc/Spring11/Mar29PromptReco_v8/WJetsToLNu/patTuple_skim_72_0_W7w.root
+/castor/cern.ch/user/b/bhlee/2011mc/Spring11/Mar29PromptReco_v8/WJetsToLNu/patTuple_skim_73_0_l9L.root
+/castor/cern.ch/user/b/bhlee/2011mc/Spring11/Mar29PromptReco_v8/WJetsToLNu/patTuple_skim_74_0_Rg5.root
+/castor/cern.ch/user/b/bhlee/2011mc/Spring11/Mar29PromptReco_v8/WJetsToLNu/patTuple_skim_75_0_CcC.root
+/castor/cern.ch/user/b/bhlee/2011mc/Spring11/Mar29PromptReco_v8/WJetsToLNu/patTuple_skim_76_0_NQN.root
+/castor/cern.ch/user/b/bhlee/2011mc/Spring11/Mar29PromptReco_v8/WJetsToLNu/patTuple_skim_77_1_aVy.root
+/castor/cern.ch/user/b/bhlee/2011mc/Spring11/Mar29PromptReco_v8/WJetsToLNu/patTuple_skim_78_0_i6N.root
+/castor/cern.ch/user/b/bhlee/2011mc/Spring11/Mar29PromptReco_v8/WJetsToLNu/patTuple_skim_79_0_fQw.root
+/castor/cern.ch/user/b/bhlee/2011mc/Spring11/Mar29PromptReco_v8/WJetsToLNu/patTuple_skim_80_0_i73.root
+/castor/cern.ch/user/b/bhlee/2011mc/Spring11/Mar29PromptReco_v8/WJetsToLNu/patTuple_skim_81_0_7Eo.root
+/castor/cern.ch/user/b/bhlee/2011mc/Spring11/Mar29PromptReco_v8/WJetsToLNu/patTuple_skim_82_1_Vzh.root
+/castor/cern.ch/user/b/bhlee/2011mc/Spring11/Mar29PromptReco_v8/WJetsToLNu/patTuple_skim_83_0_okX.root
+/castor/cern.ch/user/b/bhlee/2011mc/Spring11/Mar29PromptReco_v8/WJetsToLNu/patTuple_skim_84_0_Pv8.root
+/castor/cern.ch/user/b/bhlee/2011mc/Spring11/Mar29PromptReco_v8/WJetsToLNu/patTuple_skim_85_0_8lA.root
+/castor/cern.ch/user/b/bhlee/2011mc/Spring11/Mar29PromptReco_v8/WJetsToLNu/patTuple_skim_86_1_U6i.root
+/castor/cern.ch/user/b/bhlee/2011mc/Spring11/Mar29PromptReco_v8/WJetsToLNu/patTuple_skim_87_1_xdx.root
+/castor/cern.ch/user/b/bhlee/2011mc/Spring11/Mar29PromptReco_v8/WJetsToLNu/patTuple_skim_88_0_rWy.root
+/castor/cern.ch/user/b/bhlee/2011mc/Spring11/Mar29PromptReco_v8/WJetsToLNu/patTuple_skim_89_1_kUS.root
+/castor/cern.ch/user/b/bhlee/2011mc/Spring11/Mar29PromptReco_v8/WJetsToLNu/patTuple_skim_90_0_HnL.root
+/castor/cern.ch/user/b/bhlee/2011mc/Spring11/Mar29PromptReco_v8/WJetsToLNu/patTuple_skim_91_0_I9c.root
+/castor/cern.ch/user/b/bhlee/2011mc/Spring11/Mar29PromptReco_v8/WJetsToLNu/patTuple_skim_92_0_KM7.root
+/castor/cern.ch/user/b/bhlee/2011mc/Spring11/Mar29PromptReco_v8/WJetsToLNu/patTuple_skim_93_0_nXS.root
+/castor/cern.ch/user/b/bhlee/2011mc/Spring11/Mar29PromptReco_v8/WJetsToLNu/patTuple_skim_94_0_JDN.root
+/castor/cern.ch/user/b/bhlee/2011mc/Spring11/Mar29PromptReco_v8/WJetsToLNu/patTuple_skim_95_0_moP.root
+/castor/cern.ch/user/b/bhlee/2011mc/Spring11/Mar29PromptReco_v8/WJetsToLNu/patTuple_skim_96_0_zAs.root
+/castor/cern.ch/user/b/bhlee/2011mc/Spring11/Mar29PromptReco_v8/WJetsToLNu/patTuple_skim_97_1_9bz.root
+/castor/cern.ch/user/b/bhlee/2011mc/Spring11/Mar29PromptReco_v8/WJetsToLNu/patTuple_skim_98_0_vXB.root
+/castor/cern.ch/user/b/bhlee/2011mc/Spring11/Mar29PromptReco_v8/WJetsToLNu/patTuple_skim_99_0_Nhq.root
+/castor/cern.ch/user/b/bhlee/2011mc/Spring11/Mar29PromptReco_v8/WJetsToLNu/patTuple_skim_100_0_u9x.root
+/castor/cern.ch/user/b/bhlee/2011mc/Spring11/Mar29PromptReco_v8/WJetsToLNu/patTuple_skim_101_0_wk4.root
+/castor/cern.ch/user/b/bhlee/2011mc/Spring11/Mar29PromptReco_v8/WJetsToLNu/patTuple_skim_102_0_ujf.root
+/castor/cern.ch/user/b/bhlee/2011mc/Spring11/Mar29PromptReco_v8/WJetsToLNu/patTuple_skim_103_0_1nc.root
+/castor/cern.ch/user/b/bhlee/2011mc/Spring11/Mar29PromptReco_v8/WJetsToLNu/patTuple_skim_104_0_VJd.root
+/castor/cern.ch/user/b/bhlee/2011mc/Spring11/Mar29PromptReco_v8/WJetsToLNu/patTuple_skim_105_0_DWN.root
+/castor/cern.ch/user/b/bhlee/2011mc/Spring11/Mar29PromptReco_v8/WJetsToLNu/patTuple_skim_106_0_aXH.root
+/castor/cern.ch/user/b/bhlee/2011mc/Spring11/Mar29PromptReco_v8/WJetsToLNu/patTuple_skim_107_0_gpy.root
+/castor/cern.ch/user/b/bhlee/2011mc/Spring11/Mar29PromptReco_v8/WJetsToLNu/patTuple_skim_108_0_rEc.root
+/castor/cern.ch/user/b/bhlee/2011mc/Spring11/Mar29PromptReco_v8/WJetsToLNu/patTuple_skim_109_0_vkA.root
+/castor/cern.ch/user/b/bhlee/2011mc/Spring11/Mar29PromptReco_v8/WJetsToLNu/patTuple_skim_110_0_Nsd.root
+/castor/cern.ch/user/b/bhlee/2011mc/Spring11/Mar29PromptReco_v8/WJetsToLNu/patTuple_skim_111_0_6Pq.root
+/castor/cern.ch/user/b/bhlee/2011mc/Spring11/Mar29PromptReco_v8/WJetsToLNu/patTuple_skim_112_0_euV.root
+/castor/cern.ch/user/b/bhlee/2011mc/Spring11/Mar29PromptReco_v8/WJetsToLNu/patTuple_skim_113_0_aZG.root
+/castor/cern.ch/user/b/bhlee/2011mc/Spring11/Mar29PromptReco_v8/WJetsToLNu/patTuple_skim_114_0_baS.root
+/castor/cern.ch/user/b/bhlee/2011mc/Spring11/Mar29PromptReco_v8/WJetsToLNu/patTuple_skim_115_0_ako.root
+/castor/cern.ch/user/b/bhlee/2011mc/Spring11/Mar29PromptReco_v8/WJetsToLNu/patTuple_skim_116_0_3kV.root
+/castor/cern.ch/user/b/bhlee/2011mc/Spring11/Mar29PromptReco_v8/WJetsToLNu/patTuple_skim_117_0_tPi.root
+/castor/cern.ch/user/b/bhlee/2011mc/Spring11/Mar29PromptReco_v8/WJetsToLNu/patTuple_skim_118_0_lPE.root
+/castor/cern.ch/user/b/bhlee/2011mc/Spring11/Mar29PromptReco_v8/WJetsToLNu/patTuple_skim_119_0_v92.root
+/castor/cern.ch/user/b/bhlee/2011mc/Spring11/Mar29PromptReco_v8/WJetsToLNu/patTuple_skim_120_0_7MY.root
+/castor/cern.ch/user/b/bhlee/2011mc/Spring11/Mar29PromptReco_v8/WJetsToLNu/patTuple_skim_121_0_BGW.root
+/castor/cern.ch/user/b/bhlee/2011mc/Spring11/Mar29PromptReco_v8/WJetsToLNu/patTuple_skim_122_0_jlP.root
+/castor/cern.ch/user/b/bhlee/2011mc/Spring11/Mar29PromptReco_v8/WJetsToLNu/patTuple_skim_123_0_DvX.root
+/castor/cern.ch/user/b/bhlee/2011mc/Spring11/Mar29PromptReco_v8/WJetsToLNu/patTuple_skim_124_0_Ba8.root
+/castor/cern.ch/user/b/bhlee/2011mc/Spring11/Mar29PromptReco_v8/WJetsToLNu/patTuple_skim_125_0_ZMc.root
+/castor/cern.ch/user/b/bhlee/2011mc/Spring11/Mar29PromptReco_v8/WJetsToLNu/patTuple_skim_126_0_1Yn.root
+/castor/cern.ch/user/b/bhlee/2011mc/Spring11/Mar29PromptReco_v8/WJetsToLNu/patTuple_skim_127_0_bbf.root
+/castor/cern.ch/user/b/bhlee/2011mc/Spring11/Mar29PromptReco_v8/WJetsToLNu/patTuple_skim_128_0_m5T.root
+/castor/cern.ch/user/b/bhlee/2011mc/Spring11/Mar29PromptReco_v8/WJetsToLNu/patTuple_skim_129_0_PAV.root
+/castor/cern.ch/user/b/bhlee/2011mc/Spring11/Mar29PromptReco_v8/WJetsToLNu/patTuple_skim_130_0_5k2.root
+/castor/cern.ch/user/b/bhlee/2011mc/Spring11/Mar29PromptReco_v8/WJetsToLNu/patTuple_skim_131_0_qpa.root
+/castor/cern.ch/user/b/bhlee/2011mc/Spring11/Mar29PromptReco_v8/WJetsToLNu/patTuple_skim_132_0_KE6.root
+/castor/cern.ch/user/b/bhlee/2011mc/Spring11/Mar29PromptReco_v8/WJetsToLNu/patTuple_skim_133_0_GWX.root
+/castor/cern.ch/user/b/bhlee/2011mc/Spring11/Mar29PromptReco_v8/WJetsToLNu/patTuple_skim_134_0_ysO.root
+/castor/cern.ch/user/b/bhlee/2011mc/Spring11/Mar29PromptReco_v8/WJetsToLNu/patTuple_skim_135_0_HWd.root
+/castor/cern.ch/user/b/bhlee/2011mc/Spring11/Mar29PromptReco_v8/WJetsToLNu/patTuple_skim_136_0_EaL.root
+/castor/cern.ch/user/b/bhlee/2011mc/Spring11/Mar29PromptReco_v8/WJetsToLNu/patTuple_skim_137_0_v6g.root
+/castor/cern.ch/user/b/bhlee/2011mc/Spring11/Mar29PromptReco_v8/WJetsToLNu/patTuple_skim_138_0_xEM.root
+/castor/cern.ch/user/b/bhlee/2011mc/Spring11/Mar29PromptReco_v8/WJetsToLNu/patTuple_skim_139_0_pqh.root
+/castor/cern.ch/user/b/bhlee/2011mc/Spring11/Mar29PromptReco_v8/WJetsToLNu/patTuple_skim_140_0_Hpu.root
+/castor/cern.ch/user/b/bhlee/2011mc/Spring11/Mar29PromptReco_v8/WJetsToLNu/patTuple_skim_141_0_fpN.root
+/castor/cern.ch/user/b/bhlee/2011mc/Spring11/Mar29PromptReco_v8/WJetsToLNu/patTuple_skim_142_0_zhq.root
+/castor/cern.ch/user/b/bhlee/2011mc/Spring11/Mar29PromptReco_v8/WJetsToLNu/patTuple_skim_143_0_WKj.root
+/castor/cern.ch/user/b/bhlee/2011mc/Spring11/Mar29PromptReco_v8/WJetsToLNu/patTuple_skim_144_0_x4d.root
+/castor/cern.ch/user/b/bhlee/2011mc/Spring11/Mar29PromptReco_v8/WJetsToLNu/patTuple_skim_145_0_mw2.root
+/castor/cern.ch/user/b/bhlee/2011mc/Spring11/Mar29PromptReco_v8/WJetsToLNu/patTuple_skim_146_0_kiB.root
+/castor/cern.ch/user/b/bhlee/2011mc/Spring11/Mar29PromptReco_v8/WJetsToLNu/patTuple_skim_147_0_SQ7.root
+/castor/cern.ch/user/b/bhlee/2011mc/Spring11/Mar29PromptReco_v8/WJetsToLNu/patTuple_skim_148_0_Vn4.root
+/castor/cern.ch/user/b/bhlee/2011mc/Spring11/Mar29PromptReco_v8/WJetsToLNu/patTuple_skim_149_0_cYn.root
+/castor/cern.ch/user/b/bhlee/2011mc/Spring11/Mar29PromptReco_v8/WJetsToLNu/patTuple_skim_150_0_wJ7.root
+/castor/cern.ch/user/b/bhlee/2011mc/Spring11/Mar29PromptReco_v8/WJetsToLNu/patTuple_skim_151_0_jw4.root
 
-import FWCore.ParameterSet.Config as cms
-
-readFiles = cms.untracked.vstring()
-source = cms.Source("PoolSource",
-		     noEventSort = cms.untracked.bool(True),
-		     duplicateCheckMode = cms.untracked.string("noDuplicateCheck"),
-		     fileNames = readFiles
-                    )
-readFiles.extend([
-	'rfio:///castor/cern.ch/user/t/tjkim/DIMUSKIM/MC/Spring11/WJetsToLNu/patTuple_skim_100_0_jK4.root',
-	'rfio:///castor/cern.ch/user/t/tjkim/DIMUSKIM/MC/Spring11/WJetsToLNu/patTuple_skim_101_0_UOm.root',
-	'rfio:///castor/cern.ch/user/t/tjkim/DIMUSKIM/MC/Spring11/WJetsToLNu/patTuple_skim_102_0_t3f.root',
-	'rfio:///castor/cern.ch/user/t/tjkim/DIMUSKIM/MC/Spring11/WJetsToLNu/patTuple_skim_103_0_HhW.root',
-	'rfio:///castor/cern.ch/user/t/tjkim/DIMUSKIM/MC/Spring11/WJetsToLNu/patTuple_skim_104_0_gEn.root',
-	'rfio:///castor/cern.ch/user/t/tjkim/DIMUSKIM/MC/Spring11/WJetsToLNu/patTuple_skim_105_0_W2K.root',
-	'rfio:///castor/cern.ch/user/t/tjkim/DIMUSKIM/MC/Spring11/WJetsToLNu/patTuple_skim_106_0_hqg.root',
-	'rfio:///castor/cern.ch/user/t/tjkim/DIMUSKIM/MC/Spring11/WJetsToLNu/patTuple_skim_107_0_wEj.root',
-	'rfio:///castor/cern.ch/user/t/tjkim/DIMUSKIM/MC/Spring11/WJetsToLNu/patTuple_skim_108_0_9DD.root',
-	'rfio:///castor/cern.ch/user/t/tjkim/DIMUSKIM/MC/Spring11/WJetsToLNu/patTuple_skim_109_0_q3u.root',
-	'rfio:///castor/cern.ch/user/t/tjkim/DIMUSKIM/MC/Spring11/WJetsToLNu/patTuple_skim_10_1_iJa.root',
-	'rfio:///castor/cern.ch/user/t/tjkim/DIMUSKIM/MC/Spring11/WJetsToLNu/patTuple_skim_110_0_Y78.root',
-	'rfio:///castor/cern.ch/user/t/tjkim/DIMUSKIM/MC/Spring11/WJetsToLNu/patTuple_skim_111_0_0qz.root',
-	'rfio:///castor/cern.ch/user/t/tjkim/DIMUSKIM/MC/Spring11/WJetsToLNu/patTuple_skim_112_0_ZDY.root',
-	'rfio:///castor/cern.ch/user/t/tjkim/DIMUSKIM/MC/Spring11/WJetsToLNu/patTuple_skim_113_0_Krq.root',
-	'rfio:///castor/cern.ch/user/t/tjkim/DIMUSKIM/MC/Spring11/WJetsToLNu/patTuple_skim_114_0_hOK.root',
-	'rfio:///castor/cern.ch/user/t/tjkim/DIMUSKIM/MC/Spring11/WJetsToLNu/patTuple_skim_115_0_o8t.root',
-	'rfio:///castor/cern.ch/user/t/tjkim/DIMUSKIM/MC/Spring11/WJetsToLNu/patTuple_skim_116_0_5po.root',
-	'rfio:///castor/cern.ch/user/t/tjkim/DIMUSKIM/MC/Spring11/WJetsToLNu/patTuple_skim_117_0_AkH.root',
-	'rfio:///castor/cern.ch/user/t/tjkim/DIMUSKIM/MC/Spring11/WJetsToLNu/patTuple_skim_118_0_2mI.root',
-	'rfio:///castor/cern.ch/user/t/tjkim/DIMUSKIM/MC/Spring11/WJetsToLNu/patTuple_skim_119_0_izw.root',
-	'rfio:///castor/cern.ch/user/t/tjkim/DIMUSKIM/MC/Spring11/WJetsToLNu/patTuple_skim_11_1_3nO.root',
-	'rfio:///castor/cern.ch/user/t/tjkim/DIMUSKIM/MC/Spring11/WJetsToLNu/patTuple_skim_120_0_6My.root',
-	'rfio:///castor/cern.ch/user/t/tjkim/DIMUSKIM/MC/Spring11/WJetsToLNu/patTuple_skim_121_0_8RE.root',
-	'rfio:///castor/cern.ch/user/t/tjkim/DIMUSKIM/MC/Spring11/WJetsToLNu/patTuple_skim_122_0_eAF.root',
-	'rfio:///castor/cern.ch/user/t/tjkim/DIMUSKIM/MC/Spring11/WJetsToLNu/patTuple_skim_123_0_tbS.root',
-	'rfio:///castor/cern.ch/user/t/tjkim/DIMUSKIM/MC/Spring11/WJetsToLNu/patTuple_skim_124_0_eoJ.root',
-	'rfio:///castor/cern.ch/user/t/tjkim/DIMUSKIM/MC/Spring11/WJetsToLNu/patTuple_skim_125_0_I0d.root',
-	'rfio:///castor/cern.ch/user/t/tjkim/DIMUSKIM/MC/Spring11/WJetsToLNu/patTuple_skim_126_0_snF.root',
-	'rfio:///castor/cern.ch/user/t/tjkim/DIMUSKIM/MC/Spring11/WJetsToLNu/patTuple_skim_127_0_zkB.root',
-	'rfio:///castor/cern.ch/user/t/tjkim/DIMUSKIM/MC/Spring11/WJetsToLNu/patTuple_skim_128_0_T6o.root',
-	'rfio:///castor/cern.ch/user/t/tjkim/DIMUSKIM/MC/Spring11/WJetsToLNu/patTuple_skim_129_0_p4s.root',
-	'rfio:///castor/cern.ch/user/t/tjkim/DIMUSKIM/MC/Spring11/WJetsToLNu/patTuple_skim_12_1_lA3.root',
-	'rfio:///castor/cern.ch/user/t/tjkim/DIMUSKIM/MC/Spring11/WJetsToLNu/patTuple_skim_130_0_8cy.root',
-	'rfio:///castor/cern.ch/user/t/tjkim/DIMUSKIM/MC/Spring11/WJetsToLNu/patTuple_skim_131_0_BVY.root',
-	'rfio:///castor/cern.ch/user/t/tjkim/DIMUSKIM/MC/Spring11/WJetsToLNu/patTuple_skim_132_0_ZjM.root',
-	'rfio:///castor/cern.ch/user/t/tjkim/DIMUSKIM/MC/Spring11/WJetsToLNu/patTuple_skim_133_0_kym.root',
-	'rfio:///castor/cern.ch/user/t/tjkim/DIMUSKIM/MC/Spring11/WJetsToLNu/patTuple_skim_134_0_pHE.root',
-	'rfio:///castor/cern.ch/user/t/tjkim/DIMUSKIM/MC/Spring11/WJetsToLNu/patTuple_skim_135_0_PT3.root',
-	'rfio:///castor/cern.ch/user/t/tjkim/DIMUSKIM/MC/Spring11/WJetsToLNu/patTuple_skim_136_0_0R9.root',
-	'rfio:///castor/cern.ch/user/t/tjkim/DIMUSKIM/MC/Spring11/WJetsToLNu/patTuple_skim_137_0_vhn.root',
-	'rfio:///castor/cern.ch/user/t/tjkim/DIMUSKIM/MC/Spring11/WJetsToLNu/patTuple_skim_138_0_4Ju.root',
-	'rfio:///castor/cern.ch/user/t/tjkim/DIMUSKIM/MC/Spring11/WJetsToLNu/patTuple_skim_139_0_Rha.root',
-	'rfio:///castor/cern.ch/user/t/tjkim/DIMUSKIM/MC/Spring11/WJetsToLNu/patTuple_skim_13_1_JSr.root',
-	'rfio:///castor/cern.ch/user/t/tjkim/DIMUSKIM/MC/Spring11/WJetsToLNu/patTuple_skim_140_0_zdT.root',
-	'rfio:///castor/cern.ch/user/t/tjkim/DIMUSKIM/MC/Spring11/WJetsToLNu/patTuple_skim_141_0_8D9.root',
-	'rfio:///castor/cern.ch/user/t/tjkim/DIMUSKIM/MC/Spring11/WJetsToLNu/patTuple_skim_142_0_6mE.root',
-	'rfio:///castor/cern.ch/user/t/tjkim/DIMUSKIM/MC/Spring11/WJetsToLNu/patTuple_skim_143_0_V5d.root',
-	'rfio:///castor/cern.ch/user/t/tjkim/DIMUSKIM/MC/Spring11/WJetsToLNu/patTuple_skim_144_0_Q5U.root',
-	'rfio:///castor/cern.ch/user/t/tjkim/DIMUSKIM/MC/Spring11/WJetsToLNu/patTuple_skim_145_0_PSf.root',
-	'rfio:///castor/cern.ch/user/t/tjkim/DIMUSKIM/MC/Spring11/WJetsToLNu/patTuple_skim_146_0_UW7.root',
-	'rfio:///castor/cern.ch/user/t/tjkim/DIMUSKIM/MC/Spring11/WJetsToLNu/patTuple_skim_147_0_GaT.root',
-	'rfio:///castor/cern.ch/user/t/tjkim/DIMUSKIM/MC/Spring11/WJetsToLNu/patTuple_skim_148_0_PEK.root',
-	'rfio:///castor/cern.ch/user/t/tjkim/DIMUSKIM/MC/Spring11/WJetsToLNu/patTuple_skim_149_0_3oM.root',
-	'rfio:///castor/cern.ch/user/t/tjkim/DIMUSKIM/MC/Spring11/WJetsToLNu/patTuple_skim_14_1_Sq5.root',
-	'rfio:///castor/cern.ch/user/t/tjkim/DIMUSKIM/MC/Spring11/WJetsToLNu/patTuple_skim_150_0_ldF.root',
-	'rfio:///castor/cern.ch/user/t/tjkim/DIMUSKIM/MC/Spring11/WJetsToLNu/patTuple_skim_151_0_h4W.root',
-	'rfio:///castor/cern.ch/user/t/tjkim/DIMUSKIM/MC/Spring11/WJetsToLNu/patTuple_skim_152_0_Hw8.root',
-	'rfio:///castor/cern.ch/user/t/tjkim/DIMUSKIM/MC/Spring11/WJetsToLNu/patTuple_skim_153_0_oUo.root',
-	'rfio:///castor/cern.ch/user/t/tjkim/DIMUSKIM/MC/Spring11/WJetsToLNu/patTuple_skim_15_1_g5D.root',
-	'rfio:///castor/cern.ch/user/t/tjkim/DIMUSKIM/MC/Spring11/WJetsToLNu/patTuple_skim_16_1_Nex.root',
-	'rfio:///castor/cern.ch/user/t/tjkim/DIMUSKIM/MC/Spring11/WJetsToLNu/patTuple_skim_17_1_pOf.root',
-	'rfio:///castor/cern.ch/user/t/tjkim/DIMUSKIM/MC/Spring11/WJetsToLNu/patTuple_skim_18_1_Od8.root',
-	'rfio:///castor/cern.ch/user/t/tjkim/DIMUSKIM/MC/Spring11/WJetsToLNu/patTuple_skim_19_1_AHx.root',
-	'rfio:///castor/cern.ch/user/t/tjkim/DIMUSKIM/MC/Spring11/WJetsToLNu/patTuple_skim_1_1_C7n.root',
-	'rfio:///castor/cern.ch/user/t/tjkim/DIMUSKIM/MC/Spring11/WJetsToLNu/patTuple_skim_20_1_L7P.root',
-	'rfio:///castor/cern.ch/user/t/tjkim/DIMUSKIM/MC/Spring11/WJetsToLNu/patTuple_skim_21_1_5vr.root',
-	'rfio:///castor/cern.ch/user/t/tjkim/DIMUSKIM/MC/Spring11/WJetsToLNu/patTuple_skim_22_1_M8b.root',
-	'rfio:///castor/cern.ch/user/t/tjkim/DIMUSKIM/MC/Spring11/WJetsToLNu/patTuple_skim_23_1_wzJ.root',
-	'rfio:///castor/cern.ch/user/t/tjkim/DIMUSKIM/MC/Spring11/WJetsToLNu/patTuple_skim_24_1_MHD.root',
-	'rfio:///castor/cern.ch/user/t/tjkim/DIMUSKIM/MC/Spring11/WJetsToLNu/patTuple_skim_25_1_5n9.root',
-	'rfio:///castor/cern.ch/user/t/tjkim/DIMUSKIM/MC/Spring11/WJetsToLNu/patTuple_skim_26_1_gEu.root',
-	'rfio:///castor/cern.ch/user/t/tjkim/DIMUSKIM/MC/Spring11/WJetsToLNu/patTuple_skim_27_1_t0j.root',
-	'rfio:///castor/cern.ch/user/t/tjkim/DIMUSKIM/MC/Spring11/WJetsToLNu/patTuple_skim_28_1_bC4.root',
-	'rfio:///castor/cern.ch/user/t/tjkim/DIMUSKIM/MC/Spring11/WJetsToLNu/patTuple_skim_29_1_86c.root',
-	'rfio:///castor/cern.ch/user/t/tjkim/DIMUSKIM/MC/Spring11/WJetsToLNu/patTuple_skim_2_1_u4R.root',
-	'rfio:///castor/cern.ch/user/t/tjkim/DIMUSKIM/MC/Spring11/WJetsToLNu/patTuple_skim_30_1_GDo.root',
-	'rfio:///castor/cern.ch/user/t/tjkim/DIMUSKIM/MC/Spring11/WJetsToLNu/patTuple_skim_31_1_15Z.root',
-	'rfio:///castor/cern.ch/user/t/tjkim/DIMUSKIM/MC/Spring11/WJetsToLNu/patTuple_skim_32_1_y3n.root',
-	'rfio:///castor/cern.ch/user/t/tjkim/DIMUSKIM/MC/Spring11/WJetsToLNu/patTuple_skim_33_1_pMu.root',
-	'rfio:///castor/cern.ch/user/t/tjkim/DIMUSKIM/MC/Spring11/WJetsToLNu/patTuple_skim_34_1_pIn.root',
-	'rfio:///castor/cern.ch/user/t/tjkim/DIMUSKIM/MC/Spring11/WJetsToLNu/patTuple_skim_35_1_5Fs.root',
-	'rfio:///castor/cern.ch/user/t/tjkim/DIMUSKIM/MC/Spring11/WJetsToLNu/patTuple_skim_36_1_kdS.root',
-	'rfio:///castor/cern.ch/user/t/tjkim/DIMUSKIM/MC/Spring11/WJetsToLNu/patTuple_skim_37_1_L1l.root',
-	'rfio:///castor/cern.ch/user/t/tjkim/DIMUSKIM/MC/Spring11/WJetsToLNu/patTuple_skim_38_1_MOu.root',
-	'rfio:///castor/cern.ch/user/t/tjkim/DIMUSKIM/MC/Spring11/WJetsToLNu/patTuple_skim_39_1_ki7.root',
-	'rfio:///castor/cern.ch/user/t/tjkim/DIMUSKIM/MC/Spring11/WJetsToLNu/patTuple_skim_3_1_khY.root',
-	'rfio:///castor/cern.ch/user/t/tjkim/DIMUSKIM/MC/Spring11/WJetsToLNu/patTuple_skim_40_1_6kz.root',
-	'rfio:///castor/cern.ch/user/t/tjkim/DIMUSKIM/MC/Spring11/WJetsToLNu/patTuple_skim_41_1_zgg.root',
-	'rfio:///castor/cern.ch/user/t/tjkim/DIMUSKIM/MC/Spring11/WJetsToLNu/patTuple_skim_42_1_smI.root',
-	'rfio:///castor/cern.ch/user/t/tjkim/DIMUSKIM/MC/Spring11/WJetsToLNu/patTuple_skim_43_1_TBe.root',
-	'rfio:///castor/cern.ch/user/t/tjkim/DIMUSKIM/MC/Spring11/WJetsToLNu/patTuple_skim_44_1_Zjp.root',
-	'rfio:///castor/cern.ch/user/t/tjkim/DIMUSKIM/MC/Spring11/WJetsToLNu/patTuple_skim_45_1_Jh5.root',
-	'rfio:///castor/cern.ch/user/t/tjkim/DIMUSKIM/MC/Spring11/WJetsToLNu/patTuple_skim_46_1_itz.root',
-	'rfio:///castor/cern.ch/user/t/tjkim/DIMUSKIM/MC/Spring11/WJetsToLNu/patTuple_skim_47_1_eA8.root',
-	'rfio:///castor/cern.ch/user/t/tjkim/DIMUSKIM/MC/Spring11/WJetsToLNu/patTuple_skim_48_1_gnN.root',
-	'rfio:///castor/cern.ch/user/t/tjkim/DIMUSKIM/MC/Spring11/WJetsToLNu/patTuple_skim_49_1_EBY.root',
-	'rfio:///castor/cern.ch/user/t/tjkim/DIMUSKIM/MC/Spring11/WJetsToLNu/patTuple_skim_4_1_EP5.root',
-	'rfio:///castor/cern.ch/user/t/tjkim/DIMUSKIM/MC/Spring11/WJetsToLNu/patTuple_skim_50_1_U0p.root',
-	'rfio:///castor/cern.ch/user/t/tjkim/DIMUSKIM/MC/Spring11/WJetsToLNu/patTuple_skim_51_1_yQE.root',
-	'rfio:///castor/cern.ch/user/t/tjkim/DIMUSKIM/MC/Spring11/WJetsToLNu/patTuple_skim_52_1_7ro.root',
-	'rfio:///castor/cern.ch/user/t/tjkim/DIMUSKIM/MC/Spring11/WJetsToLNu/patTuple_skim_53_1_3my.root',
-	'rfio:///castor/cern.ch/user/t/tjkim/DIMUSKIM/MC/Spring11/WJetsToLNu/patTuple_skim_54_0_eku.root',
-	'rfio:///castor/cern.ch/user/t/tjkim/DIMUSKIM/MC/Spring11/WJetsToLNu/patTuple_skim_55_0_yt7.root',
-	'rfio:///castor/cern.ch/user/t/tjkim/DIMUSKIM/MC/Spring11/WJetsToLNu/patTuple_skim_56_0_uYG.root',
-	'rfio:///castor/cern.ch/user/t/tjkim/DIMUSKIM/MC/Spring11/WJetsToLNu/patTuple_skim_57_0_K4r.root',
-	'rfio:///castor/cern.ch/user/t/tjkim/DIMUSKIM/MC/Spring11/WJetsToLNu/patTuple_skim_58_0_SUq.root',
-	'rfio:///castor/cern.ch/user/t/tjkim/DIMUSKIM/MC/Spring11/WJetsToLNu/patTuple_skim_59_0_bgs.root',
-	'rfio:///castor/cern.ch/user/t/tjkim/DIMUSKIM/MC/Spring11/WJetsToLNu/patTuple_skim_5_1_YNt.root',
-	'rfio:///castor/cern.ch/user/t/tjkim/DIMUSKIM/MC/Spring11/WJetsToLNu/patTuple_skim_60_0_X8k.root',
-	'rfio:///castor/cern.ch/user/t/tjkim/DIMUSKIM/MC/Spring11/WJetsToLNu/patTuple_skim_61_0_P7o.root',
-	'rfio:///castor/cern.ch/user/t/tjkim/DIMUSKIM/MC/Spring11/WJetsToLNu/patTuple_skim_62_0_Wit.root',
-	'rfio:///castor/cern.ch/user/t/tjkim/DIMUSKIM/MC/Spring11/WJetsToLNu/patTuple_skim_63_0_OOC.root',
-	'rfio:///castor/cern.ch/user/t/tjkim/DIMUSKIM/MC/Spring11/WJetsToLNu/patTuple_skim_64_0_aPl.root',
-	'rfio:///castor/cern.ch/user/t/tjkim/DIMUSKIM/MC/Spring11/WJetsToLNu/patTuple_skim_65_0_MV0.root',
-	'rfio:///castor/cern.ch/user/t/tjkim/DIMUSKIM/MC/Spring11/WJetsToLNu/patTuple_skim_66_0_8Dt.root',
-	'rfio:///castor/cern.ch/user/t/tjkim/DIMUSKIM/MC/Spring11/WJetsToLNu/patTuple_skim_67_0_doF.root',
-	'rfio:///castor/cern.ch/user/t/tjkim/DIMUSKIM/MC/Spring11/WJetsToLNu/patTuple_skim_68_0_xab.root',
-	'rfio:///castor/cern.ch/user/t/tjkim/DIMUSKIM/MC/Spring11/WJetsToLNu/patTuple_skim_69_0_4w5.root',
-	'rfio:///castor/cern.ch/user/t/tjkim/DIMUSKIM/MC/Spring11/WJetsToLNu/patTuple_skim_6_1_Pdv.root',
-	'rfio:///castor/cern.ch/user/t/tjkim/DIMUSKIM/MC/Spring11/WJetsToLNu/patTuple_skim_70_0_P8c.root',
-	'rfio:///castor/cern.ch/user/t/tjkim/DIMUSKIM/MC/Spring11/WJetsToLNu/patTuple_skim_71_0_Ojd.root',
-	'rfio:///castor/cern.ch/user/t/tjkim/DIMUSKIM/MC/Spring11/WJetsToLNu/patTuple_skim_72_0_xXw.root',
-	'rfio:///castor/cern.ch/user/t/tjkim/DIMUSKIM/MC/Spring11/WJetsToLNu/patTuple_skim_73_0_8B2.root',
-	'rfio:///castor/cern.ch/user/t/tjkim/DIMUSKIM/MC/Spring11/WJetsToLNu/patTuple_skim_74_0_Doa.root',
-	'rfio:///castor/cern.ch/user/t/tjkim/DIMUSKIM/MC/Spring11/WJetsToLNu/patTuple_skim_75_0_VNi.root',
-	'rfio:///castor/cern.ch/user/t/tjkim/DIMUSKIM/MC/Spring11/WJetsToLNu/patTuple_skim_76_0_n2h.root',
-	'rfio:///castor/cern.ch/user/t/tjkim/DIMUSKIM/MC/Spring11/WJetsToLNu/patTuple_skim_77_0_Rsl.root',
-	'rfio:///castor/cern.ch/user/t/tjkim/DIMUSKIM/MC/Spring11/WJetsToLNu/patTuple_skim_78_0_e3N.root',
-	'rfio:///castor/cern.ch/user/t/tjkim/DIMUSKIM/MC/Spring11/WJetsToLNu/patTuple_skim_79_0_HEm.root',
-	'rfio:///castor/cern.ch/user/t/tjkim/DIMUSKIM/MC/Spring11/WJetsToLNu/patTuple_skim_7_1_V5N.root',
-	'rfio:///castor/cern.ch/user/t/tjkim/DIMUSKIM/MC/Spring11/WJetsToLNu/patTuple_skim_80_0_S7c.root',
-	'rfio:///castor/cern.ch/user/t/tjkim/DIMUSKIM/MC/Spring11/WJetsToLNu/patTuple_skim_81_0_IM2.root',
-	'rfio:///castor/cern.ch/user/t/tjkim/DIMUSKIM/MC/Spring11/WJetsToLNu/patTuple_skim_82_0_uY5.root',
-	'rfio:///castor/cern.ch/user/t/tjkim/DIMUSKIM/MC/Spring11/WJetsToLNu/patTuple_skim_83_0_3P8.root',
-	'rfio:///castor/cern.ch/user/t/tjkim/DIMUSKIM/MC/Spring11/WJetsToLNu/patTuple_skim_84_0_7G8.root',
-	'rfio:///castor/cern.ch/user/t/tjkim/DIMUSKIM/MC/Spring11/WJetsToLNu/patTuple_skim_85_0_J4s.root',
-	'rfio:///castor/cern.ch/user/t/tjkim/DIMUSKIM/MC/Spring11/WJetsToLNu/patTuple_skim_86_0_bsM.root',
-	'rfio:///castor/cern.ch/user/t/tjkim/DIMUSKIM/MC/Spring11/WJetsToLNu/patTuple_skim_87_0_eKF.root',
-	'rfio:///castor/cern.ch/user/t/tjkim/DIMUSKIM/MC/Spring11/WJetsToLNu/patTuple_skim_88_0_9g5.root',
-	'rfio:///castor/cern.ch/user/t/tjkim/DIMUSKIM/MC/Spring11/WJetsToLNu/patTuple_skim_89_0_Eug.root',
-	'rfio:///castor/cern.ch/user/t/tjkim/DIMUSKIM/MC/Spring11/WJetsToLNu/patTuple_skim_8_1_32T.root',
-	'rfio:///castor/cern.ch/user/t/tjkim/DIMUSKIM/MC/Spring11/WJetsToLNu/patTuple_skim_90_0_25f.root',
-	'rfio:///castor/cern.ch/user/t/tjkim/DIMUSKIM/MC/Spring11/WJetsToLNu/patTuple_skim_91_0_1Tw.root',
-	'rfio:///castor/cern.ch/user/t/tjkim/DIMUSKIM/MC/Spring11/WJetsToLNu/patTuple_skim_92_0_pAE.root',
-	'rfio:///castor/cern.ch/user/t/tjkim/DIMUSKIM/MC/Spring11/WJetsToLNu/patTuple_skim_93_0_sc9.root',
-	'rfio:///castor/cern.ch/user/t/tjkim/DIMUSKIM/MC/Spring11/WJetsToLNu/patTuple_skim_94_0_MG9.root',
-	'rfio:///castor/cern.ch/user/t/tjkim/DIMUSKIM/MC/Spring11/WJetsToLNu/patTuple_skim_95_0_IFF.root',
-	'rfio:///castor/cern.ch/user/t/tjkim/DIMUSKIM/MC/Spring11/WJetsToLNu/patTuple_skim_96_0_zEu.root',
-	'rfio:///castor/cern.ch/user/t/tjkim/DIMUSKIM/MC/Spring11/WJetsToLNu/patTuple_skim_97_0_Cop.root',
-	'rfio:///castor/cern.ch/user/t/tjkim/DIMUSKIM/MC/Spring11/WJetsToLNu/patTuple_skim_98_0_oiX.root',
-	'rfio:///castor/cern.ch/user/t/tjkim/DIMUSKIM/MC/Spring11/WJetsToLNu/patTuple_skim_99_0_8Hy.root',
-	'rfio:///castor/cern.ch/user/t/tjkim/DIMUSKIM/MC/Spring11/WJetsToLNu/patTuple_skim_9_1_FBw.root',
-]
-        )
