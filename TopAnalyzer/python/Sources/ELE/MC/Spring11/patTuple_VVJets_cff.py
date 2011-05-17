@@ -8,9 +8,9 @@ source = cms.Source("PoolSource",
 )
 
 readFiles.extend([
-    'rfio:/castor/cern.ch/user/j/jhgoh/TopAnalysis/pf2pat/ElEl/MC/20110513/patTuple_skim_1_1_QfQ.root',
-    'rfio:/castor/cern.ch/user/j/jhgoh/TopAnalysis/pf2pat/ElEl/MC/20110513/patTuple_skim_2_1_e0E.root',
-    'rfio:/castor/cern.ch/user/j/jhgoh/TopAnalysis/pf2pat/ElEl/MC/20110513/patTuple_skim_3_1_Sa9.root',
-    'rfio:/castor/cern.ch/user/j/jhgoh/TopAnalysis/pf2pat/ElEl/MC/20110513/patTuple_skim_4_1_He5.root',
-    'rfio:/castor/cern.ch/user/j/jhgoh/TopAnalysis/pf2pat/ElEl/MC/20110513/patTuple_skim_5_1_1dj.root',
+    'rfio:/castor/cern.ch/user/j/jhgoh/TopAnalysis/pf2pat/ElEl/MC/20110513/VVJets/patTuple_skim_1_1_QfQ.root',
+    'rfio:/castor/cern.ch/user/j/jhgoh/TopAnalysis/pf2pat/ElEl/MC/20110513/VVJets/patTuple_skim_2_1_e0E.root',
+    'rfio:/castor/cern.ch/user/j/jhgoh/TopAnalysis/pf2pat/ElEl/MC/20110513/VVJets/patTuple_skim_3_1_Sa9.root',
+    'rfio:/castor/cern.ch/user/j/jhgoh/TopAnalysis/pf2pat/ElEl/MC/20110513/VVJets/patTuple_skim_4_1_He5.root',
+    'rfio:/castor/cern.ch/user/j/jhgoh/TopAnalysis/pf2pat/ElEl/MC/20110513/VVJets/patTuple_skim_5_1_1dj.root',
 ])
