@@ -26,8 +26,8 @@ print currdir
 outdir = currdir+"/Out/"+decay
 
 #if you want to save ntuple in castor
-#mcdir = "/castor/cern.ch/user/t/tjkim/ntuple/top/"+decay
-#datadir = "/castor/cern.ch/user/t/tjkim/ntuple/top/"+decay
+#mcdir = "/castor/cern.ch/user/b/bhlee/ntuple/top/"+decay+"/2011mc/Spring11/Mar29PromptReco_v8/"
+#datadir = "/castor/cern.ch/user/b/bhlee/ntuple/top/"+decay+"/2011data/DoubleMu/Mar29PromptReco_v8/"
 
 #to save log information in local
 os.system("rfmkdir Out")
