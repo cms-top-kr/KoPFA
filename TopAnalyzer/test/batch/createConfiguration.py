@@ -10,7 +10,7 @@ import commands
 decay = sys.argv[1]
 
 mclist = ["ZJets", "ZtauDecay", "DYmm20to50", "DYee20to50", "DYtt20to50", "DYmm10to20", "DYee10to20", "DYtt10to20", "WJetsToLNu", "VVJets", "TTbarTuneZ2","SingleTop_tW","QCD"]
-datalist = ["Run2011A_PromptReco_v1", "Run2011A_PromptReco_v2"]
+datalist = ["Run2011A_PromptReco_DoubleMu_v1", "Run2011A_PromptReco_DoubleMu_v2"]
 
 def common():
   script = """import FWCore.ParameterSet.Config as cms
