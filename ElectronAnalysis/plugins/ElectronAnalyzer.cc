@@ -48,19 +48,28 @@ private:
   VDP genPt_, genEta_, genPhi_, genE_, genP_;
   VDP gsfPt_, gsfEta_, gsfPhi_, gsfE_, gsfP_;
   VDP pfaPt_, pfaEta_, pfaPhi_, pfaE_, pfaP_;
+
+  // Matched genParticle observables
+  VDP gsfGenPt_, gsfGenEta_, gsfGenPhi_, gsfGenE_, gsfGenP_;
+  VDP pfaGenPt_, pfaGenEta_, pfaGenPhi_, pfaGenE_, pfaGenP_;
+
   std::vector<bool>* gsfToPfaMatch_;
 
   VDP gsfEcalE_, pfaEcalE_;
   VDP gsfMva_, pfaMva_;
 
   VDP umPfaPt_, umPfaEta_, umPfaPhi_, umPfaE_, umPfaP_;
+  VDP umPfaGenPt_, umPfaGenEta_, umPfaGenPhi_, umPfaGenE_, umPfaGenP_;
   VDP umPfaEcalE_;
   VDP umPfaMva_;
 
 private:
+  typedef edm::View<reco::GenParticle>::const_iterator GenParIter;
   typedef edm::View<reco::PFCandidate>::const_iterator PFCandIter;
   typedef edm::View<reco::GsfElectron>::const_iterator GsfEleIter;
 
+  template <typename TIter>
+  GenParIter findElectron(const TIter recoEle, GenParIter begin, GenParIter end);
   PFCandIter findElectron(const GsfEleIter gsf, PFCandIter begin, PFCandIter end);
   GsfEleIter findElectron(const PFCandIter pfa, GsfEleIter begin, GsfEleIter end);
 };
@@ -89,6 +98,18 @@ ElectronAnalyzer::ElectronAnalyzer(const edm::ParameterSet& pset)
   pfaE_   = new std::vector<double>;
   pfaP_   = new std::vector<double>;
 
+  gsfGenPt_  = new std::vector<double>;
+  gsfGenEta_ = new std::vector<double>;
+  gsfGenPhi_ = new std::vector<double>;
+  gsfGenE_   = new std::vector<double>;
+  gsfGenP_   = new std::vector<double>;
+
+  pfaGenPt_  = new std::vector<double>;
+  pfaGenEta_ = new std::vector<double>;
+  pfaGenPhi_ = new std::vector<double>;
+  pfaGenE_   = new std::vector<double>;
+  pfaGenP_   = new std::vector<double>;
+
   gsfEcalE_ = new std::vector<double>;
   pfaEcalE_ = new std::vector<double>;
 
@@ -102,6 +123,12 @@ ElectronAnalyzer::ElectronAnalyzer(const edm::ParameterSet& pset)
   umPfaPhi_ = new std::vector<double>;
   umPfaE_   = new std::vector<double>;
   umPfaP_   = new std::vector<double>;
+
+  umPfaGenPt_  = new std::vector<double>;
+  umPfaGenEta_ = new std::vector<double>;
+  umPfaGenPhi_ = new std::vector<double>;
+  umPfaGenE_   = new std::vector<double>;
+  umPfaGenP_   = new std::vector<double>;
 
   umPfaEcalE_ = new std::vector<double>;
   umPfaMva_ = new std::vector<double>;
@@ -138,6 +165,18 @@ void ElectronAnalyzer::beginJob()
   tree_->Branch("pfaE"  , "std::vector<double>", &pfaE_  );
   tree_->Branch("pfaP"  , "std::vector<double>", &pfaP_  );
 
+  tree_->Branch("gsfGenPt" , "std::vector<double>", &gsfGenPt_ );
+  tree_->Branch("gsfGenEta", "std::vector<double>", &gsfGenEta_);
+  tree_->Branch("gsfGenPhi", "std::vector<double>", &gsfGenPhi_);
+  tree_->Branch("gsfGenE"  , "std::vector<double>", &gsfGenE_  );
+  tree_->Branch("gsfGenP"  , "std::vector<double>", &gsfGenP_  );
+
+  tree_->Branch("pfaGenPt" , "std::vector<double>", &pfaGenPt_ );
+  tree_->Branch("pfaGenEta", "std::vector<double>", &pfaGenEta_);
+  tree_->Branch("pfaGenPhi", "std::vector<double>", &pfaGenPhi_);
+  tree_->Branch("pfaGenE"  , "std::vector<double>", &pfaGenE_  );
+  tree_->Branch("pfaGenP"  , "std::vector<double>", &pfaGenP_  );
+
   tree_->Branch("gsfMva", "std::vector<double>", &gsfMva_);
   tree_->Branch("pfaMva", "std::vector<double>", &pfaMva_);
 
@@ -152,6 +191,12 @@ void ElectronAnalyzer::beginJob()
   tree_->Branch("umPfaE"  , "std::vector<double>", &umPfaE_  );
   tree_->Branch("umPfaP"  , "std::vector<double>", &umPfaP_  );
 
+  tree_->Branch("umPfaGenPt" , "std::vector<double>", &umPfaGenPt_ );
+  tree_->Branch("umPfaGenEta", "std::vector<double>", &umPfaGenEta_);
+  tree_->Branch("umPfaGenPhi", "std::vector<double>", &umPfaGenPhi_);
+  tree_->Branch("umPfaGenE"  , "std::vector<double>", &umPfaGenE_  );
+  tree_->Branch("umPfaGenP"  , "std::vector<double>", &umPfaGenP_  );
+
   tree_->Branch("umPfaEcalE", "std::vector<double>", &umPfaEcalE_);
   tree_->Branch("umPfaMva", "std::vector<double>", & umPfaMva_);
 }
@@ -159,6 +204,14 @@ void ElectronAnalyzer::beginJob()
 void ElectronAnalyzer::endJob()
 {
 
+}
+
+template <typename TIter>
+ElectronAnalyzer::GenParIter ElectronAnalyzer::findElectron(const TIter recoEle,
+                                                            ElectronAnalyzer::GenParIter begin,
+                                                            ElectronAnalyzer::GenParIter end)
+{
+  return begin;
 }
 
 ElectronAnalyzer::PFCandIter ElectronAnalyzer::findElectron(const GsfEleIter gsf,
@@ -275,6 +328,18 @@ void ElectronAnalyzer::analyze(const edm::Event& event, const edm::EventSetup& e
   pfaE_  ->clear();
   pfaP_  ->clear();
 
+  gsfGenPt_ ->clear();
+  gsfGenEta_->clear();
+  gsfGenPhi_->clear();
+  gsfGenE_  ->clear();
+  gsfGenP_  ->clear();
+
+  pfaGenPt_ ->clear();
+  pfaGenEta_->clear();
+  pfaGenPhi_->clear();
+  pfaGenE_  ->clear();
+  pfaGenP_  ->clear();
+
   gsfEcalE_->clear();
   pfaEcalE_->clear();
 
@@ -294,7 +359,7 @@ void ElectronAnalyzer::analyze(const edm::Event& event, const edm::EventSetup& e
 
   if ( genParticleHandle.isValid() )
   {
-    for ( edm::View<reco::GenParticle>::const_iterator iGen = genParticleHandle->begin();
+    for ( GenParIter iGen = genParticleHandle->begin();
           iGen != genParticleHandle->end(); ++iGen )
     {
       if ( abs(iGen->pdgId()) != 11 or iGen->status() != 3 ) continue;
@@ -308,7 +373,7 @@ void ElectronAnalyzer::analyze(const edm::Event& event, const edm::EventSetup& e
     }
   }
 
-  for ( edm::View<reco::GsfElectron>::const_iterator iEle = electronHandle->begin();
+  for ( GsfEleIter iEle = electronHandle->begin();
         iEle != electronHandle->end(); ++iEle )
   {
     const reco::Candidate::LorentzVector p4 = iEle->p4();
@@ -320,6 +385,24 @@ void ElectronAnalyzer::analyze(const edm::Event& event, const edm::EventSetup& e
 
     gsfEcalE_->push_back(iEle->ecalEnergy());
     gsfMva_->push_back(iEle->mva());
+
+    GenParIter gsfGenPar = findElectron(iEle, genParticleHandle->begin(), genParticleHandle->end());
+    if ( gsfGenPar != genParticleHandle->end() )
+    {
+      gsfGenPt_->push_back(gsfGenPar->p4().pt());
+      gsfGenEta_->push_back(gsfGenPar->p4().eta());
+      gsfGenPhi_->push_back(gsfGenPar->p4().phi());
+      gsfGenE_->push_back(gsfGenPar->p4().e());
+      gsfGenP_->push_back(gsfGenPar->p4().P());
+    }
+    else
+    {
+      gsfGenPt_->push_back(-999);
+      gsfGenEta_->push_back(-999);
+      gsfGenPhi_->push_back(-999);
+      gsfGenE_->push_back(-999);
+      gsfGenP_->push_back(-999);
+    }
 
     PFCandIter matched = findElectron(iEle, pfCandHandle->begin(), pfCandHandle->end());
     if ( matched != pfCandHandle->end() )
@@ -334,6 +417,24 @@ void ElectronAnalyzer::analyze(const edm::Event& event, const edm::EventSetup& e
       pfaMva_->push_back(matched->mva_e_pi());
 
       gsfToPfaMatch_->push_back(true);
+
+      GenParIter pfaGenPar = findElectron(matched, genParticleHandle->begin(), genParticleHandle->end());
+      if ( pfaGenPar != genParticleHandle->end() )
+      {
+        pfaGenPt_->push_back(pfaGenPar->p4().pt());
+        pfaGenEta_->push_back(pfaGenPar->p4().eta());
+        pfaGenPhi_->push_back(pfaGenPar->p4().phi());
+        pfaGenE_->push_back(pfaGenPar->p4().e());
+        pfaGenP_->push_back(pfaGenPar->p4().P());
+      }
+      else
+      {
+        pfaGenPt_->push_back(-999);
+        pfaGenEta_->push_back(-999);
+        pfaGenPhi_->push_back(-999);
+        pfaGenE_->push_back(-999);
+        pfaGenP_->push_back(-999);
+      }
     }
     else
     {
@@ -347,14 +448,20 @@ void ElectronAnalyzer::analyze(const edm::Event& event, const edm::EventSetup& e
       pfaMva_->push_back(-999);
 
       gsfToPfaMatch_->push_back(false);
+
+      pfaGenPt_->push_back(-999);
+      pfaGenEta_->push_back(-999);
+      pfaGenPhi_->push_back(-999);
+      pfaGenE_->push_back(-999);
+      pfaGenP_->push_back(-999);
     }
   }
 
-  for ( edm::View<reco::PFCandidate>::const_iterator iPFCand = pfCandHandle->begin();
-        iPFCand != pfCandHandle->end(); ++iPFCand )
+  for ( PFCandIter iPFCand = pfCandHandle->begin();
+      iPFCand != pfCandHandle->end(); ++iPFCand )
   {
     if ( abs(iPFCand->pdgId()) != 11 ) continue;
-    
+
     const reco::Candidate::LorentzVector p4 = iPFCand->p4();
     GsfEleIter matched = findElectron(iPFCand, electronHandle->begin(), electronHandle->end());
     if ( matched == electronHandle->end() )
@@ -367,6 +474,24 @@ void ElectronAnalyzer::analyze(const edm::Event& event, const edm::EventSetup& e
 
       umPfaEcalE_->push_back(iPFCand->ecalEnergy());
       umPfaMva_->push_back(iPFCand->mva_e_pi());
+
+      GenParIter umPfaGenPar = findElectron(matched, genParticleHandle->begin(), genParticleHandle->end());
+      if ( umPfaGenPar != genParticleHandle->end() )
+      {
+        umPfaGenPt_->push_back(umPfaGenPar->p4().pt());
+        umPfaGenEta_->push_back(umPfaGenPar->p4().eta());
+        umPfaGenPhi_->push_back(umPfaGenPar->p4().phi());
+        umPfaGenE_->push_back(umPfaGenPar->p4().e());
+        umPfaGenP_->push_back(umPfaGenPar->p4().P());
+      }
+      else
+      {
+        umPfaGenPt_->push_back(-999);
+        umPfaGenEta_->push_back(-999);
+        umPfaGenPhi_->push_back(-999);
+        umPfaGenE_->push_back(-999);
+        umPfaGenP_->push_back(-999);
+      }
     }
   }
 
