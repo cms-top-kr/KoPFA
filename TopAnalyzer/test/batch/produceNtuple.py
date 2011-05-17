@@ -9,9 +9,9 @@ import time
 sample = sys.argv[1]
 decay = sys.argv[2]
 
-mclist = ["ZJets", "ZtauDecay", "DYmm20to50", "DYee20to50", "DYtt20to50", "WJetsToLNu", "VVJets", "TTbarTuneZ2","SingleToptW"]
+mclist = ["ZJets", "ZtauDecay", "DYmm20to50", "DYee20to50", "DYtt20to50", "DYmm10to20", "DYee10to20", "DYtt10to20", "WJetsToLNu", "VVJets", "TTbarTuneZ2","SingleTop_tW"]
 qcdlist = ["QCD"]
-datalist = ["Run2011A"]
+datalist = ["Run2011A_PromptReco_DoubleMu_v1", "Run2011A_PromptReco_DoubleMu_v2"]
 
 def processSample(sample, dir):
     os.system("rm -rf "+dir+"/Log/"+sample)
