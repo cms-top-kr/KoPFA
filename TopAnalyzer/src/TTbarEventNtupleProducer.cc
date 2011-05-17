@@ -23,7 +23,7 @@
 
 #include "KoPFA/DataFormats/interface/TTbarEvent.h"
 #include "KoPFA/DataFormats/interface/TTbarGenEvent.h"
-#include "KoPFA/TopAnalyzer/interface/MaosTTbar.h"
+#include "KoPFA/DataFormats/interface/Maos.h"
 
 #include "TFile.h"
 #include "TTree.h"
