@@ -12,8 +12,8 @@ dataormc =sys.argv[2]
 type = sys.argv[3]
 
 if dataormc == "mc":
-  dir = "/castor/cern.ch/user/b/bhlee/ntuple/top/"+type+"/2011mc/Spring11/Mar29PromptReco_v8"
-  destination = "/home/bhlee/ntuple/top/"+type+"/2011mc/Spring11/Mar29PromptReco_8"
+  dir = "/castor/cern.ch/user/b/bhlee/ntuple/top/"+type+"/2011mc/Spring11/Mar29PromptReco_v8/Res"
+  destination = "/home/bhlee/ntuple/top/"+type+"/2011mc/Spring11/Mar29PromptReco_8/Res"
 
   if type == "MuMu":
     list = ["ZJets", "ZtauDecay", "DYtt20to50", "DYmm20to50", "DYee20to50", "WJetsToLNu", "VVJets", "TTbarTuneZ2", "SingleTop_tW", "DYtt10to20", "DYmm10to20", "DYee10to20"]
@@ -24,8 +24,8 @@ if dataormc == "mc":
   else: 
     print "wrong type"
 elif dataormc == "data":
-  dir = "/castor/cern.ch/user/b/bhlee/ntuple/top/"+type+"/2011data/DoubleMu/Mar29PromptReco_v8"
-  destination = "/home/bhlee/ntuple/top/"+type+"/2011data/DoubleMu/Mar29PromptReco_v8"
+  dir = "/castor/cern.ch/user/b/bhlee/ntuple/top/"+type+"/2011data/DoubleMu/Mar29PromptReco_v8/Res"
+  destination = "/home/bhlee/ntuple/top/"+type+"/2011data/DoubleMu/Mar29PromptReco_v8/Res"
   list = ["Run2011A_PromptReco_DoubleMu_v1","Run2011A_PromptReco_DoubleMu_v2"]
 else:
   print "data or mc?"  
