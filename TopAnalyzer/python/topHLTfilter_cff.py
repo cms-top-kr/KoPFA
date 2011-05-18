@@ -26,7 +26,7 @@ hltHighLevelElElRD.TriggerResultsTag = cms.InputTag("TriggerResults","","HLT")
 hltHighLevelElElRD.HLTPaths = cms.vstring('HLT_Ele17_CaloIdT_TrkIdVL_CaloIsoVL_TrkIsoVL_Ele8_CaloIdT_TrkIdVL_CaloIsoVL_TrkIsoVL_v2')
 hltHighLevelElElRD.throw = cms.bool(False)
 
-#for DoubleElectron dataset
+#for DoubleMuon dataset
 #MC
 hltHighLevelMuMuMC = hltHighLevel.clone()
 hltHighLevelMuMuMC.TriggerResultsTag = cms.InputTag("TriggerResults","","REDIGI311X")
