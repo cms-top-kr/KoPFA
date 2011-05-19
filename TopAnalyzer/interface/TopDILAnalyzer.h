@@ -13,7 +13,7 @@
 //
 // Original Author:  Tae Jeong Kim,40 R-A32,+41227678602,
 //         Created:  Fri Jun  4 17:19:29 CEST 2010
-// $Id: TopDILAnalyzer.h,v 1.36 2011/04/27 13:43:06 tjkim Exp $
+// $Id: TopDILAnalyzer.h,v 1.40 2011/05/12 16:05:21 tjkim Exp $
 //
 //
 
@@ -28,6 +28,7 @@
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/Framework/interface/MakerMacros.h"
 #include "FWCore/ServiceRegistry/interface/Service.h"
+#include "FWCore/Framework/interface/LuminosityBlock.h"
 #include "CommonTools/UtilAlgos/interface/TFileService.h"
 
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
@@ -41,6 +42,7 @@
 
 #include "DataFormats/Math/interface/deltaR.h"
 #include "DataFormats/Math/interface/LorentzVector.h"
+#include "DataFormats/Common/interface/MergeableCounter.h"
 #include "KoPFA/DataFormats/interface/ZCandidate.h"
 #include "KoPFA/DataFormats/interface/TTbarGenEvent.h"
 #include "KoPFA/DataFormats/interface/TTbarMass.h"
@@ -60,7 +62,6 @@
 #include "CondFormats/JetMETObjects/interface/JetCorrectorParameters.h"
 #include "CondFormats/JetMETObjects/interface/FactorizedJetCorrector.h"
 #include "CondFormats/JetMETObjects/interface/JetCorrectionUncertainty.h"
-//#include "KoPFA/TopAnalyzer/interface/MaosTTbar.h"
 #include "KoPFA/DataFormats/interface/Maos.h"
 #include "TFile.h"
 #include "TTree.h"
@@ -555,12 +556,18 @@ class TopDILAnalyzer : public edm::EDAnalyzer {
 
   virtual void endJob() 
   {
+  }
+
+  void endLuminosityBlock(const edm::LuminosityBlock & lumi, const edm::EventSetup & setup){
     if(useEventCounter_){
-      DQMStore* store = &*edm::Service<DQMStore>();
-      if(filters_.size()>0) {
-        for(unsigned int i=0;i<filters_.size();++i) {
-          MonitorElement *tmpM = store->get(filters_[i]);
-          tmp->SetBinContent(i+1,tmpM->getFloatValue());
+      for(unsigned int i=0;i<filters_.size();++i) {
+        std::string name = filters_[i];
+        cout << name << endl;
+        edm::Handle<edm::MergeableCounter> numEventsCounter;
+        lumi.getByLabel(name, numEventsCounter);
+        if( numEventsCounter.isValid()){
+          cout << "n= " << numEventsCounter->value << endl;
+          tmp->AddBinContent(i+1, numEventsCounter->value);
           tmp->GetXaxis()->SetBinLabel(i+1,filters_[i].c_str());
         }
       }
