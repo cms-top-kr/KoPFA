@@ -45,7 +45,7 @@ process.out = cms.OutputModule("PoolOutputModule",
 process.load("PhysicsTools.PatAlgos.patSequences_cff")
 from PhysicsTools.PatAlgos.tools.pfTools import *
 
-process.primaryVertexFilter = cms.EDFilter("VertexSelector",
+process.goodOfflinePrimaryVertices = cms.EDFilter("VertexSelector",
    src = cms.InputTag("offlinePrimaryVertices"),
    cut = cms.string("!isFake && ndof > 4 && abs(z) < 24 && position.Rho < 2"), # tracksSize() > 3 for the older cut
    filter = cms.bool(True),   # otherwise it won't filter the events, just produce an empty vertex collection.
@@ -110,7 +110,7 @@ process.outpath = cms.EndPath(process.out)
 process.p = cms.Path(
     process.nEventsTotal*
     process.noscraping*
-    process.primaryVertexFilter*
+    process.goodOfflinePrimaryVertices*
     process.HBHENoiseFilter *
     process.nEventsClean* 
     process.eidCiCSequence
@@ -126,6 +126,7 @@ def updateEventContent(p):
     l.extend(patEventContentNoCleaning)
     l.extend([
         'keep edmMergeableCounter_*_*_*',
+        'keep *_goodOfflinePrimaryVertices*_*_*',
         'keep *_particleFlow_*_*',
         'keep *_acceptedMuons_*_*',
         'keep *_acceptedElectrons_*_*',
