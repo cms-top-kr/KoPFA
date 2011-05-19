@@ -135,7 +135,7 @@ topElElAnalysisMCSequence = cms.Sequence(
 
 topElElAnalysisRealDataSequence = cms.Sequence(
     loadHistosFromRunInfo*
-    hltHighLevelElElMC*
+    hltHighLevelElElRD*
 #    electronTriggerFilterByRun*
     removeDuplicate*
     VertexFilter*
