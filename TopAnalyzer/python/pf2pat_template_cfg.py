@@ -97,17 +97,22 @@ process.eidCiCSequence = cms.Sequence(
 process.load('CommonTools.RecoAlgos.HBHENoiseFilter_cfi')
 
 ##################################################################
-process.load("PFAnalyses.CommonTools.countingSequences_cfi")
 process.load("KoPFA.TopAnalyzer.topHLTfilter_cff")
 
-process.outpath = cms.EndPath(process.saveHistosInRunInfo*process.out)
+process.nEventsTotal = cms.EDProducer("EventCountProducer")
+process.nEventsClean = cms.EDProducer("EventCountProducer")
+process.nEventsHLT = cms.EDProducer("EventCountProducer")
+process.nEventsFiltered = cms.EDProducer("EventCountProducer")
+
+process.outpath = cms.EndPath(process.out)
 #process.load("KoPFA.CommonTools.recoPFCandCountFilter_cfi")
 
 process.p = cms.Path(
-#    process.startupSequence*
+    process.nEventsTotal*
     process.noscraping*
     process.primaryVertexFilter*
-#    process.HBHENoiseFilter *
+    process.HBHENoiseFilter *
+    process.nEventsClean* 
     process.eidCiCSequence
 )
 
@@ -120,11 +125,11 @@ def updateEventContent(p):
     l.extend(patExtraAodEventContent)
     l.extend(patEventContentNoCleaning)
     l.extend([
-        'keep *_MEtoEDMConverter_*_PAT',
+        'keep edmMergeableCounter_*_*_*',
         'keep *_particleFlow_*_*',
         'keep *_acceptedMuons_*_*',
         'keep *_acceptedElectrons_*_*',
-        'keep *_*_rho_*',
+        'keep double_*PFlow*_rho_PAT',
     ])
 
     # Uniquify outputCommands
