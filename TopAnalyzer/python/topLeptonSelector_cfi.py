@@ -1,7 +1,7 @@
 import FWCore.ParameterSet.Config as cms
 
-from PFAnalyses.CommonTools.Selectors.muonSelectorPSet_cff import muonSelectorPSet
-from PFAnalyses.CommonTools.Selectors.muonIsoSelectorPSet_cff import muonIsoSelectorPSet
+from KoPFA.CommonTools.muonSelectorPSet_cff import muonSelectorPSet
+from KoPFA.CommonTools.muonIsoSelectorPSet_cff import muonIsoSelectorPSet
 muonId = muonSelectorPSet.clone()
 muonId.verbose = False 
 muonId.dxy = 0.02

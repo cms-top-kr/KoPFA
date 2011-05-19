@@ -1,6 +1,5 @@
 #include "KoPFA/CommonTools/interface/MuonIDSelector.h"
 
-
 #include "DataFormats/RecoCandidate/interface/IsoDeposit.h"
 #include "DataFormats/RecoCandidate/interface/IsoDepositVetos.h"
 #include "DataFormats/RecoCandidate/interface/IsoDepositDirection.h"
@@ -20,7 +19,7 @@ MuonIDSelector::MuonIDSelector()
   : verbose_(false){
   push_back("VBTF",0);
   push_back("QTF",0);
-  push_back("TOP",0);
+  push_back("TOPDIL",0);
   push_back("isGlobalMuon",0);
   push_back("isTrackerMuon",0);
   push_back("nMatches",0);
@@ -34,7 +33,6 @@ MuonIDSelector::MuonIDSelector()
   push_back("dz",0.);
   push_back("relIso",0.); 
   push_back("tmLastStationAngTight",0);
-  push_back("globalMuonPromptTight",0);
   push_back("pt",0);
   push_back("eta",0);
 
@@ -45,12 +43,11 @@ void MuonIDSelector::initialize( const edm::ParameterSet& ps ) {
 
   initialize(ps.getParameter< int >("VBTF"),  
 	     ps.getParameter< int >("QTF"),  
-	     ps.getParameter< int >("TOP"),  
+             ps.getParameter< int >("TOPDIL"),
 	     ps.getParameter< int >("isGlobalMuon"),
 	     ps.getParameter< int >("isTrackerMuon"),
 	     ps.getParameter< int >("nMatches"),
 	     ps.getParameter< int >("tmLastStationAngTight"),
-	     ps.getParameter< int >("globalMuonPromptTight"),
 	     ps.getParameter< int >("muonHits"),
 	     ps.getParameter< double >("globalNormChi2"),
 	     ps.getParameter< int >("trackerHits"),
@@ -64,18 +61,22 @@ void MuonIDSelector::initialize( const edm::ParameterSet& ps ) {
 	     ps.getParameter< double >("eta") 
 	     );
 
+
   verbose_ = ps.getUntrackedParameter<bool>("verbose", false);
+  calcDispFromGlobalTrack_ = ps.getUntrackedParameter<bool>("calcDispFromGlobalTrack", false);
+
+  if ( ps.exists("cutsToIgnore") )
+    setIgnoredCuts( ps.getParameter<std::vector<std::string> >("cutsToIgnore") );
 
 }
 
 void MuonIDSelector::initialize(int VBTF,
 				 int QTF,
-				 int TOP,
+                                 int TOPDIL,
 				 int isGlobalMuon,
 				 int isTrackerMuon,
 				 int nMatches,
 				 int tmLastStationAngTight,
-                                 int globalMuonPromptTight,
 				 int muonHits,	
 				 double globalNormChi2,
 				 int trackerHits,
@@ -89,12 +90,11 @@ void MuonIDSelector::initialize(int VBTF,
 				 double eta){
   set("VBTF",VBTF);
   set("QTF",QTF);
-  set("TOP",TOP);
+  set("TOPDIL",TOPDIL);
   set("isGlobalMuon",isGlobalMuon);
   set("isTrackerMuon",isTrackerMuon);
   set("nMatches",nMatches);
   set("tmLastStationAngTight",tmLastStationAngTight);
-  set("globalMuonPromptTight",globalMuonPromptTight);
   set("muonHits",muonHits);
   set("globalNormChi2",globalNormChi2);
   set("trackerHits",trackerHits);
@@ -113,8 +113,12 @@ bool MuonIDSelector::operator()( const pat::Muon & muon, pat::strbitset & ret ) 
 }
 
 bool MuonIDSelector::operator()( const pat::Muon & muon, const edm::Handle<reco::BeamSpot>& beamspot, pat::strbitset & ret ) {
+  return operator()(muon,beamspot->position(),ret);
+}
 
-  bool passedBeamSpotSelection = beamSpotSelection( muon, beamspot, ret);
+bool MuonIDSelector::operator()( const pat::Muon & muon, const Point& position, pat::strbitset & ret ) {
+
+  bool passedBeamSpotSelection = beamSpotSelection( muon, position, ret);
   bool passedMuIDSelection = muIDSelection( muon, ret ); 
   return passedMuIDSelection && passedBeamSpotSelection;
 }
@@ -130,7 +134,6 @@ bool MuonIDSelector::muIDSelection( const pat::Muon& muon,
   int isTracker = (int)muon.isTrackerMuon();
   int nMatches = (int)muon.numberOfMatches();
   int tmLastStationAngTight = (int)muon::isGoodMuon(muon,muon::TMLastStationAngTight);
-  int globalMuonPromptTight = (int)muon::isGoodMuon(muon,muon::GlobalMuonPromptTight);
 
   // from global track
   int muonHits = 0.;
@@ -140,7 +143,7 @@ bool MuonIDSelector::muIDSelection( const pat::Muon& muon,
   int trackerHits = 0.;
   int pixelHits = 0;
   int pixelLayersWithHits = 0;
-  int trackNormChi2 = 9999.;
+  double trackNormChi2 = 9999.;
   
 
   
@@ -151,14 +154,15 @@ bool MuonIDSelector::muIDSelection( const pat::Muon& muon,
     const reco::TrackRef& combinedMuon = muon.globalTrack();        
     globalNormChi2 = combinedMuon->normalizedChi2();
     muonHits = combinedMuon->hitPattern().numberOfValidMuonHits();
-  }
-  else{
-    //cout<<" number of muon hits = "<<muonHits<<endl;
-    // hack to remove cut for tracker (!global) muons
-    muonHits = 999;
-    globalNormChi2 = 0.;
+    trackerHits = combinedMuon->hitPattern().numberOfValidTrackerHits();
+    pixelHits = combinedMuon->hitPattern().numberOfValidPixelHits();
+    pixelLayersWithHits = combinedMuon->hitPattern().pixelLayersWithMeasurement();
+    trackNormChi2 = combinedMuon->normalizedChi2();
+
   }
 
+  // commented out until tracks are embedded into pat muons
+  /*
   if(!muon.track()){
   }
   else{
@@ -168,7 +172,7 @@ bool MuonIDSelector::muIDSelection( const pat::Muon& muon,
     pixelLayersWithHits = track->hitPattern().pixelLayersWithMeasurement();
     trackNormChi2 = track->normalizedChi2();
   }
-
+  */
 
 
   if(ignoreCut("isGlobalMuon") || isGlobal == cut("isGlobalMuon", int() ) )  
@@ -182,9 +186,6 @@ bool MuonIDSelector::muIDSelection( const pat::Muon& muon,
 
   if(ignoreCut("tmLastStationAngTight") ||   tmLastStationAngTight == cut("tmLastStationAngTight", int() )) 
     passCut( ret, "tmLastStationAngTight");  
-
-  if(ignoreCut("globalMuonPromptTight") ||   globalMuonPromptTight == cut("globalMuonPromptTight", int() ))
-    passCut( ret, "globalMuonPromptTight");
 
   if(ignoreCut("muonHits") || muonHits > cut("muonHits", int() ))
     passCut( ret, "muonHits");
@@ -213,17 +214,6 @@ bool MuonIDSelector::muIDSelection( const pat::Muon& muon,
   
   if(ignoreCut("relIso") || relIso< cut("relIso", double() ) )
     passCut( ret, "relIso");
-
-  // No isolation included in VBTF cuts
-  if(ignoreCut("TOP") || (
-                           isGlobal == cut("isGlobalMuon", int() )  &&
-                           isTracker == cut("isTrackerMuon", int() ) &&
-                           globalMuonPromptTight == cut("gobalMuonPromptTight", int() ) &&
-                           trackerHits >= cut("trackerHits", int() ) &&
-                           globalNormChi2 <= cut("globalNormChi2", double() ) 
-                           )
-     )
-    passCut( ret, "TOP");
 
 
   // No isolation included in VBTF cuts
@@ -259,7 +249,17 @@ bool MuonIDSelector::muIDSelection( const pat::Muon& muon,
 	 */	 )
      )    
     passCut( ret, "QTF");
-  
+  // No isolation included in TOPDIL cuts
+  if(ignoreCut("TOPDIL") || (
+                           isGlobal == cut("isGlobalMuon", int() )  &&
+                           isTracker == cut("isTrackerMuon", int() ) &&
+                           trackerHits >= cut("trackerHits", int() ) &&
+                           globalNormChi2 <= cut("globalNormChi2", double() ) &&
+                           muonHits > cut("muonHits", int() )
+                           )
+     )
+    passCut( ret, "TOPDIL");
+ 
   
   double pt = muon.pt();
   
@@ -283,144 +283,176 @@ bool MuonIDSelector::muIDSelection( const pat::Muon& muon,
 
 
 bool MuonIDSelector::beamSpotSelection( const pat::Muon& muon, 
-				const edm::Handle<reco::BeamSpot>& beamSpot,
+				const Point& position,
 				pat::strbitset & ret)  {    
 
    
-  //  if(verbose_) 
-  // cout<<"Selecting Pat muon with VBTF cuts: "<<muon.pt()<<endl;
+  if(verbose_) 
+    cout<<"Selecting Pat muon : "<<muon.pt()<<endl;
 
-  if(!muon.track()) return false;
-
-  const reco::TrackRef& track = muon.track();        
-
-  double dxy = fabs(track->dxy(beamSpot->position()));
-  double dz = fabs(track->dz(beamSpot->position()));
-  
-  // For some reason EWK cuts on the global fit
-  
-  /*
   double dxy = 9999.;
   double dz = 9999.;
 
-  if(!muon.isGlobalMuon() &&  !muon.track()) return false;
 
-  if(muon.isGlobalMuon()){
-    //const reco::TrackRef& combinedMuon = muon.combinedMuon();    
-    const reco::TrackRef& combinedMuon = muon.globalTrack();        
-    dxy = combinedMuon->dxy(beamSpot->position());
-    dz = combinedMuon->dz(beamSpot->position());
-  }
-  else{
-    const reco::TrackRef& track = muon.track();    
-    dxy = track->dxy(beamSpot->position());
-    dz = track->dz(beamSpot->position());
-  } 
-  */
-  if(ignoreCut("dxy") || dxy <= cut("dxy", double() ) )
+
+    const reco::TrackRef& track = muon.track();        
+    if(!track.isNull() && !calcDispFromGlobalTrack_){
+      dxy = track->dxy(position);
+      dz = track->dz(position);
+    } 
+    else{
+      if(muon.isGlobalMuon()){
+	const reco::TrackRef& combinedMuon = muon.globalTrack();        
+	dxy = combinedMuon->dxy(position);
+	dz = combinedMuon->dz(position);
+      }    
+    }
+
+
+  
+  if(ignoreCut("dxy") || fabs(dxy) <= cut("dxy", double() ) )
     passCut( ret, "dxy");
 
-  if(ignoreCut("dz") || dz <= cut("dz", double() ) )
+  if(ignoreCut("dz") || fabs(dz) <= cut("dz", double() ) )
     passCut( ret, "dz");
 
   setIgnored( ret );
   
   //if(verbose_) ret.print( cout );
- 
-  return (bool)ret;
+  return ret.test("dxy");
+
 }
 
 bool MuonIDSelector::beamSpotCut( const reco::Muon& muon, 
-				edm::Handle<reco::BeamSpot>& beamSpot)  {  
+				const Point& position)  {  
 
-  
-  if(!muon.track()) return false;
-
-  const reco::TrackRef& track = muon.track();        
-
-  double dxy = fabs(track->dxy(beamSpot->position()));
-  double dz = fabs(track->dz(beamSpot->position()));
-
-  // For some reason EWK cuts on the global fit
-  /*
   double dxy = 9999;
+  double dz = 9999;
 
-  if(!muon.isGlobalMuon() &&  !muon.track()) return false;
 
-  if(muon.isGlobalMuon()){
-    //const reco::TrackRef& combinedMuon = muon.combinedMuon();    
-    const reco::TrackRef& combinedMuon = muon.globalTrack();    
-    
-    dxy = combinedMuon->dxy(beamSpot->position());
-    dz = combinedMuon->dz(beamSpot->position());
+    const reco::TrackRef& track = muon.track();        
+    if(!track.isNull() && !calcDispFromGlobalTrack_){
+      dxy = track->dxy(position);
+      dz = track->dz(position);
+    } 
+    else{
+      if(muon.isGlobalMuon()){
+	const reco::TrackRef& combinedMuon = muon.globalTrack();        
+	dxy = combinedMuon->dxy(position);
+	dz = combinedMuon->dz(position);
+      }    
+    }
+    /*
+    const reco::TrackRef& track = muon.track();        
+
+  if(calcDispFromGlobalTrack_){
+    if(muon.isGlobalMuon()){
+      const reco::TrackRef& combinedMuon = muon.globalTrack();        
+      dxy = combinedMuon->dxy(position);
+      dz = combinedMuon->dz(position);
+    }    
   }
   else{
-    const reco::TrackRef& track = muon.track();    
-    dxy = track->dxy(beamSpot->position());
-    dz = track->dz(beamSpot->position());
-  }
-  */
-  
-  if(!ignoreCut("dxy") && dxy > cut("dxy", double() ) )
-    return false;
 
-  if(!ignoreCut("dz") && dz > cut("dz", double() ) )
+
+    if(!track.isNull()){
+      dxy = track->dxy(position);
+      dz = track->dz(position);
+    }
+    else{
+      if(muon.isGlobalMuon()){
+	const reco::TrackRef& combinedMuon = muon.globalTrack();        
+	dxy = combinedMuon->dxy(position);
+	dz = combinedMuon->dz(position);
+      }    
+    }
+  }
+    */
+  if(!ignoreCut("dxy") && fabs(dxy) > cut("dxy", double() ) )
+    return false;
+  
+  if(!ignoreCut("dz") && fabs(dz) > cut("dz", double() ) )
     return false;
 
   return true;
 }
 
-// parallel versions of VBTF and QTF cuts for reco muons in case you want to compare (without the strbitset)
+// parallel versions of VBTF, QTF and TOPDIL cuts for reco muons in case you want to compare (without the strbitset)
 
 bool MuonIDSelector::VBTFcuts( const reco::Muon& muon, 
-				edm::Handle<reco::BeamSpot>& beamSpot)  {    
+				const Point& position)  {    
 
    
- if(verbose_) 
+  if(verbose_) 
     cout<<"Selecting Reco muon with VBTF cuts: "<<muon.pt()<<endl;
- 
+  
   if(!ignoreCut("isGlobalMuon") && !muon.isGlobalMuon()  ) 
     return false;
+  
+  if(!ignoreCut("isTrackerMuon") && !muon.isTrackerMuon() ) 
+    return false;
+  
+  int nMatches = muon.numberOfMatches();
+  
+  if(!ignoreCut("nMatches") && nMatches < cut("nMatches", int() ))
+    return false;
+  
+  
+  //const reco::TrackRef& combinedMuon = muon.combinedMuon();    
+  const reco::TrackRef& combinedMuon = muon.globalTrack();    
+  
+  int trackerHits = combinedMuon->hitPattern().numberOfValidTrackerHits();
+  
+  if(!ignoreCut("trackerHits") && trackerHits < cut("trackerHits", int() ))
+    return false;
+  
+  int pixelHits = combinedMuon->hitPattern().numberOfValidPixelHits();
+  
+  if(!ignoreCut("pixelHits") && pixelHits <= cut("pixelHits", int() ))
+    return false;
+  
+  
+  double globalNormChi2 = combinedMuon->normalizedChi2();
+  if(!ignoreCut("globalNormChi2") && globalNormChi2 >= cut("globalNormChi2", double() ) )
+    return false;
+  
+  
 
-   if(!ignoreCut("isTrackerMuon") && !muon.isTrackerMuon() ) 
-     return false;
 
-   int nMatches = muon.numberOfMatches();
-    
-    if(!ignoreCut("nMatches") && nMatches < cut("nMatches", int() ))
-       return false;
+  double dxy = 9999.;
 
+  const reco::TrackRef& track = muon.track();            
 
-    //const reco::TrackRef& combinedMuon = muon.combinedMuon();    
-    const reco::TrackRef& combinedMuon = muon.globalTrack();    
-    
-    int trackerHits = combinedMuon->hitPattern().numberOfValidTrackerHits();
-    
-    if(!ignoreCut("trackerHits") && trackerHits < cut("trackerHits", int() ))
-       return false;
+  if(!calcDispFromGlobalTrack_ && !track.isNull()){
+      dxy = track->dxy(position);
+  }
+  else{
+      dxy = combinedMuon->dxy(position);
+  }
 
-    int pixelHits = combinedMuon->hitPattern().numberOfValidPixelHits();
-    
-    if(!ignoreCut("pixelHits") && pixelHits <= cut("pixelHits", int() ))
-       return false;
-
-
-    double globalNormChi2 = combinedMuon->normalizedChi2();
-    if(!ignoreCut("globalNormChi2") && globalNormChi2 >= cut("globalNormChi2", double() ) )
-       return false;
-
-    
-    double dxy = combinedMuon->dxy(beamSpot->position());
-    
-    if(!ignoreCut("dxy") && dxy > cut("dxy", double() ) )
-      return false;
-    
-    int muonHits = combinedMuon->hitPattern().numberOfValidMuonHits();
-    
-    if(!ignoreCut("muonHits") && muonHits <= cut("muonHits", int() ))
-      return false;
-    
-    
+  /*
+  if(calcDispFromGlobalTrack_){
+    dxy = combinedMuon->dxy(position);
+  }
+  else{
+  const reco::TrackRef& track = muon.track();            
+    if(!track.isNull()){  
+      dxy = track->dxy(position);
+    }
+    else{    
+      dxy = combinedMuon->dxy(position);
+    }  
+  }
+  */
+  if(!ignoreCut("dxy") && fabs(dxy) > cut("dxy", double() ) )
+    return false;
+  
+  int muonHits = combinedMuon->hitPattern().numberOfValidMuonHits();
+  
+  if(!ignoreCut("muonHits") && muonHits <= cut("muonHits", int() ))
+    return false;
+  
+  
   
   double sumPtR03 = muon.isolationR03().sumPt;
   double emEtR03 = muon.isolationR03().emEt;
@@ -437,7 +469,7 @@ bool MuonIDSelector::VBTFcuts( const reco::Muon& muon,
 
 
 bool MuonIDSelector::QTFcuts( const reco::Muon& muon, 
-			       edm::Handle<reco::BeamSpot>& beamSpot)  {    
+			       const Point& position)  {    
   if(verbose_) 
     cout<<"Selecting Reco muon with QTF cuts: "<<muon.pt()<<endl;
 
@@ -466,10 +498,10 @@ bool MuonIDSelector::QTFcuts( const reco::Muon& muon,
   if(!ignoreCut("trackNormChi2") && track->normalizedChi2() > cut("trackNormChi2", double() ) )
     return false;
   
-  if(!ignoreCut("dxy") && fabs(track->dxy(beamSpot->position())) >= cut("dxy", double() ) )
+  if(!ignoreCut("dxy") && fabs(track->dxy(position)) >= cut("dxy", double() ) )
     return false;
   
-  if(!ignoreCut("dz") && fabs(track->dz(beamSpot->position())) >= cut("dz", double() ) )
+  if(!ignoreCut("dz") && fabs(track->dz(position)) >= cut("dz", double() ) )
     return false;
 
   int muonHits = 0;
@@ -513,3 +545,62 @@ bool MuonIDSelector::QTFcuts( const reco::Muon& muon,
 
   return true;
 }
+
+bool MuonIDSelector::TOPDILcuts( const reco::Muon& muon,
+                                const Point& position)  {
+
+
+  if(verbose_)
+    cout<<"Selecting Reco muon with TOPDIL cuts: "<<muon.pt()<<endl;
+
+  if(!ignoreCut("isGlobalMuon") && !muon.isGlobalMuon()  )
+    return false;
+
+  if(!ignoreCut("isTrackerMuon") && !muon.isTrackerMuon() )
+    return false;
+
+  //const reco::TrackRef& combinedMuon = muon.combinedMuon();    
+  const reco::TrackRef& combinedMuon = muon.globalTrack();
+
+  int trackerHits = combinedMuon->hitPattern().numberOfValidTrackerHits();
+
+  if(!ignoreCut("trackerHits") && trackerHits < cut("trackerHits", int() ))
+    return false;
+
+  double globalNormChi2 = combinedMuon->normalizedChi2();
+  if(!ignoreCut("globalNormChi2") && globalNormChi2 >= cut("globalNormChi2", double() ) )
+    return false;
+
+  double dxy = 9999.;
+
+  const reco::TrackRef& track = muon.track();
+
+  if(!calcDispFromGlobalTrack_ && !track.isNull()){
+      dxy = track->dxy(position);
+  }
+  else{
+      dxy = combinedMuon->dxy(position);
+  }
+
+  if(!ignoreCut("dxy") && fabs(dxy) > cut("dxy", double() ) )
+    return false;
+
+  int muonHits = combinedMuon->hitPattern().numberOfValidMuonHits();
+
+  if(!ignoreCut("muonHits") && muonHits <= cut("muonHits", int() ))
+    return false;
+
+  double sumPtR03 = muon.isolationR03().sumPt;
+  double emEtR03 = muon.isolationR03().emEt;
+  double hadEtR03 = muon.isolationR03().hadEt;
+
+  double relIso = (sumPtR03 + emEtR03 + hadEtR03)/muon.pt();
+
+  if(!ignoreCut("relIso") && relIso > cut("relIso", double() ) )
+    return false;
+
+  return true;
+}
+  
+
+
