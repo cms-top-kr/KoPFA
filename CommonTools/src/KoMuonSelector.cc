@@ -103,7 +103,7 @@ void KoMuonSelector::produce(edm::Event& iEvent, const edm::EventSetup& es)
     bool C5 = C4 && muonIdSel.test("trackerHits");
     bool C6 = C5 && muonIdSel.test("globalNormChi2");
     bool C7 = C6 && muonIdSel.test("muonHits");
-    bool C8 = C1 && muonIdSel.test("TOPDIL");
+    bool C8 = C2 && muonIdSel.test("TOPDIL");
   
     if(C1) cut[0]++;
     if(C2) cut[1]++;
