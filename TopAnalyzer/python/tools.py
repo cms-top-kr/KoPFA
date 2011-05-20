@@ -51,10 +51,34 @@ def addLooseLeptons(process):
 
 def topProjection(process, postfix=""):
 	# top projections in PF2PAT:
-	getattr(process,"pfNoPileUp"+postfix).enable = True
-	getattr(process,"pfNoMuon"+postfix).enable = True
-	getattr(process,"pfNoElectron"+postfix).enable = True
-	getattr(process,"pfNoTau"+postfix).enable = False # to use tau-cleaned jet collection : True
+        getattr(process,"pfNoPileUp"+postfix).enable = True
+        getattr(process,"pfNoMuon"+postfix).enable = True
+        getattr(process,"pfNoElectron"+postfix).enable = True
+        getattr(process,"pfNoTau"+postfix).enable = False # to use tau-cleaned jet collection : True
 	getattr(process,"pfNoJet"+postfix).enable = True
 
+
+from PhysicsTools.PatAlgos.patEventContent_cff import *
+def updateEventContent(p):
+    l = p.out.outputCommands[:]
+    p.out.outputCommands = ['drop *']
+
+    l.extend(patTriggerEventContent)
+    l.extend(patExtraAodEventContent)
+    l.extend(patEventContentNoCleaning)
+    l.extend([
+        'keep edmMergeableCounter_*_*_*',
+        'keep *_goodOfflinePrimaryVertices*_*_*',
+        'keep *_particleFlow_*_*',
+        'keep *_acceptedMuons_*_*',
+        'keep *_acceptedElectrons_*_*',
+        'keep double_*PFlow*_rho_PAT',
+    ])
+
+    # Uniquify outputCommands
+    s = set()
+    for item in l:
+        if item not in s:
+            s.add(item)
+            p.out.outputCommands.append(item)
 
