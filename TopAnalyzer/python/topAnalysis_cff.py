@@ -56,7 +56,7 @@ patElectronFilterForMuEl = patElectronFilter.clone()
 patMuonFilterForMuEl.minNumber = 1
 patElectronFilterForMuEl.minNumber = 1
 
-ElEl = cms.EDAnalyzer('TopElElAnalyzer',
+ElEl = cms.EDFilter('TopElElAnalyzer',
     genParticlesLabel = cms.InputTag('genParticles'),
     muonLabel1 =  cms.InputTag('Electrons'),
     muonLabel2 =  cms.InputTag('Electrons'),
@@ -77,7 +77,7 @@ ElEl = cms.EDAnalyzer('TopElElAnalyzer',
     minBTagValue = cms.untracked.double(1.7),
 )
 
-MuMu = cms.EDAnalyzer('TopMuMuAnalyzer',
+MuMu = cms.EDFilter('TopMuMuAnalyzer',
     genParticlesLabel = cms.InputTag('genParticles'),
     muonLabel1 =  cms.InputTag('Muons'),
     muonLabel2 =  cms.InputTag('Muons'),
@@ -99,7 +99,7 @@ MuMu = cms.EDAnalyzer('TopMuMuAnalyzer',
     minBTagValue = cms.untracked.double(1.7),
 )
 
-MuEl = cms.EDAnalyzer('TopMuElAnalyzer',
+MuEl = cms.EDFilter('TopMuElAnalyzer',
     genParticlesLabel = cms.InputTag('genParticles'),
     muonLabel1 =  cms.InputTag('Muons'),
     muonLabel2 =  cms.InputTag('Electrons'),

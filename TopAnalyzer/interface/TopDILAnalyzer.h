@@ -13,7 +13,7 @@
 //
 // Original Author:  Tae Jeong Kim,40 R-A32,+41227678602,
 //         Created:  Fri Jun  4 17:19:29 CEST 2010
-// $Id: TopDILAnalyzer.h,v 1.40 2011/05/12 16:05:21 tjkim Exp $
+// $Id: TopDILAnalyzer.h,v 1.41 2011/05/19 21:48:15 tjkim Exp $
 //
 //
 
@@ -24,6 +24,8 @@
 // user include files
 #include "FWCore/Framework/interface/Frameworkfwd.h"
 #include "FWCore/Framework/interface/EDAnalyzer.h"
+#include "FWCore/Framework/interface/EDFilter.h"
+#include "FWCore/Framework/interface/EDProducer.h"
 
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/Framework/interface/MakerMacros.h"
@@ -77,7 +79,7 @@ using namespace reco;
 using namespace isodeposit;
 
 template<typename T1, typename T2>
-class TopDILAnalyzer : public edm::EDAnalyzer {
+class TopDILAnalyzer : public edm::EDFilter {
  public:
   explicit TopDILAnalyzer(const edm::ParameterSet& iConfig){
     //now do what ever initialization is needed
@@ -236,8 +238,12 @@ class TopDILAnalyzer : public edm::EDAnalyzer {
 
  } 
 
-  virtual void analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
+  //virtual void produce(const edm::Event& iEvent, const edm::EventSetup& iSetup)
+  virtual bool filter(edm::Event& iEvent, const edm::EventSetup& iSetup)
   {
+
+    bool accept = false;
+
     clear();
 
     EVENT  = iEvent.id().event();
@@ -308,6 +314,7 @@ class TopDILAnalyzer : public edm::EDAnalyzer {
         const int sign = it1.charge() * it2.charge();
         const Ko::ZCandidate dimuon(it1.p4(), it2.p4(), sign);
 
+        accept = true;
         Z->push_back(dimuon);
 
         h_leadingpt->Fill(it1.pt());
@@ -501,6 +508,8 @@ class TopDILAnalyzer : public edm::EDAnalyzer {
     //iSetup.get<SetupRecord>().get(pSetup);
     tree->Fill();
 
+    return accept;
+
   }
 
   void clear(){
@@ -554,24 +563,19 @@ class TopDILAnalyzer : public edm::EDAnalyzer {
 
   }
 
-  virtual void endJob() 
-  {
-  }
-
-  void endLuminosityBlock(const edm::LuminosityBlock & lumi, const edm::EventSetup & setup){
+  virtual bool endLuminosityBlock(edm::LuminosityBlock & lumi, const edm::EventSetup & setup){
     if(useEventCounter_){
       for(unsigned int i=0;i<filters_.size();++i) {
         std::string name = filters_[i];
-        cout << name << endl;
         edm::Handle<edm::MergeableCounter> numEventsCounter;
         lumi.getByLabel(name, numEventsCounter);
         if( numEventsCounter.isValid()){
-          cout << "n= " << numEventsCounter->value << endl;
           tmp->AddBinContent(i+1, numEventsCounter->value);
           tmp->GetXaxis()->SetBinLabel(i+1,filters_[i].c_str());
         }
       }
     }
+    return true;
   }
 
   bool checkOverlap(const double & eta, const double & phi, const double & dRval1,const double & reliso1, const double &dRval2, const double & reliso2)
