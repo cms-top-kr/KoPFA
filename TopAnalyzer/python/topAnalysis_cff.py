@@ -65,8 +65,10 @@ ElEl = cms.EDAnalyzer('TopElElAnalyzer',
     metStudy = cms.untracked.bool( False),
     useEventCounter = cms.bool( False ),
     filters = cms.untracked.vstring(
-        'initialEvents',
-        'finalEvents'
+        'nEventsTotal',
+        'nEventsClean',
+        'nEventsHLT',
+        'nEventsFiltered',
     ),
     looseJetId = myJetId,
     relIso1 = cms.untracked.double(0.26),
@@ -84,8 +86,10 @@ MuMu = cms.EDAnalyzer('TopMuMuAnalyzer',
     metStudy = cms.untracked.bool( True ),
     useEventCounter = cms.bool( False ),
     filters = cms.untracked.vstring(
-        'initialEvents',
-        'finalEvents'
+        'nEventsTotal',
+        'nEventsClean',
+        'nEventsHLT',
+        'nEventsFiltered',
     ),
     looseJetId = myJetId, 
     #for jet cleaning overlapping with isolated epton within 0.4
@@ -103,8 +107,10 @@ MuEl = cms.EDAnalyzer('TopMuElAnalyzer',
     jetLabel =  cms.InputTag('selectedPatJetsPFlow'),
     useEventCounter = cms.bool( False ),
     filters = cms.untracked.vstring(
-        'initialEvents',
-    #    'finalEvents'
+        'nEventsTotal',
+        'nEventsClean',
+        'nEventsHLT',
+        'nEventsFiltered',
     ),
     looseJetId = myJetId, 
     #for jet cleaning overlapping with isolated epton within 0.4
