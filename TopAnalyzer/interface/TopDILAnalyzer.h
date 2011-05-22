@@ -13,7 +13,7 @@
 //
 // Original Author:  Tae Jeong Kim,40 R-A32,+41227678602,
 //         Created:  Fri Jun  4 17:19:29 CEST 2010
-// $Id: TopDILAnalyzer.h,v 1.41 2011/05/19 21:48:15 tjkim Exp $
+// $Id: TopDILAnalyzer.h,v 1.42 2011/05/20 13:47:43 tjkim Exp $
 //
 //
 
@@ -168,6 +168,7 @@ class TopDILAnalyzer : public edm::EDFilter {
     tree->Branch("EVENT",&EVENT,"EVENT/i");
     tree->Branch("RUN",&RUN,"RUN/i");
     tree->Branch("LUMI",&LUMI,"LUMI/i");
+    tree->Branch("nvertex",&nvertex,"nvertex/i");
     tree->Branch("weight",&weight, "weight/d");
 
     tree->Branch("Z","std::vector<Ko::ZCandidate>", &Z);
@@ -250,6 +251,19 @@ class TopDILAnalyzer : public edm::EDFilter {
     RUN    = iEvent.id().run();
     LUMI   = iEvent.id().luminosityBlock();
 
+    edm::Handle<reco::VertexCollection> recVtxs_;
+    iEvent.getByLabel("offlinePrimaryVertices",recVtxs_);
+
+    int nv = 0 ;
+
+    for(reco::VertexCollection::const_iterator v=recVtxs_->begin();  v!=recVtxs_->end(); ++v){
+      if (!(v->isFake()) && (v->ndof()>4) && (fabs(v->z())<=24.0) && (v->position().Rho()<=2.0) ) {
+            nv++;
+      }
+    }
+
+    nvertex = nv;
+ 
     edm::Handle<double> weight_;
     iEvent.getByLabel("PUweight", weight_);
 
@@ -710,7 +724,7 @@ class TopDILAnalyzer : public edm::EDFilter {
   unsigned int EVENT;
   unsigned int RUN;
   unsigned int LUMI;
-
+  unsigned int nvertex;
   double weight;
   // Residual Jet energy correction for 38X
   bool doResJec_;
