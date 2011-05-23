@@ -39,6 +39,7 @@ KoMuonSelector::KoMuonSelector(const edm::ParameterSet& cfg)
   pt = new std::vector<double>();
   eta = new std::vector<double>();
   phi = new std::vector<double>();
+  charge = new std::vector<double>();
 
   chIso = new std::vector<double>();
   nhIso = new std::vector<double>();
@@ -63,6 +64,7 @@ void KoMuonSelector::produce(edm::Event& iEvent, const edm::EventSetup& es)
   pt->clear();
   eta->clear();
   phi->clear();
+  charge->clear();
 
   chIso->clear();
   nhIso->clear();
@@ -138,6 +140,7 @@ void KoMuonSelector::produce(edm::Event& iEvent, const edm::EventSetup& es)
       pt->push_back(muon.pt());
       eta->push_back(muon.eta());
       phi->push_back(muon.phi());
+      charge->push_back(muon.charge());
 
       //chIso->push_back(muon.chargedHadronIso());
       //phIso->push_back(muon.photonIso());
@@ -175,6 +178,7 @@ KoMuonSelector::beginJob(){
    tree->Branch("pt","std::vector<double>",&pt);
    tree->Branch("eta","std::vector<double>",&eta);
    tree->Branch("phi","std::vector<double>",&phi);
+   tree->Branch("charge","std::vector<double>",&charge);
    tree->Branch("multiplicity",&multiplicity,"multiplicity/i");
 
    tree->Branch("chIso","std::vector<double>",&chIso);

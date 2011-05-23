@@ -63,6 +63,7 @@ class KoMuonSelector : public edm::EDProducer
   std::vector<double>* eta;
   std::vector<double>* phi;
   std::vector<double>* pt;
+  std::vector<double>* charge;
   int multiplicity;
 
   std::vector<double>* chIso;
