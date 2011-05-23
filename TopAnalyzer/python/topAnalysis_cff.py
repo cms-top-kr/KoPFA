@@ -147,7 +147,6 @@ topElElAnalysisMCSequence = cms.Sequence(
 )
 
 topElElAnalysisRealDataSequence = cms.Sequence(
-    loadHistosFromRunInfo*
     hltHighLevelElElRD*
 #    electronTriggerFilterByRun*
     removeDuplicate*
@@ -159,7 +158,6 @@ topElElAnalysisRealDataSequence = cms.Sequence(
 )
 
 topMuMuAnalysisMCSequence = cms.Sequence(
-    loadHistosFromRunInfo*
     hltHighLevelMuMuMC*
     topWLeptonGenFilter*
     GenZmassFilter*
@@ -173,7 +171,6 @@ topMuMuAnalysisMCSequence = cms.Sequence(
 )
 
 topMuMuAnalysisRealDataSequence = cms.Sequence(
-#    loadHistosFromRunInfo*
 #    hltHighLevelMuMuRD*
 #    muonTriggerFilterByRun*
     removeDuplicate*
@@ -186,7 +183,6 @@ topMuMuAnalysisRealDataSequence = cms.Sequence(
 )
 
 topMuElAnalysisMCSequence = cms.Sequence(
-#    loadHistosFromRunInfo*
 #    hltHighLevelMuElMC*
     topWLeptonGenFilter*
     GenZmassFilter*
@@ -199,7 +195,6 @@ topMuElAnalysisMCSequence = cms.Sequence(
 )
 
 topMuElAnalysisRealDataSequence = cms.Sequence(
-    loadHistosFromRunInfo*
 #    hltHighLevelMuElRD*
 #    muonTriggerFilterByRun*
     removeDuplicate*
