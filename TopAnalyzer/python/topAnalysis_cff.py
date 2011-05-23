@@ -56,6 +56,13 @@ patElectronFilterForMuEl = patElectronFilter.clone()
 patMuonFilterForMuEl.minNumber = 1
 patElectronFilterForMuEl.minNumber = 1
 
+DYmmFilter = cms.EDFilter("ZmmFilter",
+  muonLabel1 =  cms.InputTag('acceptedMuons'),
+  muonLabel2 =  cms.InputTag('acceptedMuons'),
+  min = cms.double(12),
+  max = cms.double(99999),
+)
+
 ElEl = cms.EDFilter('TopElElAnalyzer',
     genParticlesLabel = cms.InputTag('genParticles'),
     muonLabel1 =  cms.InputTag('Electrons'),
@@ -131,7 +138,7 @@ topElElAnalysisMCSequence = cms.Sequence(
     hltHighLevelElElMC*
     topWLeptonGenFilter*
     GenZmassFilter*
-    VertexFilter*
+#    VertexFilter*
     PUweight*
     Electrons*
     patElectronFilter*
@@ -144,7 +151,7 @@ topElElAnalysisRealDataSequence = cms.Sequence(
     hltHighLevelElElRD*
 #    electronTriggerFilterByRun*
     removeDuplicate*
-    VertexFilter*
+#    VertexFilter*
     Electrons*
     patElectronFilter*
     ElEl
@@ -156,32 +163,34 @@ topMuMuAnalysisMCSequence = cms.Sequence(
     hltHighLevelMuMuMC*
     topWLeptonGenFilter*
     GenZmassFilter*
-    VertexFilter*
+#    VertexFilter*
     PUweight*
+    DYmmFilter*
     Muons*
     patMuonFilter*
-    MuMu*
-    mm
+    MuMu
+#    mm
 )
 
 topMuMuAnalysisRealDataSequence = cms.Sequence(
-    loadHistosFromRunInfo*
+#    loadHistosFromRunInfo*
 #    hltHighLevelMuMuRD*
 #    muonTriggerFilterByRun*
     removeDuplicate*
-    VertexFilter*
+#    VertexFilter*
+    DYmmFilter*
     Muons*
     patMuonFilter*
-    MuMu*
-    mm
+    MuMu
+#    mm
 )
 
 topMuElAnalysisMCSequence = cms.Sequence(
-    loadHistosFromRunInfo*
+#    loadHistosFromRunInfo*
 #    hltHighLevelMuElMC*
     topWLeptonGenFilter*
     GenZmassFilter*
-    VertexFilter*
+#    VertexFilter*
     PUweight*
     Muons * Electrons *
     patMuonFilterForMuEl * patElectronFilterForMuEl *
@@ -194,7 +203,7 @@ topMuElAnalysisRealDataSequence = cms.Sequence(
 #    hltHighLevelMuElRD*
 #    muonTriggerFilterByRun*
     removeDuplicate*
-    VertexFilter*
+#    VertexFilter*
     Muons * Electrons *
     patMuonFilterForMuEl * patElectronFilterForMuEl *
     MuEl
