@@ -13,7 +13,7 @@
 //
 // Original Author:  Tae Jeong Kim,40 R-A32,+41227678602,
 //         Created:  Fri Jun  4 17:19:29 CEST 2010
-// $Id: TopDILAnalyzer.h,v 1.42 2011/05/20 13:47:43 tjkim Exp $
+// $Id: TopDILAnalyzer.h,v 1.43 2011/05/22 21:32:44 tjkim Exp $
 //
 //
 
@@ -45,6 +45,7 @@
 #include "DataFormats/Math/interface/deltaR.h"
 #include "DataFormats/Math/interface/LorentzVector.h"
 #include "DataFormats/Common/interface/MergeableCounter.h"
+#include "KoPFA/DataFormats/interface/Lepton.h"
 #include "KoPFA/DataFormats/interface/ZCandidate.h"
 #include "KoPFA/DataFormats/interface/TTbarGenEvent.h"
 #include "KoPFA/DataFormats/interface/TTbarMass.h"
@@ -118,6 +119,8 @@ class TopDILAnalyzer : public edm::EDFilter {
     h_bjet_multi = fs->make<TH1F>( "h_bjet_multi", "bjet_multi", 10, 0, 10);
 
     Z = new std::vector<Ko::ZCandidate>();
+    lepton1 = new std::vector<Ko::Lepton>();
+    lepton2 = new std::vector<Ko::Lepton>();
     pfMet = new std::vector<Ko::METCandidate>();
     ttbar = new std::vector<Ko::TTbarMass>();
     met = new std::vector<math::XYZTLorentzVector>();
@@ -125,34 +128,6 @@ class TopDILAnalyzer : public edm::EDFilter {
     jetspt30 = new std::vector<math::XYZTLorentzVector>();
     bjets = new std::vector<math::XYZTLorentzVector>();
 
-    chIso1 = new std::vector<double>;
-    phIso1 = new std::vector<double>;
-    nhIso1 = new std::vector<double>;
-    chIso2 = new std::vector<double>;
-    phIso2 = new std::vector<double>;
-    nhIso2 = new std::vector<double>;
-
-    chIsoOpt1 = new std::vector<double>;
-    phIsoOpt1 = new std::vector<double>;
-    nhIsoOpt1 = new std::vector<double>;
-    chIsoOpt2 = new std::vector<double>;
-    phIsoOpt2 = new std::vector<double>;
-    nhIsoOpt2 = new std::vector<double>;
-
-    relIso03lep1 = new std::vector<double>;
-    relIso03lep2 = new std::vector<double>;
-    relIso04lep1 = new std::vector<double>;
-    relIso04lep2 = new std::vector<double>;
-    relIso05lep1 = new std::vector<double>;
-    relIso05lep2 = new std::vector<double>;
-
-    trackIso1 = new std::vector<double>;
-    ecalIso1 = new std::vector<double>;
-    hcalIso1 = new std::vector<double>;
-    trackIso2 = new std::vector<double>;
-    ecalIso2 = new std::vector<double>;
-    hcalIso2 = new std::vector<double>;
-  
   }
 
 
@@ -172,6 +147,8 @@ class TopDILAnalyzer : public edm::EDFilter {
     tree->Branch("weight",&weight, "weight/d");
 
     tree->Branch("Z","std::vector<Ko::ZCandidate>", &Z);
+    tree->Branch("lepton1","std::vector<Ko::Lepton>", &lepton1);
+    tree->Branch("lepton2","std::vector<Ko::Lepton>", &lepton2);
     tree->Branch("pfMet","std::vector<Ko::METCandidate>", &pfMet);
     tree->Branch("ttbar","std::vector<Ko::TTbarMass>", &ttbar);
 
@@ -179,34 +156,6 @@ class TopDILAnalyzer : public edm::EDFilter {
     tree->Branch("jets","std::vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >", &jets);
     tree->Branch("jetspt30","std::vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >", &jetspt30);
     tree->Branch("bjets","std::vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >", &bjets);
-
-    tree->Branch("chIso1","std::vector<double>", &chIso1);
-    tree->Branch("phIso1","std::vector<double>", &phIso1);
-    tree->Branch("nhIso1","std::vector<double>", &nhIso1);
-    tree->Branch("chIso2","std::vector<double>", &chIso2);
-    tree->Branch("phIso2","std::vector<double>", &phIso2);
-    tree->Branch("nhIso2","std::vector<double>", &nhIso2);
-
-    tree->Branch("chIsoOpt1","std::vector<double>", &chIsoOpt1);
-    tree->Branch("phIsoOpt1","std::vector<double>", &phIsoOpt1);
-    tree->Branch("nhIsoOpt1","std::vector<double>", &nhIsoOpt1);
-    tree->Branch("chIsoOpt2","std::vector<double>", &chIsoOpt2);
-    tree->Branch("phIsoOpt2","std::vector<double>", &phIsoOpt2);
-    tree->Branch("nhIsoOpt2","std::vector<double>", &nhIsoOpt2);
-
-    tree->Branch("relIso03lep1","std::vector<double>",&relIso03lep1);
-    tree->Branch("relIso03lep2","std::vector<double>",&relIso03lep2);
-    tree->Branch("relIso04lep1","std::vector<double>",&relIso04lep1);
-    tree->Branch("relIso04lep2","std::vector<double>",&relIso04lep2);
-    tree->Branch("relIso05lep1","std::vector<double>",&relIso05lep1);
-    tree->Branch("relIso05lep2","std::vector<double>",&relIso05lep2);
-
-    tree->Branch("trackIso1","std::vector<double>", &trackIso1);
-    tree->Branch("ecalIso1","std::vector<double>", &ecalIso1);
-    tree->Branch("hcalIso1","std::vector<double>", &hcalIso1);
-    tree->Branch("trackIso2","std::vector<double>", &trackIso2);
-    tree->Branch("ecalIso2","std::vector<double>", &ecalIso2);
-    tree->Branch("hcalIso2","std::vector<double>", &hcalIso2);
 
     tree->Branch("MET",&MET,"MET/d");
     tree->Branch("dphimetlepton",&dphimetlepton,"dphimetlepton/d");
@@ -325,87 +274,47 @@ class TopDILAnalyzer : public edm::EDFilter {
         if(match) continue;
         dphimetlepton = fabs(deltaPhi(mi->phi(),it1.phi()));
 
-        const int sign = it1.charge() * it2.charge();
-        const Ko::ZCandidate dimuon(it1.p4(), it2.p4(), sign);
-
         accept = true;
+
+        const Ko::Lepton lep1(it1.p4(), (int) it1.charge());
+        const Ko::Lepton lep2(it2.p4(), (int) it2.charge());
+
+        lepton1->push_back(lep1);
+        lepton2->push_back(lep2);
+
+        reco::isodeposit::Direction Dir1 = Direction(it1.eta(),it1.phi());
+        reco::isodeposit::Direction Dir2 = Direction(it2.eta(),it2.phi());
+        reco::isodeposit::AbsVetos vetos_ch;
+        reco::isodeposit::AbsVetos vetos_nh;
+        vetos_nh.push_back(new ThresholdVeto( 0.5 ));
+        reco::isodeposit::AbsVetos vetos_ph1;
+        vetos_ph1.push_back(new ThresholdVeto( 0.5 ));
+        //vetos_ph1.push_back(new RectangularEtaPhiVeto( Dir1, -0.1, 0.1, -0.2, 0.2));
+        reco::isodeposit::AbsVetos vetos_ph2;
+        vetos_ph2.push_back(new ThresholdVeto( 0.5 ));
+        //vetos_ph2.push_back(new RectangularEtaPhiVeto( Dir2, -0.1, 0.1, -0.2, 0.2));
+
+        //pf isolation setup
+        lepton1->back().setIsoDeposit( pat::PfChargedHadronIso, it1.isoDeposit(pat::PfChargedHadronIso), vetos_ch );
+        lepton1->back().setIsoDeposit( pat::PfNeutralHadronIso, it1.isoDeposit(pat::PfNeutralHadronIso), vetos_nh );
+        lepton1->back().setIsoDeposit( pat::PfGammaIso, it1.isoDeposit(pat::PfGammaIso), vetos_ph1 );
+    
+        lepton2->back().setIsoDeposit( pat::PfChargedHadronIso, it2.isoDeposit(pat::PfChargedHadronIso), vetos_ch );
+        lepton2->back().setIsoDeposit( pat::PfNeutralHadronIso, it2.isoDeposit(pat::PfNeutralHadronIso), vetos_nh );
+        lepton2->back().setIsoDeposit( pat::PfGammaIso, it2.isoDeposit(pat::PfGammaIso), vetos_ph2 );
+ 
+        //detector based isolation
+        lepton1->back().setIsoDeposit( it1.trackIso(), it1.ecalIso(), it1.hcalIso());
+        lepton2->back().setIsoDeposit( it2.trackIso(), it2.ecalIso(), it2.hcalIso());
+
+        const Ko::ZCandidate dimuon(lepton1->back(), lepton2->back());
         Z->push_back(dimuon);
+
 
         h_leadingpt->Fill(it1.pt());
         h_secondpt->Fill(it2.pt());
         h_mass->Fill(dimuon.mass());
 
-        reco::IsoDeposit::Direction Dir1 = Direction(it1.eta(),it1.phi());
-        reco::IsoDeposit::Direction Dir2 = Direction(it2.eta(),it2.phi());
-        IsoDeposit::AbsVetos vetos_ch;
-        IsoDeposit::AbsVetos vetos_nh;
-        vetos_nh.push_back(new ThresholdVeto( 0.5 ));
-        IsoDeposit::AbsVetos vetos_ph1;
-        vetos_ph1.push_back(new ThresholdVeto( 0.5 ));
-        //vetos_ph1.push_back(new RectangularEtaPhiVeto( Dir1, -0.1, 0.1, -0.2, 0.2));
-        IsoDeposit::AbsVetos vetos_ph2;
-        vetos_ph2.push_back(new ThresholdVeto( 0.5 ));
-        //vetos_ph2.push_back(new RectangularEtaPhiVeto( Dir2, -0.1, 0.1, -0.2, 0.2));
-
-        chIso1->push_back(it1.chargedHadronIso());
-        phIso1->push_back(it1.photonIso());
-        nhIso1->push_back(it1.neutralHadronIso());
-
-        chIso2->push_back(it2.chargedHadronIso());
-        phIso2->push_back(it2.photonIso());
-        nhIso2->push_back(it2.neutralHadronIso());
-
-        const double chiso03lep1 = it1.isoDeposit(pat::PfChargedHadronIso)->depositAndCountWithin(0.3, vetos_ch).first;
-        const double nhiso03lep1 = it1.isoDeposit(pat::PfNeutralHadronIso)->depositAndCountWithin(0.3, vetos_nh).first;
-        const double phiso03lep1 = it1.isoDeposit(pat::PfGammaIso)->depositAndCountWithin(0.3, vetos_ph1).first;
-        const double chiso03lep2 = it2.isoDeposit(pat::PfChargedHadronIso)->depositAndCountWithin(0.3, vetos_ch).first;
-        const double nhiso03lep2 = it2.isoDeposit(pat::PfNeutralHadronIso)->depositAndCountWithin(0.3, vetos_nh).first;
-        const double phiso03lep2 = it2.isoDeposit(pat::PfGammaIso)->depositAndCountWithin(0.3, vetos_ph1).first;
-
-        const double chiso04lep1 = it1.isoDeposit(pat::PfChargedHadronIso)->depositAndCountWithin(0.4, vetos_ch).first;
-        const double nhiso04lep1 = it1.isoDeposit(pat::PfNeutralHadronIso)->depositAndCountWithin(0.4, vetos_nh).first;
-        const double phiso04lep1 = it1.isoDeposit(pat::PfGammaIso)->depositAndCountWithin(0.4, vetos_ph1).first;
-        const double chiso04lep2 = it2.isoDeposit(pat::PfChargedHadronIso)->depositAndCountWithin(0.4, vetos_ch).first;
-        const double nhiso04lep2 = it2.isoDeposit(pat::PfNeutralHadronIso)->depositAndCountWithin(0.4, vetos_nh).first;
-        const double phiso04lep2 = it2.isoDeposit(pat::PfGammaIso)->depositAndCountWithin(0.4, vetos_ph1).first;
-
-        const double chiso05lep1 = it1.isoDeposit(pat::PfChargedHadronIso)->depositAndCountWithin(0.5, vetos_ch).first;
-        const double nhiso05lep1 = it1.isoDeposit(pat::PfNeutralHadronIso)->depositAndCountWithin(0.5, vetos_nh).first;
-        const double phiso05lep1 = it1.isoDeposit(pat::PfGammaIso)->depositAndCountWithin(0.5, vetos_ph1).first;
-        const double chiso05lep2 = it2.isoDeposit(pat::PfChargedHadronIso)->depositAndCountWithin(0.5, vetos_ch).first;
-        const double nhiso05lep2 = it2.isoDeposit(pat::PfNeutralHadronIso)->depositAndCountWithin(0.5, vetos_nh).first;
-        const double phiso05lep2 = it2.isoDeposit(pat::PfGammaIso)->depositAndCountWithin(0.5, vetos_ph1).first;     
-
-        chIsoOpt1->push_back(chiso04lep1);
-        nhIsoOpt1->push_back(nhiso04lep1);
-        phIsoOpt1->push_back(phiso04lep1);
-
-        chIsoOpt2->push_back(chiso04lep2);
-        nhIsoOpt2->push_back(nhiso04lep2);
-        phIsoOpt2->push_back(phiso04lep2);
-
-        const double reliso03lep1 =  (chiso03lep1+ nhiso03lep1 + phiso03lep1) / it1.pt();
-        const double reliso03lep2 =  (chiso03lep2+ nhiso03lep2 + phiso03lep2) / it2.pt();
-        const double reliso04lep1 =  (chiso04lep1+ nhiso04lep1 + phiso04lep1) / it1.pt();
-        const double reliso04lep2 =  (chiso04lep2+ nhiso04lep2 + phiso04lep2) / it2.pt();
-        const double reliso05lep1 =  (chiso05lep1+ nhiso05lep1 + phiso05lep1) / it1.pt();
-        const double reliso05lep2 =  (chiso05lep2+ nhiso05lep2 + phiso05lep2) / it2.pt();
-
-        relIso03lep1->push_back(reliso03lep1);
-        relIso03lep2->push_back(reliso03lep2);
-        relIso04lep1->push_back(reliso04lep1);
-        relIso04lep2->push_back(reliso04lep2);
-        relIso05lep1->push_back(reliso05lep1);
-        relIso05lep2->push_back(reliso05lep2);
-
-        trackIso1->push_back(it1.trackIso());
-        ecalIso1->push_back(it1.ecalIso());
-        hcalIso1->push_back(it1.hcalIso());
-
-        trackIso2->push_back(it2.trackIso());
-        ecalIso2->push_back(it2.ecalIso());
-        hcalIso2->push_back(it2.hcalIso());
-     
         double met_x = mi->px();
         double met_y = mi->py();
         
@@ -455,7 +364,7 @@ class TopDILAnalyzer : public edm::EDFilter {
           if(passId){
             const double dRval1 = deltaR(jit->eta(), jit->phi(), it1.eta(), it1.phi());
             const double dRval2 = deltaR(jit->eta(), jit->phi(), it2.eta(), it2.phi());
-            bool overlap = checkOverlap(jit->eta(), jit->phi(), dRval1, reliso04lep1, dRval2, reliso04lep2);
+            bool overlap = checkOverlap(jit->eta(), jit->phi(), dRval1, lep1.relpfIso04(), dRval2, lep2.relpfIso04());
             //jet cleaning
             if( overlap ) continue;
 
@@ -529,40 +438,14 @@ class TopDILAnalyzer : public edm::EDFilter {
   void clear(){
 
     Z->clear();
+    lepton1->clear();
+    lepton2->clear();
     pfMet->clear();
     ttbar->clear();
     met->clear();
     jets->clear();
     jetspt30->clear();
     bjets->clear();
-
-    chIso1->clear();
-    phIso1->clear();
-    nhIso1->clear();
-    chIso2->clear();
-    phIso2->clear();
-    nhIso2->clear();
-
-    chIsoOpt1->clear();
-    phIsoOpt1->clear();
-    nhIsoOpt1->clear();
-    chIsoOpt2->clear();
-    phIsoOpt2->clear();
-    nhIsoOpt2->clear();
-
-    relIso03lep1->clear();
-    relIso03lep2->clear();
-    relIso04lep1->clear();
-    relIso04lep2->clear();
-    relIso05lep1->clear();
-    relIso05lep2->clear();
-
-    trackIso1->clear();
-    ecalIso1->clear();
-    hcalIso1->clear();
-    trackIso2->clear();
-    ecalIso2->clear();
-    hcalIso2->clear();
 
     genttbarM = -999;
     resmaosM = -999; 
@@ -666,6 +549,8 @@ class TopDILAnalyzer : public edm::EDFilter {
   TH1F * h_bjet_multi;
 
   std::vector<Ko::ZCandidate>* Z;
+  std::vector<Ko::Lepton>* lepton1;
+  std::vector<Ko::Lepton>* lepton2;
   std::vector<Ko::METCandidate>* pfMet;
   std::vector<Ko::TTbarMass>* ttbar;
   std::vector<math::XYZTLorentzVector>* met;
@@ -673,34 +558,6 @@ class TopDILAnalyzer : public edm::EDFilter {
   std::vector<math::XYZTLorentzVector>* jetspt30;
   std::vector<math::XYZTLorentzVector>* bjets;
 
-  std::vector<double>* chIso1;
-  std::vector<double>* phIso1;
-  std::vector<double>* nhIso1;
-  std::vector<double>* chIso2;
-  std::vector<double>* phIso2;
-  std::vector<double>* nhIso2;
-
-  std::vector<double>* chIsoOpt1;
-  std::vector<double>* phIsoOpt1;
-  std::vector<double>* nhIsoOpt1;
-  std::vector<double>* chIsoOpt2;
-  std::vector<double>* phIsoOpt2;
-  std::vector<double>* nhIsoOpt2;
-
-  std::vector<double>* relIso03lep1;
-  std::vector<double>* relIso03lep2;
-  std::vector<double>* relIso04lep1;
-  std::vector<double>* relIso04lep2;
-  std::vector<double>* relIso05lep1;
-  std::vector<double>* relIso05lep2;
-
-  std::vector<double>* trackIso1;
-  std::vector<double>* ecalIso1;
-  std::vector<double>* hcalIso1;
-  std::vector<double>* trackIso2;
-  std::vector<double>* ecalIso2;
-  std::vector<double>* hcalIso2;
-  
   double MET;
   double dphimetlepton;
 
