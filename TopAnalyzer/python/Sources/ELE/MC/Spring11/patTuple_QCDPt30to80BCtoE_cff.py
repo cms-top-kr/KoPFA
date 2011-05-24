@@ -8,7 +8,5 @@ source = cms.Source("PoolSource",
 )
 
 readFiles.extend([
-    'rfio:/castor/cern.ch/user/j/jhgoh/TopAnalysis/pf2pat/ElEl/MC/20110520/QCDPt20to30BCtoE.root',
-#    'rfio:/castor/cern.ch/user/j/jhgoh/TopAnalysis/pf2pat/ElEl/MC/20110520/QCDPt30to80BCtoE.root',
-#    'rfio:/castor/cern.ch/user/j/jhgoh/TopAnalysis/pf2pat/ElEl/MC/20110520/QCDPt80to170BCtoE.root',
+    'rfio:/castor/cern.ch/user/j/jhgoh/TopAnalysis/pf2pat/ElEl/MC/20110520/QCDPt30to80BCtoE.root',
 ])
