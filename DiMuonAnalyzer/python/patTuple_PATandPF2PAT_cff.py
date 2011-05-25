@@ -59,7 +59,7 @@ removeMCMatching(process, ['All'] )
 #getattr(process, "patMuons"+postfix).embedGenMatch = False
 
 #to include particle-based isolation to reco muon
-from PhysicsTools.PFCandProducer.Isolation.tools_cfi import *
+from CommonTools.ParticleFlow.Isolation.tools_cfi import *
 
 process.isoDepMuonWithCharged   = isoDepositReplace( 'muons', 'pfAllChargedHadronsPFlow' )
 process.isoDepMuonWithNeutral   = isoDepositReplace( 'muons', 'pfAllNeutralHadronsPFlow' )
