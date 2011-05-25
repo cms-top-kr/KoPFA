@@ -6,7 +6,7 @@ from KoPFA.TopAnalyzer.tools import *
 
 postfix = "PFlow"
 jetAlgo="AK5"
-usePF2PAT(process,runPF2PAT=True, jetAlgo=jetAlgo, runOnMC=MC, postfix=postfix)
+usePF2PAT(process,runPF2PAT=True, jetAlgo=jetAlgo, runOnMC=True, postfix=postfix)
 
 #REMOVE ISOLATION FROM PF2PAT!!!
 addLooseLeptons(process)
