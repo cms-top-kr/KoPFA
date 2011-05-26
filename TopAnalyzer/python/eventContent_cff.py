@@ -13,5 +13,6 @@ pf2patEventContent +=[
         'keep *_acceptedMuons_*_*',
         'keep *_acceptedElectrons_*_*',
         'keep double_*PFlow*_rho_PAT',
+        'keep *_pfJets*_*_*'
 ]
 
