@@ -8,6 +8,9 @@ postfix = "PFlow"
 jetAlgo="AK5"
 usePF2PAT(process,runPF2PAT=True, jetAlgo=jetAlgo, runOnMC=False, postfix=postfix)
 
+#FastJet!
+applyFastJet(process,postfix)
+
 #REMOVE ISOLATION FROM PF2PAT!!!
 addLooseLeptons(process)
 
@@ -21,6 +24,7 @@ process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
 process.MessageLogger.cerr.FwkReport.reportEvery = 100
 
 process.patMuonFilter.minNumber = 2
+
 process.patElectronFilter.minNumber = 0
 
 ## Source

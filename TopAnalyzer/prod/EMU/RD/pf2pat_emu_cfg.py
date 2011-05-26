@@ -8,6 +8,9 @@ postfix = "PFlow"
 jetAlgo="AK5"
 usePF2PAT(process,runPF2PAT=True, jetAlgo=jetAlgo, runOnMC=False, postfix=postfix)
 
+#FastJet!
+applyFastJet(process,postfix)
+
 #REMOVE ISOLATION FROM PF2PAT!!!
 addLooseLeptons(process)
 
