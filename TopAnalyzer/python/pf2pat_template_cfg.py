@@ -12,9 +12,9 @@ process.options   = cms.untracked.PSet( wantSummary = cms.untracked.bool(True) )
 from PhysicsTools.PatAlgos.tools.cmsswVersionTools import pickRelValInputFiles
 process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(
-    pickRelValInputFiles( cmsswVersion  = 'CMSSW_4_1_2'
+    pickRelValInputFiles( cmsswVersion  = 'CMSSW_4_2_3'
                         , relVal        = 'RelValTTbar'
-                        , globalTag     = 'START311_V2'
+                        , globalTag     = 'START42_V12'
                         , numberOfFiles = 1
                         )
     )
@@ -60,7 +60,8 @@ process.noscraping = cms.EDFilter("FilterOutScraping",
 
 process.acceptedElectrons = cms.EDFilter("PATElectronSelector",
     src = cms.InputTag("selectedPatElectronsLoosePFlow"),
-    cut = cms.string("pt > 20 && abs(eta) < 2.5 && ecalDrivenSeed")
+    cut = cms.string("pt > 20 && abs(eta) < 2.5")
+    #cut = cms.string("pt > 20 && abs(eta) < 2.5 && ecalDrivenSeed")
 )
 
 process.patElectronFilter = cms.EDFilter("CandViewCountFilter",
