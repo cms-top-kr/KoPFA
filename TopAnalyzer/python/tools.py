@@ -3,6 +3,32 @@ import os
 
 from PhysicsTools.PatAlgos.tools.pfTools import *
 
+def applyFastJet(process,postfix):
+	process.pfPileUpPFlow.Enable = True
+	process.pfPileUpPFlow.checkClosestZVertex = cms.bool(False)
+	process.pfPileUpPFlow.Vertices = cms.InputTag('goodOfflinePrimaryVertices')
+	process.pfJetsPFlow.doAreaFastjet = True 
+	process.pfJetsPFlow.doRhoFastjet = False
+
+	# Compute the mean pt per unit area (rho) from the
+	# PFchs inputs
+	from RecoJets.JetProducers.kt4PFJets_cfi import kt4PFJets
+	process.kt6PFJetsPFlow = kt4PFJets.clone(
+	    rParam = cms.double(0.6),
+	    src = cms.InputTag('pfNoElectron'+postfix),
+	    doAreaFastjet = cms.bool(True),
+	    doRhoFastjet = cms.bool(True),
+	    voronoiRfact = cms.double(0.9)
+	    )
+        process.patJetCorrFactorsPFlow.rho = cms.InputTag("kt6PFJetsPFlow", "rho")
+
+
+        # Add the PV selector and KT6 producer to the sequence
+        getattr(process,"patPF2PATSequence"+postfix).replace(
+           getattr(process,"pfNoElectron"+postfix),
+           getattr(process,"pfNoElectron"+postfix)*process.kt6PFJetsPFlow )
+
+
 def addLooseLeptons(process):
         #set isolation for muon to be usef for jet clustering    
         process.pfIsolatedMuonsPFlow.combinedIsolationCut = cms.double(0.25)
