@@ -19,7 +19,7 @@ process.TFileService = cms.Service("TFileService",
 #    )
 #)
 
-process.load("PFAnalyses.TTbarDIL.Sources.MU.MC.Fall10.patTuple_Zmumu_cff")
+#process.load("PFAnalyses.TTbarDIL.Sources.MU.MC.Fall10.patTuple_Zmumu_cff")
 
 from KoPFA.TagProbe.common_variables_cff import *
 
