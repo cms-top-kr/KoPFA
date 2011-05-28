@@ -30,12 +30,17 @@ namespace Ko{
     double nhIso04() const { return nhIso04_; }
     double phIso04() const { return phIso04_; }
 
+    double chIso05() const { return chIso05_; }
+    double nhIso05() const { return nhIso05_; }
+    double phIso05() const { return phIso05_; }
+
     double trackIso() const { return trackIso_; }
     double ecalIso() const { return ecalIso_; }
     double hcalIso() const { return hcalIso_; }
 
     double relpfIso03() const { return (chIso03_ + nhIso03_ + phIso03_) / pt_; }
     double relpfIso04() const { return (chIso04_ + nhIso04_ + phIso04_) / pt_; }
+    double relpfIso05() const { return (chIso05_ + nhIso05_ + phIso05_) / pt_; }
     double reldetIso() const { return (trackIso_ + ecalIso_ + hcalIso_) / pt_; }
 
     void setIsoDeposit( pat::IsolationKeys key, const pat::IsoDeposit *dep, reco::isodeposit::AbsVetos);
@@ -58,6 +63,10 @@ namespace Ko{
     double nhIso04_;
     double phIso04_;
 
+    double chIso05_;
+    double nhIso05_;
+    double phIso05_;
+ 
     double trackIso_;
     double ecalIso_;
     double hcalIso_;
