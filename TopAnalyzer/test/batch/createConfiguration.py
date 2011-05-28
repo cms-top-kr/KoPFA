@@ -9,8 +9,54 @@ import commands
 
 decay = sys.argv[1]
 
-mclist = ["ZJets", "ZtauDecay", "DYmm20to50", "DYee20to50", "DYtt20to50", "DYmm10to20", "DYee10to20", "DYtt10to20", "WJetsToLNu", "VVJets", "TTbarTuneZ2","SingleTop_tW","QCD"]
-datalist = ["Run2011A_PromptReco_DoubleMu_v1", "Run2011A_PromptReco_DoubleMu_v2"]
+mcSet = {}
+rdSet = {}
+
+mcSet['ElEl'] = [
+    'TTbarTuneZ2',
+    'SingleTop_tW', 'SingleTop_t', 'SingleTop_s',
+    'ZJets', 'DYee20to50', 'DYee10to20',
+    'ZtauDecay', 'DYtt20to50', 'DYtt10to20',
+    'WJetstoLNu', 'VVJets',
+    'QCDPt20to30BCtoE', 'QCDPt30to80BCtoE', 'QCDPt80to170BCtoE',
+]
+
+mcSet['MuMu'] = [
+    'TTbarTuneZ2',
+    'SingleTop_tW', 'SingleTop_t', 'SingleTop_s',
+    'ZJets', 'DYmm20to50', 'DYmm10to20',
+    'ZtauDecay', 'DYtt20to50', 'DYtt10to20',
+    'WJetstoLNu', 'VVJets',
+    'QCDPt20MuPt15', 'QCDPt20to30EM', 'QCDPt30to80EM', 'QCDPt80to170EM',
+]
+
+mcSet['MuEl'] = [
+    'TTbarTuneZ2',
+    'SingleTop_tW', 'SingleTop_t', 'SingleTop_s',
+    'ZJets', 'DYee20to50', 'DYee10to20', 'DYmm20to50', 'DYmm10to20',
+    'ZtauDecay', 'DYtt20to50', 'DYtt10to20',
+    'WJetstoLNu', 'VVJets',
+    'QCDPt20to30BCtoE', 'QCDPt30to80BCtoE', 'QCDPt80to170BCtoE',
+    'QCDPt20MuPt15', 'QCDPt20to30EM', 'QCDPt30to80EM', 'QCDPt80to170EM',
+]
+
+rdSet['ElEl'] = [
+    'Run2011A_PromptReco_DoubleElectron_v1', 
+    'Run2011A_PromptReco_DoubleElectron_v2',
+]
+
+rdSet['MuMu'] = [
+    'Run2011A_PromptReco_DoubleMu_v1', 
+    'Run2011A_PromptReco_DoubleMu_v2',
+]
+
+rdSet['MuEl'] = [
+    'Run2011A_PromptReco_MuE_v1', 
+    'Run2011A_PromptReco_MuE_v2',
+]
+
+mclist = mcSet[decay]
+datalist = rdSet[decay]
 
 def common():
   script = """import FWCore.ParameterSet.Config as cms
@@ -111,6 +157,8 @@ process.GenZmassFilter.max = 50
   return script
 
 #os.system("mkdir "+decay)
+if not os.path.exists(decay):
+    os.mkdir(decay)
  
 for src in mclist:
     out = open(decay+'/top'+decay+'Analyzer_'+src+'_cfg.py','w')
