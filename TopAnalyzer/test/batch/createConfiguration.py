@@ -14,28 +14,28 @@ rdSet = {}
 
 mcSet['ElEl'] = [
     'TTbarTuneZ2',
-    'SingleTop_tW', 'SingleTop_t', 'SingleTop_s',
+    'SingleToptW', 'SingleTopt', 'SingleTops',
     'ZJets', 'DYee20to50', 'DYee10to20',
     'ZtauDecay', 'DYtt20to50', 'DYtt10to20',
-    'WJetstoLNu', 'VVJets',
+    'WJetsToLNu', 'VVJets',
     'QCDPt20to30BCtoE', 'QCDPt30to80BCtoE', 'QCDPt80to170BCtoE',
 ]
 
 mcSet['MuMu'] = [
     'TTbarTuneZ2',
-    'SingleTop_tW', 'SingleTop_t', 'SingleTop_s',
+    'SingleToptW', 'SingleTopt', 'SingleTops',
     'ZJets', 'DYmm20to50', 'DYmm10to20',
     'ZtauDecay', 'DYtt20to50', 'DYtt10to20',
-    'WJetstoLNu', 'VVJets',
+    'WJetsToLNu', 'VVJets',
     'QCDPt20MuPt15', 'QCDPt20to30EM', 'QCDPt30to80EM', 'QCDPt80to170EM',
 ]
 
 mcSet['MuEl'] = [
     'TTbarTuneZ2',
-    'SingleTop_tW', 'SingleTop_t', 'SingleTop_s',
+    'SingleToptW', 'SingleTopt', 'SingleTops',
     'ZJets', 'DYee20to50', 'DYee10to20', 'DYmm20to50', 'DYmm10to20',
     'ZtauDecay', 'DYtt20to50', 'DYtt10to20',
-    'WJetstoLNu', 'VVJets',
+    'WJetsToLNu', 'VVJets',
     'QCDPt20to30BCtoE', 'QCDPt30to80BCtoE', 'QCDPt80to170BCtoE',
     'QCDPt20MuPt15', 'QCDPt20to30EM', 'QCDPt30to80EM', 'QCDPt80to170EM',
 ]
