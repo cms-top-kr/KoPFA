@@ -54,8 +54,8 @@ public:
   void applyCutSteps();
   void applySingleCut(const TCut cut, const TString monitirPlotNamesStr);
 
-  void drawEffCurve(const TCut cut, const string varexp, const string scanPoints);
-  void drawEffCurve(const TCut cut, const string varexp, std::vector<double>& scanPoints);
+  void drawEffCurve(const TCut cut, const string varexp, const string scanPoints, const string imgPrefix = "");
+  void drawEffCurve(const TCut cut, const string varexp, std::vector<double>& scanPoints, const string imgPrefix = "");
 
   void saveHistograms(TString fileName = "");
 
@@ -778,7 +778,7 @@ void TopAnalyzerLite::setEventWeightVar(const string eventWeightVar)
   eventWeightVar_ = eventWeightVar;
 }
 
-void TopAnalyzerLite::drawEffCurve(const TCut cut, const string varexp, const string scanPoints)
+void TopAnalyzerLite::drawEffCurve(const TCut cut, const string varexp, const string scanPoints, const std::string imgPrefix)
 {
   stringstream ss(scanPoints);
 
@@ -786,10 +786,10 @@ void TopAnalyzerLite::drawEffCurve(const TCut cut, const string varexp, const st
   std::vector<double> xarr;
   while ( ss >> x ) xarr.push_back(x);
 
-  drawEffCurve(cut, varexp, xarr);
+  drawEffCurve(cut, varexp, xarr, imgPrefix);
 }
 
-void TopAnalyzerLite::drawEffCurve(const TCut cut, const string varexp, std::vector<double>& scanPoints)
+void TopAnalyzerLite::drawEffCurve(const TCut cut, const string varexp, std::vector<double>& scanPoints, const std::string imgPrefix)
 {
   // Check scan points are monotonically ordered
   const int nPoint = scanPoints.size();
@@ -814,12 +814,12 @@ void TopAnalyzerLite::drawEffCurve(const TCut cut, const string varexp, std::vec
   double nTotalSig = 0, nTotalBkg = 0;
   for ( unsigned int i=0; i<mcSigs_.size(); ++i )
   {
-    nTotalSig += mcSigs_[i].nEvents*mcSigs_[i].xsec*lumi_;
+    nTotalSig += mcSigs_[i].chain->GetEntries(cut)*mcSigs_[i].xsec*lumi_;
   }
 
   for ( unsigned int i=0; i<mcBkgs_.size(); ++i )
   {
-    nTotalBkg += mcBkgs_[i].nEvents*mcBkgs_[i].xsec*lumi_;
+    nTotalBkg += mcBkgs_[i].chain->GetEntries(cut)*mcBkgs_[i].xsec*lumi_;
   }
 
   for ( int i=0; i<nPoint; ++i )
@@ -848,7 +848,7 @@ void TopAnalyzerLite::drawEffCurve(const TCut cut, const string varexp, std::vec
     grpResponse->SetPoint(i, 100*bkgEff, 100*sigEff);
   }
 
-  TCanvas* cEff = new TCanvas;
+  TCanvas* cEff = new TCanvas(("cEfficiency_"+varexp).c_str(), ("efficiency "+varexp).c_str());
   cEff->cd();
   grpSigEff->SetTitle(("Efficiency curve for "+varexp+";"+varexp+";Efficiency #epsilon [\%]").c_str());
   grpBkgEff->SetTitle(("Efficiency curve for "+varexp+";"+varexp+";Efficiency #epsilon [\%]").c_str());
@@ -858,15 +858,26 @@ void TopAnalyzerLite::drawEffCurve(const TCut cut, const string varexp, std::vec
   grpSigEff->Draw("AL*");
   grpBkgEff->Draw("sameL*");
 
-  TCanvas* cSignif = new TCanvas;
+  TCanvas* cSignif = new TCanvas(("cSignif_"+varexp).c_str(), ("signif "+varexp).c_str());
   cSignif->cd();
   grpSignif->SetTitle(("S/#sqrt{S+B} curve for "+varexp+";"+varexp+";S/#sqrt{S+B}").c_str());
   grpSignif->SetMinimum(0);
   grpSignif->Draw("AL*");
 
-  TCanvas* cEffVsEff = new TCanvas;
+  TCanvas* cEffVsEff = new TCanvas(("cEffEff_"+varexp).c_str(), ("effeff "+varexp).c_str());
   cEffVsEff->cd();
   grpResponse->SetTitle(("Response curve for "+varexp+";Background #epsilon [\%];Signal #epsilon [\%]").c_str());
   grpResponse->Draw("AL*");
+
+  if ( !imgPrefix.empty() )
+  {
+    TString prefix;
+    if ( imageOutDir_.empty() ) prefix = imgPrefix;
+    else prefix = imageOutDir_+"/"+imgPrefix;
+
+    cEff->Print(prefix+"_eff.png");
+    cSignif->Print(prefix+"_signif.png");
+    cEffVsEff->Print(prefix+"_effeff.png");
+  }
 }
 
