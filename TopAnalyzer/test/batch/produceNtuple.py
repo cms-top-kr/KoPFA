@@ -9,9 +9,14 @@ import time
 sample = sys.argv[1]
 decay = sys.argv[2]
 
-mclist = ["ZJets", "ZtauDecay", "DYmm20to50", "DYee20to50", "DYtt20to50", "DYmm10to20", "DYee10to20", "DYtt10to20", "WJetsToLNu", "VVJets", "TTbarTuneZ2","SingleTop_tW"]
+mclist = ["ZJets", "ZtauDecay", "DYmm20to50", "DYee20to50", "DYtt20to50", "WJetsToLNu", "VVJets", "TTbarTuneZ2","TTbarOthers","SingleToptW"]
+mclist += ["DYmm10to20"]
+#mclist += ["DYee10to20"]
+
+#qcdlist = ["QCDPt20to30PCtoE","QCDPt30to80BCtoE","QCDPt80to170BCtoE"]
 qcdlist = ["QCD"]
-datalist = ["Run2011A_PromptReco_DoubleMu_v1", "Run2011A_PromptReco_DoubleMu_v2"]
+
+datalist = ["Run2011A"]
 
 def processSample(sample, dir):
     os.system("rm -rf "+dir+"/Log/"+sample)
@@ -26,8 +31,7 @@ print currdir
 outdir = currdir+"/Out/"+decay
 
 #if you want to save ntuple in castor
-#mcdir = "/castor/cern.ch/user/b/bhlee/ntuple/top/"+decay+"/2011mc/Spring11/Mar29PromptReco_v8"
-#datadir = "/castor/cern.ch/user/b/bhlee/ntuple/top/"+decay+"/2011data/DoubleMu/Mar29PromptReco_v8"
+#outdir = "/castor/cern.ch/user/t/tjkim/ntuple/top/Out/"+decay
 
 #to save log information in local
 os.system("rfmkdir Out")
