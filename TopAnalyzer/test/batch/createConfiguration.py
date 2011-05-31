@@ -13,7 +13,7 @@ mcSet = {}
 rdSet = {}
 
 mcSet['ElEl'] = [
-    'TTbarTuneZ2',
+    'TTbarTuneZ2', 'TTbarOthers',
     'SingleToptW', 'SingleTopt', 'SingleTops',
     'ZJets', 'DYee20to50', 'DYee10to20',
     'ZtauDecay', 'DYtt20to50', 'DYtt10to20',
@@ -22,7 +22,7 @@ mcSet['ElEl'] = [
 ]
 
 mcSet['MuMu'] = [
-    'TTbarTuneZ2',
+    'TTbarTuneZ2', 'TTbarOthers',
     'SingleToptW', 'SingleTopt', 'SingleTops',
     'ZJets', 'DYmm20to50', 'DYmm10to20',
     'ZtauDecay', 'DYtt20to50', 'DYtt10to20',
@@ -31,7 +31,7 @@ mcSet['MuMu'] = [
 ]
 
 mcSet['MuEl'] = [
-    'TTbarTuneZ2',
+    'TTbarTuneZ2', 'TTbarOthers',
     'SingleToptW', 'SingleTopt', 'SingleTops',
     'ZJets', 'DYee20to50', 'DYee10to20', 'DYmm20to50', 'DYmm10to20',
     'ZtauDecay', 'DYtt20to50', 'DYtt10to20',
@@ -132,6 +132,12 @@ process.topWLeptonGenFilter.applyFilter = True
 """
   return script
 
+def ttbarothersfilter():
+  script = """
+~process.topWLeptonGenFilter.applyFilter = True
+"""
+  return script
+
 def genzmassfilter():
   script = """
 process.GenZmassFilter.applyFilter = True
@@ -166,8 +172,10 @@ for src in mclist:
       out.write(mcsample("ZJets"))
     else:
       out.write(mcsample(src))
-    if src.find("TTbar") != -1:
+    if src.find("TTbarTuneZ2") != -1:
       out.write(ttbarfilter())
+    if src.find("TTbarOthers") != -1:
+      out.write(ttbarothersfilter())
     if src.find("ZJets") != -1:
       out.write(genzmassfilter())
     if src.find("ZtauDecay") != -1:
