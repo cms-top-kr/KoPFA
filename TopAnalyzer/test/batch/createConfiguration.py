@@ -136,8 +136,9 @@ process.topWLeptonGenFilter.applyFilter = True
 
 def ttbarothersfilter():
   script = """
-~process.topWLeptonGenFilter.applyFilter = True
-"""
+process.topWLeptonGenFilter.applyFilter = True
+process.top%sAnalysisMCSequence.replace(process.topWLeptonGenFilter,~process.topWLeptonGenFilter)
+""" % decay
   return script
 
 def genzmassfilter():
@@ -172,6 +173,8 @@ for src in mclist:
     out.write(outfile(src))
     if src.find("ZtauDecay") != -1:
       out.write(mcsample("ZJets"))
+    elif src.find("TTbarOthers") != -1:
+      out.write(mcsample("TTbarTuneZ2"))
     else:
       out.write(mcsample(src))
     if src.find("TTbarTuneZ2") != -1:
