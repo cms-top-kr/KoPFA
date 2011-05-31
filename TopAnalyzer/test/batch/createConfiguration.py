@@ -41,18 +41,15 @@ mcSet['MuEl'] = [
 ]
 
 rdSet['ElEl'] = [
-    'Run2011A_PromptReco_DoubleElectron_v1', 
-    'Run2011A_PromptReco_DoubleElectron_v2',
+    'Run2011A', 
 ]
 
 rdSet['MuMu'] = [
-    'Run2011A_PromptReco_DoubleMu_v1', 
-    'Run2011A_PromptReco_DoubleMu_v2',
+    'Run2011A', 
 ]
 
 rdSet['MuEl'] = [
-    'Run2011A_PromptReco_MuE_v1', 
-    'Run2011A_PromptReco_MuE_v2',
+    'Run2011A', 
 ]
 
 mclist = mcSet[decay]
