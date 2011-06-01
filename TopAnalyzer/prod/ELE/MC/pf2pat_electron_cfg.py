@@ -8,6 +8,9 @@ postfix = "PFlow"
 jetAlgo="AK5"
 usePF2PAT(process,runPF2PAT=True, jetAlgo=jetAlgo, runOnMC=True, postfix=postfix)
 
+#change cone size
+changeConeSize(process)
+
 #FastJet!
 applyFastJet(process,postfix)
 

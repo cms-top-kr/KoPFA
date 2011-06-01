@@ -8,6 +8,9 @@ postfix = "PFlow"
 jetAlgo="AK5"
 usePF2PAT(process,runPF2PAT=True, jetAlgo=jetAlgo, runOnMC=False, postfix=postfix)
 
+#change cone size
+changeConeSize(process)
+
 #FastJet!
 applyFastJet(process,postfix)
 
@@ -24,7 +27,6 @@ process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
 process.MessageLogger.cerr.FwkReport.reportEvery = 100
 
 process.patMuonFilter.minNumber = 2
-
 process.patElectronFilter.minNumber = 0
 
 ## Source
