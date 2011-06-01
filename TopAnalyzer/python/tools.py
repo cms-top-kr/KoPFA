@@ -3,6 +3,69 @@ import os
 
 from PhysicsTools.PatAlgos.tools.pfTools import *
 
+def changeConeSize(process):
+        process.isoValElectronWithChargedPFlow.deposits = cms.VPSet( 
+          cms.PSet(
+          src = cms.InputTag("isoDepElectronWithChargedPFlow"),
+          deltaR = cms.double(0.3),
+          weight = cms.string('1'),
+          vetos = cms.vstring(),
+          skipDefaultVeto = cms.bool(True),
+          mode = cms.string('sum')
+          )
+        )
+        process.isoValElectronWithNeutralPFlow.deposits = cms.VPSet(
+          cms.PSet(
+	  src = cms.InputTag("isoDepElectronWithNeutralPFlow"),
+	  deltaR = cms.double(0.3),
+	  weight = cms.string('1'), # 0.3333,
+	  vetos = cms.vstring('Threshold(0.5)'),
+	  skipDefaultVeto = cms.bool(True),
+	  mode = cms.string('sum')
+	  )
+        )
+        process.isoValElectronWithPhotonsPFlow.deposits = cms.VPSet(
+          cms.PSet(
+	  src = cms.InputTag("isoDepElectronWithPhotonsPFlow"),
+	  deltaR = cms.double(0.3),
+	  weight = cms.string('1'),
+	  vetos = cms.vstring('Threshold(0.5)'),
+	  skipDefaultVeto = cms.bool(True),
+	  mode = cms.string('sum')
+          )
+        )
+        
+        process.isoValMuonWithChargedPFlow.deposits = cms.VPSet( 
+          cms.PSet(
+          src = cms.InputTag("isoDepMuonWithChargedPFlow"),
+          deltaR = cms.double(0.3),
+          weight = cms.string('1'),
+          vetos = cms.vstring(),
+          skipDefaultVeto = cms.bool(True),
+          mode = cms.string('sum')
+          )
+        )
+        process.isoValMuonWithNeutralPFlow.deposits = cms.VPSet(
+          cms.PSet(
+          src = cms.InputTag("isoDepMuonWithNeutralPFlow"),
+          deltaR = cms.double(0.3),
+          weight = cms.string('1'), # 0.3333,
+          vetos = cms.vstring('Threshold(0.5)'),
+          skipDefaultVeto = cms.bool(True),
+          mode = cms.string('sum')
+          )
+        )
+        process.isoValMuonWithPhotonsPFlow.deposits = cms.VPSet(
+          cms.PSet(
+          src = cms.InputTag("isoDepMuonWithPhotonsPFlow"),
+          deltaR = cms.double(0.3),
+          weight = cms.string('1'),
+          vetos = cms.vstring('Threshold(0.5)'),
+          skipDefaultVeto = cms.bool(True),
+          mode = cms.string('sum')
+          )
+        )
+
 def applyFastJet(process,postfix):
 	process.pfPileUpPFlow.Enable = True
 	process.pfPileUpPFlow.checkClosestZVertex = cms.bool(False)
