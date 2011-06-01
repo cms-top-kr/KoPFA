@@ -26,7 +26,7 @@ process.out.outputCommands +=pf2patEventContent
 process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
 process.MessageLogger.cerr.FwkReport.reportEvery = 100
 
-process.acceptedMuons.cut = cms.string("pt > 20 && abs(eta) < 2.5 && (chargedHadronsIso + neutralHadronIso + photonIso)/pt < 0.2")
+process.acceptedMuons.cut = cms.string("pt > 20 && abs(eta) < 2.5 && (chargedHadronsIso + neutralHadronIso + photonIso)/pt < 0.1")
 
 process.patMuonFilter.minNumber = 1
 
