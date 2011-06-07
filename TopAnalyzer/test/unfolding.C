@@ -38,20 +38,23 @@ void unfolding(){
   TH1F * hGenDist = (TH1F*) file->Get("hGen");
   TH1F * hAcceptDist = (TH1F*) file->Get("hAccept");
 
-  plot(h2ResponseM, hDataDist, hGenDist, hAcceptDist, "vsum", 500000, 191.0, true, false); 
+  double lumi = 204;
+  double genTTbar = 500000;
+  double lumiTTbar = genTTbar/157.5;
+  double scale = lumi/lumiTTbar;
+  bool print = true;
+  bool pseudo = false;
+
+  plot(h2ResponseM, hDataDist, hGenDist, hAcceptDist, "vsum", scale, lumi, print, pseudo); 
 
 }
 
-void plot(TH2* h2_response_m, TH1F* hData, TH1F* hGenDist, TH1F* accept, const TString &var, const double & genEvt, const double &lumi, bool print, bool pseudo){
-
-  double lumiTTbar = genEvt/157.5; //pb-1
-  double scale = lumi/lumiTTbar;
+void plot(TH2* h2_response_m, TH1F* hData, TH1F* hGenDist, TH1F* accept, const TString &var, const double & scale, const double & lumi, bool print, bool pseudo){
 
   const TH1* h_genMC = h2_response_m->ProjectionY();
   const TH1* h_recMC = h2_response_m->ProjectionX();
 
   unfoldingPlot(h_genMC, h_recMC, h2_response_m,  hData, hGenDist, accept, scale, Form("%s",var.Data()), lumi, print, pseudo);
-  cout <<"ici" << endl;
 
 }
 
