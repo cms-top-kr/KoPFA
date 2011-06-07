@@ -15,7 +15,7 @@
 #include <iomanip>
 #include <iostream>
 
-void unfoldingPlot(TH1* h_gen, TH1* h_rec, TH2* m, TH1* h_mea, TH1* h_genTTbar, TH1F* accept, double scale_ttbar, TString name, double lumi, bool print, bool pseudo){
+void unfoldingPlot(TH1* h_gen, TH1* h_rec, TH2* m, TH1* h_mea, TH1* h_genTTbar, TH1F* accept, double scale_ttbar, TString name, double lumi, int k, RooUnfold::ErrorTreatment err, bool print, bool pseudo){
 
   RooUnfoldResponse *response = new RooUnfoldResponse(h_rec, h_gen, m);
 
@@ -44,13 +44,11 @@ void unfoldingPlot(TH1* h_gen, TH1* h_rec, TH2* m, TH1* h_mea, TH1* h_genTTbar, 
 
   RooUnfold* unfold = 0;
   //unfold = new RooUnfoldBayes(response, h_mea, 4);    // OR
-  unfold = new RooUnfoldSvd(response, h_mea, 2);   // OR
+  unfold = new RooUnfoldSvd(response, h_mea, k);   // OR
   //unfold = new RooUnfoldBinByBin(response, h_mea);
   //unfold = new RooUnfoldInvert(response, h_mea);
 
-  //TH1F* h_unfold = (TH1F*) unfold->Hreco(RooUnfold::kCovToy);
-  TH1F* h_unfold = (TH1F*) unfold->Hreco(RooUnfold::kCovariance);
-  //TH1F* h_unfold = (TH1F*) unfold->Hreco(RooUnfold::kErrors);
+  TH1F* h_unfold = (TH1F*) unfold->Hreco(err);
   
   TMatrixD m_unfoldE = unfold->Ereco();
   //TVectorD v_unfoldE = unfold->ErecoV(RooUnfold::kCovariance);
@@ -165,8 +163,8 @@ void unfoldingPlot(TH1* h_gen, TH1* h_rec, TH2* m, TH1* h_mea, TH1* h_genTTbar, 
 
   label->DrawLatex(0.47,0.88,Form("%1.0f pb^{-1} at #sqrt{s} = 7 TeV",lumi));
   
-  cout << "chi2 : " << unfold->Chi2(hgen, RooUnfold::kErrors) << endl;
-  //cout << "2 " << unfold->Chi2(hgen, RooUnfold::kCovariance) << endl;
+  cout << "chi2(kErrors) : " << unfold->Chi2(hgen, RooUnfold::kErrors) << endl;
+  cout << "chi2(kCovariance) : " << unfold->Chi2(hgen, RooUnfold::kCovariance) << endl;
 
   if(print){
     c_response->Print(Form("c_response_%s.eps",name.Data()));
@@ -184,14 +182,6 @@ void unfoldingPlot(TH1* h_gen, TH1* h_rec, TH2* m, TH1* h_mea, TH1* h_genTTbar, 
     c_errmat->Print(Form("c_errmat_%s.png",name.Data()));
     c_dsigma->Print(Form("c_dsigma_%s.png",name.Data()));
     c_d->Print(Form("c_d_%s.png",name.Data()));
-
-    //c_response->Print(Form("c_response_%s.pdf",name.Data()));
-    //c->Print(Form("c_unfold_%s.pdf",name.Data()));
-    //c_err->Print(Form("c_err_%s.pdf",name.Data()));
-    //c_meaerr->Print(Form("c_meaerr_%s.pdf",name.Data()));
-    //c_errmat->Print(Form("c_errmat_%s.pdf",name.Data()));
-    //c_dsigma->Print(Form("c_dsigma_%s.pdf",name.Data()));
-    //c_d->Print(Form("c_d_%s.pdf",name.Data()));
 
   }
 }
