@@ -15,7 +15,7 @@ mclist += ["DYee10to20"]
 mclist += ["DYtt10to20"]
 
 #qcdlist = ["QCDPt20to30PCtoE","QCDPt30to80BCtoE","QCDPt80to170BCtoE","QCDPt20to30EM","QCDPt30to80EM","QCDPt80to170EM"]
-qcdlist = ["QCDPt20MuPt15"]
+qcdlist = ["QCD"]
 
 datalist = ["Run2011A"]
 
@@ -32,7 +32,7 @@ print currdir
 outdir = currdir+"/Out/"+decay
 
 #if you want to save ntuple in castor
-#outdir = "/castor/cern.ch/user/b/bhlee/ntuple/top/Out/"+decay
+#outdir = "/castor/cern.ch/user/t/tjkim/ntuple/top/Out/"+decay
 
 #to save log information in local
 os.system("rfmkdir Out")
