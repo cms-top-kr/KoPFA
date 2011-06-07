@@ -6,7 +6,7 @@ from HLTrigger.HLTfilters.hltHighLevel_cfi import *
 #MC
 hltHighLevelMuElMC = hltHighLevel.clone()
 hltHighLevelMuElMC.TriggerResultsTag = cms.InputTag("TriggerResults","","REDIGI311X")
-hltHighLevelMuElMC.HLTPaths = cms.vstring('HLT_Mu8_Ele8_v1','HLT_Mu11_Ele8_v1')
+hltHighLevelMuElMC.HLTPaths = cms.vstring('HLT_Mu8_Ele8_v1','HLT_Mu11_Ele8_v1','HLT_Mu5_Ele13_v2','HLT_Mu5_Ele17_v2')
 hltHighLevelMuElMC.throw = cms.bool(False)
 #RD
 hltHighLevelMuElRD = hltHighLevel.clone()
