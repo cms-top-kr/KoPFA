@@ -40,6 +40,7 @@ void unfoldingPlot(TH1* h_gen, TH1* h_rec, TH2* m, TH1* h_mea, TH1* h_genTTbar, 
   hgen->SetStats(0);
   hgen->SetTitle(""); 
   hgen->GetYaxis()->SetTitle("Events");
+  hgen->GetXaxis()->SetTitle("Unfolded M_{t#bar{t}}");
 
   RooUnfold* unfold = 0;
   //unfold = new RooUnfoldBayes(response, h_mea, 4);    // OR
@@ -131,7 +132,6 @@ void unfoldingPlot(TH1* h_gen, TH1* h_rec, TH2* m, TH1* h_mea, TH1* h_genTTbar, 
   hErrMat->GetXaxis()->SetTitle("Generated M_{t#bar{t}} bin number");
   hErrMat->GetYaxis()->SetTitle("Reconstructed M_{t#bar{t}} bin number");
   hErrMat->Draw("colz");
-
 
   TCanvas *c_d = new TCanvas(Form("c_d_%s",name.Data()),Form("c_d_%s",name.Data()));
   c_d->SetLogy();
