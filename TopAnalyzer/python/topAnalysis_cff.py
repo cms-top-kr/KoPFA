@@ -134,7 +134,6 @@ removeDuplicate = cms.EDFilter("RemoveDuplicate",
 )
 
 topElElAnalysisMCSequence = cms.Sequence(
-    loadHistosFromRunInfo*
     hltHighLevelElElMC*
     topWLeptonGenFilter*
     GenZmassFilter*
@@ -160,7 +159,7 @@ topMuMuAnalysisMCSequence = cms.Sequence(
     topWLeptonGenFilter*
     GenZmassFilter*
     PUweight*
-    DYmmFilter*
+#    DYmmFilter*
     Muons*
     patMuonFilter*
     MuMu
@@ -168,10 +167,10 @@ topMuMuAnalysisMCSequence = cms.Sequence(
 )
 
 topMuMuAnalysisRealDataSequence = cms.Sequence(
-#    hltHighLevelMuMuRD*
+    hltHighLevelMuMuRD*
 #    muonTriggerFilterByRun*
     removeDuplicate*
-    DYmmFilter*
+#    DYmmFilter*
     Muons*
     patMuonFilter*
     MuMu
@@ -179,7 +178,7 @@ topMuMuAnalysisRealDataSequence = cms.Sequence(
 )
 
 topMuElAnalysisMCSequence = cms.Sequence(
-#    hltHighLevelMuElMC*
+    hltHighLevelMuElMC*
     topWLeptonGenFilter*
     GenZmassFilter*
     PUweight*
@@ -190,7 +189,7 @@ topMuElAnalysisMCSequence = cms.Sequence(
 )
 
 topMuElAnalysisRealDataSequence = cms.Sequence(
-#    hltHighLevelMuElRD*
+    hltHighLevelMuElRD*
 #    muonTriggerFilterByRun*
     removeDuplicate*
     Muons * Electrons *
