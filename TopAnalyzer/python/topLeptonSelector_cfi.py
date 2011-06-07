@@ -11,7 +11,7 @@ muonId.pt = 20
 Muons = cms.EDProducer(
     "KoMuonSelector",
     version = cms.untracked.int32( -1 ),# dxy, pt, eta
-    cut = cms.vstring("pt","eta","dxy"),
+    cut = cms.vstring("pt","eta","dxy","TOPDIL"),
     isocut = cms.vstring(),
     muonLabel  = cms.InputTag("acceptedMuons"),
     beamSpotLabel = cms.InputTag("offlineBeamSpot"),
