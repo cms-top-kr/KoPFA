@@ -134,6 +134,13 @@ removeDuplicate = cms.EDFilter("RemoveDuplicate",
     applyFilter = cms.untracked.bool( True )
 )
 
+ElectronAna = cms.EDAnalyzer(
+    "pfElectronAnalyzer",
+    ptcut = cms.untracked.double(20),
+    electronLabel  = cms.InputTag("acceptedElectrons"),
+    beamSpotLabel = cms.InputTag("offlineBeamSpot"),
+)
+
 nEventsPatHLT = cms.EDProducer("EventCountProducer")
 
 topElElAnalysisMCSequence = cms.Sequence(
@@ -142,6 +149,7 @@ topElElAnalysisMCSequence = cms.Sequence(
     topWLeptonGenFilter*
     GenZmassFilter*
     PUweight*
+    ElectronAna*
     Electrons*
     patElectronFilter*
     ElEl
@@ -153,6 +161,7 @@ topElElAnalysisRealDataSequence = cms.Sequence(
 #    electronTriggerFilterByRun*
     nEventsPatHLT*
     removeDuplicate*
+    ElectronAna*
     Electrons*
     patElectronFilter*
     ElEl
