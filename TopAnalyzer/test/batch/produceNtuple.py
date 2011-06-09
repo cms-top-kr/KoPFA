@@ -9,10 +9,9 @@ import time
 sample = sys.argv[1]
 decay = sys.argv[2]
 
-mclist = ["ZJets", "ZtauDecay", "DYmm20to50", "DYee20to50", "DYtt20to50", "WJetsToLNu", "VVJets", "TTbarTuneZ2","TTbarOthers","SingleToptW"]
-mclist += ["DYmm10to20"]
-mclist += ["DYee10to20"]
-mclist += ["DYtt10to20"]
+mclist = ["ZJets", "ZtauDecay", "DYtt20to50", "DYtt10to20", "WJetsToLNu", "VVJets", "TTbarTuneZ2","TTbarOthers","SingleToptW"]
+mclist += ["DYmm20to50, DYmm10to20"]
+mclist += ["DYee20to50, DYee10to20"]
 
 #qcdlist = ["QCDPt20to30PCtoE","QCDPt30to80BCtoE","QCDPt80to170BCtoE","QCDPt20to30EM","QCDPt30to80EM","QCDPt80to170EM"]
 qcdlist = ["QCD"]
