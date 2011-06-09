@@ -53,16 +53,16 @@ void ana(string decayMode = "MuMu", string imageOutDir = "")
   //STEP2 : isolation
   if ( decayMode == "MuMu" )
   {
-    analyzer->addCutStep("(chIso1+nhIso1+phIso1)/Z.leg1().pt() < 0.21 && (chIso2+nhIso2+phIso2)/Z.leg2().pt() < 0.21", "");
+    analyzer->addCutStep("Z.leg1().relpfIso03() < 0.20 && Z.leg2().relpfIso03() < 0.20", "");
   }
   else if ( decayMode == "ElEl" )
   {
-    analyzer->addCutStep("(chIso1+nhIso1+phIso1)/Z.leg1().pt() < 0.26 && (chIso2+nhIso2+phIso2)/Z.leg2().pt() < 0.26", "");
+    analyzer->addCutStep("Z.leg1().relpfIso03() < 0.20 && Z.leg2().relpfIso03() < 0.20", "");
   }
   else if ( decayMode == "MuEl" )
   {
     cout << "DEBUG: MuEl" << endl;
-    analyzer->addCutStep("(chIso1+nhIso1+phIso1)/Z.leg1().pt() < 0.21 && (chIso2+nhIso2+phIso2)/Z.leg2().pt() < 0.26", "");
+    analyzer->addCutStep("Z.leg1().relpfIso03() < 0.20 && Z.leg2().relpfIso03() < 0.20", "");
   }
 
   //STEP3 : opposite sign
