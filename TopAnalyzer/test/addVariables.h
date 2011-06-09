@@ -19,15 +19,15 @@ void addTopVariables(TopAnalyzerLite* analyzer){
   analyzer->addMonitorPlot("jet1phi", "jetspt30[0].phi()", "Leading #phi;#phi (Radian);Events/0.2 rad.", 35, -3.5, 3.5, 0.1, 20000);
   analyzer->addMonitorPlot("jet2phi", "jetspt30[1].phi()", "Leading #phi;#phi (Radian);Events/0.2 rad.", 35, -3.5, 3.5, 0.1, 20000);
 
-  analyzer->addMonitorPlot("Iso04lep1","relIso04lep1","relIso04lep1;relIso;Events", 20, 0, 0.4, 0.1, 20000);
-  analyzer->addMonitorPlot("chIso1","chIso1","chIso1;Charged Hadron #Sigma p_{T} (GeV);Events/0.2 GeV", 20, 0, 4, 0.1, 20000);
-  analyzer->addMonitorPlot("nhIso1","nhIso1","nhIso1;Neutral Hadron #Sigma p_{T} (GeV);Events/0.2 GeV", 20, 0, 4, 0.1, 20000);
-  analyzer->addMonitorPlot("phIso1","phIso1","phIso1;Photon #Sigma p_{T} (GeV);Events/0.2 GeV", 20, 0, 4, 0.1, 20000);
+  analyzer->addMonitorPlot("pfIso03lep1","lepton1.relpfIso03lep1","relpfIso03lep1;relpfIso;Events", 20, 0, 0.4, 0.1, 20000);
+  analyzer->addMonitorPlot("chIso1","lepton1.chIso1","chIso1;Charged Hadron #Sigma p_{T} (GeV);Events/0.2 GeV", 20, 0, 4, 0.1, 20000);
+  analyzer->addMonitorPlot("nhIso1","lepton1.nhIso1","nhIso1;Neutral Hadron #Sigma p_{T} (GeV);Events/0.2 GeV", 20, 0, 4, 0.1, 20000);
+  analyzer->addMonitorPlot("phIso1","lepton1.phIso1","phIso1;Photon #Sigma p_{T} (GeV);Events/0.2 GeV", 20, 0, 4, 0.1, 20000);
 
-  analyzer->addMonitorPlot("Iso04lep2","relIso04lep2","relIso04lep2;relIso;Events", 20, 0, 0.4, 0.1, 20000);
-  analyzer->addMonitorPlot("chIso2","chIso2","chIso2;Charged Hadron #Sigma p_{T} (GeV);Events/0.2 GeV", 20, 0, 4, 0.1, 20000);
-  analyzer->addMonitorPlot("nhIso2","nhIso2","nhIso2;Neutral Hadron #Sigma p_{T} (GeV);Events/0.2 GeV", 20, 0, 4, 0.1, 20000);
-  analyzer->addMonitorPlot("phIso2","phIso2","phIso2;Photon #Sigma p_{T} (GeV);Events/0.2 GeV", 20, 0, 4, 0.1, 20000);
+  analyzer->addMonitorPlot("pfIso03lep2","lepton2.relpfIso03lep2","relpfIso03lep2;relpfIso;Events", 20, 0, 0.4, 0.1, 20000);
+  analyzer->addMonitorPlot("chIso2","lepton2.chIso2","chIso2;Charged Hadron #Sigma p_{T} (GeV);Events/0.2 GeV", 20, 0, 4, 0.1, 20000);
+  analyzer->addMonitorPlot("nhIso2","lepton2.nhIso2","nhIso2;Neutral Hadron #Sigma p_{T} (GeV);Events/0.2 GeV", 20, 0, 4, 0.1, 20000);
+  analyzer->addMonitorPlot("phIso2","lepton2.phIso2","phIso2;Photon #Sigma p_{T} (GeV);Events/0.2 GeV", 20, 0, 4, 0.1, 20000);
 
   analyzer->addMonitorPlot("sumet", "sumEt", "#Sigma E_{T};#Sigma E_{T} (GeV);Events/20 GeV", 50, 0, 1000, 0.1, 20000);
   analyzer->addMonitorPlot("chargedhadet", "pfMet.chargedHadEt()", "#Sigma E_{T};Charged Hadron #Sigma E_{T} (GeV);Events/5 GeV", 40, 0, 200, 0.1, 20000);
