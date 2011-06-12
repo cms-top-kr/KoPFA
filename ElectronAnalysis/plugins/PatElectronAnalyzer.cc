@@ -18,6 +18,7 @@
 #include "DataFormats/EgammaCandidates/interface/GsfElectron.h"
 #include "DataFormats/ParticleFlowCandidate/interface/PFCandidate.h"
 #include "DataFormats/PatCandidates/interface/Electron.h"
+#include "DataFormats/PatCandidates/interface/MET.h"
 #include "DataFormats/RecoCandidate/interface/IsoDepositDirection.h"
 #include "DataFormats/RecoCandidate/interface/IsoDeposit.h"
 #include "DataFormats/RecoCandidate/interface/IsoDepositVetos.h"
@@ -48,6 +49,7 @@ private:
 
 private:
   edm::InputTag electronLabel_;
+  edm::InputTag metLabel_;
   std::vector<std::string> idNames_;
   int idMask_;
 
@@ -60,12 +62,16 @@ private:
   double brE2Q_, brE2ChIso_, brE2PhIso_, brE2NhIso_, brE2RelIso_;
   double brEEQ_, brEEM_, brEEDR_, brEEDPhi_;
   std::map<std::string, int> brE1Id_, brE2Id_;
+
+  double brMet_, brMetPhi_;
+  double brMetE1DPhi_, brMetE2DPhi_;
   
 };
 
 KoPatElectronAnalyzer::KoPatElectronAnalyzer(const edm::ParameterSet& pset)
 {
   electronLabel_ = pset.getUntrackedParameter<edm::InputTag>("electronLabel");
+  metLabel_ = pset.getUntrackedParameter<edm::InputTag>("metLabel");
   idNames_ = pset.getUntrackedParameter<std::vector<std::string> >("idNames");
   idMask_ = pset.getUntrackedParameter<int>("idMask", 5);
 
@@ -114,6 +120,11 @@ void KoPatElectronAnalyzer::beginJob()
     tree_->Branch(("e1Id_"+*idName).c_str(), &(brE1Id_[*idName]), ("e1Id_"+*idName+"/i").c_str());
     tree_->Branch(("e2Id_"+*idName).c_str(), &(brE2Id_[*idName]), ("e2Id_"+*idName+"/i").c_str());
   }
+
+  tree_->Branch("met", &brMet_, "met/d");
+  tree_->Branch("metPhi", &brMetPhi_, "metPhi/d");
+  tree_->Branch("metE1DPhi", &brMetE1DPhi_, "metE1DPhi/d");
+  tree_->Branch("metE2DPhi", &brMetE2DPhi_, "metE2DPhi/d");
 }
 
 void KoPatElectronAnalyzer::endJob()
@@ -139,10 +150,17 @@ void KoPatElectronAnalyzer::analyze(const edm::Event& event, const edm::EventSet
     brE1Id_[*idName] = 0;
     brE2Id_[*idName] = 0;
   }
+  brMet_ = brMetPhi_ = -999;
+  brMetE1DPhi_ = brMetE2DPhi_ = -999;
 
   edm::Handle<edm::View<pat::Electron> > electronHandle;
   event.getByLabel(electronLabel_, electronHandle);
   brNE_ = electronHandle->size();
+
+  edm::Handle<edm::View<pat::MET> > metHandle;
+  event.getByLabel(metLabel_, metHandle);
+  brMet_ = metHandle->begin()->pt();
+  brMetPhi_ = metHandle->begin()->phi();
 
   // Pick leading and 2nd reading electrons
   edm::View<pat::Electron>::const_iterator e1 = electronHandle->end();
@@ -160,6 +178,8 @@ void KoPatElectronAnalyzer::analyze(const edm::Event& event, const edm::EventSet
     brE1PhIso_ = getIsolation(*e1, pat::PfGammaIso);
     brE1RelIso_ = (brE1ChIso_+brE1PhIso_+brE1PhIso_)/brE1P4_->pt();
 
+    brMetE1DPhi_ = deltaPhi(brMetPhi_, e1->phi());
+
     for ( std::vector<std::string>::const_iterator idName = idNames_.begin();
           idName != idNames_.end(); ++idName )
     {
@@ -176,6 +196,8 @@ void KoPatElectronAnalyzer::analyze(const edm::Event& event, const edm::EventSet
     brE2NhIso_ = getIsolation(*e2, pat::PfNeutralHadronIso);
     brE2PhIso_ = getIsolation(*e2, pat::PfGammaIso);
     brE2RelIso_ = (brE2ChIso_+brE2PhIso_+brE2PhIso_)/brE2P4_->pt();
+
+    brMetE2DPhi_ = deltaPhi(brMetPhi_, e2->phi());
 
     for ( std::vector<std::string>::const_iterator idName = idNames_.begin();
           idName != idNames_.end(); ++idName )

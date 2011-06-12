@@ -35,6 +35,7 @@ process.source.fileNames = readFiles
 
 process.eleAna = cms.EDAnalyzer("KoPatElectronAnalyzer",
     electronLabel = cms.untracked.InputTag("selectedPatElectronsLoosePFlow"),
+    metLabel = cms.untracked.InputTag("patMETsPFlow"),
     idNames = cms.untracked.vstring(
         "eidVeryLooseMC", 
         "eidLooseMC", 
