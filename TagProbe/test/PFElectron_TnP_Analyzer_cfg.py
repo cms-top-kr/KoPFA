@@ -9,7 +9,7 @@ process.MessageLogger.destinations = ['cout', 'cerr']
 process.MessageLogger.cerr.FwkReport.reportEvery = 1000
 
 import os
-mode = os.environ['MODE']
+mode = 'RD'
 
 def tnpEffPSet(categories):
     effSet = cms.PSet()
@@ -80,7 +80,8 @@ process.tnpId = cms.EDAnalyzer("TagProbeFitTreeAnalyzer",
     ),
 
     Categories = cms.PSet(
-        Id = cms.vstring("Id", "dummy[pass=1,fail=0]"),
+        IdMedium = cms.vstring("IdMedium", "dummy[pass=1,fail=0]"),
+        IdTight = cms.vstring("IdTight", "dummy[pass=1,fail=0]"),
     ),
 
     PDFs = cms.PSet(
@@ -99,14 +100,14 @@ process.tnpId = cms.EDAnalyzer("TagProbeFitTreeAnalyzer",
             "signalFractionInPassing[0.9]"
         )
     ),
-    Efficiencies = tnpEffPSet(["Id"])
+    Efficiencies = tnpEffPSet(["IdMedium", "IdTight"])
 )
 
-process.tnpIdIso = cms.EDAnalyzer("TagProbeFitTreeAnalyzer",
+process.tnpMediumIdIso = cms.EDAnalyzer("TagProbeFitTreeAnalyzer",
     InputFileNames = cms.vstring("tnpTree_%s.root" % mode),
-    InputDirectoryName = cms.string("tnpIdIso"),
+    InputDirectoryName = cms.string("tnpMediumIdIso"),
     InputTreeName = cms.string("fitter_tree"),
-    OutputFileName = cms.string("result_IdIso_%s.root" % mode),
+    OutputFileName = cms.string("result_MediumIdIso_%s.root" % mode),
     NumCPU = cms.uint32(1),
     SaveWorkspace = cms.bool(True),
     floatShapeParameters = cms.bool(True),
@@ -118,12 +119,9 @@ process.tnpIdIso = cms.EDAnalyzer("TagProbeFitTreeAnalyzer",
     ),
 
     Categories = cms.PSet(
-        IdIso20 = cms.vstring("IdIso20", "dummy[pass=1,fail=0]"),
-        IdIso22 = cms.vstring("IdIso22", "dummy[pass=1,fail=0]"),
-        IdIso24 = cms.vstring("IdIso24", "dummy[pass=1,fail=0]"),
-        IdIso26 = cms.vstring("IdIso26", "dummy[pass=1,fail=0]"),
-        IdIso30 = cms.vstring("IdIso30", "dummy[pass=1,fail=0]"),
-        IdIso50 = cms.vstring("IdIso50", "dummy[pass=1,fail=0]"),
+        Iso15 = cms.vstring("Iso15", "dummy[pass=1,fail=0]"),
+        Iso17 = cms.vstring("Iso17", "dummy[pass=1,fail=0]"),
+        Iso20 = cms.vstring("Iso20", "dummy[pass=1,fail=0]"),
     ),
 
     PDFs = cms.PSet(
@@ -144,11 +142,54 @@ process.tnpIdIso = cms.EDAnalyzer("TagProbeFitTreeAnalyzer",
     ),
 
     #Efficiencies = tnpEffPSet(["IdIso20", "IdIso22", "IdIso24", "IdIso26", "IdIso30", "IdIso50"]),
-    Efficiencies = tnpEffPSet(["IdIso26"]),
+    Efficiencies = tnpEffPSet(["Iso15", "Iso17", "Iso20"]),
+)
+
+process.tnpTightIdIso = cms.EDAnalyzer("TagProbeFitTreeAnalyzer",
+    InputFileNames = cms.vstring("tnpTree_%s.root" % mode),
+    InputDirectoryName = cms.string("tnpTightIdIso"),
+    InputTreeName = cms.string("fitter_tree"),
+    OutputFileName = cms.string("result_TightIdIso_%s.root" % mode),
+    NumCPU = cms.uint32(1),
+    SaveWorkspace = cms.bool(True),
+    floatShapeParameters = cms.bool(True),
+    Variables = cms.PSet(
+        mass = cms.vstring("Tag-Probe mass", "70.0", "110.0", "GeV/c^{2}"),
+        pt = cms.vstring("Probe p_{T}", "0", "1000", "GeV/c"),
+        eta = cms.vstring("Probe #eta", "-2.5", "2.5", "Radian"),
+        abseta = cms.vstring("Probe |#eta|", "0", "2.5", "Radian"),
+    ),
+
+    Categories = cms.PSet(
+        Iso15 = cms.vstring("Iso15", "dummy[pass=1,fail=0]"),
+        Iso17 = cms.vstring("Iso17", "dummy[pass=1,fail=0]"),
+        Iso20 = cms.vstring("Iso20", "dummy[pass=1,fail=0]"),
+    ),
+
+    PDFs = cms.PSet(
+        gaussPlusExp = cms.vstring(
+            "Gaussian::signal(mass, mean[91.2, 89.0, 93.0], sigma[2.5, 0.5, 10.0])",
+            "RooExponential::backgroundPass(mass, cPass[0,-10,10])",
+            "RooExponential::backgroundFail(mass, cFail[0,-10,10])",
+            "efficiency[0.9,0,1]",
+            "signalFractionInPassing[0.9]"
+        ),
+        bgaussPlusExp = cms.vstring(
+            "RooBifurGauss::signal(mass, mean[91.2, 89.0, 93.0], sigma1[2.5, 0.5, 10.0], sigma2[2.5, 0.5, 10.0])",
+            "RooExponential::backgroundPass(mass, cPass[0,-10,10])",
+            "RooExponential::backgroundFail(mass, cFail[0,-10,10])",
+            "efficiency[0.9,0,1]",
+            "signalFractionInPassing[0.9]"
+        )
+    ),
+
+    #Efficiencies = tnpEffPSet(["IdIso20", "IdIso22", "IdIso24", "IdIso26", "IdIso30", "IdIso50"]),
+    Efficiencies = tnpEffPSet(["Iso15", "Iso17", "Iso20"]),
 )
 
 process.p = cms.Path(
-    process.tnpId * 
-    process.tnpIdIso
+    process.tnpId
+  + process.tnpMediumIdIso
+  + process.tnpTightIdIso
 )
 
