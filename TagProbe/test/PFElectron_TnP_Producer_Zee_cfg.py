@@ -42,8 +42,36 @@ process.eleTag = cms.EDFilter("PATElectronSelector",
     filter = cms.bool(True),
 )
 
+process.eleIdMedium = cms.EDFilter("PATElectronSelector",
+    src = cms.InputTag("acceptedElectrons"),
+    cut = cms.string(
+        eidMediumMC
+    ),  
+    filter = cms.bool(False),
+)
+
+process.eleIdTight = cms.EDFilter("PATElectronSelector",
+    src = cms.InputTag("acceptedElectrons"),
+    cut = cms.string(
+        eidTightMC
+    ),  
+    filter = cms.bool(False),
+)
+
 process.zBase = cms.EDProducer("CandViewShallowCloneCombiner",
     decay = cms.string("eleTag@+ selectedPatElectronsLoosePFlow@-"),
+    checkCharge = cms.bool(False),
+    cut = cms.string("70 < mass < 110"),
+)
+
+process.zIdMedium = cms.EDProducer("CandViewShallowCloneCombiner",
+    decay = cms.string("eleTag@+ eleIdMedium@-"),
+    checkCharge = cms.bool(False),
+    cut = cms.string("70 < mass < 110"),
+)
+
+process.zIdTight = cms.EDProducer("CandViewShallowCloneCombiner",
+    decay = cms.string("eleTag@+ eleIdTight@-"),
     checkCharge = cms.bool(False),
     cut = cms.string("70 < mass < 110"),
 )
@@ -61,6 +89,41 @@ process.tnpId = cms.EDAnalyzer("TagProbeFitTreeProducer",
     flags = cms.PSet(
         IdMedium = cms.string(eidMediumMC),
         IdTight = cms.string(eidTightMC),
+    ),
+    addRunLumiInfo = cms.bool(True),
+    isMC = cms.bool(False),
+)
+
+process.tnpMediumIdIso = cms.EDAnalyzer("TagProbeFitTreeProducer",
+    tagProbePairs = cms.InputTag("zIdMedium"),
+    arbitration = cms.string("OneProbe"),
+    #arbitration = cms.string("BestMass"),
+    variables = cms.PSet(
+        pt = cms.string("pt"),
+        eta = cms.string("eta"),
+        abseta = cms.string("abs(eta)"),
+        charge = cms.string("charge"),
+    ),
+    flags = cms.PSet(
+        Iso15 = cms.string(relIso15),
+        Iso17 = cms.string(relIso17),
+        Iso20 = cms.string(relIso20),
+    ),
+    addRunLumiInfo = cms.bool(True),
+    isMC = cms.bool(False),
+)
+
+process.tnpTightIdIso = cms.EDAnalyzer("TagProbeFitTreeProducer",
+    tagProbePairs = cms.InputTag("zIdTight"),
+    arbitration = cms.string("OneProbe"),
+    #arbitration = cms.string("BestMass"),
+    variables = cms.PSet(
+        pt = cms.string("pt"),
+        eta = cms.string("eta"),
+        abseta = cms.string("abs(eta)"),
+        charge = cms.string("charge"),
+    ),
+    flags = cms.PSet(
         Iso15 = cms.string(relIso15),
         Iso17 = cms.string(relIso17),
         Iso20 = cms.string(relIso20),
@@ -70,8 +133,8 @@ process.tnpId = cms.EDAnalyzer("TagProbeFitTreeProducer",
 )
 
 process.p = cms.Path(
-    process.eleTag
-  + process.zBase
-  + process.tnpId
+    process.eleTag * process.eleIdMedium + process.eleIdTight
+  + process.zBase + process.zIdMedium + process.zIdTight
+  + process.tnpId + process.tnpMediumIdIso + process.tnpTightIdIso
 )
 
