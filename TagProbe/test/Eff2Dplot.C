@@ -45,10 +45,10 @@ Eff2Dplot(){
   hh1->SetLabelOffset(0.0005);
   hh1->SetTitleOffset(1.08);
   cc1->SetLogx();
-  cc1->Draw();
-  cc1->Print("Eff_Iso_data_"+var+".gif");
-  cc1->Print("Eff_Iso_data_"+var+".png");
-  cc1->Print("Eff_Iso_data_"+var+".eps");
+//  cc1->Draw();
+//  cc1->Print("Eff_Iso_data_"+var+".gif");
+//  cc1->Print("Eff_Iso_data_"+var+".png");
+//  cc1->Print("Eff_Iso_data_"+var+".eps");
 
 //////////////////////////
   TFile * f_Isomc = new TFile(Form("%s",FileIso_mc.Data()));
@@ -61,15 +61,15 @@ Eff2Dplot(){
   hh2->SetLabelOffset(0.0005);
   hh2->SetTitleOffset(1.08);
   cc2->SetLogx();
-  cc2->Draw();
-  cc2->Print("Eff_Iso_mc_"+var+".gif");
-  cc2->Print("Eff_Iso_mc_"+var+".png");
-  cc2->Print("Eff_Iso_mc_"+var+".eps");
+//  cc2->Draw();
+//  cc2->Print("Eff_Iso_mc_"+var+".gif");
+//  cc2->Print("Eff_Iso_mc_"+var+".png");
+//  cc2->Print("Eff_Iso_mc_"+var+".eps");
 
 ///////////////////////////////////////////////////////////////////
 //  For print out the efficiency into a file
 ///////////////////////////////////////////////////////////////////
-/*  int nbinx = hh1->GetNbinsX();
+  int nbinx = hh1->GetNbinsX();
   int nbiny = hh1->GetNbinsY();
     cout << "//////////////////////////////" << endl;
   string tablefordata;
@@ -139,7 +139,7 @@ Eff2Dplot(){
   fout << "scale factor" << endl;
   fout << columnfortable << endl;
   fout << tableforscale << endl;
-*/
+
 ////////////////////////////////////////////////////////////////////////////
   TFile * f_ID = new TFile(Form("%s",FileID.Data()));
   f_ID->cd("tnpTree/ID_pt_abseta/fit_eff_plots");
@@ -151,10 +151,10 @@ Eff2Dplot(){
   hh3->SetLabelOffset(0.0005);
   hh3->SetTitleOffset(1.08);
   cc3->SetLogx();
-  cc3->Draw();
-  cc3->Print("Eff_ID_data_"+var+".gif");
-  cc3->Print("Eff_ID_data_"+var+".png");
-  cc3->Print("Eff_ID_data_"+var+".eps");
+//  cc3->Draw();
+//  cc3->Print("Eff_ID_data_"+var+".gif");
+//  cc3->Print("Eff_ID_data_"+var+".png");
+//  cc3->Print("Eff_ID_data_"+var+".eps");
 
 //////////////////////////
   TFile * f_IDmc = new TFile(Form("%s",FileID_mc.Data()));
@@ -174,7 +174,7 @@ Eff2Dplot(){
 ////////////////////////////////////////////////////////////////////
 //  For print out the efficiency into a file
 ////////////////////////////////////////////////////////////////////
-/*  int nbinx = hh3->GetNbinsX();
+  int nbinx = hh3->GetNbinsX();
   int nbiny = hh3->GetNbinsY();
     cout << "//////////////////////////////" << endl;
   string tablefordata;
@@ -244,7 +244,7 @@ Eff2Dplot(){
   fout2 << "scale factor" << endl;
   fout2 << columnfortable << endl;
   fout2 << tableforscale << endl;
-*/
+
 //////////////////////////
   fout.close();
   fout2.close();
