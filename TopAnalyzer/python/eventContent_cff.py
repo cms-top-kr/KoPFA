@@ -14,5 +14,6 @@ pf2patEventContent +=[
         'keep *_acceptedElectrons_*_*',
         'keep double_*PFlow*_rho_PAT',
         'keep *_pfJets*_*_*'
+        'keep *_addPileupInfo_*_*'
 ]
 
