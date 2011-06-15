@@ -16,34 +16,36 @@ process.GlobalTag.globaltag = cms.string( autoCond[ 'startup' ] )
 process.source = cms.Source("PoolSource", 
     fileNames = cms.untracked.vstring(),
 )
-#process.load("PFAnalyses.TTbarDIL.Sources.ELE.MC.Fall10.patTuple_ZJets50_cff")
-from KoPFA.TopAnalyzer.Sources.ELE.RD.patTuple_Run2011A_cff import readFiles
+#from KoPFA.TopAnalyzer.Sources.ELE.RD.patTuple_Run2011A_cff import readFiles
+#from KoPFA.TopAnalyzer.Sources.ELE.MC.Spring11.patTuple_ZJets_TnP_cff import readFiles
+from KoPFA.TopAnalyzer.Sources.ELE.MC.Spring11.patTuple_ZJets_cff import readFiles
 process.source.fileNames = readFiles
 
-process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )    
+process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(100000) )
 
 process.TFileService = cms.Service("TFileService",
-    fileName = cms.string("/tmp/jhgoh/tnpTree_RD.root")
+    fileName = cms.string("tnpTree_MC.root")
 )
 
 #process.load("KoPFA.TagProbe.Electron_TnP_Producer_cff")
 
-relIso15 = "(chargedHadronIso+neutralHadronIso+photonIso)/pt < 0.15"
-relIso17 = "(chargedHadronIso+neutralHadronIso+photonIso)/pt < 0.17"
-relIso20 = "(chargedHadronIso+neutralHadronIso+photonIso)/pt < 0.20"
+relIso10 = "(chargedHadronIso+neutralHadronIso+photonIso)/pfCandidateRef.p4.pt < 0.10"
+relIso15 = "(chargedHadronIso+neutralHadronIso+photonIso)/pfCandidateRef.p4.pt < 0.15"
+relIso17 = "(chargedHadronIso+neutralHadronIso+photonIso)/pfCandidateRef.p4.pt < 0.17"
+relIso20 = "(chargedHadronIso+neutralHadronIso+photonIso)/pfCandidateRef.p4.pt < 0.20"
 eidMediumMC = "(electronID('eidMediumMC') == 5 || electronID('eidMediumMC') == 7 || electronID('eidMediumMC') == 15)"
 eidTightMC = "(electronID('eidTightMC') == 5 || electronID('eidTightMC') == 7 || electronID('eidTightMC') == 15)"
 
 process.eleTag = cms.EDFilter("PATElectronSelector",
     src = cms.InputTag("acceptedElectrons"),
     cut = cms.string(
-        relIso20 + "&&" + eidTightMC
+        relIso10 + "&&" + eidTightMC
     ),
     filter = cms.bool(True),
 )
 
 process.eleIdMedium = cms.EDFilter("PATElectronSelector",
-    src = cms.InputTag("acceptedElectrons"),
+    src = cms.InputTag("selectedPatElectronsLoosePFlow"),
     cut = cms.string(
         eidMediumMC
     ),  
@@ -51,7 +53,7 @@ process.eleIdMedium = cms.EDFilter("PATElectronSelector",
 )
 
 process.eleIdTight = cms.EDFilter("PATElectronSelector",
-    src = cms.InputTag("acceptedElectrons"),
+    src = cms.InputTag("selectedPatElectronsLoosePFlow"),
     cut = cms.string(
         eidTightMC
     ),  
