@@ -315,7 +315,6 @@ void plotNewEff(TFile *f1, TFile *f2, const TString & leg1, const TString & leg2
 
 void plot2Eff(TFile *f1, TFile* f2, const TString & leg1, const TString & leg2, const TString& dir1, const TString &dir2, const TString& plot1, const TString & plot2, const TString& printName, const TString& hName){
 
-  gStyle->SetPadTickX(1);
   f1->cd(dir1);
   TCanvas* c1 = (TCanvas*) gDirectory->FindKey(plot1)->ReadObj();
   setRangeY(c1,0.5,1.1);
@@ -357,7 +356,6 @@ void plotEff(TFile* f, const TString& dir, const TString& hName){
 }
 
 void plot2DEff(TFile* f, TFile* f_MC, const TString& dir, const TString& plot, const TString& hName){
-  gStyle->SetPalette(1);
   f->cd(dir);
   TCanvas* c = (TCanvas*) gDirectory->FindKey(plot)->ReadObj();
   TH2* h = (TH2F*) c->FindObject(plot);
@@ -495,5 +493,151 @@ void SetLatex(double x, double y){
   //label->DrawLatex(x,y,"CMS Preliminary 2010");
   //label->DrawLatex(x,y-0.05,"36 pb^{-1} at #sqrt{s} = 7 TeV");
   label->DrawLatex(x,y-0.1,"#DeltaR=0.4");
+}
+
+void plotEff1D(TFile* fMC, TFile* fRD, TString dirName, TString varName, TString varTitleOpt)
+{
+  TObjArray* varTitleOpts = varTitleOpt.Tokenize(";");
+  const int nField = varTitleOpts->GetEntries();
+  TString varTitle = nField <= 0 ? "" : varTitleOpts->At(0)->GetName();
+  TString varUnit  = nField <= 1 ? "" : varTitleOpts->At(1)->GetName();
+  TString varOpt   = nField <= 2 ? "" : varTitleOpts->At(2)->GetName();
+
+  TString srcCanvasName = dirName+"_"+varName+"/fit_eff_plots/"+varName+"_PLOT";
+  TCanvas* cMC = (TCanvas*)fMC->Get(srcCanvasName);
+  TCanvas* cRD = (TCanvas*)fRD->Get(srcCanvasName);
+
+  RooHist* hMC = (RooHist*)cMC->FindObject("hxy_fit_eff");
+  RooHist* hRD = (RooHist*)cRD->FindObject("hxy_fit_eff");
+
+  if ( !hMC || !hRD ) return;
+
+  TString grpTitle = Form("Efficiency of %s", varTitle.Data());
+  TGraphAsymmErrors* grpMC = getGraph(hMC, grpTitle);
+  TGraphAsymmErrors* grpRD = getGraph(hRD, grpTitle);
+
+  grpMC->GetXaxis()->SetTitle(varTitle+" "+varUnit);
+  grpRD->GetXaxis()->SetTitle(varTitle+" "+varUnit);
+  grpMC->GetYaxis()->SetTitle("Efficiency");
+  grpRD->GetYaxis()->SetTitle("Efficiency");
+
+  decorateGraph(grpMC, kBlue, 20);
+  decorateGraph(grpRD, kRed , 21);
+
+  TString canvasName = (dirName+"_"+varName).ReplaceAll("/", "_");
+  TCanvas* can = new TCanvas("c_"+canvasName, canvasName, 600, 500);
+  if ( varOpt.Contains("log") || varOpt.Contains("LOG") ) can->SetLogx();
+
+  grpMC->Draw("AP");
+  grpRD->Draw("P");
+  TLegend* leg = new TLegend(0.65, 0.20, 0.85, 0.35);
+  leg->AddEntry(grpRD, "Data");
+  leg->AddEntry(grpMC, "MC");
+  leg->Draw();
+
+  can->Print(TString(can->GetName())+".png");
+  can->Print(TString(can->GetName())+".eps");
+}
+
+void plotEff2D(TFile* fMC, TFile* fRD, TString dirName, TString varName1, TString varName2, TString varTitleOpt1, TString varTitleOpt2)
+{
+  TObjArray* varTitleOpts1 = varTitleOpt1.Tokenize(";");
+  const int nField1 = varTitleOpts1->GetEntries();
+  TString varTitle1 = nField1 <= 0 ? "" : varTitleOpts1->At(0)->GetName();
+  TString varUnit1  = nField1 <= 1 ? "" : varTitleOpts1->At(1)->GetName();
+  TString varOpt1   = nField1 <= 2 ? "" : varTitleOpts1->At(2)->GetName();
+
+  TObjArray* varTitleOpts2 = varTitleOpt2.Tokenize(";");
+  const int nField2 = varTitleOpts2->GetEntries();
+  TString varTitle2 = nField2 <= 0 ? "" : varTitleOpts2->At(0)->GetName();
+  TString varUnit2  = nField2 <= 1 ? "" : varTitleOpts2->At(1)->GetName();
+  TString varOpt2   = nField2 <= 2 ? "" : varTitleOpts2->At(2)->GetName();
+
+  const bool doLogX = varOpt1.Contains("log") || varOpt1.Contains("LOG");
+  const bool doLogY = varOpt2.Contains("log") || varOpt2.Contains("LOG");
+
+  TString srcCanvasName = dirName+"_"+varName1+"_"+varName2+"/fit_eff_plots/"+varName1+"_"+varName2+"_PLOT";
+  TCanvas* cMC = (TCanvas*)fMC->Get(srcCanvasName);
+  TCanvas* cRD = (TCanvas*)fRD->Get(srcCanvasName);
+
+  //RooHist* hMC = (RooHist*)cMC->FindObject(varName1+"_"+varName2+"_PLOT");
+  //RooHist* hRD = (RooHist*)cRD->FindObject(varName1+"_"+varName2+"_PLOT");
+
+  TH2* hMC = (TH2*)cMC->FindObject(varName1+"_"+varName2+"_PLOT");
+  TH2* hRD = (TH2*)cRD->FindObject(varName1+"_"+varName2+"_PLOT");
+
+  hMC->GetXaxis()->SetTitle(varTitle1+" "+varUnit1);
+  hRD->GetXaxis()->SetTitle(varTitle1+" "+varUnit1);
+  hMC->GetYaxis()->SetTitle(varTitle2+" "+varUnit2);
+  hRD->GetYaxis()->SetTitle(varTitle2+" "+varUnit2);
+
+  decorateTH2(hMC);
+  decorateTH2(hRD);
+
+  TPaveText* ttMC = new TPaveText(0.1, 0.93, 0.4, 0.98, "NDC");
+  TPaveText* ttRD = new TPaveText(0.1, 0.93, 0.4, 0.98, "NDC");
+  ttMC->AddText("MC");
+  ttRD->AddText("Data");
+
+  TString canvasName = (dirName+"_"+varName1+"_"+varName2).ReplaceAll("/", "_");
+  TCanvas* can = new TCanvas("c_"+canvasName, canvasName, 1200, 500);
+  can->Divide(2);
+  TPad* pad1 = can->cd(1);
+  if ( doLogX ) pad1->SetLogx();
+  if ( doLogY ) pad1->SetLogy();
+  hMC->Draw("colz,texte");
+  ttMC->Draw();
+  TPad* pad2 = can->cd(2);
+  if ( doLogX ) pad2->SetLogx();
+  if ( doLogY ) pad2->SetLogy();
+  hRD->Draw("colz,texte");
+  ttRD->Draw();
+
+  can->Print(TString(can->GetName())+".png");
+  can->Print(TString(can->GetName())+".eps");
+}
+
+void decorateGraph(TGraph* grp, int color, int marker)
+{
+  grp->SetLineColor(color);
+  grp->SetMarkerColor(color);
+  grp->SetFillColor(kWhite);
+  grp->SetLineWidth(2);
+  grp->SetMarkerStyle(marker);
+  grp->SetMarkerSize(1.2);
+  grp->GetXaxis()->SetMoreLogLabels(true); 
+  grp->GetHistogram()->SetTitleOffset(1.22);
+
+  grp->SetMinimum(0.5);
+  grp->SetMaximum(1.1);
+
+  const int n = grp->GetN();
+  const double xmin = grp->GetX()[0]-grp->GetEXlow()[0];
+  const double xmax = grp->GetX()[n-1]+grp->GetEXhigh()[n-1];
+  grp->GetXaxis()->SetRangeUser(xmin, xmax);
+}
+
+void decorateTH2(TH2* h)
+{
+  h->SetMarkerSize(1.5);
+  h->GetXaxis()->SetMoreLogLabels(true);
+  h->GetYaxis()->SetMoreLogLabels(true);
+  h->SetLabelOffset(0.0005);
+  h->SetTitleOffset(1.22);
+}
+
+TGraphAsymmErrors* getGraph(RooHist* h, TString title)
+{
+  const int n = h->GetN();
+  const double* x = h->GetX();
+  const double* y = h->GetY();
+  const double* exl = h->GetEXlow();
+  const double* exh = h->GetEXhigh();
+  const double* eyl = h->GetEYlow();
+  const double* eyh = h->GetEYhigh();
+
+  TGraphAsymmErrors* grp = new TGraphAsymmErrors(n, x, y, exl, exh, eyl, eyh);
+  grp->SetTitle(title);
+  return grp;
 }
 
