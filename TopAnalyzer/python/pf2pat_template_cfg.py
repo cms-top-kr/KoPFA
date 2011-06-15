@@ -1,34 +1,33 @@
 import FWCore.ParameterSet.Config as cms
+import os
 
 process = cms.Process("PAT")
 
 ## MessageLogger
 process.load("FWCore.MessageLogger.MessageLogger_cfi")
+process.load("Configuration.StandardSequences.Geometry_cff")
+process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_cff")
+process.load("Configuration.StandardSequences.MagneticField_cff")
 
 ## Options and Output Report
 process.options   = cms.untracked.PSet( wantSummary = cms.untracked.bool(True) )
+
+from Configuration.PyReleaseValidation.autoCond import autoCond
+process.GlobalTag.globaltag = cms.string( autoCond[ 'startup' ] )
 
 ## Source
 from PhysicsTools.PatAlgos.tools.cmsswVersionTools import pickRelValInputFiles
 process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(
-    pickRelValInputFiles( cmsswVersion  = 'CMSSW_4_2_3'
+    pickRelValInputFiles( cmsswVersion  = os.environ['CMSSW_VERSION']
                         , relVal        = 'RelValTTbar'
-                        , globalTag     = 'START42_V12'
+                        , globalTag     = process.GlobalTag.globaltag.value().split(':')[0]
                         , numberOfFiles = 1
                         )
     )
 )
 
 process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
-
-## Geometry and Detector Conditions (needed for a few patTuple production steps)
-process.load("Configuration.StandardSequences.Geometry_cff")
-process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_cff")
-#process.GlobalTag.globaltag = cms.string('START38_V13::All')
-from Configuration.PyReleaseValidation.autoCond import autoCond
-process.GlobalTag.globaltag = cms.string( autoCond[ 'startup' ] )
-process.load("Configuration.StandardSequences.MagneticField_cff")
 
 ## Output Module Configuration (expects a path 'p')
 from PhysicsTools.PatAlgos.patEventContent_cff import patEventContent
