@@ -15,7 +15,7 @@
 #include <iomanip>
 #include <iostream>
 
-void unfoldingPlot(TH1* h_gen, TH1* h_rec, TH2* m, TH1* h_mea, TH1* h_genTTbar, TH1F* accept, double scale_ttbar, TString name, double lumi, int k, RooUnfold::ErrorTreatment err, bool print, bool pseudo){
+void unfoldingPlot(TH1* h_gen, TH1* h_rec, TH2* m, TH1* h_mea, TH1* h_genTTbar, TH1F* accept, double scale_ttbar, TString name, double lumi, int k, RooUnfold::ErrorTreatment & err, bool print, bool pseudo){
 
   RooUnfoldResponse *response = new RooUnfoldResponse(h_rec, h_gen, m);
 
@@ -25,13 +25,17 @@ void unfoldingPlot(TH1* h_gen, TH1* h_rec, TH2* m, TH1* h_mea, TH1* h_genTTbar, 
   hgen->SetLineColor(2);
   hmea->SetLineColor(4);
 
+
+  //response matrix plot ====================================================================================
   TCanvas *c_response = new TCanvas(Form("c_response_%s",name.Data()),Form("c_response_%s",name.Data()),1);
   TMatrixD * Mres = (TMatrixD *) response->Mresponse();
   TH2D* hResponse = new TH2D(*Mres);
   hResponse->GetXaxis()->SetTitle("Generated M_{t#bar{t}} bin number");
   hResponse->GetYaxis()->SetTitle("Reconstructed M_{t#bar{t}} bin number");
   hResponse->Draw("box");
+  //==========================================================================================================
 
+  //unfolded result to be compare with truth level============================================================
   TCanvas *c = new TCanvas(Form("c_unfold_%s",name.Data()),Form("c_unfold_%s",name.Data()), 1);
   c->SetLogy();
   //unfolding
@@ -47,9 +51,13 @@ void unfoldingPlot(TH1* h_gen, TH1* h_rec, TH2* m, TH1* h_mea, TH1* h_genTTbar, 
   unfold = new RooUnfoldSvd(response, h_mea, k);   // OR
   //unfold = new RooUnfoldBinByBin(response, h_mea);
   //unfold = new RooUnfoldInvert(response, h_mea);
-
+  unfold->RooUnfoldSvd::SetNtoysSVD(1000);
+  cout << "n. of toys= " << unfold->RooUnfoldSvd::GetNtoysSVD() << endl;
   TH1F* h_unfold = (TH1F*) unfold->Hreco(err);
-  
+  //TH1F* h_unfold = (TH1F*) unfold->Hreco(RooUnfold::kCovToy);
+ 
+  int nbins = h_unfold->GetNbinsX();
+ 
   TMatrixD m_unfoldE = unfold->Ereco();
   //TVectorD v_unfoldE = unfold->ErecoV(RooUnfold::kCovariance);
 
@@ -84,8 +92,57 @@ void unfoldingPlot(TH1* h_gen, TH1* h_rec, TH2* m, TH1* h_mea, TH1* h_genTTbar, 
   label->SetTextSize(0.05);
   //label->DrawLatex(x,y,"CMS Preliminary 2010");
   label->DrawLatex(0.50,0.88,Form("%1.0f pb^{-1} at #sqrt{s} = 7 TeV",lumi));
+  //===============================================================================================
 
-  int nbins = h_unfold->GetNbinsX();
+  //Toy Test =======================================================================================
+  TCanvas *c_toy =  new TCanvas(Form("c_toy_%s",name.Data()),Form("c_toy_%s",name.Data()),1);
+  c_toy->Divide(3,3);
+  float detBins[] = {0, 350, 400, 450, 500,  550, 600, 700, 800, 1400};
+  int nDet = sizeof(detBins)/sizeof(float) - 1;
+
+  TH1 *h[9];
+  TF1 *g[9];
+  for(int i=0; i <9; i++){
+     double center = hgen->GetBinContent(i+1);
+     h[i] = new TH1F(Form("h%1.0f_%1.0f_%s",detBins[i],detBins[i+1],name.Data()), Form("h%1.0f_%1.0f_%s",detBins[i],detBins[i+1],name.Data()), 200, (center+10)-100,(center+10)+100);
+  } 
+
+  for(int i=0 ; i <10000 ; i++){
+    TH1* unfoldedToy =  unfold->Runtoy();
+    for(int j=0; j <9; j++){
+      double rec_ = RooUnfoldResponse::GetBinContent(unfoldedToy,j+1,true);
+      h[j]->Fill(rec_);
+    }
+  }
+  
+  for(int i=0; i<9; i++){
+    c_toy->cd(i+1);
+    h[i]->Fit("gaus");
+    g[i]  = h[i]->GetFunction("gaus");
+    h[i]->Draw();
+    gStyle->SetStatH(0.4);
+    gStyle->SetStatW(0.2);
+    gStyle->SetStatFontSize(0.05);
+    gStyle->SetStatBorderSize(1);
+    h[i]->SetTitle(Form("%1.0f-%1.0f GeV",detBins[i],detBins[i+1]));
+    h[i]->GetXaxis()->SetTitle("Unfolded number of events");
+    h[i]->GetYaxis()->SetTitle("Number of toy MC");
+  }
+
+  for(int i=0; i<9; i++){
+    double Mean = h[i]->GetMean();
+    double rms = h[i]->GetRMS();
+    double mean = g[i]->GetParameter(1);
+    double sigma = g[i]->GetParameter(2);
+    double mass = (detBins[i+1] + detBins[i])/2;
+    double meanerr = g[i]->GetParError(1);
+    double sigmaerr = g[i]->GetParError(2);
+    cout <<  "point= " << mass <<  " MEAN= " <<  mean << " RMS= " << rms << " mean= " << mean << "(error= " << meanerr << ")" << " sigma= " << sigma << "(error= " << sigmaerr << ") " <<"\n";
+  }
+
+  //==================================================================================================
+
+  //err after unfolding =============================================================================
 
   TCanvas *c_err = new TCanvas(Form("c_err_%s",name.Data()),Form("c_err_%s",name.Data()),1); 
 
@@ -111,37 +168,48 @@ void unfoldingPlot(TH1* h_gen, TH1* h_rec, TH2* m, TH1* h_mea, TH1* h_genTTbar, 
   cout << "Truth: evt number / sigma (fb)" << endl;
   TGraphAsymmErrors* dsigmaTruth = printFinal(nbins, hgen, accept, lumi, scale_ttbar, true);
   TH1* hSigmaTruth = getSigmaTruth(hgen, accept, lumi);
-
+ 
+  gerr->SetTitle(0);
   gerr->SetMarkerStyle(20);
   gerr->Draw("ALP");
   gerr->GetXaxis()->SetTitle("t#bar{t} invariant mass");
   gerr->GetYaxis()->SetTitle("Statistical Uncertainty (%)");
   label->DrawLatex(0.30,0.88,Form("%1.0f pb^{-1} at #sqrt{s} = 7 TeV",lumi));
 
+  //====================================================================================================
+
+  //err before unfolding ===============================================================================
   TCanvas *c_meaerr = new TCanvas(Form("c_meaerr_%s",name.Data()),Form("c_meaerr_%s",name.Data()),1);
   gerrbefore->Draw("ALP");
   gerrbefore->SetMarkerStyle(20);
   gerrbefore->GetXaxis()->SetTitle("t#bar{t} invariant mass");
   gerrbefore->GetYaxis()->SetTitle("Statistical Uncertainty (%)");
-
+  //====================================================================================================
+  //covariance matrix =============================================================================
   TCanvas *c_errmat = new TCanvas(Form("c_errmat_%s",name.Data()),Form("c_errmat_%s",name.Data()),1);
   //m_unfoldE.Draw("colz");
   TH2D* hErrMat = new TH2D(m_unfoldE);
   hErrMat->GetXaxis()->SetTitle("Generated M_{t#bar{t}} bin number");
   hErrMat->GetYaxis()->SetTitle("Reconstructed M_{t#bar{t}} bin number");
   hErrMat->Draw("colz");
+  //================================================================================================== 
 
+  //log d plot =====================================================================================
   TCanvas *c_d = new TCanvas(Form("c_d_%s",name.Data()),Form("c_d_%s",name.Data()));
   c_d->SetLogy();
   TH1D* h_d = unfold->RooUnfoldSvd::Impl()->GetD();
+  h_d->SetTitle(0);
   h_d->Draw("PC");
   h_d->GetYaxis()->SetTitle("log|d_{i}|");
   h_d->GetXaxis()->SetTitle("i");
+  //================================================================================================
 
+  //cross section plot ================================================================================================
   TCanvas *c_dsigma = new TCanvas(Form("c_dsigma_%s",name.Data()),Form("c_dsigma_%s",name.Data()));
   c_dsigma->SetLogy();
   hSigmaTruth->SetLineWidth(1);
   hSigmaTruth->SetLineStyle(1);
+  hSigmaTruth->SetTitle(0);
   hSigmaTruth->Draw();
   hSigmaTruth->SetMaximum(3000);
   hSigmaTruth->GetXaxis()->SetTitle("Unfolded t#bar{t} invariant mass (GeV/c^{2})");
@@ -162,26 +230,29 @@ void unfoldingPlot(TH1* h_gen, TH1* h_rec, TH2* m, TH1* h_mea, TH1* h_genTTbar, 
   l_dsigma->Draw();
 
   label->DrawLatex(0.47,0.88,Form("%1.0f pb^{-1} at #sqrt{s} = 7 TeV",lumi));
-  
+  //======================================================================================================================  
+
   cout << "chi2(kErrors) : " << unfold->Chi2(hgen, RooUnfold::kErrors) << endl;
   cout << "chi2(kCovariance) : " << unfold->Chi2(hgen, RooUnfold::kCovariance) << endl;
 
   if(print){
-    c_response->Print(Form("c_response_%s.eps",name.Data()));
-    c->Print(Form("c_unfold_%s.eps",name.Data()));
-    c_err->Print(Form("c_err_%s.eps",name.Data()));
-    c_meaerr->Print(Form("c_meaerr_%s.eps",name.Data()));
-    c_errmat->Print(Form("c_errmat_%s.eps",name.Data()));
-    c_dsigma->Print(Form("c_dsigma_%s.eps",name.Data()));
-    c_d->Print(Form("c_d_%s.eps",name.Data()));
+    c_response->Print(Form("cUF_response_%s.eps",name.Data()));
+    c->Print(Form("cUF_unfold_%s.eps",name.Data()));
+    c_err->Print(Form("cUF_err_%s.eps",name.Data()));
+    c_meaerr->Print(Form("cUF_meaerr_%s.eps",name.Data()));
+    c_errmat->Print(Form("cUF_errmat_%s.eps",name.Data()));
+    c_dsigma->Print(Form("cUF_dsigma_%s.eps",name.Data()));
+    c_d->Print(Form("cUF_d_%s.eps",name.Data()));
+    c_toy->Print(Form("cUF_toy_%s.eps",name.Data()));
 
-    c_response->Print(Form("c_response_%s.png",name.Data()));
-    c->Print(Form("c_unfold_%s.png",name.Data()));
-    c_err->Print(Form("c_err_%s.png",name.Data()));
-    c_meaerr->Print(Form("c_meaerr_%s.png",name.Data()));
-    c_errmat->Print(Form("c_errmat_%s.png",name.Data()));
-    c_dsigma->Print(Form("c_dsigma_%s.png",name.Data()));
-    c_d->Print(Form("c_d_%s.png",name.Data()));
+    c_response->Print(Form("cUF_response_%s.png",name.Data()));
+    c->Print(Form("cUF_unfold_%s.png",name.Data()));
+    c_err->Print(Form("cUF_err_%s.png",name.Data()));
+    c_meaerr->Print(Form("cUF_meaerr_%s.png",name.Data()));
+    c_errmat->Print(Form("cUF_errmat_%s.png",name.Data()));
+    c_dsigma->Print(Form("cUF_dsigma_%s.png",name.Data()));
+    c_d->Print(Form("cUF_d_%s.png",name.Data()));
+    c_toy->Print(Form("cUF_toy_%s.png",name.Data()));
 
   }
 }
