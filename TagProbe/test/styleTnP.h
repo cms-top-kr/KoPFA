@@ -79,6 +79,98 @@ void printEff(RooHist* h1, RooHist* h2, vector<double>& data, vector<double>& mc
   h_s = tmps;
 }
 
+void printEff(TH2* hRD, TH2* hMC, TString colTitle, TString rowTitle, TString fileName = "")
+{
+  if ( hRD->GetNbinsX() != hMC->GetNbinsX() ||
+       hRD->GetNbinsY() != hMC->GetNbinsY() )
+  {
+    cout << "@@ printEff : Histogram size does not match\n";
+    return;
+  }
+
+  colTitle.ReplaceAll("#", "\\");
+  rowTitle.ReplaceAll("#", "\\");
+
+  const int nX = hRD->GetNbinsX();
+  const int nY = hRD->GetNbinsY();
+
+  // Build headers
+  string rdTab, mcTab, sfTab;
+  rdTab = "\\begin{tabular}{";
+  for ( int i=0; i<=nY; ++i ) rdTab += "c|";
+  rdTab[rdTab.size()-1] = '}';
+  rdTab += "\n\\hline\\hline\nSelection";
+
+  for ( int i=1; i<=nY; ++i )
+  {
+    const double ylo = hRD->GetYaxis()->GetBinLowEdge(i);
+    const double yup = hRD->GetYaxis()->GetBinUpEdge(i);
+    rdTab += Form(" ~&~ $%.1f < %s < %.1f$", ylo, colTitle.Data(), yup);
+  }
+  rdTab += "\\\\ \\hline\n";
+  mcTab = sfTab = rdTab;
+
+  for ( int i=1; i<=nX; ++i )
+  {
+    const double xlo = hRD->GetXaxis()->GetBinLowEdge(i);
+    const double xup = hRD->GetXaxis()->GetBinUpEdge(i);
+    const string rowContent = Form("$%.1f < %s < %.1f$", xlo, rowTitle.Data(), xup);
+    rdTab += rowContent;
+    mcTab += rowContent;
+    sfTab += rowContent;
+    for ( int j=1; j<=nY; ++j )
+    {
+      const double rdEff = hRD->GetBinContent(i,j);
+      const double rdErr = hRD->GetBinError(i,j);
+      const double mcEff = hMC->GetBinContent(i,j);
+      const double mcErr = hMC->GetBinError(i,j);
+      const double effSF = rdEff/mcEff;
+      const double sfErr = rdErr/rdEff;
+
+      rdTab += Form(" ~&~ %.4f\\pm%.4f", rdEff, rdErr);
+      mcTab += Form(" ~&~ %.4f\\pm%.4f", mcEff, mcErr);
+      sfTab += Form(" ~&~ %.4f\\pm%.4f", effSF, sfErr);
+    }
+    rdTab += "\\\\\n";
+    mcTab += "\\\\\n";
+    sfTab += "\\\\\n";
+  }
+
+  // Build footers
+  rdTab += "\\hline\\hline\n\\end{tabular}\n";
+  mcTab += "\\hline\\hline\n\\end{tabular}\n";
+  sfTab += "\\hline\\hline\n\\end{tabular}\n";
+
+  ostream& out = cout;
+  if ( fileName != "" )
+  {
+    ofstream fout(fileName.Data());
+
+    fout << "Real data efficiency\n";
+    fout << rdTab << endl;
+
+    fout << "MC efficiency\n";
+    fout << mcTab << endl;
+
+    fout << "Scale factors\n";
+    fout << sfTab << endl;
+
+    fout.close();
+  }
+  else
+  {
+    cout << "Real data efficiency\n";
+    cout << rdTab << endl;
+
+    cout << "MC efficiency\n";
+    cout << mcTab << endl;
+
+    cout << "Scale factors\n";
+    cout << sfTab << endl;
+  }
+
+}
+
 //vector<string> printEff(RooHist* h, map<int,vector<double> > seff){
 //   for(int i=0 ; i < h->GetMaxSize() ; i++){
 //    double x;
@@ -196,7 +288,7 @@ void plotNewEff(TFile *f1, TFile *f2, const TString & leg1, const TString & leg2
   }
   isolabel->SetHeader("Rel. Iso.");
   sflabel->SetHeader("Rel. Iso.");
-   
+
   TCanvas * c = new TCanvas("c","c",800,300);
 
   int k = 0;
@@ -303,14 +395,14 @@ void plotNewEff(TFile *f1, TFile *f2, const TString & leg1, const TString & leg2
   sflabel->SetLineColor(0);
 
   isolabel->Draw();
-  
+
   SetLatex(0.60,0.60);
 
   c1->Print(Form("c_eff_%s_%s.eps",printName.Data(),hName.Data()));
   c1->Print(Form("c_eff_%s_%s.C",printName.Data(),hName.Data()));
   c1->Print(Form("c_eff_%s_%s.png",printName.Data(),hName.Data()));
   c->Print(Form("c_sf_%s_%s.eps",printName.Data(),hName.Data()));
-  
+
 }
 
 void plot2Eff(TFile *f1, TFile* f2, const TString & leg1, const TString & leg2, const TString& dir1, const TString &dir2, const TString& plot1, const TString & plot2, const TString& printName, const TString& hName){
@@ -423,19 +515,19 @@ void plot2DEff(TFile* f, TFile* f_MC, const TString& dir, const TString& plot, c
       string serrdata = float2string(errdata,4);
       string seffmc = float2string(effmc,4);
       string serrmc = float2string(errmc,4);
-  
+
       tablefordata = tablefordata+" ~&~ "+seffdata + "$\\pm$" + serrdata;
       tableformc = tableformc+" ~&~ "+seffmc + "$\\pm$" + serrmc;
 
       float scale = h->GetBinContent(i,j)/h2->GetBinContent(i,j);
       float scale_err = h->GetBinError(i,j)/h2->GetBinContent(i,j);
- 
+
       string sscale = float2string(scale,4);
       string sscale_err = float2string(scale_err,4);
 
       tableforscale = tableforscale+" ~&~ "+ sscale+ "$\\pm$"+ sscale_err;
     }
-   
+
     tablefordata = tablefordata + "\\\\ \n";
     tableformc = tableformc + "\\\\ \n";
     tableforscale = tableforscale + "\\\\ \n";
@@ -477,13 +569,13 @@ void getObjects( TCanvas *c){
 
 
 void doLegend(TGraphAsymmErrors *g1, TGraphAsymmErrors *g2, const TString& lab1, const TString& lab2) {
-    TLegend *leg = new TLegend(.68,.25 ,.88,.40 );
-    leg->AddEntry(g1, Form("%s",lab1.Data()), "LP");
-    leg->AddEntry(g2, Form("%s",lab2.Data()), "LP");
-    leg->SetFillColor(0);
-    leg->SetTextSize(0.04);
-    leg->SetLineColor(0);
-    leg->Draw();
+  TLegend *leg = new TLegend(.68,.25 ,.88,.40 );
+  leg->AddEntry(g1, Form("%s",lab1.Data()), "LP");
+  leg->AddEntry(g2, Form("%s",lab2.Data()), "LP");
+  leg->SetFillColor(0);
+  leg->SetTextSize(0.04);
+  leg->SetLineColor(0);
+  leg->Draw();
 }
 
 void SetLatex(double x, double y){
@@ -595,6 +687,8 @@ void plotEff2D(TFile* fMC, TFile* fRD, TString dirName, TString varName1, TStrin
 
   can->Print(TString(can->GetName())+".png");
   can->Print(TString(can->GetName())+".eps");
+
+  printEff(hRD, hMC, varTitle1, varTitle2, Form("eff_RD_MC_%s_%s.txt", varName1.Data(), varName2.Data()));
 }
 
 void decorateGraph(TGraph* grp, int color, int marker)
