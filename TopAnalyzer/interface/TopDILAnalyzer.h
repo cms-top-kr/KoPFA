@@ -13,7 +13,7 @@
 //
 // Original Author:  Tae Jeong Kim,40 R-A32,+41227678602,
 //         Created:  Fri Jun  4 17:19:29 CEST 2010
-// $Id: TopDILAnalyzer.h,v 1.43 2011/05/22 21:32:44 tjkim Exp $
+// $Id: TopDILAnalyzer.h,v 1.44 2011/05/23 19:30:31 tjkim Exp $
 //
 //
 
@@ -127,7 +127,7 @@ class TopDILAnalyzer : public edm::EDFilter {
     jets = new std::vector<math::XYZTLorentzVector>();
     jetspt30 = new std::vector<math::XYZTLorentzVector>();
     bjets = new std::vector<math::XYZTLorentzVector>();
-
+ 
   }
 
 
@@ -158,7 +158,10 @@ class TopDILAnalyzer : public edm::EDFilter {
     tree->Branch("bjets","std::vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >", &bjets);
 
     tree->Branch("MET",&MET,"MET/d");
-    tree->Branch("dphimetlepton",&dphimetlepton,"dphimetlepton/d");
+    tree->Branch("dphimetlepton1",&dphimetlepton1,"dphimetlepton1/d");
+    tree->Branch("dphimetlepton2",&dphimetlepton2,"dphimetlepton2/d");
+    tree->Branch("dphimetjet1",&dphimetjet1,"dphimetjet1/d");
+    tree->Branch("dphimetjet2",&dphimetjet2,"dphimetjet2/d");
 
     tree->Branch("genttbarM",&genttbarM,"genttbarM/d");
     tree->Branch("resmaosM",&resmaosM,"resmaosM/d");
@@ -272,7 +275,8 @@ class TopDILAnalyzer : public edm::EDFilter {
 
         const bool match = MatchObjects( it1.p4(), it2.p4(), true);
         if(match) continue;
-        dphimetlepton = fabs(deltaPhi(mi->phi(),it1.phi()));
+        dphimetlepton1 = fabs(deltaPhi(mi->phi(),it1.phi()));
+        dphimetlepton2 = fabs(deltaPhi(mi->phi(),it2.phi()));
 
         accept = true;
 
@@ -369,6 +373,7 @@ class TopDILAnalyzer : public edm::EDFilter {
             if( overlap ) continue;
 
             jets->push_back(corrjet);
+
             if(corrjet.pt() > 30){
               jetspt30->push_back(corrjet);
               discr = jit->bDiscriminator(bTagAlgo_);
@@ -379,6 +384,11 @@ class TopDILAnalyzer : public edm::EDFilter {
 
           }
           
+        }
+
+        if( jetspt30->size() >= 2 ){
+          dphimetjet1 = fabs(deltaPhi(mi->phi(),jetspt30->at(0).phi()));
+          dphimetjet2 = fabs(deltaPhi(mi->phi(),jetspt30->at(1).phi()));
         }
 
         h_jet_multi->Fill(jets->size());
@@ -446,6 +456,11 @@ class TopDILAnalyzer : public edm::EDFilter {
     jets->clear();
     jetspt30->clear();
     bjets->clear();
+
+    dphimetlepton1 = -999;  
+    dphimetlepton2 = -999;  
+    dphimetjet1 = -999;
+    dphimetjet2 = -999;
 
     genttbarM = -999;
     resmaosM = -999; 
@@ -557,9 +572,13 @@ class TopDILAnalyzer : public edm::EDFilter {
   std::vector<math::XYZTLorentzVector>* jets;
   std::vector<math::XYZTLorentzVector>* jetspt30;
   std::vector<math::XYZTLorentzVector>* bjets;
-
+  
   double MET;
-  double dphimetlepton;
+  double dphimetlepton1;
+  double dphimetlepton2;
+  double dphimetjet1;
+  double dphimetjet2;
+
 
   double discr;
 
