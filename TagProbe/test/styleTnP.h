@@ -239,7 +239,7 @@ RooHist* getHist(TFile *f, const TString &dir, const TString &plot, int color, i
   h->SetMarkerStyle(color+19);
   h->SetMarkerSize(0.7);
   h->GetYaxis()->SetTitleSize(0.0);
-  delete c;
+  //delete c;
 
   return h;
 }
@@ -409,6 +409,7 @@ void plot2Eff(TFile *f1, TFile* f2, const TString & leg1, const TString & leg2, 
 
   f1->cd(dir1);
   TCanvas* c1 = (TCanvas*) gDirectory->FindKey(plot1)->ReadObj();
+  c1->SetName("c_"+printName+"_"+hName);
   setRangeY(c1,0.5,1.1);
   //getObjects(c1);
 
@@ -450,6 +451,7 @@ void plotEff(TFile* f, const TString& dir, const TString& hName){
 void plot2DEff(TFile* f, TFile* f_MC, const TString& dir, const TString& plot, const TString& hName){
   f->cd(dir);
   TCanvas* c = (TCanvas*) gDirectory->FindKey(plot)->ReadObj();
+  c->SetName("c_"+plot+"_"+hName);
   TH2* h = (TH2F*) c->FindObject(plot);
   cout << "---" << plot << "---" << hName << "---" << endl;
   h->SetMarkerSize(2.1);
@@ -463,6 +465,7 @@ void plot2DEff(TFile* f, TFile* f_MC, const TString& dir, const TString& plot, c
 
   f_MC->cd(dir);
   TCanvas* c2 = (TCanvas*) gDirectory->FindKey(plot)->ReadObj();
+  c2->SetName("c_"+plot+"_"+hName+"_mc");
   TH2* h2 = (TH2F*) c2->FindObject(plot);
   cout << "---" << plot << "---" << hName << "---" << endl;
   h2->SetMarkerSize(2.1);
