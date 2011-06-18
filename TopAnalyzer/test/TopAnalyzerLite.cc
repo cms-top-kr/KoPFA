@@ -34,6 +34,13 @@ public:
   ~TopAnalyzerLite();
 
   void addMCSig(const string mcSampleName, const string mcSampleLabel,
+                const string fileName, const double xsec,
+                const Color_t color, const bool doStackSignal = true);
+  void addMCBkg(const string mcSampleName, const string mcSampleLabel,
+                const string fileName, const double xsec,
+                const Color_t color);
+
+  void addMCSig(const string mcSampleName, const string mcSampleLabel,
                 const string fileName, const double xsec, const double nEvents,
                 const Color_t color, const bool doStackSignal = true);
   void addMCBkg(const string mcSampleName, const string mcSampleLabel,
@@ -175,8 +182,31 @@ void TopAnalyzerLite::addMC(vector<MCSample>& mcSetup,
   }
 
   MCSample& mc = mcSetup[index];
-  mc.nEvents += nEvents;
+  if ( nEvents > 0 )
+  {
+    mc.nEvents += nEvents;
+  }
+  else
+  {
+    TFile* f = TFile::Open(fileName.c_str());
+    if ( !f || !f->IsOpen() ) cout << "Cannot open file\n";
+    else 
+    {
+      TH1* hEventSummary = (TH1*)f->Get((subDirName_+"/EventSummary").c_str());
+      if ( !hEventSummary ) cout << "Cannot find EventSummary histogram" << endl;
+      else mc.nEvents += hEventSummary->GetBinContent(1);
+      f->Close();
+    }
+  }
   mc.chain->Add(fileName.c_str());
+}
+
+void TopAnalyzerLite::addMCSig(const string name, const string label,
+                               const string fileName, const double xsec,
+                               const Color_t color, const bool doStackSignal)
+{
+  doStackSignal_ = doStackSignal;
+  addMC(mcSigs_, name, label, fileName, xsec, -1, color);
 }
 
 void TopAnalyzerLite::addMCSig(const string name, const string label,
@@ -185,6 +215,13 @@ void TopAnalyzerLite::addMCSig(const string name, const string label,
 {
   doStackSignal_ = doStackSignal;
   addMC(mcSigs_, name, label, fileName, xsec, nEvents, color);
+}
+
+void TopAnalyzerLite::addMCBkg(const string name, const string label,
+                               const string fileName, const double xsec,
+                               const Color_t color)
+{
+  addMC(mcBkgs_, name, label, fileName, xsec, -1, color);
 }
 
 void TopAnalyzerLite::addMCBkg(const string name, const string label,
