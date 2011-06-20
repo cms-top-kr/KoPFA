@@ -8,7 +8,6 @@ source = cms.Source("PoolSource",
 )
 
 readFiles.extend([
-    'rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElTnP/MC/20110610_1/ZJets/patTuple_skim_1_1_utk.root',
     'rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElTnP/MC/20110610_1/ZJets/patTuple_skim_1_1_PtD.root',
     'rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElTnP/MC/20110610_1/ZJets/patTuple_skim_2_1_YXg.root',
     'rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElTnP/MC/20110610_1/ZJets/patTuple_skim_3_1_TyM.root',
