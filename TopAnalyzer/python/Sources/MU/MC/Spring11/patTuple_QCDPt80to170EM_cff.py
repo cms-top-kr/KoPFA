@@ -7,6 +7,5 @@ source = cms.Source("PoolSource",
     fileNames = readFiles
 )
 readFiles.extend([
-    ## "ElEl" in the path is due to typo while producing patTuple. This will be fixed after processing is finished.
-    'rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC/20110601_1/QCDPt80to170EM.root',
+    'rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MuMu/MC/20110610_1/QCDPt80to170EM.root',
 ])
