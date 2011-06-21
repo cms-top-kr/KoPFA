@@ -82,7 +82,7 @@ TH2F* getResponseM( vector<std::string> mcPath, vector<std::string> rdPath, stri
   return h2_response_m;
 }
 
-TH1F* getGenDistHisto( vector<std::string> mcPath, vector<std::string> rdPath, string cutStep, vector<TString> decayMode, TString name ){
+TH1F* getGenDistHisto( vector<std::string> mcPath, vector<std::string> rdPath, string cutStep, vector<TString> decayMode, double scale, TString name ){
 
   float genBins[] = {0, 350, 400, 450, 500,  550, 600, 700, 800, 1400};
 
@@ -102,7 +102,14 @@ TH1F* getGenDistHisto( vector<std::string> mcPath, vector<std::string> rdPath, s
     TH1F *hGenDistTemp = new TH1F(Form("hGenDisTemp_%s_%s",name.Data(),decayMode[i].Data()),"h_genTTbar",nGen,genBins);
     tree->Project(Form("hGenDisTemp_%s_%s",name.Data(),decayMode[i].Data()),"genttbarM", cut,"",entries/2, entries/2);  
 
+    hGenDistTemp->Scale(scale*2);
     hGen->Add(hGenDistTemp);
+  }
+
+  //put statistical error
+  for(int i=0; i < nGen ; i++){
+    double err = sqrt(hGen->GetBinContent(i+1))*sqrt(scale*2) ;
+    hGen->SetBinError(i+1,err);
   }
 
   return hGen;

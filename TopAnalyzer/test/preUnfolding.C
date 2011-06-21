@@ -34,11 +34,13 @@ void preUnfolding(){
   rdPath.push_back("MuMu_204/MuMu.root");
 
   const std::string cutStep = "Step_7";
-
+  double scale = 204.2/6349.2; 
+ 
   TH2F * h2ResponseM = getResponseM(mcPath, rdPath, cutStep,  "ttbar.M()", decayMode, "vsum");
-  TH1F * hData = getMeasuredHisto(rdPath, cutStep);
-  //TH1F * hData = getMeasuredHistoPseudo(mcPath, rdPath, cutStep, "ttbar.M()", decayMode, 204.2/6349.2, "vsum");
-  TH1F * hGenDist = getGenDistHisto(mcPath, rdPath, cutStep, decayMode, "vsum");
+  //TH1F * hData = getMeasuredHisto(rdPath, cutStep);
+
+  TH1F * hData = getMeasuredHistoPseudo(mcPath, rdPath, cutStep, "ttbar.M()", decayMode, scale, "vsum");
+  TH1F * hGenDist = getGenDistHisto(mcPath, rdPath, cutStep, decayMode, scale,  "vsum");
   TH1F * hAccept =  getAcceptanceHisto(mcPath, rdPath, cutStep,  decayMode, "vsum");
   TGraphAsymmErrors*  gAccept =  getAcceptance(mcPath, rdPath, cutStep, decayMode, "vsum");
 
