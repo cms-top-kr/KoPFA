@@ -14,7 +14,7 @@
 #include <iomanip>
 #include <iostream>
 
-TH1F* getMeasuredHistoPseudo( vector<std::string> mcPath, vector<std::string> rdPath, string cutStep, TString var,  vector<TString> decayMode , double frac){
+TH1F* getMeasuredHistoPseudo( vector<std::string> mcPath, vector<std::string> rdPath, string cutStep, TString var,  vector<TString> decayMode , double frac, TString name){
 
   float detBins[] = {0, 350, 400, 450, 500,  550, 600, 700, 800, 1400};
 
@@ -30,10 +30,8 @@ TH1F* getMeasuredHistoPseudo( vector<std::string> mcPath, vector<std::string> rd
     TTree * tree = (TTree *) file->Get(decayMode[i]+"/tree");
 
     int entries = tree->GetEntries();
-
-    TH1F* hDataTemp = new TH1F(Form("hDataTemp_%s_%s",var.Data(),decayMode[i].Data()),"hDataTemp",nDet,detBins);
-    tree->Project(Form("hDataTemp_%s_%s",var.Data(),decayMode[i].Data()),Form("%s",var.Data()), cut,"",entries*frac, 0);
-
+    TH1F* hDataTemp = new TH1F(Form("hDataTemp_%s_%s",name.Data(),decayMode[i].Data()),"hDataTemp",nDet,detBins);
+    tree->Project(Form("hDataTemp_%s_%s",name.Data(),decayMode[i].Data()),Form("%s",var.Data()), cut,"",entries*frac, 0);
     hData->Add(hDataTemp);
   }
 
