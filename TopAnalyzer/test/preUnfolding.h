@@ -123,6 +123,45 @@ TH1F* getAcceptanceHisto(vector<std::string> mcPath, vector<std::string> rdPath,
     tree->Project(Form("hNumTemp_%s_%s",name.Data(), decayMode[i].Data()), "genttbarM", cut);
     hNum->Add(hNumTemp);
     cout << hNumTemp->GetEntries() << endl;
+
+    TGraphAsymmErrors* grpAcceptTmp = new TGraphAsymmErrors();
+
+    cout << "decay: " << decayMode[i].Data() << endl;
+
+    for(int j=0; j < nGen; j++){
+      int bin = j+1;
+      double acc = hNumTemp->GetBinContent(bin)/hDen->GetBinContent(bin);
+      double center = hNumTemp->GetBinCenter(bin);
+      double width = hNumTemp->GetBinWidth(bin);
+      double err = sqrt(hNumTemp->GetBinContent(bin))/hDen->GetBinContent(bin);
+
+      grpAcceptTmp->SetPoint(j, center, acc );
+      grpAcceptTmp->SetPointEXhigh(j, width/2);
+      grpAcceptTmp->SetPointEXlow(j, width/2);
+      grpAcceptTmp->SetPointEYhigh(j, err);
+      grpAcceptTmp->SetPointEYlow(j, err);
+
+      cout << "accept= " << setprecision(4) << acc*100 << " $\\pm$ " << err*100 << endl;
+    }
+    cout << "all bins= " << setprecision(4) << 100*hNumTemp->GetEntries()/hDen->GetEntries() << " $\\pm$ " << 100*sqrt(hNumTemp->GetEntries())/hDen->GetEntries() << endl;
+
+    TCanvas *c_accTmp = new TCanvas(Form("c_acc_%s_%s",decayMode[i].Data(), name.Data()),"acceptance",1);
+    grpAcceptTmp->Draw("2AP");
+    grpAcceptTmp->SetFillColor(4);
+    grpAcceptTmp->SetFillStyle(3001);
+    grpAcceptTmp->SetTitle("Aceeptance ;Generator level M(t#bar{t});Acceptance ");
+    grpAcceptTmp->SetMinimum(0);
+
+    TLatex *labelTmp= new TLatex;
+    labelTmp->SetNDC();
+    labelTmp->SetTextSize(0.05);
+
+    if( decayMode[i].Contains("MuEl") ) labelTmp->DrawLatex(0.70,0.68,"e#mu");
+    if( decayMode[i].Contains("MuMu") ) labelTmp->DrawLatex(0.70,0.68,"#mu#mu");
+    if( decayMode[i].Contains("ElEl") ) labelTmp->DrawLatex(0.70,0.68,"ee");
+
+    c_accTmp->Print(Form("c_accept_%s_%s.eps",decayMode[i].Data(),name.Data()));
+
   }
   cout << hDen->GetEntries() << endl;
 
@@ -145,8 +184,9 @@ TH1F* getAcceptanceHisto(vector<std::string> mcPath, vector<std::string> rdPath,
     grpAccept->SetPointEYhigh(i, err);
     grpAccept->SetPointEYlow(i, err);
 
-    cout << "accept= " << setprecision(4) << acc*100 << " +- " << err*100 << endl;
+    cout << "accept= " << setprecision(4) << acc*100 << " $\\pm$ " << err*100 << endl;
   }
+  cout << "all bins= " << setprecision(4) << 100*hNum->GetEntries()/hDen->GetEntries() << " $\\pm$ " << 100*sqrt(hNum->GetEntries())/hDen->GetEntries() << endl;
 
   TCanvas *c_acc = new TCanvas(Form("c_acc_%s",name.Data()),"acceptance",1);
   grpAccept->Draw("2AP");
@@ -159,20 +199,9 @@ TH1F* getAcceptanceHisto(vector<std::string> mcPath, vector<std::string> rdPath,
   label->SetNDC();
   label->SetTextSize(0.05);
 
-  if( decayMode.size() == 1){
-    if( decayMode[0].Contains("MuEl") )
-      label->DrawLatex(0.70,0.68,"e#mu");
-    if( decayMode[0].Contains("MuMu") )
-      label->DrawLatex(0.70,0.68,"#mu#mu");
-    if( decayMode[0].Contains("ElEl") )
-      label->DrawLatex(0.70,0.68,"ee");
-    c_acc->Print(Form("c_accept_%s_%s.eps",decayMode[0].Data(),name.Data()));
-  } else {
-    label->DrawLatex(0.70,0.68,"ee/#mu#mu/e#mu");
-    c_acc->Print(Form("c_accept_all_%s.eps",name.Data()));
-  }
+  label->DrawLatex(0.70,0.68,"ee/#mu#mu/e#mu");
+  c_acc->Print(Form("c_accept_all_%s.eps",name.Data()));
 
-  cout << "all bins= " << setprecision(4) << 100*hNum->GetEntries()/hDen->GetEntries() << " +- " << 100*sqrt(hNum->GetEntries())/hDen->GetEntries() << endl;
   return hAccept;
 
 }
