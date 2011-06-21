@@ -15,7 +15,7 @@
 #include <iomanip>
 #include <iostream>
 
-void unfoldingPlot(TH1* h_gen, TH1* h_rec, TH2* m, TH1* h_mea, TH1* h_genTTbar, TH1F* accept, double scale_ttbar, TString name, double lumi, int k, RooUnfold::ErrorTreatment & err, bool print, bool pseudo){
+void unfoldingPlot(TH1* h_gen, TH1* h_rec, TH2* m, TH1* h_mea, TH1* h_genTTbar, TH1F* accept, TString name, double lumi, int k, RooUnfold::ErrorTreatment & err, bool print, bool pseudo){
 
   RooUnfoldResponse *response = new RooUnfoldResponse(h_rec, h_gen, m);
 
@@ -39,7 +39,6 @@ void unfoldingPlot(TH1* h_gen, TH1* h_rec, TH2* m, TH1* h_mea, TH1* h_genTTbar, 
   TCanvas *c = new TCanvas(Form("c_unfold_%s",name.Data()),Form("c_unfold_%s",name.Data()), 1);
   c->SetLogy();
   //unfolding
-  hgen->Scale(scale_ttbar);
   hgen->SetLineWidth(2);
   hgen->SetStats(0);
   hgen->SetTitle(""); 
@@ -95,7 +94,7 @@ void unfoldingPlot(TH1* h_gen, TH1* h_rec, TH2* m, TH1* h_mea, TH1* h_genTTbar, 
   //===============================================================================================
 
   //Toy Test =======================================================================================
-  TCanvas *c_toy =  new TCanvas(Form("c_toy_%s",name.Data()),Form("c_toy_%s",name.Data()),1);
+  TCanvas *c_toy =  new TCanvas(Form("c_toy_%s",name.Data()),Form("c_toy_%s",name.Data()),800,800);
   c_toy->Divide(3,3);
   float detBins[] = {0, 350, 400, 450, 500,  550, 600, 700, 800, 1400};
   int nDet = sizeof(detBins)/sizeof(float) - 1;
@@ -105,13 +104,19 @@ void unfoldingPlot(TH1* h_gen, TH1* h_rec, TH2* m, TH1* h_mea, TH1* h_genTTbar, 
   for(int i=0; i <9; i++){
      double center = hgen->GetBinContent(i+1);
      h[i] = new TH1F(Form("h%1.0f_%1.0f_%s",detBins[i],detBins[i+1],name.Data()), Form("h%1.0f_%1.0f_%s",detBins[i],detBins[i+1],name.Data()), 200, (center+10)-100,(center+10)+100);
+     //h[i] = new TH1F(Form("h%1.0f_%1.0f_%s",detBins[i],detBins[i+1],name.Data()), Form("h%1.0f_%1.0f_%s",detBins[i],detBins[i+1],name.Data()), 100,-1,1);
   } 
 
   for(int i=0 ; i <10000 ; i++){
+    double *chi2_ = 0;
+    //TH1* unfoldedToy =  unfold->Runtoy(RooUnfold::kCovariance,chi2_,hGen);
     TH1* unfoldedToy =  unfold->Runtoy();
     for(int j=0; j <9; j++){
       double rec_ = RooUnfoldResponse::GetBinContent(unfoldedToy,j+1,true);
+      double gen_ = hgen->GetBinContent(j+1);
+      double pull_ = (gen_ - rec_)/gen_;
       h[j]->Fill(rec_);
+      //h[j]->Fill(pull_);
     }
   }
   
@@ -126,6 +131,7 @@ void unfoldingPlot(TH1* h_gen, TH1* h_rec, TH2* m, TH1* h_mea, TH1* h_genTTbar, 
     gStyle->SetStatBorderSize(1);
     h[i]->SetTitle(Form("%1.0f-%1.0f GeV",detBins[i],detBins[i+1]));
     h[i]->GetXaxis()->SetTitle("Unfolded number of events");
+    //h[i]->GetXaxis()->SetTitle("N_{true}-N_{unfolded}/N_{true}");
     h[i]->GetYaxis()->SetTitle("Number of toy MC");
   }
 
@@ -137,7 +143,9 @@ void unfoldingPlot(TH1* h_gen, TH1* h_rec, TH2* m, TH1* h_mea, TH1* h_genTTbar, 
     double mass = (detBins[i+1] + detBins[i])/2;
     double meanerr = g[i]->GetParError(1);
     double sigmaerr = g[i]->GetParError(2);
-    cout <<  "point= " << mass <<  " MEAN= " <<  mean << " RMS= " << rms << " mean= " << mean << "(error= " << meanerr << ")" << " sigma= " << sigma << "(error= " << sigmaerr << ") " <<"\n";
+    cout << "$" << hgen->GetBinCenter(i+1)-hgen->GetBinWidth(i+1)/2 << "-" << hgen->GetBinCenter(i+1)+hgen->GetBinWidth(i+1)/2 << "$   ~&~ "
+         << setprecision (4) << mean << " $\\pm$ " << sigma 
+         << " \\\\" <<  endl;
   }
 
   //==================================================================================================
@@ -164,9 +172,9 @@ void unfoldingPlot(TH1* h_gen, TH1* h_rec, TH2* m, TH1* h_mea, TH1* h_genTTbar, 
   }
 
   cout << "Unfolded: evt number / sigma (fb)" << endl;  
-  TGraphAsymmErrors* dsigmaData = printFinal(nbins, h_unfold, accept, lumi, 1, false);
+  TGraphAsymmErrors* dsigmaData = printFinal(nbins, h_unfold, accept, lumi, false);
   cout << "Truth: evt number / sigma (fb)" << endl;
-  TGraphAsymmErrors* dsigmaTruth = printFinal(nbins, hgen, accept, lumi, scale_ttbar, true);
+  TGraphAsymmErrors* dsigmaTruth = printFinal(nbins, hgen, accept, lumi, true);
   TH1* hSigmaTruth = getSigmaTruth(hgen, accept, lumi);
  
   gerr->SetTitle(0);
@@ -180,6 +188,7 @@ void unfoldingPlot(TH1* h_gen, TH1* h_rec, TH2* m, TH1* h_mea, TH1* h_genTTbar, 
 
   //err before unfolding ===============================================================================
   TCanvas *c_meaerr = new TCanvas(Form("c_meaerr_%s",name.Data()),Form("c_meaerr_%s",name.Data()),1);
+  gerrbefore->SetTitle(0);
   gerrbefore->Draw("ALP");
   gerrbefore->SetMarkerStyle(20);
   gerrbefore->GetXaxis()->SetTitle("t#bar{t} invariant mass");
@@ -257,52 +266,7 @@ void unfoldingPlot(TH1* h_gen, TH1* h_rec, TH2* m, TH1* h_mea, TH1* h_genTTbar, 
   }
 }
 
-void massPlot(TH1* hgen, TH1* hrec, TH1* hmea, const double scale_ttbar){
-
-  TH1F *h1 = (TH1F*)hgen->Clone("h1");
-  TH1F *h2 = (TH1F*)hrec->Clone("h2");
-  TH1F *h3 = (TH1F*)hmea->Clone("h3");
-
-  TCanvas *c = new TCanvas("c","c", 1);
-  c->SetLogy();
-  h1->SetTitle("");
-  h1->SetLineColor(2);
-  h2->SetLineColor(3);
-  h3->SetMarkerSize(1.0);
-  h3->SetMarkerStyle(20);
-
-  h1->Scale(scale_ttbar);
-  h2->Scale(scale_ttbar);
-
-  //h1->SetMaximum(1000);
-  h1->Draw();
-  h2->Draw("same");
-  h3->Draw("same");
-  h1->SetStats(0);
-  h2->SetStats(0);
-  h3->SetStats(0);
-
-  int nbins = h3->GetNbinsX();
-  for(int i=1; i <=  nbins; i++){
-    std::cout << "[" << h3->GetBinCenter(i)-h3->GetBinWidth(i)/2 << "," << h3->GetBinCenter(i)+h3->GetBinWidth(i)/2 << "]" ;
-    std::cout << " : " << h3->GetBinError(i) << "/" <<h3->GetBinContent(i) << std::endl;
-  }
-
-
-  TLegend *l= new TLegend(0.60,0.60,0.8,0.8);
-  l->AddEntry(h1,"gen mass","l");
-  l->AddEntry(h2,"reco mass","l");
-  l->AddEntry(h3,"data mass","p");
-  l->SetTextSize(0.04);
-  l->SetFillColor(0);
-  l->SetLineColor(0);
-  l->Draw();
- 
-  c->Print("c_massPlot.eps");
-
-}
-
-TGraphAsymmErrors* printFinal( int nbins, TH1F* hgen, TH1F* accept, double lumi, double scale, bool truth ){
+TGraphAsymmErrors* printFinal( int nbins, TH1F* hgen, TH1F* accept, double lumi, bool truth ){
 
   TGraphAsymmErrors* dsigma = new TGraphAsymmErrors;
 
@@ -315,10 +279,8 @@ TGraphAsymmErrors* printFinal( int nbins, TH1F* hgen, TH1F* accept, double lumi,
     y = accept->GetBinContent(i); 
  
     double unfolded = hgen->GetBinContent(i);
-    double err = 0;
-    if(truth) err = sqrt(hgen->GetBinContent(i))*sqrt(scale) ;
-    else err = hgen->GetBinError(i);
-
+    double err = hgen->GetBinError(i); 
+ 
     double sigma = 1000*unfolded/( y * lumi * hgen->GetBinWidth(i) ) ;
     double sigmaErr = sigma*err/unfolded;
 

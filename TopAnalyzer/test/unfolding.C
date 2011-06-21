@@ -32,17 +32,14 @@ void unfolding(){
   
   bool print = true;
 
-  TFile * file = new TFile("AN-225/preUnfolding.root");
+  TFile * file = new TFile("preUnfolding.root");
   TH2F * h2ResponseM = (TH2F*) file->Get("h2_response_m");
   TH1F * hDataDist = (TH1F*) file->Get("hData");
   TH1F * hGenDist = (TH1F*) file->Get("hGen");
   TH1F * hAcceptDist = (TH1F*) file->Get("hAccept");
 
   double lumi = 204.2;
-  double genTTbar = 500000;
-  double lumiTTbar = genTTbar/157.5;
-  double scale = lumi/lumiTTbar;
-  bool print = true;
+  bool print = false;
   bool pseudo = false;
   int k = 3; //from 2 to 9
 
@@ -50,16 +47,16 @@ void unfolding(){
   //RooUnfold::ErrorTreatment err = RooUnfold::kCovToy;
   //RooUnfold::ErrorTreatment err = "RooUnfold::kErrors";
  
-  plot(h2ResponseM, hDataDist, hGenDist, hAcceptDist, "vsum", scale, lumi, k, err, print, pseudo); 
+  plot(h2ResponseM, hDataDist, hGenDist, hAcceptDist, "vsum", lumi, k, err, print, pseudo); 
 
 }
 
-void plot(TH2* h2_response_m, TH1F* hData, TH1F* hGenDist, TH1F* accept, const TString &var, const double & scale, const double & lumi, int & k, RooUnfold::ErrorTreatment& err, bool print, bool pseudo){
+void plot(TH2* h2_response_m, TH1F* hData, TH1F* hGenDist, TH1F* accept, const TString &var, const double & lumi, int & k, RooUnfold::ErrorTreatment& err, bool print, bool pseudo){
 
   const TH1* h_genMC = h2_response_m->ProjectionY();
   const TH1* h_recMC = h2_response_m->ProjectionX();
-
-  unfoldingPlot(h_genMC, h_recMC, h2_response_m,  hData, hGenDist, accept, scale, Form("%s",var.Data()), lumi, k, err, print, pseudo);
+ 
+  unfoldingPlot(h_genMC, h_recMC, h2_response_m,  hData, hGenDist, accept, Form("%s",var.Data()), lumi, k, err, print, pseudo);
 
 }
 
