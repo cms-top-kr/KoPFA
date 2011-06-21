@@ -14,11 +14,12 @@
 #include <iomanip>
 #include <iostream>
 
+float detBins[] = {0, 350, 400, 450, 500,  550, 600, 700, 800, 1400};
+int nDet = sizeof(detBins)/sizeof(float) - 1;
+float genBins[] = {0, 350, 400, 450, 500,  550, 600, 700, 800, 1400};
+int nGen = sizeof(genBins)/sizeof(float) - 1;
+
 TH1F* getMeasuredHistoPseudo( vector<std::string> mcPath, vector<std::string> rdPath, string cutStep, TString var,  vector<TString> decayMode , double frac, TString name){
-
-  float detBins[] = {0, 350, 400, 450, 500,  550, 600, 700, 800, 1400};
-
-  int nDet = sizeof(detBins)/sizeof(float) - 1;
 
   TH1F *hData = new TH1F("hData","hData",nDet,detBins);
 
@@ -40,10 +41,6 @@ TH1F* getMeasuredHistoPseudo( vector<std::string> mcPath, vector<std::string> rd
 
 TH1F* getMeasuredHisto( vector<std::string> rdPath, string cutStep){
 
-  float detBins[] = {0, 350, 400, 450, 500,  550, 600, 700, 800, 1400};
-
-  int nDet = sizeof(detBins)/sizeof(float) - 1;
-
   TH1F *hData = new TH1F("hData","hData",nDet,detBins);
 
   for(size_t i = 0; i < rdPath.size() ; i++){
@@ -56,12 +53,6 @@ TH1F* getMeasuredHisto( vector<std::string> rdPath, string cutStep){
 }
 
 TH2F* getResponseM( vector<std::string> mcPath, vector<std::string> rdPath, string cutStep, TString var,  vector<TString> decayMode , TString name){
-
-  float genBins[] = {0, 350, 400, 450, 500,  550, 600, 700, 800, 1400};
-  float detBins[] = {0, 350, 400, 450, 500,  550, 600, 700, 800, 1400};
-
-  int nGen = sizeof(genBins)/sizeof(float) - 1;
-  int nDet = sizeof(detBins)/sizeof(float) - 1;
 
   TH2F *h2_response_m = new TH2F("h2_response_m","h2_response_m",nDet,detBins,nGen,genBins);
 
@@ -83,10 +74,6 @@ TH2F* getResponseM( vector<std::string> mcPath, vector<std::string> rdPath, stri
 }
 
 TH1F* getGenDistHisto( vector<std::string> mcPath, vector<std::string> rdPath, string cutStep, vector<TString> decayMode, double scale, TString name ){
-
-  float genBins[] = {0, 350, 400, 450, 500,  550, 600, 700, 800, 1400};
-
-  int nGen = sizeof(genBins)/sizeof(float) - 1;
 
   TH1F *hGen = new TH1F("hGen","hGen",nGen,genBins);
 
@@ -116,64 +103,13 @@ TH1F* getGenDistHisto( vector<std::string> mcPath, vector<std::string> rdPath, s
 
 }
 
-TGraphAsymmErrors* getAcceptance(vector<std::string> mcPath, vector<std::string> rdPath, string cutStep, vector<TString> decayMode, TString name ){
-
-  TFile * fDen = new TFile("/data/export/common/Top/ntuple/ttbarGen.root");
-  TTree* genTreeDen = (TTree*)fDen->Get("ttbarGenAna/tree");
-
-  double binsMass[] = {0, 350, 400, 450, 500, 550, 600, 700, 800, 1400};
-  const int nBinsMass = sizeof(binsMass)/sizeof(binsMass[0]) - 1;
-
-  TH1F* hDen = new TH1F("hDen", "Denominator", nBinsMass, binsMass);
-  TH1F* hNum = new TH1F("hNum", "Numerator", nBinsMass, binsMass);
-
-  genTreeDen->Project("hDen", "ttbarGen.m()");
-
-  for(size_t i = 0; i < mcPath.size() ; i++){
-
-    TFile * f_data = new TFile(rdPath[i].c_str());
-    TCut cut((f_data->Get(Form("%s/cut", cutStep.c_str())))->GetTitle());
-
-    TFile * file = new TFile(mcPath[i].c_str());
-    TTree * tree = (TTree *) file->Get(decayMode[i]+"/tree");
-
-    TH1F* hNumTemp = new TH1F(Form("hNumTemp_%s_%s",name.Data(), decayMode[i].Data()), "Numerator", nBinsMass, binsMass);
-    tree->Project(Form("hNumTemp_%s_%s",name.Data(), decayMode[i].Data()), "genttbarM", cut);
-    hNum->Add(hNumTemp);
-    cout << hNum->GetEntries() << endl;
-  }
-  cout << hDen->GetEntries() << endl;
-
-  TGraphAsymmErrors* grpAccept = new TGraphAsymmErrors();
-
-  for(int i=0; i < nBinsMass; i++){
-    int bin = i+1;
-    double acc = hNum->GetBinContent(bin)/hDen->GetBinContent(bin);
-    double center = hNum->GetBinCenter(bin);
-    double width = hNum->GetBinWidth(bin);
-    double err = sqrt(hNum->GetBinContent(bin))/hDen->GetBinContent(bin);
-    grpAccept->SetPoint(i, center, acc );
-    grpAccept->SetPointEXhigh(i, width/2);
-    grpAccept->SetPointEXlow(i, width/2);
-    grpAccept->SetPointEYhigh(i, err);
-    grpAccept->SetPointEYlow(i, err);
-    cout << "accept= " << setprecision(4) << acc*100 << " +- " << err*100 << endl;
-  }
-  cout << "all bins= " << setprecision(4) << 100*hNum->GetEntries()/hDen->GetEntries() << " +- " << 100*sqrt(hNum->GetEntries())/hDen->GetEntries() << endl;
-  return grpAccept;
-
-}
-
 TH1F* getAcceptanceHisto(vector<std::string> mcPath, vector<std::string> rdPath, string cutStep, vector<TString> decayMode, TString name ){
 
   TFile * fDen = new TFile("/data/export/common/Top/ntuple/ttbarGen.root");
   TTree* genTreeDen = (TTree*)fDen->Get("ttbarGenAna/tree");
 
-  double binsMass[] = {0, 350, 400, 450, 500, 550, 600, 700, 800, 1400};
-  const int nBinsMass = sizeof(binsMass)/sizeof(binsMass[0]) - 1;
-
-  TH1F* hDen = new TH1F("hDen", "Denominator", nBinsMass, binsMass);
-  TH1F* hNum = new TH1F("hNum", "Numerator", nBinsMass, binsMass);
+  TH1F* hDen = new TH1F("hDen", "Denominator", nGen, genBins);
+  TH1F* hNum = new TH1F("hNum", "Numerator", nGen, genBins);
 
   genTreeDen->Project("hDen", "ttbarGen.m()");
 
@@ -183,7 +119,7 @@ TH1F* getAcceptanceHisto(vector<std::string> mcPath, vector<std::string> rdPath,
     TCut cut((f_data->Get(Form("%s/cut", cutStep.c_str())))->GetTitle());
     TFile * file = new TFile(mcPath[i].c_str());
     TTree * tree = (TTree *) file->Get(decayMode[i]+"/tree");
-    TH1F* hNumTemp = new TH1F(Form("hNumTemp_%s_%s",name.Data(), decayMode[i].Data()), "Numerator", nBinsMass, binsMass);
+    TH1F* hNumTemp = new TH1F(Form("hNumTemp_%s_%s",name.Data(), decayMode[i].Data()), "Numerator", nGen, genBins);
     tree->Project(Form("hNumTemp_%s_%s",name.Data(), decayMode[i].Data()), "genttbarM", cut);
     hNum->Add(hNumTemp);
     cout << hNumTemp->GetEntries() << endl;
@@ -191,9 +127,9 @@ TH1F* getAcceptanceHisto(vector<std::string> mcPath, vector<std::string> rdPath,
   cout << hDen->GetEntries() << endl;
 
   TGraphAsymmErrors* grpAccept = new TGraphAsymmErrors();
-  TH1F *hAccept = new TH1F("hAccept","hAccept",nBinsMass, binsMass);
+  TH1F *hAccept = new TH1F("hAccept","hAccept",nGen, genBins);
 
-  for(int i=0; i < nBinsMass; i++){
+  for(int i=0; i < nGen; i++){
     int bin = i+1;
     double acc = hNum->GetBinContent(bin)/hDen->GetBinContent(bin);
     double center = hNum->GetBinCenter(bin);

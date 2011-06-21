@@ -42,7 +42,6 @@ void preUnfolding(){
   TH1F * hData = getMeasuredHistoPseudo(mcPath, rdPath, cutStep, "ttbar.M()", decayMode, scale, "vsum");
   TH1F * hGenDist = getGenDistHisto(mcPath, rdPath, cutStep, decayMode, scale,  "vsum");
   TH1F * hAccept =  getAcceptanceHisto(mcPath, rdPath, cutStep,  decayMode, "vsum");
-  TGraphAsymmErrors*  gAccept =  getAcceptance(mcPath, rdPath, cutStep, decayMode, "vsum");
 
   TFile* f = TFile::Open("preUnfolding.root", "recreate");
 
@@ -50,7 +49,6 @@ void preUnfolding(){
   hData->Write();
   hGenDist->Write();
   hAccept->Write();
-  gAccept->Write();
 
   f->Write();  
   f->Close();
