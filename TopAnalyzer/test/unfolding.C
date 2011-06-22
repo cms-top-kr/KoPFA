@@ -23,8 +23,9 @@
 #include "unfold/RooUnfold-1.0.3/src/RooUnfoldInvert.h"
 
 #include "unfolding.h"
+vector<double> chi2;
 
-void unfolding(){
+void unfolding(int k=3){
 
   gSystem->Load("libFWCoreFWLite.so");
   gROOT->LoadMacro("tdrstyle.C");
@@ -41,14 +42,23 @@ void unfolding(){
   double lumi = 204.2;
   bool print = false;
   bool pseudo = false;
-  int k = 3; //from 2 to 9
 
-  RooUnfold::ErrorTreatment err = "RooUnfold::kCovariance";
-  //RooUnfold::ErrorTreatment err = RooUnfold::kCovToy;
-  //RooUnfold::ErrorTreatment err = "RooUnfold::kErrors";
- 
+  RooUnfold::ErrorTreatment err = RooUnfold::kNoError;  //0
+  //RooUnfold::ErrorTreatment err = RooUnfold::kErrors;  //1
+  //RooUnfold::ErrorTreatment err = RooUnfold::kCovariance; //2
+  //RooUnfold::ErrorTreatment err = RooUnfold::kCovToy; //3
+
   plot(h2ResponseM, hDataDist, hGenDist, hAcceptDist, "vsum", lumi, k, err, print, pseudo); 
+  
+  //chi2 test
+  //int n = 5;
+  //for(int i=1; i <=n ;i++){
+  //  plot(h2ResponseM, hDataDist, hGenDist, hAcceptDist, "vsum", lumi, i, err, print, pseudo); 
+  //}
 
+  //for(int i=0; i<n ;i++){
+  //  cout << "k term= " << i+1 << " : " << chi2[i] << endl;
+  //}
 }
 
 void plot(TH2* h2_response_m, TH1F* hData, TH1F* hGenDist, TH1F* accept, const TString &var, const double & lumi, int & k, RooUnfold::ErrorTreatment& err, bool print, bool pseudo){

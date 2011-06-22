@@ -50,8 +50,6 @@ void unfoldingPlot(TH1* h_gen, TH1* h_rec, TH2* m, TH1* h_mea, TH1* h_genTTbar, 
   unfold = new RooUnfoldSvd(response, h_mea, k);   // OR
   //unfold = new RooUnfoldBinByBin(response, h_mea);
   //unfold = new RooUnfoldInvert(response, h_mea);
-  unfold->RooUnfoldSvd::SetNtoysSVD(1000);
-  cout << "n. of toys= " << unfold->RooUnfoldSvd::GetNtoysSVD() << endl;
   TH1F* h_unfold = (TH1F*) unfold->Hreco(err);
   //TH1F* h_unfold = (TH1F*) unfold->Hreco(RooUnfold::kCovToy);
  
@@ -94,60 +92,64 @@ void unfoldingPlot(TH1* h_gen, TH1* h_rec, TH2* m, TH1* h_mea, TH1* h_genTTbar, 
   //===============================================================================================
 
   //Toy Test =======================================================================================
-  TCanvas *c_toy =  new TCanvas(Form("c_toy_%s",name.Data()),Form("c_toy_%s",name.Data()),800,800);
-  c_toy->Divide(3,3);
-  float detBins[] = {0, 350, 400, 450, 500,  550, 600, 700, 800, 1400};
-  int nDet = sizeof(detBins)/sizeof(float) - 1;
+  bool toy=false;
+  if(toy){
+    unfold->RooUnfoldSvd::SetNtoysSVD(1000);
+    cout << "n. of toys= " << unfold->RooUnfoldSvd::GetNtoysSVD() << endl;
+    TCanvas *c_toy =  new TCanvas(Form("c_toy_%s",name.Data()),Form("c_toy_%s",name.Data()),800,800);
+    c_toy->Divide(3,3);
+    float detBins[] = {0, 350, 400, 450, 500,  550, 600, 700, 800, 1400};
+    int nDet = sizeof(detBins)/sizeof(float) - 1;
 
-  TH1 *h[9];
-  TF1 *g[9];
-  for(int i=0; i <9; i++){
-     double center = hgen->GetBinContent(i+1);
-     h[i] = new TH1F(Form("h%1.0f_%1.0f_%s",detBins[i],detBins[i+1],name.Data()), Form("h%1.0f_%1.0f_%s",detBins[i],detBins[i+1],name.Data()), 200, (center+10)-100,(center+10)+100);
-     //h[i] = new TH1F(Form("h%1.0f_%1.0f_%s",detBins[i],detBins[i+1],name.Data()), Form("h%1.0f_%1.0f_%s",detBins[i],detBins[i+1],name.Data()), 100,-1,1);
-  } 
+    TH1 *h[9];
+    TF1 *g[9];
+    for(int i=0; i <9; i++){
+       double center = hgen->GetBinContent(i+1);
+       h[i] = new TH1F(Form("h%1.0f_%1.0f_%s",detBins[i],detBins[i+1],name.Data()), Form("h%1.0f_%1.0f_%s",detBins[i],detBins[i+1],name.Data()), 200, (center+10)-100,(center+10)+100);
+       //h[i] = new TH1F(Form("h%1.0f_%1.0f_%s",detBins[i],detBins[i+1],name.Data()), Form("h%1.0f_%1.0f_%s",detBins[i],detBins[i+1],name.Data()), 100,-1,1);
+    } 
 
-  for(int i=0 ; i <10000 ; i++){
-    double *chi2_ = 0;
-    //TH1* unfoldedToy =  unfold->Runtoy(RooUnfold::kCovariance,chi2_,hGen);
-    TH1* unfoldedToy =  unfold->Runtoy();
-    for(int j=0; j <9; j++){
-      double rec_ = RooUnfoldResponse::GetBinContent(unfoldedToy,j+1,true);
-      double gen_ = hgen->GetBinContent(j+1);
-      double pull_ = (gen_ - rec_)/gen_;
-      h[j]->Fill(rec_);
-      //h[j]->Fill(pull_);
+    for(int i=0 ; i < 10000 ; i++){
+      double *chi2_ = 0;
+      //TH1* unfoldedToy =  unfold->Runtoy(RooUnfold::kCovariance,chi2_,hGen);
+      TH1* unfoldedToy =  unfold->Runtoy();
+      for(int j=0; j <9; j++){
+        double rec_ = RooUnfoldResponse::GetBinContent(unfoldedToy,j+1,true);
+        double gen_ = hgen->GetBinContent(j+1);
+        double pull_ = (gen_ - rec_)/gen_;
+        h[j]->Fill(rec_);
+        //h[j]->Fill(pull_);
+      }
+    }
+  
+    for(int i=0; i<9; i++){
+      c_toy->cd(i+1);
+      h[i]->Fit("gaus");
+      g[i]  = h[i]->GetFunction("gaus");
+      h[i]->Draw();
+      gStyle->SetStatH(0.4);
+      gStyle->SetStatW(0.2);
+      gStyle->SetStatFontSize(0.05);
+      gStyle->SetStatBorderSize(1);
+      h[i]->SetTitle(Form("%1.0f-%1.0f GeV",detBins[i],detBins[i+1]));
+      h[i]->GetXaxis()->SetTitle("Unfolded number of events");
+      //h[i]->GetXaxis()->SetTitle("N_{true}-N_{unfolded}/N_{true}");
+      h[i]->GetYaxis()->SetTitle("Number of toy MC");
+    }
+
+    for(int i=0; i<9; i++){
+      double Mean = h[i]->GetMean();
+      double rms = h[i]->GetRMS();
+      double mean = g[i]->GetParameter(1);
+      double sigma = g[i]->GetParameter(2);
+      double mass = (detBins[i+1] + detBins[i])/2;
+      double meanerr = g[i]->GetParError(1);
+      double sigmaerr = g[i]->GetParError(2);
+      cout << "$" << hgen->GetBinCenter(i+1)-hgen->GetBinWidth(i+1)/2 << "-" << hgen->GetBinCenter(i+1)+hgen->GetBinWidth(i+1)/2 << "$   ~&~ "
+           << setprecision (4) << mean << " $\\pm$ " << sigma 
+           << " \\\\" <<  endl;
     }
   }
-  
-  for(int i=0; i<9; i++){
-    c_toy->cd(i+1);
-    h[i]->Fit("gaus");
-    g[i]  = h[i]->GetFunction("gaus");
-    h[i]->Draw();
-    gStyle->SetStatH(0.4);
-    gStyle->SetStatW(0.2);
-    gStyle->SetStatFontSize(0.05);
-    gStyle->SetStatBorderSize(1);
-    h[i]->SetTitle(Form("%1.0f-%1.0f GeV",detBins[i],detBins[i+1]));
-    h[i]->GetXaxis()->SetTitle("Unfolded number of events");
-    //h[i]->GetXaxis()->SetTitle("N_{true}-N_{unfolded}/N_{true}");
-    h[i]->GetYaxis()->SetTitle("Number of toy MC");
-  }
-
-  for(int i=0; i<9; i++){
-    double Mean = h[i]->GetMean();
-    double rms = h[i]->GetRMS();
-    double mean = g[i]->GetParameter(1);
-    double sigma = g[i]->GetParameter(2);
-    double mass = (detBins[i+1] + detBins[i])/2;
-    double meanerr = g[i]->GetParError(1);
-    double sigmaerr = g[i]->GetParError(2);
-    cout << "$" << hgen->GetBinCenter(i+1)-hgen->GetBinWidth(i+1)/2 << "-" << hgen->GetBinCenter(i+1)+hgen->GetBinWidth(i+1)/2 << "$   ~&~ "
-         << setprecision (4) << mean << " $\\pm$ " << sigma 
-         << " \\\\" <<  endl;
-  }
-
   //==================================================================================================
 
   //err after unfolding =============================================================================
@@ -241,9 +243,11 @@ void unfoldingPlot(TH1* h_gen, TH1* h_rec, TH2* m, TH1* h_mea, TH1* h_genTTbar, 
   label->DrawLatex(0.47,0.88,Form("%1.0f pb^{-1} at #sqrt{s} = 7 TeV",lumi));
   //======================================================================================================================  
 
-  cout << "chi2(kErrors) : " << unfold->Chi2(hgen, RooUnfold::kErrors) << endl;
-  cout << "chi2(kCovariance) : " << unfold->Chi2(hgen, RooUnfold::kCovariance) << endl;
+  //Printing chi2
+  chi2.push_back(unfold->Chi2(hgen, err)); 
+  cout << "chi2 : " << unfold->Chi2(hgen, err) << endl;
 
+  //Saving canvas 
   if(print){
     c_response->Print(Form("cUF_response_%s.eps",name.Data()));
     c->Print(Form("cUF_unfold_%s.eps",name.Data()));
