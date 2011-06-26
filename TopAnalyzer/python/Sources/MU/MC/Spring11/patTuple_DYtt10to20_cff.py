@@ -6,7 +6,9 @@ source = cms.Source("PoolSource",
     duplicateCheckMode = cms.untracked.string("noDuplicateCheck"),
     fileNames = readFiles
 )
-
 readFiles.extend([
-    'rfio:/castor/cern.ch/user/j/jhgoh/TopAnalysis/pf2pat/MuMu/MC/20110603/DYtt10to20.root',
+    "rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MuMu/MC/20110620_2/DYtt10to20_1/patTuple_skim_1_1_Sdi.root",
+    "rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MuMu/MC/20110620_2/DYtt10to20_1/patTuple_skim_2_1_Zgp.root",
+    "rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MuMu/MC/20110620_2/DYtt10to20_1/patTuple_skim_3_1_GUa.root",
+    "rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MuMu/MC/20110620_2/DYtt10to20_1/patTuple_skim_4_1_Tik.root",
 ])

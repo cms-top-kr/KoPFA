@@ -6,15 +6,14 @@ source = cms.Source("PoolSource",
     duplicateCheckMode = cms.untracked.string("noDuplicateCheck"),
     fileNames = readFiles
 )
-
 readFiles.extend([
-    'rfio:/castor/cern.ch/user/j/jhgoh/TopAnalysis/pf2pat/MuMu/MC/20110603/SingleTop_tW/patTuple_skim_1_1_LYR.root',
-    'rfio:/castor/cern.ch/user/j/jhgoh/TopAnalysis/pf2pat/MuMu/MC/20110603/SingleTop_tW/patTuple_skim_2_1_QtN.root',
-    'rfio:/castor/cern.ch/user/j/jhgoh/TopAnalysis/pf2pat/MuMu/MC/20110603/SingleTop_tW/patTuple_skim_3_1_KmZ.root',
-    'rfio:/castor/cern.ch/user/j/jhgoh/TopAnalysis/pf2pat/MuMu/MC/20110603/SingleTop_tW/patTuple_skim_4_1_4Uz.root',
-    'rfio:/castor/cern.ch/user/j/jhgoh/TopAnalysis/pf2pat/MuMu/MC/20110603/SingleTop_tW/patTuple_skim_5_1_dUI.root',
-    'rfio:/castor/cern.ch/user/j/jhgoh/TopAnalysis/pf2pat/MuMu/MC/20110603/SingleTop_tW/patTuple_skim_6_1_R2O.root',
-    'rfio:/castor/cern.ch/user/j/jhgoh/TopAnalysis/pf2pat/MuMu/MC/20110603/SingleTop_tW/patTuple_skim_7_1_g4w.root',
-    'rfio:/castor/cern.ch/user/j/jhgoh/TopAnalysis/pf2pat/MuMu/MC/20110603/SingleTop_tW/patTuple_skim_8_1_bwA.root',
-    'rfio:/castor/cern.ch/user/j/jhgoh/TopAnalysis/pf2pat/MuMu/MC/20110603/SingleTop_tW/patTuple_skim_9_1_PHy.root',
+    "rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MuMu/MC/20110620_2/SingleTop_tW_2/patTuple_skim_1_2_han.root",
+    "rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MuMu/MC/20110620_2/SingleTop_tW_2/patTuple_skim_2_2_wsh.root",
+    "rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MuMu/MC/20110620_2/SingleTop_tW_2/patTuple_skim_3_2_xRz.root",
+    "rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MuMu/MC/20110620_2/SingleTop_tW_2/patTuple_skim_4_2_rJu.root",
+    "rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MuMu/MC/20110620_2/SingleTop_tW_2/patTuple_skim_5_2_Fcf.root",
+    "rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MuMu/MC/20110620_2/SingleTop_tW_2/patTuple_skim_6_2_j9V.root",
+    "rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MuMu/MC/20110620_2/SingleTop_tW_2/patTuple_skim_7_2_HuP.root",
+    "rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MuMu/MC/20110620_2/SingleTop_tW_2/patTuple_skim_8_2_81C.root",
+    "rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MuMu/MC/20110620_2/SingleTop_tW_2/patTuple_skim_9_2_Ik4.root",
 ])

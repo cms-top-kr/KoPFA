@@ -1,3 +1,15 @@
+################################################################################
+### Duplicated file entry found in the directory /castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MuEl/MC/20110620_2/DYtt20to50_1
+### File index = 2
+################################################################################
+################################################################################
+### Duplicated file entry found in the directory /castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MuEl/MC/20110620_2/DYtt20to50_1
+### File index = 2
+################################################################################
+################################################################################
+### Duplicated file entry found in the directory /castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MuEl/MC/20110620_2/DYtt20to50_1
+### File index = 3
+################################################################################
 import FWCore.ParameterSet.Config as cms
 
 readFiles = cms.untracked.vstring()
@@ -6,7 +18,10 @@ source = cms.Source("PoolSource",
     duplicateCheckMode = cms.untracked.string("noDuplicateCheck"),
     fileNames = readFiles
 )
-
 readFiles.extend([
-    'rfio:/castor/cern.ch/user/j/jhgoh/TopAnalysis/pf2pat/MuEl/MC/20110603/DYtt20to50.root',
+    "rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MuEl/MC/20110620_2/DYtt20to50_1/patTuple_skim_1_1_EBO.root",
+    "rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MuEl/MC/20110620_2/DYtt20to50_1/patTuple_skim_2_5_Ldd.root",
+    "rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MuEl/MC/20110620_2/DYtt20to50_1/patTuple_skim_3_5_Nte.root",
+    "rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MuEl/MC/20110620_2/DYtt20to50_1/patTuple_skim_4_2_MiS.root",
+    "rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MuEl/MC/20110620_2/DYtt20to50_1/patTuple_skim_5_2_wv8.root",
 ])
