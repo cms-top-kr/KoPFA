@@ -42,7 +42,8 @@ process.out = cms.OutputModule("PoolOutputModule",
 
 ## Standard PAT Configuration File
 process.load("PhysicsTools.PatAlgos.patSequences_cff")
-process.load("PhysicsTools.PFCandProducer.PF2PAT_cff")
+#process.load("PhysicsTools.PFCandProducer.PF2PAT_cff") # for CMSSW_3_8_X
+process.load("CommonTools.ParticleFlow.PF2PAT_cff") # for CMSSW_4_2_X
 
 process.pfPileUp.Enable = True #enable for test, Aug 30
 
