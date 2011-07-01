@@ -1,0 +1,43 @@
+import FWCore.ParameterSet.Config as cms
+
+readFiles = cms.untracked.vstring()
+source = cms.Source("PoolSource",
+    noEventSort = cms.untracked.bool(True),
+    duplicateCheckMode = cms.untracked.string("noDuplicateCheck"),
+    fileNames = readFiles
+)
+readFiles.extend([
+    "rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC/20110621_1/TTbarTuneZ2_3/patTuple_skim_1_2_k1n.root",
+    "rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC/20110621_1/TTbarTuneZ2_3/patTuple_skim_2_1_Sjb.root",
+    "rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC/20110621_1/TTbarTuneZ2_3/patTuple_skim_3_0_SQZ.root",
+    "rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC/20110621_1/TTbarTuneZ2_3/patTuple_skim_4_0_DeV.root",
+    "rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC/20110621_1/TTbarTuneZ2_3/patTuple_skim_5_0_xUU.root",
+    "rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC/20110621_1/TTbarTuneZ2_3/patTuple_skim_6_0_Zld.root",
+    "rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC/20110621_1/TTbarTuneZ2_3/patTuple_skim_7_1_bTV.root",
+    "rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC/20110621_1/TTbarTuneZ2_3/patTuple_skim_8_0_dOs.root",
+    "rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC/20110621_1/TTbarTuneZ2_3/patTuple_skim_9_1_RWx.root",
+    "rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC/20110621_1/TTbarTuneZ2_3/patTuple_skim_10_0_CBb.root",
+    "rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC/20110621_1/TTbarTuneZ2_3/patTuple_skim_11_0_9YN.root",
+    "rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC/20110621_1/TTbarTuneZ2_3/patTuple_skim_12_0_GpA.root",
+    "rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC/20110621_1/TTbarTuneZ2_3/patTuple_skim_13_0_Imj.root",
+    "rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC/20110621_1/TTbarTuneZ2_3/patTuple_skim_14_0_mRT.root",
+    "rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC/20110621_1/TTbarTuneZ2_3/patTuple_skim_15_0_0B5.root",
+    "rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC/20110621_1/TTbarTuneZ2_3/patTuple_skim_16_0_H27.root",
+    "rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC/20110621_1/TTbarTuneZ2_3/patTuple_skim_17_0_Ol3.root",
+    "rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC/20110621_1/TTbarTuneZ2_3/patTuple_skim_18_0_0uU.root",
+    "rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC/20110621_1/TTbarTuneZ2_3/patTuple_skim_19_0_MMn.root",
+    "rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC/20110621_1/TTbarTuneZ2_3/patTuple_skim_20_0_mMX.root",
+    "rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC/20110621_1/TTbarTuneZ2_3/patTuple_skim_21_0_Pjs.root",
+    "rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC/20110621_1/TTbarTuneZ2_3/patTuple_skim_22_0_I1C.root",
+    "rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC/20110621_1/TTbarTuneZ2_3/patTuple_skim_23_0_N1k.root",
+    "rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC/20110621_1/TTbarTuneZ2_3/patTuple_skim_24_0_KPH.root",
+    "rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC/20110621_1/TTbarTuneZ2_3/patTuple_skim_25_0_kfK.root",
+    "rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC/20110621_1/TTbarTuneZ2_3/patTuple_skim_26_0_Y7k.root",
+    "rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC/20110621_1/TTbarTuneZ2_3/patTuple_skim_27_0_Xh5.root",
+    "rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC/20110621_1/TTbarTuneZ2_3/patTuple_skim_28_0_tVe.root",
+    "rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC/20110621_1/TTbarTuneZ2_3/patTuple_skim_29_0_76b.root",
+    "rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC/20110621_1/TTbarTuneZ2_3/patTuple_skim_30_0_j0r.root",
+    "rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC/20110621_1/TTbarTuneZ2_3/patTuple_skim_31_0_SM9.root",
+    "rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC/20110621_1/TTbarTuneZ2_3/patTuple_skim_32_0_2HV.root",
+    "rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC/20110621_1/TTbarTuneZ2_3/patTuple_skim_33_0_yXD.root",
+])
