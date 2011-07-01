@@ -15,10 +15,9 @@
 #include <iomanip>
 #include <iostream>
 
-//double binsMass[] = {0, 350, 400, 450, 500, 550, 600, 700, 800, 1400};
-double binsMass[] = {0,50,100,150,200,250,300, 350, 400, 450, 500,  550, 600, 700, 800, 1400};
+void unfoldingPlot(TH1* h_gen, TH1* h_rec, TH2* m, TH1* h_mea, TH1* h_genTTbar, TH1F* accept, TString name, double lumi, int k, RooUnfold::ErrorTreatment & err, bool print, bool pseudo, bool toy){
 
-void unfoldingPlot(TH1* h_gen, TH1* h_rec, TH2* m, TH1* h_mea, TH1* h_genTTbar, TH1F* accept, TString name, double lumi, int k, RooUnfold::ErrorTreatment & err, bool print, bool pseudo){
+  int nbins = h_gen->GetNbinsX();
 
   RooUnfoldResponse *response = new RooUnfoldResponse(h_rec, h_gen, m);
 
@@ -38,6 +37,25 @@ void unfoldingPlot(TH1* h_gen, TH1* h_rec, TH2* m, TH1* h_mea, TH1* h_genTTbar, 
   hResponse->Draw("box");
   //==========================================================================================================
 
+  //response plot ====================================================================================
+  TCanvas *c_responseH = new TCanvas(Form("c_responseH_%s",name.Data()),Form("c_responseH_%s",name.Data()),1);
+  TH2D * Hres = (TH2D *) response->Hresponse();
+
+  Hres->GetYaxis()->SetTitle("Generated M_{t#bar{t}} (GeV/c^{2})");
+  Hres->GetXaxis()->SetTitle("Reconstructed M_{t#bar{t}} (GeV/c^{2})");
+  Hres->Draw("colTextbox");
+  double total = Hres->Integral();
+  cout << "total= " << total << endl;
+  double diagonal = 0;
+  for(int i=0; i < nbins; i++){
+    diagonal += Hres->GetBinContent(i+1,i+1);
+    cout << "diagonal= " << diagonal << endl;
+  }
+  double offdiagonal = (total-diagonal)/total*100;
+  cout << "off diagonal= " << offdiagonal << endl;
+  //==========================================================================================================
+
+
   //unfolded result to be compare with truth level============================================================
   TCanvas *c = new TCanvas(Form("c_unfold_%s",name.Data()),Form("c_unfold_%s",name.Data()), 1);
   c->SetLogy();
@@ -54,8 +72,6 @@ void unfoldingPlot(TH1* h_gen, TH1* h_rec, TH2* m, TH1* h_mea, TH1* h_genTTbar, 
   //unfold = new RooUnfoldBinByBin(response, h_mea);
   //unfold = new RooUnfoldInvert(response, h_mea);
   TH1F* h_unfold = (TH1F*) unfold->Hreco(err);
- 
-  int nbins = h_unfold->GetNbinsX();
  
   TMatrixD m_unfoldE = unfold->Ereco();
   //TVectorD v_unfoldE = unfold->ErecoV(RooUnfold::kCovariance);
@@ -96,7 +112,6 @@ void unfoldingPlot(TH1* h_gen, TH1* h_rec, TH2* m, TH1* h_mea, TH1* h_genTTbar, 
   //===============================================================================================
 
   //Toy Test =======================================================================================
-  bool toy=false;
   if(toy){
     unfold->RooUnfoldSvd::SetNtoysSVD(1000);
     cout << "n. of toys= " << unfold->RooUnfoldSvd::GetNtoysSVD() << endl;
@@ -229,6 +244,7 @@ void unfoldingPlot(TH1* h_gen, TH1* h_rec, TH2* m, TH1* h_mea, TH1* h_genTTbar, 
   TCanvas *c_dsigma = new TCanvas(Form("c_dsigma_%s",name.Data()),Form("c_dsigma_%s",name.Data()));
   c_dsigma->SetLogy();
   hSigmaTruth->SetLineWidth(1);
+  hSigmaTruth->SetLineColor(1);
   hSigmaTruth->SetLineStyle(1);
   hSigmaTruth->SetTitle(0);
   hSigmaTruth->Draw();
@@ -264,6 +280,7 @@ void unfoldingPlot(TH1* h_gen, TH1* h_rec, TH2* m, TH1* h_mea, TH1* h_genTTbar, 
   TCanvas *c_Normdsigma = new TCanvas(Form("c_Normdsigma_%s",name.Data()),Form("c_Normdsigma_%s",name.Data()));
   c_Normdsigma->SetLogy();
   NormhSigmaTruth->SetLineWidth(1);
+  NormhSigmaTruth->SetLineColor(1);
   NormhSigmaTruth->SetLineStyle(1);
   NormhSigmaTruth->SetTitle(0);
   NormhSigmaTruth->Draw();
@@ -298,6 +315,7 @@ void unfoldingPlot(TH1* h_gen, TH1* h_rec, TH2* m, TH1* h_mea, TH1* h_genTTbar, 
   //Saving canvas 
   if(print){
     c_response->Print(Form("cUF_response_%s.eps",name.Data()));
+    c_responseH->Print(Form("cUF_responseH_%s.eps",name.Data()));
     c->Print(Form("cUF_unfold_%s.eps",name.Data()));
     c_err->Print(Form("cUF_err_%s.eps",name.Data()));
     c_meaerr->Print(Form("cUF_meaerr_%s.eps",name.Data()));
@@ -308,6 +326,7 @@ void unfoldingPlot(TH1* h_gen, TH1* h_rec, TH2* m, TH1* h_mea, TH1* h_genTTbar, 
     if(toy)c_toy->Print(Form("cUF_toy_%s.eps",name.Data()));
 
     c_response->Print(Form("cUF_response_%s.png",name.Data()));
+    c_responseH->Print(Form("cUF_responseH_%s.png",name.Data()));
     c->Print(Form("cUF_unfold_%s.png",name.Data()));
     c_err->Print(Form("cUF_err_%s.png",name.Data()));
     c_meaerr->Print(Form("cUF_meaerr_%s.png",name.Data()));
@@ -391,7 +410,8 @@ TH1* getSigmaTruth(TH1F* hgen, TH1F* accept, double lumi, bool norm=false ){
 
   int nbins = hgen->GetNbinsX(); 
 
-  TH1* dsigma = new TH1F("dsigma","dsigma", nbins, binsMass);
+  TH1* dsigma = (TH1F*)hgen->Clone("disgma"); 
+  dsigma->Reset();
 
   double totalS = 0;
   for(int i=1; i <=  nbins; i++){
@@ -433,7 +453,8 @@ TH1* getTruthDist(TH1F* hgen){
 
   int nbins = hgen->GetNbinsX();
 
-  TH1* truth = new TH1F("truth","truth", nbins, binsMass);
+  TH1* truth = (TH1F*)hgen->Clone("disgma");
+  truth->Reset();
 
   for(int i=1; i <=  nbins; i++){
     double unfolded = hgen->GetBinContent(i);

@@ -33,22 +33,25 @@ void unfolding(int k=3){
   
   bool print = true;
 
-  TFile * file = new TFile("preUnfolding.root");
+  TFile * file = new TFile("preUnfolding_new.root");
   TH2F * h2ResponseM = (TH2F*) file->Get("h2_response_m");
   TH1F * hDataDist = (TH1F*) file->Get("hData");
+  //TH1F * hPseudoDataDist = (TH1F*) file->Get("hPseudoData");
   TH1F * hGenDist = (TH1F*) file->Get("hGen");
   TH1F * hAcceptDist = (TH1F*) file->Get("hAccept");
 
-  double lumi = 204.2;
-  bool print = false;
-  bool pseudo = false;
+  //double lumi = 204.2;
+  double lumi = 1000;
+  bool print = true;
+  bool pseudo = true;
+  bool toytest = false;
 
-  RooUnfold::ErrorTreatment err = RooUnfold::kNoError;  //0
+  //RooUnfold::ErrorTreatment err = RooUnfold::kNoError;  //0
   //RooUnfold::ErrorTreatment err = RooUnfold::kErrors;  //1
-  //RooUnfold::ErrorTreatment err = RooUnfold::kCovariance; //2
+  RooUnfold::ErrorTreatment err = RooUnfold::kCovariance; //2
   //RooUnfold::ErrorTreatment err = RooUnfold::kCovToy; //3
 
-  plot(h2ResponseM, hDataDist, hGenDist, hAcceptDist, "vsum", lumi, k, err, print, pseudo); 
+  plot(h2ResponseM, hDataDist, hGenDist, hAcceptDist, "vsum", lumi, k, err, print, pseudo,toytest); 
   
   //chi2 test
   //int n = 5;
@@ -61,12 +64,12 @@ void unfolding(int k=3){
   //}
 }
 
-void plot(TH2* h2_response_m, TH1F* hData, TH1F* hGenDist, TH1F* accept, const TString &var, const double & lumi, int & k, RooUnfold::ErrorTreatment& err, bool print, bool pseudo){
+void plot(TH2* h2_response_m, TH1F* hData, TH1F* hGenDist, TH1F* accept, const TString &var, const double & lumi, int & k, RooUnfold::ErrorTreatment& err, bool print, bool pseudo, bool toytest){
 
   const TH1* h_genMC = h2_response_m->ProjectionY();
   const TH1* h_recMC = h2_response_m->ProjectionX();
  
-  unfoldingPlot(h_genMC, h_recMC, h2_response_m,  hData, hGenDist, accept, Form("%s",var.Data()), lumi, k, err, print, pseudo);
+  unfoldingPlot(h_genMC, h_recMC, h2_response_m,  hData, hGenDist, accept, Form("%s",var.Data()), lumi, k, err, print, pseudo, toytest);
 
 }
 
