@@ -25,9 +25,9 @@ void preUnfolding(){
   decayMode.push_back("ElEl");
   decayMode.push_back("MuMu");
 
-  mcPath.push_back("/home/tjkim/ntuple/top/MuEl/MC/Spring11/vallot_TTbarTuneZ2.root");
-  mcPath.push_back("/home/tjkim/ntuple/top/ElEl/MC/Spring11/vallot_TTbarTuneZ2.root");
-  mcPath.push_back("/home/tjkim/ntuple/top/MuMu/MC/Spring11/vallot_TTbarTuneZ2.root");
+  mcPath.push_back("/data/export/common/Top/ntuple/MuEl/MC/Spring11/vallot_TTbarTuneZ2.root");
+  mcPath.push_back("/data/export/common/Top/ntuple/ElEl/MC/Spring11/vallot_TTbarTuneZ2.root");
+  mcPath.push_back("/data/export/common/Top/ntuple/MuMu/MC/Spring11/vallot_TTbarTuneZ2.root");
 
   rdPath.push_back("MuEl_204/MuEl.root");
   rdPath.push_back("ElEl_204/ElEl.root");
