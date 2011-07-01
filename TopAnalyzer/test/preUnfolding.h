@@ -13,10 +13,17 @@
 #include "TMatrixD.h"
 #include <iomanip>
 #include <iostream>
+#include "unfoldbin.h"
 
-float detBins[] = {0, 350, 400, 450, 500,  550, 600, 700, 800, 1400};
+//float detBins[] = {0, 350, 375, 400, 425, 450, 475, 500, 550, 600, 700, 800, 1400}; //12 bins
+float detBins[] = {0, 350, 400, 450, 500, 550, 600, 700, 800, 1400}; // 9 bins
+//float detBins[] = {0, 350, 450, 550, 650, 750, 850, 1400}; // 7 bins
+
+//float genBins[] = {0, 350, 375, 400, 425, 450, 475, 500, 550, 600, 700, 800, 1400}; //12 bins
+float genBins[] = {0, 350, 400, 450, 500, 550, 600, 700, 800, 1400}; // 9 bins
+//float genBins[] = {0, 350, 450, 550, 650, 750, 850, 1400};  // 7 bins
+
 int nDet = sizeof(detBins)/sizeof(float) - 1;
-float genBins[] = {0, 350, 400, 450, 500,  550, 600, 700, 800, 1400};
 int nGen = sizeof(genBins)/sizeof(float) - 1;
 
 TH1F* getMeasuredHistoPseudo( vector<std::string> mcPath, vector<std::string> rdPath, string cutStep, TString var,  vector<TString> decayMode , double frac, TString name){
@@ -52,7 +59,7 @@ TH1F* getMeasuredHisto( vector<std::string> rdPath, string cutStep){
   return hData;
 }
 
-TH2F* getResponseM( vector<std::string> mcPath, vector<std::string> rdPath, string cutStep, TString var,  vector<TString> decayMode , TString name){
+TH2F* getResponseM( vector<std::string> mcPath, vector<std::string> rdPath, string cutStep, TString var,  vector<TString> decayMode , bool split, TString name){
 
   TH2F *h2_response_m = new TH2F("h2_response_m","h2_response_m",nDet,detBins,nGen,genBins);
 
@@ -66,14 +73,17 @@ TH2F* getResponseM( vector<std::string> mcPath, vector<std::string> rdPath, stri
     int entries = tree->GetEntries();
 
     TH2F *h2Temp = new TH2F(Form("h2_response_m_%s_%s",name.Data(),decayMode[i].Data()),Form("h2_response_m_%s",var.Data()),nDet,detBins,nGen,genBins);
-    tree->Project(Form("h2_response_m_%s_%s",name.Data(),decayMode[i].Data()),Form("genttbarM:%s",var.Data()),cut, "", entries/2, 0);
+    if(split)
+      tree->Project(Form("h2_response_m_%s_%s",name.Data(),decayMode[i].Data()),Form("genttbarM:%s",var.Data()),cut, "", entries/2, 0);
+    else 
+      tree->Project(Form("h2_response_m_%s_%s",name.Data(),decayMode[i].Data()),Form("genttbarM:%s",var.Data()),cut);
     h2_response_m->Add(h2Temp);
   }
 
   return h2_response_m;
 }
 
-TH1F* getGenDistHisto( vector<std::string> mcPath, vector<std::string> rdPath, string cutStep, vector<TString> decayMode, double scale, TString name ){
+TH1F* getGenDistHisto( vector<std::string> mcPath, vector<std::string> rdPath, string cutStep, vector<TString> decayMode, double scale, bool split , TString name ){
 
   TH1F *hGen = new TH1F("hGen","hGen",nGen,genBins);
 
@@ -87,10 +97,15 @@ TH1F* getGenDistHisto( vector<std::string> mcPath, vector<std::string> rdPath, s
     int entries = tree->GetEntries();
 
     TH1F *hGenDistTemp = new TH1F(Form("hGenDisTemp_%s_%s",name.Data(),decayMode[i].Data()),"h_genTTbar",nGen,genBins);
-    tree->Project(Form("hGenDisTemp_%s_%s",name.Data(),decayMode[i].Data()),"genttbarM", cut,"",entries/2, entries/2);  
-
-    hGenDistTemp->Scale(scale*2);
+    if(split){
+      tree->Project(Form("hGenDisTemp_%s_%s",name.Data(),decayMode[i].Data()),"genttbarM", cut,"",entries/2, entries/2);  
+      hGenDistTemp->Scale(scale*2);
+    } else{
+      tree->Project(Form("hGenDisTemp_%s_%s",name.Data(),decayMode[i].Data()),"genttbarM", cut);  
+      hGenDistTemp->Scale(scale);
+    }
     hGen->Add(hGenDistTemp);
+
   }
 
   //put statistical error
@@ -130,10 +145,16 @@ TH1F* getAcceptanceHisto(vector<std::string> mcPath, vector<std::string> rdPath,
 
     for(int j=0; j < nGen; j++){
       int bin = j+1;
-      double acc = hNumTemp->GetBinContent(bin)/hDen->GetBinContent(bin);
+
+      double acc = 0;
+      double den = hDen->GetBinContent(bin);
+      double num = hNumTemp->GetBinContent(bin); 
+      if( den != 0) acc = num/den;
+      else acc = 0.0;
+
       double center = hNumTemp->GetBinCenter(bin);
       double width = hNumTemp->GetBinWidth(bin);
-      double err = sqrt(hNumTemp->GetBinContent(bin))/hDen->GetBinContent(bin);
+      double err = sqrt(num)/den;
 
       grpAcceptTmp->SetPoint(j, center, acc );
       grpAcceptTmp->SetPointEXhigh(j, width/2);
@@ -170,10 +191,16 @@ TH1F* getAcceptanceHisto(vector<std::string> mcPath, vector<std::string> rdPath,
 
   for(int i=0; i < nGen; i++){
     int bin = i+1;
-    double acc = hNum->GetBinContent(bin)/hDen->GetBinContent(bin);
+
+    double acc = 0;
+    double den = hDen->GetBinContent(bin);
+    double num = hNum->GetBinContent(bin);
+    if( den != 0) acc = num/den;
+    else acc = 0.0;
+
     double center = hNum->GetBinCenter(bin);
     double width = hNum->GetBinWidth(bin);
-    double err = sqrt(hNum->GetBinContent(bin))/hDen->GetBinContent(bin);
+    double err = sqrt(num)/den;
 
     hAccept->SetBinContent(bin, acc);
     hAccept->SetBinError(bin, err);

@@ -34,13 +34,16 @@ void preUnfolding(){
   rdPath.push_back("MuMu_204/MuMu.root");
 
   const std::string cutStep = "Step_7";
-  double scale = 204.2/6349.2; 
- 
-  TH2F * h2ResponseM = getResponseM(mcPath, rdPath, cutStep,  "ttbar.M()", decayMode, "vsum");
-  //TH1F * hData = getMeasuredHisto(rdPath, cutStep);
+  //double scale = 204.2/6349.2; 
+  double scale = 1000/6349.2; 
+  bool split = true;
 
-  TH1F * hData = getMeasuredHistoPseudo(mcPath, rdPath, cutStep, "ttbar.M()", decayMode, scale, "vsum");
-  TH1F * hGenDist = getGenDistHisto(mcPath, rdPath, cutStep, decayMode, scale,  "vsum");
+  TH2F * h2ResponseM = getResponseM(mcPath, rdPath, cutStep,  "ttbar.M()", decayMode, split ,"vsum");
+
+  //TH1F * hData = getMeasuredHisto(rdPath, cutStep);  //real data
+  TH1F * hData = getMeasuredHistoPseudo(mcPath, rdPath, cutStep, "ttbar.M()", decayMode, scale, "vsum"); //pseudo data
+
+  TH1F * hGenDist = getGenDistHisto(mcPath, rdPath, cutStep, decayMode, scale, split, "vsum");
   TH1F * hAccept =  getAcceptanceHisto(mcPath, rdPath, cutStep,  decayMode, "vsum");
 
   TFile* f = TFile::Open("preUnfolding.root", "recreate");
