@@ -56,6 +56,7 @@ public:
                       const string xBinsStr,
                       const double ymin = 0, const double ymax = 0, const bool doLogy = true);
   void setEventWeightVar(const string eventWeightVar = "weight");
+  void setEventWeightDY(const double w1=1, const double w2=1, const double w3=1, const double w4=1, const double w5=1, const double w6=1, const double w7=1);
   void setScanVariables(const string scanVariables);
 
   void applyCutSteps();
@@ -113,7 +114,7 @@ private:
 
   string imageOutDir_;
 
-  void plot(const string name, TCut cut, MonitorPlot& monitorPlot, const double plotScale = 1.0);
+  void plot(const string name, TCut cut, MonitorPlot& monitorPlot, const double plotScale = 1.0, const double wDY = 1.0);
   void printStat(const string& name, TCut cut);
   void addMC(vector<MCSample>& mcSetup,
              const string name, const string label,
@@ -125,6 +126,7 @@ private:
   bool writeSummary_;
   string scanVariables_;
   string eventWeightVar_;
+  vector<double> eventWeightDY_;
 
   TDirectory* baseRootDir_;
 };
@@ -324,7 +326,7 @@ void TopAnalyzerLite::applyCutSteps()
     cut = cut && cuts_[i].cut;
     const vector<string>& monitorPlotNames = cuts_[i].monitorPlotNames;
     const double plotScale = cuts_[i].plotScale;
-
+    double wDY = eventWeightDY_[i];
     printStat(Form("Step_%d", i+1), cut);
     for ( unsigned int j = 0; j < monitorPlotNames.size(); ++ j)
     {
@@ -332,7 +334,7 @@ void TopAnalyzerLite::applyCutSteps()
 
       if ( monitorPlots_.find(plotName) == monitorPlots_.end() ) continue;
       MonitorPlot& monitorPlot = monitorPlots_[plotName];
-      plot(Form("Step_%d_%s", i+1, plotName.c_str()), cut, monitorPlot, lumi_*plotScale);
+      plot(Form("Step_%d_%s", i+1, plotName.c_str()), cut, monitorPlot, lumi_*plotScale, wDY);
     }
   }
 
@@ -366,7 +368,7 @@ void TopAnalyzerLite::applyCutSteps()
   }
 }
 
-void TopAnalyzerLite::plot(const string name, const TCut cut, MonitorPlot& monitorPlot, const double plotScale)
+void TopAnalyzerLite::plot(const string name, const TCut cut, MonitorPlot& monitorPlot, const double plotScale, const double wDY)
 {
   const string& varexp = monitorPlot.varexp;
   const string& title = monitorPlot.title;
@@ -471,6 +473,11 @@ void TopAnalyzerLite::plot(const string name, const TCut cut, MonitorPlot& monit
     mcSample.chain->Project(mcHistName, varexp.c_str(), mcCutStr);
     hMC->AddBinContent(nBins, hMC->GetBinContent(nBins+1));
     hMC->Scale(lumi_*mcSample.xsec/mcSample.nEvents);
+
+    if(mcSample.label == "Z/#gamma* #rightarrow ll") {
+      hMC->Scale(wDY);
+    }
+
     hMC->SetFillColor(mcSample.color);
 
     // Subtract background from the hDataSub histogram
@@ -814,6 +821,18 @@ void TopAnalyzerLite::setEventWeightVar(const string eventWeightVar)
 {
   eventWeightVar_ = eventWeightVar;
 }
+
+void TopAnalyzerLite::setEventWeightDY(const double w1, const double w2, const double w3, const double w4, const double w5, const double w6, const double w7)
+{
+  eventWeightDY_.push_back(w1);
+  eventWeightDY_.push_back(w2);
+  eventWeightDY_.push_back(w3);
+  eventWeightDY_.push_back(w4);
+  eventWeightDY_.push_back(w5);
+  eventWeightDY_.push_back(w6);
+  eventWeightDY_.push_back(w7);
+}
+
 
 void TopAnalyzerLite::drawEffCurve(const TCut cut, const string varexp, const string scanPoints, const std::string imgPrefix)
 {
