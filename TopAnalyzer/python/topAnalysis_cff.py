@@ -12,13 +12,7 @@ myJetId = pfJetIDSelector.clone()
 from KoPFA.TopAnalyzer.topLeptonSelector_cfi import *
 from KoPFA.TopAnalyzer.triggerFilterByRun_cfi import *
 from KoPFA.TopAnalyzer.topHLTfilter_cff import *
-
-PUweight = cms.EDProducer("EventWeightProducer",
-   # PUweight = cms.vdouble(0.24698,0.878399,1.62972,1.74644,1.48563,0.999695,0.740525,0.457214,0.268234,0.184943,0.127889,0.0274048,0.0959167,0.383667),
-   # PUweight = cms.vdouble(0.302925,0.965597,1.65007,1.8125,1.42073,0.999606,0.65037,0.358266,0.258592,0.130467,0.0776312,0.0805065),#EMU 153pb-1
-    PUweight = cms.vdouble(0.209948,0.716075,1.24409,1.44944,1.3552 ,1.1622  ,0.98529,0.827434,0.705387,0.813482,1.01844  ,1.15579 ,1.33508), # 204pb-1
-    PUdefault = cms.double(1.0),
-)
+from KoPFA.TopAnalyzer.PileUpWeight_cfi import *
 
 VertexFilter = cms.EDFilter('VertexFilter',
     vertexLabel =  cms.InputTag('offlinePrimaryVertices'),
