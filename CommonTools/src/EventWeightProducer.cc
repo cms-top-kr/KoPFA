@@ -12,16 +12,15 @@
 #include "DataFormats/Math/interface/Point3D.h"
 #include "RecoVertex/VertexPrimitives/interface/TransientVertex.h"
 
-
 using namespace std;
 
 EventWeightProducer::EventWeightProducer(const edm::ParameterSet& cfg)
 {
-  PUweight_ = cfg.getParameter< std::vector<double> >("PUweight"),
-  PUdefault_ = cfg.getParameter< double >("PUdefault"),
+  PileUpRD_ = cfg.getParameter< std::vector<double> >("PileUpRD"),
+  PileUpMC_ = cfg.getParameter< std::vector<double> >("PileUpMC"),
   produces <double> ( "" );
 }
- 
+
 EventWeightProducer::~EventWeightProducer()
 {
 
@@ -30,22 +29,25 @@ EventWeightProducer::~EventWeightProducer()
 void EventWeightProducer::produce(edm::Event& iEvent, const edm::EventSetup& es)
 {
   using namespace reco;
-  using namespace isodeposit;
 
-  edm::Handle<reco::VertexCollection> recVtxs;
-  iEvent.getByLabel("offlinePrimaryVertices",recVtxs);
-  int mNPV = 0;
+  edm::Handle<std::vector< PileupSummaryInfo > >  PupInfo;
+  iEvent.getByLabel(edm::InputTag("addPileupInfo"), PupInfo);
 
-  for(unsigned int ind=0;ind<recVtxs->size();ind++) {
-    if (!((*recVtxs)[ind].isFake()) && ((*recVtxs)[ind].ndof()>4)
-          && (fabs((*recVtxs)[ind].z())<=24.0) &&
-          ((*recVtxs)[ind].position().Rho()<=2.0) ) {
-            mNPV++;
+  std::vector<PileupSummaryInfo>::const_iterator PVI;
+
+  int npv = -1;
+  for(PVI = PupInfo->begin(); PVI != PupInfo->end(); ++PVI) {
+
+    int BX = PVI->getBunchCrossing();
+
+    if(BX == 0) { 
+      npv = PVI->getPU_NumInteractions();
+      continue;
     }
-  } 
 
-  double w = PUdefault_;
-  if(mNPV <= (int) PUweight_.size()) w = PUweight_[mNPV-1];
+  }
+
+  double w = LumiWeights_.weight( npv );
 
   std::auto_ptr<double> weight( new double(w) );
 
@@ -55,6 +57,16 @@ void EventWeightProducer::produce(edm::Event& iEvent, const edm::EventSetup& es)
 
 void 
 EventWeightProducer::beginJob(){
+  std::vector< float > Wlumi ;
+  std::vector< float > TrueDist2011;
+
+  for( int i=0; i<25; ++i) {
+    TrueDist2011.push_back((float)PileUpRD_[i]);
+    Wlumi.push_back((float)PileUpMC_[i]);
+  }
+
+  LumiWeights_ = edm::LumiReWeighting(Wlumi, TrueDist2011);
+
 }
 
 

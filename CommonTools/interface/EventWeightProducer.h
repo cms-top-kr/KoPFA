@@ -14,6 +14,8 @@
 #include "PFAnalyses/CommonTools/interface/PatLeptonSelector.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "FWCore/Utilities/interface/InputTag.h"
+#include "PhysicsTools/Utilities/interface/LumiReWeighting.h"
+#include "SimDataFormats/PileupSummaryInfo/interface/PileupSummaryInfo.h"
 
 
 class EventWeightProducer : public edm::EDProducer
@@ -28,9 +30,11 @@ class EventWeightProducer : public edm::EDProducer
   void endJob();
 
  private:
-  vector<double> PUweight_;
-  double PUdefault_;
 
+  edm::LumiReWeighting LumiWeights_;
+
+  std::vector<double> PileUpRD_;
+  std::vector<double> PileUpMC_;
 };
 
 
