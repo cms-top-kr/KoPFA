@@ -19,23 +19,29 @@ hltHighLevelMuElRD.throw = cms.bool(False)
 #for DoubleElectron dataset
 #MC
 hltHighLevelElElMC = hltHighLevel.clone()
-hltHighLevelElElMC.TriggerResultsTag = cms.InputTag("TriggerResults","","REDIGI311X")
-hltHighLevelElElMC.HLTPaths = cms.vstring('HLT_Ele17_SW_TightCaloEleId_Ele8HE_L1R_v2')
+#hltHighLevelElElMC.TriggerResultsTag = cms.InputTag("TriggerResults","","REDIGI311X")
+hltHighLevelElElMC.TriggerResultsTag = cms.InputTag("TriggerResults","","HLT")
+#hltHighLevelElElMC.HLTPaths = cms.vstring('HLT_Ele17_SW_TightCaloEleId_Ele8HE_L1R_v2')
+hltHighLevelElElMC.HLTPaths = cms.vstring(
+    'HLT_Ele17_CaloIdT_TrkIdVL_CaloIsoVL_TrkIsoVL_Ele8_CaloIdT_TrkIdVL_CaloIsoVL_TrkIsoVL_v*',
+    'HLT_Ele17_CaloIdL_CaloIsoVL_Ele8_CaloIdL_CaloIsoVL_v*',
+)
 hltHighLevelElElMC.throw = cms.bool(False)
 #RD
 hltHighLevelElElRD = hltHighLevel.clone()
 hltHighLevelElElRD.TriggerResultsTag = cms.InputTag("TriggerResults","","HLT")
 hltHighLevelElElRD.HLTPaths = cms.vstring(
-    'HLT_Ele17_CaloIdT_TrkIdVL_CaloIsoVL_TrkIsoVL_Ele8_CaloIdT_TrkIdVL_CaloIsoVL_TrkIsoVL_*',
-    'HLT_Ele17_CaloIdL_CaloIsoVL_Ele8_CaloIdL_CaloIsoVL_*',
+    'HLT_Ele17_CaloIdT_TrkIdVL_CaloIsoVL_TrkIsoVL_Ele8_CaloIdT_TrkIdVL_CaloIsoVL_TrkIsoVL_v*',
+    'HLT_Ele17_CaloIdL_CaloIsoVL_Ele8_CaloIdL_CaloIsoVL_v*',
 )
 hltHighLevelElElRD.throw = cms.bool(False)
 
 #for DoubleMuon dataset
 #MC
 hltHighLevelMuMuMC = hltHighLevel.clone()
-hltHighLevelMuMuMC.TriggerResultsTag = cms.InputTag("TriggerResults","","REDIGI311X")
-hltHighLevelMuMuMC.HLTPaths = cms.vstring('HLT_DoubleMu5_v1')
+#hltHighLevelMuMuMC.TriggerResultsTag = cms.InputTag("TriggerResults","","REDIGI311X")
+hltHighLevelMuMuMC.TriggerResultsTag = cms.InputTag("TriggerResults","","HLT")
+hltHighLevelMuMuMC.HLTPaths = cms.vstring('HLT_DoubleMu3_v*','HLT_DoubleMu6_v*','HLT_DoubleMu7_v*')
 hltHighLevelMuMuMC.throw = cms.bool(False)
 #RD
 hltHighLevelMuMuRD = hltHighLevel.clone()
