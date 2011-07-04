@@ -65,7 +65,7 @@ process.acceptedElectrons = cms.EDFilter("PATElectronSelector",
 )
 
 process.patElectronFilter = cms.EDFilter("CandViewCountFilter",
-    src = cms.InputTag('selectedPatElectronsLoosePFlow'),
+    src = cms.InputTag('acceptedElectrons'),
     minNumber = cms.uint32(2)
 )
 
@@ -76,7 +76,7 @@ process.acceptedMuons = cms.EDFilter("PATMuonSelector",
 )
 
 process.patMuonFilter = cms.EDFilter("CandViewCountFilter",
-  src = cms.InputTag('selectedPatMuonsLoosePFlow'),
+  src = cms.InputTag('acceptedMuons'),
   minNumber = cms.uint32(2)
 )
 
