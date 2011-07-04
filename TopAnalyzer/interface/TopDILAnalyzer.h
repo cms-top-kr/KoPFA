@@ -13,7 +13,7 @@
 //
 // Original Author:  Tae Jeong Kim,40 R-A32,+41227678602,
 //         Created:  Fri Jun  4 17:19:29 CEST 2010
-// $Id: TopDILAnalyzer.h,v 1.44 2011/05/23 19:30:31 tjkim Exp $
+// $Id: TopDILAnalyzer.h,v 1.45 2011/06/16 12:14:25 tjkim Exp $
 //
 //
 
@@ -50,8 +50,6 @@
 #include "KoPFA/DataFormats/interface/TTbarGenEvent.h"
 #include "KoPFA/DataFormats/interface/TTbarMass.h"
 #include "KoPFA/DataFormats/interface/METCandidate.h"
-#include "PFAnalyses/CommonTools/interface/CandidateSelector.h"
-#include "PFAnalyses/CommonTools/interface/PatJetIdSelector.h"
 #include "PhysicsTools/SelectorUtils/interface/PFJetIDSelectionFunctor.h"
 
 #include "DQMServices/Core/interface/MonitorElement.h"
@@ -61,6 +59,7 @@
 #include "DataFormats/RecoCandidate/interface/IsoDeposit.h"
 #include "DataFormats/RecoCandidate/interface/IsoDepositVetos.h"
 #include "DataFormats/PatCandidates/interface/Isolation.h"
+#include "SimDataFormats/PileupSummaryInfo/interface/PileupSummaryInfo.h"
 
 #include "CondFormats/JetMETObjects/interface/JetCorrectorParameters.h"
 #include "CondFormats/JetMETObjects/interface/FactorizedJetCorrector.h"
@@ -92,7 +91,6 @@ class TopDILAnalyzer : public edm::EDFilter {
     metStudy_ = iConfig.getUntrackedParameter<bool>("metStudy",false);
     useEventCounter_ = iConfig.getParameter<bool>("useEventCounter");
     filters_ = iConfig.getUntrackedParameter<std::vector<std::string> >("filters");
-    //looseJetIdSelector_.initialize( iConfig.getParameter<edm::ParameterSet> ("looseJetId") );
     pfJetIdParams_ = iConfig.getParameter<edm::ParameterSet> ("looseJetId");
     relIso1_ = iConfig.getUntrackedParameter<double>("relIso1");
     relIso2_ = iConfig.getUntrackedParameter<double>("relIso2");
@@ -143,6 +141,7 @@ class TopDILAnalyzer : public edm::EDFilter {
     tree->Branch("EVENT",&EVENT,"EVENT/i");
     tree->Branch("RUN",&RUN,"RUN/i");
     tree->Branch("LUMI",&LUMI,"LUMI/i");
+    tree->Branch("npileup",&npileup,"npileup/i");
     tree->Branch("nvertex",&nvertex,"nvertex/i");
     tree->Branch("weight",&weight, "weight/d");
 
@@ -202,6 +201,25 @@ class TopDILAnalyzer : public edm::EDFilter {
     EVENT  = iEvent.id().event();
     RUN    = iEvent.id().run();
     LUMI   = iEvent.id().luminosityBlock();
+
+    edm::Handle<std::vector< PileupSummaryInfo > >  PupInfo;
+    iEvent.getByLabel(edm::InputTag("addPileupInfo"), PupInfo);
+
+    std::vector<PileupSummaryInfo>::const_iterator PVI;
+
+    int npv = -1;
+    for(PVI = PupInfo->begin(); PVI != PupInfo->end(); ++PVI) {
+
+      int BX = PVI->getBunchCrossing();
+
+      if(BX == 0) {
+        npv = PVI->getPU_NumInteractions();
+        continue;
+      }
+
+    }
+
+    npileup = npv;
 
     edm::Handle<reco::VertexCollection> recVtxs_;
     iEvent.getByLabel("offlinePrimaryVertices",recVtxs_);
@@ -539,11 +557,6 @@ class TopDILAnalyzer : public edm::EDFilter {
   std::vector<std::string> filters_;
   bool metStudy_;
   bool useEventCounter_;
-  //bool applyPUweight_;
-  //edm::InputTag weightLabel_;
-  // loose jet ID. 
-  //PatJetIdSelector looseJetIdSelector_;
-  //PFJetIDSelectionFunctor looseJetIdSelector_;
   
   // relIso
   double relIso1_;
@@ -600,6 +613,7 @@ class TopDILAnalyzer : public edm::EDFilter {
   unsigned int EVENT;
   unsigned int RUN;
   unsigned int LUMI;
+  unsigned int npileup;
   unsigned int nvertex;
   double weight;
   // Residual Jet energy correction for 38X
