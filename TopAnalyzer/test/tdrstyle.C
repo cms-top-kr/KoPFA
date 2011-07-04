@@ -6,8 +6,8 @@ void setTDRStyle() {
 // For the canvas:
   tdrStyle->SetCanvasBorderMode(0);
   tdrStyle->SetCanvasColor(kWhite);
-  //tdrStyle->SetCanvasDefH(400); //Height of canvas
-  //tdrStyle->SetCanvasDefW(400); //Width of canvas
+  tdrStyle->SetCanvasDefH(400); //Height of canvas
+  tdrStyle->SetCanvasDefW(400); //Width of canvas
   tdrStyle->SetCanvasDefX(0);   //POsition on screen
   tdrStyle->SetCanvasDefY(0);
 
@@ -80,7 +80,7 @@ void setTDRStyle() {
 
 // For the Global title:
 
-  //tdrStyle->SetOptTitle(0);
+  tdrStyle->SetOptTitle(0);
   tdrStyle->SetTitleFont(42);
   tdrStyle->SetTitleColor(1);
   tdrStyle->SetTitleTextColor(1);
