@@ -188,13 +188,13 @@ void unfoldingPlot(TH1* h_gen, TH1* h_rec, TH2* m, TH1* h_mea, TH1* h_genTTbar, 
     if( h_unfold->GetBinContent(i) != 0 ){
       gerr->SetPoint(i-1, h_unfold->GetBinCenter(i), 100*h_unfold->GetBinError(i)/h_unfold->GetBinContent(i));
     } else{
-      gerr->SetPoint(i-1, h_unfold->GetBinCenter(i), -1);
+      gerr->SetPoint(i-1, h_unfold->GetBinCenter(i), 0);
     }
 
     if( hmea->GetBinContent(i) != 0){
       gerrbefore->SetPoint(i-1, hmea->GetBinCenter(i), 100*hmea->GetBinError(i)/hmea->GetBinContent(i));
     } else {
-      gerrbefore->SetPoint(i-1, hmea->GetBinCenter(i), -1);
+      gerrbefore->SetPoint(i-1, hmea->GetBinCenter(i), 0);
     }
   }
 
@@ -284,6 +284,7 @@ void unfoldingPlot(TH1* h_gen, TH1* h_rec, TH2* m, TH1* h_mea, TH1* h_genTTbar, 
   NormhSigmaTruth->SetLineStyle(1);
   NormhSigmaTruth->SetTitle(0);
   NormhSigmaTruth->Draw();
+  //NormhSigmaTruth->SetAxisRange(340,1400);
   NormhSigmaTruth->SetMaximum(0.05);
   NormhSigmaTruth->SetMinimum(0.00001);
   NormhSigmaTruth->GetXaxis()->SetTitle("Unfolded t#bar{t} invariant mass (GeV/c^{2})");
