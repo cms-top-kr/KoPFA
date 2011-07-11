@@ -116,9 +116,8 @@ void unfoldingPlot(TH1* h_gen, TH1* h_rec, TH2* m, TH1* h_mea, TH1* h_genTTbar, 
     unfold->RooUnfoldSvd::SetNtoysSVD(1000);
     cout << "n. of toys= " << unfold->RooUnfoldSvd::GetNtoysSVD() << endl;
     TCanvas *c_toy =  new TCanvas(Form("c_toy_%s",name.Data()),Form("c_toy_%s",name.Data()),800,800);
-    c_toy->Divide(3,3);
-    //float detBins[] = {0, 350, 400, 450, 500,  550, 600, 700, 800, 1400};
-    //int nDet = sizeof(detBins)/sizeof(float) - 1;
+   
+    bool skip = h_unfold->GetBinContent(1) == 0;
 
     TH1 *h[9];
     TF1 *g[9];
@@ -126,7 +125,8 @@ void unfoldingPlot(TH1* h_gen, TH1* h_rec, TH2* m, TH1* h_mea, TH1* h_genTTbar, 
     for(int i=0; i <nbins; i++){
        double center = hgen->GetBinContent(i+1);
        //h[i] = new TH1F(Form("h%1.0f_%1.0f_%s",detBins[i],detBins[i+1],name.Data()), Form("h%1.0f_%1.0f_%s",detBins[i],detBins[i+1],name.Data()), 200, (center+10)-100,(center+10)+100);
-       h[i] = new TH1F(Form("h%1.0f_%1.0f_%s",detBins[i],detBins[i+1],name.Data()), Form("h%1.0f_%1.0f_%s",detBins[i],detBins[i+1],name.Data()), 1000,-10,10);
+       //h[i] = new TH1F(Form("h%1.0f_%1.0f_%s",detBins[i],detBins[i+1],name.Data()), Form("h%1.0f_%1.0f_%s",detBins[i],detBins[i+1],name.Data()), 1000,-10,10);
+       h[i] = new TH1F(Form("bin %1.0f ",i+1), Form("bin %1.0f",i+1), 650,-5,8);
     } 
 
     for(int i=0 ; i < 10000 ; i++){
@@ -145,29 +145,40 @@ void unfoldingPlot(TH1* h_gen, TH1* h_rec, TH2* m, TH1* h_mea, TH1* h_genTTbar, 
         h[j]->Fill(pull_);
       }
     }
+
+    if( skip ){
+      cout << "2x4" << endl;
+      c_toy->Divide(2,4);
+    }else{
+      cout << "3x3" << endl;
+      c_toy->Divide(3,3);
+    }
   
-    for(int i=0; i<nbins; i++){
-      c_toy->cd(i+1);
+    int k = 0;
+    if(skip) k = 1;
+
+    for(int i=k; i<nbins; i++){
+      c_toy->cd(i-k+1);
       h[i]->Fit("gaus");
       g[i]  = h[i]->GetFunction("gaus");
       h[i]->Draw();
-      gStyle->SetStatH(0.4);
-      gStyle->SetStatW(0.2);
+      gStyle->SetStatH(0.2);
+      gStyle->SetStatW(0.15);
       gStyle->SetStatFontSize(0.05);
       gStyle->SetStatBorderSize(1);
-      h[i]->SetTitle(Form("%1.0f-%1.0f GeV",detBins[i],detBins[i+1]));
+      double bin = i-k+1;
+      h[i]->SetTitle(Form("bin %1.0f",bin));
       //h[i]->GetXaxis()->SetTitle("Unfolded number of events");
       //h[i]->GetXaxis()->SetTitle("N_{true}-N_{unfolded}/N_{true}");
       h[i]->GetXaxis()->SetTitle("(N_{true}-N_{unfolded})/#sigma");
       h[i]->GetYaxis()->SetTitle("Number of toy MC");
     }
 
-    for(int i=0; i<nbins; i++){
+    for(int i=k; i<nbins; i++){
       double Mean = h[i]->GetMean();
       double rms = h[i]->GetRMS();
       double mean = g[i]->GetParameter(1);
       double sigma = g[i]->GetParameter(2);
-      double mass = (detBins[i+1] + detBins[i])/2;
       double meanerr = g[i]->GetParError(1);
       double sigmaerr = g[i]->GetParError(2);
       cout << "$" << hgen->GetBinCenter(i+1)-hgen->GetBinWidth(i+1)/2 << "-" << hgen->GetBinCenter(i+1)+hgen->GetBinWidth(i+1)/2 << "$   ~&~ "

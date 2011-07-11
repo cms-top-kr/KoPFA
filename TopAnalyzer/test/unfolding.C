@@ -30,17 +30,20 @@ void unfolding(int k=3){
   gSystem->Load("libFWCoreFWLite.so");
   gROOT->LoadMacro("tdrstyle.C");
   setTDRStyle();
+
+  //gStyle->SetOptStat(0000);
+  gStyle->SetOptFit(0011);
+
   
   bool print = true;
 
   TFile * file = new TFile("preUnfolding_new.root");
   TH2F * h2ResponseM = (TH2F*) file->Get("h2_response_m");
   TH1F * hDataDist = (TH1F*) file->Get("hData");
-  //TH1F * hPseudoDataDist = (TH1F*) file->Get("hPseudoData");
   TH1F * hGenDist = (TH1F*) file->Get("hGen");
   TH1F * hAcceptDist = (TH1F*) file->Get("hAccept");
 
-  //double lumi = 204.2;
+  //double lumi = 869.13;
   double lumi = 1000;
   bool print = true;
   bool pseudo = true;
