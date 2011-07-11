@@ -12,7 +12,12 @@ myJetId = pfJetIDSelector.clone()
 from KoPFA.TopAnalyzer.topLeptonSelector_cfi import *
 from KoPFA.TopAnalyzer.triggerFilterByRun_cfi import *
 from KoPFA.TopAnalyzer.topHLTfilter_cff import *
-from KoPFA.TopAnalyzer.PileUpWeight_cfi import *
+from KoPFA.TopAnalyzer.PileUpWeight_cff import *
+
+PUweight = cms.EDProducer("EventWeightProducer",
+  PileUpRD = PileUpRD2011, 
+  PileUpMC = probdistFlat10 #PoissonIntDist, PoissonOneXDist 
+)
 
 VertexFilter = cms.EDFilter('VertexFilter',
     vertexLabel =  cms.InputTag('offlinePrimaryVertices'),
