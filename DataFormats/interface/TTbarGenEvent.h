@@ -28,8 +28,18 @@ private:
   math::XYZTLorentzVector tt_;
   std::vector<math::XYZTLorentzVector> tQuarks_;
   std::vector<math::XYZTLorentzVector> bQuarks_;
+  std::vector<math::XYZTLorentzVector> leptons_;
   std::vector<math::XYZTLorentzVector> electrons_;
   std::vector<math::XYZTLorentzVector> muons_;
+  std::vector<math::XYZTLorentzVector> taus_;
+ 
+  int mumuDecay;
+  int eeDecay;
+  int emuDecay;
+  int tautauDecay;
+  int etauDecay;
+  int mutauDecay;
+ 
   double met_, metX_, metY_;
 
 };

@@ -7,8 +7,18 @@ void TTbarGenEvent::clear()
   tt_.SetPxPyPzE(0,0,0,0);
   tQuarks_.clear();
   bQuarks_.clear();
+  leptons_.clear();
+
+  mumuDecay = 0;
+  eeDecay = 0;
+  emuDecay = 0;
+  tautauDecay = 0;
+  etauDecay = 0;
+  mutauDecay = 0;
+
   electrons_.clear();
   muons_.clear();
+  taus_.clear();
   met_ = metX_ = metY_ = 0;
 }
 
@@ -47,10 +57,40 @@ void TTbarGenEvent::set(reco::GenParticleCollection::const_iterator begin,
       if ( absPdgId == 11 )
       {
         electrons_.push_back(genParticle->p4());
+        leptons_.push_back(genParticle->p4());
       }
       else if ( absPdgId == 13 ) 
       {
         muons_.push_back(genParticle->p4());
+        leptons_.push_back(genParticle->p4());
+      }
+      else if ( absPdgId ==  15 )
+      {
+        int nlep = 0;
+        unsigned int nTauDaughters = genParticle->numberOfDaughters();
+        for ( unsigned iTauDaughter=0; iTauDaughter<nTauDaughters; ++iTauDaughter ) {
+          if( nlep == 1) break;
+          const reco::Candidate* decay = genParticle->daughter(iTauDaughter);
+          if ( abs(decay->pdgId()) == 11 || abs(decay->pdgId()) == 13 ) {
+            taus_.push_back(decay->p4());
+            leptons_.push_back(decay->p4());
+            ++nlep;
+          }else if( abs(decay->pdgId()) == 15 ){
+            unsigned int nTauGrandDaughters = decay->numberOfDaughters();
+            for ( unsigned iTauGrandDaughter=0; iTauGrandDaughter<nTauGrandDaughters; ++iTauGrandDaughter ) {
+              const reco::Candidate* granddecay = decay->daughter(iTauGrandDaughter);
+              if ( abs(granddecay->pdgId()) == 11 || abs(granddecay->pdgId()) == 13 ) {
+                taus_.push_back(granddecay->p4());
+                leptons_.push_back(granddecay->p4());
+                ++nlep;
+              }else{
+                continue;
+              }
+            }
+          }else {
+           continue;
+          }
+        }
       }
       else if ( absPdgId == 12 or absPdgId == 14 or absPdgId == 16 )
       {
@@ -60,6 +100,23 @@ void TTbarGenEvent::set(reco::GenParticleCollection::const_iterator begin,
     }
   }
 
+  if( leptons_.size() >= 2 ){
+    if( taus_.size() >= 2 ){
+      tautauDecay = 1;
+    }else if( muons_.size() >= 2 ){
+      mumuDecay = 1;
+    }else if( electrons_.size() >= 2){
+      eeDecay = 1;
+    }else if( electrons_.size() == 1 && muons_.size() == 1){
+      emuDecay = 1;
+    }else if( muons_.size() ==1 && taus_.size() ==1){
+      mutauDecay = 1;
+    }else if( electrons_.size() ==1 && taus_.size() ==1){
+      etauDecay = 1;
+    }else{
+      std::cout << "it should not reach here" << std::endl;
+    }
+  }
   met_ = hypot(metX_, metY_);
 }
 
