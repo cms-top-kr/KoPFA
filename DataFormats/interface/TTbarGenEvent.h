@@ -36,9 +36,7 @@ private:
   int mumuDecay;
   int eeDecay;
   int emuDecay;
-  int tautauDecay;
-  int etauDecay;
-  int mutauDecay;
+  int tauDecay;
  
   double met_, metX_, metY_;
 
