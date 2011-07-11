@@ -114,10 +114,12 @@ process.load("KoPFA.TopAnalyzer.Sources.%s.RD.patTuple_%s_cff")
 
 def rdpath():
   script = """
+process.%s.doResJec = cms.untracked.bool(True)
+
 process.p = cms.Path(
     process.top%sAnalysisRealDataSequence
 ) 
-""" % decay
+""" % (decay, decay)
   return script
 
 def outfile(src):
