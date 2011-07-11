@@ -13,7 +13,7 @@
 //
 // Original Author:  Tae Jeong Kim,40 R-A32,+41227678602,
 //         Created:  Fri Jun  4 17:19:29 CEST 2010
-// $Id: TopDILAnalyzer.h,v 1.45 2011/06/16 12:14:25 tjkim Exp $
+// $Id: TopDILAnalyzer.h,v 1.46 2011/07/04 14:55:43 tjkim Exp $
 //
 //
 
@@ -61,6 +61,7 @@
 #include "DataFormats/PatCandidates/interface/Isolation.h"
 #include "SimDataFormats/PileupSummaryInfo/interface/PileupSummaryInfo.h"
 
+#include "JetMETCorrections/Objects/interface/JetCorrector.h"
 #include "CondFormats/JetMETObjects/interface/JetCorrectorParameters.h"
 #include "CondFormats/JetMETObjects/interface/FactorizedJetCorrector.h"
 #include "CondFormats/JetMETObjects/interface/JetCorrectionUncertainty.h"
@@ -97,7 +98,7 @@ class TopDILAnalyzer : public edm::EDFilter {
     bTagAlgo_ = iConfig.getUntrackedParameter<std::string>("bTagAlgo");
     minBTagValue_ = iConfig.getUntrackedParameter<double>("minBTagValue");
 
-    // Residual Jet energy correction for 38X
+    doJecFly_ = iConfig.getUntrackedParameter<bool>("doJecFly", true);
     doResJec_ = iConfig.getUntrackedParameter<bool>("doResJec", false);
     doJecUnc_ = iConfig.getUntrackedParameter<bool>("doJecUnc", false);
     up_ = iConfig.getUntrackedParameter<bool>("up", true); // uncertainty up
@@ -174,16 +175,24 @@ class TopDILAnalyzer : public edm::EDFilter {
     tree->Branch("neutralHadronEt",&neutralHadronEt,"neutralHadronEt/d");
 
     // Jet energy correction for 38X
-    if ( doResJec_ )
+    if ( doJecFly_ )
     {
-      edm::FileInPath jecFile("CondFormats/JetMETObjects/data/Spring10DataV2_L2L3Residual_AK5PF.txt");
+      edm::FileInPath jecL1File("KoPFA/TopAnalyzer/python/JEC/Jec11_V2_AK5PF_L1FastJet.txt");
+      edm::FileInPath jecL2File("KoPFA/TopAnalyzer/python/JEC/Jec11_V2_AK5PF_L2Relative.txt");
+      edm::FileInPath jecL3File("KoPFA/TopAnalyzer/python/JEC/Jec11_V2_AK5PF_L3Absolute.txt");
+      edm::FileInPath jecL2L3File("KoPFA/TopAnalyzer/python/JEC/Jec11_V2_AK5PF_L2L3Residual.txt");
       std::vector<JetCorrectorParameters> jecParams;
-      jecParams.push_back(JetCorrectorParameters(jecFile.fullPath()));
+      jecParams.push_back(JetCorrectorParameters(jecL1File.fullPath()));
+      jecParams.push_back(JetCorrectorParameters(jecL2File.fullPath()));
+      jecParams.push_back(JetCorrectorParameters(jecL3File.fullPath()));
+      if( doResJec_ ) {
+        jecParams.push_back(JetCorrectorParameters(jecL2L3File.fullPath()));
+      }
       resJetCorrector_ = new FactorizedJetCorrector(jecParams);
     }
 
     if ( doJecUnc_){
-        edm::FileInPath jecUncFile("CondFormats/JetMETObjects/data/Spring10_Uncertainty_AK5PF.txt");
+        edm::FileInPath jecUncFile("KoPFA/TopAnalyzer/python/JEC/Jec11_V2_AK5PF_Uncertainty.txt");
         jecUnc_ = new JetCorrectionUncertainty(jecUncFile.fullPath());
     }
  
@@ -202,23 +211,27 @@ class TopDILAnalyzer : public edm::EDFilter {
     RUN    = iEvent.id().run();
     LUMI   = iEvent.id().luminosityBlock();
 
+    edm::Handle<double>  rho;
+    iEvent.getByLabel(edm::InputTag("kt6PFJetsPFlow","rho"), rho);
+
     edm::Handle<std::vector< PileupSummaryInfo > >  PupInfo;
     iEvent.getByLabel(edm::InputTag("addPileupInfo"), PupInfo);
 
     std::vector<PileupSummaryInfo>::const_iterator PVI;
 
     int npv = -1;
-    for(PVI = PupInfo->begin(); PVI != PupInfo->end(); ++PVI) {
+    if( PupInfo.isValid()){
+      for(PVI = PupInfo->begin(); PVI != PupInfo->end(); ++PVI) {
 
-      int BX = PVI->getBunchCrossing();
+        int BX = PVI->getBunchCrossing();
 
-      if(BX == 0) {
-        npv = PVI->getPU_NumInteractions();
-        continue;
-      }
+        if(BX == 0) {
+          npv = PVI->getPU_NumInteractions();
+          continue;
+        }
 
+      } 
     }
-
     npileup = npv;
 
     edm::Handle<reco::VertexCollection> recVtxs_;
@@ -347,16 +360,24 @@ class TopDILAnalyzer : public edm::EDFilter {
           corrjet.SetPxPyPzE(jit->px(),jit->py(),jit->pz(),jit->energy());
 
           double scaleF = 1.0;
-          if(doResJec_){
-            resJetCorrector_->setJetEta(jit->eta());
-            resJetCorrector_->setJetPt(jit->pt());
+          if(doJecFly_){
+            reco::Candidate::LorentzVector uncorrJet = jit->correctedP4(0);
+
+            corrjet.SetPxPyPzE(uncorrJet.px(),uncorrJet.py(),uncorrJet.pz(),uncorrJet.energy());
+            resJetCorrector_->setJetEta( uncorrJet.eta() ); 
+            resJetCorrector_->setJetPt ( uncorrJet.pt() ); 
+            resJetCorrector_->setJetE  ( uncorrJet.energy() ); 
+            resJetCorrector_->setJetA  ( jit->jetArea() ); 
+            resJetCorrector_->setRho   ( *(rho.product()) ); 
+            resJetCorrector_->setNPV   ( nv ); 
+
             scaleF = resJetCorrector_->getCorrection();
             corrjet *= scaleF;
           }
 
           if(doJecUnc_){
-            jecUnc_->setJetEta(jit->eta());
-            jecUnc_->setJetPt(scaleF*jit->pt());
+            jecUnc_->setJetEta(corrjet.eta());
+            jecUnc_->setJetPt(corrjet.pt());
             met_x += corrjet.px();
             met_y += corrjet.py();
             double unc = jecUnc_->getUncertainty(up_);
@@ -384,11 +405,11 @@ class TopDILAnalyzer : public edm::EDFilter {
           bool passId = looseJetIdSelector_( *jit, looseJetIdSel);
           //jet id
           if(passId){
-            const double dRval1 = deltaR(jit->eta(), jit->phi(), it1.eta(), it1.phi());
-            const double dRval2 = deltaR(jit->eta(), jit->phi(), it2.eta(), it2.phi());
-            bool overlap = checkOverlap(jit->eta(), jit->phi(), dRval1, lep1.relpfIso04(), dRval2, lep2.relpfIso04());
+            //const double dRval1 = deltaR(jit->eta(), jit->phi(), it1.eta(), it1.phi());
+            //const double dRval2 = deltaR(jit->eta(), jit->phi(), it2.eta(), it2.phi());
+            //bool overlap = checkOverlap(jit->eta(), jit->phi(), dRval1, lep1.relpfIso04(), dRval2, lep2.relpfIso04());
             //jet cleaning
-            if( overlap ) continue;
+            //if( overlap ) continue;
 
             jets->push_back(corrjet);
 
@@ -617,6 +638,7 @@ class TopDILAnalyzer : public edm::EDFilter {
   unsigned int nvertex;
   double weight;
   // Residual Jet energy correction for 38X
+  bool doJecFly_;
   bool doResJec_;
   bool doJecUnc_;
   bool up_;
