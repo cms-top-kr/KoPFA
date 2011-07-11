@@ -16,7 +16,7 @@ from KoPFA.TopAnalyzer.PileUpWeight_cff import *
 
 PUweight = cms.EDProducer("EventWeightProducer",
   PileUpRD = PileUpRD2011, 
-  PileUpMC = probdistFlat10 #PoissonIntDist, PoissonOneXDist 
+  PileUpMC = PoissonIntDist #probdistFlat10, PoissonOneXDist 
 )
 
 VertexFilter = cms.EDFilter('VertexFilter',
