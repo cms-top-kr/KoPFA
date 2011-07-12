@@ -40,12 +40,6 @@ public:
                 const string fileName, const double xsec,
                 const Color_t color);
 
-  void addMCSig(const string mcSampleName, const string mcSampleLabel,
-                const string fileName, const double xsec, const double nEvents,
-                const Color_t color, const bool doStackSignal = true);
-  void addMCBkg(const string mcSampleName, const string mcSampleLabel,
-                const string fileName, const double xsec, const double nEvents,
-                const Color_t color);
   void addRealData(const string fileName, const double lumi);
 
   void addCutStep(const TCut cut, const TString monitorPlotNamesStr, const double plotScale = 1.0);
@@ -211,26 +205,11 @@ void TopAnalyzerLite::addMCSig(const string name, const string label,
   addMC(mcSigs_, name, label, fileName, xsec, -1, color);
 }
 
-void TopAnalyzerLite::addMCSig(const string name, const string label,
-                               const string fileName, const double xsec, const double nEvents,
-                               const Color_t color, const bool doStackSignal)
-{
-  doStackSignal_ = doStackSignal;
-  addMC(mcSigs_, name, label, fileName, xsec, nEvents, color);
-}
-
 void TopAnalyzerLite::addMCBkg(const string name, const string label,
                                const string fileName, const double xsec,
                                const Color_t color)
 {
   addMC(mcBkgs_, name, label, fileName, xsec, -1, color);
-}
-
-void TopAnalyzerLite::addMCBkg(const string name, const string label,
-                               const string fileName, const double xsec, const double nEvents,
-                               const Color_t color)
-{
-  addMC(mcBkgs_, name, label, fileName, xsec, nEvents, color);
 }
 
 void TopAnalyzerLite::addRealData(const string fileName, const double lumi)
