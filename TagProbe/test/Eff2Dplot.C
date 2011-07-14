@@ -9,7 +9,6 @@
 #include <fstream.h>
 #include "styleTnP.h"
 
-
 Eff2Dplot(){
 
   ofstream fout; 
@@ -26,6 +25,7 @@ Eff2Dplot(){
   TString plot = "pt_abseta_PLOT";
   TString var = "pt_abseta";
 
+/*
   TString FileIso=   "20110714/result_TightIdIso_RD.root";
   TString FileIso_mc="20110714/result_TightIdIso_MC.root";
   TString FileID=    "20110714/result_Id_RD.root";
@@ -33,6 +33,15 @@ Eff2Dplot(){
 
   TString DirID="tnpId/IdTight_pt_abseta/fit_eff_plots";
   TString DirIso="tnpTightIdIso/Iso17_pt_abseta/cnt_eff_plots";
+*/
+
+  TString FileIso=   "./data4/Efficiency_Iso_data.root";
+  TString FileIso_mc="./mc4/Efficiency_Iso_mc.root";
+  TString FileID=    "./data4/Efficiency_ID_data.root";
+  TString FileID_mc= "./mc4/Efficiency_ID_mc.root";
+
+  TString DirID="tnpTree/ID_pt_abseta/fit_eff_plots";
+  TString DirIso="tnpTreeIso/pt_abseta/fit_eff_plots";
 
 //////////////////////////
   TFile * f_Iso = new TFile(Form("%s",FileIso.Data()));
@@ -254,3 +263,4 @@ Eff2Dplot(){
   fout2.close();
 
 }
+
