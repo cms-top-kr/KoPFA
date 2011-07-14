@@ -26,45 +26,47 @@ Eff2Dplot(){
   TString plot = "pt_abseta_PLOT";
   TString var = "pt_abseta";
 
-  TString FileIso=   "./data4/Efficiency_Iso_data.root";
-  TString FileIso_mc="./mc4/Efficiency_Iso_mc.root";
-  TString FileID=    "./data4/Efficiency_ID_data.root";
-  TString FileID_mc= "./mc4/Efficiency_ID_mc.root";
+  TString FileIso=   "20110714/result_TightIdIso_RD.root";
+  TString FileIso_mc="20110714/result_TightIdIso_MC.root";
+  TString FileID=    "20110714/result_Id_RD.root";
+  TString FileID_mc= "20110714/result_Id_MC.root";
 
-  TString DirID="tnpTree/ID_pt_abseta/fit_eff_plots";
-  TString DirIso="tnpTreeIso/pt_abseta/fit_eff_plots";
+  TString DirID="tnpId/IdTight_pt_abseta/fit_eff_plots";
+  TString DirIso="tnpTightIdIso/Iso17_pt_abseta/cnt_eff_plots";
 
 //////////////////////////
   TFile * f_Iso = new TFile(Form("%s",FileIso.Data()));
-  f_Iso->cd("tnpTreeIso/pt_abseta/fit_eff_plots");
-  TCanvas* cc1 = (TCanvas*) gDirectory->FindKey("pt_abseta_PLOT")->ReadObj();
-  TH2* hh1 = (TH2F*) cc1->FindObject("pt_abseta_PLOT");
-  cout << "---" << "pt_abseta_PLOT" << "---" << hName << "---" << endl;
+  f_Iso->cd(DirIso);
+  TCanvas* cc1 = (TCanvas*) gDirectory->FindKey(plot)->ReadObj();
+  cc1->SetName("pt_abseta_PLOT_IsoRD");
+  TH2* hh1 = (TH2F*) cc1->FindObject(plot);
+  cout << "---" << plot << "---" << hName << "---" << endl;
   hh1->SetMarkerSize(1.9);
   hh1->GetXaxis()->SetMoreLogLabels(true);
   hh1->SetLabelOffset(0.0005);
   hh1->SetTitleOffset(1.08);
   cc1->SetLogx();
-//  cc1->Draw();
-//  cc1->Print("Eff_Iso_data_"+var+".gif");
-//  cc1->Print("Eff_Iso_data_"+var+".png");
-//  cc1->Print("Eff_Iso_data_"+var+".eps");
+  cc1->Draw();
+  cc1->Print("Eff_Iso_data_"+var+".gif");
+  cc1->Print("Eff_Iso_data_"+var+".png");
+  cc1->Print("Eff_Iso_data_"+var+".eps");
 
 //////////////////////////
   TFile * f_Isomc = new TFile(Form("%s",FileIso_mc.Data()));
-  f_Isomc->cd("tnpTreeIso/pt_abseta/fit_eff_plots");
-  TCanvas* cc2 = (TCanvas*) gDirectory->FindKey("pt_abseta_PLOT")->ReadObj();
-  TH2* hh2 = (TH2F*) cc2->FindObject("pt_abseta_PLOT");
-  cout << "---" << "pt_abseta_PLOT" << "---" << hName << "---" << endl;
+  f_Isomc->cd(DirIso);
+  TCanvas* cc2 = (TCanvas*) gDirectory->FindKey(plot)->ReadObj();
+  cc2->SetName("pt_abseta_PLOT_IsoMC");
+  TH2* hh2 = (TH2F*) cc2->FindObject(plot);
+  cout << "---" << plot << "---" << hName << "---" << endl;
   hh2->SetMarkerSize(1.9);
   hh2->GetXaxis()->SetMoreLogLabels(true);
   hh2->SetLabelOffset(0.0005);
   hh2->SetTitleOffset(1.08);
   cc2->SetLogx();
-//  cc2->Draw();
-//  cc2->Print("Eff_Iso_mc_"+var+".gif");
-//  cc2->Print("Eff_Iso_mc_"+var+".png");
-//  cc2->Print("Eff_Iso_mc_"+var+".eps");
+  cc2->Draw();
+  cc2->Print("Eff_Iso_mc_"+var+".gif");
+  cc2->Print("Eff_Iso_mc_"+var+".png");
+  cc2->Print("Eff_Iso_mc_"+var+".eps");
 
 ///////////////////////////////////////////////////////////////////
 //  For print out the efficiency into a file
@@ -142,35 +144,37 @@ Eff2Dplot(){
 
 ////////////////////////////////////////////////////////////////////////////
   TFile * f_ID = new TFile(Form("%s",FileID.Data()));
-  f_ID->cd("tnpTree/ID_pt_abseta/fit_eff_plots");
-  TCanvas* cc3 = (TCanvas*) gDirectory->FindKey("pt_abseta_PLOT")->ReadObj();
-  TH2* hh3 = (TH2F*) cc3->FindObject("pt_abseta_PLOT");
-  cout << "---" << "pt_abseta_PLOT" << "---" << hName << "---" << endl;
+  f_ID->cd(DirID);
+  TCanvas* cc3 = (TCanvas*) gDirectory->FindKey(plot)->ReadObj();
+  cc3->SetName("pt_abseta_PLOT_ID_RD");
+  TH2* hh3 = (TH2F*) cc3->FindObject(plot);
+  cout << "---" << plot << "---" << hName << "---" << endl;
   hh3->SetMarkerSize(1.9);
   hh3->GetXaxis()->SetMoreLogLabels(true);
   hh3->SetLabelOffset(0.0005);
   hh3->SetTitleOffset(1.08);
   cc3->SetLogx();
-//  cc3->Draw();
-//  cc3->Print("Eff_ID_data_"+var+".gif");
-//  cc3->Print("Eff_ID_data_"+var+".png");
-//  cc3->Print("Eff_ID_data_"+var+".eps");
+  cc3->Draw();
+  cc3->Print("Eff_ID_data_"+var+".gif");
+  cc3->Print("Eff_ID_data_"+var+".png");
+  cc3->Print("Eff_ID_data_"+var+".eps");
 
 //////////////////////////
   TFile * f_IDmc = new TFile(Form("%s",FileID_mc.Data()));
-  f_IDmc->cd("tnpTree/ID_pt_abseta/fit_eff_plots");
-  TCanvas* cc4 = (TCanvas*) gDirectory->FindKey("pt_abseta_PLOT")->ReadObj();
-  TH2* hh4 = (TH2F*) cc4->FindObject("pt_abseta_PLOT");
-  cout << "---" << "pt_abseta_PLOT" << "---" << hName << "---" << endl;
+  f_IDmc->cd(DirID);
+  TCanvas* cc4 = (TCanvas*) gDirectory->FindKey(plot)->ReadObj();
+  cc4->SetName("pt_abseta_PLOT_ID_MC");
+  TH2* hh4 = (TH2F*) cc4->FindObject(plot);
+  cout << "---" << plot << "---" << hName << "---" << endl;
   hh4->SetMarkerSize(1.9);
   hh4->GetXaxis()->SetMoreLogLabels(true);
   hh4->SetLabelOffset(0.0005);
   hh4->SetTitleOffset(1.08);
   cc4->SetLogx();
-//  cc4->Draw();
-//  cc4->Print("Eff_ID_mc_"+var+".gif");
-//  cc4->Print("Eff_ID_mc_"+var+".png");
-//  cc4->Print("Eff_ID_mc_"+var+".eps");
+  cc4->Draw();
+  cc4->Print("Eff_ID_mc_"+var+".gif");
+  cc4->Print("Eff_ID_mc_"+var+".png");
+  cc4->Print("Eff_ID_mc_"+var+".eps");
 ////////////////////////////////////////////////////////////////////
 //  For print out the efficiency into a file
 ////////////////////////////////////////////////////////////////////
