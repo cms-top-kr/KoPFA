@@ -1,0 +1,80 @@
+################################################################################
+### Duplicated file entry found in the directory /castor/cern.ch/user/b/bhlee/2011mc/Summer11/MU/Jul14/WJetsToLNu_1
+### File index = 4
+################################################################################
+################################################################################
+### Duplicated file entry found in the directory /castor/cern.ch/user/b/bhlee/2011mc/Summer11/MU/Jul14/WJetsToLNu_1
+### File index = 62
+################################################################################
+import FWCore.ParameterSet.Config as cms
+
+readFiles = cms.untracked.vstring()
+source = cms.Source("PoolSource",
+    noEventSort = cms.untracked.bool(True),
+    duplicateCheckMode = cms.untracked.string("noDuplicateCheck"),
+    fileNames = readFiles
+)
+readFiles.extend([
+"rfio:/castor/cern.ch/user/b/bhlee/2011mc/Summer11/MU/Jul14/WJetsToLNu_1/patTuple_skim_1_3_3ot.root",
+"rfio:/castor/cern.ch/user/b/bhlee/2011mc/Summer11/MU/Jul14/WJetsToLNu_1/patTuple_skim_2_3_ZQF.root",
+"rfio:/castor/cern.ch/user/b/bhlee/2011mc/Summer11/MU/Jul14/WJetsToLNu_1/patTuple_skim_3_3_lnO.root",
+"rfio:/castor/cern.ch/user/b/bhlee/2011mc/Summer11/MU/Jul14/WJetsToLNu_1/patTuple_skim_4_1_hWH.root",
+"rfio:/castor/cern.ch/user/b/bhlee/2011mc/Summer11/MU/Jul14/WJetsToLNu_1/patTuple_skim_5_0_leF.root",
+"rfio:/castor/cern.ch/user/b/bhlee/2011mc/Summer11/MU/Jul14/WJetsToLNu_1/patTuple_skim_6_3_aBT.root",
+"rfio:/castor/cern.ch/user/b/bhlee/2011mc/Summer11/MU/Jul14/WJetsToLNu_1/patTuple_skim_7_3_rD5.root",
+"rfio:/castor/cern.ch/user/b/bhlee/2011mc/Summer11/MU/Jul14/WJetsToLNu_1/patTuple_skim_8_3_z4R.root",
+"rfio:/castor/cern.ch/user/b/bhlee/2011mc/Summer11/MU/Jul14/WJetsToLNu_1/patTuple_skim_11_0_s84.root",
+"rfio:/castor/cern.ch/user/b/bhlee/2011mc/Summer11/MU/Jul14/WJetsToLNu_1/patTuple_skim_12_0_tHN.root",
+"rfio:/castor/cern.ch/user/b/bhlee/2011mc/Summer11/MU/Jul14/WJetsToLNu_1/patTuple_skim_13_0_gDW.root",
+"rfio:/castor/cern.ch/user/b/bhlee/2011mc/Summer11/MU/Jul14/WJetsToLNu_1/patTuple_skim_14_0_0Wt.root",
+"rfio:/castor/cern.ch/user/b/bhlee/2011mc/Summer11/MU/Jul14/WJetsToLNu_1/patTuple_skim_15_0_htk.root",
+"rfio:/castor/cern.ch/user/b/bhlee/2011mc/Summer11/MU/Jul14/WJetsToLNu_1/patTuple_skim_17_0_dtW.root",
+"rfio:/castor/cern.ch/user/b/bhlee/2011mc/Summer11/MU/Jul14/WJetsToLNu_1/patTuple_skim_18_0_TBW.root",
+"rfio:/castor/cern.ch/user/b/bhlee/2011mc/Summer11/MU/Jul14/WJetsToLNu_1/patTuple_skim_19_1_i4U.root",
+"rfio:/castor/cern.ch/user/b/bhlee/2011mc/Summer11/MU/Jul14/WJetsToLNu_1/patTuple_skim_20_0_GyZ.root",
+"rfio:/castor/cern.ch/user/b/bhlee/2011mc/Summer11/MU/Jul14/WJetsToLNu_1/patTuple_skim_21_0_Pjl.root",
+"rfio:/castor/cern.ch/user/b/bhlee/2011mc/Summer11/MU/Jul14/WJetsToLNu_1/patTuple_skim_22_0_nSd.root",
+"rfio:/castor/cern.ch/user/b/bhlee/2011mc/Summer11/MU/Jul14/WJetsToLNu_1/patTuple_skim_23_0_yOl.root",
+"rfio:/castor/cern.ch/user/b/bhlee/2011mc/Summer11/MU/Jul14/WJetsToLNu_1/patTuple_skim_24_3_qqf.root",
+"rfio:/castor/cern.ch/user/b/bhlee/2011mc/Summer11/MU/Jul14/WJetsToLNu_1/patTuple_skim_25_3_p5F.root",
+"rfio:/castor/cern.ch/user/b/bhlee/2011mc/Summer11/MU/Jul14/WJetsToLNu_1/patTuple_skim_26_3_JOO.root",
+"rfio:/castor/cern.ch/user/b/bhlee/2011mc/Summer11/MU/Jul14/WJetsToLNu_1/patTuple_skim_27_3_Px6.root",
+"rfio:/castor/cern.ch/user/b/bhlee/2011mc/Summer11/MU/Jul14/WJetsToLNu_1/patTuple_skim_28_3_OOS.root",
+"rfio:/castor/cern.ch/user/b/bhlee/2011mc/Summer11/MU/Jul14/WJetsToLNu_1/patTuple_skim_29_0_nGU.root",
+"rfio:/castor/cern.ch/user/b/bhlee/2011mc/Summer11/MU/Jul14/WJetsToLNu_1/patTuple_skim_30_0_L47.root",
+"rfio:/castor/cern.ch/user/b/bhlee/2011mc/Summer11/MU/Jul14/WJetsToLNu_1/patTuple_skim_31_0_tOj.root",
+"rfio:/castor/cern.ch/user/b/bhlee/2011mc/Summer11/MU/Jul14/WJetsToLNu_1/patTuple_skim_32_0_k1l.root",
+"rfio:/castor/cern.ch/user/b/bhlee/2011mc/Summer11/MU/Jul14/WJetsToLNu_1/patTuple_skim_33_0_ANr.root",
+"rfio:/castor/cern.ch/user/b/bhlee/2011mc/Summer11/MU/Jul14/WJetsToLNu_1/patTuple_skim_34_0_mgP.root",
+"rfio:/castor/cern.ch/user/b/bhlee/2011mc/Summer11/MU/Jul14/WJetsToLNu_1/patTuple_skim_35_0_e9d.root",
+"rfio:/castor/cern.ch/user/b/bhlee/2011mc/Summer11/MU/Jul14/WJetsToLNu_1/patTuple_skim_36_0_n03.root",
+"rfio:/castor/cern.ch/user/b/bhlee/2011mc/Summer11/MU/Jul14/WJetsToLNu_1/patTuple_skim_37_0_m9u.root",
+"rfio:/castor/cern.ch/user/b/bhlee/2011mc/Summer11/MU/Jul14/WJetsToLNu_1/patTuple_skim_41_0_jZW.root",
+"rfio:/castor/cern.ch/user/b/bhlee/2011mc/Summer11/MU/Jul14/WJetsToLNu_1/patTuple_skim_42_0_jJF.root",
+"rfio:/castor/cern.ch/user/b/bhlee/2011mc/Summer11/MU/Jul14/WJetsToLNu_1/patTuple_skim_43_0_0p5.root",
+"rfio:/castor/cern.ch/user/b/bhlee/2011mc/Summer11/MU/Jul14/WJetsToLNu_1/patTuple_skim_44_0_sYM.root",
+"rfio:/castor/cern.ch/user/b/bhlee/2011mc/Summer11/MU/Jul14/WJetsToLNu_1/patTuple_skim_45_0_OsA.root",
+"rfio:/castor/cern.ch/user/b/bhlee/2011mc/Summer11/MU/Jul14/WJetsToLNu_1/patTuple_skim_46_0_ZID.root",
+"rfio:/castor/cern.ch/user/b/bhlee/2011mc/Summer11/MU/Jul14/WJetsToLNu_1/patTuple_skim_47_0_Goi.root",
+"rfio:/castor/cern.ch/user/b/bhlee/2011mc/Summer11/MU/Jul14/WJetsToLNu_1/patTuple_skim_48_0_aaT.root",
+"rfio:/castor/cern.ch/user/b/bhlee/2011mc/Summer11/MU/Jul14/WJetsToLNu_1/patTuple_skim_49_0_rDX.root",
+"rfio:/castor/cern.ch/user/b/bhlee/2011mc/Summer11/MU/Jul14/WJetsToLNu_1/patTuple_skim_50_0_03s.root",
+"rfio:/castor/cern.ch/user/b/bhlee/2011mc/Summer11/MU/Jul14/WJetsToLNu_1/patTuple_skim_51_0_IYq.root",
+"rfio:/castor/cern.ch/user/b/bhlee/2011mc/Summer11/MU/Jul14/WJetsToLNu_1/patTuple_skim_52_0_vUS.root",
+"rfio:/castor/cern.ch/user/b/bhlee/2011mc/Summer11/MU/Jul14/WJetsToLNu_1/patTuple_skim_53_0_QF1.root",
+"rfio:/castor/cern.ch/user/b/bhlee/2011mc/Summer11/MU/Jul14/WJetsToLNu_1/patTuple_skim_54_0_HGH.root",
+"rfio:/castor/cern.ch/user/b/bhlee/2011mc/Summer11/MU/Jul14/WJetsToLNu_1/patTuple_skim_55_0_27D.root",
+"rfio:/castor/cern.ch/user/b/bhlee/2011mc/Summer11/MU/Jul14/WJetsToLNu_1/patTuple_skim_56_0_V3A.root",
+"rfio:/castor/cern.ch/user/b/bhlee/2011mc/Summer11/MU/Jul14/WJetsToLNu_1/patTuple_skim_59_0_zGS.root",
+"rfio:/castor/cern.ch/user/b/bhlee/2011mc/Summer11/MU/Jul14/WJetsToLNu_1/patTuple_skim_60_0_8LJ.root",
+"rfio:/castor/cern.ch/user/b/bhlee/2011mc/Summer11/MU/Jul14/WJetsToLNu_1/patTuple_skim_61_0_q9Z.root",
+"rfio:/castor/cern.ch/user/b/bhlee/2011mc/Summer11/MU/Jul14/WJetsToLNu_1/patTuple_skim_62_0_dZD.root",
+"rfio:/castor/cern.ch/user/b/bhlee/2011mc/Summer11/MU/Jul14/WJetsToLNu_1/patTuple_skim_63_3_98u.root",
+"rfio:/castor/cern.ch/user/b/bhlee/2011mc/Summer11/MU/Jul14/WJetsToLNu_1/patTuple_skim_64_3_yYK.root",
+"rfio:/castor/cern.ch/user/b/bhlee/2011mc/Summer11/MU/Jul14/WJetsToLNu_1/patTuple_skim_65_3_uiA.root",
+"rfio:/castor/cern.ch/user/b/bhlee/2011mc/Summer11/MU/Jul14/WJetsToLNu_1/patTuple_skim_66_0_MXB.root",
+"rfio:/castor/cern.ch/user/b/bhlee/2011mc/Summer11/MU/Jul14/WJetsToLNu_1/patTuple_skim_67_0_2Od.root",
+"rfio:/castor/cern.ch/user/b/bhlee/2011mc/Summer11/MU/Jul14/WJetsToLNu_1/patTuple_skim_68_0_0bh.root",
+"rfio:/castor/cern.ch/user/b/bhlee/2011mc/Summer11/MU/Jul14/WJetsToLNu_1/patTuple_skim_69_0_KbV.root",
+"rfio:/castor/cern.ch/user/b/bhlee/2011mc/Summer11/MU/Jul14/WJetsToLNu_1/patTuple_skim_70_0_fET.root",
+])
