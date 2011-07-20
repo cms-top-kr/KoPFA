@@ -105,12 +105,14 @@ def addLooseLeptons(process):
 	process.patMuonsLoosePFlow = process.patMuonsPFlow.clone(
 	    pfMuonSource = cms.InputTag("pfIsolatedMuonsLoosePFlow")
 	    )
-	adaptPFMuons( process, process.patMuonsLoosePFlow, "PFlow")
+	#adaptPFMuons( process, process.patMuonsLoosePFlow, "PFlow")
 
-        process.muonMatchLoosePFlow = process.muonMatchPFlow.clone(
-            src = cms.InputTag("pfIsolatedMuonsLoosePFlow")
-            )
-        process.muonMatchPFlow.src = cms.InputTag("pfIsolatedMuonsPFlow")
+        #process.muonMatchLoosePFlow = process.muonMatchPFlow.clone(
+        #    src = cms.InputTag("pfIsolatedMuonsLoosePFlow")
+        #    )
+        #process.muonMatchPFlow.src = "pfIsolatedMuonsPFlow"
+
+        process.patMuonsLoosePFlow.addGenMatch = False
 
 	process.selectedPatMuonsLoosePFlow = process.selectedPatMuonsPFlow.clone(
 	    src = cms.InputTag("patMuonsLoosePFlow")
@@ -128,6 +130,7 @@ def addLooseLeptons(process):
 	process.selectedPatElectronsLoosePFlow = process.selectedPatElectronsPFlow.clone(
 	    src = cms.InputTag("patElectronsLoosePFlow")
 	    )
+
 
 	process.looseLeptonSequence = cms.Sequence(
 	    process.pfIsolatedMuonsLoosePFlow +
