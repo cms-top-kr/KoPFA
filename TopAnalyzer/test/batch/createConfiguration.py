@@ -8,12 +8,16 @@ import time
 import commands
 
 newSubmit = False
+#newSubmit = True 
 
 class CreateConfig:
     def __init__(self, dataType, decay):
         ## All things you should set before submit
         self.sourceDir = os.environ['CMSSW_BASE']+'/src/KoPFA/TopAnalyzer/python/Sources'
         self.mcReign = 'Summer11'
+
+        #self.maxFileSize = 0 # Set 0 not to do merging
+        self.maxFileSize = 1000000000
 
         self.outProtocol = 'ssh'
         self.outHost = 'cmskr-top'
@@ -22,6 +26,8 @@ class CreateConfig:
         #self.outDir = '/afs/cern.ch/'+os.environ['USER'][0]+'/'+os.environ['USER']+'YOUR_DIRECTORY'
         #self.outProtocol = 'rfio'
         #self.outDir = '/castor/cern.ch/user/'+os.environ['USER'][0]+'/'+os.environ['USER']+'YOUR_DIRECTORY'
+
+        print "=== Creating", dataType, decay, "jobs ==="
 
         ## Set decay mode name
         if decay in ('ElEl', 'elel', 'ELEL', 'ee', 'EE', 'ELE', 'ele'):
@@ -94,13 +100,26 @@ class CreateConfig:
                 print 'Cannot find dataset file :', os.path.basename(datasetFile)
                 continue
 
-            self.datasetFileMap[dataset] = []
+            self.datasetFileMap[dataset] = [[],]
+            sumFileSize = 0
             for line in open(datasetFile).readlines():
                 line = line.strip().strip(",").strip("'").strip('"')
                 if '.root' not in line:
                     continue
 
-                self.datasetFileMap[dataset].append(line)
+                if self.maxFileSize > 0:
+                    fileSize = self.getFileSize(line)
+                    if fileSize == 0:
+                        continue
+
+                    self.datasetFileMap[dataset][-1].append(line)
+                    sumFileSize += fileSize
+
+                    if sumFileSize > self.maxFileSize:
+                        self.datasetFileMap[dataset].append([])
+                        sumFileSize = 0
+                else:
+                    self.datasetFileMap[dataset].append([line])
 
         ## Write contents
         self.header = """import FWCore.ParameterSet.Config as cms
@@ -172,7 +191,7 @@ done
         elif 'ssh' == self.outProtocol:
             runScript.write("""
 OUTHOST=%s
-ssh $OUTHOST 'mkdir -p $OUTDIR'
+ssh $OUTHOST "mkdir -p $OUTDIR"
 scp vallot_*.root $OUTHOST:$OUTDIR
 """ % (self.outHost))
         elif 'file' == self.outProtocol:
@@ -182,7 +201,7 @@ mv vallot_*.root $OUTDIR/
         runScript.close()
 
         for dataset in self.datasetFileMap:
-            print dataset, len(self.datasetFileMap[dataset])
+            print 'Dataset =', dataset, 'Number of jobs =', len(self.datasetFileMap[dataset])
 
             ## Decay mode specific configurations
             specificCfg = "\n## Decay mode specific configurations"
@@ -215,13 +234,14 @@ process.GenZmassFilter.max = 50
             os.system('chmod +x %s' % submitScript.name)
             submitScript.write('#!/bin/bash\n')
 
-            for (index, file) in enumerate(self.datasetFileMap[dataset]):
+            for (index, files) in enumerate(self.datasetFileMap[dataset]):
                 sectionName = '%s_%03d' % (dataset, index+1)
                 cfgOut = open('%s/ntuple_%s_cfg.py' % (cfgDir, sectionName), 'w')
 
                 cfgOut.write(self.header)
                 cfgOut.write(specificCfg)
-                cfgOut.write('process.source.fileNames.append("%s")\n' % file)
+                for file in files:
+                    cfgOut.write('process.source.fileNames.append("%s")\n' % file)
                 cfgOut.write('process.TFileService.fileName = "vallot_%s.root"\n' % sectionName)
                 cfgOut.write(self.footer)
 
@@ -231,6 +251,26 @@ process.GenZmassFilter.max = 50
                 cfgOut = None
 
             submitScript.close()
+
+    def getFileSize(self, file):
+        file = file.replace('///', '/')
+        file = file.replace('//', '/')
+        if 'rfio:' == file[:5]:
+            fileQuery = 'rfdir %s' % file[5:]
+        elif 'file:' == file[:5]:
+            fileQuery = 'ls -l %s' % file[5:]
+        else:
+            fileQuery = 'rfdir /castor/cern.ch/cms/%s' % file
+
+        fileQuery += ' | grep %s | awk \'{print $5}\'' % os.path.basename(file)
+
+        fileInfo = commands.getoutput(fileQuery)
+        if not fileInfo or len(fileInfo) == 0:
+            return 0
+
+        fileSize = int(fileInfo)
+        return fileSize
+
 
 if newSubmit == True:
     CreateConfig('RD', 'ElEl')
