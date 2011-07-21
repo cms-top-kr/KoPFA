@@ -6,6 +6,7 @@ import re
 import sys
 import time
 import commands
+import datetime
 
 newSubmit = False
 #newSubmit = True 
@@ -17,11 +18,12 @@ class CreateConfig:
         self.mcReign = 'Summer11'
 
         #self.maxFileSize = 0 # Set 0 not to do merging
-        self.maxFileSize = 1000000000
+        self.maxFileSize = 1000000000 # 1GByte = 1000000000
 
         self.outProtocol = 'ssh'
         self.outHost = 'cmskr-top'
-        self.outDir = '/data/export/'+os.environ['USER']+'/TopAnalysis/ntuple'
+        self.outDir = '/data/export/'+os.environ['USER']+'/TopAnalysis/ntuple/'+dataType+'/'+decay
+        self.outDir += '/'+datetime.date.today().strftime('%Y%m%d')
         #self.outProtocol = 'file'
         #self.outDir = '/afs/cern.ch/'+os.environ['USER'][0]+'/'+os.environ['USER']+'YOUR_DIRECTORY'
         #self.outProtocol = 'rfio'
