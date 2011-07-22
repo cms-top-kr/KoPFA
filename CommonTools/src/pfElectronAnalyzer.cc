@@ -68,7 +68,7 @@ void pfElectronAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup
 
   bool find = false;
 
-  for (unsigned int i=0; i < electrons_->size()-1;++i){
+  for (unsigned int i=0; i < electrons_->size();++i){
     if(find) break;
     for (unsigned int j=i+1; j < electrons_->size();++j){
       if(find) break;
@@ -107,20 +107,20 @@ void pfElectronAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup
       if( dimass < 12) continue;
       bool qcd = relIso2 > 0.5 && fabs( dimass - 91) > 30 ;
 
-      for(int i = 0 ; i < (int)cutNames.size() ; i++){
-        int eidBit1 = (int)it1.electronID(cutNames[i]);
-        int eidBit2 = (int)it2.electronID(cutNames[i]);
+      for(int k = 0 ; k < (int)cutNames.size() ; k++){
+        int eidBit1 = (int)it1.electronID(cutNames[k]);
+        int eidBit2 = (int)it2.electronID(cutNames[k]);
         bool passID1 = (eidBit1 & 5) == 5; // eidMask = 5 : 1(id)+4(con) 
         bool passID2 = (eidBit2 & 5) == 5; // eidMask = 5 : 1(id)+4(con) 
 
         if(passID1 && passID2) { 
-          id->Fill(i); 
-          id2iso->Fill(relIso1, i);
-          if(it1.charge()*it2.charge() > 0) idLike->Fill(i);
+          id->Fill(k); 
+          id2iso->Fill(relIso1, k);
+          if(it1.charge()*it2.charge() > 0) idLike->Fill(k);
           if(qcd){
-            idQCD->Fill(i);
-            id2isoQCD->Fill(relIso1,i);
-            if(it1.charge()*it2.charge() > 0) idQCDLike->Fill(i);
+            idQCD->Fill(k);
+            id2isoQCD->Fill(relIso1,k);
+            if(it1.charge()*it2.charge() > 0) idQCDLike->Fill(k);
           }
           find = true;
         }
