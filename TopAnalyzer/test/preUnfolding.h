@@ -14,13 +14,8 @@
 #include <iomanip>
 #include <iostream>
 
-//float detBins[] = {0, 350, 375, 400, 425, 450, 475, 500, 550, 600, 700, 800, 1400}; //12 bins
-float detBins[] = {0, 350, 400, 450, 500, 550, 600, 700, 800, 1400}; // 9 bins
-//float detBins[] = {0, 350, 450, 550, 650, 750, 850, 1400}; // 7 bins
-
-//float genBins[] = {0, 350, 375, 400, 425, 450, 475, 500, 550, 600, 700, 800, 1400}; //12 bins
-float genBins[] = {0, 350, 400, 450, 500, 550, 600, 700, 800, 1400}; // 9 bins
-//float genBins[] = {0, 350, 450, 550, 650, 750, 850, 1400};  // 7 bins
+float detBins[] = {0, 340, 400, 450, 500, 550, 600, 700, 800, 1400}; // 9 bins
+float genBins[] = {0, 340, 400, 450, 500, 550, 600, 700, 800, 1400}; // 9 bins
 
 int nDet = sizeof(detBins)/sizeof(float) - 1;
 int nGen = sizeof(genBins)/sizeof(float) - 1;
@@ -117,7 +112,7 @@ TH1F* getGenDistHisto( vector<std::string> mcPath, vector<std::string> rdPath, s
 
 }
 
-TH1F* getAcceptanceHisto(vector<std::string> mcPath, vector<std::string> rdPath, string cutStep, vector<TString> decayMode, TString name ){
+TH1F* getAcceptanceHisto(vector<std::string> mcPath, vector<std::string> rdPath, string cutStep, vector<TString> decayMode, TString name, TCut visible =""){
 
   TFile * fDen = new TFile("/data/export/common/Top/ntuple/ttbarGen.root");
   TTree* genTreeDen = (TTree*)fDen->Get("ttbarGenAna/tree");
@@ -125,7 +120,7 @@ TH1F* getAcceptanceHisto(vector<std::string> mcPath, vector<std::string> rdPath,
   TH1F* hDen = new TH1F("hDen", "Denominator", nGen, genBins);
   TH1F* hNum = new TH1F("hNum", "Numerator", nGen, genBins);
 
-  genTreeDen->Project("hDen", "ttbarGen.m()");
+  genTreeDen->Project("hDen", "ttbarGen.m()",visible);
 
   for(size_t i = 0; i < mcPath.size() ; i++){
 
@@ -184,7 +179,7 @@ TH1F* getAcceptanceHisto(vector<std::string> mcPath, vector<std::string> rdPath,
 
   }
   cout << hDen->GetEntries() << endl;
-
+  
   TGraphAsymmErrors* grpAccept = new TGraphAsymmErrors();
   TH1F *hAccept = new TH1F("hAccept","hAccept",nGen, genBins);
 
