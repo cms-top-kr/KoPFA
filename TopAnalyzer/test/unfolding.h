@@ -75,7 +75,7 @@ void unfoldingPlot(TH1* h_gen, TH1* h_rec, TH2* m, TH1* h_mea, TH1* h_genTTbar, 
  
   TMatrixD m_unfoldE = unfold->Ereco();
   //TVectorD v_unfoldE = unfold->ErecoV(RooUnfold::kCovariance);
-
+  
   TH1* truthDist = getTruthDist(hgen);
   truthDist->Draw();
   truthDist->GetXaxis()->SetTitle("M_{t#bar{t}} (GeV/c^{2})");
@@ -108,25 +108,27 @@ void unfoldingPlot(TH1* h_gen, TH1* h_rec, TH2* m, TH1* h_mea, TH1* h_genTTbar, 
   label->SetNDC();
   label->SetTextSize(0.05);
   //label->DrawLatex(x,y,"CMS Preliminary 2010");
-  label->DrawLatex(0.50,0.88,Form("%1.0f pb^{-1} at #sqrt{s} = 7 TeV",lumi));
+  label->DrawLatex(0.50,0.88,Form("%1.1f fb^{-1} at #sqrt{s} = 7 TeV",lumi/1000));
   //===============================================================================================
 
   //Toy Test =======================================================================================
   if(toy){
     unfold->RooUnfoldSvd::SetNtoysSVD(1000);
     cout << "n. of toys= " << unfold->RooUnfoldSvd::GetNtoysSVD() << endl;
-    TCanvas *c_toy =  new TCanvas(Form("c_toy_%s",name.Data()),Form("c_toy_%s",name.Data()),800,800);
-   
+
     bool skip = h_unfold->GetBinContent(1) == 0;
 
-    TH1 *h[9];
-    TF1 *g[9];
+    TH1 *h1[9];
+    TH1 *h2[9];
+    TF1 *g1[9];
+    TF1 *g2[9];
 
     for(int i=0; i <nbins; i++){
        double center = hgen->GetBinContent(i+1);
        //h[i] = new TH1F(Form("h%1.0f_%1.0f_%s",detBins[i],detBins[i+1],name.Data()), Form("h%1.0f_%1.0f_%s",detBins[i],detBins[i+1],name.Data()), 200, (center+10)-100,(center+10)+100);
        //h[i] = new TH1F(Form("h%1.0f_%1.0f_%s",detBins[i],detBins[i+1],name.Data()), Form("h%1.0f_%1.0f_%s",detBins[i],detBins[i+1],name.Data()), 1000,-10,10);
-       h[i] = new TH1F(Form("bin %1.0f ",i+1), Form("bin %1.0f",i+1), 650,-5,8);
+       h1[i] = new TH1F(Form("bin %1.0f ",i+1), Form("bin %1.0f",i+1), 650,-5,8);
+       h2[i] = new TH1F(Form("bin %1.0f ",i+1), Form("bin %1.0f",i+1), 100,-1,1);
     } 
 
     for(int i=0 ; i < 10000 ; i++){
@@ -139,48 +141,77 @@ void unfoldingPlot(TH1* h_gen, TH1* h_rec, TH2* m, TH1* h_mea, TH1* h_genTTbar, 
         double error_ = h_unfold->GetBinError(j+1);
         if( i == 9999) cout << "toy error= " << toyerror_ << " error = " << error_ << endl; 
         double gen_ = hgen->GetBinContent(j+1);
-        //double pull_ = (gen_ - rec_)/gen_;
-        double pull_ = (gen_ - rec_)/error_;
-        //h[j]->Fill(rec_);
-        h[j]->Fill(pull_);
+        double pullNtrue_ = (gen_ - rec_)/gen_;
+        double pullerror_ = (gen_ - rec_)/error_;
+        h1[j]->Fill(pullerror_);
+        h2[j]->Fill(pullNtrue_);
       }
     }
 
+    TCanvas *c_toy_sigma =  new TCanvas(Form("c_toy_sigma_%s",name.Data()),Form("c_toy_sigma_%s",name.Data()),800,800);
+
     if( skip ){
       cout << "2x4" << endl;
-      c_toy->Divide(2,4);
+      c_toy_sigma->Divide(2,4);
     }else{
       cout << "3x3" << endl;
-      c_toy->Divide(3,3);
+      c_toy_sigma->Divide(3,3);
     }
   
     int k = 0;
     if(skip) k = 1;
 
     for(int i=k; i<nbins; i++){
-      c_toy->cd(i-k+1);
-      h[i]->Fit("gaus");
-      g[i]  = h[i]->GetFunction("gaus");
-      h[i]->Draw();
+      c_toy_sigma->cd(i-k+1);
+      h1[i]->Fit("gaus");
+      g1[i]  = h1[i]->GetFunction("gaus");
+      h1[i]->Draw();
       gStyle->SetStatH(0.2);
       gStyle->SetStatW(0.15);
       gStyle->SetStatFontSize(0.05);
       gStyle->SetStatBorderSize(1);
       double bin = i-k+1;
-      h[i]->SetTitle(Form("bin %1.0f",bin));
-      //h[i]->GetXaxis()->SetTitle("Unfolded number of events");
-      //h[i]->GetXaxis()->SetTitle("N_{true}-N_{unfolded}/N_{true}");
-      h[i]->GetXaxis()->SetTitle("(N_{true}-N_{unfolded})/#sigma");
-      h[i]->GetYaxis()->SetTitle("Number of toy MC");
+      h1[i]->SetTitle(Form("bin %1.0f",bin));
+      h1[i]->GetXaxis()->SetTitle("(N_{true}-N_{unfolded})/#sigma");
+      h1[i]->GetYaxis()->SetTitle("Number of toy MC");
     }
 
+    TCanvas *c_toy_Ntrue =  new TCanvas(Form("c_toy_Ntrue_%s",name.Data()),Form("c_toy_Ntrue_%s",name.Data()),800,800);
+
+    if( skip ){
+      cout << "2x4" << endl;
+      c_toy_Ntrue->Divide(2,4);
+    }else{
+      cout << "3x3" << endl;
+      c_toy_Ntrue->Divide(3,3);
+    }
+
+    int k = 0;
+    if(skip) k = 1;
+
     for(int i=k; i<nbins; i++){
-      double Mean = h[i]->GetMean();
-      double rms = h[i]->GetRMS();
-      double mean = g[i]->GetParameter(1);
-      double sigma = g[i]->GetParameter(2);
-      double meanerr = g[i]->GetParError(1);
-      double sigmaerr = g[i]->GetParError(2);
+      c_toy_Ntrue->cd(i-k+1);
+      h2[i]->Fit("gaus");
+      g2[i]  = h2[i]->GetFunction("gaus");
+      h2[i]->Draw();
+      gStyle->SetStatH(0.2);
+      gStyle->SetStatW(0.15);
+      gStyle->SetStatFontSize(0.05);
+      gStyle->SetStatBorderSize(1);
+      double bin = i-k+1;
+      h2[i]->SetTitle(Form("bin %1.0f",bin));
+      h2[i]->GetXaxis()->SetTitle("N_{true}-N_{unfolded}/N_{true}");
+      h2[i]->GetYaxis()->SetTitle("Number of toy MC");
+    }
+
+
+    for(int i=k; i<nbins; i++){
+      double Mean = h1[i]->GetMean();
+      double rms = h1[i]->GetRMS();
+      double mean = g1[i]->GetParameter(1);
+      double sigma = g1[i]->GetParameter(2);
+      double meanerr = g1[i]->GetParError(1);
+      double sigmaerr = g1[i]->GetParError(2);
       cout << "$" << hgen->GetBinCenter(i+1)-hgen->GetBinWidth(i+1)/2 << "-" << hgen->GetBinCenter(i+1)+hgen->GetBinWidth(i+1)/2 << "$   ~&~ "
            << setprecision (4) << mean << " $\\pm$ " << sigma 
            << " \\\\" <<  endl;
@@ -195,7 +226,10 @@ void unfoldingPlot(TH1* h_gen, TH1* h_rec, TH2* m, TH1* h_mea, TH1* h_genTTbar, 
   TGraph *gerr = new TGraph(nbins);  
   TGraph *gerrbefore = new TGraph(nbins);  
 
+  cout << "histogram error " << endl;
+
   for(int i=1; i <=  nbins; i++){
+    cout << h_unfold->GetBinError(i) << endl;
     if( h_unfold->GetBinContent(i) != 0 ){
       gerr->SetPoint(i-1, h_unfold->GetBinCenter(i), 100*h_unfold->GetBinError(i)/h_unfold->GetBinContent(i));
     } else{
@@ -214,7 +248,7 @@ void unfoldingPlot(TH1* h_gen, TH1* h_rec, TH2* m, TH1* h_mea, TH1* h_genTTbar, 
   gerr->Draw("ALP");
   gerr->GetXaxis()->SetTitle("t#bar{t} invariant mass");
   gerr->GetYaxis()->SetTitle("Statistical Uncertainty (%)");
-  label->DrawLatex(0.30,0.88,Form("%1.0f pb^{-1} at #sqrt{s} = 7 TeV",lumi));
+  label->DrawLatex(0.30,0.88,Form("%1.1f fb^{-1} at #sqrt{s} = 7 TeV",lumi/1000));
 
   //====================================================================================================
 
@@ -233,6 +267,25 @@ void unfoldingPlot(TH1* h_gen, TH1* h_rec, TH2* m, TH1* h_mea, TH1* h_genTTbar, 
   hErrMat->GetXaxis()->SetTitle("Generated M_{t#bar{t}} bin number");
   hErrMat->GetYaxis()->SetTitle("Reconstructed M_{t#bar{t}} bin number");
   hErrMat->Draw("colz");
+
+
+  cout << "covariance matrix= " << endl; 
+  double num = 0;
+  for(i=1; i <= 9; i++){
+    cout << sqrt(hErrMat->GetBinContent(i,i)) << endl;
+    num = sqrt(hErrMat->GetBinContent(3,3)) ;
+  }
+  cout << "off covariance= " << endl;
+  double den=0;
+  for(i=1; i <= 9; i++){
+    cout << sqrt(hErrMat->GetBinContent(3,i)) << endl;
+    if( sqrt(hErrMat->GetBinContent(3,i))  > 0){
+      den += sqrt(hErrMat->GetBinContent(3,i));
+    }
+  }
+
+  cout << "ratio= " << num/den << endl;
+
   //================================================================================================== 
 
   //log d plot =====================================================================================
@@ -259,7 +312,7 @@ void unfoldingPlot(TH1* h_gen, TH1* h_rec, TH2* m, TH1* h_mea, TH1* h_genTTbar, 
   hSigmaTruth->SetLineStyle(1);
   hSigmaTruth->SetTitle(0);
   hSigmaTruth->Draw();
-  hSigmaTruth->SetMaximum(9);
+  hSigmaTruth->SetMaximum(3000);
   hSigmaTruth->GetXaxis()->SetTitle("Unfolded t#bar{t} invariant mass (GeV/c^{2})");
   hSigmaTruth->GetYaxis()->SetTitle("d#sigma/dM_{t#bar{t}} (pb/GeV/c^{2})");
   dsigmaTruth->SetFillColor(30);
@@ -278,7 +331,7 @@ void unfoldingPlot(TH1* h_gen, TH1* h_rec, TH2* m, TH1* h_mea, TH1* h_genTTbar, 
   l_dsigma->Draw();
 
   label->DrawLatex(0.47,0.88,"CMS Preliminary");
-  label->DrawLatex(0.47,0.82.5,Form("%1.0f pb^{-1} at #sqrt{s} = 7 TeV",lumi));
+  label->DrawLatex(0.47,0.82.5,Form("%1.1f fb^{-1} at #sqrt{s} = 7 TeV",lumi/1000));
   //======================================================================================================================  
 
   //normalized cross section plot ================================================================================================
@@ -316,7 +369,7 @@ void unfoldingPlot(TH1* h_gen, TH1* h_rec, TH2* m, TH1* h_mea, TH1* h_genTTbar, 
   l_Normdsigma->Draw();
 
   label->DrawLatex(0.47,0.88,"CMS Preliminary");
-  label->DrawLatex(0.47,0.82.5,Form("%1.0f pb^{-1} at #sqrt{s} = 7 TeV",lumi));
+  label->DrawLatex(0.47,0.82.5,Form("%1.1f fb^{-1} at #sqrt{s} = 7 TeV",lumi/1000));
   //================================================================================================================
 
 
@@ -335,7 +388,10 @@ void unfoldingPlot(TH1* h_gen, TH1* h_rec, TH2* m, TH1* h_mea, TH1* h_genTTbar, 
     c_dsigma->Print(Form("cUF_dsigma_%s.eps",name.Data()));
     c_Normdsigma->Print(Form("cUF_Normdsigma_%s.eps",name.Data()));
     c_d->Print(Form("cUF_d_%s.eps",name.Data()));
-    if(toy)c_toy->Print(Form("cUF_toy_%s.eps",name.Data()));
+    if(toy){
+      c_toy_sigma->Print(Form("cUF_toy_sigma_%s.eps",name.Data()));
+      c_toy_Ntrue->Print(Form("cUF_toy_Ntrue_%s.eps",name.Data()));
+    }
 
     c_response->Print(Form("cUF_response_%s.png",name.Data()));
     c_responseH->Print(Form("cUF_responseH_%s.png",name.Data()));
@@ -346,7 +402,10 @@ void unfoldingPlot(TH1* h_gen, TH1* h_rec, TH2* m, TH1* h_mea, TH1* h_genTTbar, 
     c_dsigma->Print(Form("cUF_dsigma_%s.png",name.Data()));
     c_Normdsigma->Print(Form("cUF_Normdsigma_%s.png",name.Data()));
     c_d->Print(Form("cUF_d_%s.png",name.Data()));
-    if(toy)c_toy->Print(Form("cUF_toy_%s.png",name.Data()));
+    if(toy){
+      c_toy_sigma->Print(Form("cUF_toy_sigma_%s.png",name.Data()));
+      c_toy_Ntrue->Print(Form("cUF_toy_Ntrue_%s.png",name.Data()));
+    }
 
   }
 }
