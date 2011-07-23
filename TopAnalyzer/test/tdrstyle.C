@@ -3,6 +3,8 @@ void setTDRStyle() {
 
   TStyle *tdrStyle = new TStyle("Plain","Style for P-TDR");
 
+  tdrStyle->SetPaintTextFormat("5.0f");
+
 // For the canvas:
   tdrStyle->SetCanvasBorderMode(0);
   tdrStyle->SetCanvasColor(kWhite);
@@ -59,7 +61,8 @@ void setTDRStyle() {
 
 // For the statistics box:
   tdrStyle->SetOptFile(0);
-  tdrStyle->SetOptStat("mr"); // To display the mean and RMS:   SetOptStat("mr");
+  tdrStyle->SetOptStat(0);
+  //tdrStyle->SetOptStat("mr"); // To display the mean and RMS:   SetOptStat("mr");
   tdrStyle->SetStatColor(kWhite);
   tdrStyle->SetStatFont(42);
   tdrStyle->SetStatFontSize(0.025);
@@ -98,11 +101,11 @@ void setTDRStyle() {
   tdrStyle->SetTitleColor(1, "XYZ");
   tdrStyle->SetTitleFont(42, "XYZ");
   tdrStyle->SetTitleSize(0.06, "XYZ");
-  // tdrStyle->SetTitleXSize(Float_t size = 0.02); // Another way to set the size?
-  // tdrStyle->SetTitleYSize(Float_t size = 0.02);
+  //tdrStyle->SetTitleXSize(Float_t size = 0.02); // Another way to set the size?
+  //tdrStyle->SetTitleYSize(Float_t size = 0.02);
   tdrStyle->SetTitleXOffset(0.9);
-  tdrStyle->SetTitleYOffset(1.25);
-  // tdrStyle->SetTitleOffset(1.1, "Y"); // Another way to set the Offset
+  tdrStyle->SetTitleYOffset(1.19);
+  //tdrStyle->SetTitleOffset(3.1, "Y"); // Another way to set the Offset
 
 // For the axis labels:
 
@@ -141,6 +144,9 @@ void setTDRStyle() {
   // tdrStyle->SetHistMinimumZero(kTRUE);
 
   tdrStyle->cd();
+
+  //gROOT->ForceStyle();
+
 }
 
 //void tdrGrid(bool gridOn) {
@@ -182,7 +188,7 @@ void defaultStyle(){
     gStyle->SetTitleFont(42, "XYZ");
     gStyle->SetTitleSize(0.06, "XYZ");
     gStyle->SetTitleXOffset(0.9);
-    gStyle->SetTitleYOffset(1.1);
+    gStyle->SetTitleYOffset(1.2);
 
     // For the axis labels:
     gStyle->SetLabelColor(1, "XYZ");
