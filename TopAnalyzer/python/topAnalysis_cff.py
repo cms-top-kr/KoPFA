@@ -143,7 +143,22 @@ ElectronAna = cms.EDAnalyzer(
 
 nEventsPatHLT = cms.EDProducer("EventCountProducer")
 
+mumuFilter = cms.EDFilter("CandViewCountFilter",
+  src = cms.InputTag('acceptedMuons'),
+  minNumber = cms.uint32(2)
+)
+
+elelFilter = cms.EDFilter("CandViewCountFilter",
+  src = cms.InputTag('acceptedElectrons'),
+  minNumber = cms.uint32(2)
+)
+
+singleMuFilter = mumuFilter.clone(minNumber = cms.uint32(1))
+singleElFilter = elelFilter.clone(minNumber = cms.uint32(1))
+muelFilter = cms.Sequence(singleMuFilter + singleElFilter)
+
 topElElAnalysisMCSequence = cms.Sequence(
+    elelFilter*
     hltHighLevelElElMC*
     nEventsPatHLT*
     topWLeptonGenFilter*
@@ -157,6 +172,7 @@ topElElAnalysisMCSequence = cms.Sequence(
 )
 
 topElElAnalysisRealDataSequence = cms.Sequence(
+    elelFilter*
     hltHighLevelElElRD*
 #    electronTriggerFilterByRun*
     nEventsPatHLT*
@@ -169,6 +185,7 @@ topElElAnalysisRealDataSequence = cms.Sequence(
 )
 
 topMuMuAnalysisMCSequence = cms.Sequence(
+    mumuFilter*
     hltHighLevelMuMuMC*
     nEventsPatHLT*
     topWLeptonGenFilter*
@@ -182,6 +199,7 @@ topMuMuAnalysisMCSequence = cms.Sequence(
 )
 
 topMuMuAnalysisRealDataSequence = cms.Sequence(
+    mumuFilter*
     hltHighLevelMuMuRD*
 #    muonTriggerFilterByRun*
     nEventsPatHLT*
@@ -194,6 +212,7 @@ topMuMuAnalysisRealDataSequence = cms.Sequence(
 )
 
 topMuElAnalysisMCSequence = cms.Sequence(
+    muelFilter*
     hltHighLevelMuElMC*
     nEventsPatHLT*
     topWLeptonGenFilter*
@@ -206,6 +225,7 @@ topMuElAnalysisMCSequence = cms.Sequence(
 )
 
 topMuElAnalysisRealDataSequence = cms.Sequence(
+    muelFilter*
     hltHighLevelMuElRD*
 #    muonTriggerFilterByRun*
     nEventsPatHLT*
