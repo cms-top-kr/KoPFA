@@ -108,6 +108,8 @@ class CreateConfig:
                 line = line.strip().strip(",").strip("'").strip('"')
                 if '.root' not in line:
                     continue
+                if '#' == line[0]:
+                    continue
 
                 if self.maxFileSize > 0:
                     fileSize = self.getFileSize(line)
@@ -257,6 +259,7 @@ process.GenZmassFilter.max = 50
     def getFileSize(self, file):
         file = file.replace('///', '/')
         file = file.replace('//', '/')
+        file = file.replace('"', '').replace("'", '')
         if 'rfio:' == file[:5]:
             fileQuery = 'rfdir %s' % file[5:]
         elif 'file:' == file[:5]:
