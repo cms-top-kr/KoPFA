@@ -7,8 +7,9 @@ source = cms.Source("PoolSource",
     fileNames = readFiles
 )
 readFiles.extend([
-"rfio:/castor/cern.ch/user/b/bhlee/2011mc/Summer11/MU/Jul14/DYtt10to20_1/patTuple_skim_1_5_3zS.root",
-"rfio:/castor/cern.ch/user/b/bhlee/2011mc/Summer11/MU/Jul14/DYtt10to20_1/patTuple_skim_3_5_J2e.root",
-"rfio:/castor/cern.ch/user/b/bhlee/2011mc/Summer11/MU/Jul14/DYtt10to20_1/patTuple_skim_4_5_S9L.root",
-"rfio:/castor/cern.ch/user/b/bhlee/2011mc/Summer11/MU/Jul14/DYtt10to20_1/patTuple_skim_5_0_KwT.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/DYtt_10to20_1/patTuple_skim_1_1_KU6.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/DYtt_10to20_1/patTuple_skim_2_1_i96.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/DYtt_10to20_1/patTuple_skim_3_1_MPu.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/DYtt_10to20_1/patTuple_skim_4_1_KQM.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/DYtt_10to20_1/patTuple_skim_5_2_ELx.root",
 ])

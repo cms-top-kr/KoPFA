@@ -7,13 +7,14 @@ source = cms.Source("PoolSource",
     fileNames = readFiles
 )
 readFiles.extend([
-"rfio:/castor/cern.ch/user/b/bhlee/2011mc/Summer11/MU/Jul14/DYmm10to20_1/patTuple_skim_1_4_Yco.root",
-"rfio:/castor/cern.ch/user/b/bhlee/2011mc/Summer11/MU/Jul14/DYmm10to20_1/patTuple_skim_2_2_MHt.root",
-"rfio:/castor/cern.ch/user/b/bhlee/2011mc/Summer11/MU/Jul14/DYmm10to20_1/patTuple_skim_3_0_B2a.root",
-"rfio:/castor/cern.ch/user/b/bhlee/2011mc/Summer11/MU/Jul14/DYmm10to20_1/patTuple_skim_5_0_DzO.root",
-"rfio:/castor/cern.ch/user/b/bhlee/2011mc/Summer11/MU/Jul14/DYmm10to20_1/patTuple_skim_6_1_B84.root",
-"rfio:/castor/cern.ch/user/b/bhlee/2011mc/Summer11/MU/Jul14/DYmm10to20_1/patTuple_skim_7_1_mAc.root",
-"rfio:/castor/cern.ch/user/b/bhlee/2011mc/Summer11/MU/Jul14/DYmm10to20_1/patTuple_skim_8_0_9Wh.root",
-"rfio:/castor/cern.ch/user/b/bhlee/2011mc/Summer11/MU/Jul14/DYmm10to20_1/patTuple_skim_9_0_BdD.root",
-"rfio:/castor/cern.ch/user/b/bhlee/2011mc/Summer11/MU/Jul14/DYmm10to20_1/patTuple_skim_10_2_22G.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/DYmm_10to20_1/patTuple_skim_1_1_oII.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/DYmm_10to20_1/patTuple_skim_2_4_Ri9.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/DYmm_10to20_1/patTuple_skim_3_4_Law.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/DYmm_10to20_1/patTuple_skim_4_1_OXR.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/DYmm_10to20_1/patTuple_skim_5_1_n6R.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/DYmm_10to20_1/patTuple_skim_6_1_7Dr.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/DYmm_10to20_1/patTuple_skim_7_1_xfy.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/DYmm_10to20_1/patTuple_skim_8_4_bFd.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/DYmm_10to20_1/patTuple_skim_9_1_WqK.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/DYmm_10to20_1/patTuple_skim_10_1_pV0.root",
 ])
