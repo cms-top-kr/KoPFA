@@ -1,894 +1,30 @@
 ################################################################################
-### Duplicated file entry found in the directory /castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1
-### File index = 100
-################################################################################
-################################################################################
-### Duplicated file entry found in the directory /castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1
-### File index = 101
-################################################################################
-################################################################################
-### Duplicated file entry found in the directory /castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1
-### File index = 104
-################################################################################
-################################################################################
-### Duplicated file entry found in the directory /castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1
-### File index = 105
-################################################################################
-################################################################################
-### Duplicated file entry found in the directory /castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1
-### File index = 105
-################################################################################
-################################################################################
-### Duplicated file entry found in the directory /castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1
-### File index = 107
-################################################################################
-################################################################################
-### Duplicated file entry found in the directory /castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1
-### File index = 108
-################################################################################
-################################################################################
-### Duplicated file entry found in the directory /castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1
-### File index = 110
-################################################################################
-################################################################################
-### Duplicated file entry found in the directory /castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1
-### File index = 113
-################################################################################
-################################################################################
-### Duplicated file entry found in the directory /castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1
-### File index = 115
-################################################################################
-################################################################################
-### Duplicated file entry found in the directory /castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1
-### File index = 116
-################################################################################
-################################################################################
-### Duplicated file entry found in the directory /castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1
-### File index = 117
-################################################################################
-################################################################################
-### Duplicated file entry found in the directory /castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1
-### File index = 118
-################################################################################
-################################################################################
-### Duplicated file entry found in the directory /castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1
-### File index = 119
-################################################################################
-################################################################################
-### Duplicated file entry found in the directory /castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1
-### File index = 120
-################################################################################
-################################################################################
-### Duplicated file entry found in the directory /castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1
-### File index = 121
-################################################################################
-################################################################################
-### Duplicated file entry found in the directory /castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1
-### File index = 122
-################################################################################
-################################################################################
-### Duplicated file entry found in the directory /castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1
-### File index = 123
-################################################################################
-################################################################################
-### Duplicated file entry found in the directory /castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1
-### File index = 124
-################################################################################
-################################################################################
-### Duplicated file entry found in the directory /castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1
-### File index = 124
-################################################################################
-################################################################################
-### Duplicated file entry found in the directory /castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1
-### File index = 126
-################################################################################
-################################################################################
-### Duplicated file entry found in the directory /castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1
-### File index = 127
-################################################################################
-################################################################################
-### Duplicated file entry found in the directory /castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1
-### File index = 128
-################################################################################
-################################################################################
-### Duplicated file entry found in the directory /castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1
-### File index = 129
-################################################################################
-################################################################################
-### Duplicated file entry found in the directory /castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1
-### File index = 12
-################################################################################
-################################################################################
-### Duplicated file entry found in the directory /castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1
-### File index = 130
-################################################################################
-################################################################################
-### Duplicated file entry found in the directory /castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1
-### File index = 132
-################################################################################
-################################################################################
-### Duplicated file entry found in the directory /castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1
-### File index = 137
-################################################################################
-################################################################################
-### Duplicated file entry found in the directory /castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1
-### File index = 138
-################################################################################
-################################################################################
-### Duplicated file entry found in the directory /castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1
-### File index = 139
-################################################################################
-################################################################################
-### Duplicated file entry found in the directory /castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1
-### File index = 140
-################################################################################
-################################################################################
-### Duplicated file entry found in the directory /castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1
-### File index = 143
-################################################################################
-################################################################################
-### Duplicated file entry found in the directory /castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1
-### File index = 144
-################################################################################
-################################################################################
-### Duplicated file entry found in the directory /castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1
-### File index = 145
-################################################################################
-################################################################################
-### Duplicated file entry found in the directory /castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1
-### File index = 147
-################################################################################
-################################################################################
-### Duplicated file entry found in the directory /castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1
-### File index = 148
-################################################################################
-################################################################################
-### Duplicated file entry found in the directory /castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1
-### File index = 14
-################################################################################
-################################################################################
-### Duplicated file entry found in the directory /castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1
-### File index = 150
-################################################################################
-################################################################################
-### Duplicated file entry found in the directory /castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1
-### File index = 152
-################################################################################
-################################################################################
-### Duplicated file entry found in the directory /castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1
-### File index = 154
-################################################################################
-################################################################################
-### Duplicated file entry found in the directory /castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1
-### File index = 155
-################################################################################
-################################################################################
-### Duplicated file entry found in the directory /castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1
-### File index = 156
-################################################################################
-################################################################################
-### Duplicated file entry found in the directory /castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1
-### File index = 157
-################################################################################
-################################################################################
-### Duplicated file entry found in the directory /castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1
-### File index = 159
-################################################################################
-################################################################################
-### Duplicated file entry found in the directory /castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1
-### File index = 160
-################################################################################
-################################################################################
-### Duplicated file entry found in the directory /castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1
-### File index = 161
-################################################################################
-################################################################################
-### Duplicated file entry found in the directory /castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1
-### File index = 163
-################################################################################
-################################################################################
-### Duplicated file entry found in the directory /castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1
-### File index = 164
-################################################################################
-################################################################################
-### Duplicated file entry found in the directory /castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1
-### File index = 165
-################################################################################
-################################################################################
-### Duplicated file entry found in the directory /castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1
-### File index = 166
-################################################################################
-################################################################################
-### Duplicated file entry found in the directory /castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1
-### File index = 167
-################################################################################
-################################################################################
-### Duplicated file entry found in the directory /castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1
-### File index = 168
-################################################################################
-################################################################################
-### Duplicated file entry found in the directory /castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1
-### File index = 169
-################################################################################
-################################################################################
-### Duplicated file entry found in the directory /castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1
-### File index = 172
-################################################################################
-################################################################################
-### Duplicated file entry found in the directory /castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1
-### File index = 173
-################################################################################
-################################################################################
-### Duplicated file entry found in the directory /castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1
-### File index = 174
-################################################################################
-################################################################################
-### Duplicated file entry found in the directory /castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1
-### File index = 175
-################################################################################
-################################################################################
-### Duplicated file entry found in the directory /castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1
-### File index = 177
-################################################################################
-################################################################################
-### Duplicated file entry found in the directory /castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1
-### File index = 178
-################################################################################
-################################################################################
-### Duplicated file entry found in the directory /castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1
-### File index = 17
-################################################################################
-################################################################################
-### Duplicated file entry found in the directory /castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1
-### File index = 181
-################################################################################
-################################################################################
-### Duplicated file entry found in the directory /castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1
-### File index = 183
-################################################################################
-################################################################################
-### Duplicated file entry found in the directory /castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1
-### File index = 185
-################################################################################
-################################################################################
-### Duplicated file entry found in the directory /castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1
-### File index = 185
-################################################################################
-################################################################################
-### Duplicated file entry found in the directory /castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1
-### File index = 187
-################################################################################
-################################################################################
-### Duplicated file entry found in the directory /castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1
-### File index = 189
-################################################################################
-################################################################################
-### Duplicated file entry found in the directory /castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1
-### File index = 191
-################################################################################
-################################################################################
-### Duplicated file entry found in the directory /castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1
-### File index = 194
-################################################################################
-################################################################################
-### Duplicated file entry found in the directory /castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1
-### File index = 196
-################################################################################
-################################################################################
-### Duplicated file entry found in the directory /castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1
-### File index = 199
-################################################################################
-################################################################################
-### Duplicated file entry found in the directory /castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1
-### File index = 19
-################################################################################
-################################################################################
-### Duplicated file entry found in the directory /castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1
-### File index = 1
-################################################################################
-################################################################################
-### Duplicated file entry found in the directory /castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1
-### File index = 204
-################################################################################
-################################################################################
-### Duplicated file entry found in the directory /castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1
-### File index = 207
-################################################################################
-################################################################################
-### Duplicated file entry found in the directory /castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1
-### File index = 210
-################################################################################
-################################################################################
-### Duplicated file entry found in the directory /castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1
-### File index = 211
-################################################################################
-################################################################################
-### Duplicated file entry found in the directory /castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1
-### File index = 214
-################################################################################
-################################################################################
-### Duplicated file entry found in the directory /castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1
-### File index = 216
-################################################################################
-################################################################################
-### Duplicated file entry found in the directory /castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1
-### File index = 218
-################################################################################
-################################################################################
-### Duplicated file entry found in the directory /castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1
-### File index = 219
-################################################################################
-################################################################################
-### Duplicated file entry found in the directory /castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1
-### File index = 21
-################################################################################
-################################################################################
-### Duplicated file entry found in the directory /castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1
-### File index = 221
-################################################################################
-################################################################################
-### Duplicated file entry found in the directory /castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1
-### File index = 223
-################################################################################
-################################################################################
-### Duplicated file entry found in the directory /castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1
+### Duplicated file entry found in the directory /castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1
 ### File index = 227
 ################################################################################
 ################################################################################
-### Duplicated file entry found in the directory /castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1
-### File index = 228
-################################################################################
-################################################################################
-### Duplicated file entry found in the directory /castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1
-### File index = 22
-################################################################################
-################################################################################
-### Duplicated file entry found in the directory /castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1
-### File index = 230
-################################################################################
-################################################################################
-### Duplicated file entry found in the directory /castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1
-### File index = 231
-################################################################################
-################################################################################
-### Duplicated file entry found in the directory /castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1
-### File index = 232
-################################################################################
-################################################################################
-### Duplicated file entry found in the directory /castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1
-### File index = 233
-################################################################################
-################################################################################
-### Duplicated file entry found in the directory /castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1
-### File index = 234
-################################################################################
-################################################################################
-### Duplicated file entry found in the directory /castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1
-### File index = 239
-################################################################################
-################################################################################
-### Duplicated file entry found in the directory /castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1
-### File index = 23
-################################################################################
-################################################################################
-### Duplicated file entry found in the directory /castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1
-### File index = 240
-################################################################################
-################################################################################
-### Duplicated file entry found in the directory /castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1
-### File index = 244
-################################################################################
-################################################################################
-### Duplicated file entry found in the directory /castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1
-### File index = 245
-################################################################################
-################################################################################
-### Duplicated file entry found in the directory /castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1
-### File index = 246
-################################################################################
-################################################################################
-### Duplicated file entry found in the directory /castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1
-### File index = 247
-################################################################################
-################################################################################
-### Duplicated file entry found in the directory /castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1
-### File index = 248
-################################################################################
-################################################################################
-### Duplicated file entry found in the directory /castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1
-### File index = 249
-################################################################################
-################################################################################
-### Duplicated file entry found in the directory /castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1
-### File index = 250
-################################################################################
-################################################################################
-### Duplicated file entry found in the directory /castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1
-### File index = 254
-################################################################################
-################################################################################
-### Duplicated file entry found in the directory /castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1
-### File index = 256
-################################################################################
-################################################################################
-### Duplicated file entry found in the directory /castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1
-### File index = 257
-################################################################################
-################################################################################
-### Duplicated file entry found in the directory /castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1
-### File index = 258
-################################################################################
-################################################################################
-### Duplicated file entry found in the directory /castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1
-### File index = 259
-################################################################################
-################################################################################
-### Duplicated file entry found in the directory /castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1
-### File index = 25
-################################################################################
-################################################################################
-### Duplicated file entry found in the directory /castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1
-### File index = 262
-################################################################################
-################################################################################
-### Duplicated file entry found in the directory /castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1
-### File index = 263
-################################################################################
-################################################################################
-### Duplicated file entry found in the directory /castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1
-### File index = 264
-################################################################################
-################################################################################
-### Duplicated file entry found in the directory /castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1
-### File index = 265
-################################################################################
-################################################################################
-### Duplicated file entry found in the directory /castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1
-### File index = 266
-################################################################################
-################################################################################
-### Duplicated file entry found in the directory /castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1
+### Duplicated file entry found in the directory /castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1
 ### File index = 267
 ################################################################################
 ################################################################################
-### Duplicated file entry found in the directory /castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1
-### File index = 268
-################################################################################
-################################################################################
-### Duplicated file entry found in the directory /castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1
-### File index = 269
-################################################################################
-################################################################################
-### Duplicated file entry found in the directory /castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1
-### File index = 270
-################################################################################
-################################################################################
-### Duplicated file entry found in the directory /castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1
+### Duplicated file entry found in the directory /castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1
 ### File index = 271
 ################################################################################
 ################################################################################
-### Duplicated file entry found in the directory /castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1
-### File index = 272
-################################################################################
-################################################################################
-### Duplicated file entry found in the directory /castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1
-### File index = 273
-################################################################################
-################################################################################
-### Duplicated file entry found in the directory /castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1
-### File index = 276
-################################################################################
-################################################################################
-### Duplicated file entry found in the directory /castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1
-### File index = 277
-################################################################################
-################################################################################
-### Duplicated file entry found in the directory /castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1
-### File index = 278
-################################################################################
-################################################################################
-### Duplicated file entry found in the directory /castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1
-### File index = 27
-################################################################################
-################################################################################
-### Duplicated file entry found in the directory /castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1
-### File index = 280
-################################################################################
-################################################################################
-### Duplicated file entry found in the directory /castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1
-### File index = 282
-################################################################################
-################################################################################
-### Duplicated file entry found in the directory /castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1
-### File index = 284
-################################################################################
-################################################################################
-### Duplicated file entry found in the directory /castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1
-### File index = 285
-################################################################################
-################################################################################
-### Duplicated file entry found in the directory /castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1
-### File index = 286
-################################################################################
-################################################################################
-### Duplicated file entry found in the directory /castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1
-### File index = 287
-################################################################################
-################################################################################
-### Duplicated file entry found in the directory /castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1
-### File index = 289
-################################################################################
-################################################################################
-### Duplicated file entry found in the directory /castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1
-### File index = 290
-################################################################################
-################################################################################
-### Duplicated file entry found in the directory /castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1
-### File index = 291
-################################################################################
-################################################################################
-### Duplicated file entry found in the directory /castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1
-### File index = 292
-################################################################################
-################################################################################
-### Duplicated file entry found in the directory /castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1
-### File index = 294
-################################################################################
-################################################################################
-### Duplicated file entry found in the directory /castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1
-### File index = 295
-################################################################################
-################################################################################
-### Duplicated file entry found in the directory /castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1
-### File index = 296
-################################################################################
-################################################################################
-### Duplicated file entry found in the directory /castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1
-### File index = 297
-################################################################################
-################################################################################
-### Duplicated file entry found in the directory /castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1
-### File index = 29
-################################################################################
-################################################################################
-### Duplicated file entry found in the directory /castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1
-### File index = 2
-################################################################################
-################################################################################
-### Duplicated file entry found in the directory /castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1
-### File index = 301
-################################################################################
-################################################################################
-### Duplicated file entry found in the directory /castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1
-### File index = 303
-################################################################################
-################################################################################
-### Duplicated file entry found in the directory /castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1
-### File index = 304
-################################################################################
-################################################################################
-### Duplicated file entry found in the directory /castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1
-### File index = 306
-################################################################################
-################################################################################
-### Duplicated file entry found in the directory /castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1
-### File index = 308
-################################################################################
-################################################################################
-### Duplicated file entry found in the directory /castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1
-### File index = 309
-################################################################################
-################################################################################
-### Duplicated file entry found in the directory /castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1
+### Duplicated file entry found in the directory /castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1
 ### File index = 30
 ################################################################################
 ################################################################################
-### Duplicated file entry found in the directory /castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1
-### File index = 310
+### Duplicated file entry found in the directory /castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1
+### File index = 329
 ################################################################################
 ################################################################################
-### Duplicated file entry found in the directory /castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1
-### File index = 311
+### Duplicated file entry found in the directory /castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1
+### File index = 33
 ################################################################################
 ################################################################################
-### Duplicated file entry found in the directory /castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1
-### File index = 313
-################################################################################
-################################################################################
-### Duplicated file entry found in the directory /castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1
-### File index = 314
-################################################################################
-################################################################################
-### Duplicated file entry found in the directory /castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1
-### File index = 315
-################################################################################
-################################################################################
-### Duplicated file entry found in the directory /castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1
-### File index = 315
-################################################################################
-################################################################################
-### Duplicated file entry found in the directory /castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1
-### File index = 316
-################################################################################
-################################################################################
-### Duplicated file entry found in the directory /castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1
-### File index = 317
-################################################################################
-################################################################################
-### Duplicated file entry found in the directory /castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1
-### File index = 318
-################################################################################
-################################################################################
-### Duplicated file entry found in the directory /castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1
-### File index = 319
-################################################################################
-################################################################################
-### Duplicated file entry found in the directory /castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1
-### File index = 31
-################################################################################
-################################################################################
-### Duplicated file entry found in the directory /castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1
-### File index = 323
-################################################################################
-################################################################################
-### Duplicated file entry found in the directory /castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1
-### File index = 324
-################################################################################
-################################################################################
-### Duplicated file entry found in the directory /castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1
-### File index = 326
-################################################################################
-################################################################################
-### Duplicated file entry found in the directory /castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1
-### File index = 32
-################################################################################
-################################################################################
-### Duplicated file entry found in the directory /castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1
-### File index = 332
-################################################################################
-################################################################################
-### Duplicated file entry found in the directory /castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1
-### File index = 335
-################################################################################
-################################################################################
-### Duplicated file entry found in the directory /castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1
-### File index = 336
-################################################################################
-################################################################################
-### Duplicated file entry found in the directory /castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1
-### File index = 339
-################################################################################
-################################################################################
-### Duplicated file entry found in the directory /castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1
-### File index = 340
-################################################################################
-################################################################################
-### Duplicated file entry found in the directory /castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1
-### File index = 341
-################################################################################
-################################################################################
-### Duplicated file entry found in the directory /castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1
-### File index = 342
-################################################################################
-################################################################################
-### Duplicated file entry found in the directory /castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1
-### File index = 345
-################################################################################
-################################################################################
-### Duplicated file entry found in the directory /castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1
-### File index = 347
-################################################################################
-################################################################################
-### Duplicated file entry found in the directory /castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1
-### File index = 348
-################################################################################
-################################################################################
-### Duplicated file entry found in the directory /castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1
-### File index = 349
-################################################################################
-################################################################################
-### Duplicated file entry found in the directory /castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1
-### File index = 350
-################################################################################
-################################################################################
-### Duplicated file entry found in the directory /castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1
-### File index = 351
-################################################################################
-################################################################################
-### Duplicated file entry found in the directory /castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1
-### File index = 351
-################################################################################
-################################################################################
-### Duplicated file entry found in the directory /castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1
-### File index = 352
-################################################################################
-################################################################################
-### Duplicated file entry found in the directory /castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1
-### File index = 353
-################################################################################
-################################################################################
-### Duplicated file entry found in the directory /castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1
-### File index = 354
-################################################################################
-################################################################################
-### Duplicated file entry found in the directory /castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1
-### File index = 356
-################################################################################
-################################################################################
-### Duplicated file entry found in the directory /castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1
-### File index = 357
-################################################################################
-################################################################################
-### Duplicated file entry found in the directory /castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1
-### File index = 359
-################################################################################
-################################################################################
-### Duplicated file entry found in the directory /castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1
-### File index = 35
-################################################################################
-################################################################################
-### Duplicated file entry found in the directory /castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1
-### File index = 3
-################################################################################
-################################################################################
-### Duplicated file entry found in the directory /castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1
+### Duplicated file entry found in the directory /castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1
 ### File index = 41
-################################################################################
-################################################################################
-### Duplicated file entry found in the directory /castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1
-### File index = 42
-################################################################################
-################################################################################
-### Duplicated file entry found in the directory /castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1
-### File index = 43
-################################################################################
-################################################################################
-### Duplicated file entry found in the directory /castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1
-### File index = 45
-################################################################################
-################################################################################
-### Duplicated file entry found in the directory /castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1
-### File index = 46
-################################################################################
-################################################################################
-### Duplicated file entry found in the directory /castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1
-### File index = 47
-################################################################################
-################################################################################
-### Duplicated file entry found in the directory /castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1
-### File index = 47
-################################################################################
-################################################################################
-### Duplicated file entry found in the directory /castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1
-### File index = 48
-################################################################################
-################################################################################
-### Duplicated file entry found in the directory /castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1
-### File index = 4
-################################################################################
-################################################################################
-### Duplicated file entry found in the directory /castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1
-### File index = 50
-################################################################################
-################################################################################
-### Duplicated file entry found in the directory /castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1
-### File index = 52
-################################################################################
-################################################################################
-### Duplicated file entry found in the directory /castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1
-### File index = 56
-################################################################################
-################################################################################
-### Duplicated file entry found in the directory /castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1
-### File index = 57
-################################################################################
-################################################################################
-### Duplicated file entry found in the directory /castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1
-### File index = 58
-################################################################################
-################################################################################
-### Duplicated file entry found in the directory /castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1
-### File index = 60
-################################################################################
-################################################################################
-### Duplicated file entry found in the directory /castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1
-### File index = 61
-################################################################################
-################################################################################
-### Duplicated file entry found in the directory /castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1
-### File index = 62
-################################################################################
-################################################################################
-### Duplicated file entry found in the directory /castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1
-### File index = 63
-################################################################################
-################################################################################
-### Duplicated file entry found in the directory /castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1
-### File index = 67
-################################################################################
-################################################################################
-### Duplicated file entry found in the directory /castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1
-### File index = 67
-################################################################################
-################################################################################
-### Duplicated file entry found in the directory /castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1
-### File index = 69
-################################################################################
-################################################################################
-### Duplicated file entry found in the directory /castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1
-### File index = 6
-################################################################################
-################################################################################
-### Duplicated file entry found in the directory /castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1
-### File index = 71
-################################################################################
-################################################################################
-### Duplicated file entry found in the directory /castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1
-### File index = 71
-################################################################################
-################################################################################
-### Duplicated file entry found in the directory /castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1
-### File index = 73
-################################################################################
-################################################################################
-### Duplicated file entry found in the directory /castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1
-### File index = 74
-################################################################################
-################################################################################
-### Duplicated file entry found in the directory /castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1
-### File index = 79
-################################################################################
-################################################################################
-### Duplicated file entry found in the directory /castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1
-### File index = 7
-################################################################################
-################################################################################
-### Duplicated file entry found in the directory /castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1
-### File index = 80
-################################################################################
-################################################################################
-### Duplicated file entry found in the directory /castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1
-### File index = 81
-################################################################################
-################################################################################
-### Duplicated file entry found in the directory /castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1
-### File index = 83
-################################################################################
-################################################################################
-### Duplicated file entry found in the directory /castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1
-### File index = 88
-################################################################################
-################################################################################
-### Duplicated file entry found in the directory /castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1
-### File index = 8
-################################################################################
-################################################################################
-### Duplicated file entry found in the directory /castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1
-### File index = 90
-################################################################################
-################################################################################
-### Duplicated file entry found in the directory /castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1
-### File index = 91
-################################################################################
-################################################################################
-### Duplicated file entry found in the directory /castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1
-### File index = 93
-################################################################################
-################################################################################
-### Duplicated file entry found in the directory /castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1
-### File index = 94
-################################################################################
-################################################################################
-### Duplicated file entry found in the directory /castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1
-### File index = 96
-################################################################################
-################################################################################
-### Duplicated file entry found in the directory /castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1
-### File index = 99
-################################################################################
-################################################################################
-### Duplicated file entry found in the directory /castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1
-### File index = 9
 ################################################################################
 import FWCore.ParameterSet.Config as cms
 
@@ -899,363 +35,368 @@ source = cms.Source("PoolSource",
     fileNames = readFiles
 )
 readFiles.extend([
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_1_2_tN5.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_2_1_eFO.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_3_1_bho.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_4_1_h6X.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_5_2_MQf.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_6_1_YaS.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_7_1_Iuz.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_8_1_WqM.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_9_1_b6G.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_10_1_VoA.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_11_1_Ype.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_12_1_vBY.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_13_1_cKN.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_14_1_KT5.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_15_2_ONk.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_16_1_ksI.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_17_1_mDz.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_18_1_aUM.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_19_1_Eon.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_20_1_5Mt.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_21_1_QFD.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_22_1_PGe.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_23_1_zU0.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_24_1_n7L.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_25_1_SgY.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_26_1_abr.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_27_1_Juj.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_28_1_azA.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_29_1_LMe.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_30_1_FUo.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_31_2_Vqy.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_32_1_6Rt.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_33_2_Ai5.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_34_1_pdB.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_35_2_jlb.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_36_3_kb4.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_37_1_aLy.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_38_1_2yK.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_39_1_uzf.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_40_0_6Cl.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_41_0_G4I.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_42_0_dL7.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_43_1_p13.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_44_0_uou.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_45_0_guZ.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_46_2_VVC.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_47_2_4Vc.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_48_0_ak2.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_49_3_wbD.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_50_1_TCq.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_51_1_AvR.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_52_0_fGi.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_53_0_zCW.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_54_0_QbF.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_55_0_kMF.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_56_0_pxz.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_57_0_wz3.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_58_0_Afk.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_59_0_F5Q.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_60_0_ETW.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_61_0_z5y.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_62_0_8ri.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_63_1_ckE.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_64_0_PER.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_65_0_7ui.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_66_0_Ns8.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_67_2_IL6.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_68_0_SK2.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_69_2_2oN.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_70_0_Hql.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_71_1_tIG.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_72_0_HV0.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_73_0_SPc.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_74_0_7Jl.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_75_0_oQN.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_76_0_UCV.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_77_0_1Na.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_78_1_HIB.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_79_0_msi.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_80_0_sgN.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_81_0_lD1.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_82_0_3fQ.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_83_0_ZIV.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_84_0_syW.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_85_0_y2a.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_86_0_7LM.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_87_0_EJx.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_88_0_SjJ.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_89_0_7Gn.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_90_0_yg2.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_91_0_Syo.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_92_0_0i9.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_93_0_bTS.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_94_0_hzZ.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_95_0_x69.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_96_0_ZyO.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_97_0_UtD.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_98_0_W1W.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_99_0_X58.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_100_1_kEg.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_101_0_ewv.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_102_0_PZq.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_103_0_Jzv.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_104_0_lsH.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_105_0_uM5.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_106_0_9Wd.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_107_0_vbv.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_108_0_vLI.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_109_0_4Ug.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_110_0_TY4.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_111_0_o0h.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_112_0_fCT.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_113_0_wzK.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_114_0_NEk.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_115_0_kNh.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_116_0_MZk.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_117_0_luM.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_118_0_icU.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_119_1_3ss.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_120_0_pEt.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_121_0_zwA.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_122_0_qaY.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_123_0_zEb.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_124_0_pTk.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_125_1_sYL.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_126_0_aeb.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_127_0_y8Y.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_128_0_JwD.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_129_0_u6v.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_130_0_uW7.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_131_0_jAs.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_132_0_Xck.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_133_0_165.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_134_0_xAw.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_135_0_MNe.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_136_0_a2R.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_137_0_ogB.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_138_0_3gv.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_139_0_R1d.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_140_0_SXu.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_141_0_Huw.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_142_0_Hxs.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_143_0_WM4.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_144_0_KGp.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_145_0_JAb.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_146_0_OmC.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_147_0_oKO.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_148_0_w0p.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_149_0_YvW.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_150_0_XqF.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_151_0_uyx.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_152_0_nez.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_153_0_8lJ.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_154_0_rJA.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_155_0_jNM.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_156_0_VRw.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_157_0_PGz.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_158_0_5JK.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_159_0_rjR.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_160_0_wsm.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_161_0_tY4.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_162_0_tM0.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_163_0_gIw.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_164_0_lBK.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_165_0_gT1.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_166_0_Zom.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_167_0_b7r.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_168_0_a2n.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_169_0_SSd.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_170_0_QDJ.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_171_0_cpu.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_172_0_Zc9.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_173_0_Wfu.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_174_0_atn.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_175_0_xdl.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_176_0_t9M.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_177_0_RO1.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_178_0_UsQ.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_179_0_Ep1.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_180_0_ax6.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_181_0_t0S.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_182_0_lNR.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_183_0_6dv.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_184_0_HK6.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_185_0_w2T.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_186_0_NzM.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_187_0_WJ0.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_188_0_fhG.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_189_0_Q6h.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_190_0_dkk.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_191_0_Spl.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_192_0_x0d.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_193_0_rEz.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_194_0_eqD.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_195_0_Uax.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_196_0_SVd.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_197_0_QpP.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_198_0_hd0.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_199_0_z19.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_200_0_Tqk.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_201_0_uR2.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_202_0_8mO.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_203_0_uT1.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_204_0_wUe.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_205_0_R3K.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_206_0_99Q.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_207_0_X5E.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_208_0_c2a.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_209_0_p3A.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_210_0_HVk.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_211_0_TBt.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_212_0_6xW.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_213_0_eWw.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_214_0_XC5.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_215_0_ClQ.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_216_0_vZm.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_217_0_JBM.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_218_0_l85.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_219_0_t5n.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_220_0_KSP.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_221_0_seL.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_222_0_oc9.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_223_0_z8g.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_224_0_7JE.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_225_0_XMy.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_226_0_rbL.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_227_0_PF7.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_228_0_PLK.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_229_0_bvK.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_230_0_jKt.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_231_0_rr2.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_232_0_vn3.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_233_0_wxp.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_234_0_z7s.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_235_0_ENJ.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_236_0_oG7.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_237_0_nft.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_238_0_8CJ.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_239_0_KiC.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_240_0_ZiM.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_241_0_9o7.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_242_0_U38.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_243_0_ySJ.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_244_0_Muc.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_245_0_XzB.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_246_0_yum.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_247_0_Ptz.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_248_0_p4v.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_249_0_SuA.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_250_0_niS.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_251_0_vMl.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_252_0_G5x.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_253_0_mFu.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_254_0_bjf.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_255_0_CrH.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_256_0_qRX.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_257_0_zcN.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_258_0_lQ7.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_259_0_aYJ.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_260_0_cE8.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_261_0_DgI.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_262_0_8W0.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_263_0_fol.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_264_0_Liv.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_265_0_T47.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_266_0_fk7.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_267_0_AFO.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_268_0_qID.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_269_0_Oo5.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_270_0_pk3.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_271_0_5VQ.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_272_0_e72.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_273_0_QWf.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_274_0_Vgf.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_275_0_FKa.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_276_0_cok.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_277_0_oZG.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_278_0_JZe.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_279_0_0xO.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_280_0_jcC.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_281_0_1o8.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_282_0_SEz.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_283_0_mV8.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_284_0_Vm8.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_285_0_ydP.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_286_0_gdR.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_287_0_TCu.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_288_0_4dw.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_289_0_pFV.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_290_0_aQI.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_291_0_foi.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_292_0_bUb.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_293_0_t4q.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_294_0_KcZ.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_295_0_kfv.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_296_0_KBa.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_297_0_yDY.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_298_0_R6L.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_299_0_mdF.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_300_0_10u.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_301_0_HzU.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_302_0_wg3.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_303_0_sVn.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_304_0_FZc.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_305_0_GUY.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_306_0_hx8.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_307_0_Bfs.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_308_0_RrH.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_309_0_gW4.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_310_0_sOa.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_311_0_whH.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_312_0_1fZ.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_313_0_pIO.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_314_0_jfk.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_315_0_xf2.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_316_0_yez.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_317_0_cGk.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_318_0_ISz.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_319_0_vVw.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_320_0_A2F.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_321_0_QKp.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_322_0_6EF.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_323_0_gOw.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_324_0_Ysw.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_325_0_waU.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_326_0_Nap.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_327_1_6Ch.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_328_1_Haq.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_329_0_Cf8.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_330_0_TUg.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_331_0_CGy.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_332_1_oP3.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_334_0_zIa.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_335_1_bOw.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_336_0_uZL.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_337_0_Vtg.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_338_0_1p6.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_339_0_Ua0.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_340_0_sH0.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_341_0_vYs.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_342_0_oPM.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_343_0_b50.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_344_1_upf.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_345_1_HZp.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_346_0_nu4.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_347_0_bH8.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_348_0_kxn.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_349_0_fdU.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_350_0_lQC.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_351_1_7TY.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_352_0_r3a.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_353_0_vCu.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_354_0_s6Q.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_355_0_X1Q.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_356_0_vXW.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_357_0_wSN.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_358_0_E8H.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_359_0_rZN.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/ElEl/MC//20110712_1/EE_ZJets_1/patTuple_skim_360_0_aBp.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_1_1_YVv.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_2_2_6mp.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_3_2_6ub.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_4_3_Sh2.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_5_5_O8g.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_6_1_JJl.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_7_2_cPV.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_8_2_FsJ.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_9_2_AOs.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_10_2_0N2.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_11_2_BVV.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_12_2_Alt.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_13_1_8EN.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_14_1_FNY.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_15_2_zKZ.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_16_1_LW8.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_17_1_gjN.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_18_2_9QS.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_19_3_iiN.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_20_1_lso.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_21_3_hbT.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_22_1_LRD.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_23_1_qzI.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_24_1_M7z.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_25_1_3UA.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_26_2_flT.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_27_1_ut5.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_28_1_X1a.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_29_0_nRX.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_30_2_Yaf.root",
+#"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_31_0_g1n.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_32_0_oBD.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_33_2_Mxp.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_34_0_93Z.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_36_1_9D7.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_37_0_OZ1.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_38_1_7mO.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_39_1_xDt.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_40_1_3Du.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_41_1_Ug0.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_42_1_iuG.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_43_0_89E.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_44_0_Q2p.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_45_1_h3m.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_47_0_BAM.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_48_0_Z8A.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_49_1_sVi.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_50_0_GJI.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_51_1_YIO.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_52_0_TDg.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_53_0_DJ8.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_54_0_uK2.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_55_0_Ht7.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_56_0_y0t.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_57_0_3rX.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_58_0_oQ4.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_59_0_tTQ.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_60_0_6qC.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_61_0_xOx.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_62_0_Rqt.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_63_0_olG.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_64_0_E5d.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_65_0_aC2.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_66_0_fF5.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_67_0_V2y.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_68_0_XDm.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_69_0_mRr.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_70_0_MTE.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_71_0_67t.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_72_0_IwZ.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_73_0_C2B.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_74_0_enV.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_75_0_t8A.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_76_0_skq.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_77_0_9tg.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_78_0_mTW.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_79_0_UMN.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_80_0_D6X.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_81_0_wnl.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_82_0_IEH.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_83_0_sie.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_84_0_ATl.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_85_0_xPq.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_87_0_6tL.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_88_0_aZ6.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_89_0_uVw.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_90_0_3km.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_91_1_fuO.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_93_0_KNL.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_94_0_oal.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_95_0_SMJ.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_96_1_mtg.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_97_0_04G.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_98_0_94A.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_100_0_Ptj.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_101_0_GSI.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_102_0_mMQ.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_103_0_VwY.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_104_0_klM.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_105_0_zrQ.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_106_0_vMn.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_107_0_zQF.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_108_0_ixX.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_109_0_T5v.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_110_0_8I6.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_111_0_J6z.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_112_0_SPU.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_113_0_8Sk.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_114_0_XwO.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_115_0_4IL.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_116_0_m5j.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_117_0_8Xe.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_118_0_mWK.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_119_0_9T8.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_120_0_DuA.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_121_0_uE5.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_122_0_cTb.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_123_0_plN.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_124_0_6v4.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_125_0_OUP.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_126_0_xYR.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_127_0_XIs.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_128_0_khE.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_129_0_2aA.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_130_0_QL9.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_131_0_hD7.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_132_0_aoL.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_133_0_MF1.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_134_0_0qc.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_135_0_q7L.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_136_0_JNB.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_137_0_EKT.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_138_0_mNz.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_139_0_FhR.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_140_0_QxY.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_141_0_EIZ.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_142_0_q8E.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_143_0_g18.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_144_0_jpl.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_145_0_mE2.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_147_0_ZEY.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_148_0_SNd.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_149_0_XhG.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_150_0_E1g.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_151_0_7QL.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_152_0_ei3.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_153_0_we0.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_154_0_s8Z.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_155_0_wZH.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_156_0_a14.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_157_0_9Qa.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_158_0_PJ0.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_159_0_1R7.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_160_0_zO2.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_161_1_Lii.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_162_0_P2L.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_163_0_qvp.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_164_0_97f.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_165_0_NWg.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_166_0_9Gt.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_167_0_170.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_168_0_Py5.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_169_0_u0X.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_170_0_vHT.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_171_0_5pj.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_172_0_6sj.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_173_0_MU5.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_174_0_wWT.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_175_0_dnX.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_176_0_8Tx.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_177_0_HOh.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_178_0_qDI.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_179_0_rlw.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_180_0_76J.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_182_0_CtG.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_183_0_VcC.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_184_1_4w1.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_185_1_eGO.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_186_0_874.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_187_0_AlI.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_188_0_VSH.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_189_0_pdj.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_190_0_8qd.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_193_1_kO9.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_194_0_Iho.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_195_0_Knu.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_197_0_fxv.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_198_0_QDb.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_199_0_7sY.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_200_0_Lur.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_203_0_mik.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_204_0_rx6.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_205_0_3Ue.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_206_0_fHf.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_209_0_WXu.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_210_0_0k6.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_211_0_v56.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_212_0_CJD.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_214_0_E5X.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_215_0_Eyp.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_217_0_mDk.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_218_0_0b3.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_219_0_YPr.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_220_0_1UY.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_221_0_T82.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_222_0_v0y.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_223_0_6LE.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_225_0_4qC.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_226_0_lFe.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_227_0_YwS.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_228_0_C4t.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_229_0_Dj5.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_230_0_O72.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_231_0_8mI.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_232_0_Cwb.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_233_0_YlW.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_234_0_E7t.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_235_1_2Kr.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_236_0_5y9.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_237_0_88K.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_238_0_ORZ.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_239_0_cUC.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_240_0_tdd.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_241_0_PbE.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_242_0_BpK.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_244_1_laY.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_245_0_kYy.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_246_0_jBt.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_247_1_yOO.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_248_0_8qr.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_250_0_fNy.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_251_0_p0v.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_252_1_8CF.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_253_0_b2m.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_255_1_GsX.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_256_0_Fr8.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_257_0_YGq.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_258_0_APL.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_259_0_XNR.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_260_0_qEO.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_262_0_wmb.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_263_0_Qyx.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_264_0_Z9X.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_265_0_JwL.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_266_0_riH.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_267_0_b5o.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_268_0_XKR.root",
+#"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_269_0_Z4l.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_270_0_XbI.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_271_0_zkZ.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_272_0_gg7.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_273_0_832.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_274_0_upM.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_275_0_bRc.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_276_0_vE1.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_278_0_kFc.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_279_0_xSv.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_280_0_RPS.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_281_0_lHm.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_282_0_vUE.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_283_0_lNv.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_285_0_rbe.root",
+#"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_286_0_DuD.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_287_0_g6S.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_288_0_vCJ.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_289_0_ej6.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_291_0_Oop.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_293_0_tUD.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_294_0_0Os.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_296_0_qmb.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_297_0_DnF.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_299_0_Ov2.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_300_0_Ixz.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_301_0_dqw.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_302_0_PZt.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_304_0_bye.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_305_0_BDz.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_306_0_0fV.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_307_0_jab.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_308_0_LRF.root",
+#"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_309_0_hiW.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_311_1_QFP.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_312_0_fk4.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_313_0_Lap.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_314_0_IOt.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_315_0_FCl.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_316_0_eVF.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_317_0_I1D.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_318_0_qDU.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_321_2_meS.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_322_0_A0T.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_324_0_ors.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_325_0_7XE.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_326_0_7Sa.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_327_0_uEz.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_328_0_ihW.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_329_2_HoX.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_330_0_PcI.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_332_0_hJJ.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_333_1_3k6.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_334_0_KiN.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_335_1_mGo.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_336_0_fvB.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_337_0_Xsq.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_338_0_TGB.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_340_0_9J8.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_341_0_1A3.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_342_0_BiN.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_343_0_XtM.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_344_0_1Ms.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_345_0_lA7.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_346_0_3FX.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_347_0_C9E.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_348_0_7jB.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_349_1_bTA.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_350_0_9tC.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_351_0_5bx.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_352_0_ldw.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_353_0_yMa.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_354_0_v1F.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_355_0_sny.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_356_1_NBf.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_357_0_Six.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_358_0_tn1.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_360_0_ThB.root",
+])
+
+readFiles.extend([
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_3/patTuple_skim_31_1_6Kb.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_3/patTuple_skim_35_1_384.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_3/patTuple_skim_46_1_aum.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_3/patTuple_skim_86_0_s4D.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_3/patTuple_skim_92_1_tZd.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_3/patTuple_skim_96_1_bKx.root",
+
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_3/patTuple_skim_146_0_JvZ.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_3/patTuple_skim_181_0_LVM.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_3/patTuple_skim_191_0_6uy.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_3/patTuple_skim_192_0_OYU.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_3/patTuple_skim_196_0_ByK.root",
+
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_3/patTuple_skim_201_0_Zdf.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_3/patTuple_skim_202_0_ze2.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_3/patTuple_skim_208_0_eK8.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_3/patTuple_skim_213_0_npx.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_3/patTuple_skim_216_1_lwt.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_3/patTuple_skim_224_0_Zf6.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_3/patTuple_skim_243_0_NBo.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_3/patTuple_skim_249_0_6uh.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_3/patTuple_skim_254_0_Iap.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_3/patTuple_skim_261_0_7jQ.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_3/patTuple_skim_269_0_Nby.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_3/patTuple_skim_277_0_evJ.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_3/patTuple_skim_284_0_Mlc.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_3/patTuple_skim_286_0_hoJ.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_3/patTuple_skim_298_0_lYb.root",
+
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_3/patTuple_skim_303_0_cvj.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_3/patTuple_skim_309_0_sxm.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_3/patTuple_skim_310_0_lez.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_3/patTuple_skim_319_0_e3V.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_3/patTuple_skim_320_0_WYK.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_3/patTuple_skim_331_0_hTc.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_3/patTuple_skim_359_0_LDO.root",
 ])
