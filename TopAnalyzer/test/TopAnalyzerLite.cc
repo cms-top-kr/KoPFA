@@ -7,6 +7,9 @@
 #include "TFile.h"
 #include "TChain.h"
 #include "TTreePlayer.h"
+#include "TFileCollection.h"
+#include "THashList.h"
+#include "TFileInfo.h"
 
 #include "TCanvas.h"
 #include "TPad.h"
@@ -184,14 +187,22 @@ void TopAnalyzerLite::addMC(vector<MCSample>& mcSetup,
   }
   else
   {
-    TFile* f = TFile::Open(fileName.c_str());
-    if ( !f || !f->IsOpen() ) cout << "Cannot open file\n";
-    else 
+    TFileCollection fileColl;
+    fileColl.Add(fileName.c_str());
+    THashList* fileList = fileColl.GetList();
+  
+    for ( int i=0; i<fileList->GetSize(); ++i )
     {
-      TH1* hEventSummary = (TH1*)f->Get((subDirName_+"/EventSummary").c_str());
-      if ( !hEventSummary ) cout << "Cannot find EventSummary histogram" << endl;
-      else mc.nEvents += hEventSummary->GetBinContent(1);
-      f->Close();
+      TFileInfo* fileInfo = (TFileInfo*)fileList->At(i);
+      TFile* f = TFile::Open(fileInfo->GetFirstUrl()->GetFile());
+      if ( !f || !f->IsOpen() ) cout << "Cannot open file\n";
+      else 
+      {
+        TH1* hEventSummary = (TH1*)f->Get((subDirName_+"/EventSummary").c_str());
+        if ( !hEventSummary ) cout << "Cannot find EventSummary histogram" << endl;
+        else mc.nEvents += hEventSummary->GetBinContent(1);
+        f->Close();
+      }
     }
   }
   mc.chain->Add(fileName.c_str());
