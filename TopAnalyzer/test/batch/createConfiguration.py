@@ -16,18 +16,22 @@ class CreateConfig:
         ## All things you should set before submit
         self.sourceDir = os.environ['CMSSW_BASE']+'/src/KoPFA/TopAnalyzer/python/Sources'
         self.mcReign = 'Summer11'
+        self.ntupleVersion = datetime.date.today().strftime('%Y%m%d')+'_v1'
 
         #self.maxFileSize = 0 # Set 0 not to do merging
-        self.maxFileSize = 1000000000 # 1GByte = 1000000000
+        GB = 1000000000
+        self.maxFileSize = 5*GB
 
         self.outProtocol = 'ssh'
         self.outHost = 'cmskr-top'
         self.outDir = '/data/export/'+os.environ['USER']+'/TopAnalysis/ntuple/'+dataType+'/'+decay
-        self.outDir += '/'+datetime.date.today().strftime('%Y%m%d')
+        self.outDir += '/'+self.ntupleVersion
         #self.outProtocol = 'file'
         #self.outDir = '/afs/cern.ch/'+os.environ['USER'][0]+'/'+os.environ['USER']+'YOUR_DIRECTORY'
         #self.outProtocol = 'rfio'
         #self.outDir = '/castor/cern.ch/user/'+os.environ['USER'][0]+'/'+os.environ['USER']+'YOUR_DIRECTORY'
+        #self.outDir = '/castor/cern.ch/cms/store/user/'+os.environ['USER']+'/TopAnalysis/ntuple/'+dataType+'/'+decay
+        #self.outDir += '/'+self.ntupleVersion
 
         print "=== Creating", dataType, decay, "jobs ==="
 
@@ -95,6 +99,8 @@ class CreateConfig:
         for dataset in self.datasets:
             if dataset == 'TTbarOthers':
                 datasetFile = self.sourceDir+'/patTuple_%s_cff.py' % 'TTbarTuneZ2'
+            elif dataset == 'ZtauDecay':
+                datasetFile = self.sourceDir+'/patTuple_%s_cff.py' % 'ZJets'
             else:
                 datasetFile = self.sourceDir+'/patTuple_%s_cff.py' % dataset
 
@@ -143,6 +149,7 @@ process.source = cms.Source("PoolSource",
 process.load("FWCore.MessageService.MessageLogger_cfi")
 process.MessageLogger.cerr.FwkReport.reportEvery = 1000
 
+#process.load("KoPFA.TopAnalyzer.topAnalysis_Syst_cff")
 process.load("KoPFA.TopAnalyzer.topAnalysis_cff")
 
 process.TFileService = cms.Service("TFileService",
@@ -167,7 +174,7 @@ process.p = cms.Path(
             self.footer += "process.%s.doResJec = cms.untracked.bool(True)" % (self.decay)
 
         ## Now we are ready to create configuration files
-        cfgDir = os.path.abspath('./%s/%s' % (dataType, self.decay))
+        cfgDir = os.path.abspath('./%s/%s/%s' % (self.ntupleVersion, dataType, self.decay))
         os.makedirs(cfgDir)
 
         ## Create run script
@@ -184,12 +191,18 @@ eval `scram runtime -sh`
 
 cd $SCRATCHDIR
 cmsRun $CFGDIR/$CFG
+RETVAL=$?
+
+if [ $RETVAL != 0 ]; then
+  exit $RETVAL
+fi
+
 """ % (cfgDir, self.outDir))
         if 'rfio' == self.outProtocol:
             runScript.write("""
-nsmkdir -p $OUTDIR
+rfmkdir -p $OUTDIR
 for FILE in vallot_*.root
-    do rfcp $FILE *.root $OUTDIR; 
+    do rfcp $FILE $OUTDIR; 
 done
 """)
         elif 'ssh' == self.outProtocol:
@@ -200,6 +213,7 @@ scp vallot_*.root $OUTHOST:$OUTDIR
 """ % (self.outHost))
         elif 'file' == self.outProtocol:
             runScript.write("""
+mkdir -p $OUTDIR
 mv vallot_*.root $OUTDIR/
 """)
         runScript.close()
