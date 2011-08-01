@@ -369,6 +369,7 @@ readFiles.extend([
 "rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_3/patTuple_skim_86_0_s4D.root",
 "rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_3/patTuple_skim_92_1_tZd.root",
 "rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_3/patTuple_skim_96_1_bKx.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_3/patTuple_skim_99_2_VNa.root",
 
 "rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_3/patTuple_skim_146_0_JvZ.root",
 "rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_3/patTuple_skim_181_0_LVM.root",
@@ -378,6 +379,7 @@ readFiles.extend([
 
 "rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_3/patTuple_skim_201_0_Zdf.root",
 "rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_3/patTuple_skim_202_0_ze2.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_3/patTuple_skim_207_0_fmI.root",
 "rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_3/patTuple_skim_208_0_eK8.root",
 "rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_3/patTuple_skim_213_0_npx.root",
 "rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_3/patTuple_skim_216_1_lwt.root",
@@ -390,6 +392,9 @@ readFiles.extend([
 "rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_3/patTuple_skim_277_0_evJ.root",
 "rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_3/patTuple_skim_284_0_Mlc.root",
 "rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_3/patTuple_skim_286_0_hoJ.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_3/patTuple_skim_290_0_bKB.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_3/patTuple_skim_292_0_r6L.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_3/patTuple_skim_295_0_Xt5.root",
 "rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_3/patTuple_skim_298_0_lYb.root",
 
 "rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_3/patTuple_skim_303_0_cvj.root",
@@ -397,6 +402,8 @@ readFiles.extend([
 "rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_3/patTuple_skim_310_0_lez.root",
 "rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_3/patTuple_skim_319_0_e3V.root",
 "rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_3/patTuple_skim_320_0_WYK.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_3/patTuple_skim_323_0_TZ9.root",
 "rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_3/patTuple_skim_331_0_hTc.root",
+"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_3/patTuple_skim_339_0_Qvu.root",
 "rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_3/patTuple_skim_359_0_LDO.root",
 ])
