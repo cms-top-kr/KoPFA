@@ -415,6 +415,7 @@ void TopAnalyzerLite::plot(const string name, const TCut cut, MonitorPlot& monit
     if ( doStackSignal_ )
     {
       hMCSig->SetFillColor(mcSample.color);
+      hMCSig->SetFillStyle(1001);
 
       stackedPlots.push_back(make_pair(mcSample.label, hMCSig));
       hStack->Add(hMCSig);
@@ -469,6 +470,7 @@ void TopAnalyzerLite::plot(const string name, const TCut cut, MonitorPlot& monit
     }
 
     hMC->SetFillColor(mcSample.color);
+    hMC->SetFillStyle(1001);
 
     // Subtract background from the hDataSub histogram
     hDataSub->Add(hMC, -1);
