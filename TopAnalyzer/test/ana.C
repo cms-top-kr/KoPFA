@@ -5,7 +5,7 @@ using namespace std;
 
 void defaultStyle();
 
-void ana(string decayMode = "MuMu", string imageOutDir = "")
+void ana()
 {
   gSystem->Load("libFWCoreFWLite.so");
   AutoLibraryLoader::enable();
@@ -13,45 +13,64 @@ void ana(string decayMode = "MuMu", string imageOutDir = "")
   gSystem->Load("libDataFormatsPatCandidates.so");
 
   gSystem->Load("libPhysicsToolsRooStatsCms.so");
-
-  //AutoLibraryLoader::enable();
-
   gSystem->CompileMacro("TopAnalyzerLite.cc", "k");
-  TopAnalyzerLite* analyzer = new TopAnalyzerLite(decayMode, imageOutDir);
-
-  const std::string mcPath = "/home/bhlee/w0/Analysis/Top/ParticleFlowBTag/CMSSW_4_2_5/src/KoPFA/TopAnalyzer/test/ntuple/"+decayMode+"/MC/";
-  const std::string rdPath = "/home/bhlee/w0/Analysis/Top/ParticleFlowBTag/CMSSW_4_2_5/src/KoPFA/TopAnalyzer/test/ntuple/"+decayMode+"/RD/";
 
   defaultStyle();
 
-  analyzer->addRealData(rdPath+"vallot.root", 869.00);
+  ana("MuMu", "result/MuMu");
+  ana("ElEl", "result/ElEl");
+  ana("MuEl", "result/MuEl");
+}
 
-  analyzer->addMCSig("TTbar", "t#bar{t}", mcPath+"vallot_TTbarTuneZ2.root", 157.5, 4);
-  analyzer->addMCBkg("Wl", "W #rightarrow l#nu", mcPath+"vallot_WJetsToLNu.root", 10438, 46);
-  analyzer->addMCBkg("VV", "Dibosons", mcPath+"vallot_VVJets.root", 4.51, 6);
-  analyzer->addMCBkg("SingleTop", "Single top", mcPath+"vallot_SingleToptW.root", 10.6, 7);
+void ana(string decayMode, string imageOutDir)
+{
+  TopAnalyzerLite* analyzer = new TopAnalyzerLite(decayMode, imageOutDir);
 
-  analyzer->addMCBkg("DYtt"       , "Z/#gamma* #rightarrow #tau#tau", mcPath+"vallot_ZtauDecay.root" , 3048, 5);
-  analyzer->addMCBkg("DYtt_10to20", "Z/#gamma* #rightarrow #tau#tau", mcPath+"vallot_DYtt10to20.root", 3457, 5);
-  analyzer->addMCBkg("DYtt_20to50", "Z/#gamma* #rightarrow #tau#tau", mcPath+"vallot_DYtt20to50.root", 1666, 5);
+  //const std::string mcPath = "/data/cmskr-top/common/Top/ntuple/"+decayMode+"/MC/Summer11/";
+  //const std::string rdPath = "/data/cmskr-top/common/Top/ntuple/"+decayMode+"/RD/July06/";
 
-  analyzer->addMCBkg("DYll", "Z/#gamma* #rightarrow ll", mcPath+"vallot_ZJets.root", 3048, 2);
+  const std::string mcPath = "/data/cmskr-top/jhgoh/TopAnalysis/ntuple/MC/"+decayMode+"/20110801_HLT_v1/";
+  const std::string rdPath = "/data/cmskr-top/jhgoh/TopAnalysis/ntuple/RD/"+decayMode+"/20110801_HLT_v1/";
+
+  analyzer->addRealData(rdPath+"vallot*.root", 1091.94);
+
+  analyzer->addMCSig("TTbar", "t#bar{t}", mcPath+"vallot_TTbarTuneZ2_*.root", 157.5, kRed+1);
+  analyzer->addMCBkg("Wl", "W#rightarrowl#nu", mcPath+"vallot_WJetsToLNu_*.root", 10438, kGreen-3);
+  //analyzer->addMCBkg("VV", "Dibosons", mcPath+"vallot_VVJets_*.root", 4.51, kWhite);
+  //analyzer->addMCBkg("tW", "Single top", mcPath+"vallot_SingleToptW_*.root", 10.6, kMagenta);
+
+  if ( decayMode == "ElEl" )
+  {
+    analyzer->addMCBkg("QCDPt20to30BCtoE" , "QCD", mcPath+"vallot_QCDPt20to30BCtoE_*.root" , 17.0 , kYellow);
+    analyzer->addMCBkg("QCDPt30to80BCtoE" , "QCD", mcPath+"vallot_QCDPt30to80BCtoE_*.root" , 14.6 , kYellow);
+    analyzer->addMCBkg("QCDPt80to170BCtoE", "QCD", mcPath+"vallot_QCDPt80to170BCtoE_*.root", 111.5, kYellow);
+  }
+  else
+  {
+    analyzer->addMCBkg("QCDPt20MuPt15", "QCD", mcPath+"vallot_QCDPt20MuPt15_*.root", 347.6, kYellow);
+  }
+
+  analyzer->addMCBkg("DYtt"       , "Z/#gamma*#rightarrow#tau^{+}#tau^{-}", mcPath+"vallot_ZtauDecay_*.root" , 3048, kAzure+8);
+  analyzer->addMCBkg("DYtt_10to20", "Z/#gamma*#rightarrow#tau^{+}#tau^{-}", mcPath+"vallot_DYtt10to20_*.root", 3457, kAzure+8);
+  analyzer->addMCBkg("DYtt_20to50", "Z/#gamma*#rightarrow#tau^{+}#tau^{-}", mcPath+"vallot_DYtt20to50_*.root", 1666, kAzure+8);
+
+  analyzer->addMCBkg("DYll", "Z/#gamma*#rightarrowl^{+}l^{-}", mcPath+"vallot_ZJets_*.root", 3048, kAzure-2);
   if (decayMode == "ElEl")
   {
-  	analyzer->addMCBkg("DYee10to20", "Z/#gamma* #rightarrow ll", mcPath+"vallot_DYee10to20.root", 3457, 2);
-  	analyzer->addMCBkg("DYee20to50", "Z/#gamma* #rightarrow ll", mcPath+"vallot_DYee20to50.root", 1666, 2);
+    analyzer->addMCBkg("DYee10to20", "Z/#gamma*#rightarrowl^{+}l^{-}", mcPath+"vallot_DYee10to20_*.root", 3457, kAzure-2);
+    analyzer->addMCBkg("DYee20to50", "Z/#gamma*#rightarrowl^{+}l^{-}", mcPath+"vallot_DYee20to50_*.root", 1666, kAzure-2);
   }
   else if (decayMode == "MuMu")
   {
-  	analyzer->addMCBkg("DYmm10to20", "Z/#gamma* #rightarrow ll", mcPath+"vallot_DYmm10to20.root", 3457, 2);
-  	analyzer->addMCBkg("DYmm20to50", "Z/#gamma* #rightarrow ll", mcPath+"vallot_DYmm20to50.root", 1666, 2);
+    analyzer->addMCBkg("DYmm10to20", "Z/#gamma*#rightarrowl^{+}l^{-}", mcPath+"vallot_DYmm10to20_*.root", 3457, kAzure-2);
+    analyzer->addMCBkg("DYmm20to50", "Z/#gamma*#rightarrowl^{+}l^{-}", mcPath+"vallot_DYmm20to50_*.root", 1666, kAzure-2);
   }
   else if (decayMode == "MuEl")
   {
-  	analyzer->addMCBkg("DYee10to20", "Z/#gamma* #rightarrow ll", mcPath+"vallot_DYee10to20.root", 3457, 2);
-  	analyzer->addMCBkg("DYee20to50", "Z/#gamma* #rightarrow ll", mcPath+"vallot_DYee20to50.root", 1666, 2);
-  	analyzer->addMCBkg("DYmm10to20", "Z/#gamma* #rightarrow ll", mcPath+"vallot_DYmm10to20.root", 3457, 2);
-  	analyzer->addMCBkg("DYmm20to50", "Z/#gamma* #rightarrow ll", mcPath+"vallot_DYmm20to50.root", 1666, 2);
+    analyzer->addMCBkg("DYee10to20", "Z/#gamma*#rightarrowl^{+}l^{-}", mcPath+"vallot_DYee10to20_*.root", 3457, kAzure-2);
+    analyzer->addMCBkg("DYee20to50", "Z/#gamma*#rightarrowl^{+}l^{-}", mcPath+"vallot_DYee20to50_*.root", 1666, kAzure-2);
+    analyzer->addMCBkg("DYmm10to20", "Z/#gamma*#rightarrowl^{+}l^{-}", mcPath+"vallot_DYmm10to20_*.root", 3457, kAzure-2);
+    analyzer->addMCBkg("DYmm20to50", "Z/#gamma*#rightarrowl^{+}l^{-}", mcPath+"vallot_DYmm20to50_*.root", 1666, kAzure-2);
   }
   //addMonitorPlot
   //analyzer->addMonitorPlot("nbJet", "@bjets.size()", "b-Jet Multiplicity;b-Jet Multiplicity;Events", 5, 0, 5, 0.1, 3,false);
@@ -110,12 +129,6 @@ void ana(string decayMode = "MuMu", string imageOutDir = "")
   //STEP7 : b-tagging
   analyzer->addCutStep("@bjets.size() >= 1", "MET,nbJet,vsumM,vsumMAlt,genttbarM", 0.5);  
 
-  //STEP8 : b-tagging
-  analyzer->addCutStep("bjets.Pt() >= 50 && @bjets.size() >= 1", "MET,nbJet,vsumM,vsumMAlt,genttbarM", 0.5);  
-
-  //STEP9 : b-tagging
-  analyzer->addCutStep("bjets.Pt() >= 50 && @bjets.size() >= 2", "MET,nbJet,vsumM,vsumMAlt,genttbarM", 0.5);  
-  
   //analyzer->setEventWeightVar("weight");
 
   analyzer->applyCutSteps();
@@ -125,48 +138,48 @@ void ana(string decayMode = "MuMu", string imageOutDir = "")
 
 void defaultStyle()
 {
-    gROOT->SetStyle("Plain");
-    //gStyle->SetOptStat(1110);
+  gROOT->SetStyle("Plain");
+  //gStyle->SetOptStat(1110);
 
-    gStyle->SetOptTitle(0);
-    gStyle->SetOptStat(0); //remove statistics box
-    gStyle->SetOptFit(1);
-    gStyle->SetStatW(0.25);
-    gStyle->SetStatH(0.15);
+  gStyle->SetOptTitle(0);
+  gStyle->SetOptStat(0); //remove statistics box
+  gStyle->SetOptFit(1);
+  gStyle->SetStatW(0.25);
+  gStyle->SetStatH(0.15);
 
-    gStyle->SetCanvasDefH(400);
-    gStyle->SetCanvasDefW(400);
+  gStyle->SetCanvasDefH(400);
+  gStyle->SetCanvasDefW(400);
 
-    // For the axis:
-    gStyle->SetAxisColor(1, "XYZ");
-    gStyle->SetStripDecimals(kTRUE);
-    gStyle->SetTickLength(0.03, "XYZ");
-    gStyle->SetNdivisions(510, "XYZ");
-    gStyle->SetPadTickX(1);  // To get tick marks on the opposite side of the frame
-    gStyle->SetPadTickY(1);
+  // For the axis:
+  gStyle->SetAxisColor(1, "XYZ");
+  gStyle->SetStripDecimals(kTRUE);
+  gStyle->SetTickLength(0.03, "XYZ");
+  gStyle->SetNdivisions(510, "XYZ");
+  gStyle->SetPadTickX(1);  // To get tick marks on the opposite side of the frame
+  gStyle->SetPadTickY(1);
 
-    // To make 2D contour colorful
-    gStyle->SetPalette(1);
+  // To make 2D contour colorful
+  gStyle->SetPalette(1);
 
-    //gStyle->SetOptTitle(0);
-    // Margins:
-    gStyle->SetPadTopMargin(0.1);
-    gStyle->SetPadBottomMargin(0.15);
-    gStyle->SetPadLeftMargin(0.15);
-    gStyle->SetPadRightMargin(0.05);
+  //gStyle->SetOptTitle(0);
+  // Margins:
+  gStyle->SetPadTopMargin(0.1);
+  gStyle->SetPadBottomMargin(0.15);
+  gStyle->SetPadLeftMargin(0.15);
+  gStyle->SetPadRightMargin(0.05);
 
-    // For the axis titles:
-    gStyle->SetTitleColor(1, "XYZ");
-    gStyle->SetTitleFont(42, "XYZ");
-    gStyle->SetTitleSize(0.06, "XYZ");
-    gStyle->SetTitleXOffset(0.9);
-    gStyle->SetTitleYOffset(1.1);
+  // For the axis titles:
+  gStyle->SetTitleColor(1, "XYZ");
+  gStyle->SetTitleFont(42, "XYZ");
+  gStyle->SetTitleSize(0.06, "XYZ");
+  gStyle->SetTitleXOffset(0.9);
+  gStyle->SetTitleYOffset(1.1);
 
-    // For the axis labels:
-    gStyle->SetLabelColor(1, "XYZ");
-    gStyle->SetLabelFont(42, "XYZ");
-    gStyle->SetLabelOffset(0.007, "XYZ");
-    gStyle->SetLabelSize(0.05, "XYZ");
+  // For the axis labels:
+  gStyle->SetLabelColor(1, "XYZ");
+  gStyle->SetLabelFont(42, "XYZ");
+  gStyle->SetLabelOffset(0.007, "XYZ");
+  gStyle->SetLabelSize(0.05, "XYZ");
 
 }
 
