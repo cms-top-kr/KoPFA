@@ -126,7 +126,7 @@ readFiles.extend([
 "rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_93_0_KNL.root",
 "rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_94_0_oal.root",
 "rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_95_0_SMJ.root",
-"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_96_1_mtg.root",
+#"rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_96_1_mtg.root",
 "rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_97_0_04G.root",
 "rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_98_0_94A.root",
 "rfio:/castor/cern.ch/cms/store/user/jhgoh/TopAnalysis/pat/MC/20110720_2/ZJets_1/patTuple_skim_100_0_Ptj.root",
