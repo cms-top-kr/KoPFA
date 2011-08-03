@@ -13,7 +13,7 @@
 //
 // Original Author:  Tae Jeong Kim,40 R-A32,+41227678602,
 //         Created:  Fri Jun  4 17:19:29 CEST 2010
-// $Id: TopDILAnalyzer.h,v 1.46 2011/07/04 14:55:43 tjkim Exp $
+// $Id: TopDILAnalyzer.h,v 1.47 2011/07/11 10:29:18 tjkim Exp $
 //
 //
 
@@ -95,6 +95,7 @@ class TopDILAnalyzer : public edm::EDFilter {
     pfJetIdParams_ = iConfig.getParameter<edm::ParameterSet> ("looseJetId");
     relIso1_ = iConfig.getUntrackedParameter<double>("relIso1");
     relIso2_ = iConfig.getUntrackedParameter<double>("relIso2");
+    oppPair_ = iConfig.getUntrackedParameter<bool>("oppPair",true);
     bTagAlgo_ = iConfig.getUntrackedParameter<std::string>("bTagAlgo");
     minBTagValue_ = iConfig.getUntrackedParameter<double>("minBTagValue");
 
@@ -177,10 +178,10 @@ class TopDILAnalyzer : public edm::EDFilter {
     // Jet energy correction for 38X
     if ( doJecFly_ )
     {
-      edm::FileInPath jecL1File("KoPFA/TopAnalyzer/python/JEC/Jec11_V2_AK5PF_L1FastJet.txt");
-      edm::FileInPath jecL2File("KoPFA/TopAnalyzer/python/JEC/Jec11_V2_AK5PF_L2Relative.txt");
-      edm::FileInPath jecL3File("KoPFA/TopAnalyzer/python/JEC/Jec11_V2_AK5PF_L3Absolute.txt");
-      edm::FileInPath jecL2L3File("KoPFA/TopAnalyzer/python/JEC/Jec11_V2_AK5PF_L2L3Residual.txt");
+      edm::FileInPath jecL1File("KoPFA/TopAnalyzer/python/JEC/chs/GR_R_42_V19_AK5PFchs_L1FastJet.txt");
+      edm::FileInPath jecL2File("KoPFA/TopAnalyzer/python/JEC/chs/GR_R_42_V19_AK5PFchs_L2Relative.txt");
+      edm::FileInPath jecL3File("KoPFA/TopAnalyzer/python/JEC/chs/GR_R_42_V19_AK5PFchs_L3Absolute.txt");
+      edm::FileInPath jecL2L3File("KoPFA/TopAnalyzer/python/JEC/chs/GR_R_42_V19_AK5PFchs_L2L3Residual.txt");
       std::vector<JetCorrectorParameters> jecParams;
       jecParams.push_back(JetCorrectorParameters(jecL1File.fullPath()));
       jecParams.push_back(JetCorrectorParameters(jecL2File.fullPath()));
@@ -306,10 +307,6 @@ class TopDILAnalyzer : public edm::EDFilter {
 
         const bool match = MatchObjects( it1.p4(), it2.p4(), true);
         if(match) continue;
-        dphimetlepton1 = fabs(deltaPhi(mi->phi(),it1.phi()));
-        dphimetlepton2 = fabs(deltaPhi(mi->phi(),it2.phi()));
-
-        accept = true;
 
         const Ko::Lepton lep1(it1.p4(), (int) it1.charge());
         const Ko::Lepton lep2(it2.p4(), (int) it2.charge());
@@ -342,6 +339,16 @@ class TopDILAnalyzer : public edm::EDFilter {
         lepton1->back().setIsoDeposit( it1.trackIso(), it1.ecalIso(), it1.hcalIso());
         lepton2->back().setIsoDeposit( it2.trackIso(), it2.ecalIso(), it2.hcalIso());
 
+        //explicitly requuire opposite sign of isolated leptons
+        bool iso = lepton1->back().relpfIso03() < relIso1_ && lepton2->back().relpfIso03() < relIso2_;
+        bool opp = it1.charge() * it2.charge() < 0;
+        if( !iso ) continue;
+        if( !opp && oppPair_) continue;
+
+        accept = true;
+        dphimetlepton1 = fabs(deltaPhi(mi->phi(),it1.phi()));
+        dphimetlepton2 = fabs(deltaPhi(mi->phi(),it2.phi()));
+ 
         const Ko::ZCandidate dimuon(lepton1->back(), lepton2->back());
         Z->push_back(dimuon);
 
@@ -407,7 +414,8 @@ class TopDILAnalyzer : public edm::EDFilter {
           if(passId){
             //const double dRval1 = deltaR(jit->eta(), jit->phi(), it1.eta(), it1.phi());
             //const double dRval2 = deltaR(jit->eta(), jit->phi(), it2.eta(), it2.phi());
-            //bool overlap = checkOverlap(jit->eta(), jit->phi(), dRval1, lep1.relpfIso04(), dRval2, lep2.relpfIso04());
+            //bool overlap = checkOverlap(jit->eta(), jit->phi(), dRval1, lepton1->back().relpfIso03(), dRval2, lepton2->back().relpfIso03());
+
             //jet cleaning
             //if( overlap ) continue;
 
@@ -637,6 +645,8 @@ class TopDILAnalyzer : public edm::EDFilter {
   unsigned int npileup;
   unsigned int nvertex;
   double weight;
+
+  bool oppPair_;
   // Residual Jet energy correction for 38X
   bool doJecFly_;
   bool doResJec_;
