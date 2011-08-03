@@ -13,7 +13,7 @@
 //
 // Original Author:  Tae Jeong Kim,40 R-A32,+41227678602,
 //         Created:  Fri Jun  4 17:19:29 CEST 2010
-// $Id: TopDILAnalyzer.h,v 1.48 2011/08/03 14:36:04 tjkim Exp $
+// $Id: TopDILAnalyzer.h,v 1.49 2011/08/03 15:14:55 tjkim Exp $
 //
 //
 
@@ -408,7 +408,7 @@ class TopDILAnalyzer : public edm::EDFilter {
           }
 
           //geometric acceptance
-          if(fabs(jit->eta()) >= 2.5) continue;
+          if(fabs(jit->eta()) >= 2.4) continue;
 
           pat::strbitset looseJetIdSel = looseJetIdSelector_.getBitTemplate();
           bool passId = looseJetIdSelector_( *jit, looseJetIdSel);
