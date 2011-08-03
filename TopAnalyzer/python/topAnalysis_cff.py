@@ -16,7 +16,8 @@ from KoPFA.TopAnalyzer.PileUpWeight_cff import *
 
 PUweight = cms.EDProducer("EventWeightProducer",
   PileUpRD = PileUpRD2011, 
-  PileUpMC = PoissonIntDist #probdistFlat10, PoissonOneXDist 
+  #PileUpMC = PoissonIntDist #probdistFlat10, PoissonOneXDist 
+  PileUpMC = PoissonIntDist
 )
 
 VertexFilter = cms.EDFilter('VertexFilter',
@@ -78,8 +79,8 @@ ElEl = cms.EDFilter('TopElElAnalyzer',
         'nEventsPatHLT',
     ),
     looseJetId = myJetId,
-    relIso1 = cms.untracked.double(0.26),
-    relIso2 = cms.untracked.double(0.26),
+    relIso1 = cms.untracked.double(0.17),
+    relIso2 = cms.untracked.double(0.17),
     bTagAlgo = cms.untracked.string("trackCountingHighEffBJetTags"),
     minBTagValue = cms.untracked.double(1.7),
 )
@@ -100,8 +101,8 @@ MuMu = cms.EDFilter('TopMuMuAnalyzer',
     ),
     looseJetId = myJetId, 
     #for jet cleaning overlapping with isolated epton within 0.4
-    relIso1 = cms.untracked.double(0.21),
-    relIso2 = cms.untracked.double(0.21),
+    relIso1 = cms.untracked.double(0.20),
+    relIso2 = cms.untracked.double(0.20),
     bTagAlgo = cms.untracked.string("trackCountingHighEffBJetTags"),
     minBTagValue = cms.untracked.double(1.7),
 )
@@ -123,7 +124,7 @@ MuEl = cms.EDFilter('TopMuElAnalyzer',
     looseJetId = myJetId, 
     #for jet cleaning overlapping with isolated epton within 0.4
     relIso1 = cms.untracked.double(0.20),
-    relIso2 = cms.untracked.double(0.20),
+    relIso2 = cms.untracked.double(0.17),
     bTagAlgo = cms.untracked.string("trackCountingHighEffBJetTags"),
     minBTagValue = cms.untracked.double(1.7),
 )
@@ -143,28 +144,13 @@ ElectronAna = cms.EDAnalyzer(
 
 nEventsPatHLT = cms.EDProducer("EventCountProducer")
 
-mumuFilter = cms.EDFilter("CandViewCountFilter",
-  src = cms.InputTag('acceptedMuons'),
-  minNumber = cms.uint32(2)
-)
-
-elelFilter = cms.EDFilter("CandViewCountFilter",
-  src = cms.InputTag('acceptedElectrons'),
-  minNumber = cms.uint32(2)
-)
-
-singleMuFilter = mumuFilter.clone(minNumber = cms.uint32(1))
-singleElFilter = elelFilter.clone(minNumber = cms.uint32(1))
-muelFilter = cms.Sequence(singleMuFilter + singleElFilter)
-
 topElElAnalysisMCSequence = cms.Sequence(
-    elelFilter*
-    hltHighLevelElElMC*
+#    hltHighLevelElElMC*
     nEventsPatHLT*
     topWLeptonGenFilter*
     GenZmassFilter*
     PUweight*
-    ElectronAna*
+#    ElectronAna*
     Electrons*
     patElectronFilter*
     ElEl
@@ -172,12 +158,11 @@ topElElAnalysisMCSequence = cms.Sequence(
 )
 
 topElElAnalysisRealDataSequence = cms.Sequence(
-    elelFilter*
     hltHighLevelElElRD*
 #    electronTriggerFilterByRun*
     nEventsPatHLT*
     removeDuplicate*
-    ElectronAna*
+#    ElectronAna*
     Electrons*
     patElectronFilter*
     ElEl
@@ -185,8 +170,7 @@ topElElAnalysisRealDataSequence = cms.Sequence(
 )
 
 topMuMuAnalysisMCSequence = cms.Sequence(
-    mumuFilter*
-    hltHighLevelMuMuMC*
+#    hltHighLevelMuMuMC*
     nEventsPatHLT*
     topWLeptonGenFilter*
     GenZmassFilter*
@@ -199,7 +183,6 @@ topMuMuAnalysisMCSequence = cms.Sequence(
 )
 
 topMuMuAnalysisRealDataSequence = cms.Sequence(
-    mumuFilter*
     hltHighLevelMuMuRD*
 #    muonTriggerFilterByRun*
     nEventsPatHLT*
@@ -212,8 +195,7 @@ topMuMuAnalysisRealDataSequence = cms.Sequence(
 )
 
 topMuElAnalysisMCSequence = cms.Sequence(
-    muelFilter*
-    hltHighLevelMuElMC*
+#    hltHighLevelMuElMC*
     nEventsPatHLT*
     topWLeptonGenFilter*
     GenZmassFilter*
@@ -225,7 +207,6 @@ topMuElAnalysisMCSequence = cms.Sequence(
 )
 
 topMuElAnalysisRealDataSequence = cms.Sequence(
-    muelFilter*
     hltHighLevelMuElRD*
 #    muonTriggerFilterByRun*
     nEventsPatHLT*
