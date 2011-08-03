@@ -23,6 +23,7 @@ Muons = cms.EDProducer(
 Electrons = cms.EDProducer(
     "KoElectronSelector",
     version = cms.untracked.int32( 5 ),# 10 = MVA, 5 = WP90?
+    etacut = cms.untracked.double( 2.4 ),
     electronLabel  = cms.InputTag("acceptedElectrons"),
     beamSpotLabel = cms.InputTag("offlineBeamSpot"),
     eidName = cms.untracked.string("eidTightMC"),
