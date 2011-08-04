@@ -97,6 +97,10 @@ process.eidCiCSequence = cms.Sequence(
 )
 
 process.load('CommonTools.RecoAlgos.HBHENoiseFilter_cfi')
+process.HBHENoiseFilter.minNumIsolatedNoiseChannels = cms.int32(9999)
+process.HBHENoiseFilter.minIsolatedNoiseSumE = cms.double(9999)
+process.HBHENoiseFilter.minIsolatedNoiseSumEt = cms.double(9999)
+
 
 ##################################################################
 process.load("KoPFA.TopAnalyzer.topHLTfilter_cff")

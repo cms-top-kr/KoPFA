@@ -81,7 +81,7 @@ def applyFastJet(process,postfix):
 	    src = cms.InputTag('pfNoElectron'+postfix),
 	    doAreaFastjet = cms.bool(True),
 	    doRhoFastjet = cms.bool(True),
-	    voronoiRfact = cms.double(0.9)
+	    #voronoiRfact = cms.double(0.9)
 	    )
         process.patJetCorrFactorsPFlow.rho = cms.InputTag("kt6PFJetsPFlow", "rho")
 
