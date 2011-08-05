@@ -46,7 +46,7 @@ hltHighLevelMuMuMC.throw = cms.bool(False)
 #RD
 hltHighLevelMuMuRD = hltHighLevel.clone()
 hltHighLevelMuMuRD.TriggerResultsTag = cms.InputTag("TriggerResults","","HLT")
-hltHighLevelMuMuRD.HLTPaths = cms.vstring('HLT_DoubleMu7_*','HLT_Mu17_Mu8_v*')
+hltHighLevelMuMuRD.HLTPaths = cms.vstring('HLT_DoubleMu7_*','HLT_Mu17_Mu8_v*','HLT_Mu13_Mu8_v*')
 hltHighLevelMuMuRD.throw = cms.bool(False)
 
 
