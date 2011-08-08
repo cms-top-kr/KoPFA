@@ -13,7 +13,7 @@
 //
 // Original Author:  Tae Jeong Kim,40 R-A32,+41227678602,
 //         Created:  Fri Jun  4 17:19:29 CEST 2010
-// $Id: TopDILAnalyzer.h,v 1.49 2011/08/03 15:14:55 tjkim Exp $
+// $Id: TopDILAnalyzer.h,v 1.50 2011/08/03 16:21:28 tjkim Exp $
 //
 //
 
@@ -60,6 +60,7 @@
 #include "DataFormats/RecoCandidate/interface/IsoDepositVetos.h"
 #include "DataFormats/PatCandidates/interface/Isolation.h"
 #include "SimDataFormats/PileupSummaryInfo/interface/PileupSummaryInfo.h"
+#include "PhysicsTools/Utilities/interface/LumiReWeighting.h"
 
 #include "JetMETCorrections/Objects/interface/JetCorrector.h"
 #include "CondFormats/JetMETObjects/interface/JetCorrectorParameters.h"
@@ -98,6 +99,9 @@ class TopDILAnalyzer : public edm::EDFilter {
     oppPair_ = iConfig.getUntrackedParameter<bool>("oppPair",true);
     bTagAlgo_ = iConfig.getUntrackedParameter<std::string>("bTagAlgo");
     minBTagValue_ = iConfig.getUntrackedParameter<double>("minBTagValue");
+    
+    PileUpRD_ = iConfig.getParameter< std::vector<double> >("PileUpRD"),
+    PileUpMC_ = iConfig.getParameter< std::vector<double> >("PileUpMC"),
 
     doJecFly_ = iConfig.getUntrackedParameter<bool>("doJecFly", true);
     doResJec_ = iConfig.getUntrackedParameter<bool>("doResJec", false);
@@ -117,6 +121,9 @@ class TopDILAnalyzer : public edm::EDFilter {
     h_jet_multi = fs->make<TH1F>( "h_jet_multi", "jet_multi", 10, 0, 10);
     h_jetpt30_multi = fs->make<TH1F>( "h_jetpt30_multi", "jet30pt_multi", 10, 0, 10);
     h_bjet_multi = fs->make<TH1F>( "h_bjet_multi", "bjet_multi", 10, 0, 10);
+    h_npileupin = fs->make<TH1F>( "h_npileupin", "npileupin", 30, 0, 30);
+    h_npileup = fs->make<TH1F>( "h_npileup", "npileup", 30, 0, 30);
+    h_nvertex = fs->make<TH1F>( "h_nvertex", "nvertex", 30, 0, 30);
 
     Z = new std::vector<Ko::ZCandidate>();
     lepton1 = new std::vector<Ko::Lepton>();
@@ -145,7 +152,10 @@ class TopDILAnalyzer : public edm::EDFilter {
     tree->Branch("LUMI",&LUMI,"LUMI/i");
     tree->Branch("npileup",&npileup,"npileup/i");
     tree->Branch("nvertex",&nvertex,"nvertex/i");
+    tree->Branch("weightin",&weightin, "weightin/d");
     tree->Branch("weight",&weight, "weight/d");
+    tree->Branch("weightplus",&weightplus, "weightplus/d");
+    tree->Branch("weightminus",&weightminus, "weightminus/d");
 
     tree->Branch("Z","std::vector<Ko::ZCandidate>", &Z);
     tree->Branch("lepton1","std::vector<Ko::Lepton>", &lepton1);
@@ -196,9 +206,21 @@ class TopDILAnalyzer : public edm::EDFilter {
         edm::FileInPath jecUncFile("KoPFA/TopAnalyzer/python/JEC/Jec11_V2_AK5PF_Uncertainty.txt");
         jecUnc_ = new JetCorrectionUncertainty(jecUncFile.fullPath());
     }
- 
 
- } 
+    std::vector< float > Wlumi ;
+    std::vector< float > TrueDist2011;
+
+    for( int i=0; i<25; ++i) {
+      TrueDist2011.push_back((float)PileUpRD_[i]);
+      Wlumi.push_back((float)PileUpMC_[i]);
+    }
+
+    LumiWeights_ = edm::LumiReWeighting(Wlumi, TrueDist2011);
+
+    PShiftDown_ = reweight::PoissonMeanShifter(-0.5);
+    PShiftUp_ = reweight::PoissonMeanShifter(0.5);
+
+  } 
 
   //virtual void produce(const edm::Event& iEvent, const edm::EventSetup& iSetup)
   virtual bool filter(edm::Event& iEvent, const edm::EventSetup& iSetup)
@@ -221,8 +243,12 @@ class TopDILAnalyzer : public edm::EDFilter {
     std::vector<PileupSummaryInfo>::const_iterator PVI;
 
     int npv = -1;
+    float sum_nvtx = 0;
+    float ave_nvtx = 0;
     if( PupInfo.isValid()){
       for(PVI = PupInfo->begin(); PVI != PupInfo->end(); ++PVI) {
+        int tmpnpv = PVI->getPU_NumInteractions();
+        sum_nvtx += float(tmpnpv);
 
         int BX = PVI->getBunchCrossing();
 
@@ -232,7 +258,23 @@ class TopDILAnalyzer : public edm::EDFilter {
         }
 
       } 
+
+      ave_nvtx = sum_nvtx/3.;
+
+      weightin = LumiWeights_.weight( npv );
+      weight = LumiWeights_.weight3BX( ave_nvtx );
+      weightplus  = weight*PShiftUp_.ShiftWeight( ave_nvtx );
+      weightminus = weight*PShiftDown_.ShiftWeight( ave_nvtx );
+    }else{
+      weightin = 1.0;
+      weight = 1.0;
+      weightplus = 1.0;
+      weightminus = 1.0;
     }
+
+    h_npileupin->Fill(npv);
+    h_npileup->Fill(ave_nvtx);
+
     npileup = npv;
 
     edm::Handle<reco::VertexCollection> recVtxs_;
@@ -247,15 +289,17 @@ class TopDILAnalyzer : public edm::EDFilter {
     }
 
     nvertex = nv;
- 
-    edm::Handle<double> weight_;
-    iEvent.getByLabel("PUweight", weight_);
 
-    if(weight_.isValid()){
-      weight = *weight_;
-    }else{
-      weight = 1.0;
-    }
+    h_nvertex->Fill(nv);
+
+    //edm::Handle<double> weight_;
+    //iEvent.getByLabel("PUweight", weight_);
+
+    //if(weight_.isValid()){
+    //  weight = *weight_;
+    //}else{
+    //  weight = 1.0;
+    //}
 
     edm::Handle<std::vector<T1> > muons1_;
     edm::Handle<std::vector<T2> > muons2_;
@@ -506,6 +550,10 @@ class TopDILAnalyzer : public edm::EDFilter {
     jetspt30->clear();
     bjets->clear();
 
+    weight = 1.0;
+    weightplus = 1.0;
+    weightminus = 1.0;
+
     dphimetlepton1 = -999;  
     dphimetlepton2 = -999;  
     dphimetjet1 = -999;
@@ -606,6 +654,9 @@ class TopDILAnalyzer : public edm::EDFilter {
   TH1F * h_jet_multi;
   TH1F * h_jetpt30_multi;
   TH1F * h_bjet_multi;
+  TH1F * h_npileupin;
+  TH1F * h_npileup;
+  TH1F * h_nvertex;
 
   std::vector<Ko::ZCandidate>* Z;
   std::vector<Ko::Lepton>* lepton1;
@@ -646,7 +697,18 @@ class TopDILAnalyzer : public edm::EDFilter {
   unsigned int LUMI;
   unsigned int npileup;
   unsigned int nvertex;
+  double weightin;
   double weight;
+  double weightplus;
+  double weightminus;
+
+  edm::LumiReWeighting LumiWeights_;
+
+  std::vector<double> PileUpRD_;
+  std::vector<double> PileUpMC_;
+
+  reweight::PoissonMeanShifter PShiftUp_;
+  reweight::PoissonMeanShifter PShiftDown_;
 
   bool oppPair_;
   // Residual Jet energy correction for 38X
