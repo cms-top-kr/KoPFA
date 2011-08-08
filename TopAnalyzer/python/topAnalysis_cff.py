@@ -83,6 +83,8 @@ ElEl = cms.EDFilter('TopElElAnalyzer',
     relIso2 = cms.untracked.double(0.17),
     bTagAlgo = cms.untracked.string("trackCountingHighEffBJetTags"),
     minBTagValue = cms.untracked.double(1.7),
+    PileUpRD = PileUpRD2011,
+    PileUpMC = Summer11IntDist,
 )
 
 MuMu = cms.EDFilter('TopMuMuAnalyzer',
@@ -105,6 +107,8 @@ MuMu = cms.EDFilter('TopMuMuAnalyzer',
     relIso2 = cms.untracked.double(0.20),
     bTagAlgo = cms.untracked.string("trackCountingHighEffBJetTags"),
     minBTagValue = cms.untracked.double(1.7),
+    PileUpRD = PileUpRD2011,
+    PileUpMC = Summer11IntDist,
 )
 
 MuEl = cms.EDFilter('TopMuElAnalyzer',
@@ -127,6 +131,8 @@ MuEl = cms.EDFilter('TopMuElAnalyzer',
     relIso2 = cms.untracked.double(0.17),
     bTagAlgo = cms.untracked.string("trackCountingHighEffBJetTags"),
     minBTagValue = cms.untracked.double(1.7),
+    PileUpRD = PileUpRD2011,
+    PileUpMC = Summer11IntDist,
 )
 
 from KoPFA.TopAnalyzer.ttbarNtupleProducer_cfi import *
@@ -149,7 +155,7 @@ topElElAnalysisMCSequence = cms.Sequence(
     nEventsPatHLT*
     topWLeptonGenFilter*
     GenZmassFilter*
-    PUweight*
+#    PUweight*
 #    ElectronAna*
     Electrons*
     patElectronFilter*
@@ -174,7 +180,7 @@ topMuMuAnalysisMCSequence = cms.Sequence(
     nEventsPatHLT*
     topWLeptonGenFilter*
     GenZmassFilter*
-    PUweight*
+#    PUweight*
 #    DYmmFilter*
     Muons*
     patMuonFilter*
@@ -199,7 +205,7 @@ topMuElAnalysisMCSequence = cms.Sequence(
     nEventsPatHLT*
     topWLeptonGenFilter*
     GenZmassFilter*
-    PUweight*
+#    PUweight*
     Muons * Electrons *
     patMuonFilterForMuEl * patElectronFilterForMuEl *
     MuEl
