@@ -26,18 +26,17 @@ void ana(string decayMode, string imageOutDir)
 {
   TopAnalyzerLite* analyzer = new TopAnalyzerLite(decayMode, imageOutDir);
 
-  //const std::string mcPath = "/data/cmskr-top/common/Top/ntuple/"+decayMode+"/MC/Summer11/";
-  //const std::string rdPath = "/data/cmskr-top/common/Top/ntuple/"+decayMode+"/RD/July06/";
+  const std::string mcPath = "/data/cmskr-top/common/Top/ntuple/"+decayMode+"/MC/Summer11/";
+  const std::string rdPath = "/data/cmskr-top/common/Top/ntuple/"+decayMode+"/RD/July06/";
 
-  const std::string mcPath = "/data/cmskr-top/jhgoh/TopAnalysis/ntuple/MC/"+decayMode+"/20110801_HLT_v1/";
-  const std::string rdPath = "/data/cmskr-top/jhgoh/TopAnalysis/ntuple/RD/"+decayMode+"/20110801_HLT_v1/";
+  analyzer->addRealData(rdPath+"vallot.root", 1143.221);
 
-  analyzer->addRealData(rdPath+"vallot*.root", 1091.94);
-
-  analyzer->addMCSig("TTbar", "t#bar{t}", mcPath+"vallot_TTbarTuneZ2_*.root", 157.5, kRed+1);
-  analyzer->addMCBkg("Wl", "W#rightarrowl#nu", mcPath+"vallot_WJetsToLNu_*.root", 10438, kGreen-3);
-  //analyzer->addMCBkg("VV", "Dibosons", mcPath+"vallot_VVJets_*.root", 4.51, kWhite);
-  //analyzer->addMCBkg("tW", "Single top", mcPath+"vallot_SingleToptW_*.root", 10.6, kMagenta);
+  analyzer->addMCSig("TTbar", "t#bar{t}", mcPath+"vallot_TTbarTuneZ2.root", 157.5, kRed+1);
+  analyzer->addMCBkg("Wl", "W#rightarrowl#nu", mcPath+"vallot_WJetsToLNu.root", 31314, kGreen-3);
+  analyzer->addMCBkg("VV", "VV", mcPath+"vallot_ZZ.root", 7.4 , kGray+4);
+  analyzer->addMCBkg("WW", "VV", mcPath+"vallot_WW.root", 4.51, kGray+4);
+  analyzer->addMCBkg("WZ", "VV", mcPath+"vallot_WZ.root", 0.61, kGray+4);
+  analyzer->addMCBkg("SingleTop", "Single top", mcPath+"vallot_SingleToptW.root", 7.87, kMagenta);
 
   if ( decayMode == "ElEl" )
   {
@@ -50,27 +49,27 @@ void ana(string decayMode, string imageOutDir)
     analyzer->addMCBkg("QCDPt20MuPt15", "QCD", mcPath+"vallot_QCDPt20MuPt15_*.root", 347.6, kYellow);
   }
 
-  analyzer->addMCBkg("DYtt"       , "Z/#gamma*#rightarrow#tau^{+}#tau^{-}", mcPath+"vallot_ZtauDecay_*.root" , 3048, kAzure+8);
-  analyzer->addMCBkg("DYtt_10to20", "Z/#gamma*#rightarrow#tau^{+}#tau^{-}", mcPath+"vallot_DYtt10to20_*.root", 3457, kAzure+8);
-  analyzer->addMCBkg("DYtt_20to50", "Z/#gamma*#rightarrow#tau^{+}#tau^{-}", mcPath+"vallot_DYtt20to50_*.root", 1666, kAzure+8);
+  analyzer->addMCBkg("DYtt"       , "Z/#gamma*#rightarrow#tau^{+}#tau^{-}", mcPath+"vallot_ZtauDecay.root" , 3048, kAzure+8);
+  analyzer->addMCBkg("DYtt_10to20", "Z/#gamma*#rightarrow#tau^{+}#tau^{-}", mcPath+"vallot_DYtt10to20.root", 3457, kAzure+8);
+  analyzer->addMCBkg("DYtt_20to50", "Z/#gamma*#rightarrow#tau^{+}#tau^{-}", mcPath+"vallot_DYtt20to50.root", 1666, kAzure+8);
 
-  analyzer->addMCBkg("DYll", "Z/#gamma*#rightarrowl^{+}l^{-}", mcPath+"vallot_ZJets_*.root", 3048, kAzure-2);
+  analyzer->addMCBkg("DYll", "Z/#gamma*#rightarrowl^{+}l^{-}", mcPath+"vallot_ZJets.root", 3048, kAzure-2);
   if (decayMode == "ElEl")
   {
-    analyzer->addMCBkg("DYee10to20", "Z/#gamma*#rightarrowl^{+}l^{-}", mcPath+"vallot_DYee10to20_*.root", 3457, kAzure-2);
-    analyzer->addMCBkg("DYee20to50", "Z/#gamma*#rightarrowl^{+}l^{-}", mcPath+"vallot_DYee20to50_*.root", 1666, kAzure-2);
+    analyzer->addMCBkg("DYee10to20", "Z/#gamma*#rightarrowl^{+}l^{-}", mcPath+"vallot_DYee10to20.root", 3457, kAzure-2);
+    analyzer->addMCBkg("DYee20to50", "Z/#gamma*#rightarrowl^{+}l^{-}", mcPath+"vallot_DYee20to50.root", 1666, kAzure-2);
   }
   else if (decayMode == "MuMu")
   {
-    analyzer->addMCBkg("DYmm10to20", "Z/#gamma*#rightarrowl^{+}l^{-}", mcPath+"vallot_DYmm10to20_*.root", 3457, kAzure-2);
-    analyzer->addMCBkg("DYmm20to50", "Z/#gamma*#rightarrowl^{+}l^{-}", mcPath+"vallot_DYmm20to50_*.root", 1666, kAzure-2);
+    analyzer->addMCBkg("DYmm10to20", "Z/#gamma*#rightarrowl^{+}l^{-}", mcPath+"vallot_DYmm10to20.root", 3457, kAzure-2);
+    analyzer->addMCBkg("DYmm20to50", "Z/#gamma*#rightarrowl^{+}l^{-}", mcPath+"vallot_DYmm20to50.root", 1666, kAzure-2);
   }
   else if (decayMode == "MuEl")
   {
-    analyzer->addMCBkg("DYee10to20", "Z/#gamma*#rightarrowl^{+}l^{-}", mcPath+"vallot_DYee10to20_*.root", 3457, kAzure-2);
-    analyzer->addMCBkg("DYee20to50", "Z/#gamma*#rightarrowl^{+}l^{-}", mcPath+"vallot_DYee20to50_*.root", 1666, kAzure-2);
-    analyzer->addMCBkg("DYmm10to20", "Z/#gamma*#rightarrowl^{+}l^{-}", mcPath+"vallot_DYmm10to20_*.root", 3457, kAzure-2);
-    analyzer->addMCBkg("DYmm20to50", "Z/#gamma*#rightarrowl^{+}l^{-}", mcPath+"vallot_DYmm20to50_*.root", 1666, kAzure-2);
+    analyzer->addMCBkg("DYee10to20", "Z/#gamma*#rightarrowl^{+}l^{-}", mcPath+"vallot_DYee10to20.root", 3457, kAzure-2);
+    analyzer->addMCBkg("DYee20to50", "Z/#gamma*#rightarrowl^{+}l^{-}", mcPath+"vallot_DYee20to50.root", 1666, kAzure-2);
+    analyzer->addMCBkg("DYmm10to20", "Z/#gamma*#rightarrowl^{+}l^{-}", mcPath+"vallot_DYmm10to20.root", 3457, kAzure-2);
+    analyzer->addMCBkg("DYmm20to50", "Z/#gamma*#rightarrowl^{+}l^{-}", mcPath+"vallot_DYmm20to50.root", 1666, kAzure-2);
   }
   //addMonitorPlot
   //analyzer->addMonitorPlot("nbJet", "@bjets.size()", "b-Jet Multiplicity;b-Jet Multiplicity;Events", 5, 0, 5, 0.1, 3,false);
