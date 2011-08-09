@@ -465,7 +465,7 @@ void TopAnalyzerLite::plot(const string name, const TCut cut, MonitorPlot& monit
     hMC->AddBinContent(nBins, hMC->GetBinContent(nBins+1));
     hMC->Scale(lumi_*mcSample.xsec/mcSample.nEvents);
 
-    if(mcSample.label == "Z/#gamma* #rightarrow ll") {
+    if(mcSample.label == "Z/#gamma*#rightarrowl^{+}l^{-}") {
       hMC->Scale(wDY);
     }
 
