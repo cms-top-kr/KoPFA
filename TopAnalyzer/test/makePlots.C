@@ -2,6 +2,13 @@
 TFile* fEE, * fME, * fMM;
 TString outDirName = ".";
 
+const int nBkg = 5;
+const char* bkgNames[] = {"Wl", "VV", "SingleTop", "DYtt", "DYll"};
+const char* bkgLabels[] = {
+  "W #rightarrow l#nu", "Dibosons", "Single top",
+  "Z/#gamma* #rightarrow #tau#tau", "Z/#gamma* #rightarrow ll"
+};
+
 void cutStepPlots(const char* cutStep, const char* histName, const char* histTitle,
                   double minY, double maxY, bool doLogY);
 TLegend* buildLegend();
@@ -11,25 +18,164 @@ void makePlots(TString noteNumber = "AN-11-076")
 {
   setTDRStyle();
 
-  fEE = TFile::Open("/data/cmskr-top/common/Top/finalHisto/v1/ElEl.root");
-  fME = TFile::Open("/data/cmskr-top/common/Top/finalHisto/v1/MuEl.root");
-  fMM = TFile::Open("/data/cmskr-top/common/Top/finalHisto/v1/MuMu.root");
+  fEE = TFile::Open("ElEl.root");
+  fME = TFile::Open("MuEl.root");
+  fMM = TFile::Open("MuMu.root");
 
   if ( !fEE || !fME || !fMM ) return;
 
   outDirName += "/"+noteNumber;
   gSystem->Exec("mkdir "+outDirName);
 
-  cutStepPlots("Step_3", "MET", "Missing E_{T}", 0.1, 1e6, true);
-  cutStepPlots("Step_3", "nJet", "Jet multiplicity", 0.1, 1e6, true);
-  cutStepPlots("Step_3", "ZMass", "Z mass", 0.1, 1e6, true);
-  cutStepPlots("Step_4", "MET", "Missing E_{T}", 0.1, 1e6, true);
-  cutStepPlots("Step_5", "MET", "Missing E_{T}", 0.1, 1e6, true);
-  cutStepPlots("Step_6", "nJet", "Jet multiplicity", 0.1, 1e6, true);
-  cutStepPlots("Step_6", "vsumM", "t#bar{t} invariant mass", 0, 30, false);
-  cutStepPlots("Step_7", "nbJet", "b-Jet multiplicity", 0.1, 1e5, true);
-  cutStepPlots("Step_7", "vsumM", "t#bar{t} invariant mass", 0, 30, false);
-  cutStepPlots("Step_7", "MET", "Missing E_{T}", 0, 50, false);
+  cutStepPlots("Step_3", "METlog", "Missing E_{T}", 1, 1e8, true);
+  cutStepPlots("Step_3", "nJetlog", "Jet multiplicity", 1, 1e9, true);
+  cutStepPlots("Step_3", "ZMass", "Z mass", 1, 1e8, true);
+  cutStepPlots("Step_4", "METlog", "Missing E_{T}", 1, 1e8, true);
+  cutStepPlots("Step_5", "MET", "Missing E_{T}", 1, 1e8, true);
+  cutStepPlots("Step_6", "nJet", "Jet multiplicity", 1, 1e8, true);
+  cutStepPlots("Step_6", "vsumMAlt", "t#bar{t} invariant mass", 0, 1000, false);
+  cutStepPlots("Step_7", "nbJet", "b-Jet multiplicity", 1, 1e7, true);
+  cutStepPlots("Step_7", "vsumMAlt", "t#bar{t} invariant mass", 0, 1000, false);
+  cutStepPlots("Step_7", "MET", "Missing E_{T}", 0, 1000, false);
+
+  printCutFlow("MuMu", "-,-,METlog,METlog,MET,vsumMAlt,vsumMAlt");
+  printCutFlow("ElEl", "-,-,METlog,METlog,MET,vsumMAlt,vsumMAlt");
+  printCutFlow("MuEl", "-,-,METlog,METlog,MET,vsumMAlt,vsumMAlt");
+
+  // Restore back DY scaling and apply +50% scaling
+  rescalePlots("Step_3", "DYll", "METlog,nJetlog,ZMass", 1/1.04*(1+.04*.5), 1/1.04*(1+.04*.5), 1);
+  rescalePlots("Step_4", "DYll", "METlog"              , 1/1.34*(1+.34*.5), 1/1.34*(1+.34*.5), 1);
+  rescalePlots("Step_5", "DYll", "MET"                 , 1/1.87*(1+.87*.5), 1/1.91*(1+.91*.5), 1);
+  rescalePlots("Step_6", "DYll", "nJet,vsumMAlt"       , 1/1.51*(1+.51*.5), 1/1.91*(1+.91*.5), 1);
+  rescalePlots("Step_7", "DYll", "nbJet,vsumMAlt,MET"  , 1/1.51*(1+.51*.5), 1/1.91*(1+.91*.5), 1);
+
+  printCutFlow("MuMu", "-,-,METlog,METlog,MET,vsumMAlt,vsumMAlt");
+  printCutFlow("ElEl", "-,-,METlog,METlog,MET,vsumMAlt,vsumMAlt");
+  printCutFlow("MuEl", "-,-,METlog,METlog,MET,vsumMAlt,vsumMAlt");
+
+  // Restore back DY scaling again, and apply -50%
+  rescalePlots("Step_3", "DYll", "METlog,nJetlog,ZMass", 1/(1+.04*.5)*(1-.04*.5), 1/(1+.04*.5)*(1-.04*.5), 1);
+  rescalePlots("Step_4", "DYll", "METlog"              , 1/(1+.34*.5)*(1-.34*.5), 1/(1+.34*.5)*(1-.34*.5), 1);
+  rescalePlots("Step_5", "DYll", "MET"                 , 1/(1+.87*.5)*(1-.87*.5), 1/(1+.91*.5)*(1-.91*.5), 1);
+  rescalePlots("Step_6", "DYll", "nJet,vsumMAlt"       , 1/(1+.51*.5)*(1-.51*.5), 1/(1+.91*.5)*(1-.91*.5), 1);
+  rescalePlots("Step_7", "DYll", "nbJet,vsumMAlt,MET"  , 1/(1+.51*.5)*(1-.51*.5), 1/(1+.91*.5)*(1-.91*.5), 1);
+
+  printCutFlow("MuMu", "-,-,METlog,METlog,MET,vsumMAlt,vsumMAlt");
+  printCutFlow("ElEl", "-,-,METlog,METlog,MET,vsumMAlt,vsumMAlt");
+  printCutFlow("MuEl", "-,-,METlog,METlog,MET,vsumMAlt,vsumMAlt");
+}
+
+void printCutFlow(TString decayMode, TString histNamesStr)
+{
+  TFile* f = gROOT->GetFile(decayMode+".root");
+  if ( !f ) f = TFile::Open(decayMode+".root");
+
+  TObjArray* histNames = histNamesStr.Tokenize(",");
+  std::vector<double> nBkgTotal(histNames->GetEntries());
+  std::vector<double> nMCTotal(histNames->GetEntries());
+
+  // Pretty printing
+  int maxLabelWidth = 0;
+  for ( int i=0; i<nBkg; ++i )
+  {
+    const int labelWidth = strlen(bkgLabels[i]);
+    if ( labelWidth > maxLabelWidth ) maxLabelWidth = labelWidth;
+  }
+  TString labelForm = Form("%%%ds", maxLabelWidth);
+
+  cout << "========================================= " << decayMode << " =========================================\n";
+  cout << Form(labelForm.Data(), "-");
+  for ( int i=0; i<histNames->GetEntries(); ++i )
+  {
+    cout << Form("\tStep_%d", i+1);
+  }
+  cout << "\n----------------------------------------------------------------------------------------\n";
+
+  for ( int i=0; i<nBkg; ++i )
+  {
+    cout << Form(labelForm.Data(), bkgLabels[i]);
+    for ( int j=0; j<histNames->GetEntries(); ++j )
+    {
+      TString histName = histNames->At(j)->GetName();
+
+      TH1F* hMC = (TH1F*)f->Get(Form("Step_%d/hMC_%s_Step_%d_%s", j+1, bkgNames[i], j+1, histName));
+      if ( !hMC ) 
+      {
+        cout << "\t-";
+        continue;
+      }
+
+      nBkgTotal[j] += hMC->Integral();
+      cout << '\t' << hMC->Integral();
+    }
+    cout << "\n";
+  }
+
+  cout << "----------------------------------------------------------------------------------------\n";
+  cout << Form(labelForm.Data(), "TTbar");
+  for ( int i=0; i<histNames->GetEntries(); ++i )
+  {
+    TString histName = histNames->At(i)->GetName();
+
+    TH1F* hSig = (TH1F*)f->Get(Form("Step_%d/hMCSig_TTbar_Step_%d_%s", i+1, i+1, histName.Data()));
+    if ( !hSig )
+    {
+      cout << "\t-";
+      continue;
+    }
+
+    nMCTotal[i] = nBkgTotal[i]+hSig->Integral();
+    cout << '\t' << hSig->Integral();
+  }
+  cout << "\n----------------------------------------------------------------------------------------\n";
+  cout << Form(labelForm.Data(), "Bkg total");
+  for ( int i=0; i<histNames->GetEntries(); ++i )
+  {
+    cout << '\t' << nBkgTotal[i];
+  }
+  cout << '\n';
+  cout << Form(labelForm.Data(), "MC total");
+  for ( int i=0; i<histNames->GetEntries(); ++i )
+  {
+    cout << '\t' << nMCTotal[i];
+  }
+  cout << "\n----------------------------------------------------------------------------------------\n";
+
+  cout << Form(labelForm.Data(), "Data");
+  for ( int i=0; i<histNames->GetEntries(); ++i )
+  {
+    TString histName = histNames->At(i)->GetName();
+
+    TH1F* hData = (TH1F*)f->Get(Form("Step_%d/hData_Step_%d_%s", i+1, i+1, histName.Data()));
+    if ( !hData )
+    {
+      cout << "\t-";
+      continue;
+    }
+
+    cout << '\t' << hData->Integral();
+  }
+  cout << "\n========================================================================================\n\n";
+}
+
+void rescalePlots(TString cutStep, TString bkgName, TString histNamesStr, double mumuScale, double elelScale, double muelScale)
+{
+  TObjArray* histNames = histNamesStr.Tokenize(",");
+
+  for ( int i=0; i<histNames->GetEntries(); ++i )
+  {
+    TString histName = histNames->At(i)->GetName();
+
+    TH1F* hEE = (TH1F*)fEE->Get(Form("%s/hMC_%s_%s_%s", cutStep.Data(), bkgName.Data(), cutStep.Data(), histName.Data()));
+    TH1F* hME = (TH1F*)fME->Get(Form("%s/hMC_%s_%s_%s", cutStep.Data(), bkgName.Data(), cutStep.Data(), histName.Data()));
+    TH1F* hMM = (TH1F*)fMM->Get(Form("%s/hMC_%s_%s_%s", cutStep.Data(), bkgName.Data(), cutStep.Data(), histName.Data()));
+
+    if ( !hEE || !hME || !hMM ) continue;
+
+    hEE->Scale(elelScale);
+    hMM->Scale(mumuScale);
+    hME->Scale(muelScale);
+  }
 }
 
 // Function to draw EE, ME, MM channel and all channel merged plot
@@ -69,13 +215,6 @@ void cutStepPlots(const char* cutStep, const char* histName, const char* histTit
   hStackME->Add(hSigME);
   hStackMM->Add(hSigMM);
   hStackLL->Add(hSigLL);
-
-  const int nBkg = 5;
-  const char* bkgNames[nBkg] = {"Wl", "VV", "SingleTop", "DYtt", "DYll"};
-  const char* bkgLabels[nBkg] = {
-    "W #rightarrow l#nu", "Dibosons", "Single top",
-    "Z/#gamma* #rightarrow #tau#tau", "Z/#gamma* #rightarrow ll"
-  };
 
   // Build legends
   TLegend* legEE = buildLegend();
