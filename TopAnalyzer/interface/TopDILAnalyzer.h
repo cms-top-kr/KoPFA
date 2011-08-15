@@ -13,7 +13,7 @@
 //
 // Original Author:  Tae Jeong Kim,40 R-A32,+41227678602,
 //         Created:  Fri Jun  4 17:19:29 CEST 2010
-// $Id: TopDILAnalyzer.h,v 1.51 2011/08/08 13:41:44 tjkim Exp $
+// $Id: TopDILAnalyzer.h,v 1.52 2011/08/15 10:23:22 tjkim Exp $
 //
 //
 
@@ -158,16 +158,27 @@ class TopDILAnalyzer : public edm::EDFilter {
     tree->Branch("weightplus",&weightplus, "weightplus/d");
     tree->Branch("weightminus",&weightminus, "weightminus/d");
 
-    tree->Branch("Z","std::vector<Ko::ZCandidate>", &Z);
+    tree->Branch("ZMass",&ZMass,"ZMass/d");
+    tree->Branch("PairSign",&PairSign,"PairSign/d");
+    tree->Branch("relIso1",&relIso1,"relIso1/d");
+    tree->Branch("relIso2",&relIso2,"relIso2/d");
+    tree->Branch("isIso",&isIso,"isIso/d");
+    tree->Branch("pt1",&pt1,"pt1/d");
+    tree->Branch("pt2",&pt2,"pt2/d");
+    tree->Branch("eta1",&eta1,"eta1/d");
+    tree->Branch("eta2",&eta2,"eta2/d");
+
+    //tree->Branch("Z","std::vector<Ko::ZCandidate>", &Z);
     //tree->Branch("lepton1","std::vector<Ko::Lepton>", &lepton1);
     //tree->Branch("lepton2","std::vector<Ko::Lepton>", &lepton2);
-    tree->Branch("pfMet","std::vector<Ko::METCandidate>", &pfMet);
+    //tree->Branch("pfMet","std::vector<Ko::METCandidate>", &pfMet);
     tree->Branch("ttbar","std::vector<Ko::TTbarMass>", &ttbar);
 
     //tree->Branch("met","std::vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >", &met);
     //tree->Branch("jets","std::vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >", &jets);
     tree->Branch("jetspt30","std::vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >", &jetspt30);
-    tree->Branch("bjets","std::vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >", &bjets);
+    //tree->Branch("bjets","std::vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >", &bjets);
+    tree->Branch("nbjets",&nbjets,"nbjets/d");
 
     tree->Branch("MET",&MET,"MET/d");
     tree->Branch("dphimetlepton1",&dphimetlepton1,"dphimetlepton1/d");
@@ -388,8 +399,22 @@ class TopDILAnalyzer : public edm::EDFilter {
         if( dimuon.mass() <= 12 ) continue;
 
         bool iso = lepton1->back().relpfIso03() < relIso1_ && lepton2->back().relpfIso03() < relIso2_;
-        bool noiso = lepton1->back().relpfIso03() > relIso1_ && lepton2->back().relpfIso03() > relIso2_;
+        //bool noiso = lepton1->back().relpfIso03() > relIso1_ && lepton2->back().relpfIso03() > relIso2_;
         bool opp = it1.charge() * it2.charge() < 0;
+
+        bool selected = false;
+        if(!selected) {
+          selected = true;
+          ZMass = dimuon.mass();
+          PairSign = (int) it1.charge() * it2.charge();
+          relIso1 = lepton1->back().relpfIso03();
+          relIso2 = lepton2->back().relpfIso03();
+          pt1 = it1.pt();
+          pt2 = it2.pt();
+          eta1 = it1.eta();
+          eta2 = it2.eta();
+          if( iso ) isIso = 1;  
+        }
 
         if( !iso && applyIso_) continue;
         if( !opp && oppPair_) continue;
@@ -399,139 +424,153 @@ class TopDILAnalyzer : public edm::EDFilter {
         dphimetlepton2 = fabs(deltaPhi(mi->phi(),it2.phi()));
  
         Z->push_back(dimuon);
-
-
+        ZMass = dimuon.mass();
+        PairSign = (int) it1.charge() * it2.charge();
+        relIso1 = lepton1->back().relpfIso03();
+        relIso2 = lepton2->back().relpfIso03();
+        pt1 = it1.pt();
+        pt2 = it2.pt();
+        eta1 = it1.eta();
+        eta2 = it2.eta();
+        if( iso ) isIso = 1;       
+        
         h_leadingpt->Fill(it1.pt());
         h_secondpt->Fill(it2.pt());
         h_mass->Fill(dimuon.mass());
 
-        double met_x = mi->px();
-        double met_y = mi->py();
-        
-        //Jet selection by checking overlap with selected leptons
-        for (JI jit = Jets->begin(); jit != Jets->end(); ++jit) {
-
-          ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > corrjet;
-          corrjet.SetPxPyPzE(jit->px(),jit->py(),jit->pz(),jit->energy());
-
-          double scaleF = 1.0;
-          if(doJecFly_){
-            reco::Candidate::LorentzVector uncorrJet = jit->correctedP4(0);
-
-            corrjet.SetPxPyPzE(uncorrJet.px(),uncorrJet.py(),uncorrJet.pz(),uncorrJet.energy());
-            resJetCorrector_->setJetEta( uncorrJet.eta() ); 
-            resJetCorrector_->setJetPt ( uncorrJet.pt() ); 
-            resJetCorrector_->setJetE  ( uncorrJet.energy() ); 
-            resJetCorrector_->setJetA  ( jit->jetArea() ); 
-            resJetCorrector_->setRho   ( *(rho.product()) ); 
-            resJetCorrector_->setNPV   ( nv ); 
-
-            scaleF = resJetCorrector_->getCorrection();
-            corrjet *= scaleF;
-          }
-
-          if(doJecUnc_){
-            jecUnc_->setJetEta(corrjet.eta());
-            jecUnc_->setJetPt(corrjet.pt());
-            met_x += corrjet.px();
-            met_y += corrjet.py();
-            double unc = jecUnc_->getUncertainty(up_);
-            //double c_sw = 0.015; //for release differences and calibration changes
-            double c_sw = 0.0; //for release differences and calibration changes
-            //double c_pu = 0.2*0.8*2.2/(corrjet.pt()); // PU uncertainty
-            double c_pu = 0.0; // PU uncertainty
-            double c_bjets = 0.03; // bjet uncertainty
-            //if(corrjet.pt() > 50 && corrjet.pt() < 200 && fabs(corrjet.eta()) < 2.0) {
-            //  c_bjets = 0.02;
-            //}else c_bjets = 0.03;
-
-            double cor = sqrt(c_sw*c_sw + c_pu*c_pu+c_bjets*c_bjets);
-            unc = sqrt(unc*unc + cor*cor);
-            double ptscaleunc = 0;
-            if(up_) ptscaleunc = 1 + unc;
-            else ptscaleunc = 1 - unc;
-            corrjet *= ptscaleunc;
-            met_x -= corrjet.px();
-            met_y -= corrjet.py();
-          }
-
-          //geometric acceptance
-          if(fabs(jit->eta()) >= 2.4) continue;
-
-          pat::strbitset looseJetIdSel = looseJetIdSelector_.getBitTemplate();
-          bool passId = looseJetIdSelector_( *jit, looseJetIdSel);
-          //jet id
-          if(passId){
-            //const double dRval1 = deltaR(jit->eta(), jit->phi(), it1.eta(), it1.phi());
-            //const double dRval2 = deltaR(jit->eta(), jit->phi(), it2.eta(), it2.phi());
-            //bool overlap = checkOverlap(jit->eta(), jit->phi(), dRval1, lepton1->back().relpfIso03(), dRval2, lepton2->back().relpfIso03());
-
-            //jet cleaning
-            //if( overlap ) continue;
-
-            jets->push_back(corrjet);
-
-            if(corrjet.pt() > 30){
-              jetspt30->push_back(corrjet);
-              discr = jit->bDiscriminator(bTagAlgo_);
-              if(discr > minBTagValue_){
-                bjets->push_back(corrjet);
-              }
-            }
-
-          }
-          
-        }
-
-        if( jetspt30->size() >= 2 ){
-          dphimetjet1 = fabs(deltaPhi(mi->phi(),jetspt30->at(0).phi()));
-          dphimetjet2 = fabs(deltaPhi(mi->phi(),jetspt30->at(1).phi()));
-        }
-
-        h_jet_multi->Fill(jets->size());
-        h_jetpt30_multi->Fill(jetspt30->size());
-        h_bjet_multi->Fill(bjets->size());
-
-        ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > corrmet;
-        corrmet.SetPxPyPzE(met_x,met_y,0,sqrt(met_x*met_x + met_y*met_y));
-        MET = sqrt(met_x*met_x + met_y*met_y);
-        met->push_back(corrmet);
-
-        if(metStudy_){
-          const Ko::METCandidate pfmet(MET, mi->sumEt(), mi->NeutralEMFraction(),mi->NeutralHadEtFraction(),mi->ChargedHadEtFraction(),mi->ChargedEMEtFraction(),mi->MuonEtFraction() );
-          pfMet->push_back(pfmet);
-        }
-
-        h_MET->Fill(MET);
-
-        if(jetspt30->size() >= 2){
-          const Ko::TTbarMass ttbarMass(it1.p4(), it2.p4(), jetspt30->at(0), jetspt30->at(1), met->at(0));
-          ttbar->push_back(ttbarMass);
-
-          if(genParticles_.isValid()){
-            TLorentzVector ttbarGen(0,0,0,0);
-
-            for (reco::GenParticleCollection::const_iterator mcIter=genParticles_->begin(); mcIter != genParticles_->end(); mcIter++ ) {
-              int genId = mcIter->pdgId();
-              if( fabs(genId) == 6){ 
-                //double mass = mcIter->p4().M(); 
-                TLorentzVector top(mcIter->p4().Px(), mcIter->p4().Py(), mcIter->p4().Pz(), mcIter->p4().E());
-                ttbarGen = ttbarGen+top;
-              }
-          
-            }
-
-            genttbarM = ttbarGen.M();
-            resmaosM = ttbar->back().maosM() - ttbarGen.M();
-            resvsumM = ttbar->back().M() - ttbarGen.M();
-            resuser1M = ttbar->back().user1M() - ttbarGen.M();
-            resuser2M = ttbar->back().user2M() - ttbarGen.M();
-          }
-        }
-
         break;
       }
       break;
+    }
+
+    double met_x = mi->px();
+    double met_y = mi->py();
+
+    //Jet selection by checking overlap with selected leptons
+    for (JI jit = Jets->begin(); jit != Jets->end(); ++jit) {
+
+      ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > corrjet;
+      corrjet.SetPxPyPzE(jit->px(),jit->py(),jit->pz(),jit->energy());
+
+      double scaleF = 1.0;
+      if(doJecFly_){
+	reco::Candidate::LorentzVector uncorrJet = jit->correctedP4(0);
+
+	corrjet.SetPxPyPzE(uncorrJet.px(),uncorrJet.py(),uncorrJet.pz(),uncorrJet.energy());
+	resJetCorrector_->setJetEta( uncorrJet.eta() );
+	resJetCorrector_->setJetPt ( uncorrJet.pt() );
+	resJetCorrector_->setJetE  ( uncorrJet.energy() );
+	resJetCorrector_->setJetA  ( jit->jetArea() );
+	resJetCorrector_->setRho   ( *(rho.product()) );
+	resJetCorrector_->setNPV   ( nv );
+
+	scaleF = resJetCorrector_->getCorrection();
+	corrjet *= scaleF;
+      }
+
+      if(doJecUnc_){
+	jecUnc_->setJetEta(corrjet.eta());
+	jecUnc_->setJetPt(corrjet.pt());
+	met_x += corrjet.px();
+	met_y += corrjet.py();
+	double unc = jecUnc_->getUncertainty(up_);
+	//double c_sw = 0.015; //for release differences and calibration changes
+	double c_sw = 0.0; //for release differences and calibration changes
+	//double c_pu = 0.2*0.8*2.2/(corrjet.pt()); // PU uncertainty
+	double c_pu = 0.0; // PU uncertainty
+	double c_bjets = 0.03; // bjet uncertainty
+	//if(corrjet.pt() > 50 && corrjet.pt() < 200 && fabs(corrjet.eta()) < 2.0) {
+	//  c_bjets = 0.02;
+	//}else c_bjets = 0.03;
+
+	double cor = sqrt(c_sw*c_sw + c_pu*c_pu+c_bjets*c_bjets);
+	unc = sqrt(unc*unc + cor*cor);
+	double ptscaleunc = 0;
+	if(up_) ptscaleunc = 1 + unc;
+	else ptscaleunc = 1 - unc;
+	corrjet *= ptscaleunc;
+	met_x -= corrjet.px();
+	met_y -= corrjet.py();
+      }
+
+      //geometric acceptance
+      if(fabs(jit->eta()) >= 2.4) continue;
+
+      pat::strbitset looseJetIdSel = looseJetIdSelector_.getBitTemplate();
+      bool passId = looseJetIdSelector_( *jit, looseJetIdSel);
+
+      //jet id
+      if(passId){
+	//const double dRval1 = deltaR(jit->eta(), jit->phi(), it1.eta(), it1.phi());
+	//const double dRval2 = deltaR(jit->eta(), jit->phi(), it2.eta(), it2.phi());
+	//bool overlap = checkOverlap(jit->eta(), jit->phi(), dRval1, lepton1->back().relpfIso03(), dRval2, lepton2->back().relpfIso03());
+
+	//jet cleaning
+	//if( overlap ) continue;
+
+	jets->push_back(corrjet);
+
+	if(corrjet.pt() > 30){
+	  jetspt30->push_back(corrjet);
+	  discr = jit->bDiscriminator(bTagAlgo_);
+	  if(discr > minBTagValue_){
+	    bjets->push_back(corrjet);
+	  }
+	}
+      }
+    }
+
+    if( jetspt30->size() >= 2 ){
+      dphimetjet1 = fabs(deltaPhi(mi->phi(),jetspt30->at(0).phi()));
+      dphimetjet2 = fabs(deltaPhi(mi->phi(),jetspt30->at(1).phi()));
+    }
+
+    h_jet_multi->Fill(jets->size());
+    h_jetpt30_multi->Fill(jetspt30->size());
+    h_bjet_multi->Fill(bjets->size());
+
+    nbjets = bjets->size();
+
+    ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > corrmet;
+    corrmet.SetPxPyPzE(met_x,met_y,0,sqrt(met_x*met_x + met_y*met_y));
+    MET = sqrt(met_x*met_x + met_y*met_y);
+    met->push_back(corrmet);
+
+    if(metStudy_){
+      const Ko::METCandidate pfmet(MET, mi->sumEt(), mi->NeutralEMFraction(),mi->NeutralHadEtFraction(),mi->ChargedHadEtFraction(),mi->ChargedEMEtFraction(),mi->MuonEtFraction() );
+      pfMet->push_back(pfmet);
+    }
+
+    h_MET->Fill(MET);
+
+    if(jetspt30->size() >= 2){
+      ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > lep1;
+      ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > lep2;
+      lep1.SetPxPyPzE(Z->back().leg1().px(),Z->back().leg1().py(),Z->back().leg1().pz(),Z->back().leg1().energy());
+      lep2.SetPxPyPzE(Z->back().leg2().px(),Z->back().leg2().py(),Z->back().leg2().pz(),Z->back().leg2().energy());
+
+      const Ko::TTbarMass ttbarMass(lep1, lep2, jetspt30->at(0), jetspt30->at(1), met->at(0));
+      ttbar->push_back(ttbarMass);
+
+      if(genParticles_.isValid()){
+	TLorentzVector ttbarGen(0,0,0,0);
+
+	for (reco::GenParticleCollection::const_iterator mcIter=genParticles_->begin(); mcIter != genParticles_->end(); mcIter++ ) {
+	  int genId = mcIter->pdgId();
+	  if( fabs(genId) == 6){
+	    //double mass = mcIter->p4().M(); 
+	    TLorentzVector top(mcIter->p4().Px(), mcIter->p4().Py(), mcIter->p4().Pz(), mcIter->p4().E());
+	    ttbarGen = ttbarGen+top;
+	  }
+
+	}
+
+	genttbarM = ttbarGen.M();
+	resmaosM = ttbar->back().maosM() - ttbarGen.M();
+	resvsumM = ttbar->back().M() - ttbarGen.M();
+	resuser1M = ttbar->back().user1M() - ttbarGen.M();
+	resuser2M = ttbar->back().user2M() - ttbarGen.M();
+      }
     }
 
     //ESHandle<SetupData> pSetup;
@@ -554,6 +593,8 @@ class TopDILAnalyzer : public edm::EDFilter {
     jetspt30->clear();
     bjets->clear();
 
+    nbjets = -999;
+
     weight = 1.0;
     weightplus = 1.0;
     weightminus = 1.0;
@@ -562,6 +603,16 @@ class TopDILAnalyzer : public edm::EDFilter {
     dphimetlepton2 = -999;  
     dphimetjet1 = -999;
     dphimetjet2 = -999;
+
+    ZMass = -999; 
+    PairSign = -999;
+    relIso1 = -999;
+    relIso2 = -999;
+    isIso = -999;
+    pt1 = -999; 
+    pt2 = -999;
+    eta1 = -999;
+    eta2 = -999;
 
     genttbarM = -999;
     resmaosM = -999; 
@@ -677,7 +728,17 @@ class TopDILAnalyzer : public edm::EDFilter {
   double dphimetlepton2;
   double dphimetjet1;
   double dphimetjet2;
+  double ZMass;
+  double PairSign;
+  double relIso1;
+  double relIso2;
+  double isIso;
+  double pt1;
+  double pt2;
+  double eta1;
+  double eta2;
 
+  double nbjets;
 
   double discr;
 
