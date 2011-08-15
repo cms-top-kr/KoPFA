@@ -9,6 +9,8 @@
 <use   name="PFAnalyses/CommonTools"/>
 <use   name="DQMServices/Core"/>
 <use   name="KoPFA/DataFormats"/>
+<use   name="SimDataFormats/PileupSummaryInfo"/>
+<use   name="PhysicsTools/Utilities"/>
 <use   name="rootminuit"/>
 <use   name="rootminuit2"/>
 <flags   EDM_PLUGIN="1"/>
