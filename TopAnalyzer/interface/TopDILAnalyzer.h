@@ -13,7 +13,7 @@
 //
 // Original Author:  Tae Jeong Kim,40 R-A32,+41227678602,
 //         Created:  Fri Jun  4 17:19:29 CEST 2010
-// $Id: TopDILAnalyzer.h,v 1.50 2011/08/03 16:21:28 tjkim Exp $
+// $Id: TopDILAnalyzer.h,v 1.51 2011/08/08 13:41:44 tjkim Exp $
 //
 //
 
@@ -96,6 +96,7 @@ class TopDILAnalyzer : public edm::EDFilter {
     pfJetIdParams_ = iConfig.getParameter<edm::ParameterSet> ("looseJetId");
     relIso1_ = iConfig.getUntrackedParameter<double>("relIso1");
     relIso2_ = iConfig.getUntrackedParameter<double>("relIso2");
+    applyIso_ = iConfig.getUntrackedParameter<bool>("applyIso",true);
     oppPair_ = iConfig.getUntrackedParameter<bool>("oppPair",true);
     bTagAlgo_ = iConfig.getUntrackedParameter<std::string>("bTagAlgo");
     minBTagValue_ = iConfig.getUntrackedParameter<double>("minBTagValue");
@@ -158,13 +159,13 @@ class TopDILAnalyzer : public edm::EDFilter {
     tree->Branch("weightminus",&weightminus, "weightminus/d");
 
     tree->Branch("Z","std::vector<Ko::ZCandidate>", &Z);
-    tree->Branch("lepton1","std::vector<Ko::Lepton>", &lepton1);
-    tree->Branch("lepton2","std::vector<Ko::Lepton>", &lepton2);
+    //tree->Branch("lepton1","std::vector<Ko::Lepton>", &lepton1);
+    //tree->Branch("lepton2","std::vector<Ko::Lepton>", &lepton2);
     tree->Branch("pfMet","std::vector<Ko::METCandidate>", &pfMet);
     tree->Branch("ttbar","std::vector<Ko::TTbarMass>", &ttbar);
 
-    tree->Branch("met","std::vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >", &met);
-    tree->Branch("jets","std::vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >", &jets);
+    //tree->Branch("met","std::vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >", &met);
+    //tree->Branch("jets","std::vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >", &jets);
     tree->Branch("jetspt30","std::vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >", &jetspt30);
     tree->Branch("bjets","std::vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >", &bjets);
 
@@ -175,15 +176,15 @@ class TopDILAnalyzer : public edm::EDFilter {
     tree->Branch("dphimetjet2",&dphimetjet2,"dphimetjet2/d");
 
     tree->Branch("genttbarM",&genttbarM,"genttbarM/d");
-    tree->Branch("resmaosM",&resmaosM,"resmaosM/d");
-    tree->Branch("resvsumM",&resvsumM,"resvsumM/d");
-    tree->Branch("resuser1M",&resuser1M,"resuser1M/d");
-    tree->Branch("resuser2M",&resuser2M,"resuser2M/d");
+    //tree->Branch("resmaosM",&resmaosM,"resmaosM/d");
+    //tree->Branch("resvsumM",&resvsumM,"resvsumM/d");
+    //tree->Branch("resuser1M",&resuser1M,"resuser1M/d");
+    //tree->Branch("resuser2M",&resuser2M,"resuser2M/d");
 
-    tree->Branch("sumEt",&sumEt,"sumEt/d");
-    tree->Branch("photonEt",&photonEt,"photonEt/d");
-    tree->Branch("chargedHadronEt",&chargedHadronEt,"chargedHadronEt/d");
-    tree->Branch("neutralHadronEt",&neutralHadronEt,"neutralHadronEt/d");
+    //tree->Branch("sumEt",&sumEt,"sumEt/d");
+    //tree->Branch("photonEt",&photonEt,"photonEt/d");
+    //tree->Branch("chargedHadronEt",&chargedHadronEt,"chargedHadronEt/d");
+    //tree->Branch("neutralHadronEt",&neutralHadronEt,"neutralHadronEt/d");
 
     // Jet energy correction for 38X
     if ( doJecFly_ )
@@ -321,18 +322,17 @@ class TopDILAnalyzer : public edm::EDFilter {
     chargedHadronEt = 0;
     neutralHadronEt = 0;
 
-    for(CI ci = pfCandidates_->begin(); ci!=pfCandidates_->end(); ++ci) {
-      const reco::PFCandidate& pfc = *ci;
-      double E = pfc.energy();
-      double theta = pfc.theta();
-      double sintheta = sin(theta);
-      double et = E*sintheta;
-      sumEt += et;
-      if( pfc.particleId() == 1 ) chargedHadronEt += et;
-      if( pfc.particleId() == 5 ) neutralHadronEt += et;
-      if( pfc.particleId() == 4 ) photonEt += et; 
-    } 
-
+    //for(CI ci = pfCandidates_->begin(); ci!=pfCandidates_->end(); ++ci) {
+    //  const reco::PFCandidate& pfc = *ci;
+    //  double E = pfc.energy();
+    //  double theta = pfc.theta();
+    //  double sintheta = sin(theta);
+    //  double et = E*sintheta;
+    //  sumEt += et;
+    //  if( pfc.particleId() == 1 ) chargedHadronEt += et;
+    //  if( pfc.particleId() == 5 ) neutralHadronEt += et;
+    //  if( pfc.particleId() == 4 ) photonEt += et; 
+    //} 
 
     edm::Handle<pat::JetCollection> Jets;
     iEvent.getByLabel(jetLabel_, Jets);
@@ -384,16 +384,20 @@ class TopDILAnalyzer : public edm::EDFilter {
         lepton2->back().setIsoDeposit( it2.trackIso(), it2.ecalIso(), it2.hcalIso());
 
         //explicitly requuire opposite sign of isolated leptons
+        const Ko::ZCandidate dimuon(lepton1->back(), lepton2->back());
+        if( dimuon.mass() <= 12 ) continue;
+
         bool iso = lepton1->back().relpfIso03() < relIso1_ && lepton2->back().relpfIso03() < relIso2_;
+        bool noiso = lepton1->back().relpfIso03() > relIso1_ && lepton2->back().relpfIso03() > relIso2_;
         bool opp = it1.charge() * it2.charge() < 0;
-        if( !iso ) continue;
+
+        if( !iso && applyIso_) continue;
         if( !opp && oppPair_) continue;
 
         accept = true;
         dphimetlepton1 = fabs(deltaPhi(mi->phi(),it1.phi()));
         dphimetlepton2 = fabs(deltaPhi(mi->phi(),it2.phi()));
  
-        const Ko::ZCandidate dimuon(lepton1->back(), lepton2->back());
         Z->push_back(dimuon);
 
 
@@ -710,6 +714,7 @@ class TopDILAnalyzer : public edm::EDFilter {
   reweight::PoissonMeanShifter PShiftUp_;
   reweight::PoissonMeanShifter PShiftDown_;
 
+  bool applyIso_;
   bool oppPair_;
   // Residual Jet energy correction for 38X
   bool doJecFly_;
