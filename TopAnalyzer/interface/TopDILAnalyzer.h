@@ -13,7 +13,7 @@
 //
 // Original Author:  Tae Jeong Kim,40 R-A32,+41227678602,
 //         Created:  Fri Jun  4 17:19:29 CEST 2010
-// $Id: TopDILAnalyzer.h,v 1.52 2011/08/15 10:23:22 tjkim Exp $
+// $Id: TopDILAnalyzer.h,v 1.53 2011/08/15 20:19:49 tjkim Exp $
 //
 //
 
@@ -543,7 +543,7 @@ class TopDILAnalyzer : public edm::EDFilter {
 
     h_MET->Fill(MET);
 
-    if(jetspt30->size() >= 2){
+    if(jetspt30->size() >= 2 && Z->size() > 0){
       ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > lep1;
       ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > lep2;
       lep1.SetPxPyPzE(Z->back().leg1().px(),Z->back().leg1().py(),Z->back().leg1().pz(),Z->back().leg1().energy());
