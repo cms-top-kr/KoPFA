@@ -749,7 +749,7 @@ void TopAnalyzerLite::saveHistograms(TString fileName)
 {
   if ( fileName == "" )
   {
-    fileName = subDirName_+".root";
+    fileName = imageOutDir_+"/"+subDirName_+".root";
   }
 
   TFile* f = TFile::Open(fileName, "recreate");
