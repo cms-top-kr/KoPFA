@@ -36,4 +36,15 @@ basicPDFs = cms.PSet(
             "efficiency[0.9,0,1]",
             "signalFractionInPassing[0.9]"
         ),
+        bwResCBExp = cms.vstring(
+            "BreitWigner::bw(mass, m0[91.2,89,93], width[2.9,0.1,9.0])",
+            "RooCBShape::cbResPass(mass, peakPass[0,-10,10], sigmaPass[0.5,0,20], alphaPass[0.5,0,10], nPass[1,0,10])",
+            "RooCBShape::cbResFail(mass, peakFail[0,-10,10], sigmaFail[0.5,0,20], alphaFail[0.5,0,10], nFail[1,0,10])",
+            "FCONV::signalPass(mass, bw, cbResPass)",
+            "FCONV::signalFail(mass, bw, cbResFail)",
+            "RooExponential::backgroundPass(mass, cPass[-0.02,-10,0])",
+            "RooExponential::backgroundFail(mass, cFail[-0.02,-10,0])",
+            "efficiency[0.9,0,1]",
+            "signalFractionInPassing[0.9]",
+        ),
 )

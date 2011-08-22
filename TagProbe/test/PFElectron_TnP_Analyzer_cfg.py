@@ -9,7 +9,12 @@ process.MessageLogger.destinations = ['cout', 'cerr']
 process.MessageLogger.cerr.FwkReport.reportEvery = 1000
 
 import os
-mode = 'RD'
+if 'MODE' not in os.environ:
+    mode = 'MC'
+else:
+    mode = os.environ['MODE']
+
+from KoPFA.TagProbe.common_PDFs_cff import *
 
 def tnpEffPSet(categories):
     effSet = cms.PSet()
@@ -19,47 +24,32 @@ def tnpEffPSet(categories):
             EfficiencyCategoryAndState = cms.vstring(category, "pass"),
             UnbinnedVariables = cms.vstring("mass"),
             BinnedVariables = cms.PSet(
-                pt = cms.vdouble(20, 30, 40, 50, 150)
+                #pt = cms.vdouble(20, 25, 30, 35, 40, 50, 150),
+                pt = cms.vdouble(20, 30, 40, 50, 150),
             ),
-            BinToPDFmap = cms.vstring("bgaussPlusExp")
-        ))
-
-        setattr(effSet, category+"_eta", cms.PSet(
-            EfficiencyCategoryAndState = cms.vstring(category, "pass"),
-            UnbinnedVariables = cms.vstring("mass"),
-            BinnedVariables = cms.PSet(
-                eta = cms.vdouble(-2.5, -1.5, 0.0, 1.5, 2.5)
-            ),
-            BinToPDFmap = cms.vstring("bgaussPlusExp")
+            BinToPDFmap = cms.vstring("bwResCBExp")
         ))
 
         setattr(effSet, category+"_abseta", cms.PSet(
             EfficiencyCategoryAndState = cms.vstring(category, "pass"),
             UnbinnedVariables = cms.vstring("mass"),
             BinnedVariables = cms.PSet(
-                abseta = cms.vdouble(0.0, 1.5, 2.5)
+                abseta = cms.vdouble(0.0, 1.4, 1.6, 2.4)
+                #abseta = cms.vdouble(0.0, 1.5, 2.4)
             ),
-            BinToPDFmap = cms.vstring("bgaussPlusExp")
-        ))
-
-        setattr(effSet, category+"_pt_eta", cms.PSet(
-            EfficiencyCategoryAndState = cms.vstring(category, "pass"),
-            UnbinnedVariables = cms.vstring("mass"),
-            BinnedVariables = cms.PSet(
-                pt = cms.vdouble(20, 30, 40, 50, 150),
-                eta = cms.vdouble(-2.5, -1.5, 0.0, 1.5, 2.5)
-            ),
-            BinToPDFmap = cms.vstring("bgaussPlusExp")
+            BinToPDFmap = cms.vstring("bwResCBExp")
         ))
 
         setattr(effSet, category+"_pt_abseta", cms.PSet(
             EfficiencyCategoryAndState = cms.vstring(category, "pass"),
             UnbinnedVariables = cms.vstring("mass"),
             BinnedVariables = cms.PSet(
+                #pt = cms.vdouble(20, 25, 30, 35, 40, 50, 150),
                 pt = cms.vdouble(20, 30, 40, 50, 150),
-                abseta = cms.vdouble(0.0, 1.5, 2.5)
+                abseta = cms.vdouble(0.0, 1.4, 1.6, 2.4)
+                #abseta = cms.vdouble(0.0, 1.5, 2.4)
             ),
-            BinToPDFmap = cms.vstring("bgaussPlusExp")
+            BinToPDFmap = cms.vstring("bwResCBExp")
         ))
 
     return effSet
@@ -75,8 +65,7 @@ process.tnpId = cms.EDAnalyzer("TagProbeFitTreeAnalyzer",
     Variables = cms.PSet(
         mass = cms.vstring("Tag-Probe mass", "70.0", "110.0", "GeV/c^{2}"),
         pt = cms.vstring("Probe p_{T}", "0", "1000", "GeV/c"),
-        eta = cms.vstring("Probe #eta", "-2.5", "2.5", "Radian"),
-        abseta = cms.vstring("Probe |#eta|", "0", "2.5", "Radian"),
+        abseta = cms.vstring("Probe |#eta|", "0", "2.4", ""),
     ),
 
     Categories = cms.PSet(
@@ -84,65 +73,12 @@ process.tnpId = cms.EDAnalyzer("TagProbeFitTreeAnalyzer",
         IdTight = cms.vstring("IdTight", "dummy[pass=1,fail=0]"),
     ),
 
-    PDFs = cms.PSet(
-        gaussPlusExp = cms.vstring(
-            "Gaussian::signal(mass, mean[91.2, 89.0, 93.0], sigma[2.5, 0.5, 10.0])",
-            "RooExponential::backgroundPass(mass, cPass[0,-10,10])",
-            "RooExponential::backgroundFail(mass, cFail[0,-10,10])",
-            "efficiency[0.9,0,1]",
-            "signalFractionInPassing[0.9]"
-        ),
-        bgaussPlusExp = cms.vstring(
-            "RooBifurGauss::signal(mass, mean[91.2, 89.0, 93.0], sigma1[2.5, 0.5, 10.0], sigma2[2.5, 0.5, 10.0])",
-            "RooExponential::backgroundPass(mass, cPass[0,-10,10])",
-            "RooExponential::backgroundFail(mass, cFail[0,-10,10])",
-            "efficiency[0.9,0,1]",
-            "signalFractionInPassing[0.9]"
-        )
-    ),
+    PDFs = basicPDFs,
+
+    binnedFit = cms.bool(True),
+    binsForFit = cms.uint32(50),
+
     Efficiencies = tnpEffPSet(["IdMedium", "IdTight"])
-)
-
-process.tnpMediumIdIso = cms.EDAnalyzer("TagProbeFitTreeAnalyzer",
-    InputFileNames = cms.vstring("tnpTree_%s.root" % mode),
-    InputDirectoryName = cms.string("tnpMediumIdIso"),
-    InputTreeName = cms.string("fitter_tree"),
-    OutputFileName = cms.string("result_MediumIdIso_%s.root" % mode),
-    NumCPU = cms.uint32(1),
-    SaveWorkspace = cms.bool(True),
-    floatShapeParameters = cms.bool(True),
-    Variables = cms.PSet(
-        mass = cms.vstring("Tag-Probe mass", "70.0", "110.0", "GeV/c^{2}"),
-        pt = cms.vstring("Probe p_{T}", "0", "1000", "GeV/c"),
-        eta = cms.vstring("Probe #eta", "-2.5", "2.5", "Radian"),
-        abseta = cms.vstring("Probe |#eta|", "0", "2.5", "Radian"),
-    ),
-
-    Categories = cms.PSet(
-        Iso15 = cms.vstring("Iso15", "dummy[pass=1,fail=0]"),
-        Iso17 = cms.vstring("Iso17", "dummy[pass=1,fail=0]"),
-        Iso20 = cms.vstring("Iso20", "dummy[pass=1,fail=0]"),
-    ),
-
-    PDFs = cms.PSet(
-        gaussPlusExp = cms.vstring(
-            "Gaussian::signal(mass, mean[91.2, 89.0, 93.0], sigma[2.5, 0.5, 10.0])",
-            "RooExponential::backgroundPass(mass, cPass[0,-10,10])",
-            "RooExponential::backgroundFail(mass, cFail[0,-10,10])",
-            "efficiency[0.9,0,1]",
-            "signalFractionInPassing[0.9]"
-        ),
-        bgaussPlusExp = cms.vstring(
-            "RooBifurGauss::signal(mass, mean[91.2, 89.0, 93.0], sigma1[2.5, 0.5, 10.0], sigma2[2.5, 0.5, 10.0])",
-            "RooExponential::backgroundPass(mass, cPass[0,-10,10])",
-            "RooExponential::backgroundFail(mass, cFail[0,-10,10])",
-            "efficiency[0.9,0,1]",
-            "signalFractionInPassing[0.9]"
-        )
-    ),
-
-    #Efficiencies = tnpEffPSet(["IdIso20", "IdIso22", "IdIso24", "IdIso26", "IdIso30", "IdIso50"]),
-    Efficiencies = tnpEffPSet(["Iso15", "Iso17", "Iso20"]),
 )
 
 process.tnpTightIdIso = cms.EDAnalyzer("TagProbeFitTreeAnalyzer",
@@ -156,8 +92,8 @@ process.tnpTightIdIso = cms.EDAnalyzer("TagProbeFitTreeAnalyzer",
     Variables = cms.PSet(
         mass = cms.vstring("Tag-Probe mass", "70.0", "110.0", "GeV/c^{2}"),
         pt = cms.vstring("Probe p_{T}", "0", "1000", "GeV/c"),
-        eta = cms.vstring("Probe #eta", "-2.5", "2.5", "Radian"),
-        abseta = cms.vstring("Probe |#eta|", "0", "2.5", "Radian"),
+        eta = cms.vstring("Probe #eta", "-2.4", "2.4", ""),
+        abseta = cms.vstring("Probe |#eta|", "0", "2.4", ""),
     ),
 
     Categories = cms.PSet(
@@ -166,30 +102,17 @@ process.tnpTightIdIso = cms.EDAnalyzer("TagProbeFitTreeAnalyzer",
         Iso20 = cms.vstring("Iso20", "dummy[pass=1,fail=0]"),
     ),
 
-    PDFs = cms.PSet(
-        gaussPlusExp = cms.vstring(
-            "Gaussian::signal(mass, mean[91.2, 89.0, 93.0], sigma[2.5, 0.5, 10.0])",
-            "RooExponential::backgroundPass(mass, cPass[0,-10,10])",
-            "RooExponential::backgroundFail(mass, cFail[0,-10,10])",
-            "efficiency[0.9,0,1]",
-            "signalFractionInPassing[0.9]"
-        ),
-        bgaussPlusExp = cms.vstring(
-            "RooBifurGauss::signal(mass, mean[91.2, 89.0, 93.0], sigma1[2.5, 0.5, 10.0], sigma2[2.5, 0.5, 10.0])",
-            "RooExponential::backgroundPass(mass, cPass[0,-10,10])",
-            "RooExponential::backgroundFail(mass, cFail[0,-10,10])",
-            "efficiency[0.9,0,1]",
-            "signalFractionInPassing[0.9]"
-        )
-    ),
+    PDFs = basicPDFs,
 
-    #Efficiencies = tnpEffPSet(["IdIso20", "IdIso22", "IdIso24", "IdIso26", "IdIso30", "IdIso50"]),
+    binnedFit = cms.bool(True),
+    binsForFit = cms.uint32(50),
+
     Efficiencies = tnpEffPSet(["Iso15", "Iso17", "Iso20"]),
 )
 
 process.p = cms.Path(
     process.tnpId
-  + process.tnpMediumIdIso
+  #+ process.tnpMediumIdIso
   + process.tnpTightIdIso
 )
 
