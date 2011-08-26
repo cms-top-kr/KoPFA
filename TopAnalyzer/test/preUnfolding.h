@@ -46,8 +46,27 @@ TH1F* getMeasuredHisto( vector<std::string> rdPath, string cutStep){
 
   for(size_t i = 0; i < rdPath.size() ; i++){
     TFile * f_data = new TFile(rdPath[i].c_str());
-    TH1F *hTemp = (TH1F*) f_data->Get(Form("%s/hDataSub_%s_vsumMAlt", cutStep.c_str(), cutStep.c_str()));
-    hData->Add(hTemp);
+    TList* keys = f_data->GetDirectory(cutStep.c_str())->GetListOfKeys();
+
+    for ( int j=0; j<keys->GetSize(); ++j )
+    {
+      TString key = keys->At(j)->GetName();
+      if ( !key.EndsWith("_vsumMAlt") ) continue;
+
+      TString histPath = Form("%s/%s", cutStep.c_str(), key.Data());
+      TH1F* hTemp = (TH1F*)f_data->Get(histPath);
+
+      if ( !hTemp ) { cout << "No hist" << endl; continue; }
+
+      if ( key.BeginsWith("hMC_") )
+      {
+        hData->Add(hTemp, -1);
+      }
+      else if ( key.BeginsWith("hData_") )
+      {
+        hData->Add(hTemp);
+      }
+    }
   }
 
   return hData;
