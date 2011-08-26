@@ -40,7 +40,7 @@ void rescale(TString inFileName, TString outFileName, TString histNamePrefix,
 
       if ( histName.BeginsWith(histNamePrefix) )
       {
-        h->Scale(1.+(1.-wDYll[i])*(1.+variation));
+        h->Scale(1.+(wDYll[i]-1.)*(1.+variation));
       }
     }
   }
