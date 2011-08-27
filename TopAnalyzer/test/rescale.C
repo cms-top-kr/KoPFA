@@ -1,15 +1,15 @@
 void rescale()
 {
-  const double wDYmm[] = {1.0, 1.0, 1,0, 1.04, 1.34, 1.87, 1.51};
-  const double wDYee[] = {1.0, 1.0, 1,0, 1.04, 1.34, 1.91, 1.91};
+  const double wDYmm[] = {1.0,1.0,1.0,1.02,0.96,1.07,1.20};
+  const double wDYee[] = {1.0,1.0,1.0,1.03,1.00,1.22,1.33};
   const int nDYmm = sizeof(wDYmm)/sizeof(wDYmm[0]);
   const int nDYee = sizeof(wDYee)/sizeof(wDYee[0]);
 
-  rescale("MuMu.root", "MuMu_DYll_up.root", "hMC_DYll_", wDYmm, nDYmm, +0.2);
-  rescale("MuMu.root", "MuMu_DYll_dw.root", "hMC_DYll_", wDYmm, nDYmm, -0.2);
+  rescale("MuMu.root", "MuMu_DYll_up.root", "hMC_DYll_", wDYmm, nDYmm, +0.5);
+  rescale("MuMu.root", "MuMu_DYll_dw.root", "hMC_DYll_", wDYmm, nDYmm, -0.5);
 
-  rescale("ElEl.root", "ElEl_DYll_up.root", "hMC_DYll_", wDYee, nDYee, +0.2);
-  rescale("ElEl.root", "ElEl_DYll_dw.root", "hMC_DYll_", wDYee, nDYee, -0.2);
+  rescale("ElEl.root", "ElEl_DYll_up.root", "hMC_DYll_", wDYee, nDYee, +0.5);
+  rescale("ElEl.root", "ElEl_DYll_dw.root", "hMC_DYll_", wDYee, nDYee, -0.5);
 
 }
 
