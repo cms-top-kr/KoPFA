@@ -14,15 +14,15 @@
 #include <iomanip>
 #include <iostream>
 
-float detBins[] = {0, 340, 400, 450, 500, 550, 600, 700, 800, 1400}; // 9 bins
-float genBins[] = {0, 340, 400, 450, 500, 550, 600, 700, 800, 1400}; // 9 bins
+float detBins[] = {0, 345, 400, 450, 500, 550, 600, 700, 800, 1400}; // 9 bins
+float genBins[] = {0, 345, 400, 450, 500, 550, 600, 700, 800, 1400}; // 9 bins
 
 int nDet = sizeof(detBins)/sizeof(float) - 1;
 int nGen = sizeof(genBins)/sizeof(float) - 1;
 
 TH1F* getMeasuredHistoPseudo( vector<std::string> mcPath, vector<std::string> rdPath, string cutStep, TString var,  vector<TString> decayMode , double frac, TString name){
 
-  TH1F *hData = new TH1F("hData","hData",nDet,detBins);
+  TH1F *hData = new TH1F(Form("hData_%s",name.Data()),Form("hData_%s",name.Data()),nDet,detBins);
 
   for(size_t i = 0; i< mcPath.size() ; i++){
     TFile * f_data = new TFile(rdPath[i].c_str());
@@ -40,9 +40,9 @@ TH1F* getMeasuredHistoPseudo( vector<std::string> mcPath, vector<std::string> rd
   return hData;
 }
 
-TH1F* getMeasuredHisto( vector<std::string> rdPath, string cutStep){
+TH1F* getMeasuredHisto( vector<std::string> rdPath, string cutStep, TString name = ""){
 
-  TH1F *hData = new TH1F("hData","hData",nDet,detBins);
+  TH1F *hData = new TH1F(Form("hData_%s",name.Data()),Form("hData_%s",name.Data()),nDet,detBins);
 
   for(size_t i = 0; i < rdPath.size() ; i++){
     TFile * f_data = new TFile(rdPath[i].c_str());
@@ -98,7 +98,7 @@ TH2F* getResponseM( vector<std::string> mcPath, vector<std::string> rdPath, stri
 
 TH1F* getGenDistHisto( vector<std::string> mcPath, vector<std::string> rdPath, string cutStep, vector<TString> decayMode, double scale, bool split , TString name ){
 
-  TH1F *hGen = new TH1F("hGen","hGen",nGen,genBins);
+  TH1F *hGen = new TH1F(Form("hGen_%s",name.Data()),Form("hGen_%s",name.Data()),nGen,genBins);
 
   for(size_t i = 0; i< mcPath.size() ; i++){
     TFile * f_data = new TFile(rdPath[i].c_str());
