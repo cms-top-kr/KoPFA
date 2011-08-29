@@ -42,6 +42,10 @@ public:
   void addMCBkg(const string mcSampleName, const string mcSampleLabel,
                 const string fileName, const double xsec,
                 const Color_t color);
+  void addDataBkg(const string name, const string label,
+                  const string fileName, const double norm,
+                  const Color_t color);
+  void replaceDataBkgCut(const string name, const string from, const string to);
 
   void addRealData(const string fileName, const double lumi);
 
@@ -77,6 +81,16 @@ private:
     Color_t color;
   };
 
+  struct DataSample
+  {
+    string name;
+    double norm;
+    TChain* chain;
+    string label;
+    Color_t color;
+    std::map<std::string, std::string> replaceCuts;
+  };
+
   struct MonitorPlot
   {
     string varexp;
@@ -104,6 +118,7 @@ private:
   bool doStackSignal_;
   vector<MCSample> mcSigs_;
   vector<MCSample> mcBkgs_;
+  vector<DataSample> dataBkgs_;
   TChain* realDataChain_;
 
   map<const string, MonitorPlot> monitorPlots_;
@@ -221,6 +236,45 @@ void TopAnalyzerLite::addMCBkg(const string name, const string label,
                                const Color_t color)
 {
   addMC(mcBkgs_, name, label, fileName, xsec, -1, color);
+}
+
+void TopAnalyzerLite::addDataBkg(const string name, const string label,
+                                 const string fileName, const double norm,
+                                 const Color_t color)
+{
+  int index = -1;
+  for ( unsigned int i=0; i<dataBkgs_.size(); ++i )
+  {
+    if ( dataBkgs_[i].name == name )
+    {
+      index = i;
+      break;
+    }
+  }
+
+  if ( index == -1 )
+  {
+    std::map<std::string, std::string> replaceCuts;
+    DataSample data = {name, norm, 0, label, color, replaceCuts};
+    baseRootDir_->cd();
+    data.chain = new TChain((subDirName_+"/tree").c_str(), (subDirName_+"/tree").c_str());
+    dataBkgs_.push_back(data);
+    index = dataBkgs_.size()-1;
+  }
+
+  DataSample& data = dataBkgs_[index];
+  data.chain->Add(fileName.c_str());
+}
+
+void TopAnalyzerLite::replaceDataBkgCut(const string name, const string from, const string to)
+{
+  for ( unsigned int i=0; i<dataBkgs_.size(); ++i )
+  {
+    DataSample& dataBkg = dataBkgs_[i];
+    if ( dataBkg.name != name ) continue;
+
+    dataBkg.replaceCuts[from] = to;
+  }
 }
 
 void TopAnalyzerLite::addRealData(const string fileName, const double lumi)
@@ -505,6 +559,50 @@ void TopAnalyzerLite::plot(const string name, const TCut cut, MonitorPlot& monit
     }
   }
 
+  for ( unsigned int i=0; i<dataBkgs_.size(); ++i )
+  {
+    DataSample& sample = dataBkgs_[i];
+    TString histName = Form("hDataBkg_%s_%s", sample.name.c_str(), name.c_str());
+    TH1F* hBkg = new TH1F(histName, title.c_str(), nBins, xBins);
+
+    TString cutStr;
+    map<string, string>::const_iterator replaceCut = sample.replaceCuts.find((const char*)cut);
+    if ( replaceCut != sample.replaceCuts.end() ) cutStr = replaceCut->second.c_str();
+    else cutStr = mcCutStr;
+
+    sample.chain->Project(histName, varexp.c_str(), cutStr);
+    hBkg->AddBinContent(nBins, hBkg->GetBinContent(nBins+1));
+    hBkg->Scale(sample.norm);
+
+    hBkg->SetFillColor(sample.color);
+    hBkg->SetFillStyle(1001);
+
+    LabeledPlots::const_iterator matchedPlot = stackedPlots.end();
+    for ( LabeledPlots::const_iterator plotIter = stackedPlots.begin();
+          plotIter != stackedPlots.end(); ++plotIter )
+    {
+      if ( plotIter->first == sample.label )
+      {
+        matchedPlot = plotIter;
+        break;
+      }
+    }
+
+    if ( matchedPlot == stackedPlots.end() )
+    {
+      stackedPlots.push_back(make_pair(sample.label, hBkg));
+      hStack->Add(hBkg);
+      histograms_.Add(hBkg);
+    }
+    else
+    {
+      TH1F* h = matchedPlot->second;
+      if ( h ) h->Add(hBkg);
+      // In this case, temporary histogram is not needed anymore.
+      delete hBkg;
+    }
+  }
+
   // Do automatic bin labels
   if ( xBins[0] == 0 and xBins[nBins] == nBins and nBins < 20 )
   {
@@ -651,6 +749,41 @@ void TopAnalyzerLite::printStat(const string& name, TCut cut)
     if ( matchedStatObj == stats.end() )
     {
       Stat stat = {mcSample.name, mcSample.label, nEvents, nEventsErr2};
+      stats.push_back(stat);
+    }
+    else
+    {
+      matchedStatObj->nEvents += nEvents;
+      matchedStatObj->nEventsErr2 += nEventsErr2;
+    }
+  }
+
+  for ( unsigned int i=0; i<dataBkgs_.size(); ++i )
+  {
+    DataSample& sample = dataBkgs_[i];
+
+    TString cutStr;
+    map<string, string>::const_iterator replaceCut = sample.replaceCuts.find((const char*)cut);
+    if ( replaceCut != sample.replaceCuts.end() ) cutStr = replaceCut->second.c_str();
+    else cutStr = cut;
+
+    const double norm = sample.norm;
+    const double nEvents = sample.chain->GetEntries(cutStr)*norm;
+    const double nEventsErr2 = nEvents*norm;
+
+    vector<Stat>::iterator matchedStatObj = stats.end();
+    for ( vector<Stat>::iterator statObj = stats.begin();
+          statObj != stats.end(); ++statObj )
+    {
+      if ( statObj->label == sample.label )
+      {
+        matchedStatObj = statObj;
+        break;
+      }
+    }
+    if ( matchedStatObj == stats.end() )
+    {
+      Stat stat = {sample.name, sample.label, nEvents, nEventsErr2};
       stats.push_back(stat);
     }
     else

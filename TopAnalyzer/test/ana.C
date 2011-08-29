@@ -26,8 +26,8 @@ void ana(string decayMode, string imageOutDir)
 {
   TopAnalyzerLite* analyzer = new TopAnalyzerLite(decayMode, imageOutDir);
 
-  const std::string mcPath = "/data/cmskr-top/common/Top/ntuple/"+decayMode+"/MC/Summer11/";
-  const std::string rdPath = "/data/cmskr-top/common/Top/ntuple/"+decayMode+"/RD/July06/";
+  const std::string mcPath = "/data/cmskr-top/common/Top/ntuple/"+decayMode+"/MC/Summer11_new/";
+  const std::string rdPath = "/data/cmskr-top/common/Top/ntuple/"+decayMode+"/RD/July06_new/";
 
   analyzer->addRealData(rdPath+"vallot.root", 1143.221);
 
@@ -38,16 +38,19 @@ void ana(string decayMode, string imageOutDir)
   analyzer->addMCBkg("WZ", "VV", mcPath+"vallot_WZ.root", 0.61, kGray+4);
   analyzer->addMCBkg("SingleTop", "Single top", mcPath+"vallot_SingleToptW.root", 7.87, kMagenta);
 
+  analyzer->addDataBkg("QCD", "QCD", rdPath+"vallot.root", 1.0, kYellow);
+/*
   if ( decayMode == "ElEl" )
   {
-    analyzer->addMCBkg("QCDPt20to30BCtoE" , "QCD", mcPath+"vallot_QCDPt20to30BCtoE_*.root" , 17.0 , kYellow);
-    analyzer->addMCBkg("QCDPt30to80BCtoE" , "QCD", mcPath+"vallot_QCDPt30to80BCtoE_*.root" , 14.6 , kYellow);
-    analyzer->addMCBkg("QCDPt80to170BCtoE", "QCD", mcPath+"vallot_QCDPt80to170BCtoE_*.root", 111.5, kYellow);
+    analyzer->addMCBkg("QCDPt20to30BCtoE" , "QCD", mcPath+"vallot_QCDPt20to30BCtoE.root" , 17.0 , kYellow);
+    analyzer->addMCBkg("QCDPt30to80BCtoE" , "QCD", mcPath+"vallot_QCDPt30to80BCtoE.root" , 14.6 , kYellow);
+    analyzer->addMCBkg("QCDPt80to170BCtoE", "QCD", mcPath+"vallot_QCDPt80to170BCtoE.root", 111.5, kYellow);
   }
   else
   {
-    analyzer->addMCBkg("QCDPt20MuPt15", "QCD", mcPath+"vallot_QCDPt20MuPt15_*.root", 347.6, kYellow);
+    analyzer->addMCBkg("QCDPt20MuPt15", "QCD", mcPath+"vallot_QCDPt20MuPt15.root", 347.6, kYellow);
   }
+*/
 
   analyzer->addMCBkg("DYtt"       , "Z/#gamma*#rightarrow#tau^{+}#tau^{-}", mcPath+"vallot_ZtauDecay.root" , 3048, kAzure+8);
   analyzer->addMCBkg("DYtt_10to20", "Z/#gamma*#rightarrow#tau^{+}#tau^{-}", mcPath+"vallot_DYtt10to20.root", 3457, kAzure+8);
@@ -71,11 +74,14 @@ void ana(string decayMode, string imageOutDir)
     analyzer->addMCBkg("DYmm10to20", "Z/#gamma*#rightarrowl^{+}l^{-}", mcPath+"vallot_DYmm10to20.root", 3457, kAzure-2);
     analyzer->addMCBkg("DYmm20to50", "Z/#gamma*#rightarrowl^{+}l^{-}", mcPath+"vallot_DYmm20to50.root", 1666, kAzure-2);
   }
+
   //addMonitorPlot
   //analyzer->addMonitorPlot("nbJet", "@bjets.size()", "b-Jet Multiplicity;b-Jet Multiplicity;Events", 5, 0, 5, 0.1, 3,false);
   //use common histogram names for top analysis
   gROOT->ProcessLine(".L addVariables.h");
   addTopVariables(analyzer); //add Top analysis related variables for plotting
+
+  analyzer->setScanVariables("RUN:LUMI:EVENT:ZMass:@jetspt30.size():MET");
 
   if( decayMode == "MuMu" ){
     analyzer->setEventWeightDY(1.0,1.0,1.0,1.04,1.34,1.87,1.51);
@@ -86,32 +92,20 @@ void ana(string decayMode, string imageOutDir)
   }
 
   //STEP1 : low invariant mass cut
-  analyzer->addCutStep("Z.mass() > 12", "", 1.5);
+  analyzer->addCutStep("ZMass > 12", "", 1.5);
 
   //STEP2 : isolation
-  if ( decayMode == "MuMu" )
-  {
-    analyzer->addCutStep("Z.leg1().relpfIso03() < 0.20 && Z.leg2().relpfIso03() < 0.20", "");
-  }
-  else if ( decayMode == "ElEl" )
-  {
-    analyzer->addCutStep("Z.leg1().relpfIso03() < 0.20 && Z.leg2().relpfIso03() < 0.20", "");
-  }
-  else if ( decayMode == "MuEl" )
-  {
-    cout << "DEBUG: MuEl" << endl;
-    analyzer->addCutStep("Z.leg1().relpfIso03() < 0.20 && Z.leg2().relpfIso03() < 0.20", "");
-  }
+  analyzer->addCutStep("isIso", "");
 
   //STEP3 : opposite sign
-  analyzer->addCutStep("Z.sign() < 0", "ZMass,nJetlog,METlog");
+  analyzer->addCutStep("PairSign < 0", "ZMass,nJetlog,METlog");
 
   //STEP4 : Z veto
   if ( decayMode == "MuEl") 
   {
-    analyzer->addCutStep("abs(Z.mass() - 91.2) > -1", "nJetlog,METlog", 0.5);
+    analyzer->addCutStep("abs(ZMass - 91.2) > -1", "nJetlog,METlog", 0.5);
   }else{
-    analyzer->addCutStep("abs(Z.mass() - 91.2) > 15", "nJetlog,METlog", 0.5);
+    analyzer->addCutStep("abs(ZMass - 91.2) > 15", "nJetlog,METlog", 0.5);
   }
 
   //STEP5 : two jets requirement 
@@ -126,9 +120,12 @@ void ana(string decayMode, string imageOutDir)
   }
 
   //STEP7 : b-tagging
-  analyzer->addCutStep("@bjets.size() >= 1", "MET,nbJet,vsumM,vsumMAlt,genttbarM", 0.5);  
+  analyzer->addCutStep("nbjets >= 1", "MET,nbJet,vsumM,vsumMAlt,genttbarM", 0.5);  
 
   //analyzer->setEventWeightVar("weight");
+
+  analyzer->replaceDataBkgCut("QCD", "isIso", "relIso1 > 0.2 && relIso2 > 0.2");
+  analyzer->replaceDataBkgCut("QCD", "PairSign < 0", "PairSign > 0");
 
   analyzer->applyCutSteps();
 
