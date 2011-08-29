@@ -22,10 +22,10 @@ void rescale(TString inFileName, TString outFileName, TString histNamePrefix,
   TList* inDirs = inFile->GetListOfKeys();
   for ( int i=0; i<nDYll; ++i )
   {
-    TDirectory* inDir = dynamic_cast<TDirectory*>(inFile->Get(Form("Step_%d", i)));
+    TDirectory* inDir = dynamic_cast<TDirectory*>(inFile->Get(Form("Step_%d", i+1)));
     if ( !inDir ) continue;
 
-    TDirectory* outDir = outFile->mkdir(Form("Step_%d", i));
+    TDirectory* outDir = outFile->mkdir(Form("Step_%d", i+1));
 
     TList* inHists = inDir->GetListOfKeys();
     for ( int j=0; j<inHists->GetSize(); ++j )
