@@ -30,23 +30,27 @@ void preUnfolding(){
   decayMode.push_back("ElEl");
   decayMode.push_back("MuMu");
 
+  //response matrix
   mcPath.push_back("/data/export/common/Top/ntuple/MuEl/MC/Summer11_new/vallot_TTbarTuneZ2.root");
   mcPath.push_back("/data/export/common/Top/ntuple/ElEl/MC/Summer11_new/vallot_TTbarTuneZ2.root");
   mcPath.push_back("/data/export/common/Top/ntuple/MuMu/MC/Summer11_new/vallot_TTbarTuneZ2.root");
 
+  //measured mc distribution after final cut
   mePath.push_back("/data/export/common/Top/ntuple/MuEl/MC/Summer11_new/vallot_TTbarTuneZ2.root");
   mePath.push_back("/data/export/common/Top/ntuple/ElEl/MC/Summer11_new/vallot_TTbarTuneZ2.root");
   mePath.push_back("/data/export/common/Top/ntuple/MuMu/MC/Summer11_new/vallot_TTbarTuneZ2.root");
   //mePath.push_back("ZPrime/MuEl/vallot_ZPrimeM500W50.root");
   //mePath.push_back("ZPrime/ElEl/vallot_ZPrimeM500W50.root");
   //mePath.push_back("ZPrime/MuMu/vallot_ZPrimeM500W50.root");
-
+   
+  //measured data distribution after final cut
   rdPath.push_back("/data/export/common/Top/finalHisto/v5/MuEl.root");
   rdPath.push_back("/data/export/common/Top/finalHisto/v5/ElEl.root");
   rdPath.push_back("/data/export/common/Top/finalHisto/v5/MuMu.root");
 
   const std::string cutStep = "Step_7";
-  double scale = 1194.22/222222.22;//normalized to 1.1 fb-1 
+  double lumi = 1194.22;
+  double scale = lumi/222222.22;//normalized to 1.1 fb-1 
   bool split = false;//use full statistics if it is false
   string recon = "vsum";
 
@@ -57,18 +61,19 @@ void preUnfolding(){
   TH2F * h2ResponseM = getResponseM(mcPath, rdPath, cutStep,  "ttbar.M()", decayMode, split ,recon);
 
   TH1F * hData = getMeasuredHisto(rdPath, cutStep, recon);  //real data
-  //TH1F * hData = getMeasuredHistoPseudo(mePath, rdPath, cutStep, "ttbar.M()", decayMode, scale, recon); //pseudo data
+  TH1F * hDataPseudo = getMeasuredHistoPseudo(mePath, rdPath, cutStep, "ttbar.M()", decayMode, scale, recon+"_pseudo"); //pseudo data
 
   TH1F * hGenDist = getGenDistHisto(mcPath, rdPath, cutStep, decayMode, scale, split, recon);
-  TH1F * hAccept =  getAcceptanceHisto(mcPath, rdPath, cutStep,  decayMode, recon);
+  TH1F * hAccept =  getAcceptanceHisto(mcPath, rdPath, cutStep,  decayMode, recon, visible);
 
-  //for visible phase space definition
-  //TH1F * hAccept =  getAcceptanceHisto(mcPath, rdPath, cutStep,  decayMode, recon, visible);
+  //for full phase space definition
+  //TH1F * hAccept =  getAcceptanceHisto(mcPath, rdPath, cutStep,  decayMode, recon);
 
   TFile* f = TFile::Open("preUnfolding.root", "recreate");
 
   h2ResponseM->Write();
   hData->Write();
+  hDataPseudo->Write();
   hGenDist->Write();
   hAccept->Write();
 
