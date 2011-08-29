@@ -15,7 +15,7 @@
 #include <iomanip>
 #include <iostream>
 
-void unfoldingPlot(TH2* m, TH1* h_mea, TH1* h_genTTbar, TH1F* accept, TString name, double lumi, int k, RooUnfold::ErrorTreatment & err, bool print, bool pseudo, bool toy){
+TH1F* unfoldingPlot(TH2* m, TH1* h_mea, TH1* h_genTTbar, TString name, double lumi, int k, RooUnfold::ErrorTreatment & err, bool print, bool pseudo, bool toy){
 
   const TH1* h_gen = m->ProjectionY();
   const TH1* h_rec = m->ProjectionX();
@@ -299,81 +299,6 @@ void unfoldingPlot(TH2* m, TH1* h_mea, TH1* h_genTTbar, TH1F* accept, TString na
   h_d->GetXaxis()->SetTitle("i");
   //================================================================================================
 
-  //cross section plot ================================================================================================
-  cout << "Unfolded: evt number / sigma (pb)" << endl;
-  TGraphAsymmErrors* dsigmaData = printFinal(nbins, h_unfold, accept, lumi, false);
-  cout << "Truth: evt number / sigma (pb)" << endl;
-  TGraphAsymmErrors* dsigmaTruth = printFinal(nbins, hgen, accept, lumi, true);
-  TH1* hSigmaTruth = getSigmaTruth(hgen, accept, lumi);
-
-  TCanvas *c_dsigma = new TCanvas(Form("c_dsigma_%s",name.Data()),Form("c_dsigma_%s",name.Data()));
-  c_dsigma->SetLogy();
-  hSigmaTruth->SetLineWidth(1);
-  hSigmaTruth->SetLineColor(1);
-  hSigmaTruth->SetLineStyle(1);
-  hSigmaTruth->SetTitle(0);
-  hSigmaTruth->Draw();
-  hSigmaTruth->SetMaximum(3000);
-  hSigmaTruth->GetXaxis()->SetTitle("Unfolded t#bar{t} invariant mass (GeV/c^{2})");
-  hSigmaTruth->GetYaxis()->SetTitle("d#sigma/dM_{t#bar{t}} (pb/GeV/c^{2})");
-  dsigmaTruth->SetFillColor(30);
-  dsigmaTruth->SetFillStyle(3001);
-  dsigmaTruth->SetLineColor(0);
-  dsigmaTruth->Draw("2same");
-  dsigmaData->Draw("Psame");
-
-  TLegend *l_dsigma= new TLegend(0.58,0.68,0.80,0.8);
-  l_dsigma->AddEntry(hSigmaTruth, "SM Expectation","L");
-  l_dsigma->AddEntry(dsigmaTruth, "SM Uncertainties","F");
-  l_dsigma->AddEntry(dsigmaData, "Unfolded Data","P");
-  l_dsigma->SetTextSize(0.04);
-  l_dsigma->SetFillColor(0);
-  l_dsigma->SetLineColor(0);
-  l_dsigma->Draw();
-
-  label->DrawLatex(0.47,0.88,"CMS Preliminary");
-  label->DrawLatex(0.47,0.82.5,Form("%1.1f fb^{-1} at #sqrt{s} = 7 TeV",lumi/1000));
-  //======================================================================================================================  
-
-  //normalized cross section plot ================================================================================================
-  cout << "Unfolded: evt number / probability" << endl;
-  TGraphAsymmErrors* NormdsigmaData = printFinal(nbins, h_unfold, accept, lumi, false,true);
-  cout << "Truth: evt number / probability" << endl;
-  TGraphAsymmErrors* NormdsigmaTruth = printFinal(nbins, hgen, accept, lumi, true,true);
-  TH1* NormhSigmaTruth = getSigmaTruth(hgen, accept, lumi, true);
-
-  TCanvas *c_Normdsigma = new TCanvas(Form("c_Normdsigma_%s",name.Data()),Form("c_Normdsigma_%s",name.Data()));
-  c_Normdsigma->SetLogy();
-  NormhSigmaTruth->SetLineWidth(1);
-  NormhSigmaTruth->SetLineColor(1);
-  NormhSigmaTruth->SetLineStyle(1);
-  NormhSigmaTruth->SetTitle(0);
-  NormhSigmaTruth->Draw();
-  //NormhSigmaTruth->SetAxisRange(340,1400);
-  NormhSigmaTruth->SetMaximum(0.05);
-  NormhSigmaTruth->SetMinimum(0.00001);
-  NormhSigmaTruth->GetXaxis()->SetTitle("Unfolded t#bar{t} invariant mass (GeV/c^{2})");
-  NormhSigmaTruth->GetYaxis()->SetTitle("1/#sigma_{t#bar{t}} d#sigma/dM_{t#bar{t}} (1/GeV/c^{2})");
-  NormdsigmaTruth->SetFillColor(30);
-  NormdsigmaTruth->SetFillStyle(3001);
-  NormdsigmaTruth->SetLineColor(0);
-  NormdsigmaTruth->Draw("2same");
-  NormdsigmaData->Draw("Psame");
-
-  TLegend *l_Normdsigma= new TLegend(0.58,0.68,0.80,0.8);
-  l_Normdsigma->AddEntry(NormhSigmaTruth, "SM Expectation","L");
-  l_Normdsigma->AddEntry(NormdsigmaTruth, "SM Uncertainties","F");
-  l_Normdsigma->AddEntry(NormdsigmaData, "Unfolded Data","P");
-  l_Normdsigma->SetTextSize(0.04);
-  l_Normdsigma->SetFillColor(0);
-  l_Normdsigma->SetLineColor(0);
-  l_Normdsigma->Draw();
-
-  label->DrawLatex(0.47,0.88,"CMS Preliminary");
-  label->DrawLatex(0.47,0.82.5,Form("%1.1f fb^{-1} at #sqrt{s} = 7 TeV",lumi/1000));
-  //================================================================================================================
-
-
   //Printing chi2
   chi2.push_back(unfold->Chi2(hgen, err)); 
   cout << "chi2 : " << unfold->Chi2(hgen, err) << endl;
@@ -386,8 +311,8 @@ void unfoldingPlot(TH2* m, TH1* h_mea, TH1* h_genTTbar, TH1F* accept, TString na
     c_err->Print(Form("cUF_err_%s.eps",name.Data()));
     c_meaerr->Print(Form("cUF_meaerr_%s.eps",name.Data()));
     c_errmat->Print(Form("cUF_errmat_%s.eps",name.Data()));
-    c_dsigma->Print(Form("cUF_dsigma_%s.eps",name.Data()));
-    c_Normdsigma->Print(Form("cUF_Normdsigma_%s.eps",name.Data()));
+    //c_dsigma->Print(Form("cUF_dsigma_%s.eps",name.Data()));
+    //c_Normdsigma->Print(Form("cUF_Normdsigma_%s.eps",name.Data()));
     c_d->Print(Form("cUF_d_%s.eps",name.Data()));
     if(toy){
       c_toy_sigma->Print(Form("cUF_toy_sigma_%s.eps",name.Data()));
@@ -400,8 +325,8 @@ void unfoldingPlot(TH2* m, TH1* h_mea, TH1* h_genTTbar, TH1F* accept, TString na
     c_err->Print(Form("cUF_err_%s.png",name.Data()));
     c_meaerr->Print(Form("cUF_meaerr_%s.png",name.Data()));
     c_errmat->Print(Form("cUF_errmat_%s.png",name.Data()));
-    c_dsigma->Print(Form("cUF_dsigma_%s.png",name.Data()));
-    c_Normdsigma->Print(Form("cUF_Normdsigma_%s.png",name.Data()));
+    //c_dsigma->Print(Form("cUF_dsigma_%s.png",name.Data()));
+    //c_Normdsigma->Print(Form("cUF_Normdsigma_%s.png",name.Data()));
     c_d->Print(Form("cUF_d_%s.png",name.Data()));
     if(toy){
       c_toy_sigma->Print(Form("cUF_toy_sigma_%s.png",name.Data()));
@@ -409,7 +334,56 @@ void unfoldingPlot(TH2* m, TH1* h_mea, TH1* h_genTTbar, TH1F* accept, TString na
     }
 
   }
+ 
+  return h_unfold;
 }
+
+void FinalPlot(TH1F* h_unfold, TH1F* gen, TH1F* accept, double lumi, TString hName, TString cName, double min, double max, bool normalized=true, bool log=true, bool curve=false, bool print){
+
+  int nbins = h_unfold->GetNbinsX();
+
+  cout << "Unfolded: evt number / sigma (pb)" << endl;
+  TGraphAsymmErrors* dsigmaData = printFinal(nbins, h_unfold, accept, lumi, false);
+  cout << "Truth: evt number / sigma (pb)" << endl;
+  TGraphAsymmErrors* dsigmaTruth = printFinal(nbins, hgen, accept, lumi, true);
+  TH1* hSigmaTruth = getSigmaTruth(hgen, accept, lumi);
+
+  TCanvas *c_dsigma = new TCanvas(Form("c_%s_dsigma_%s",hName.Data(), cName.Data()),Form("c_%s_dsigma_%s",hName.Data(), cName.Data()));
+  TGaxis::SetMaxDigits(4);
+
+  if(log) c_dsigma->SetLogy();
+
+  //SetHistoStyle(hSigmaTruth, 2,2,1,0,0,0,min,max,"M_{t#bar{t}} (GeV/c^{2})","");
+  SetHistoStyle(hSigmaTruth, 2,2,1,0,0,0,min,max,"Unfolded t#bar{t} invariant mass (GeV/c^{2})","");
+
+  if(normalized){
+    hSigmaTruth->GetYaxis()->SetTitle("1/#sigma_{t#bar{t}} d#sigma/dM_{t#bar{t}} (1/GeV/c^{2})");
+  }else{
+    hSigmaTruth->GetYaxis()->SetTitle("d#sigma/dM_{t#bar{t}} (pb/GeV/c^{2})");
+  }
+
+  if(curve){
+    hSigmaTruth->Draw("c");
+  }else{
+    hSigmaTruth->Draw();
+  }
+
+  //MC band
+  //dsigmaTruth->SetFillColor(30);
+  //dsigmaTruth->SetFillStyle(3001);
+  //dsigmaTruth->SetLineColor(0);
+  //dsigmaTruth->Draw("2same");
+
+  dsigmaData->Draw("Psame");
+
+  SetLabel(0.47,0.88, lumi);
+  //Default Style
+  SetLegend(hSigmaTruth, dsigmaData, "MadGraph", "Unfolded data", "L", "P", 0.58,0.64,0.80,0.8);
+  //print
+  Print(c_dsigma, "final", hName.Data(), cName.Data(), print);
+}
+
+
 
 TGraphAsymmErrors* printFinal( int nbins, TH1F* hgen, TH1F* accept, double lumi, bool truth, bool norm=false ){
 

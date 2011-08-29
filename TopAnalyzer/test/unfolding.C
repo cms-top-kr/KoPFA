@@ -45,7 +45,7 @@ void unfolding(int k=4){
 
   double lumi = 1143.22;
   bool print = true;
-  bool pseudo = true;
+  bool pseudo = false;
   bool toytest = false;
 
   //RooUnfold::ErrorTreatment err = RooUnfold::kNoError;  //0
@@ -53,8 +53,15 @@ void unfolding(int k=4){
   RooUnfold::ErrorTreatment err = RooUnfold::kCovariance; //2
   //RooUnfold::ErrorTreatment err = RooUnfold::kCovToy; //3
 
-  unfoldingPlot(h2ResponseM,  hDataDist, hGenDist, hAcceptDist, "vusm", lumi, k, err, print, pseudo, toytest);
- 
+  TH1F* h_unfold = unfoldingPlot(h2ResponseM,  hDataDist, hGenDist, "vusm", lumi, k, err, print, pseudo, toytest);
+
+  //for final plots
+  bool norm =  false;
+  bool log = true;
+  bool curve = false;
+
+  FinalPlot(h_unfold, hGenDist, hAcceptDist, lumi, "unfold_Normalized", "dSigmadM",  0.00001, 0.06, norm, log, curve, print);
+
   //chi2 test
   //int n = 5;
   //for(int i=1; i <=n ;i++){
