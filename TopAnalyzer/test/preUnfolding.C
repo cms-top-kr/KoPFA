@@ -50,7 +50,7 @@ void preUnfolding(){
 
   const std::string cutStep = "Step_7";
   double lumi = 1194.22;
-  double scale = lumi/222222.22;//normalized to 1.1 fb-1 
+  double scale = lumi/22222.22;//normalized to 1.1 fb-1 
   bool split = false;//use full statistics if it is false
   string recon = "vsum";
 
