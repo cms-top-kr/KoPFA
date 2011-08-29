@@ -5,16 +5,16 @@ void rescale()
   const int nDYmm = sizeof(wDYmm)/sizeof(wDYmm[0]);
   const int nDYee = sizeof(wDYee)/sizeof(wDYee[0]);
 
-  rescale("MuMu.root", "MuMu_DYll_up.root", "hMC_DYll_", wDYmm, nDYmm, +0.5);
-  rescale("MuMu.root", "MuMu_DYll_dw.root", "hMC_DYll_", wDYmm, nDYmm, -0.5);
+  rescale("MuMu.root", "MuMu_DYll_up.root", "hMC_DYll_", wDYmm, nDYmm, +0.5, 1.3);
+  rescale("MuMu.root", "MuMu_DYll_dw.root", "hMC_DYll_", wDYmm, nDYmm, -0.5, 0.7);
 
-  rescale("ElEl.root", "ElEl_DYll_up.root", "hMC_DYll_", wDYee, nDYee, +0.5);
-  rescale("ElEl.root", "ElEl_DYll_dw.root", "hMC_DYll_", wDYee, nDYee, -0.5);
+  rescale("ElEl.root", "ElEl_DYll_up.root", "hMC_DYll_", wDYee, nDYee, +0.5, 1.3);
+  rescale("ElEl.root", "ElEl_DYll_dw.root", "hMC_DYll_", wDYee, nDYee, -0.5, 0.7);
 
 }
 
 void rescale(TString inFileName, TString outFileName, TString histNamePrefix,
-             const double* wDYll, const int nDYll, const double variation = 0)
+             const double* wDYll, const int nDYll, const double variation = 0, const double scaleAllMC = 1.0)
 {
   TFile* inFile = TFile::Open(inFileName);
   TFile* outFile = TFile::Open(outFileName, "RECREATE");
@@ -38,9 +38,15 @@ void rescale(TString inFileName, TString outFileName, TString histNamePrefix,
       outDir->cd();
       TH1F* h = (TH1F*)hSrc->Clone();
 
+      if ( histName.contains("gen") ) continue;
+
       if ( histName.BeginsWith(histNamePrefix) )
       {
         h->Scale(wDYll[i]*(1.+variation));
+      }
+      else if ( histName.BeginsWith("hMC_") )
+      {
+        h->Scale(scaleAllMC);
       }
     }
   }
