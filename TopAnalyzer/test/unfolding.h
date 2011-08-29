@@ -15,7 +15,10 @@
 #include <iomanip>
 #include <iostream>
 
-void unfoldingPlot(TH1* h_gen, TH1* h_rec, TH2* m, TH1* h_mea, TH1* h_genTTbar, TH1F* accept, TString name, double lumi, int k, RooUnfold::ErrorTreatment & err, bool print, bool pseudo, bool toy){
+void unfoldingPlot(TH2* m, TH1* h_mea, TH1* h_genTTbar, TH1F* accept, TString name, double lumi, int k, RooUnfold::ErrorTreatment & err, bool print, bool pseudo, bool toy){
+
+  const TH1* h_gen = m->ProjectionY();
+  const TH1* h_rec = m->ProjectionX();
 
   int nbins = h_gen->GetNbinsX();
 
@@ -45,14 +48,15 @@ void unfoldingPlot(TH1* h_gen, TH1* h_rec, TH2* m, TH1* h_mea, TH1* h_genTTbar, 
   Hres->GetXaxis()->SetTitle("Reconstructed M_{t#bar{t}} (GeV/c^{2})");
   Hres->Draw("colTextbox");
   double total = Hres->Integral();
-  cout << "total= " << total << endl;
-  double diagonal = 0;
-  for(int i=0; i < nbins; i++){
-    diagonal += Hres->GetBinContent(i+1,i+1);
-    cout << "diagonal= " << diagonal << endl;
-  }
-  double offdiagonal = (total-diagonal)/total*100;
-  cout << "off diagonal= " << offdiagonal << endl;
+
+  //cout << "total= " << total << endl;
+  //double diagonal = 0;
+  //for(int i=0; i < nbins; i++){
+  //  diagonal += Hres->GetBinContent(i+1,i+1);
+  //  cout << "diagonal= " << diagonal << endl;
+  //}
+  //double offdiagonal = (total-diagonal)/total*100;
+  //cout << "off diagonal= " << offdiagonal << endl;
   //==========================================================================================================
 
 
@@ -226,10 +230,7 @@ void unfoldingPlot(TH1* h_gen, TH1* h_rec, TH2* m, TH1* h_mea, TH1* h_genTTbar, 
   TGraph *gerr = new TGraph(nbins);  
   TGraph *gerrbefore = new TGraph(nbins);  
 
-  cout << "histogram error " << endl;
-
   for(int i=1; i <=  nbins; i++){
-    cout << h_unfold->GetBinError(i) << endl;
     if( h_unfold->GetBinContent(i) != 0 ){
       gerr->SetPoint(i-1, h_unfold->GetBinCenter(i), 100*h_unfold->GetBinError(i)/h_unfold->GetBinContent(i));
     } else{
@@ -269,22 +270,22 @@ void unfoldingPlot(TH1* h_gen, TH1* h_rec, TH2* m, TH1* h_mea, TH1* h_genTTbar, 
   hErrMat->Draw("colz");
 
 
-  cout << "covariance matrix= " << endl; 
-  double num = 0;
-  for(i=1; i <= 9; i++){
-    cout << sqrt(hErrMat->GetBinContent(i,i)) << endl;
-    num = sqrt(hErrMat->GetBinContent(3,3)) ;
-  }
-  cout << "off covariance= " << endl;
-  double den=0;
-  for(i=1; i <= 9; i++){
-    cout << sqrt(hErrMat->GetBinContent(3,i)) << endl;
-    if( sqrt(hErrMat->GetBinContent(3,i))  > 0){
-      den += sqrt(hErrMat->GetBinContent(3,i));
-    }
-  }
+  //cout << "covariance matrix= " << endl; 
+  //double num = 0;
+  //for(i=1; i <= 9; i++){
+  //  cout << sqrt(hErrMat->GetBinContent(i,i)) << endl;
+  //  num = sqrt(hErrMat->GetBinContent(3,3)) ;
+  //}
+  //cout << "off covariance= " << endl;
+  //double den=0;
+  //for(i=1; i <= 9; i++){
+  //  cout << sqrt(hErrMat->GetBinContent(3,i)) << endl;
+  //  if( sqrt(hErrMat->GetBinContent(3,i))  > 0){
+  //    den += sqrt(hErrMat->GetBinContent(3,i));
+  //  }
+  //}
 
-  cout << "ratio= " << num/den << endl;
+  //cout << "ratio= " << num/den << endl;
 
   //================================================================================================== 
 
