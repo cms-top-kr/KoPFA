@@ -69,10 +69,6 @@ void unfolding(int k=4){
   //For PAS TOP-11-013
   //FinalPlot(h_unfold, hGenDist, hAcceptDist, hGenMADGRAPH, hGenPOWHEG, hVisTTbarM, lumi, "unfold_Normalized", "dSigmadM",  0.00001, 0.06, norm, log, bincorr, print);
 
-  //This is for comparison with several MCs
-  TFile * f_MadGraph = new TFile("/data/export/common/Top/ntuple/ttbarGen.root");
-  TFile * f_POWHEG = new TFile("/data/export/common/Top/ntuple/Gen/ttbarGen_TTTo2L2Nu2BTuneZ2_Powheg_Summer11_PUS4_v0.root");
-
   //chi2 test
   //int n = 5;
   //for(int i=1; i <=n ;i++){
