@@ -384,7 +384,7 @@ void FinalPlot(TH1F* h_unfold, TH1F* hgen, TH1F* accept, double lumi, TString hN
   Print(c_dsigma, "final", hName.Data(), cName.Data(), print);
 }
 
-void FinalPlot(TH1F* h_unfold, TH1F* hgen, TH1F* accept, TH1D* hTr1, TH1D* hTr2, TH1D* hTr3, double lumi, TString hName, TString cName, double min, double max, bool norm=true, bool log=true, bool curve=false, bool print){
+void FinalPlot(TH1F* h_unfold, TH1F* hgen, TH1F* accept, TH1D* hTr1, TH1D* hTr2, TH1D* hTr3, double lumi, TString hName, TString cName, double min, double max, bool norm=true, bool log=true, bool curve=false, bool print, bool HBBstyle = false){
 
   int nbins = h_unfold->GetNbinsX();
   
@@ -409,10 +409,13 @@ void FinalPlot(TH1F* h_unfold, TH1F* hgen, TH1F* accept, TH1D* hTr1, TH1D* hTr2,
   TGaxis::SetMaxDigits(4);
   
   if(log) c_dsigma->SetLogy();
-  
-  //SetHistoStyle(hSigmaTruth, 2,2,1,0,0,0,min,max,"M_{t#bar{t}} (GeV/c^{2})","");
-  SetHistoStyle(hSigmaTruth, 2,2,1,0,0,0,min,max,"Unfolded t#bar{t} invariant mass (GeV/c^{2})","");
-  
+ 
+  if(HBBstyle){ 
+    SetHistoStyle(hSigmaTruth, 2,2,1,0,0,0,min,max,"M_{t#bar{t}} (GeV/c^{2})","");
+  }else{
+    SetHistoStyle(hSigmaTruth, 2,2,1,0,0,0,min,max,"Unfolded t#bar{t} invariant mass (GeV/c^{2})","");
+  }
+
   if(norm){
     hSigmaTruth->GetYaxis()->SetTitle("1/#sigma_{t#bar{t}} d#sigma/dM_{t#bar{t}} (1/GeV/c^{2})"); 
   }else{
@@ -441,7 +444,13 @@ void FinalPlot(TH1F* h_unfold, TH1F* hgen, TH1F* accept, TH1D* hTr1, TH1D* hTr2,
     dsigmaData->Draw("Psame");
   }
 
-  SetLabel(0.47,0.88, lumi);
+  if(HBBstyle){
+    bool isPreliminary = true;
+    DrawCMSLabels(isPreliminary, 1143);
+    DrawDecayChLabel("Dilepton Combined");
+  }else{
+   SetLabel(0.47,0.88, lumi);
+  }
   //Default Style
   SetLegend(hSigmaTruth, hSigmaTruth2, hSigmaTruth3, dsigmaData, "MadGraph", "MC@NLO", "POWHEG", "Unfolded data", "L","L","L", "P", 0.58,0.64,0.80,0.8);
   //print

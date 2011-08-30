@@ -21,7 +21,7 @@
 #include "unfold/RooUnfold-1.0.3/src/RooUnfoldSvd.h"
 #include "unfold/RooUnfold-1.0.3/src/RooUnfoldBinByBin.h"
 #include "unfold/RooUnfold-1.0.3/src/RooUnfoldInvert.h"
-
+#include "HHStyle.h"
 #include "unfolding.h"
 vector<double> chi2;
 
@@ -63,11 +63,17 @@ void unfolding(int k=4){
   bool norm =  true;
   bool log = true;
   bool bincorr = false;
+  bool HBBstyle = false;
 
   FinalPlot(h_unfold, hGenDist, hAcceptDist, lumi, "unfold_Normalized_simple", "dSigmadM",  0.00001, 0.06, norm, log, bincorr, print);
  
   //For PAS TOP-11-013
-  FinalPlot(h_unfold, hGenDist, hAcceptDist, hGenMADGRAPH, hGenPOWHEG, hVisTTbarM, lumi, "unfold_Normalized", "dSigmadM",  0.00001, 0.06, norm, log, bincorr, print);
+  if(HBBstyle){
+    gROOT->SetStyle("Plain");
+    setHHStyle(*gStyle);
+  }
+
+  FinalPlot(h_unfold, hGenDist, hAcceptDist, hGenMADGRAPH, hGenPOWHEG, hVisTTbarM, lumi, "unfold_Normalized", "dSigmadM",  0.00001, 0.06, norm, log, bincorr, print, HBBstyle);
 
   //chi2 test
   //int n = 5;
