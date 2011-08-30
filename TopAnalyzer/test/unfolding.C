@@ -67,7 +67,7 @@ void unfolding(int k=4){
   FinalPlot(h_unfold, hGenDist, hAcceptDist, lumi, "unfold_Normalized_simple", "dSigmadM",  0.00001, 0.06, norm, log, bincorr, print);
  
   //For PAS TOP-11-013
-  //FinalPlot(h_unfold, hGenDist, hAcceptDist, hGenMADGRAPH, hGenPOWHEG, hVisTTbarM, lumi, "unfold_Normalized", "dSigmadM",  0.00001, 0.06, norm, log, bincorr, print);
+  FinalPlot(h_unfold, hGenDist, hAcceptDist, hGenMADGRAPH, hGenPOWHEG, hVisTTbarM, lumi, "unfold_Normalized", "dSigmadM",  0.00001, 0.06, norm, log, bincorr, print);
 
   //chi2 test
   //int n = 5;

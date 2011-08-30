@@ -338,7 +338,7 @@ TH1F* unfoldingPlot(TH2* m, TH1* h_mea, TH1* h_genTTbar, TString name, double lu
   return h_unfold;
 }
 
-void FinalPlot(TH1F* h_unfold, TH1F* gen, TH1F* accept, double lumi, TString hName, TString cName, double min, double max, bool norm=true, bool log=true, bool curve=false, bool print){
+void FinalPlot(TH1F* h_unfold, TH1F* hgen, TH1F* accept, double lumi, TString hName, TString cName, double min, double max, bool norm=true, bool log=true, bool curve=false, bool print){
 
   int nbins = h_unfold->GetNbinsX();
 
@@ -346,6 +346,7 @@ void FinalPlot(TH1F* h_unfold, TH1F* gen, TH1F* accept, double lumi, TString hNa
   TGraphAsymmErrors* dsigmaData = printFinal(nbins, h_unfold, accept, lumi, false, norm);
   cout << "Truth: evt number / sigma (pb)" << endl;
   TGraphAsymmErrors* dsigmaTruth = printFinal(nbins, hgen, accept, lumi, true, norm);
+
   TH1* hSigmaTruth = getSigmaTruth(hgen, accept, lumi, norm);
 
   TCanvas *c_dsigma = new TCanvas(Form("c_%s_dsigma_%s",hName.Data(), cName.Data()),Form("c_%s_dsigma_%s",hName.Data(), cName.Data()));
@@ -383,7 +384,7 @@ void FinalPlot(TH1F* h_unfold, TH1F* gen, TH1F* accept, double lumi, TString hNa
   Print(c_dsigma, "final", hName.Data(), cName.Data(), print);
 }
 
-void FinalPlot(TH1F* h_unfold, TH1F* gen, TH1F* accept, TH1D* hTr1, TH1D* hTr2, TH1D* hTr3, double lumi, TString hName, TString cName, double min, double max, bool norm=true, bool log=true, bool curve=false, bool print){
+void FinalPlot(TH1F* h_unfold, TH1F* hgen, TH1F* accept, TH1D* hTr1, TH1D* hTr2, TH1D* hTr3, double lumi, TString hName, TString cName, double min, double max, bool norm=true, bool log=true, bool curve=false, bool print){
 
   int nbins = h_unfold->GetNbinsX();
   
@@ -392,9 +393,13 @@ void FinalPlot(TH1F* h_unfold, TH1F* gen, TH1F* accept, TH1D* hTr1, TH1D* hTr2, 
   cout << "Truth: evt number / sigma (pb)" << endl;
   TGraphAsymmErrors* dsigmaTruth = printFinal(nbins, hgen, accept, lumi, true, norm);
 
-  TH1* hSigmaTruth = getSigmaTruth(hgen, hTr1, lumi, norm);
-  TH1* hSigmaTruth2 = getSigmaTruth(hgen, hTr2, lumi, norm);
-  TH1* hSigmaTruth3 = getSigmaTruth(hgen, hTr3, lumi, norm);
+  TH1F* hSigmaTruth = getSigmaTruth(hgen, hTr1, lumi, norm, curve);
+  TH1F* hSigmaTruth2 = getSigmaTruth(hgen, hTr2, lumi, norm, curve);
+  TH1F* hSigmaTruth3 = getSigmaTruth(hgen, hTr3, lumi, norm, curve);
+
+  TH1F* hSigmaTruthHisto = getSigmaTruth(hgen, hTr1, lumi, norm, false);
+
+  TGraphAsymmErrors* dsigmaDataCentered = BinCenterCorrection(dsigmaData, hSigmaTruthHisto, hSigmaTruth);
  
   SetHistoStyle(hSigmaTruth, 2,2,1,0,0,0,min,max,"M_{t#bar{t}} (GeV/c^{2})","");
   SetHistoStyle(hSigmaTruth2, 2,4,1,0,0,0,min,max,"M_{t#bar{t}} (GeV/c^{2})","");
@@ -430,7 +435,11 @@ void FinalPlot(TH1F* h_unfold, TH1F* gen, TH1F* accept, TH1D* hTr1, TH1D* hTr2, 
   //dsigmaTruth->SetLineColor(0);
   //dsigmaTruth->Draw("2same");
 
-  dsigmaData->Draw("Psame");
+  if(curve){
+    dsigmaDataCentered->Draw("Psame");
+  }else{
+    dsigmaData->Draw("Psame");
+  }
 
   SetLabel(0.47,0.88, lumi);
   //Default Style
@@ -551,20 +560,30 @@ TH1* getSigmaTruth(TH1F* hgen, TH1F* accept, double lumi, bool norm){
   return dsigma;
 }
 
-TH1* getSigmaTruth(TH1F* hgen, TH1D* htruth, double lumi, bool norm){
-
-  int nbins = hgen->GetNbinsX();
+TH1* getSigmaTruth(TH1F* hgen, TH1D* htruth, double lumi, bool norm, bool curve=false){
 
   TH1* dsigma = (TH1F*)hgen->Clone("disgma");
   dsigma->Reset();
 
   double total = htruth->Integral();
 
+  if(curve){
+    if(norm){
+      htruth->Scale(1.0/total);
+      return htruth;
+    }else{
+      htruth->Scale(1.0/lumi);
+      return htruth;
+    }
+  }
+
+  int nbins = hgen->GetNbinsX();
+
   for(int i=1; i <=  nbins; i++){
-    double width = hgen->GetBinWidth(i);
-    int start = hgen->GetBinCenter(i)-width/2 + 1;
-    int end = hgen->GetBinCenter(i)+width/2;
-    //cout << "start= " << start << " end=" << end;
+    double  width = hgen->GetBinWidth(i);
+    double  start = hgen->GetBinCenter(i)-width/2 + 1;
+    double  end = hgen->GetBinCenter(i)+width/2;
+
     double unfolded = htruth->Integral(start, end);
     double normsigma = unfolded/( total * width );
     double sigma = unfolded/( lumi * width );
@@ -593,6 +612,51 @@ TH1* getTruthDist(TH1F* hgen){
   }
 
   return truth;
+}
+
+TGraphAsymmErrors* BinCenterCorrection( TGraphAsymmErrors* data, TH1* gen_histo, TH1* gen_curve){
+
+  TGraphAsymmErrors* dsigma = new TGraphAsymmErrors;
+  int nbins = gen_histo->GetNbinsX();
+
+  for(int i=1; i <=  nbins; i++){
+    double x;
+    double sigma;
+    data->GetPoint(i-1,x,sigma);
+    double ave = gen_histo->GetBinContent(i);
+    double width = gen_histo->GetBinWidth(i);
+    double bincenter = x;
+
+    if( ave != 0){
+      double proximity = 999999;
+      double lowedge = x-width/2;
+      double highedge = x+width/2;
+      int start = (int) lowedge/gen_curve->GetBinWidth(1) + 1;
+      int end = (int) highedge/gen_curve->GetBinWidth(1);
+
+      for(int k=start ; k<= end; k++){
+        double center = gen_curve->GetBinCenter(k);
+        double ypoint = gen_curve->GetBinContent(k);
+
+        if( fabs( ypoint - ave) < proximity){
+          bincenter = center;
+          proximity = fabs(ypoint - ave);
+        }
+      }
+    }
+
+    double ErrYhigh = data->GetErrorYhigh(i-1);
+    double ErrYlow = data->GetErrorYlow(i-1);
+    dsigma->SetPoint(i-1, bincenter, sigma );
+    dsigma->SetPointEYhigh(i-1, ErrYhigh);
+    dsigma->SetPointEYlow(i-1, ErrYlow);
+    //dsigma->SetPointEXhigh(i-1, width/2 - (bincenter-x));
+    //dsigma->SetPointEXlow(i-1, width/2 + (bincenter-x));
+    cout << "$" << gen_histo->GetBinCenter(i)-width/2 << "-" << gen_histo->GetBinCenter(i)+width/2 << "$   ~&~ "
+       << bincenter << " ~&~ " << sigma << " $\\pm$ " << ErrYhigh << "(" << ErrYlow << ")" << " \\\\" <<  endl;
+  }
+
+  return dsigma;
 }
 
 
