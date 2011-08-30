@@ -41,10 +41,14 @@ void unfolding(int k=4){
   TH2F * h2ResponseM = (TH2F*) file->Get("h2_response_m");
   TH1F * hDataDist = (TH1F*) file->Get("hData_vsum");
   TH1F * hGenDist = (TH1F*) file->Get("hGen_vsum");
-  TH1F * hAcceptDist = (TH1F*) file->Get("hAccept");
+  TH1F * hAcceptDist = (TH1F*) file->Get("hAccept_vsum");
+  //truth level 
+  TH1D * hGenMADGRAPH = (TH1D*) file->Get("hGenMADGRAPH");
+  TH1D * hGenPOWHEG = (TH1D*) file->Get("hGenPOWHEG");
+  TH1D * hVisTTbarM = (TH1D*) file->Get("hVisTTbarM");
 
   double lumi = 1143.22;
-  bool print = true;
+  bool print = false;
   bool pseudo = false;
   bool toytest = false;
 
@@ -56,11 +60,18 @@ void unfolding(int k=4){
   TH1F* h_unfold = unfoldingPlot(h2ResponseM,  hDataDist, hGenDist, "vusm", lumi, k, err, print, pseudo, toytest);
 
   //for final plots
-  bool norm =  false;
+  bool norm =  true;
   bool log = true;
-  bool curve = false;
+  bool bincorr = false;
 
-  FinalPlot(h_unfold, hGenDist, hAcceptDist, lumi, "unfold_Normalized", "dSigmadM",  0.00001, 0.06, norm, log, curve, print);
+  FinalPlot(h_unfold, hGenDist, hAcceptDist, lumi, "unfold_Normalized_simple", "dSigmadM",  0.00001, 0.06, norm, log, bincorr, print);
+ 
+  //For PAS TOP-11-013
+  FinalPlot(h_unfold, hGenDist, hAcceptDist, hGenMADGRAPH, hGenPOWHEG, hVisTTbarM, lumi, "unfold_Normalized", "dSigmadM",  0.00001, 0.06, norm, log, bincorr, print);
+
+  //This is for comparison with several MCs
+  TFile * f_MadGraph = new TFile("/data/export/common/Top/ntuple/ttbarGen.root");
+  TFile * f_POWHEG = new TFile("/data/export/common/Top/ntuple/Gen/ttbarGen_TTTo2L2Nu2BTuneZ2_Powheg_Summer11_PUS4_v0.root");
 
   //chi2 test
   //int n = 5;

@@ -338,15 +338,15 @@ TH1F* unfoldingPlot(TH2* m, TH1* h_mea, TH1* h_genTTbar, TString name, double lu
   return h_unfold;
 }
 
-void FinalPlot(TH1F* h_unfold, TH1F* gen, TH1F* accept, double lumi, TString hName, TString cName, double min, double max, bool normalized=true, bool log=true, bool curve=false, bool print){
+void FinalPlot(TH1F* h_unfold, TH1F* gen, TH1F* accept, double lumi, TString hName, TString cName, double min, double max, bool norm=true, bool log=true, bool curve=false, bool print){
 
   int nbins = h_unfold->GetNbinsX();
 
   cout << "Unfolded: evt number / sigma (pb)" << endl;
-  TGraphAsymmErrors* dsigmaData = printFinal(nbins, h_unfold, accept, lumi, false);
+  TGraphAsymmErrors* dsigmaData = printFinal(nbins, h_unfold, accept, lumi, false, norm);
   cout << "Truth: evt number / sigma (pb)" << endl;
-  TGraphAsymmErrors* dsigmaTruth = printFinal(nbins, hgen, accept, lumi, true);
-  TH1* hSigmaTruth = getSigmaTruth(hgen, accept, lumi);
+  TGraphAsymmErrors* dsigmaTruth = printFinal(nbins, hgen, accept, lumi, true, norm);
+  TH1* hSigmaTruth = getSigmaTruth(hgen, accept, lumi, norm);
 
   TCanvas *c_dsigma = new TCanvas(Form("c_%s_dsigma_%s",hName.Data(), cName.Data()),Form("c_%s_dsigma_%s",hName.Data(), cName.Data()));
   TGaxis::SetMaxDigits(4);
@@ -356,7 +356,7 @@ void FinalPlot(TH1F* h_unfold, TH1F* gen, TH1F* accept, double lumi, TString hNa
   //SetHistoStyle(hSigmaTruth, 2,2,1,0,0,0,min,max,"M_{t#bar{t}} (GeV/c^{2})","");
   SetHistoStyle(hSigmaTruth, 2,2,1,0,0,0,min,max,"Unfolded t#bar{t} invariant mass (GeV/c^{2})","");
 
-  if(normalized){
+  if(norm){
     hSigmaTruth->GetYaxis()->SetTitle("1/#sigma_{t#bar{t}} d#sigma/dM_{t#bar{t}} (1/GeV/c^{2})");
   }else{
     hSigmaTruth->GetYaxis()->SetTitle("d#sigma/dM_{t#bar{t}} (pb/GeV/c^{2})");
@@ -383,9 +383,65 @@ void FinalPlot(TH1F* h_unfold, TH1F* gen, TH1F* accept, double lumi, TString hNa
   Print(c_dsigma, "final", hName.Data(), cName.Data(), print);
 }
 
+void FinalPlot(TH1F* h_unfold, TH1F* gen, TH1F* accept, TH1D* hTr1, TH1D* hTr2, TH1D* hTr3, double lumi, TString hName, TString cName, double min, double max, bool norm=true, bool log=true, bool curve=false, bool print){
+
+  int nbins = h_unfold->GetNbinsX();
+  
+  cout << "Unfolded: evt number / sigma (pb)" << endl;
+  TGraphAsymmErrors* dsigmaData = printFinal(nbins, h_unfold, accept, lumi, false, norm);
+  cout << "Truth: evt number / sigma (pb)" << endl;
+  TGraphAsymmErrors* dsigmaTruth = printFinal(nbins, hgen, accept, lumi, true, norm);
+
+  TH1* hSigmaTruth = getSigmaTruth(hgen, hTr1, lumi, norm);
+  TH1* hSigmaTruth2 = getSigmaTruth(hgen, hTr2, lumi, norm);
+  TH1* hSigmaTruth3 = getSigmaTruth(hgen, hTr3, lumi, norm);
+ 
+  SetHistoStyle(hSigmaTruth, 2,2,1,0,0,0,min,max,"M_{t#bar{t}} (GeV/c^{2})","");
+  SetHistoStyle(hSigmaTruth2, 2,4,1,0,0,0,min,max,"M_{t#bar{t}} (GeV/c^{2})","");
+  SetHistoStyle(hSigmaTruth3, 2,3,1,0,0,0,min,max,"M_{t#bar{t}} (GeV/c^{2})","");
+
+  TCanvas *c_dsigma = new TCanvas(Form("c_%s_dsigma_%s",hName.Data(), cName.Data()),Form("c_%s_dsigma_%s",hName.Data(), cName.Data()));
+  TGaxis::SetMaxDigits(4);
+  
+  if(log) c_dsigma->SetLogy();
+  
+  //SetHistoStyle(hSigmaTruth, 2,2,1,0,0,0,min,max,"M_{t#bar{t}} (GeV/c^{2})","");
+  SetHistoStyle(hSigmaTruth, 2,2,1,0,0,0,min,max,"Unfolded t#bar{t} invariant mass (GeV/c^{2})","");
+  
+  if(norm){
+    hSigmaTruth->GetYaxis()->SetTitle("1/#sigma_{t#bar{t}} d#sigma/dM_{t#bar{t}} (1/GeV/c^{2})"); 
+  }else{
+    hSigmaTruth->GetYaxis()->SetTitle("d#sigma/dM_{t#bar{t}} (pb/GeV/c^{2})");
+  }
+
+  if(curve){
+    hSigmaTruth->Draw("c");
+    hSigmaTruth2->Draw("csame");
+    hSigmaTruth3->Draw("csame");
+  }else{
+    hSigmaTruth->Draw();
+    hSigmaTruth2->Draw("same");
+    hSigmaTruth3->Draw("same");
+  }
+
+  //MC band
+  //dsigmaTruth->SetFillColor(30);
+  //dsigmaTruth->SetFillStyle(3001);
+  //dsigmaTruth->SetLineColor(0);
+  //dsigmaTruth->Draw("2same");
+
+  dsigmaData->Draw("Psame");
+
+  SetLabel(0.47,0.88, lumi);
+  //Default Style
+  SetLegend(hSigmaTruth, hSigmaTruth2, hSigmaTruth3, dsigmaData, "MadGraph", "MC@NLO", "POWHEG", "Unfolded data", "L","L","L", "P", 0.58,0.64,0.80,0.8);
+  //print
+  Print(c_dsigma, "final", hName.Data(), cName.Data(), print);
+}
 
 
-TGraphAsymmErrors* printFinal( int nbins, TH1F* hgen, TH1F* accept, double lumi, bool truth, bool norm=false ){
+
+TGraphAsymmErrors* printFinal( int nbins, TH1F* hgen, TH1F* accept, double lumi, bool truth, bool norm){
 
   TGraphAsymmErrors* dsigma = new TGraphAsymmErrors;
 
@@ -452,7 +508,7 @@ TGraphAsymmErrors* printFinal( int nbins, TH1F* hgen, TH1F* accept, double lumi,
   return dsigma;
 }
 
-TH1* getSigmaTruth(TH1F* hgen, TH1F* accept, double lumi, bool norm=false ){
+TH1* getSigmaTruth(TH1F* hgen, TH1F* accept, double lumi, bool norm){
 
   int nbins = hgen->GetNbinsX(); 
 
@@ -494,6 +550,35 @@ TH1* getSigmaTruth(TH1F* hgen, TH1F* accept, double lumi, bool norm=false ){
 
   return dsigma;
 }
+
+TH1* getSigmaTruth(TH1F* hgen, TH1D* htruth, double lumi, bool norm){
+
+  int nbins = hgen->GetNbinsX();
+
+  TH1* dsigma = (TH1F*)hgen->Clone("disgma");
+  dsigma->Reset();
+
+  double total = htruth->Integral();
+
+  for(int i=1; i <=  nbins; i++){
+    double width = hgen->GetBinWidth(i);
+    int start = hgen->GetBinCenter(i)-width/2 + 1;
+    int end = hgen->GetBinCenter(i)+width/2;
+    //cout << "start= " << start << " end=" << end;
+    double unfolded = htruth->Integral(start, end);
+    double normsigma = unfolded/( total * width );
+    double sigma = unfolded/( lumi * width );
+
+    if(norm){
+      dsigma->SetBinContent(i, normsigma);
+    }else{
+      dsigma->SetBinContent(i, sigma);
+    }
+  }
+
+  return dsigma;
+}
+
 
 TH1* getTruthDist(TH1F* hgen){
 
