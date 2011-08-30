@@ -48,6 +48,11 @@ void preUnfolding(){
   rdPath.push_back("/data/export/common/Top/finalHisto/v5/ElEl.root");
   rdPath.push_back("/data/export/common/Top/finalHisto/v5/MuMu.root");
 
+  //mc truth level for full phase space or visible
+  TFile * f_MadGraph = new TFile("/data/export/common/Top/ntuple/ttbarGen.root");
+  TFile * f_POWHEG = new TFile("/data/export/common/Top/ntuple/Gen/ttbarGen_TTTo2L2Nu2BTuneZ2_Powheg_Summer11_PUS4_v0.root");
+  TFile * f_MCNLO = new TFile("/data/export/common/Top/ntuple/Gen/ttbar_ntuple_cteq6m_dilepton.root");
+
   const std::string cutStep = "Step_7";
   double lumi = 1194.22;
   double scale = lumi/22222.22;//normalized to 1.1 fb-1 
@@ -59,12 +64,19 @@ void preUnfolding(){
   TCut visible = lepton && bquark;
 
   TH2F * h2ResponseM = getResponseM(mcPath, rdPath, cutStep,  "ttbar.M()", decayMode, split ,recon);
-
+  
+  //after final selection
   TH1F * hData = getMeasuredHisto(rdPath, cutStep, recon);  //real data
   TH1F * hDataPseudo = getMeasuredHistoPseudo(mePath, rdPath, cutStep, "ttbar.M()", decayMode, scale, recon+"_pseudo"); //pseudo data
-
   TH1F * hGenDist = getGenDistHisto(mcPath, rdPath, cutStep, decayMode, scale, split, recon);
+
+  //acceptance to visible phase space
   TH1F * hAccept =  getAcceptanceHisto(mcPath, rdPath, cutStep,  decayMode, recon, visible);
+
+  //truth level in visible phase space
+  TH1D* hMadGraph = getTruthHisto(f_MadGraph, "MADGRAPH", visible);
+  TH1D* hPOWHEG = getTruthHisto(f_POWHEG, "POWHEG", visible);
+  TH1D* hMCNLO = (TH1D*) f_MCNLO->Get("MCatNLO/hVisTTbarM");
 
   //for full phase space definition
   //TH1F * hAccept =  getAcceptanceHisto(mcPath, rdPath, cutStep,  decayMode, recon);
@@ -76,6 +88,10 @@ void preUnfolding(){
   hDataPseudo->Write();
   hGenDist->Write();
   hAccept->Write();
+
+  hMadGraph->Write();
+  hPOWHEG->Write();
+  hMCNLO->Write();
 
   f->Write();  
   f->Close();

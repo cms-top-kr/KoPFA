@@ -131,6 +131,15 @@ TH1F* getGenDistHisto( vector<std::string> mcPath, vector<std::string> rdPath, s
 
 }
 
+TH1D* getTruthHisto(TFile * fDen, TString name, TCut visible ="" ){
+
+  TTree* genTree = (TTree*)fDen->Get("ttbarGenAna/tree");
+  TH1D* h_Gen = new TH1D(Form("hGen%s",name.Data()), Form("hGen%s",name.Data()), 1400, 0, 1400);
+  genTree->Project(Form("hGen%s",name.Data()), "ttbarGen.m()",visible);
+
+  return h_Gen;
+}
+
 TH1F* getAcceptanceHisto(vector<std::string> mcPath, vector<std::string> rdPath, string cutStep, vector<TString> decayMode, TString name, TCut visible =""){
 
   TFile * fDen = new TFile("/data/export/common/Top/ntuple/ttbarGen.root");
@@ -200,7 +209,7 @@ TH1F* getAcceptanceHisto(vector<std::string> mcPath, vector<std::string> rdPath,
   cout << hDen->GetEntries() << endl;
   
   TGraphAsymmErrors* grpAccept = new TGraphAsymmErrors();
-  TH1F *hAccept = new TH1F("hAccept","hAccept",nGen, genBins);
+  TH1F *hAccept = new TH1F(Form("hAccept_%s",name.Data()),Form("hAccept_%s",name.Data()),nGen, genBins);
 
   for(int i=0; i < nGen; i++){
     int bin = i+1;
