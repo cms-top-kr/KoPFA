@@ -51,7 +51,7 @@ void preUnfolding(){
   //mc truth level for full phase space or visible
   TFile * f_MadGraph = new TFile("/data/export/common/Top/ntuple/ttbarGen.root");
   TFile * f_POWHEG = new TFile("/data/export/common/Top/ntuple/Gen/ttbarGen_TTTo2L2Nu2BTuneZ2_Powheg_Summer11_PUS4_v0.root");
-  TFile * f_MCNLO = new TFile("/data/export/common/Top/ntuple/Gen/ttbar_ntuple_cteq6m_dilepton.root");
+  TFile * f_MCNLO = new TFile("/data/export/common/Top/ntuple/ttbar_ntuple_cteq6m_dilepton.root");
 
   const std::string cutStep = "Step_7";
   double lumi = 1194.22;
