@@ -393,11 +393,11 @@ void FinalPlot(TH1F* h_unfold, TH1F* hgen, TH1F* accept, TH1D* hTr1, TH1D* hTr2,
   cout << "Truth: evt number / sigma (pb)" << endl;
   TGraphAsymmErrors* dsigmaTruth = printFinal(nbins, hgen, accept, lumi, true, norm);
 
-  TH1F* hSigmaTruth = getSigmaTruth(hgen, hTr1, lumi, norm, curve);
-  TH1F* hSigmaTruth2 = getSigmaTruth(hgen, hTr2, lumi, norm, curve);
-  TH1F* hSigmaTruth3 = getSigmaTruth(hgen, hTr3, lumi, norm, curve);
+  TH1F* hSigmaTruth = getSigmaTruth(hgen, hTr1, lumi, norm, curve,1);
+  TH1F* hSigmaTruth2 = getSigmaTruth(hgen, hTr2, lumi, norm, curve,1);
+  TH1F* hSigmaTruth3 = getSigmaTruth(hgen, hTr3, lumi, norm, curve,1);
 
-  TH1F* hSigmaTruthHisto = getSigmaTruth(hgen, hTr1, lumi, norm, false);
+  TH1F* hSigmaTruthHisto = getSigmaTruth(hgen, hTr1, lumi, norm, false, 1);
 
   TGraphAsymmErrors* dsigmaDataCentered = BinCenterCorrection(dsigmaData, hSigmaTruthHisto, hSigmaTruth);
  
@@ -539,7 +539,7 @@ TH1* getSigmaTruth(TH1F* hgen, TH1F* accept, double lumi, bool norm){
     totalS += sigma*width;
   }
 
-
+  cout << "default" << endl;
   for(int i=1; i <=  nbins; i++){
     double x;
     double y;
@@ -560,22 +560,34 @@ TH1* getSigmaTruth(TH1F* hgen, TH1F* accept, double lumi, bool norm){
   return dsigma;
 }
 
-TH1* getSigmaTruth(TH1F* hgen, TH1D* htruth, double lumi, bool norm, bool curve=false){
-
-  TH1* dsigma = (TH1F*)hgen->Clone("disgma");
-  dsigma->Reset();
+TH1* getSigmaTruth(TH1F* hgen, TH1D* htruth, double lumi, bool norm, bool curve=false, int w=1){
 
   double total = htruth->Integral();
 
   if(curve){
-    if(norm){
-      htruth->Scale(1.0/total);
-      return htruth;
-    }else{
-      htruth->Scale(1.0/lumi);
-      return htruth;
+    double nbins = 1400/(double) w;
+    double min = 1;
+    double max = 1400;
+    TH1* truthRe = (TH1F*)htruth->Clone("truthRe");
+    truthRe->Rebin(w);
+
+    TH1* hdSigma = (TH1F*)truthRe->Clone("hdSigma");
+    hdSigma->Reset();
+
+    for(int i=1; i <= nbins ; i++){
+      double num = truthRe->GetBinContent(i);
+      if(norm){
+        hdSigma->SetBinContent(i, num/(total*w));
+      }else{
+        hdSigma->SetBinContent(i, num/(lumi*w));
+      }
     }
+
+    return hdSigma;
   }
+
+  TH1* dsigma = (TH1F*)hgen->Clone("disgma");
+  dsigma->Reset();
 
   int nbins = hgen->GetNbinsX();
 
