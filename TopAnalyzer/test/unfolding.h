@@ -338,7 +338,7 @@ TH1F* unfoldingPlot(TH2* m, TH1* h_mea, TH1* h_genTTbar, TString name, double lu
   return h_unfold;
 }
 
-void FinalPlot(TH1F* h_unfold, TH1F* hgen, TH1F* accept, double lumi, TString hName, TString cName, double min, double max, bool norm=true, bool log=true, bool curve=false, bool print){
+TGraphAsymmErrors* FinalPlot(TH1F* h_unfold, TH1F* hgen, TH1F* accept, double lumi, TString hName, TString cName, double min, double max, bool norm=true, bool log=true, bool curve=false, bool print){
 
   int nbins = h_unfold->GetNbinsX();
 
@@ -382,6 +382,8 @@ void FinalPlot(TH1F* h_unfold, TH1F* hgen, TH1F* accept, double lumi, TString hN
   SetLegend(hSigmaTruth, dsigmaData, "MadGraph", "Unfolded data", "L", "P", 0.58,0.64,0.80,0.8);
   //print
   Print(c_dsigma, "final", hName.Data(), cName.Data(), print);
+
+  return dsigmaData;
 }
 
 void FinalPlot(TH1F* h_unfold, TH1F* hgen, TH1F* accept, TH1D* hTr1, TH1D* hTr2, TH1D* hTr3, double lumi, TString hName, TString cName, double min, double max, bool norm=true, bool log=true, bool curve=false, bool print, bool HBBstyle = false){
@@ -680,4 +682,21 @@ TGraphAsymmErrors* BinCenterCorrection( TGraphAsymmErrors* data, TH1* gen_histo,
   return dsigma;
 }
 
+void getUncertainty(TGraphAsymmErrors* de, TGraphAsymmErrors* up, TGraphAsymmErrors* dw){
 
+  for(int i=0; i <9; i++){
+    double de_x;
+    double de_y;
+    double up_x;
+    double up_y;
+    double dw_x;
+    double dw_y;
+    de->GetPoint(i, de_x, de_y);
+    up->GetPoint(i, up_x, up_y);
+    dw->GetPoint(i, dw_x, dw_y);
+    if( de_y != 0){
+      cout << "Bin " << i+1 << " : " << " + " << fabs(up_y - de_y)/ de_y << " - " << fabs(dw_y - de_y)/ de_y << endl; 
+    }
+  }
+
+}
