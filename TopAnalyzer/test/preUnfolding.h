@@ -22,7 +22,7 @@ int nGen = sizeof(genBins)/sizeof(float) - 1;
 
 TH1F* getMeasuredHistoPseudo( vector<std::string> mcPath, vector<std::string> rdPath, string cutStep, TString var,  vector<TString> decayMode , double frac, TString name){
 
-  TH1F *hData = new TH1F(Form("hData_%s",name.Data()),Form("hData_%s",name.Data()),nDet,detBins);
+  TH1F *hData = new TH1F(Form("hPseudoData_%s",name.Data()),Form("hPseudoData_%s",name.Data()),nDet,detBins);
 
   for(size_t i = 0; i< mcPath.size() ; i++){
     TFile * f_data = new TFile(rdPath[i].c_str());
@@ -98,7 +98,7 @@ TH2F* getResponseM( vector<std::string> mcPath, vector<std::string> rdPath, stri
 
 TH1F* getGenDistHisto( vector<std::string> mcPath, vector<std::string> rdPath, string cutStep, vector<TString> decayMode, double scale, bool split , TString name ){
 
-  TH1F *hGen = new TH1F(Form("hGen_%s",name.Data()),Form("hGen_%s",name.Data()),nGen,genBins);
+  TH1F *hGen = new TH1F(Form("hTruth_%s",name.Data()), "truth distribution after reconstructed level selection",nGen,genBins);
 
   for(size_t i = 0; i< mcPath.size() ; i++){
     TFile * f_data = new TFile(rdPath[i].c_str());
@@ -109,7 +109,7 @@ TH1F* getGenDistHisto( vector<std::string> mcPath, vector<std::string> rdPath, s
 
     int entries = tree->GetEntries();
 
-    TH1F *hGenDistTemp = new TH1F(Form("hGenDisTemp_%s_%s",name.Data(),decayMode[i].Data()),"h_genTTbar",nGen,genBins);
+    TH1F *hGenDistTemp = new TH1F(Form("hGenDisTemp_%s_%s",name.Data(),decayMode[i].Data()),"hGenDisTemp",nGen,genBins);
     if(split){
       tree->Project(Form("hGenDisTemp_%s_%s",name.Data(),decayMode[i].Data()),"genttbarM", cut,"",entries/2, entries/2);  
       hGenDistTemp->Scale(scale*2);
@@ -134,7 +134,7 @@ TH1F* getGenDistHisto( vector<std::string> mcPath, vector<std::string> rdPath, s
 TH1D* getTruthHisto(TFile * fDen, TString name, TCut visible ="" ){
 
   TTree* genTree = (TTree*)fDen->Get("ttbarGenAna/tree");
-  TH1D* h_Gen = new TH1D(Form("hGen%s",name.Data()), Form("hGen%s",name.Data()), 1400, 0, 1400);
+  TH1D* h_Gen = new TH1D(Form("hTruthFinal%s",name.Data()), Form("hGen%s",name.Data()), 1400, 0, 1400);
   genTree->Project(Form("hGen%s",name.Data()), "ttbarGen.m()",visible);
 
   return h_Gen;

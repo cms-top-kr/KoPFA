@@ -36,9 +36,9 @@ void preUnfolding(){
   mcPath.push_back("/data/export/common/Top/ntuple/MuMu/MC/Summer11_new/vallot_TTbarTuneZ2.root");
 
   //measured mc distribution after final cut
-  mePath.push_back("/data/export/common/Top/ntuple/MuEl/MC/Summer11_new/vallot_TTbarTuneZ2.root");
-  mePath.push_back("/data/export/common/Top/ntuple/ElEl/MC/Summer11_new/vallot_TTbarTuneZ2.root");
-  mePath.push_back("/data/export/common/Top/ntuple/MuMu/MC/Summer11_new/vallot_TTbarTuneZ2.root");
+  mePath.push_back("/data/export/common/Top/ntuple/MuEl/MC/Summer11_new/vallot_TTbarPowheg.root");
+  mePath.push_back("/data/export/common/Top/ntuple/ElEl/MC/Summer11_new/vallot_TTbarPowheg.root");
+  mePath.push_back("/data/export/common/Top/ntuple/MuMu/MC/Summer11_new/vallot_TTbarPowheg.root");
   //mePath.push_back("ZPrime/MuEl/vallot_ZPrimeM500W50.root");
   //mePath.push_back("ZPrime/ElEl/vallot_ZPrimeM500W50.root");
   //mePath.push_back("ZPrime/MuMu/vallot_ZPrimeM500W50.root");
@@ -55,7 +55,8 @@ void preUnfolding(){
 
   const std::string cutStep = "Step_7";
   double lumi = 1194.22;
-  double scale = lumi/22222.22;//normalized to 1.1 fb-1 
+  double scale = lumi/22222.22;
+  double scale_powheg = lumi/6349.21;
   bool split = false;//use full statistics if it is false
   string recon = "vsum";
 
@@ -67,8 +68,11 @@ void preUnfolding(){
   
   //after final selection
   TH1F * hData = getMeasuredHisto(rdPath, cutStep, recon);  //real data
-  TH1F * hDataPseudo = getMeasuredHistoPseudo(mePath, rdPath, cutStep, "ttbar.M()", decayMode, scale, recon+"_pseudo"); //pseudo data
-  TH1F * hGenDist = getGenDistHisto(mcPath, rdPath, cutStep, decayMode, scale, split, recon);
+  TH1F * hDataPseudo = getMeasuredHistoPseudo(mcPath, rdPath, cutStep, "ttbar.M()", decayMode, scale, recon+"_MadGraph"); //pseudo data
+  TH1F * hDataPseudoPowheg = getMeasuredHistoPseudo(mePath, rdPath, cutStep, "ttbar.M()", decayMode, scale_powheg, recon+"_Powheg"); //pseudo data
+  //truth level after final selection
+  TH1F * hGenDist = getGenDistHisto(mcPath, rdPath, cutStep, decayMode, scale, split, "MadGraph");
+  TH1F * hGenDistPowheg = getGenDistHisto(mcPath, rdPath, cutStep, decayMode, scale, split, "Powheg");
 
   //acceptance to visible phase space
   TH1F * hAccept =  getAcceptanceHisto(mcPath, rdPath, cutStep,  decayMode, recon, visible);
@@ -86,7 +90,9 @@ void preUnfolding(){
   h2ResponseM->Write();
   hData->Write();
   hDataPseudo->Write();
+  hDataPseudoPowheg->Write();
   hGenDist->Write();
+  hGenDistPowheg->Write();
   hAccept->Write();
 
   hMadGraph->Write();
