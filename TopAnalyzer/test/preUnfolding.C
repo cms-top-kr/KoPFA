@@ -72,7 +72,7 @@ void preUnfolding(){
   TH1F * hDataPseudoPowheg = getMeasuredHistoPseudo(mePath, rdPath, cutStep, "ttbar.M()", decayMode, scale_powheg, recon+"_Powheg"); //pseudo data
   //truth level after final selection
   TH1F * hGenDist = getGenDistHisto(mcPath, rdPath, cutStep, decayMode, scale, split, "MadGraph");
-  TH1F * hGenDistPowheg = getGenDistHisto(mcPath, rdPath, cutStep, decayMode, scale, split, "Powheg");
+  TH1F * hGenDistPowheg = getGenDistHisto(mePath, rdPath, cutStep, decayMode, scale, split, "Powheg");
 
   //acceptance to visible phase space
   TH1F * hAccept =  getAcceptanceHisto(mcPath, rdPath, cutStep,  decayMode, recon, visible);
