@@ -56,7 +56,7 @@ void preUnfolding(){
   const std::string cutStep = "Step_7";
   double lumi = 1194.22;
   double scale = lumi/22222.22;
-  double scale_powheg = lumi/6349.21;
+  double scale_powheg = lumi/ ( 1000000.0 / (157.5 * 0.11) );
   bool split = false;//use full statistics if it is false
   string recon = "vsum";
 
