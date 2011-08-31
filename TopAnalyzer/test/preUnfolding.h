@@ -135,7 +135,7 @@ TH1D* getTruthHisto(TFile * fDen, TString name, TCut visible ="" ){
 
   TTree* genTree = (TTree*)fDen->Get("ttbarGenAna/tree");
   TH1D* h_Gen = new TH1D(Form("hTruthFinal%s",name.Data()), Form("hGen%s",name.Data()), 1400, 0, 1400);
-  genTree->Project(Form("hGen%s",name.Data()), "ttbarGen.m()",visible);
+  genTree->Project(Form("hTruthFinal%s",name.Data()), "ttbarGen.m()",visible);
 
   return h_Gen;
 }
