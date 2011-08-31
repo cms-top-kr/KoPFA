@@ -1,18 +1,21 @@
 void rescale()
 {
-  const double wDYmm[] = {1.0,1.0,1.0,1.02,0.96,1.07,1.20};
-  const double wDYee[] = {1.0,1.0,1.0,1.03,1.00,1.22,1.33};
+  //const double wDYmm[] = {1.0,1.0,1.0,1.02,0.96,1.07,1.20};
+  //const double wDYee[] = {1.0,1.0,1.0,1.03,1.00,1.22,1.33};
+  const double wDYmm[] = {1.0,1.0,1.0,1.0,1.0,1.0,1.0};
+  const double wDYee[] = {1.0,1.0,1.0,1.0,1.0,1.0,1.0};
+
   const int nDYmm = sizeof(wDYmm)/sizeof(wDYmm[0]);
   const int nDYee = sizeof(wDYee)/sizeof(wDYee[0]);
 
-  rescale("MuMu.root", "MuMu_DYll_up.root", "hMC_DYll_", wDYmm, nDYmm, +0.5, 1.3);
-  rescale("MuMu.root", "MuMu_DYll_dw.root", "hMC_DYll_", wDYmm, nDYmm, -0.5, 0.7);
+  rescale("/data/export/common/Top/finalHisto/v5/MuMu.root", "MuMu_DYll_up.root", "hMC_DYll_", wDYmm, nDYmm, +0.5, 1.3);
+  rescale("/data/export/common/Top/finalHisto/v5/MuMu.root", "MuMu_DYll_dw.root", "hMC_DYll_", wDYmm, nDYmm, -0.5, 0.7);
 
-  rescale("MuEl.root", "MuEl_DYll_up.root", "hMC_DYll_", wDYmm, nDYmm, +0.5, 1.3);
-  rescale("MuEl.root", "MuEl_DYll_dw.root", "hMC_DYll_", wDYmm, nDYmm, -0.5, 0.7);
+  rescale("/data/export/common/Top/finalHisto/v5/MuEl.root", "MuEl_DYll_up.root", "hMC_DYll_", wDYmm, nDYmm, +0.5, 1.3);
+  rescale("/data/export/common/Top/finalHisto/v5/MuEl.root", "MuEl_DYll_dw.root", "hMC_DYll_", wDYmm, nDYmm, -0.5, 0.7);
 
-  rescale("ElEl.root", "ElEl_DYll_up.root", "hMC_DYll_", wDYee, nDYee, +0.5, 1.3);
-  rescale("ElEl.root", "ElEl_DYll_dw.root", "hMC_DYll_", wDYee, nDYee, -0.5, 0.7);
+  rescale("/data/export/common/Top/finalHisto/v5/ElEl.root", "ElEl_DYll_up.root", "hMC_DYll_", wDYee, nDYee, +0.5, 1.3);
+  rescale("/data/export/common/Top/finalHisto/v5/ElEl.root", "ElEl_DYll_dw.root", "hMC_DYll_", wDYee, nDYee, -0.5, 0.7);
 
 }
 
@@ -41,7 +44,7 @@ void rescale(TString inFileName, TString outFileName, TString histNamePrefix,
       outDir->cd();
       TH1F* h = (TH1F*)hSrc->Clone();
 
-      if ( histName.contains("gen") ) continue;
+      if ( histName.Contains("gen") ) continue;
 
       if ( histName.BeginsWith(histNamePrefix) )
       {
