@@ -113,6 +113,11 @@ TH1F* unfoldingPlot(TH2* m, TH1* h_mea, TH1* h_genTTbar, TString name, double lu
   label->SetTextSize(0.05);
   //label->DrawLatex(x,y,"CMS Preliminary 2010");
   label->DrawLatex(0.50,0.88,Form("%1.1f fb^{-1} at #sqrt{s} = 7 TeV",lumi/1000));
+
+  //////////////////////////////////////////
+  unfold->PrintTable(cout, truthDist, err);
+  //////////////////////////////////////////
+
   //===============================================================================================
 
   //Toy Test =======================================================================================
