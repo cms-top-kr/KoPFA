@@ -23,9 +23,11 @@ double Ko::mtsq(const TVector3 &ptl, const TVector3 &qt, double ml, double mchi)
     return  ml*ml + mchi*mchi + 2.0*(El*Echi - l1.Dot(l2));
 }
 
+#ifndef __MAKECINT__
 TLorentzVector Ko::tmpl1_;
 TLorentzVector Ko::tmpl2_;
 TLorentzVector Ko::tmpmet_;
+#endif
 
 void minfn(Int_t &npar, Double_t *gin, Double_t &retval, Double_t *par, Int_t iflag){
     static TLorentzVector p1;
@@ -43,7 +45,9 @@ void minfn(Int_t &npar, Double_t *gin, Double_t &retval, Double_t *par, Int_t if
 
 double Ko::Maos::MT2(const TLorentzVector& metvec, const TLorentzVector &lep1, const TLorentzVector &lep2, double mchi){
 
+#ifndef __MAKECINT__
     TMinuit *gMinuit = new TMinuit(2);
+#endif
     gMinuit->SetPrintLevel(-1);
     static bool init=false;
 
