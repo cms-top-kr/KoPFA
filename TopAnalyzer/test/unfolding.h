@@ -76,7 +76,7 @@ TH1F* unfoldingPlot(TH2* m, TH1* h_mea, TH1* h_genTTbar, TString name, double lu
   //unfold = new RooUnfoldBinByBin(response, h_mea);
   //unfold = new RooUnfoldInvert(response, h_mea);
   TH1F* h_unfold = (TH1F*) unfold->Hreco(err);
- 
+  //h_unfold->Scale(2.0); 
   TMatrixD m_unfoldE = unfold->Ereco();
   //TVectorD v_unfoldE = unfold->ErecoV(RooUnfold::kCovariance);
   
@@ -96,7 +96,7 @@ TH1F* unfoldingPlot(TH2* m, TH1* h_mea, TH1* h_genTTbar, TString name, double lu
   h_unfold->SetMarkerStyle(20);
   h_unfold->SetMarkerSize(1.0);
   h_unfold->SetStats(0);  
-
+  //h_unfold->Scale(2.0);
   TLegend *l_unfold= new TLegend(0.58,0.68,0.80,0.8);
   l_unfold->AddEntry(truthDist,"MC Truth t#bar{t}","F");
   if(pseudo){
@@ -144,13 +144,17 @@ TH1F* unfoldingPlot(TH2* m, TH1* h_mea, TH1* h_genTTbar, TString name, double lu
       double *chi2_ = 0;
       //TH1* unfoldedToy =  unfold->Runtoy(RooUnfold::kCovariance,chi2_,hGen);
       TH1* unfoldedToy =  unfold->Runtoy();
+      double total_unfolded = unfoldedToy->Integral();
+      double total_gen = hgen->Integral();
+o     if ( i == 9999) cout << total_unfolded << " " << total_gen << endl;
       for(int j=0; j <nbins; j++){
         double rec_ = RooUnfoldResponse::GetBinContent(unfoldedToy,j+1,true);
         double toyerror_ = RooUnfoldResponse::GetBinError(unfoldedToy,j+1,true);
         double error_ = h_unfold->GetBinError(j+1);
-        if( i == 9999) cout << "toy error= " << toyerror_ << " error = " << error_ << endl; 
+        if( i == 9999) cout << "toy unfolded= " << rec_ << " error= " << toyerror_ << " error = " << error_ << endl; 
         double gen_ = hgen->GetBinContent(j+1);
         double pullNtrue_ = (gen_ - rec_)/gen_;
+        //double pullNtrue_ = ( (gen_/total_gen) - (rec_/total_unfolded) ) / (gen_/total_gen);
         double pullerror_ = (gen_ - rec_)/error_;
         h1[j]->Fill(pullerror_);
         h2[j]->Fill(pullNtrue_);
@@ -272,8 +276,7 @@ TH1F* unfoldingPlot(TH2* m, TH1* h_mea, TH1* h_genTTbar, TString name, double lu
   TH2D* hErrMat = new TH2D(m_unfoldE);
   hErrMat->GetXaxis()->SetTitle("Generated M_{t#bar{t}} bin number");
   hErrMat->GetYaxis()->SetTitle("Reconstructed M_{t#bar{t}} bin number");
-  hErrMat->Draw("colz");
-
+  hErrMat->Draw("Textcolz");
 
   //cout << "covariance matrix= " << endl; 
   //double num = 0;
@@ -310,35 +313,31 @@ TH1F* unfoldingPlot(TH2* m, TH1* h_mea, TH1* h_genTTbar, TString name, double lu
 
   //Saving canvas 
   if(print){
-    c_response->Print(Form("cUF_response_%s.eps",name.Data()));
-    c_responseH->Print(Form("cUF_responseH_%s.eps",name.Data()));
-    c->Print(Form("cUF_unfold_%s.eps",name.Data()));
-    c_err->Print(Form("cUF_err_%s.eps",name.Data()));
-    c_meaerr->Print(Form("cUF_meaerr_%s.eps",name.Data()));
-    c_errmat->Print(Form("cUF_errmat_%s.eps",name.Data()));
-    //c_dsigma->Print(Form("cUF_dsigma_%s.eps",name.Data()));
-    //c_Normdsigma->Print(Form("cUF_Normdsigma_%s.eps",name.Data()));
-    c_d->Print(Form("cUF_d_%s.eps",name.Data()));
-    if(toy){
-      c_toy_sigma->Print(Form("cUF_toy_sigma_%s.eps",name.Data()));
-      c_toy_Ntrue->Print(Form("cUF_toy_Ntrue_%s.eps",name.Data()));
-    }
+    c_response->Print(Form("Unfold_plot/cUF_response_%s.eps",name.Data()));
+    c_responseH->Print(Form("Unfold_plot/cUF_responseH_%s.eps",name.Data()));
+    c->Print(Form("Unfold_plot/cUF_unfold_%s.eps",name.Data()));
+    c_err->Print(Form("Unfold_plot/cUF_err_%s.eps",name.Data()));
+    c_meaerr->Print(Form("Unfold_plot/cUF_meaerr_%s.eps",name.Data()));
+    c_errmat->Print(Form("Unfold_plot/cUF_errmat_%s.eps",name.Data()));
+    c_d->Print(Form("Unfold_plot/cUF_d_%s.eps",name.Data()));
 
-    c_response->Print(Form("cUF_response_%s.png",name.Data()));
-    c_responseH->Print(Form("cUF_responseH_%s.png",name.Data()));
-    c->Print(Form("cUF_unfold_%s.png",name.Data()));
-    c_err->Print(Form("cUF_err_%s.png",name.Data()));
-    c_meaerr->Print(Form("cUF_meaerr_%s.png",name.Data()));
-    c_errmat->Print(Form("cUF_errmat_%s.png",name.Data()));
-    //c_dsigma->Print(Form("cUF_dsigma_%s.png",name.Data()));
-    //c_Normdsigma->Print(Form("cUF_Normdsigma_%s.png",name.Data()));
-    c_d->Print(Form("cUF_d_%s.png",name.Data()));
-    if(toy){
-      c_toy_sigma->Print(Form("cUF_toy_sigma_%s.png",name.Data()));
-      c_toy_Ntrue->Print(Form("cUF_toy_Ntrue_%s.png",name.Data()));
-    }
-
+    c_response->Print(Form("Unfold_plot/cUF_response_%s.png",name.Data()));
+    c_responseH->Print(Form("Unfold_plot/cUF_responseH_%s.png",name.Data()));
+    c->Print(Form("Unfold_plot/cUF_unfold_%s.png",name.Data()));
+    c_err->Print(Form("Unfold_plot/cUF_err_%s.png",name.Data()));
+    c_meaerr->Print(Form("Unfold_plot/cUF_meaerr_%s.png",name.Data()));
+    c_errmat->Print(Form("Unfold_plot/cUF_errmat_%s.png",name.Data()));
+    c_d->Print(Form("Unfold_plot/cUF_d_%s.png",name.Data()));
   }
+
+  if(toy){
+      c_toy_sigma->Print(Form("Unfold_plot/cUF_toy_sigma_%s.eps",name.Data()));
+      c_toy_Ntrue->Print(Form("Unfold_plot/cUF_toy_Ntrue_%s.eps",name.Data()));
+
+      c_toy_sigma->Print(Form("Unfold_plot/cUF_toy_sigma_%s.png",name.Data()));
+      c_toy_Ntrue->Print(Form("Unfold_plot/cUF_toy_Ntrue_%s.png",name.Data()));
+  }
+
  
   return h_unfold;
 }
@@ -363,6 +362,7 @@ TGraphAsymmErrors* FinalPlot(TH1F* h_unfold, TH1F* hgen, TH1F* accept, double lu
   SetHistoStyle(hSigmaTruth, 2,2,1,0,0,0,min,max,"Unfolded t#bar{t} invariant mass (GeV/c^{2})","");
 
   if(norm){
+    //hSigmaTruth->GetYaxis()->SetTitle("1/#sigma_{t#bar{t}} d#sigma/dM_{t#bar{t}} (1/GeV/c^{2})");
     hSigmaTruth->GetYaxis()->SetTitle("1/#sigma_{t#bar{t}} d#sigma/dM_{t#bar{t}} (1/GeV/c^{2})");
   }else{
     hSigmaTruth->GetYaxis()->SetTitle("d#sigma/dM_{t#bar{t}} (pb/GeV/c^{2})");
@@ -375,10 +375,10 @@ TGraphAsymmErrors* FinalPlot(TH1F* h_unfold, TH1F* hgen, TH1F* accept, double lu
   }
 
   //MC band
-  //dsigmaTruth->SetFillColor(30);
-  //dsigmaTruth->SetFillStyle(3001);
-  //dsigmaTruth->SetLineColor(0);
-  //dsigmaTruth->Draw("2same");
+  dsigmaTruth->SetFillColor(30);
+  dsigmaTruth->SetFillStyle(3001);
+  dsigmaTruth->SetLineColor(0);
+  dsigmaTruth->Draw("2same");
 
   dsigmaData->Draw("Psame");
 
@@ -400,39 +400,60 @@ void FinalPlot(TH1F* h_unfold, TH1F* hgen, TH1F* accept, TH1D* hTr1, TH1D* hTr2,
   cout << "Truth: evt number / sigma (pb)" << endl;
   TGraphAsymmErrors* dsigmaTruth = printFinal(nbins, hgen, accept, lumi, true, norm);
 
-  TH1F* hSigmaTruth = getSigmaTruth(hgen, hTr1, lumi, norm, curve,1);
-  TH1F* hSigmaTruth2 = getSigmaTruth(hgen, hTr2, lumi, norm, curve,1);
-  TH1F* hSigmaTruth3 = getSigmaTruth(hgen, hTr3, lumi, norm, curve,1);
+  TH1F* hSigmaTruth = getSigmaTruth(hgen, hTr1, lumi, norm, curve,50);
+  TH1F* hSigmaTruth2 = getSigmaTruth(hgen, hTr2, lumi, norm, curve,50);
+  TH1F* hSigmaTruth3 = getSigmaTruth(hgen, hTr3, lumi, norm, curve,50);
 
   TH1F* hSigmaTruthHisto = getSigmaTruth(hgen, hTr1, lumi, norm, false, 1);
 
+  getUncertainty(dsigmaData, hSigmaTruth2);
+
   TGraphAsymmErrors* dsigmaDataCentered = BinCenterCorrection(dsigmaData, hSigmaTruthHisto, hSigmaTruth);
- 
+
+  SetHistoStyle(hSigmaTruthHisto, 2,2,1,2,2,2,min,max,"M_{t#bar{t}} (GeV/c^{2})","");
   SetHistoStyle(hSigmaTruth, 2,2,1,0,0,0,min,max,"M_{t#bar{t}} (GeV/c^{2})","");
   SetHistoStyle(hSigmaTruth2, 2,4,1,0,0,0,min,max,"M_{t#bar{t}} (GeV/c^{2})","");
   SetHistoStyle(hSigmaTruth3, 2,3,1,0,0,0,min,max,"M_{t#bar{t}} (GeV/c^{2})","");
 
   TCanvas *c_dsigma = new TCanvas(Form("c_%s_dsigma_%s",hName.Data(), cName.Data()),Form("c_%s_dsigma_%s",hName.Data(), cName.Data()));
   TGaxis::SetMaxDigits(4);
-  
+ 
   if(log) c_dsigma->SetLogy();
  
   if(HBBstyle){ 
-    SetHistoStyle(hSigmaTruth, 2,2,1,0,0,0,min,max,"M_{t#bar{t}} (GeV/c^{2})","");
+    //SetHistoStyle(hSigmaTruth, 2,2,1,0,0,0,min,max,"M_{t#bar{t}} [GeV/c^{2}]","");
+    SetHistoStyle(hSigmaTruth, 2,2,1,0,0,0,min,max,"m_{t#bar{t}} #left[#frac{GeV}{c^{2}}#right]","");
+    hSigmaTruth->GetXaxis()->SetTitleOffset(1.25);
+    hSigmaTruth->GetXaxis()->SetTitleSize(0.045);
+    hSigmaTruth->GetXaxis()->SetLabelSize(0.035);
   }else{
     SetHistoStyle(hSigmaTruth, 2,2,1,0,0,0,min,max,"Unfolded t#bar{t} invariant mass (GeV/c^{2})","");
   }
 
   if(norm){
-    hSigmaTruth->GetYaxis()->SetTitle("1/#sigma_{t#bar{t}} d#sigma/dM_{t#bar{t}} (1/GeV/c^{2})"); 
+    if(HBBstyle){
+      hSigmaTruth->GetYaxis()->SetTitle("#frac{1}{#sigma} #frac{d#sigma}{dm_{t#bar{t}}}  #left[(#frac{GeV}{c^{2}})^{-1}#right]"); 
+      //hSigmaTruth->GetYaxis()->SetTitle("1/#sigma d#sigma/dM_{t#bar{t}} [1/GeV/c^{2}]"); 
+      hSigmaTruth->GetYaxis()->SetTitleOffset(1.6); 
+      hSigmaTruth->GetYaxis()->SetTitleSize(0.045);
+      hSigmaTruth->GetYaxis()->SetLabelSize(0.035);
+    }else{
+      hSigmaTruth->GetYaxis()->SetTitle("1/#sigma d#sigma/dM_{t#bar{t}} (1/GeV/c^{2})");
+    }
   }else{
     hSigmaTruth->GetYaxis()->SetTitle("d#sigma/dM_{t#bar{t}} (pb/GeV/c^{2})");
   }
 
   if(curve){
+    //hSigmaTruth->Smooth();
+    //hSigmaTruth2->Smooth();
+    //hSigmaTruth3->Smooth();
+
     hSigmaTruth->Draw("c");
     hSigmaTruth2->Draw("csame");
     hSigmaTruth3->Draw("csame");
+
+    if(HBBstyle) hSigmaTruthHisto->Draw("same");
   }else{
     hSigmaTruth->Draw();
     hSigmaTruth2->Draw("same");
@@ -459,7 +480,11 @@ void FinalPlot(TH1F* h_unfold, TH1F* hgen, TH1F* accept, TH1D* hTr1, TH1D* hTr2,
    SetLabel(0.47,0.88, lumi);
   }
   //Default Style
-  SetLegend(hSigmaTruth, hSigmaTruth2, hSigmaTruth3, dsigmaData, "MadGraph", "MC@NLO", "POWHEG", "Unfolded data", "L","L","L", "P", 0.58,0.64,0.80,0.8);
+  if(HBBstyle){
+    SetLegend(hSigmaTruth, hSigmaTruth2, hSigmaTruth3, dsigmaData, "MadGraph", "MC@NLO", "POWHEG", "Data", "L","L","L","P", 0.71,0.73,0.90,0.87);
+  }else{
+    SetLegend(dsigmaData, hSigmaTruth, hSigmaTruth2, hSigmaTruth3, "Unfolded data", "MadGraph", "MC@NLO", "POWHEG", "P","L","L", "L", 0.58,0.64,0.80,0.8);
+  }
   //print
   Print(c_dsigma, "final", hName.Data(), cName.Data(), print);
 }
@@ -467,6 +492,9 @@ void FinalPlot(TH1F* h_unfold, TH1F* hgen, TH1F* accept, TH1D* hTr1, TH1D* hTr2,
 
 
 TGraphAsymmErrors* printFinal( int nbins, TH1F* hgen, TH1F* accept, double lumi, bool truth, bool norm){
+
+  //double syst[] = { 0, 9.35, 15.08, 17.96, 23.04, 19.02, 17.14, 17.23, 31.38};
+  double syst[] = { 0, 9.1, 6.7, 17.3, 20.7, 9.5, 11.5, 14.3, 29.3};
 
   TGraphAsymmErrors* dsigma = new TGraphAsymmErrors;
 
@@ -490,6 +518,8 @@ TGraphAsymmErrors* printFinal( int nbins, TH1F* hgen, TH1F* accept, double lumi,
     integralS += sigma*width;
   }
 
+  cout << "total S= " << totalS << endl;
+
   for(int i=1; i <=  nbins; i++){
     double x;
     double y;
@@ -503,28 +533,32 @@ TGraphAsymmErrors* printFinal( int nbins, TH1F* hgen, TH1F* accept, double lumi,
     double sigma = 0;
     if( y != 0) sigma = unfolded/( y * lumi * hgen->GetBinWidth(i) ) ;
     double sigmaErr = 0;
-    if(unfolded != 0) sigmaErr = sigma*err/unfolded;
-    else sigmaErr = 0;
+    double sigmaSystErr = 0;
+    if(unfolded != 0) {
+      sigmaErr = sigma*err/unfolded;
+      if(!truth) sigmaSystErr = sigma*syst[i-1]/100.0;
+    }
 
     double width = hgen->GetBinWidth(i);
+    double totalE = sqrt(sigmaErr*sigmaErr + sigmaSystErr*sigmaSystErr);
 
-    dsigma->SetPointEXhigh(i-1, width/2);
-    dsigma->SetPointEXlow(i-1, width/2);
+    //dsigma->SetPointEXhigh(i-1, width/2);
+    //dsigma->SetPointEXlow(i-1, width/2);
     if(norm){
-      dsigma->SetPointEYhigh(i-1, sigmaErr/totalS);
-      dsigma->SetPointEYlow(i-1, sigmaErr/totalS);
+      dsigma->SetPointEYhigh(i-1, totalE/totalS);
+      dsigma->SetPointEYlow(i-1, totalE/totalS);
       dsigma->SetPoint(i-1, x, sigma/totalS );
       cout << "$" << hgen->GetBinCenter(i)-hgen->GetBinWidth(i)/2 << "-" << hgen->GetBinCenter(i)+hgen->GetBinWidth(i)/2 << "$   ~&~ "
          << setprecision (4) << hgen->GetBinContent(i) << " $\\pm$ " << err << " ~&~ "
-         << sigma/totalS << " $\\pm$ " << sigmaErr/totalS
+         << sigma/totalS*1000 << " $\\pm$ " << sigmaErr/totalS*1000 << "(stat.)" << " $\\pm$ " << sigmaSystErr/totalS*1000 << "(syst.) $\\pm$ " << totalE/totalS*1000 << "(total)"   
          << " \\\\" <<  endl;
     }else{
-      dsigma->SetPointEYhigh(i-1, sigmaErr);
-      dsigma->SetPointEYlow(i-1, sigmaErr);
+      dsigma->SetPointEYhigh(i-1, totalE);
+      dsigma->SetPointEYlow(i-1, totalE);
       dsigma->SetPoint(i-1, x, sigma );
       cout << "$" << hgen->GetBinCenter(i)-hgen->GetBinWidth(i)/2 << "-" << hgen->GetBinCenter(i)+hgen->GetBinWidth(i)/2 << "$   ~&~ "
          << setprecision (4) << hgen->GetBinContent(i) << " $\\pm$ " << err << " ~&~ "
-         << sigma << " $\\pm$ " << sigmaErr
+         << sigma*1000 << " $\\pm$ " << sigmaErr*1000 << "(stat.) $\\pm$ " << sigmaSystErr*1000 << "(syst.) $\\pm$ " << totalE*1000 << "(total)"  
          << " \\\\" <<  endl;
     }
   }
@@ -647,6 +681,8 @@ TGraphAsymmErrors* BinCenterCorrection( TGraphAsymmErrors* data, TH1* gen_histo,
   TGraphAsymmErrors* dsigma = new TGraphAsymmErrors;
   int nbins = gen_histo->GetNbinsX();
 
+  double centerpoints[] = { 172.5, 370, 425, 475, 525, 575, 645, 745, 1000};
+
   for(int i=1; i <=  nbins; i++){
     double x;
     double sigma;
@@ -654,23 +690,25 @@ TGraphAsymmErrors* BinCenterCorrection( TGraphAsymmErrors* data, TH1* gen_histo,
     double ave = gen_histo->GetBinContent(i);
     double width = gen_histo->GetBinWidth(i);
     double bincenter = x;
+    double curvesigma = gen_curve->GetBinContent(i);
 
-    if( ave != 0){
+    if( ave != 0 || ave != curvesigma ){
       double proximity = 999999;
       double lowedge = x-width/2;
       double highedge = x+width/2;
-      int start = (int) lowedge/gen_curve->GetBinWidth(1) + 1;
-      int end = (int) highedge/gen_curve->GetBinWidth(1);
+      int start = (int) lowedge/gen_curve->GetBinWidth(i) + 1;
+      int end = (int) highedge/gen_curve->GetBinWidth(i);
+      
+      bincenter = centerpoints[i-1];
+      //for(int k=start ; k<= end; k++){
+      //  double center = gen_curve->GetBinCenter(k);
+      //  double ypoint = gen_curve->GetBinContent(k);
 
-      for(int k=start ; k<= end; k++){
-        double center = gen_curve->GetBinCenter(k);
-        double ypoint = gen_curve->GetBinContent(k);
-
-        if( fabs( ypoint - ave) < proximity){
-          bincenter = center;
-          proximity = fabs(ypoint - ave);
-        }
-      }
+      //  if( fabs( ypoint - ave) < proximity){
+      //    bincenter = center;
+      //    proximity = fabs(ypoint - ave);
+      //  }
+      //}
     }
 
     double ErrYhigh = data->GetErrorYhigh(i-1);
@@ -705,3 +743,18 @@ void getUncertainty(TGraphAsymmErrors* de, TGraphAsymmErrors* up, TGraphAsymmErr
   }
 
 }
+
+void getUncertainty(TGraphAsymmErrors* de, TH1* up){
+
+  for(int i=0; i <9; i++){
+    double de_x;
+    double de_y;
+    double up_y = up->GetBinContent(i+1);
+    de->GetPoint(i, de_x, de_y);
+    if( de_y != 0){
+      cout << "Bin " << i+1 << " : " << fabs(up_y - de_y)/ de_y << endl;
+    }
+  }
+
+}
+
