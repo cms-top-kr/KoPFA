@@ -80,6 +80,11 @@ process.patMuonFilter = cms.EDFilter("CandViewCountFilter",
   minNumber = cms.uint32(2)
 )
 
+process.patLeptonFilter = cms.EDFilter("MultiLeptonCountFilter",
+  leptons = cms.untracked.VInputTag('acceptedMuons','acceptedElectrons'),
+  minCount = cms.untracked.uint32(2)
+)
+
 #Electron ID
 process.load('RecoEgamma.ElectronIdentification.cutsInCategoriesElectronIdentificationV06_cfi')
 process.patElectrons.electronIDSources = cms.PSet(
