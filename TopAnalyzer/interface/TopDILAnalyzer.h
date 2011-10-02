@@ -13,7 +13,7 @@
 //
 // Original Author:  Tae Jeong Kim,40 R-A32,+41227678602,
 //         Created:  Fri Jun  4 17:19:29 CEST 2010
-// $Id: TopDILAnalyzer.h,v 1.53 2011/08/15 20:19:49 tjkim Exp $
+// $Id: TopDILAnalyzer.h,v 1.54 2011/08/16 07:40:28 tjkim Exp $
 //
 //
 
@@ -405,6 +405,7 @@ class TopDILAnalyzer : public edm::EDFilter {
         bool selected = false;
         if(!selected) {
           selected = true;
+          Z->push_back(dimuon);
           ZMass = dimuon.mass();
           PairSign = (int) it1.charge() * it2.charge();
           relIso1 = lepton1->back().relpfIso03();
@@ -543,7 +544,7 @@ class TopDILAnalyzer : public edm::EDFilter {
 
     h_MET->Fill(MET);
 
-    if(jetspt30->size() >= 2 && Z->size() > 0){
+    if(jetspt30->size() >= 2 && ZMass > 12){
       ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > lep1;
       ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > lep2;
       lep1.SetPxPyPzE(Z->back().leg1().px(),Z->back().leg1().py(),Z->back().leg1().pz(),Z->back().leg1().energy());
@@ -553,8 +554,8 @@ class TopDILAnalyzer : public edm::EDFilter {
       ttbar->push_back(ttbarMass);
 
       if(genParticles_.isValid()){
-	TLorentzVector ttbarGen(0,0,0,0);
 
+	TLorentzVector ttbarGen(0,0,0,0);
 	for (reco::GenParticleCollection::const_iterator mcIter=genParticles_->begin(); mcIter != genParticles_->end(); mcIter++ ) {
 	  int genId = mcIter->pdgId();
 	  if( fabs(genId) == 6){
