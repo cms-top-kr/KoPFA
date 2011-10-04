@@ -58,6 +58,7 @@ public:
                       const double ymin = 0, const double ymax = 0, const bool doLogy = true);
   void setEventWeightVar(const string eventWeightVar = "weight");
   void setEventWeightDY(const double w1=1, const double w2=1, const double w3=1, const double w4=1, const double w5=1, const double w6=1, const double w7=1);
+  void setEventWeight(const string, const double* w, const int nW);
   void setScanVariables(const string scanVariables);
 
   void applyCutSteps();
@@ -138,8 +139,7 @@ private:
   bool writeSummary_;
   string scanVariables_;
   string eventWeightVar_;
-  vector<double> eventWeightDY_;
-
+  map<string, vector<double> > wMap_;
   TDirectory* baseRootDir_;
 };
 
@@ -368,7 +368,6 @@ void TopAnalyzerLite::applyCutSteps()
     cut = cut && cuts_[i].cut;
     const vector<string>& monitorPlotNames = cuts_[i].monitorPlotNames;
     const double plotScale = cuts_[i].plotScale;
-    double wDY = eventWeightDY_[i];
     printStat(Form("Step_%d", i+1), cut);
     for ( unsigned int j = 0; j < monitorPlotNames.size(); ++ j)
     {
@@ -376,7 +375,7 @@ void TopAnalyzerLite::applyCutSteps()
 
       if ( monitorPlots_.find(plotName) == monitorPlots_.end() ) continue;
       MonitorPlot& monitorPlot = monitorPlots_[plotName];
-      plot(Form("Step_%d_%s", i+1, plotName.c_str()), cut, monitorPlot, lumi_*plotScale, wDY);
+      plot(Form("Step_%d_%s", i+1, plotName.c_str()), cut, monitorPlot, lumi_*plotScale, i);
     }
   }
 
@@ -410,7 +409,7 @@ void TopAnalyzerLite::applyCutSteps()
   }
 }
 
-void TopAnalyzerLite::plot(const string name, const TCut cut, MonitorPlot& monitorPlot, const double plotScale, const double wDY)
+void TopAnalyzerLite::plot(const string name, const TCut cut, MonitorPlot& monitorPlot, const double plotScale, const double cutStep)
 {
   const string& varexp = monitorPlot.varexp;
   const string& title = monitorPlot.title;
@@ -518,8 +517,11 @@ void TopAnalyzerLite::plot(const string name, const TCut cut, MonitorPlot& monit
     hMC->AddBinContent(nBins, hMC->GetBinContent(nBins+1));
     hMC->Scale(lumi_*mcSample.xsec/mcSample.nEvents);
 
-    if(mcSample.label == "Z/#gamma*#rightarrowl^{+}l^{-}") {
-      hMC->Scale(wDY);
+    //scale MC
+    map<string, vector<double> >::iterator it;
+    it = wMap_.find(mcSample.label);
+    if( it != wMap_.end() ) {
+      hMC->Scale(it->second[cutStep]);
     }
 
     hMC->SetFillColor(mcSample.color);
@@ -941,17 +943,25 @@ void TopAnalyzerLite::setEventWeightVar(const string eventWeightVar)
   eventWeightVar_ = eventWeightVar;
 }
 
+//to be removed
 void TopAnalyzerLite::setEventWeightDY(const double w1, const double w2, const double w3, const double w4, const double w5, const double w6, const double w7)
 {
-  eventWeightDY_.push_back(w1);
-  eventWeightDY_.push_back(w2);
-  eventWeightDY_.push_back(w3);
-  eventWeightDY_.push_back(w4);
-  eventWeightDY_.push_back(w5);
-  eventWeightDY_.push_back(w6);
-  eventWeightDY_.push_back(w7);
+  wMap_["Z/#gamma* #rightarrow ll"].push_back(w1);
+  wMap_["Z/#gamma* #rightarrow ll"].push_back(w2);
+  wMap_["Z/#gamma* #rightarrow ll"].push_back(w3);
+  wMap_["Z/#gamma* #rightarrow ll"].push_back(w4);
+  wMap_["Z/#gamma* #rightarrow ll"].push_back(w5);
+  wMap_["Z/#gamma* #rightarrow ll"].push_back(w6);
+  wMap_["Z/#gamma* #rightarrow ll"].push_back(w7);
 }
 
+void TopAnalyzerLite::setEventWeight(const string sample, const double *w, const int nW)
+{
+  assert( nW == (int) cuts_.size() );
+  for(int i=0 ; i <(int) cuts_.size(); i++){ 
+    wMap_[sample.c_str()].push_back(w[i]);
+  }
+}
 
 void TopAnalyzerLite::drawEffCurve(const TCut cut, const string varexp, const string scanPoints, const std::string imgPrefix)
 {
