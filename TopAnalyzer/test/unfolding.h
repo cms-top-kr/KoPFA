@@ -233,23 +233,21 @@ o     if ( i == 9999) cout << total_unfolded << " " << total_gen << endl;
   //==================================================================================================
 
   //err after unfolding =============================================================================
-
   TCanvas *c_err = new TCanvas(Form("c_err_%s",name.Data()),Form("c_err_%s",name.Data()),1); 
 
-  TGraph *gerr = new TGraph(nbins);  
-  TGraph *gerrbefore = new TGraph(nbins);  
+  TGraph *gerr = new TGraph(nbins-1);  
+  TGraph *gerrbefore = new TGraph(nbins-1);  
+  TGraph *gerr_perfect = new TGraph(nbins-1);
 
-  for(int i=1; i <=  nbins; i++){
+  for(int i=2; i <=  nbins; i++){
     if( h_unfold->GetBinContent(i) != 0 ){
-      gerr->SetPoint(i-1, h_unfold->GetBinCenter(i), 100*h_unfold->GetBinError(i)/h_unfold->GetBinContent(i));
+      gerr->SetPoint(i-2, h_unfold->GetBinCenter(i), 100*h_unfold->GetBinError(i)/h_unfold->GetBinContent(i));
+      gerr_perfect->SetPoint(i-2, h_unfold->GetBinCenter(i), 100*sqrt(h_unfold->GetBinContent(i))/h_unfold->GetBinContent(i));
+      gerrbefore->SetPoint(i-2, hmea->GetBinCenter(i), 100*hmea->GetBinError(i)/h_unfold->GetBinContent(i));
     } else{
-      gerr->SetPoint(i-1, h_unfold->GetBinCenter(i), 0);
-    }
-
-    if( hmea->GetBinContent(i) != 0){
-      gerrbefore->SetPoint(i-1, hmea->GetBinCenter(i), 100*hmea->GetBinError(i)/hmea->GetBinContent(i));
-    } else {
-      gerrbefore->SetPoint(i-1, hmea->GetBinCenter(i), 0);
+      gerr->SetPoint(i-2, h_unfold->GetBinCenter(i), 0);
+      gerr_perfect->SetPoint(i-2, h_unfold->GetBinCenter(i), 0);
+      gerrbefore->SetPoint(i-2, hmea->GetBinCenter(i), 0);
     }
   }
 
@@ -263,13 +261,29 @@ o     if ( i == 9999) cout << total_unfolded << " " << total_gen << endl;
   //====================================================================================================
 
   //err before unfolding ===============================================================================
-  TCanvas *c_meaerr = new TCanvas(Form("c_meaerr_%s",name.Data()),Form("c_meaerr_%s",name.Data()),1);
-  gerrbefore->SetTitle(0);
-  gerrbefore->Draw("ALP");
-  gerrbefore->SetMarkerStyle(20);
-  gerrbefore->GetXaxis()->SetTitle("t#bar{t} invariant mass");
-  gerrbefore->GetYaxis()->SetTitle("Statistical Uncertainty (%)");
+  //TCanvas *c_meaerr = new TCanvas(Form("c_meaerr_%s",name.Data()),Form("c_meaerr_%s",name.Data()),1);
+  //gerrbefore->SetTitle(0);
+  //gerrbefore->Draw("ALP");
+  //gerrbefore->SetMarkerStyle(20);
+  //gerrbefore->GetXaxis()->SetTitle("t#bar{t} invariant mass");
+  //gerrbefore->GetYaxis()->SetTitle("Statistical Uncertainty (%)");
   //====================================================================================================
+  
+  //put together errors ============
+  TCanvas *c_err_all = new TCanvas(Form("c_err_all_%s",name.Data()),Form("c_err_all_%s",name.Data()),1);
+  gerr->Draw("ALP");
+  gerr->SetMaximum(20);
+  gerr->SetMinimum(0);
+  gerr_perfect->SetLineColor(2);
+  gerr_perfect->SetMarkerColor(2);
+  gerr_perfect->SetMarkerStyle(24);
+  gerr_perfect->Draw("LPsame");
+  gerrbefore->SetLineColor(4);
+  gerrbefore->SetMarkerColor(4);
+  gerrbefore->SetMarkerStyle(21);
+  gerrbefore->Draw("LPsame");
+  SetLegend(gerr, gerrbefore,gerr_perfect,Form("SVD, k=%1.0f",(double) k),"Bin. #sqrt{N_{reco.}}","perfect detector #sqrt{N_{unfolded}}", "LP","LP","LP",0.2,0.72,0.4,0.94);
+  //=========================
   //covariance matrix =============================================================================
   TCanvas *c_errmat = new TCanvas(Form("c_errmat_%s",name.Data()),Form("c_errmat_%s",name.Data()),1);
   //m_unfoldE.Draw("colz");
@@ -317,7 +331,7 @@ o     if ( i == 9999) cout << total_unfolded << " " << total_gen << endl;
     c_responseH->Print(Form("Unfold_plot/cUF_responseH_%s.eps",name.Data()));
     c->Print(Form("Unfold_plot/cUF_unfold_%s.eps",name.Data()));
     c_err->Print(Form("Unfold_plot/cUF_err_%s.eps",name.Data()));
-    c_meaerr->Print(Form("Unfold_plot/cUF_meaerr_%s.eps",name.Data()));
+    c_err_all->Print(Form("Unfold_plot/cUF_err_all_%s.eps",name.Data()));
     c_errmat->Print(Form("Unfold_plot/cUF_errmat_%s.eps",name.Data()));
     c_d->Print(Form("Unfold_plot/cUF_d_%s.eps",name.Data()));
 
@@ -325,10 +339,13 @@ o     if ( i == 9999) cout << total_unfolded << " " << total_gen << endl;
     c_responseH->Print(Form("Unfold_plot/cUF_responseH_%s.png",name.Data()));
     c->Print(Form("Unfold_plot/cUF_unfold_%s.png",name.Data()));
     c_err->Print(Form("Unfold_plot/cUF_err_%s.png",name.Data()));
-    c_meaerr->Print(Form("Unfold_plot/cUF_meaerr_%s.png",name.Data()));
+    c_err_all->Print(Form("Unfold_plot/cUF_err_all_%s.png",name.Data()));
     c_errmat->Print(Form("Unfold_plot/cUF_errmat_%s.png",name.Data()));
     c_d->Print(Form("Unfold_plot/cUF_d_%s.png",name.Data()));
   }
+
+  c_err_all->Print(Form("Unfold_plot/cUF_err_all_%s.eps",name.Data()));
+  c_err_all->Print(Form("Unfold_plot/cUF_err_all_%s.png",name.Data()));
 
   if(toy){
       c_toy_sigma->Print(Form("Unfold_plot/cUF_toy_sigma_%s.eps",name.Data()));
