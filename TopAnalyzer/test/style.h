@@ -42,6 +42,41 @@ void SetLegend(TH1* h1, TGraphAsymmErrors* h2, TString& leg1, TString& leg2, TSt
 
 void SetLegend(TH1* h1, TH1* h2, TH1* h3, TGraphAsymmErrors* h4, TString& leg1, TString& leg2, TString& leg3, TString& leg4, TString& o1, TString& o2, TString& o3, TString& o4, double x1, double y1, double x2, double y2){
   TLegend *l= new TLegend(x1,y1,x2,y2);
+  l->AddEntry(h4,Form("%s",leg4.Data()),Form("%s",o4.Data()));
+  l->AddEntry(h1,Form("%s",leg1.Data()),Form("%s",o1.Data()));
+  l->AddEntry(h2,Form("%s",leg2.Data()),Form("%s",o2.Data()));
+  l->AddEntry(h3,Form("%s",leg3.Data()),Form("%s",o3.Data()));
+  l->SetTextSize(0.04);
+  l->SetFillColor(0);
+  l->SetLineColor(0);
+  l->Draw();
+}
+
+void SetLegend(TGraph* h1, TGraph* h2, TGraph* h3, TGraph* h4, TString& leg1, TString& leg2, TString& leg3, TString& leg4, TString& o1, TString& o2, TString& o3, TString& o4, double x1, double y1, double x2, double y2){
+  TLegend *l= new TLegend(x1,y1,x2,y2);
+  l->AddEntry(h1,Form("%s",leg1.Data()),Form("%s",o1.Data()));
+  l->AddEntry(h2,Form("%s",leg2.Data()),Form("%s",o2.Data()));
+  l->AddEntry(h3,Form("%s",leg3.Data()),Form("%s",o3.Data()));
+  l->AddEntry(h4,Form("%s",leg4.Data()),Form("%s",o4.Data()));
+  l->SetTextSize(0.04);
+  l->SetFillColor(0);
+  l->SetLineColor(0);
+  l->Draw();
+}
+
+void SetLegend(TGraph* h1, TGraph* h2, TGraph* h3, TString& leg1, TString& leg2, TString& leg3, TString& o1, TString& o2, TString& o3, double x1, double y1, double x2, double y2){
+  TLegend *l= new TLegend(x1,y1,x2,y2);
+  l->AddEntry(h1,Form("%s",leg1.Data()),Form("%s",o1.Data()));
+  l->AddEntry(h2,Form("%s",leg2.Data()),Form("%s",o2.Data()));
+  l->AddEntry(h3,Form("%s",leg3.Data()),Form("%s",o3.Data()));
+  l->SetTextSize(0.04);
+  l->SetFillColor(0);
+  l->SetLineColor(0);
+  l->Draw();
+}
+
+void SetLegend(TGraphAsymmErrors* h4, TH1* h1, TH1* h2, TH1* h3, TString& leg4, TString& leg1, TString& leg2, TString& leg3, TString& o4, TString& o1, TString& o2, TString& o3, double x1, double y1, double x2, double y2){
+  TLegend *l= new TLegend(x1,y1,x2,y2);
   l->AddEntry(h1,Form("%s",leg1.Data()),Form("%s",o1.Data()));
   l->AddEntry(h2,Form("%s",leg2.Data()),Form("%s",o2.Data()));
   l->AddEntry(h3,Form("%s",leg3.Data()),Form("%s",o3.Data()));
@@ -136,6 +171,7 @@ void Print(TCanvas* c, TString& dir, const TString& hName, const TString& name, 
 //    c->Print(Form("%s/c_%s_%s.pdf",dir.Data(),hName.Data(),name.Data()));
     c->Print(Form("%s/c_%s_%s.eps",dir.Data(),hName.Data(),name.Data()));   
     c->Print(Form("%s/c_%s_%s.png",dir.Data(),hName.Data(),name.Data()));
+    c->Print(Form("%s/c_%s_%s.C",dir.Data(),hName.Data(),name.Data()));
   }
 }
 
@@ -179,7 +215,7 @@ void DrawCMSLabels(bool cmsprelim=true, double luminosity=0.0, double textSize=0
 
   if (cmsprelim)
     {
-      label -> AddText(Form("CMS Preliminary, %2.1f fb^{-1} at #sqrt{s}=7 TeV",luminosity/1000));
+      label -> AddText(Form("CMS Preliminary, %3.2f fb^{-1} at #sqrt{s}=7 TeV",luminosity/1000));
     }
   else
     {
