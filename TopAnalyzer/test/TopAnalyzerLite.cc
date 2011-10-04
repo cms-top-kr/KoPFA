@@ -79,6 +79,7 @@ private:
     TChain* chain;
     string label;
     Color_t color;
+    bool doStack;
   };
 
   struct DataSample
@@ -115,7 +116,6 @@ private:
 
   double lumi_;
   string subDirName_;
-  bool doStackSignal_;
   vector<MCSample> mcSigs_;
   vector<MCSample> mcBkgs_;
   vector<DataSample> dataBkgs_;
@@ -131,7 +131,7 @@ private:
   void addMC(vector<MCSample>& mcSetup,
              const string name, const string label,
              const string fileName, const double xsec, const double nEvents,
-             const Color_t color);
+             const Color_t color, bool doStack=true);
 
   TObjArray histograms_;
   ofstream fout_;
@@ -160,10 +160,9 @@ TopAnalyzerLite::TopAnalyzerLite(const string subDirName, const string imageOutD
   }
   else writeSummary_ = false;
 
-  scanVariables_ = "RUN:LUMI:EVENT:Z.mass():@jetspt30.size():MET";
+  scanVariables_ = "RUN:LUMI:EVENT:ZMass:@jetspt30.size():MET";
   eventWeightVar_ = "";
 
-  doStackSignal_ = true;
 }
 
 TopAnalyzerLite::~TopAnalyzerLite()
@@ -174,7 +173,7 @@ TopAnalyzerLite::~TopAnalyzerLite()
 void TopAnalyzerLite::addMC(vector<MCSample>& mcSetup,
                             const string name, const string label,
                             const string fileName, const double xsec, const double nEvents,
-                            const Color_t color)
+                            const Color_t color, bool doStack)
 {
   int index = -1;
   for ( unsigned int i=0; i<mcSetup.size(); ++i )
@@ -188,7 +187,7 @@ void TopAnalyzerLite::addMC(vector<MCSample>& mcSetup,
 
   if ( index == -1 )
   {
-    MCSample mc = {name, 0, xsec, 0, label, color};
+    MCSample mc = {name, 0, xsec, 0, label, color, doStack};
     baseRootDir_->cd();
     mc.chain = new TChain((subDirName_+"/tree").c_str(), (subDirName_+"/tree").c_str());
     mcSetup.push_back(mc);
@@ -227,8 +226,7 @@ void TopAnalyzerLite::addMCSig(const string name, const string label,
                                const string fileName, const double xsec,
                                const Color_t color, const bool doStackSignal)
 {
-  doStackSignal_ = doStackSignal;
-  addMC(mcSigs_, name, label, fileName, xsec, -1, color);
+  addMC(mcSigs_, name, label, fileName, xsec, -1, color, doStackSignal);
 }
 
 void TopAnalyzerLite::addMCBkg(const string name, const string label,
@@ -466,7 +464,7 @@ void TopAnalyzerLite::plot(const string name, const TCut cut, MonitorPlot& monit
     hMCSig->AddBinContent(nBins, hMCSig->GetBinContent(nBins+1));
     hMCSig->Scale(lumi_*mcSample.xsec/mcSample.nEvents);
 
-    if ( doStackSignal_ )
+    if ( mcSample.doStack )
     {
       hMCSig->SetFillColor(mcSample.color);
       hMCSig->SetFillStyle(1001);
@@ -493,7 +491,8 @@ void TopAnalyzerLite::plot(const string name, const TCut cut, MonitorPlot& monit
       {
         sigPlots.push_back(make_pair(mcSample.label, hMCSig));
 
-        hMCSig->SetLineWidth(2);
+//        hMCSig->SetLineWidth(2);
+        hMCSig->SetLineStyle(mcSample.color);
         hMCSig->SetLineColor(mcSample.color);
 
         histograms_.Add(hMCSig);
@@ -636,14 +635,11 @@ void TopAnalyzerLite::plot(const string name, const TCut cut, MonitorPlot& monit
     legend->AddEntry(h, label, "f");
   }
 
-  if ( !doStackSignal_ )
+  for ( unsigned int i=0; i<sigPlots.size(); ++i )
   {
-    for ( unsigned int i=0; i<sigPlots.size(); ++i )
-    {
-      const char* label = sigPlots[i].first.c_str();
-      TH1F* h = sigPlots[i].second;
-      legend->AddEntry(h, label, "f");
-    }
+    const char* label = sigPlots[i].first.c_str();
+    TH1F* h = sigPlots[i].second;
+    legend->AddEntry(h, label, "l");
   }
 
   TCanvas* c = new TCanvas(Form("c_%s", name.c_str()), name.c_str(), 1);
@@ -666,14 +662,11 @@ void TopAnalyzerLite::plot(const string name, const TCut cut, MonitorPlot& monit
   hStack->SetMaximum(ymax);
 
   hStack->Draw();
-  hData->Draw("same");
-  if ( !doStackSignal_ )
-  {
-    for ( unsigned int i=0; i<sigPlots.size(); ++i )
-    {
-      sigPlots[i].second->Draw("same");
-    }
+  for ( unsigned int i=0; i<sigPlots.size(); ++i ){ 
+    sigPlots[i].second->Draw("same");
   }
+  hData->Draw("same");
+
   legend->Draw();
 
   if ( imageOutDir_ != "" )
