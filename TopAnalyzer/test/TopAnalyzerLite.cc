@@ -129,7 +129,7 @@ private:
   string imageOutDir_;
 
   void plot(const string name, TCut cut, MonitorPlot& monitorPlot, const double plotScale = 1.0, const double wDY = 1.0);
-  void printStat(const string& name, TCut cut);
+  void printStat(const string& name, TCut cut, double cutStep=0);
   void addMC(vector<MCSample>& mcSetup,
              const string name, const string label,
              const string fileName, const double xsec, const double nEvents,
@@ -369,7 +369,7 @@ void TopAnalyzerLite::applyCutSteps()
     cut = cut && cuts_[i].cut;
     const vector<string>& monitorPlotNames = cuts_[i].monitorPlotNames;
     const double plotScale = cuts_[i].plotScale;
-    printStat(Form("Step_%d", i+1), cut);
+    printStat(Form("Step_%d", i+1), cut, i);
     for ( unsigned int j = 0; j < monitorPlotNames.size(); ++ j)
     {
       const string& plotName = monitorPlotNames[j];
@@ -691,7 +691,7 @@ void TopAnalyzerLite::plot(const string name, const TCut cut, MonitorPlot& monit
   }
 }
 
-void TopAnalyzerLite::printStat(const string& name, TCut cut)
+void TopAnalyzerLite::printStat(const string& name, TCut cut, double cutStep)
 {
   cout << "-------------------------\n";
   cout << "   " << name << endl;
@@ -741,8 +741,16 @@ void TopAnalyzerLite::printStat(const string& name, TCut cut)
   {
     MCSample& mcSample = mcBkgs_[i];
 
+    //scale MC
+    double scale = 1;
+    map<string, vector<double> >::iterator it;
+    it = wMap_.find(mcSample.label);
+    if( it != wMap_.end() ) {
+      scale = it->second[cutStep];
+    }
+
     const double norm = lumi_*mcSample.xsec/mcSample.nEvents;
-    const double nEvents = mcSample.chain->GetEntries(cut)*norm;
+    const double nEvents = mcSample.chain->GetEntries(cut)*norm*scale;
     const double nEventsErr2 = nEvents*norm;
 
     // Merge statistics with same labels
@@ -777,8 +785,16 @@ void TopAnalyzerLite::printStat(const string& name, TCut cut)
       cutStr.ReplaceAll((*cit).first, (*cit).second);
     }
 
+    //scale MC
+    double scale = 1;
+    map<string, vector<double> >::iterator it;
+    it = wMap_.find(sample.label);
+    if( it != wMap_.end() ) {
+      scale = it->second[cutStep];
+    }
+
     const double norm = sample.norm;
-    const double nEvents = sample.chain->GetEntries(cutStr)*norm;
+    const double nEvents = sample.chain->GetEntries(cutStr)*norm*scale;
     const double nEventsErr2 = nEvents*norm;
 
     vector<Stat>::iterator matchedStatObj = stats.end();
@@ -1104,7 +1120,7 @@ void TopAnalyzerLite::printCutFlow(){
     const string label = Form(form.Data(), (*it).second[i].label.c_str());
 
     cout << label << " = " ;
-    for( int k = 0; k != statsMap_.size() ; k++){
+    for( int k = 0; k != (int) statsMap_.size() ; k++){
       Stat& stat = (*it).second[i];
       cout << stat.nEvents << " +- " << sqrt(stat.nEventsErr2) << "\t";
       nTotal[Form("Step_%d", k+1) ] += stat.nEvents;
@@ -1120,7 +1136,7 @@ void TopAnalyzerLite::printCutFlow(){
   itTotalErr2= nTotalErr2.begin();
 
   cout << Form(form.Data(), "Total") << " = " ;
-  for( int k = 0; k != statsMap_.size() ; k++){
+  for( int k = 0; k != (int) statsMap_.size() ; k++){
     cout << (*itTotal).second << " +- " << sqrt( (*itTotalErr2).second ) << "\t" ;
     itTotal++;
     itTotalErr2++;
@@ -1128,7 +1144,7 @@ void TopAnalyzerLite::printCutFlow(){
   cout << "\n" ;
   cout << Form(form.Data(), "Data") << " = " ;  
   TCut cut;
-  for( int k = 0; k != statsMap_.size() ; k++){
+  for( int k = 0; k != (int) statsMap_.size() ; k++){
     cut = cut && cuts_[k].cut;
     const double nData = realDataChain_ ? realDataChain_->GetEntries( cut ) : 0;
     cout << nData <<  "\t" ;
