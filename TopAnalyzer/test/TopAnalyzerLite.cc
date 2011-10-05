@@ -270,7 +270,6 @@ void TopAnalyzerLite::replaceDataBkgCut(const string name, const string from, co
   {
     DataSample& dataBkg = dataBkgs_[i];
     if ( dataBkg.name != name ) continue;
-
     dataBkg.replaceCuts[from] = to;
   }
 }
@@ -567,16 +566,28 @@ void TopAnalyzerLite::plot(const string name, const TCut cut, MonitorPlot& monit
     TH1F* hBkg = new TH1F(histName, title.c_str(), nBins, xBins);
 
     TString cutStr;
-    map<string, string>::const_iterator replaceCut = sample.replaceCuts.find((const char*)cut);
-    if ( replaceCut != sample.replaceCuts.end() ) cutStr = replaceCut->second.c_str();
-    else cutStr = mcCutStr;
+    cutStr = cut;
+    map<string, string>::const_iterator cit;
+    for(cit=sample.replaceCuts.begin(); cit != sample.replaceCuts.end() ; cit++){
+      cutStr.ReplaceAll((*cit).first, (*cit).second);
+    }
 
     sample.chain->Project(histName, varexp.c_str(), cutStr);
     hBkg->AddBinContent(nBins, hBkg->GetBinContent(nBins+1));
     hBkg->Scale(sample.norm);
 
+    //scale MC
+    map<string, vector<double> >::iterator it;
+    it = wMap_.find(sample.label);
+    if( it != wMap_.end() ) {
+      hBkg->Scale(it->second[cutStep]);
+    }
+
     hBkg->SetFillColor(sample.color);
     hBkg->SetFillStyle(1001);
+
+    // Subtract background from the hDataSub histogram
+    hDataSub->Add(hBkg, -1);
 
     LabeledPlots::const_iterator matchedPlot = stackedPlots.end();
     for ( LabeledPlots::const_iterator plotIter = stackedPlots.begin();
@@ -758,9 +769,11 @@ void TopAnalyzerLite::printStat(const string& name, TCut cut)
     DataSample& sample = dataBkgs_[i];
 
     TString cutStr;
-    map<string, string>::const_iterator replaceCut = sample.replaceCuts.find((const char*)cut);
-    if ( replaceCut != sample.replaceCuts.end() ) cutStr = replaceCut->second.c_str();
-    else cutStr = cut;
+    cutStr = cut;
+    map<string, string>::const_iterator cit;
+    for(cit=sample.replaceCuts.begin(); cit != sample.replaceCuts.end() ; cit++){
+      cutStr.ReplaceAll((*cit).first, (*cit).second);
+    }
 
     const double norm = sample.norm;
     const double nEvents = sample.chain->GetEntries(cutStr)*norm;
