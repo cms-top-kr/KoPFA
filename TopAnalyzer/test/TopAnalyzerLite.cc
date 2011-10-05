@@ -68,6 +68,7 @@ public:
   void drawEffCurve(const TCut cut, const string varexp, std::vector<double>& scanPoints, const string imgPrefix = "");
 
   void saveHistograms(TString fileName = "");
+  void printCutFlow();
 
 private:
   TObjArray getHistograms();
@@ -139,7 +140,8 @@ private:
   bool writeSummary_;
   string scanVariables_;
   string eventWeightVar_;
-  map<string, vector<double> > wMap_;
+  map<string, vector<double> > wMap_; 
+  map<TString, vector<Stat> > statsMap_; 
   TDirectory* baseRootDir_;
 };
 
@@ -403,7 +405,6 @@ void TopAnalyzerLite::applyCutSteps()
     ifstream tmpFile(tmpFileName.c_str());
     copy(istreambuf_iterator<char>(tmpFile), istreambuf_iterator<char>(), ostreambuf_iterator<char>(fout_));
     fout_ << "Number of entries after final selection = " << realDataChain_->GetEntries(finalCut) << endl;
-
     gSystem->Exec(("rm -f "+tmpFileName).c_str());
   }
 }
@@ -706,6 +707,9 @@ void TopAnalyzerLite::printStat(const string& name, TCut cut)
   double nTotal = 0, nSignal = 0;
   double nTotalErr2 = 0;
 
+  TString cutStr;
+  cutStr = cut;
+
   vector<Stat> stats;
   for ( unsigned int i=0; i<mcSigs_.size(); ++i )
   {
@@ -768,8 +772,6 @@ void TopAnalyzerLite::printStat(const string& name, TCut cut)
   {
     DataSample& sample = dataBkgs_[i];
 
-    TString cutStr;
-    cutStr = cut;
     map<string, string>::const_iterator cit;
     for(cit=sample.replaceCuts.begin(); cit != sample.replaceCuts.end() ; cit++){
       cutStr.ReplaceAll((*cit).first, (*cit).second);
@@ -852,6 +854,8 @@ void TopAnalyzerLite::printStat(const string& name, TCut cut)
     fout_ << Form(form.Data(), "S/sqrt(S+B)") << " = " << signif << endl;
     fout_ << "-----------------------------------------------" << endl;
   }
+
+  statsMap_[name] = stats;
 }
 
 void TopAnalyzerLite::applySingleCut(const TCut cut, const TString monitorPlotNamesStr)
@@ -1079,3 +1083,55 @@ void TopAnalyzerLite::drawEffCurve(const TCut cut, const string varexp, std::vec
   }
 }
 
+void TopAnalyzerLite::printCutFlow(){
+  map<TString, vector<Stat> >::iterator it;  
+  it = statsMap_.begin();
+  int nSample = it->second.size();
+
+  int maxFWidth = 0;
+  for ( int i=0; i < nSample; i++ )
+  {
+    const int fWidth = (*it).second[i].label.size();
+    if ( fWidth > maxFWidth ) maxFWidth = fWidth;
+  }
+  TString form = TString("%-") + Form("%d", maxFWidth) + "s";
+ 
+  map<TString, double> nTotal;
+  map<TString, double> nTotalErr2;
+  for( int i=0 ; i < nSample ; i++ )
+  { 
+    it = statsMap_.begin();
+    const string label = Form(form.Data(), (*it).second[i].label.c_str());
+
+    cout << label << " = " ;
+    for( int k = 0; k != statsMap_.size() ; k++){
+      Stat& stat = (*it).second[i];
+      cout << stat.nEvents << " +- " << sqrt(stat.nEventsErr2) << "\t";
+      nTotal[Form("Step_%d", k+1) ] += stat.nEvents;
+      nTotalErr2[Form("Step_%d", k+1)] += stat.nEventsErr2;
+      it++;
+    }
+    cout << "\n" ;
+  } 
+
+  map<TString, double >::iterator itTotal;
+  map<TString, double >::iterator itTotalErr2;
+  itTotal= nTotal.begin();
+  itTotalErr2= nTotalErr2.begin();
+
+  cout << Form(form.Data(), "Total") << " = " ;
+  for( int k = 0; k != statsMap_.size() ; k++){
+    cout << (*itTotal).second << " +- " << sqrt( (*itTotalErr2).second ) << "\t" ;
+    itTotal++;
+    itTotalErr2++;
+  }
+  cout << "\n" ;
+  cout << Form(form.Data(), "Data") << " = " ;  
+  TCut cut;
+  for( int k = 0; k != statsMap_.size() ; k++){
+    cut = cut && cuts_[k].cut;
+    const double nData = realDataChain_ ? realDataChain_->GetEntries( cut ) : 0;
+    cout << nData <<  "\t" ;
+  }
+  cout << "\n" ;
+}
