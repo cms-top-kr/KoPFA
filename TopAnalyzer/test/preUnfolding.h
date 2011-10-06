@@ -14,8 +14,13 @@
 #include <iomanip>
 #include <iostream>
 
+//default
 float detBins[] = {0, 345, 400, 450, 500, 550, 600, 700, 800, 1400}; // 9 bins
 float genBins[] = {0, 345, 400, 450, 500, 550, 600, 700, 800, 1400}; // 9 bins
+
+//DESY binning
+//float detBins[] = {0, 345, 400, 475, 550, 700, 1000}; // 9 bins
+//float genBins[] = {0, 345, 400, 475, 550, 700, 1000}; // 9 bins
 
 int nDet = sizeof(detBins)/sizeof(float) - 1;
 int nGen = sizeof(genBins)/sizeof(float) - 1;
@@ -40,7 +45,20 @@ TH1F* getMeasuredHistoPseudo( vector<std::string> mcPath, vector<std::string> rd
   return hData;
 }
 
-TH1F* getMeasuredHisto( vector<std::string> rdPath, string cutStep, TString name = ""){
+TH1F* getMeasuredHisto( vector<std::string> rdPath, string cutStep, TString var = "vsumMAlt" , TString name = ""){
+
+  TH1F *hData = new TH1F(Form("hData_%s",name.Data()),Form("hData_%s",name.Data()),nDet,detBins);
+
+  for(size_t i = 0; i < rdPath.size() ; i++){
+    TFile * f_data = new TFile(rdPath[i].c_str());
+    TH1F *hTemp = (TH1F*) f_data->Get(Form("%s/hDataSub_%s_%s", cutStep.c_str(), cutStep.c_str(), var.Data()));
+    hData->Add(hTemp);
+  }
+
+  return hData;
+}
+
+TH1F* getMeasuredHistoNew( vector<std::string> rdPath, string cutStep, TString var = "vsumMAlt" , TString name = ""){
 
   TH1F *hData = new TH1F(Form("hData_%s",name.Data()),Form("hData_%s",name.Data()),nDet,detBins);
 
@@ -51,7 +69,7 @@ TH1F* getMeasuredHisto( vector<std::string> rdPath, string cutStep, TString name
     for ( int j=0; j<keys->GetSize(); ++j )
     {
       TString key = keys->At(j)->GetName();
-      if ( !key.EndsWith("_vsumMAlt") ) continue;
+      if ( !key.EndsWith( Form("_%s", var.Data()) )) continue;
 
       TString histPath = Form("%s/%s", cutStep.c_str(), key.Data());
       TH1F* hTemp = (TH1F*)f_data->Get(histPath);
