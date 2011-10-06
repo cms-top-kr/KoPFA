@@ -26,8 +26,8 @@ void ana(string decayMode, string imageOutDir)
 {
   TopAnalyzerLite* analyzer = new TopAnalyzerLite(decayMode, imageOutDir);
 
-  const std::string mcPath = "/data/cmskr-top/common/Top/ntuple/"+decayMode+"/MC/Summer11_new/";
-  const std::string rdPath = "/data/cmskr-top/common/Top/ntuple/"+decayMode+"/RD/July06_new/";
+  const std::string mcPath = "/data/export/common/Top/ntuple/"+decayMode+"/MC/Summer11_new/";
+  const std::string rdPath = "/data/export/common/Top/ntuple/"+decayMode+"/RD/Oct05/";
 
   analyzer->addRealData(rdPath+"vallot.root", 1143.221);
 
@@ -83,14 +83,6 @@ void ana(string decayMode, string imageOutDir)
 
   analyzer->setScanVariables("RUN:LUMI:EVENT:ZMass:@jetspt30.size():MET");
 
-  if( decayMode == "MuMu" ){
-    analyzer->setEventWeightDY(1.0,1.0,1.0,1.04,1.34,1.87,1.51);
-  } else if( decayMode == "ElEl" ) {
-    analyzer->setEventWeightDY(1.0,1.0,1.0,1.04,1.34,1.91,1.91);
-  } else if( decayMode == "MuEl" ) {
-    analyzer->setEventWeightDY(1.0,1.0,1.0,1.0,1.0,1.0,1.0);
-  }
-
   //STEP1 : low invariant mass cut
   analyzer->addCutStep("ZMass > 12", "", 1.5);
 
@@ -122,10 +114,34 @@ void ana(string decayMode, string imageOutDir)
   //STEP7 : b-tagging
   analyzer->addCutStep("nbjets >= 1", "MET,nbJet,vsumM,vsumMAlt,genttbarM", 0.5);  
 
-  //analyzer->setEventWeightVar("weight");
+  analyzer->setEventWeightVar("weightin");
+  
+  if ( decayMode == "MuMu"){
+    analyzer->replaceDataBkgCut("QCD", "isIso", "relIso1 > 0.20 && relIso2 > 0.20");
+    analyzer->replaceDataBkgCut("QCD", "ZMass > 12", "ZMass > 12 && relIso1 > 0.20 && relIso2 > 0.20");
+  }else if( decayMode == "ElEl"){
+    analyzer->replaceDataBkgCut("QCD", "isIso", "relIso1 > 0.17 && relIso2 > 0.17");
+    analyzer->replaceDataBkgCut("QCD", "ZMass > 12", "ZMass > 12 && relIso1 > 0.17 && relIso2 > 0.17");
+  }else if( decayMode == "MuEl"){
+    analyzer->replaceDataBkgCut("QCD", "isIso", "relIso1 > 0.20 && relIso2 > 0.17");
+    analyzer->replaceDataBkgCut("QCD", "ZMass > 12", "ZMass > 12 && relIso1 > 0.20 && relIso2 > 0.17");
+  }
 
-  analyzer->replaceDataBkgCut("QCD", "isIso", "relIso1 > 0.2 && relIso2 > 0.2");
-  analyzer->replaceDataBkgCut("QCD", "PairSign < 0", "PairSign > 0");
+  const double wDYmm[] = {1.0,1.0,1.0,1.02,0.96,1.07,1.20};
+  const double wDYee[] = {1.0,1.0,1.0,1.03,1.00,1.22,1.33};
+  const double wQCDee[] = {1.0,1.0,1.70*0.1250,1.60*0.0679,1.21*0.0093,1.34*0.0303,1.40*0.0347};
+  const double wQCDmm[] = {1.0,1.0,1.08*0.0071,1.08*0.0063,1.03*0.0019,1.03*0.0075,1.01*0.0064};
+  const double wQCDem[] = {1.0,1.0,1.18*0.0149,1.18*0.0149,1.07*0.0020,1.07*0.0020,1.06*0.0017};
+  int n = sizeof(wDYmm)/sizeof(wDYmm[0]);
+  if( decayMode == "MuMu" ){
+    analyzer->setEventWeight("Z/#gamma* #rightarrow ll", wDYmm, n);
+    analyzer->setEventWeight("QCD", wQCDmm, n);
+  } else if( decayMode == "ElEl" ) {
+    analyzer->setEventWeight("Z/#gamma* #rightarrow ll", wDYee, n);
+    analyzer->setEventWeight("QCD", wQCDee, n);
+  } else if( decayMode == "MuEl" ) {
+    analyzer->setEventWeight("QCD", wQCDem, n);
+  }
 
   analyzer->applyCutSteps();
 
