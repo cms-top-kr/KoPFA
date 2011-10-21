@@ -37,7 +37,7 @@ void unfolding(int k=4){
   
   bool print = true;
 
-  TFile * file = new TFile("preUnfolding.root");
+  TFile * file = new TFile("preUnfolding_pas013.root");
   //response matrix
   TH2F * h2ResponseM = (TH2F*) file->Get("h2_response_m");
   //measured distribution
@@ -65,9 +65,10 @@ void unfolding(int k=4){
   RooUnfold::ErrorTreatment err = RooUnfold::kCovariance; //2
   //RooUnfold::ErrorTreatment err = RooUnfold::kCovToy; //3
 
-  TH1F* h_unfold = unfoldingPlot(h2ResponseM,  hDataDist, hGenDistMADGRAPH, "vusm", lumi, k, err, print, pseudo, toytest);
-  //TH1F* h_unfoldup = unfoldingPlot(h2ResponseM,  hDataDistUp, hGenDist, "vusm_up", lumi, k, err, print, pseudo, toytest);
-  //TH1F* h_unfolddw = unfoldingPlot(h2ResponseM,  hDataDistDw, hGenDist, "vusm_dw", lumi, k, err, print, pseudo, toytest);
+  int method = 2; // BinByBin:0 Invert:1 SVD:2 Bayes:3 
+  TH1F* h_unfold = unfoldingPlot(method, h2ResponseM,  hDataDist, hGenDistMADGRAPH, "vusm", lumi, k, err, print, pseudo, toytest);
+  //TH1F* h_unfoldup = unfoldingPlot(method, h2ResponseM,  hDataDistUp, hGenDist, "vusm_up", lumi, k, err, print, pseudo, toytest);
+  //TH1F* h_unfolddw = unfoldingPlot(method, h2ResponseM,  hDataDistDw, hGenDist, "vusm_dw", lumi, k, err, print, pseudo, toytest);
 
   //for final plots
   bool norm =  true;
@@ -79,14 +80,18 @@ void unfolding(int k=4){
   //TGraphAsymmErrors* up = FinalPlot(h_unfoldup, hGenDist, hAcceptDist, lumi, "unfold_Normalized_simple_up", "dSigmadM",  0.00001, 0.06, norm, log, bincorr, print);
   //TGraphAsymmErrors* dw = FinalPlot(h_unfolddw, hGenDist, hAcceptDist, lumi, "unfold_Normalized_simple_dw", "dSigmadM",  0.00001, 0.06, norm, log, bincorr, print);
 
+  FinalPlot(h_unfold, hGenDistMADGRAPH, hAcceptDist, hGenMADGRAPH, hGenPOWHEG, hVisTTbarM, lumi, "unfold_Normalized", "dSigmadM",  0.00001, 0.06, norm, log, bincorr, print, HBBstyle);
+  
   //getUncertainty(de,up,dw); 
   //For PAS TOP-11-013
+  bincorr = true;
+  HBBstyle = true;
   if(HBBstyle){
     gROOT->SetStyle("Plain");
     setHHStyle(*gStyle);
   }
 
-  FinalPlot(h_unfold, hGenDistMADGRAPH, hAcceptDist, hGenMADGRAPH, hGenPOWHEG, hVisTTbarM, lumi, "unfold_Normalized", "dSigmadM",  0.00001, 0.06, norm, log, bincorr, print, HBBstyle);
+  //FinalPlot(h_unfold, hGenDistMADGRAPH, hAcceptDist, hGenMADGRAPH, hGenPOWHEG, hVisTTbarM, lumi, "unfold_Normalized", "dSigmadM",  0.00001, 0.06, norm, log, bincorr, print, HBBstyle);
 
   //chi2 test
   //int n = 5;

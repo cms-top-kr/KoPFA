@@ -15,7 +15,7 @@
 #include <iomanip>
 #include <iostream>
 
-TH1F* unfoldingPlot(TH2* m, TH1* h_mea, TH1* h_genTTbar, TString name, double lumi, int k, RooUnfold::ErrorTreatment & err, bool print, bool pseudo, bool toy){
+TH1F* unfoldingPlot(int algo, TH2* m, TH1* h_mea, TH1* h_genTTbar, TString name, double lumi, int k, RooUnfold::ErrorTreatment & err, bool print, bool pseudo, bool toy){
 
   const TH1* h_gen = m->ProjectionY();
   const TH1* h_rec = m->ProjectionX();
@@ -71,10 +71,10 @@ TH1F* unfoldingPlot(TH2* m, TH1* h_mea, TH1* h_genTTbar, TString name, double lu
   hgen->GetXaxis()->SetTitle("Unfolded M_{t#bar{t}}");
 
   RooUnfold* unfold = 0;
-  //unfold = new RooUnfoldBayes(response, h_mea, 4);    // OR
-  unfold = new RooUnfoldSvd(response, h_mea, k);   // OR
-  //unfold = new RooUnfoldBinByBin(response, h_mea);
-  //unfold = new RooUnfoldInvert(response, h_mea);
+  if(algo == 0) unfold = new RooUnfoldBinByBin(response, h_mea);
+  if(algo == 1) unfold = new RooUnfoldInvert(response, h_mea);
+  if(algo == 2) unfold = new RooUnfoldSvd(response, h_mea, k);
+  if(algo == 3) unfold = new RooUnfoldBayes(response, h_mea, 4);    
   TH1F* h_unfold = (TH1F*) unfold->Hreco(err);
   //h_unfold->Scale(2.0); 
   TMatrixD m_unfoldE = unfold->Ereco();
@@ -232,58 +232,6 @@ o     if ( i == 9999) cout << total_unfolded << " " << total_gen << endl;
   }
   //==================================================================================================
 
-  //err after unfolding =============================================================================
-  TCanvas *c_err = new TCanvas(Form("c_err_%s",name.Data()),Form("c_err_%s",name.Data()),1); 
-
-  TGraph *gerr = new TGraph(nbins-1);  
-  TGraph *gerrbefore = new TGraph(nbins-1);  
-  TGraph *gerr_perfect = new TGraph(nbins-1);
-
-  for(int i=2; i <=  nbins; i++){
-    if( h_unfold->GetBinContent(i) != 0 ){
-      gerr->SetPoint(i-2, h_unfold->GetBinCenter(i), 100*h_unfold->GetBinError(i)/h_unfold->GetBinContent(i));
-      gerr_perfect->SetPoint(i-2, h_unfold->GetBinCenter(i), 100*sqrt(h_unfold->GetBinContent(i))/h_unfold->GetBinContent(i));
-      gerrbefore->SetPoint(i-2, hmea->GetBinCenter(i), 100*hmea->GetBinError(i)/h_unfold->GetBinContent(i));
-    } else{
-      gerr->SetPoint(i-2, h_unfold->GetBinCenter(i), 0);
-      gerr_perfect->SetPoint(i-2, h_unfold->GetBinCenter(i), 0);
-      gerrbefore->SetPoint(i-2, hmea->GetBinCenter(i), 0);
-    }
-  }
-
-  gerr->SetTitle(0);
-  gerr->SetMarkerStyle(20);
-  gerr->Draw("ALP");
-  gerr->GetXaxis()->SetTitle("t#bar{t} invariant mass");
-  gerr->GetYaxis()->SetTitle("Statistical Uncertainty (%)");
-  label->DrawLatex(0.30,0.88,Form("%1.1f fb^{-1} at #sqrt{s} = 7 TeV",lumi/1000));
-
-  //====================================================================================================
-
-  //err before unfolding ===============================================================================
-  //TCanvas *c_meaerr = new TCanvas(Form("c_meaerr_%s",name.Data()),Form("c_meaerr_%s",name.Data()),1);
-  //gerrbefore->SetTitle(0);
-  //gerrbefore->Draw("ALP");
-  //gerrbefore->SetMarkerStyle(20);
-  //gerrbefore->GetXaxis()->SetTitle("t#bar{t} invariant mass");
-  //gerrbefore->GetYaxis()->SetTitle("Statistical Uncertainty (%)");
-  //====================================================================================================
-  
-  //put together errors ============
-  TCanvas *c_err_all = new TCanvas(Form("c_err_all_%s",name.Data()),Form("c_err_all_%s",name.Data()),1);
-  gerr->Draw("ALP");
-  gerr->SetMaximum(20);
-  gerr->SetMinimum(0);
-  gerr_perfect->SetLineColor(2);
-  gerr_perfect->SetMarkerColor(2);
-  gerr_perfect->SetMarkerStyle(24);
-  gerr_perfect->Draw("LPsame");
-  gerrbefore->SetLineColor(4);
-  gerrbefore->SetMarkerColor(4);
-  gerrbefore->SetMarkerStyle(21);
-  gerrbefore->Draw("LPsame");
-  SetLegend(gerr, gerrbefore,gerr_perfect,Form("SVD, k=%1.0f",(double) k),"Bin. #sqrt{N_{reco.}}","perfect detector #sqrt{N_{unfolded}}", "LP","LP","LP",0.2,0.72,0.4,0.94);
-  //=========================
   //covariance matrix =============================================================================
   TCanvas *c_errmat = new TCanvas(Form("c_errmat_%s",name.Data()),Form("c_errmat_%s",name.Data()),1);
   //m_unfoldE.Draw("colz");
@@ -311,16 +259,6 @@ o     if ( i == 9999) cout << total_unfolded << " " << total_gen << endl;
 
   //================================================================================================== 
 
-  //log d plot =====================================================================================
-  TCanvas *c_d = new TCanvas(Form("c_d_%s",name.Data()),Form("c_d_%s",name.Data()));
-  c_d->SetLogy();
-  TH1D* h_d = unfold->RooUnfoldSvd::Impl()->GetD();
-  h_d->SetTitle(0);
-  h_d->Draw("PC");
-  h_d->GetYaxis()->SetTitle("log|d_{i}|");
-  h_d->GetXaxis()->SetTitle("i");
-  //================================================================================================
-
   //Printing chi2
   chi2.push_back(unfold->Chi2(hgen, err)); 
   cout << "chi2 : " << unfold->Chi2(hgen, err) << endl;
@@ -330,22 +268,13 @@ o     if ( i == 9999) cout << total_unfolded << " " << total_gen << endl;
     c_response->Print(Form("Unfold_plot/cUF_response_%s.eps",name.Data()));
     c_responseH->Print(Form("Unfold_plot/cUF_responseH_%s.eps",name.Data()));
     c->Print(Form("Unfold_plot/cUF_unfold_%s.eps",name.Data()));
-    c_err->Print(Form("Unfold_plot/cUF_err_%s.eps",name.Data()));
-    c_err_all->Print(Form("Unfold_plot/cUF_err_all_%s.eps",name.Data()));
     c_errmat->Print(Form("Unfold_plot/cUF_errmat_%s.eps",name.Data()));
-    c_d->Print(Form("Unfold_plot/cUF_d_%s.eps",name.Data()));
 
-    c_response->Print(Form("Unfold_plot/cUF_response_%s.png",name.Data()));
-    c_responseH->Print(Form("Unfold_plot/cUF_responseH_%s.png",name.Data()));
-    c->Print(Form("Unfold_plot/cUF_unfold_%s.png",name.Data()));
-    c_err->Print(Form("Unfold_plot/cUF_err_%s.png",name.Data()));
-    c_err_all->Print(Form("Unfold_plot/cUF_err_all_%s.png",name.Data()));
-    c_errmat->Print(Form("Unfold_plot/cUF_errmat_%s.png",name.Data()));
-    c_d->Print(Form("Unfold_plot/cUF_d_%s.png",name.Data()));
+    //c_response->Print(Form("Unfold_plot/cUF_response_%s.png",name.Data()));
+    //c_responseH->Print(Form("Unfold_plot/cUF_responseH_%s.png",name.Data()));
+    //c->Print(Form("Unfold_plot/cUF_unfold_%s.png",name.Data()));
+    //c_errmat->Print(Form("Unfold_plot/cUF_errmat_%s.png",name.Data()));
   }
-
-  c_err_all->Print(Form("Unfold_plot/cUF_err_all_%s.eps",name.Data()));
-  c_err_all->Print(Form("Unfold_plot/cUF_err_all_%s.png",name.Data()));
 
   if(toy){
       c_toy_sigma->Print(Form("Unfold_plot/cUF_toy_sigma_%s.eps",name.Data()));
@@ -358,6 +287,127 @@ o     if ( i == 9999) cout << total_unfolded << " " << total_gen << endl;
  
   return h_unfold;
 }
+
+
+void dPlot(TH1F* h_unfold, bool print){
+  //log d plot =====================================================================================
+  TCanvas *c_d = new TCanvas(Form("c_d_%s",name.Data()),Form("c_d_%s",name.Data()));
+  c_d->SetLogy();
+  TH1D* h_d = unfold->RooUnfoldSvd::Impl()->GetD();
+  h_d->SetTitle(0);
+  h_d->Draw("PC");
+  h_d->GetYaxis()->SetTitle("log|d_{i}|");
+  h_d->GetXaxis()->SetTitle("i");
+  if(print){
+    c_d->Print(Form("Unfold_plot/cUF_d_%s.eps",name.Data()));
+    //c_d->Print(Form("Unfold_plot/cUF_d_%s.png",name.Data()));
+  }
+}
+//err after unfolding =============================================================================
+void errorPlotsToCompareWithDESY(double lumi, TH1F* h_unfold, int k, TString name=""){
+  TCanvas *c_err = new TCanvas("c_err","c_err",1);
+
+  int nbins = h_unfold->GetNbinsX();
+
+  TGraph *gerr = new TGraph(nbins-1);
+  TGraph *gerr_DESY = new TGraph(nbins-1);
+  double er[6] = { 0, 0.048, 0.046, 0.058, 0.062, 0.084 }; 
+  for(int i=2; i <=  nbins; i++){
+    if( h_unfold->GetBinContent(i) != 0 ){
+      gerr->SetPoint(i-2, h_unfold->GetBinCenter(i), 100*h_unfold->GetBinError(i)/h_unfold->GetBinContent(i));
+      gerr_DESY->SetPoint(i-2, h_unfold->GetBinCenter(i), 100*er[i-1]);
+    } else{
+      gerr->SetPoint(i-2, h_unfold->GetBinCenter(i), 0);
+      gerr_DESY->SetPoint(i-2, h_unfold->GetBinCenter(i), 0);
+    }
+  }
+
+  TLatex *label= new TLatex;
+  label->SetNDC();
+  label->SetTextSize(0.05);
+  label->DrawLatex(0.30,0.88,Form("%1.1f fb^{-1} at #sqrt{s} = 7 TeV",lumi/1000));
+
+  TCanvas *c_err_all = new TCanvas("c_err_all","c_err_all",1);
+  gerr->SetTitle(0);
+  gerr->SetMarkerStyle(20);
+  gerr->Draw("ALP");
+  gerr->SetMaximum(30);
+  gerr->SetMinimum(0);
+  gerr->GetXaxis()->SetTitle("t#bar{t} invariant mass (GeV/c^{2})");
+  gerr->GetYaxis()->SetTitle("Statistical Uncertainty (%)");
+  gerr_DESY->SetLineColor(2);
+  gerr_DESY->SetMarkerColor(2);
+  gerr_DESY->SetMarkerStyle(21);
+  gerr_DESY->Draw("LPsame");
+  SetLegend(gerr, gerr_DESY, Form("RooUnfold SVD, k=%1.0f",(double) k),"Bin By Bin","LP","LP", 0.2,0.72,0.4,0.94);
+
+  if(true){
+    c_err->Print(Form("Unfold_plot/cUF_err_%s.eps",name.Data()));
+    //c_err->Print(Form("Unfold_plot/cUF_err_%s.png",name.Data()));
+    c_err_all->Print(Form("Unfold_plot/cUF_err_all_%s.eps",name.Data()));
+    //c_err_all->Print(Form("Unfold_plot/cUF_err_all_%s.png",name.Data()));
+  }
+
+}
+
+void errorPlots(double lumi, TH1F* h_unfold, int k, TH1F* h_unfoldBinByBin, TString name=""){
+
+  TCanvas *c_err = new TCanvas("c_err","c_err",1);
+
+  int nbins = h_unfold->GetNbinsX();
+
+  TGraph *gerr = new TGraph(nbins-1);
+  TGraph *gerr_perfect = new TGraph(nbins-1);
+  TGraph *gerr_binbybin = new TGraph(nbins-1);
+
+  for(int i=2; i <=  nbins; i++){
+    if( h_unfold->GetBinContent(i) != 0 ){
+      gerr->SetPoint(i-2, h_unfold->GetBinCenter(i), 100*h_unfold->GetBinError(i)/h_unfold->GetBinContent(i));
+      gerr_binbybin->SetPoint(i-2, h_unfoldBinByBin->GetBinCenter(i), 100*h_unfoldBinByBin->GetBinError(i)/h_unfoldBinByBin->GetBinContent(i));
+      gerr_perfect->SetPoint(i-2, h_unfold->GetBinCenter(i), 100*sqrt(h_unfold->GetBinContent(i))/h_unfold->GetBinContent(i));
+    } else{      
+      gerr->SetPoint(i-2, h_unfold->GetBinCenter(i), 0);
+      gerr_binbybin->SetPoint(i-2, h_unfoldBinByBin->GetBinCenter(i), 0);
+      gerr_perfect->SetPoint(i-2, h_unfold->GetBinCenter(i), 0);
+    }
+  }
+
+  gerr->SetTitle(0);
+  gerr->SetMarkerStyle(20);
+  gerr->Draw("ALP");
+  gerr->GetXaxis()->SetTitle("t#bar{t} invariant mass (GeV/c^{2})");
+  gerr->GetYaxis()->SetTitle("Statistical Uncertainty (%)");
+  TLatex *label= new TLatex;
+  label->SetNDC();
+  label->SetTextSize(0.05);
+  label->DrawLatex(0.30,0.88,Form("%1.1f fb^{-1} at #sqrt{s} = 7 TeV",lumi/1000));
+
+  //put together errors ============
+  //TCanvas *c_err_all = new TCanvas(Form("c_err_all_%s",name.Data()),Form("c_err_all_%s",name.Data()),1);
+  TCanvas *c_err_all = new TCanvas("c_err_all","c_err_all",1);
+  gerr->Draw("ALP");
+  gerr->SetMaximum(30);
+  gerr->SetMinimum(0);
+  gerr_perfect->SetLineColor(2);
+  gerr_perfect->SetMarkerColor(2);
+  gerr_perfect->SetMarkerStyle(24);
+  //gerr_perfect->Draw("LPsame");
+  gerr_binbybin->SetLineColor(2);
+  gerr_binbybin->SetMarkerColor(2);
+  gerr_binbybin->SetMarkerStyle(21);
+  gerr_binbybin->Draw("LPsame");
+  //SetLegend(gerr, gerr_binbybin, gerr_perfect, Form("RooUnfold SVD, k=%1.0f",(double) k),"RooUnfold Bin By Bin", "perfect,  #sqrt{N_{unfolded}}", "LP","LP","LP", 0.2,0.72,0.4,0.94);
+  SetLegend(gerr, gerr_binbybin, Form("RooUnfold SVD, k=%1.0f",(double) k),"Bin By Bin","LP","LP", 0.2,0.72,0.4,0.94);
+
+  if(true){
+    c_err->Print(Form("Unfold_plot/cUF_err_%s.eps",name.Data()));
+    //c_err->Print(Form("Unfold_plot/cUF_err_%s.png",name.Data()));
+    c_err_all->Print(Form("Unfold_plot/cUF_err_all_%s.eps",name.Data()));
+    //c_err_all->Print(Form("Unfold_plot/cUF_err_all_%s.png",name.Data()));
+  }
+
+}
+
 
 TGraphAsymmErrors* FinalPlot(TH1F* h_unfold, TH1F* hgen, TH1F* accept, double lumi, TString hName, TString cName, double min, double max, bool norm=true, bool log=true, bool curve=false, bool print){
 
@@ -403,7 +453,7 @@ TGraphAsymmErrors* FinalPlot(TH1F* h_unfold, TH1F* hgen, TH1F* accept, double lu
   //Default Style
   SetLegend(hSigmaTruth, dsigmaData, "MadGraph", "Unfolded data", "L", "P", 0.58,0.64,0.80,0.8);
   //print
-  Print(c_dsigma, "final", hName.Data(), cName.Data(), print);
+  Print(c_dsigma, "Unfold_plot", hName.Data(), cName.Data(), print);
 
   return dsigmaData;
 }
@@ -416,6 +466,8 @@ void FinalPlot(TH1F* h_unfold, TH1F* hgen, TH1F* accept, TH1D* hTr1, TH1D* hTr2,
   TGraphAsymmErrors* dsigmaData = printFinal(nbins, h_unfold, accept, lumi, false, norm);
   cout << "Truth: evt number / sigma (pb)" << endl;
   TGraphAsymmErrors* dsigmaTruth = printFinal(nbins, hgen, accept, lumi, true, norm);
+
+  //TGraphAsymmErrors* DESY = DESYPlot(accept); 
 
   TH1F* hSigmaTruth = getSigmaTruth(hgen, hTr1, lumi, norm, curve,50);
   TH1F* hSigmaTruth2 = getSigmaTruth(hgen, hTr2, lumi, norm, curve,50);
@@ -488,6 +540,7 @@ void FinalPlot(TH1F* h_unfold, TH1F* hgen, TH1F* accept, TH1D* hTr1, TH1D* hTr2,
   }else{
     dsigmaData->Draw("Psame");
   }
+  //DESY->Draw("Psame");
 
   if(HBBstyle){
     bool isPreliminary = true;
@@ -501,17 +554,18 @@ void FinalPlot(TH1F* h_unfold, TH1F* hgen, TH1F* accept, TH1D* hTr1, TH1D* hTr2,
     SetLegend(hSigmaTruth, hSigmaTruth2, hSigmaTruth3, dsigmaData, "MadGraph", "MC@NLO", "POWHEG", "Data", "L","L","L","P", 0.71,0.73,0.90,0.87);
   }else{
     SetLegend(dsigmaData, hSigmaTruth, hSigmaTruth2, hSigmaTruth3, "Unfolded data", "MadGraph", "MC@NLO", "POWHEG", "P","L","L", "L", 0.58,0.64,0.80,0.8);
+    //SetLegend(DESY,dsigmaData, hSigmaTruth, hSigmaTruth2, hSigmaTruth3, "DESY", "SVD", "MadGraph", "MC@NLO", "POWHEG", "P", "P","L","L", "L", 0.58,0.64,0.80,0.8);
   }
   //print
-  Print(c_dsigma, "final", hName.Data(), cName.Data(), print);
+  Print(c_dsigma, "Unfold_plot", hName.Data(), cName.Data(), print);
 }
 
 
 
 TGraphAsymmErrors* printFinal( int nbins, TH1F* hgen, TH1F* accept, double lumi, bool truth, bool norm){
 
-  //double syst[] = { 0, 9.35, 15.08, 17.96, 23.04, 19.02, 17.14, 17.23, 31.38};
-  double syst[] = { 0, 9.1, 6.7, 17.3, 20.7, 9.5, 11.5, 14.3, 29.3};
+  double syst[] = { 0, 9.35, 15.08, 17.96, 23.04, 19.02, 17.14, 17.23, 31.38};
+  //double syst[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0};
 
   TGraphAsymmErrors* dsigma = new TGraphAsymmErrors;
 
@@ -775,3 +829,29 @@ void getUncertainty(TGraphAsymmErrors* de, TH1* up){
 
 }
 
+TGraphAsymmErrors* DESYPlot(TH1F* accept){
+
+  TGraphAsymmErrors* DESY = new TGraphAsymmErrors();
+  DESY->SetPoint(0,accept->GetBinCenter(1),0);
+  DESY->SetPoint(1,accept->GetBinCenter(2),0.00528);
+  DESY->SetPoint(2,accept->GetBinCenter(3),0.00416);
+  DESY->SetPoint(3,accept->GetBinCenter(4),0.00255);
+  DESY->SetPoint(4,accept->GetBinCenter(5),0.00098);
+  DESY->SetPoint(5,accept->GetBinCenter(6),0.00020);
+  DESY->SetPointEYhigh(0,0);
+  DESY->SetPointEYhigh(1,0.00528*0.048);
+  DESY->SetPointEYhigh(2,0.00416*0.046);
+  DESY->SetPointEYhigh(3,0.00255*0.058);
+  DESY->SetPointEYhigh(4,0.00098*0.062);
+  DESY->SetPointEYhigh(5,0.00020*0.084);
+  DESY->SetPointEYlow(0,0);
+  DESY->SetPointEYlow(1,0.00528*0.048);
+  DESY->SetPointEYlow(2,0.00416*0.046);
+  DESY->SetPointEYlow(3,0.00255*0.058);
+  DESY->SetPointEYlow(4,0.00098*0.062);
+  DESY->SetPointEYlow(5,0.00020*0.084);
+  DESY->SetMarkerColor(4);
+
+  return DESY;
+
+}
