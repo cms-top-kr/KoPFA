@@ -418,7 +418,7 @@ TGraphAsymmErrors* FinalPlot(TH1F* h_unfold, TH1F* hgen, TH1F* accept, double lu
   cout << "Truth: evt number / sigma (pb)" << endl;
   TGraphAsymmErrors* dsigmaTruth = printFinal(nbins, hgen, accept, lumi, true, norm);
 
-  TH1* hSigmaTruth = getSigmaTruth(hgen, accept, lumi, norm);
+  TH1* hSigmaTruth = getMeasuredCrossSection(hgen, accept, lumi, norm);
 
   TCanvas *c_dsigma = new TCanvas(Form("c_%s_dsigma_%s",hName.Data(), cName.Data()),Form("c_%s_dsigma_%s",hName.Data(), cName.Data()));
   TGaxis::SetMaxDigits(4);
@@ -469,11 +469,10 @@ void FinalPlot(TH1F* h_unfold, TH1F* hgen, TH1F* accept, TH1D* hTr1, TH1D* hTr2,
 
   //TGraphAsymmErrors* DESY = DESYPlot(accept); 
 
-  TH1F* hSigmaTruth = getSigmaTruth(hgen, hTr1, lumi, norm, curve,50);
-  TH1F* hSigmaTruth2 = getSigmaTruth(hgen, hTr2, lumi, norm, curve,50);
-  TH1F* hSigmaTruth3 = getSigmaTruth(hgen, hTr3, lumi, norm, curve,50);
-
-  TH1F* hSigmaTruthHisto = getSigmaTruth(hgen, hTr1, lumi, norm, false, 1);
+  TH1F* hSigmaTruth = getTruthCrossSection(hgen, hTr1, lumi, norm, curve,50);
+  TH1F* hSigmaTruth2 = getTruthCrossSection(hgen, hTr2, lumi, norm, curve,50);
+  TH1F* hSigmaTruth3 = getTruthCrossSection(hgen, hTr3, lumi, norm, curve,50);
+  TH1F* hSigmaTruthHisto = getTruthCrossSection(hgen, hTr1, lumi, norm, false, 1);
 
   getUncertainty(dsigmaData, hSigmaTruth2);
 
@@ -560,20 +559,21 @@ void FinalPlot(TH1F* h_unfold, TH1F* hgen, TH1F* accept, TH1D* hTr1, TH1D* hTr2,
   Print(c_dsigma, "Unfold_plot", hName.Data(), cName.Data(), print);
 }
 
-TH1* getMeasuredCrossSection( TH1F* h_unfold, TH1F* accept, double lumi){
+TH1* getMeasuredCrossSection( TH1F* h_unfold, TH1F* accept, double lumi, bool norm=false){
 
   int nbins = h_unfold->GetNbinsX();
   TH1* dsigma = (TH1F*)h_unfold->Clone("disgma");
   dsigma->Reset();
 
-  for(int i=1; i <=  nbins; i++){
+  double totalS = 0;
 
+  for(int i=1; i <=  nbins; i++){
     double x = accept->GetBinCenter(i);
     double y = accept->GetBinContent(i);
-
     double unfolded = h_unfold->GetBinContent(i);
+    double width = hgen->GetBinWidth(i);
     double sigma = 0;
-    if( y != 0) sigma = unfolded/( y * lumi * hgen->GetBinWidth(i) ) ;
+    if( y != 0) sigma = unfolded/( y * lumi * width ) ;
     double sigmaErr = 0;
     if(unfolded != 0) {
       sigmaErr = sigma*h_unfold->GetBinError(i)/unfolded;
@@ -581,9 +581,23 @@ TH1* getMeasuredCrossSection( TH1F* h_unfold, TH1F* accept, double lumi){
 
     dsigma->SetBinContent(i,sigma);
     dsigma->SetBinError(i,sigmaErr);
+    totalS += sigma*width;
   } 
 
-  return dsigma;
+  //get the normalized cross section
+  TH1* dsigma_norm = (TH1F*)h_unfold->Clone("disgma_norm");
+  dsigma_norm->Reset();
+  cout << "total cross section= " << totalS << endl;
+  for(int i=1; i <=  nbins; i++){
+    double sigma_norm = dsigma->GetBinContent(i)/totalS;
+    double sigmaErr_norm = dsigma->GetBinError(i)/totalS;
+    dsigma_norm->SetBinContent(i,sigma_norm);
+    dsigma_norm->SetBinError(i,sigmaErr_norm);
+  }
+  
+  if(norm) return dsigma_norm;
+  else return dsigma;
+
 
 }
 
@@ -592,37 +606,17 @@ TGraphAsymmErrors* printFinal( int nbins, TH1F* hgen, TH1F* accept, double lumi,
   double syst[] = { 0, 9.35, 15.08, 17.96, 23.04, 19.02, 17.14, 17.23, 31.38};
 
   TGraphAsymmErrors* dsigma = new TGraphAsymmErrors;
-
   double totalN = 0;
-  double totalS = 0;
-
-  TH1F* sigmaHistogram = getMeasuredCrossSection(hgen,accept,lumi);
+  TH1F* sigmaHistogram = getMeasuredCrossSection(hgen,accept,lumi,norm);
 
   for(int i=1; i <=  nbins; i++){
     double unfolded = hgen->GetBinContent(i);
-    double width = sigmaHistogram->GetBinWidth(i);
-    double sigma = sigmaHistogram->GetBinContent(i);
     totalN += unfolded;
-    totalS += sigma*width;
-  }
-
-  for(int i=1; i <=  nbins; i++){
-
-    double unfolded = hgen->GetBinContent(i);
     double err = hgen->GetBinError(i);
     double width = sigmaHistogram->GetBinWidth(i);
     double x = sigmaHistogram->GetBinCenter(i);
-
-    double sigma = 0;
-    double sigmaErr = 0;
-
-    if(norm){
-      sigma = sigmaHistogram->GetBinContent(i)/totalS;
-      sigmaErr = sigmaHistogram->GetBinError(i)/totalS;
-    }else{
-      sigma = sigmaHistogram->GetBinContent(i);
-      sigmaErr = sigmaHistogram->GetBinError(i);
-    }
+    double sigma = sigmaHistogram->GetBinContent(i);
+    double sigmaErr = sigmaHistogram->GetBinError(i);
 
     double sigmaSystErr = 0;
     if(!truth) sigmaSystErr = sigma*syst[i-1]/100.0;
@@ -636,56 +630,12 @@ TGraphAsymmErrors* printFinal( int nbins, TH1F* hgen, TH1F* accept, double lumi,
        << sigma*1000 << " $\\pm$ " << sigmaErr*1000 << "(stat.) $\\pm$ " << sigmaSystErr*1000 << "(syst.) $\\pm$ " << totalE*1000 << "(total)"  
        << " \\\\" <<  endl;
   }
-
-  cout << "total unfolded= " << totalN << " integrated sigma= " << totalS << endl;
-  
-  return dsigma;
-}
-
-TH1* getSigmaTruth(TH1F* hgen, TH1F* accept, double lumi, bool norm){
-
-  int nbins = hgen->GetNbinsX(); 
-
-  TH1* dsigma = (TH1F*)hgen->Clone("disgma"); 
-  dsigma->Reset();
-
-  double totalS = 0;
-  for(int i=1; i <=  nbins; i++){
-    double x;
-    double y;
-    //accept->GetPoint(i-1,x,y);
-    x = accept->GetBinCenter(i);
-    y = accept->GetBinContent(i);
-
-    double unfolded = hgen->GetBinContent(i);
-    double sigma = 0;
-    if(y != 0) sigma = unfolded/( y * lumi * hgen->GetBinWidth(i) ) ;
-    double width = hgen->GetBinWidth(i);
-    totalS += sigma*width;
-  }
-
-  cout << "default" << endl;
-  for(int i=1; i <=  nbins; i++){
-    double x;
-    double y;
-    //accept->GetPoint(i-1,x,y);
-    x = accept->GetBinCenter(i);
-    y = accept->GetBinContent(i);
-
-    double unfolded = hgen->GetBinContent(i);
-    double sigma = 0;
-    if( y != 0) sigma = unfolded/( y * lumi * hgen->GetBinWidth(i) ) ;
-    if(norm){
-      dsigma->SetBinContent(i, sigma/totalS);
-    }else{
-      dsigma->SetBinContent(i, sigma);
-    }
-  }
+  cout << "total unfolded= " << totalN << endl;
 
   return dsigma;
 }
 
-TH1* getSigmaTruth(TH1F* hgen, TH1D* htruth, double lumi, bool norm, bool curve=false, int w=1){
+TH1* getTruthCrossSection(TH1F* hgen, TH1D* htruth, double lumi, bool norm, bool curve=false, int w=1){
 
   double total = htruth->Integral();
 
