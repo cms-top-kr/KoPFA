@@ -561,6 +561,8 @@ void FinalPlot(TH1F* h_unfold, TH1F* hgen, TH1F* accept, TH1D* hTr1, TH1D* hTr2,
 
 TH1* getMeasuredCrossSection( TH1F* h_unfold, TH1F* accept, double lumi, bool norm=false){
 
+  double syst[] = { 0, 9.35, 15.08, 17.96, 23.04, 19.02, 17.14, 17.23, 31.38};
+
   int nbins = h_unfold->GetNbinsX();
   TH1* dsigma = (TH1F*)h_unfold->Clone("disgma");
   dsigma->Reset();
@@ -575,12 +577,15 @@ TH1* getMeasuredCrossSection( TH1F* h_unfold, TH1F* accept, double lumi, bool no
     double sigma = 0;
     if( y != 0) sigma = unfolded/( y * lumi * width ) ;
     double sigmaErr = 0;
+    double sigmaSystErr = 0;
     if(unfolded != 0) {
       sigmaErr = sigma*h_unfold->GetBinError(i)/unfolded;
+      sigmaSystErr = sigma*syst[i-1]/100.0;
     }
 
+    double totalE = sqrt(sigmaErr*sigmaErr + sigmaSystErr*sigmaSystErr);
     dsigma->SetBinContent(i,sigma);
-    dsigma->SetBinError(i,sigmaErr);
+    dsigma->SetBinError(i,totalE);
     totalS += sigma*width;
   } 
 
@@ -599,40 +604,6 @@ TH1* getMeasuredCrossSection( TH1F* h_unfold, TH1F* accept, double lumi, bool no
   else return dsigma;
 
 
-}
-
-TGraphAsymmErrors* printFinal( int nbins, TH1F* hgen, TH1F* accept, double lumi, bool truth, bool norm){
-
-  double syst[] = { 0, 9.35, 15.08, 17.96, 23.04, 19.02, 17.14, 17.23, 31.38};
-
-  TGraphAsymmErrors* dsigma = new TGraphAsymmErrors;
-  double totalN = 0;
-  TH1F* sigmaHistogram = getMeasuredCrossSection(hgen,accept,lumi,norm);
-
-  for(int i=1; i <=  nbins; i++){
-    double unfolded = hgen->GetBinContent(i);
-    totalN += unfolded;
-    double err = hgen->GetBinError(i);
-    double width = sigmaHistogram->GetBinWidth(i);
-    double x = sigmaHistogram->GetBinCenter(i);
-    double sigma = sigmaHistogram->GetBinContent(i);
-    double sigmaErr = sigmaHistogram->GetBinError(i);
-
-    double sigmaSystErr = 0;
-    if(!truth) sigmaSystErr = sigma*syst[i-1]/100.0;
-    double totalE = sqrt(sigmaErr*sigmaErr + sigmaSystErr*sigmaSystErr);
-
-    dsigma->SetPointEYhigh(i-1, totalE);
-    dsigma->SetPointEYlow(i-1, totalE);
-    dsigma->SetPoint(i-1, x, sigma );
-    cout << "$" << hgen->GetBinCenter(i)-hgen->GetBinWidth(i)/2 << "-" << hgen->GetBinCenter(i)+hgen->GetBinWidth(i)/2 << "$   ~&~ "
-       << setprecision (4) << hgen->GetBinContent(i) << " $\\pm$ " << err << " ~&~ "
-       << sigma*1000 << " $\\pm$ " << sigmaErr*1000 << "(stat.) $\\pm$ " << sigmaSystErr*1000 << "(syst.) $\\pm$ " << totalE*1000 << "(total)"  
-       << " \\\\" <<  endl;
-  }
-  cout << "total unfolded= " << totalN << endl;
-
-  return dsigma;
 }
 
 TH1* getTruthCrossSection(TH1F* hgen, TH1D* htruth, double lumi, bool norm, bool curve=false, int w=1){
@@ -685,6 +656,66 @@ TH1* getTruthCrossSection(TH1F* hgen, TH1D* htruth, double lumi, bool norm, bool
   return dsigma;
 }
 
+
+TGraphAsymmErrors* printFinal( int nbins, TH1F* hgen, TH1F* accept, double lumi, bool truth, bool norm){
+
+  double syst[] = { 0, 9.35, 15.08, 17.96, 23.04, 19.02, 17.14, 17.23, 31.38};
+
+  TGraphAsymmErrors* dsigma = new TGraphAsymmErrors;
+  double totalN = 0;
+  TH1F* sigmaHistogram = getMeasuredCrossSection(hgen,accept,lumi,norm);
+
+  for(int i=1; i <=  nbins; i++){
+    double unfolded = hgen->GetBinContent(i);
+    totalN += unfolded;
+    double err = hgen->GetBinError(i);
+    double rel_err = 0;
+    if(unfolded != 0) rel_err = err/unfolded;
+    double width = sigmaHistogram->GetBinWidth(i);
+    double x = sigmaHistogram->GetBinCenter(i);
+    double sigma = sigmaHistogram->GetBinContent(i);
+    double sigmaErr = sigma*rel_err;
+    double sigmaSystErr = 0;
+    if(!truth) sigmaSystErr = sigma*syst[i-1]/100.0;
+    double totalE = sqrt(sigmaErr*sigmaErr + sigmaSystErr*sigmaSystErr);
+
+    dsigma = getGraphAsymmErrors(sigmaHistogram);
+
+    cout << "$" << hgen->GetBinCenter(i)-hgen->GetBinWidth(i)/2 << "-" << hgen->GetBinCenter(i)+hgen->GetBinWidth(i)/2 << "$   ~&~ "
+       << setprecision (4) << hgen->GetBinContent(i) << " $\\pm$ " << err << " ~&~ "
+       << sigma*1000 << " $\\pm$ " << sigmaErr*1000 << "(stat.) $\\pm$ " << sigmaSystErr*1000 << "(syst.) $\\pm$ " << totalE*1000 << "(total)"
+       << " \\\\" <<  endl;
+  }
+  cout << "total unfolded= " << totalN << endl;
+
+  return dsigma;
+}
+
+TGraphAsymmErrors* getGraphAsymmErrors( TH1F* hgen, bool band = false, TH1F* hgen_up = "", TH1F* hgen_dw = "" ){
+
+  TGraphAsymmErrors* dsigma = new TGraphAsymmErrors;
+  int nbins = hgen->GetNbinsX();
+  for(int i=1; i <=  nbins; i++){
+    double x = hgen->GetBinCenter(i);
+    double sigma = hgen->GetBinContent(i);
+    double sigma_up = 0; 
+    double sigma_dw = 0; 
+    
+    if(band){
+      sigma_up = hgen_up->GetBinContent(i);
+      sigma_dw = hgen_dw->GetBinContent(i);
+    }else{
+      sigma_up = hgen->GetBinError(i);
+      sigma_dw = sigma_up;
+    }
+
+    dsigma->SetPointEYhigh(i-1, sigma_up);
+    dsigma->SetPointEYlow(i-1, sigma_dw);
+    dsigma->SetPoint(i-1, x, sigma );
+  }
+
+  return dsigma;
+}
 
 TH1* getTruthDist(TH1F* hgen){
 
