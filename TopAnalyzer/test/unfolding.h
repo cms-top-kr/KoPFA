@@ -560,79 +560,83 @@ void FinalPlot(TH1F* h_unfold, TH1F* hgen, TH1F* accept, TH1D* hTr1, TH1D* hTr2,
   Print(c_dsigma, "Unfold_plot", hName.Data(), cName.Data(), print);
 }
 
+TH1* getMeasuredCrossSection( TH1F* h_unfold, TH1F* accept, double lumi){
 
+  int nbins = h_unfold->GetNbinsX();
+  TH1* dsigma = (TH1F*)h_unfold->Clone("disgma");
+  dsigma->Reset();
+
+  for(int i=1; i <=  nbins; i++){
+
+    double x = accept->GetBinCenter(i);
+    double y = accept->GetBinContent(i);
+
+    double unfolded = h_unfold->GetBinContent(i);
+    double sigma = 0;
+    if( y != 0) sigma = unfolded/( y * lumi * hgen->GetBinWidth(i) ) ;
+    double sigmaErr = 0;
+    if(unfolded != 0) {
+      sigmaErr = sigma*h_unfold->GetBinError(i)/unfolded;
+    }
+
+    dsigma->SetBinContent(i,sigma);
+    dsigma->SetBinError(i,sigmaErr);
+  } 
+
+  return dsigma;
+
+}
 
 TGraphAsymmErrors* printFinal( int nbins, TH1F* hgen, TH1F* accept, double lumi, bool truth, bool norm){
 
   double syst[] = { 0, 9.35, 15.08, 17.96, 23.04, 19.02, 17.14, 17.23, 31.38};
-  //double syst[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0};
 
   TGraphAsymmErrors* dsigma = new TGraphAsymmErrors;
 
   double totalN = 0;
   double totalS = 0;
-  double integralS = 0;
+
+  TH1F* sigmaHistogram = getMeasuredCrossSection(hgen,accept,lumi);
 
   for(int i=1; i <=  nbins; i++){
-    double x;
-    double y;
-
-    x = accept->GetBinCenter(i);
-    y = accept->GetBinContent(i); 
     double unfolded = hgen->GetBinContent(i);
-    double sigma = 0;
-    if(y != 0) sigma = unfolded/( y * lumi * hgen->GetBinWidth(i) ) ;
-    double width = hgen->GetBinWidth(i);
-
+    double width = sigmaHistogram->GetBinWidth(i);
+    double sigma = sigmaHistogram->GetBinContent(i);
     totalN += unfolded;
     totalS += sigma*width;
-    integralS += sigma*width;
   }
-
-  cout << "total S= " << totalS << endl;
 
   for(int i=1; i <=  nbins; i++){
-    double x;
-    double y;
-    //accept->GetPoint(i-1,x,y);
-      
-    x = accept->GetBinCenter(i);
-    y = accept->GetBinContent(i); 
- 
+
     double unfolded = hgen->GetBinContent(i);
-    double err = hgen->GetBinError(i); 
+    double err = hgen->GetBinError(i);
+    double width = sigmaHistogram->GetBinWidth(i);
+    double x = sigmaHistogram->GetBinCenter(i);
+
     double sigma = 0;
-    if( y != 0) sigma = unfolded/( y * lumi * hgen->GetBinWidth(i) ) ;
     double sigmaErr = 0;
-    double sigmaSystErr = 0;
-    if(unfolded != 0) {
-      sigmaErr = sigma*err/unfolded;
-      if(!truth) sigmaSystErr = sigma*syst[i-1]/100.0;
+
+    if(norm){
+      sigma = sigmaHistogram->GetBinContent(i)/totalS;
+      sigmaErr = sigmaHistogram->GetBinError(i)/totalS;
+    }else{
+      sigma = sigmaHistogram->GetBinContent(i);
+      sigmaErr = sigmaHistogram->GetBinError(i);
     }
 
-    double width = hgen->GetBinWidth(i);
+    double sigmaSystErr = 0;
+    if(!truth) sigmaSystErr = sigma*syst[i-1]/100.0;
     double totalE = sqrt(sigmaErr*sigmaErr + sigmaSystErr*sigmaSystErr);
 
-    //dsigma->SetPointEXhigh(i-1, width/2);
-    //dsigma->SetPointEXlow(i-1, width/2);
-    if(norm){
-      dsigma->SetPointEYhigh(i-1, totalE/totalS);
-      dsigma->SetPointEYlow(i-1, totalE/totalS);
-      dsigma->SetPoint(i-1, x, sigma/totalS );
-      cout << "$" << hgen->GetBinCenter(i)-hgen->GetBinWidth(i)/2 << "-" << hgen->GetBinCenter(i)+hgen->GetBinWidth(i)/2 << "$   ~&~ "
-         << setprecision (4) << hgen->GetBinContent(i) << " $\\pm$ " << err << " ~&~ "
-         << sigma/totalS*1000 << " $\\pm$ " << sigmaErr/totalS*1000 << "(stat.)" << " $\\pm$ " << sigmaSystErr/totalS*1000 << "(syst.) $\\pm$ " << totalE/totalS*1000 << "(total)"   
-         << " \\\\" <<  endl;
-    }else{
-      dsigma->SetPointEYhigh(i-1, totalE);
-      dsigma->SetPointEYlow(i-1, totalE);
-      dsigma->SetPoint(i-1, x, sigma );
-      cout << "$" << hgen->GetBinCenter(i)-hgen->GetBinWidth(i)/2 << "-" << hgen->GetBinCenter(i)+hgen->GetBinWidth(i)/2 << "$   ~&~ "
-         << setprecision (4) << hgen->GetBinContent(i) << " $\\pm$ " << err << " ~&~ "
-         << sigma*1000 << " $\\pm$ " << sigmaErr*1000 << "(stat.) $\\pm$ " << sigmaSystErr*1000 << "(syst.) $\\pm$ " << totalE*1000 << "(total)"  
-         << " \\\\" <<  endl;
-    }
+    dsigma->SetPointEYhigh(i-1, totalE);
+    dsigma->SetPointEYlow(i-1, totalE);
+    dsigma->SetPoint(i-1, x, sigma );
+    cout << "$" << hgen->GetBinCenter(i)-hgen->GetBinWidth(i)/2 << "-" << hgen->GetBinCenter(i)+hgen->GetBinWidth(i)/2 << "$   ~&~ "
+       << setprecision (4) << hgen->GetBinContent(i) << " $\\pm$ " << err << " ~&~ "
+       << sigma*1000 << " $\\pm$ " << sigmaErr*1000 << "(stat.) $\\pm$ " << sigmaSystErr*1000 << "(syst.) $\\pm$ " << totalE*1000 << "(total)"  
+       << " \\\\" <<  endl;
   }
+
   cout << "total unfolded= " << totalN << " integrated sigma= " << totalS << endl;
   
   return dsigma;
