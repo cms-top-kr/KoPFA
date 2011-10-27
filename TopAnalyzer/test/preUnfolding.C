@@ -97,6 +97,7 @@ void preUnfolding(){
   TH1F * hDataUp = getMeasuredHisto(rdPathUp, cutStep, "vsumMAlt", recon+"_up");  //real data
   TH1F * hDataDw = getMeasuredHisto(rdPathDw, cutStep, "vsumMAlt", recon+"_dw");  //real data
   TH1F * hDataPseudo = getMeasuredHistoPseudo(mcPath, rdPath, cutStep, "ttbar.M()", decayMode, scale, recon+"_MadGraph"); //pseudo data
+  TH1F * hDataPseudoWeighted = getMeasuredHistoPseudo(mcPath, rdPath, cutStep, "ttbar.M()", decayMode, scale, recon+"_MadGraph_Weighted", "1.0+(genttbarM-450)*0.005"); //pseudo data
   TH1F * hDataPseudoPowheg = getMeasuredHistoPseudo(mePath, rdPath, cutStep, "ttbar.M()", decayMode, scale_powheg, recon+"_Powheg"); //pseudo data
   TH1F * hDataPseudoPowhegPythia = getMeasuredHistoPseudo(mePath2, rdPath, cutStep, "ttbar.M()", decayMode, scale_powheg, recon+"_PowhegPythia"); //pseudo data
   TH1F * hDataPseudoPowhegHerwig = getMeasuredHistoPseudo(mePath3, rdPath, cutStep, "ttbar.M()", decayMode, scale_powheg, recon+"_PowhegHerwig"); //pseudo data
@@ -105,6 +106,7 @@ void preUnfolding(){
   //truth level after final selection
   cout << "producing truth level plots before correcting acceptance..." << endl;
   TH1F * hGenDist = getGenDistHisto(mcPath, rdPath, cutStep, decayMode, scale, split, "MadGraph");
+  TH1F * hGenDistWeighted = getGenDistHisto(mcPath, rdPath, cutStep, decayMode, scale, split, "MadGraph", "1.0+(genttbarM-450)*0.005");
   TH1F * hGenDistPowheg = getGenDistHisto(mePath, rdPath, cutStep, decayMode, scale_powheg, split, "Powheg");
   TH1F * hGenDistZprime = getGenDistHisto(mePathZprime, rdPath, cutStep, decayMode, scale_powheg, split, "Zprime");
 
@@ -115,11 +117,11 @@ void preUnfolding(){
 
   //truth level in visible phase space
   cout << "producing truth level plots..." << endl;
-  TH1D* hMadGraph = getTruthHisto(f_MadGraph, "MADGRAPH", visible);
-  TH1D* hPOWHEG = getTruthHisto(f_POWHEG, "POWHEG", visible);
-  TH1D* hMadGraphFull = getTruthHisto(f_MadGraph, "MADGRAPH_Full", visible);
-  TH1D* hPOWHEGFull = getTruthHisto(f_POWHEG, "POWHEG_Full", visible);
-  TH1D* hMCNLO = (TH1D*) f_MCNLO->Get("MCatNLO/hVisTTbarM");
+  TH1D* hMadGraph = getTruthHisto(f_MadGraph, "MADGRAPH", scale, visible);
+  TH1D* hPOWHEG = getTruthHisto(f_POWHEG, "POWHEG", scale_powheg, visible);
+  TH1D* hMadGraphFull = getTruthHisto(f_MadGraph, "MADGRAPH_Full", scale);
+  TH1D* hPOWHEGFull = getTruthHisto(f_POWHEG, "POWHEG_Full", scale_powheg);
+  TH1D* hMCNLO = (TH1D*) f_MCNLO->Get("hVisTTbarM");
 
   TFile* f = TFile::Open("preUnfolding.root", "recreate");
 
@@ -130,11 +132,13 @@ void preUnfolding(){
   hDataUp->Write();
   hDataDw->Write();
   hDataPseudo->Write();
+  hDataPseudoWeighted->Write();
   hDataPseudoPowheg->Write();
   hDataPseudoPowhegPythia->Write();
   hDataPseudoPowhegHerwig->Write();
   hDataPseudoZprime->Write();
   hGenDist->Write();
+  hGenDistWeighted->Write();
   hGenDistPowheg->Write();
   hGenDistZprime->Write();
   hAccept->Write();

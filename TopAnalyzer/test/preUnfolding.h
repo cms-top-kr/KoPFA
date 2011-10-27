@@ -25,7 +25,7 @@ float genBins[] = {0, 345, 400, 450, 500, 550, 600, 700, 800, 1400}; // 9 bins
 int nDet = sizeof(detBins)/sizeof(float) - 1;
 int nGen = sizeof(genBins)/sizeof(float) - 1;
 
-TH1F* getMeasuredHistoPseudo( vector<std::string> mcPath, vector<std::string> rdPath, string cutStep, TString var,  vector<TString> decayMode , double frac, TString name){
+TH1F* getMeasuredHistoPseudo( vector<std::string> mcPath, vector<std::string> rdPath, string cutStep, TString var,  vector<TString> decayMode , double frac, TString name, string weight=""){
 
   TH1F *hData = new TH1F(Form("hPseudoData_%s",name.Data()),Form("hPseudoData_%s",name.Data()),nDet,detBins);
 
@@ -33,12 +33,19 @@ TH1F* getMeasuredHistoPseudo( vector<std::string> mcPath, vector<std::string> rd
     TFile * f_data = new TFile(rdPath[i].c_str());
     TCut cut((f_data->Get(Form("%s/cut", cutStep.c_str())))->GetTitle());
 
+    TCut cutStr = "";
+    if( weight != ""){
+      cutStr = Form("(%s)*(%s)", weight.c_str(), (const char*)cut );
+    }else{
+      cutStr = Form("%s", (const char*)cut );
+    }
+
     TFile * file = new TFile(mcPath[i].c_str());
     TTree * tree = (TTree *) file->Get(decayMode[i]+"/tree");
 
     int entries = tree->GetEntries();
     TH1F* hDataTemp = new TH1F(Form("hDataTemp_%s_%s",name.Data(),decayMode[i].Data()),"hDataTemp",nDet,detBins);
-    tree->Project(Form("hDataTemp_%s_%s",name.Data(),decayMode[i].Data()),Form("%s",var.Data()), cut,"",entries*frac, 0);
+    tree->Project(Form("hDataTemp_%s_%s",name.Data(),decayMode[i].Data()),Form("%s",var.Data()), cutStr, "",entries*frac, 0);
     hData->Add(hDataTemp);
   }
 
@@ -114,13 +121,20 @@ TH2F* getResponseM( vector<std::string> mcPath, vector<std::string> rdPath, stri
   return h2_response_m;
 }
 
-TH1F* getGenDistHisto( vector<std::string> mcPath, vector<std::string> rdPath, string cutStep, vector<TString> decayMode, double scale, bool split , TString name ){
+TH1F* getGenDistHisto( vector<std::string> mcPath, vector<std::string> rdPath, string cutStep, vector<TString> decayMode, double scale, bool split , TString name, string weight="" ){
 
   TH1F *hGen = new TH1F(Form("hTruth_%s",name.Data()), "truth distribution after reconstructed level selection",nGen,genBins);
 
   for(size_t i = 0; i< mcPath.size() ; i++){
     TFile * f_data = new TFile(rdPath[i].c_str());
     TCut cut((f_data->Get(Form("%s/cut", cutStep.c_str())))->GetTitle());
+
+    TCut cutStr = "";
+    if( weight != ""){
+      cutStr = Form("(%s)*(%s)", weight.c_str(), (const char*)cut );
+    }else{
+      cutStr = Form("%s", (const char*)cut );
+    }
 
     TFile * file = new TFile(mcPath[i].c_str());
     TTree * tree = (TTree *) file->Get(decayMode[i]+"/tree");
@@ -129,10 +143,10 @@ TH1F* getGenDistHisto( vector<std::string> mcPath, vector<std::string> rdPath, s
 
     TH1F *hGenDistTemp = new TH1F(Form("hGenDisTemp_%s_%s",name.Data(),decayMode[i].Data()),"hGenDisTemp",nGen,genBins);
     if(split){
-      tree->Project(Form("hGenDisTemp_%s_%s",name.Data(),decayMode[i].Data()),"genttbarM", cut,"",entries/2, entries/2);  
+      tree->Project(Form("hGenDisTemp_%s_%s",name.Data(),decayMode[i].Data()),"genttbarM", cutStr,"",entries/2, entries/2);  
       hGenDistTemp->Scale(scale*2);
     } else{
-      tree->Project(Form("hGenDisTemp_%s_%s",name.Data(),decayMode[i].Data()),"genttbarM", cut);  
+      tree->Project(Form("hGenDisTemp_%s_%s",name.Data(),decayMode[i].Data()),"genttbarM", cutStr);  
       hGenDistTemp->Scale(scale);
     }
     hGen->Add(hGenDistTemp);
@@ -149,11 +163,12 @@ TH1F* getGenDistHisto( vector<std::string> mcPath, vector<std::string> rdPath, s
 
 }
 
-TH1D* getTruthHisto(TFile * fDen, TString name, TCut visible ="" ){
+TH1D* getTruthHisto(TFile * fDen, TString name, double scale, TCut visible ="" ){
 
   TTree* genTree = (TTree*)fDen->Get("ttbarGenAna/tree");
   TH1D* h_Gen = new TH1D(Form("hTruthFinal%s",name.Data()), Form("hGen%s",name.Data()), 1400, 0, 1400);
   genTree->Project(Form("hTruthFinal%s",name.Data()), "ttbarGen.m()",visible);
+  h_Gen->Scale(scale);
 
   return h_Gen;
 }
