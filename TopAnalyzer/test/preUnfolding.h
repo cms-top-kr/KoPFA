@@ -14,17 +14,6 @@
 #include <iomanip>
 #include <iostream>
 
-//default
-float detBins[] = {0, 345, 400, 450, 500, 550, 600, 700, 800, 1400}; // 9 bins
-float genBins[] = {0, 345, 400, 450, 500, 550, 600, 700, 800, 1400}; // 9 bins
-
-//DESY binning
-//float detBins[] = {0, 345, 400, 475, 550, 700, 1000}; // 9 bins
-//float genBins[] = {0, 345, 400, 475, 550, 700, 1000}; // 9 bins
-
-int nDet = sizeof(detBins)/sizeof(float) - 1;
-int nGen = sizeof(genBins)/sizeof(float) - 1;
-
 TH1F* getMeasuredHistoPseudo( vector<std::string> mcPath, vector<std::string> rdPath, string cutStep, TString var,  vector<TString> decayMode , double frac, TString name, string weight=""){
 
   TH1F *hData = new TH1F(Form("hPseudoData_%s",name.Data()),Form("hPseudoData_%s",name.Data()),nDet,detBins);

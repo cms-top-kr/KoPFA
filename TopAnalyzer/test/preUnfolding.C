@@ -13,6 +13,14 @@
 #include "TGraph.h"
 #include "TROOT.h"
 #include <iostream>
+
+//default
+float detBins[] = {0, 345, 400, 450, 500, 550, 600, 700, 800, 1400}; // 9 bins
+float genBins[] = {0, 345, 400, 450, 500, 550, 600, 700, 800, 1400}; // 9 bins
+
+int nDet = sizeof(detBins)/sizeof(float) - 1;
+int nGen = sizeof(genBins)/sizeof(float) - 1;
+
 #include "preUnfolding.h"
 
 void defaultStyle();
@@ -74,7 +82,7 @@ void preUnfolding(){
   //mc truth level for full phase space or visible
   TFile * f_MadGraph = new TFile("/data/export/common/Top/ntuple/ttbarGen.root");
   TFile * f_POWHEG = new TFile("/data/export/common/Top/ntuple/Gen/ttbarGen_TTTo2L2Nu2BTuneZ2_Powheg_Summer11_PUS4_v0.root");
-  TFile * f_MCNLO = new TFile("/data/export/common/Top/ntuple/ttbar_ntuple_cteq6m_dilepton_status3.root");
+  TFile * f_MCNLO = new TFile("/data/export/common/Top/ntuple/ttbar_ntuple_cteq6m_dilepton_v20111028.root");
 
   const std::string cutStep = "Step_7";
   double lumi = 1143.22;
@@ -122,6 +130,8 @@ void preUnfolding(){
   TH1D* hMadGraphFull = getTruthHisto(f_MadGraph, "MADGRAPH_Full", scale);
   TH1D* hPOWHEGFull = getTruthHisto(f_POWHEG, "POWHEG_Full", scale_powheg);
   TH1D* hMCNLO = (TH1D*) f_MCNLO->Get("hVisTTbarM");
+  TH1D* hMCNLO_Up = (TH1D*) f_MCNLO->Get("hVisTTbarM_Up");
+  TH1D* hMCNLO_Down = (TH1D*) f_MCNLO->Get("hVisTTbarM_Down");
 
   TFile* f = TFile::Open("preUnfolding.root", "recreate");
 
@@ -149,6 +159,8 @@ void preUnfolding(){
   hMadGraphFull->Write();
   hPOWHEGFull->Write();
   hMCNLO->Write();
+  hMCNLO_Up->Write();
+  hMCNLO_Down->Write();
 
   f->Write();  
   f->Close();
