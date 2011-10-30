@@ -114,7 +114,7 @@ void preUnfolding(){
   //truth level after final selection
   cout << "producing truth level plots before correcting acceptance..." << endl;
   TH1F * hGenDist = getGenDistHisto(mcPath, rdPath, cutStep, decayMode, scale, split, "MadGraph");
-  TH1F * hGenDistWeighted = getGenDistHisto(mcPath, rdPath, cutStep, decayMode, scale, split, "MadGraph", "1.0+(genttbarM-450)*0.005");
+  TH1F * hGenDistWeighted = getGenDistHisto(mcPath, rdPath, cutStep, decayMode, scale, split, "MadGraph_Weighted", "1.0+(genttbarM-450)*0.005");
   TH1F * hGenDistPowheg = getGenDistHisto(mePath, rdPath, cutStep, decayMode, scale_powheg, split, "Powheg");
   TH1F * hGenDistZprime = getGenDistHisto(mePathZprime, rdPath, cutStep, decayMode, scale_powheg, split, "Zprime");
 
