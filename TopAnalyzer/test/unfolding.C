@@ -34,10 +34,7 @@ void unfolding(int k=4){
   //gStyle->SetOptStat(0000);
   gStyle->SetOptFit(0011);
 
-  
-  bool print = true;
-
-  TFile * file = new TFile("preUnfolding_pas013.root");
+  TFile * file = new TFile("preUnfolding.root");
   //response matrix
   TH2F * h2ResponseM = (TH2F*) file->Get("h2_response_m");
   //measured distribution
@@ -50,13 +47,19 @@ void unfolding(int k=4){
   TH1F * hGenDistMADGRAPH = (TH1F*) file->Get("hTruth_MadGraph");
   TH1F * hGenDistPOWHEG = (TH1F*) file->Get("hTruth_Powheg");
   TH1F * hAcceptDist = (TH1F*) file->Get("hAccept_vsum");
+  TH1F * hAcceptDistFull = (TH1F*) file->Get("hAccept_vsum_Full");
   //truth level for final
   TH1D * hGenMADGRAPH = (TH1D*) file->Get("hTruthFinalMADGRAPH");
   TH1D * hGenPOWHEG = (TH1D*) file->Get("hTruthFinalPOWHEG");
-  TH1D * hGenTTbarM = (TH1D*) file->Get("hVisTTbarM");
+  TH1D * hGenMADGRAPH_Full = (TH1D*) file->Get("hTruthFinalMADGRAPH_Full");
+  TH1D * hGenPOWHEG_Full = (TH1D*) file->Get("hTruthFinalPOWHEG_Full");
+  TH1D * hGenMCNLO = (TH1D*) file->Get("hVisTTbarM");
+  TH1D * hGenMCNLO_Up = (TH1D*) file->Get("hVisTTbarM_Up");
+  TH1D * hGenMCNLO_Down = (TH1D*) file->Get("hVisTTbarM_Down");
 
   double lumi = 1143.22;
-  bool print = false;
+  bool print = true; //save plots
+  bool printX = true; //print cross section
   bool pseudo = false;
   bool toytest = false;
 
@@ -76,12 +79,14 @@ void unfolding(int k=4){
   bool bincorr = false;
   bool HBBstyle = false;
 
-  TGraphAsymmErrors* de = FinalPlot(h_unfold, hGenDistMADGRAPH, hAcceptDist, lumi, "unfold_Normalized_simple", "dSigmadM",  0.00001, 0.06, norm, log, bincorr, print);
-  //TGraphAsymmErrors* up = FinalPlot(h_unfoldup, hGenDist, hAcceptDist, lumi, "unfold_Normalized_simple_up", "dSigmadM",  0.00001, 0.06, norm, log, bincorr, print);
-  //TGraphAsymmErrors* dw = FinalPlot(h_unfolddw, hGenDist, hAcceptDist, lumi, "unfold_Normalized_simple_dw", "dSigmadM",  0.00001, 0.06, norm, log, bincorr, print);
+  //Full correction: set norm = false
+  FinalPlot(h_unfold, hGenDistMADGRAPH, hAcceptDistFull, hGenMADGRAPH_Full, lumi, "unfold_simple_full", "dSigmadM",  0.0001, 200, false, log, bincorr, print); 
+  //visible correction normalized
+  FinalPlot(h_unfold, hGenDistMADGRAPH, hAcceptDist, hGenMADGRAPH, hGenPOWHEG, hGenMCNLO, lumi, "unfold_Normalized", "dSigmadM",  0.00001, 0.06, norm, log, bincorr, print, printX, HBBstyle); 
 
-  FinalPlot(h_unfold, hGenDistMADGRAPH, hAcceptDist, hGenMADGRAPH, hGenPOWHEG, hVisTTbarM, lumi, "unfold_Normalized", "dSigmadM",  0.00001, 0.06, norm, log, bincorr, print, HBBstyle);
-  
+  //TGraphAsymmErrors* de = FinalPlot(h_unfold, hGenDistMADGRAPH, hAcceptDist, lumi, "unfold_Normalized_simple", "dSigmadM",  0.00001, 0.06, norm, log, bincorr, print);
+  //TGraphAsymmErrors* up = FinalPlot(h_unfoldup, hGenDistMADGRAPH, hAcceptDist, lumi, "unfold_Normalized_simple_up", "dSigmadM",  0.00001, 0.06, norm, log, bincorr, print);
+  //TGraphAsymmErrors* dw = FinalPlot(h_unfolddw, hGenDistMADGRAPH, hAcceptDist, lumi, "unfold_Normalized_simple_dw", "dSigmadM",  0.00001, 0.06, norm, log, bincorr, print); 
   //getUncertainty(de,up,dw); 
   //For PAS TOP-11-013
   bincorr = true;
@@ -91,8 +96,8 @@ void unfolding(int k=4){
     setHHStyle(*gStyle);
   }
 
-  //FinalPlot(h_unfold, hGenDistMADGRAPH, hAcceptDist, hGenMADGRAPH, hGenPOWHEG, hVisTTbarM, lumi, "unfold_Normalized", "dSigmadM",  0.00001, 0.06, norm, log, bincorr, print, HBBstyle);
-
+  FinalPlot(h_unfold, hGenDistMADGRAPH, hAcceptDist, hGenMADGRAPH, hGenPOWHEG, hGenMCNLO, lumi, "unfold_Normalized_pas013", "dSigmadM",  0.00001, 0.06, norm, log, bincorr, print, false, HBBstyle, true, hGenMCNLO_Up, hGenMCNLO_Down);
+ 
   //chi2 test
   //int n = 5;
   //for(int i=1; i <=n ;i++){
