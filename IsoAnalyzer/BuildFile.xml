@@ -5,9 +5,4 @@
 <use   name="PhysicsTools/UtilAlgos"/>
 <use   name="FWCore/ServiceRegistry"/>
 <use   name="DataFormats/Common"/>
-<use   name="PFAnalyses/CommonTools"/>
-<use   name="DQMServices/Core"/>
 <flags   EDM_PLUGIN="1"/>
-<export>
-  <lib   name="1"/>
-</export>
