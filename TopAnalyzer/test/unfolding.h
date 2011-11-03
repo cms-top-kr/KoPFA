@@ -462,23 +462,26 @@ TGraphAsymmErrors* FinalPlot(TH1F* h_unfold, TH1F* hgen, TH1F* accept, TH1D* hTr
   return dsigmaData;
 }
 
-void FinalPlot(TH1F* h_unfold, TH1F* hgen, TH1F* accept, TH1D* hTr1, TH1D* hTr2, TH1D* hTr3, double lumi, TString hName, TString cName, double min, double max, bool norm=true, bool log=true, bool curve=false, bool print = false, bool printX = false, bool HBBstyle = false, bool band = false, TH1D* hTr3_up ="", TH1D* hTr3_dw= ""){
+void FinalPlot(TH1F* h_unfold, TH1F* hgen, TH1F* accept, TH1D* hTr1, TH1D* hTr2, TH1D* hTr3, double lumi, TString hName, TString cName, double min, double max, bool norm=true, bool log=true, bool curve=false, bool print = false, bool printX = false, bool HBBstyle = false, bool band = false, TH1D* hTr2_up ="", TH1D* hTr2_dw= ""){
 
   int nbins = h_unfold->GetNbinsX();
  
   TH1F* dsigmaDataHisto = getMeasuredCrossSection(h_unfold,accept,lumi,norm, printX, "unfolded");
+  TH1F* dsigmaDataHistoOnlyWithStat = getMeasuredCrossSection(h_unfold,accept,lumi,norm, printX, "unfolded", false); //set false for systematic uncert.
 
   TGraphAsymmErrors* dsigmaTruth = new TGraphAsymmErrors();
   TGraphAsymmErrors* dsigmaData = getGraphAsymmErrors(dsigmaDataHisto);
+  TGraphAsymmErrors* dsigmaDataOnlyWithStat = getGraphAsymmErrors(dsigmaDataHistoOnlyWithStat);
+
   //TGraphAsymmErrors* DESY = DESYPlot(accept); 
 
   TH1F* hSigmaTruth = getTruthCrossSection(hgen, hTr1, lumi, norm, curve,50);
   TH1F* hSigmaTruth2 = getTruthCrossSection(hgen, hTr2, lumi, norm, curve,50);
   TH1F* hSigmaTruth3 = getTruthCrossSection(hgen, hTr3, lumi, norm, curve,50);
   if(band){
-    TH1F* hSigmaTruth3_up = getTruthCrossSection(hgen, hTr3_up, lumi, norm, curve,50);
-    TH1F* hSigmaTruth3_dw = getTruthCrossSection(hgen, hTr3_dw, lumi, norm, curve,50);
-    dsigmaTruth = getGraphAsymmErrors(hSigmaTruth3, true, hSigmaTruth3_up, hSigmaTruth3_dw);
+    TH1F* hSigmaTruth2_up = getTruthCrossSection(hgen, hTr2_up, lumi, norm, curve,50);
+    TH1F* hSigmaTruth2_dw = getTruthCrossSection(hgen, hTr2_dw, lumi, norm, curve,50);
+    dsigmaTruth = getGraphAsymmErrors(hSigmaTruth2, true, hSigmaTruth2_up, hSigmaTruth2_dw);
   }
   TH1F* hSigmaTruthHisto = getTruthCrossSection(hgen, hTr1, lumi, norm, false, 1, printX);
 
@@ -523,6 +526,8 @@ void FinalPlot(TH1F* h_unfold, TH1F* hgen, TH1F* accept, TH1D* hTr1, TH1D* hTr2,
     //hSigmaTruth3->Smooth();
     hSigmaTruth->Draw("c");
     if(band){
+      dsigmaTruth->SetLineWidth(2);
+      dsigmaTruth->SetLineColor(4);
       dsigmaTruth->SetFillColor(kGray);
       //dsigmaTruth->SetFillStyle(3001);
       //dsigmaTruth->SetLineColor(0);
@@ -537,6 +542,8 @@ void FinalPlot(TH1F* h_unfold, TH1F* hgen, TH1F* accept, TH1D* hTr1, TH1D* hTr2,
   }else{
     hSigmaTruth->Draw();
     if(band){
+      dsigmaTruth->SetLineWidth(2);
+      dsigmaTruth->SetLineColor(4);
       dsigmaTruth->SetFillColor(kGray);
       //dsigmaTruth->SetFillStyle(3001);
       //dsigmaTruth->SetLineColor(0);
@@ -550,7 +557,10 @@ void FinalPlot(TH1F* h_unfold, TH1F* hgen, TH1F* accept, TH1D* hTr1, TH1D* hTr2,
 
   if(curve){
     TGraphAsymmErrors* dsigmaDataCentered = BinCenterCorrection(dsigmaData, hSigmaTruthHisto, hSigmaTruth);
-    dsigmaDataCentered->Draw("Psame");
+    TGraphAsymmErrors* dsigmaDataCenteredOnlyWithStats = BinCenterCorrection(dsigmaDataOnlyWithStat, hSigmaTruthHisto, hSigmaTruth);
+    dsigmaDataCentered->Draw("ZPsame");
+    dsigmaDataCenteredOnlyWithStats->Draw("||");
+ 
   }else{
     //dsigmaData->Draw("Psame");
     dsigmaDataHisto->Draw("Psame");
@@ -566,7 +576,14 @@ void FinalPlot(TH1F* h_unfold, TH1F* hgen, TH1F* accept, TH1D* hTr1, TH1D* hTr2,
   }
   //Default Style
   if(HBBstyle){
-    SetLegend(hSigmaTruth, hSigmaTruth2, hSigmaTruth3, dsigmaData, "MadGraph", "MC@NLO", "POWHEG", "Data", "L","L","L","P", 0.71,0.73,0.90,0.87);
+    TLegend *l= new TLegend(0.71,0.73,0.90,0.87);
+    l->AddEntry(hSigmaTruth, "MadGraph" ,"L");
+    //l->AddEntry(hSigmaTruth2, "MC@NLO" ,"FL");
+    l->AddEntry(dsigmaTruth, "MC@NLO" ,"FL");
+    l->AddEntry(hSigmaTruth3, "POWHEG" ,"L");
+    l->AddEntry(dsigmaData, "Data" ,"P");
+    SetLegendStyle(l);
+    l->Draw("same");
   }else{
     SetLegend(dsigmaData, hSigmaTruth, hSigmaTruth2, hSigmaTruth3, "Unfolded data", "MadGraph", "MC@NLO", "POWHEG", "P","L","L", "L", 0.58,0.64,0.80,0.8);
     //SetLegend(DESY,dsigmaData, hSigmaTruth, hSigmaTruth2, hSigmaTruth3, "DESY", "SVD", "MadGraph", "MC@NLO", "POWHEG", "P", "P","L","L", "L", 0.58,0.64,0.80,0.8);
@@ -575,7 +592,7 @@ void FinalPlot(TH1F* h_unfold, TH1F* hgen, TH1F* accept, TH1D* hTr1, TH1D* hTr2,
   Print(c_dsigma, "Unfold_plot", hName.Data(), cName.Data(), print);
 }
 
-TH1* getMeasuredCrossSection( TH1F* h_unfold, TH1F* accept, double lumi, bool norm=false, bool print = false, TString name=""){
+TH1* getMeasuredCrossSection( TH1F* h_unfold, TH1F* accept, double lumi, bool norm=false, bool print = false, TString name="", bool sysuncert = true){
 
   double syst[] = { 0, 9.35, 15.08, 17.96, 23.04, 19.02, 17.14, 17.23, 31.38};
 
@@ -617,7 +634,7 @@ TH1* getMeasuredCrossSection( TH1F* h_unfold, TH1F* accept, double lumi, bool no
 
     if( unfolded != 0) {
       sigmaErr = sigma*(abserr/unfolded);
-      sigmaSystErr = sigma*syst[i-1]/100.0;
+      if( sysuncert ) sigmaSystErr = sigma*syst[i-1]/100.0;
     }
 
     double totalE = sqrt(sigmaErr*sigmaErr + sigmaSystErr*sigmaSystErr);

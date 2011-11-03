@@ -18,6 +18,11 @@ void SetLabel(double x, double y, double lumi){
   label->DrawLatex(x,y-0.05,Form("%1.1f fb^{-1} at #sqrt{s} = 7 TeV",lumi/1000));
 }
 
+void SetLegendStyle(TLegend *l){
+  l->SetTextSize(0.04);
+  l->SetFillColor(0);
+  l->SetLineColor(0);
+}
 
 void SetLegend(TH1* h1, TH1* h2, TString& leg1, TString& leg2, TString& o1, TString& o2,double x1, double y1, double x2, double y2){
   TLegend *l= new TLegend(x1,y1,x2,y2);
@@ -75,12 +80,37 @@ void SetLegend(TGraph* h1, TGraph* h2, TGraph* h3, TString& leg1, TString& leg2,
   l->Draw();
 }
 
+void SetLegend(TGraph* h1, TGraph* h2, TString& leg1, TString& leg2, TString& o1, TString& o2, double x1, double y1, double x2, double y2){
+  TLegend *l= new TLegend(x1,y1,x2,y2);
+  l->AddEntry(h1,Form("%s",leg1.Data()),Form("%s",o1.Data()));
+  l->AddEntry(h2,Form("%s",leg2.Data()),Form("%s",o2.Data()));
+  l->SetTextSize(0.04);
+  l->SetFillColor(0);
+  l->SetLineColor(0);
+  l->Draw();
+}
+
+
+
 void SetLegend(TGraphAsymmErrors* h4, TH1* h1, TH1* h2, TH1* h3, TString& leg4, TString& leg1, TString& leg2, TString& leg3, TString& o4, TString& o1, TString& o2, TString& o3, double x1, double y1, double x2, double y2){
   TLegend *l= new TLegend(x1,y1,x2,y2);
   l->AddEntry(h1,Form("%s",leg1.Data()),Form("%s",o1.Data()));
   l->AddEntry(h2,Form("%s",leg2.Data()),Form("%s",o2.Data()));
   l->AddEntry(h3,Form("%s",leg3.Data()),Form("%s",o3.Data()));
   l->AddEntry(h4,Form("%s",leg4.Data()),Form("%s",o4.Data()));
+  l->SetTextSize(0.04);
+  l->SetFillColor(0);
+  l->SetLineColor(0);
+  l->Draw();
+}
+
+void SetLegend(TGraphAsymmErrors* h5, TGraphAsymmErrors* h4, TH1* h1, TH1* h2, TH1* h3, TString& leg5, TString& leg4, TString& leg1, TString& leg2, TString& leg3, TString& o5, TString& o4, TString& o1, TString& o2, TString& o3, double x1, double y1, double x2, double y2){
+  TLegend *l= new TLegend(x1,y1,x2,y2);
+  l->AddEntry(h1,Form("%s",leg1.Data()),Form("%s",o1.Data()));
+  l->AddEntry(h2,Form("%s",leg2.Data()),Form("%s",o2.Data()));
+  l->AddEntry(h3,Form("%s",leg3.Data()),Form("%s",o3.Data()));
+  l->AddEntry(h4,Form("%s",leg4.Data()),Form("%s",o4.Data()));
+  l->AddEntry(h5,Form("%s",leg5.Data()),Form("%s",o5.Data()));
   l->SetTextSize(0.04);
   l->SetFillColor(0);
   l->SetLineColor(0);
@@ -95,6 +125,21 @@ void SetLegend(TGraphAsymmErrors* h1, TGraphAsymmErrors* h2, TString& leg1, TStr
   l->SetFillColor(0);
   l->SetLineColor(0);
   l->Draw();
+}
+
+void SetGraphStyle(TGraph* h, double lwidth, double lcolor, double lstyle, double msize, double mcolor, double mstyle, double min, double max, TString& xtitle, TString& ytitle){
+  h->SetLineWidth(lwidth);
+  h->SetLineColor(lcolor);
+  h->SetLineStyle(lstyle);
+  h->SetMarkerSize(msize);
+  h->SetMarkerColor(mcolor);
+  h->SetMarkerStyle(mstyle);
+  h->SetMaximum(max);
+  h->SetMinimum(min);
+  h->SetStats(0);
+  h->SetTitle(0);
+  h->GetXaxis()->SetTitle(xtitle.Data());
+  h->GetYaxis()->SetTitle(ytitle.Data());
 }
 
 void SetHistoStyle(TH1* h, double lwidth, double lcolor, double lstyle, double msize, double mcolor, double mstyle, double min, double max, TString& xtitle, TString& ytitle){

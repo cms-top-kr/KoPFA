@@ -82,7 +82,7 @@ void unfolding(int k=4){
   //Full correction: set norm = false
   FinalPlot(h_unfold, hGenDistMADGRAPH, hAcceptDistFull, hGenMADGRAPH_Full, lumi, "unfold_simple_full", "dSigmadM",  0.0001, 200, false, log, bincorr, print); 
   //visible correction normalized
-  FinalPlot(h_unfold, hGenDistMADGRAPH, hAcceptDist, hGenMADGRAPH, hGenPOWHEG, hGenMCNLO, lumi, "unfold_Normalized", "dSigmadM",  0.00001, 0.06, norm, log, bincorr, print, printX, HBBstyle); 
+  FinalPlot(h_unfold, hGenDistMADGRAPH, hAcceptDist, hGenMADGRAPH, hGenMCNLO, hGenPOWHEG, lumi, "unfold_Normalized", "dSigmadM",  0.00001, 0.06, norm, log, bincorr, print, printX, HBBstyle); 
 
   //TGraphAsymmErrors* de = FinalPlot(h_unfold, hGenDistMADGRAPH, hAcceptDist, lumi, "unfold_Normalized_simple", "dSigmadM",  0.00001, 0.06, norm, log, bincorr, print);
   //TGraphAsymmErrors* up = FinalPlot(h_unfoldup, hGenDistMADGRAPH, hAcceptDist, lumi, "unfold_Normalized_simple_up", "dSigmadM",  0.00001, 0.06, norm, log, bincorr, print);
@@ -96,7 +96,7 @@ void unfolding(int k=4){
     setHHStyle(*gStyle);
   }
 
-  FinalPlot(h_unfold, hGenDistMADGRAPH, hAcceptDist, hGenMADGRAPH, hGenPOWHEG, hGenMCNLO, lumi, "unfold_Normalized_pas013", "dSigmadM",  0.00001, 0.06, norm, log, bincorr, print, false, HBBstyle, true, hGenMCNLO_Up, hGenMCNLO_Down);
+  FinalPlot(h_unfold, hGenDistMADGRAPH, hAcceptDist, hGenMADGRAPH, hGenMCNLO, hGenPOWHEG, lumi, "unfold_Normalized_pas013", "dSigmadM",  0.00001, 0.06, norm, log, bincorr, print, false, HBBstyle, true, hGenMCNLO_Up, hGenMCNLO_Down);
  
   //chi2 test
   //int n = 5;
