@@ -12,7 +12,7 @@
 
 #include "DataFormats/PatCandidates/interface/Muon.h"
 #include "DataFormats/PatCandidates/interface/Electron.h"
-#include "AnalysisDataFormats/PFAnalyses/interface/RandomCone.h"
+//#include "AnalysisDataFormats/PFAnalyses/interface/RandomCone.h"
 
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "DataFormats/Candidate/interface/Candidate.h"
