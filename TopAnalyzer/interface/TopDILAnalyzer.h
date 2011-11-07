@@ -13,7 +13,7 @@
 //
 // Original Author:  Tae Jeong Kim,40 R-A32,+41227678602,
 //         Created:  Fri Jun  4 17:19:29 CEST 2010
-// $Id: TopDILAnalyzer.h,v 1.54 2011/08/16 07:40:28 tjkim Exp $
+// $Id: TopDILAnalyzer.h,v 1.55 2011/10/02 16:02:40 tjkim Exp $
 //
 //
 
@@ -107,6 +107,7 @@ class TopDILAnalyzer : public edm::EDFilter {
     doJecFly_ = iConfig.getUntrackedParameter<bool>("doJecFly", true);
     doResJec_ = iConfig.getUntrackedParameter<bool>("doResJec", false);
     doJecUnc_ = iConfig.getUntrackedParameter<bool>("doJecUnc", false);
+    resolutionFactor_ = iConfig.getUntrackedParameter<double>("resolutionFactor");
     up_ = iConfig.getUntrackedParameter<bool>("up", true); // uncertainty up
     resJetCorrector_ = 0;
     jecUnc_ = 0;
@@ -680,6 +681,12 @@ class TopDILAnalyzer : public edm::EDFilter {
     else        return ( dRval < 0.025 && dPtRel < 0.025 );
   }
 
+  double resolutionFactor(const pat::Jet& jet)
+  {
+    if(!jet.genJet()) { return 1.; }
+    double factor = 1. + (resolutionFactor_-1.)*(jet.pt() - jet.genJet()->pt())/jet.pt();
+    return (factor<0 ? 0. : factor);
+  }
 
   typedef pat::JetCollection::const_iterator JI;
 
@@ -785,6 +792,7 @@ class TopDILAnalyzer : public edm::EDFilter {
   bool up_;
   FactorizedJetCorrector* resJetCorrector_;
   JetCorrectionUncertainty *jecUnc_;
+  double resolutionFactor_;
 
   edm::ParameterSet pfJetIdParams_;
 
