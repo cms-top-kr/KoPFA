@@ -64,6 +64,13 @@ process.acceptedElectrons = cms.EDFilter("PATElectronSelector",
     filter = cms.bool(False),
 )
 
+process.acceptedGsfElectrons = cms.EDFilter("PATElectronSelector",
+    src = cms.InputTag("selectedPatElectrons"),
+    cut = cms.string("pt > 20 && abs(eta) < 2.5"),
+    #cut = cms.string("pt > 20 && abs(eta) < 2.5 && ecalDrivenSeed")
+    filter = cms.bool(False),
+)
+
 process.patElectronFilter = cms.EDFilter("CandViewCountFilter",
     src = cms.InputTag('acceptedElectrons'),
     minNumber = cms.uint32(2)
@@ -87,15 +94,26 @@ process.patLeptonFilter = cms.EDFilter("MultiLeptonCountFilter",
 
 #Electron ID
 process.load('RecoEgamma.ElectronIdentification.cutsInCategoriesElectronIdentificationV06_cfi')
+process.load("ElectroWeakAnalysis.WENu.simpleEleIdSequence_cff")
+
 process.patElectrons.electronIDSources = cms.PSet(
+    #CiC
     eidVeryLooseMC = cms.InputTag("eidVeryLooseMC"),
     eidLooseMC = cms.InputTag("eidLooseMC"),
     eidMediumMC = cms.InputTag("eidMediumMC"),
     eidTightMC = cms.InputTag("eidTightMC"),
     eidSuperTightMC = cms.InputTag("eidSuperTightMC"),
-    eidHyperTight1MC = cms.InputTag("eidHyperTight1MC")
+    eidHyperTight1MC = cms.InputTag("eidHyperTight1MC"),
+    #VBTF 2010
+    simpleEleId95relIso= cms.InputTag("simpleEleId95relIso"),
+    simpleEleId90relIso= cms.InputTag("simpleEleId90relIso"),
+    simpleEleId85relIso= cms.InputTag("simpleEleId85relIso"),
+    simpleEleId80relIso= cms.InputTag("simpleEleId80relIso"),
+    simpleEleId70relIso= cms.InputTag("simpleEleId70relIso"),
+    simpleEleId60relIso= cms.InputTag("simpleEleId60relIso"),
 )
 
+process.patElectronIDs = cms.Sequence(process.simpleEleIdSequence)
 process.eidCiCSequence = cms.Sequence(
     process.eidVeryLooseMC * process.eidLooseMC * process.eidMediumMC
   * process.eidTightMC * process.eidSuperTightMC * process.eidHyperTight1MC
@@ -124,6 +142,7 @@ process.p = cms.Path(
     process.goodOfflinePrimaryVertices*
     process.HBHENoiseFilter *
     process.nEventsClean* 
+    process.patElectronIDs*
     process.eidCiCSequence
 )
 
