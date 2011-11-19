@@ -13,7 +13,7 @@
 //
 // Original Author:  Tae Jeong Kim,40 R-A32,+41227678602,
 //         Created:  Fri Jun  4 17:19:29 CEST 2010
-// $Id: TopDILAnalyzer.h,v 1.55 2011/10/02 16:02:40 tjkim Exp $
+// $Id: TopDILAnalyzer.h,v 1.56 2011/11/07 12:46:44 tjkim Exp $
 //
 //
 
@@ -90,6 +90,7 @@ class TopDILAnalyzer : public edm::EDFilter {
     metLabel_ = iConfig.getParameter<edm::InputTag>("metLabel");
     jetLabel_ = iConfig.getParameter<edm::InputTag>("jetLabel");
     genParticlesLabel_= iConfig.getParameter<edm::InputTag>("genParticlesLabel");
+    vertexLabel_ =  iConfig.getUntrackedParameter<edm::InputTag>("vertexLabel");
     metStudy_ = iConfig.getUntrackedParameter<bool>("metStudy",false);
     useEventCounter_ = iConfig.getParameter<bool>("useEventCounter");
     filters_ = iConfig.getUntrackedParameter<std::vector<std::string> >("filters");
@@ -291,7 +292,7 @@ class TopDILAnalyzer : public edm::EDFilter {
     npileup = npv;
 
     edm::Handle<reco::VertexCollection> recVtxs_;
-    iEvent.getByLabel("offlinePrimaryVertices",recVtxs_);
+    iEvent.getByLabel(vertexLabel_,recVtxs_);
 
     int nv = 0 ;
 
@@ -695,6 +696,7 @@ class TopDILAnalyzer : public edm::EDFilter {
   edm::InputTag metLabel_;
   edm::InputTag jetLabel_;
   edm::InputTag genParticlesLabel_;
+  edm::InputTag vertexLabel_;
 
   std::vector<std::string> filters_;
   bool metStudy_;
