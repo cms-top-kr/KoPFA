@@ -14,73 +14,40 @@
 #include <iomanip>
 #include <iostream>
 
-TH1F* getMeasuredHistoPseudo( vector<std::string> mcPath, vector<std::string> rdPath, string cutStep, TString var,  vector<TString> decayMode , double frac, TString name, string weight=""){
+float detBins[] = {0, 340, 400, 450, 500, 550, 600, 700, 800, 1400}; // 9 bins
+float genBins[] = {0, 340, 400, 450, 500, 550, 600, 700, 800, 1400}; // 9 bins
 
-  TH1F *hData = new TH1F(Form("hPseudoData_%s",name.Data()),Form("hPseudoData_%s",name.Data()),nDet,detBins);
+int nDet = sizeof(detBins)/sizeof(float) - 1;
+int nGen = sizeof(genBins)/sizeof(float) - 1;
+
+TH1F* getMeasuredHistoPseudo( vector<std::string> mcPath, vector<std::string> rdPath, string cutStep, TString var,  vector<TString> decayMode , double frac, TString name){
+
+  TH1F *hData = new TH1F("hData","hData",nDet,detBins);
 
   for(size_t i = 0; i< mcPath.size() ; i++){
     TFile * f_data = new TFile(rdPath[i].c_str());
     TCut cut((f_data->Get(Form("%s/cut", cutStep.c_str())))->GetTitle());
-
-    TCut cutStr = "";
-    if( weight != ""){
-      cutStr = Form("(%s)*(%s)", weight.c_str(), (const char*)cut );
-    }else{
-      cutStr = Form("%s", (const char*)cut );
-    }
 
     TFile * file = new TFile(mcPath[i].c_str());
     TTree * tree = (TTree *) file->Get(decayMode[i]+"/tree");
 
     int entries = tree->GetEntries();
     TH1F* hDataTemp = new TH1F(Form("hDataTemp_%s_%s",name.Data(),decayMode[i].Data()),"hDataTemp",nDet,detBins);
-    tree->Project(Form("hDataTemp_%s_%s",name.Data(),decayMode[i].Data()),Form("%s",var.Data()), cutStr, "",entries*frac, 0);
+    tree->Project(Form("hDataTemp_%s_%s",name.Data(),decayMode[i].Data()),Form("%s",var.Data()), cut,"",entries*frac, 0);
     hData->Add(hDataTemp);
   }
 
   return hData;
 }
 
-TH1F* getMeasuredHisto( vector<std::string> rdPath, string cutStep, TString var = "vsumMAlt" , TString name = ""){
+TH1F* getMeasuredHisto( vector<std::string> rdPath, string cutStep){
 
-  TH1F *hData = new TH1F(Form("hData_%s",name.Data()),Form("hData_%s",name.Data()),nDet,detBins);
+  TH1F *hData = new TH1F("hData","hData",nDet,detBins);
 
   for(size_t i = 0; i < rdPath.size() ; i++){
     TFile * f_data = new TFile(rdPath[i].c_str());
-    TH1F *hTemp = (TH1F*) f_data->Get(Form("%s/hDataSub_%s_%s", cutStep.c_str(), cutStep.c_str(), var.Data()));
+    TH1F *hTemp = (TH1F*) f_data->Get(Form("%s/hDataSub_%s_vsumMAlt", cutStep.c_str(), cutStep.c_str()));
     hData->Add(hTemp);
-  }
-
-  return hData;
-}
-
-TH1F* getMeasuredHistoNew( vector<std::string> rdPath, string cutStep, TString var = "vsumMAlt" , TString name = ""){
-
-  TH1F *hData = new TH1F(Form("hData_%s",name.Data()),Form("hData_%s",name.Data()),nDet,detBins);
-
-  for(size_t i = 0; i < rdPath.size() ; i++){
-    TFile * f_data = new TFile(rdPath[i].c_str());
-    TList* keys = f_data->GetDirectory(cutStep.c_str())->GetListOfKeys();
-
-    for ( int j=0; j<keys->GetSize(); ++j )
-    {
-      TString key = keys->At(j)->GetName();
-      if ( !key.EndsWith( Form("_%s", var.Data()) )) continue;
-
-      TString histPath = Form("%s/%s", cutStep.c_str(), key.Data());
-      TH1F* hTemp = (TH1F*)f_data->Get(histPath);
-
-      if ( !hTemp ) { cout << "No hist" << endl; continue; }
-
-      if ( key.BeginsWith("hMC_") )
-      {
-        hData->Add(hTemp, -1);
-      }
-      else if ( key.BeginsWith("hData_") )
-      {
-        hData->Add(hTemp);
-      }
-    }
   }
 
   return hData;
@@ -110,32 +77,25 @@ TH2F* getResponseM( vector<std::string> mcPath, vector<std::string> rdPath, stri
   return h2_response_m;
 }
 
-TH1F* getGenDistHisto( vector<std::string> mcPath, vector<std::string> rdPath, string cutStep, vector<TString> decayMode, double scale, bool split , TString name, string weight="" ){
+TH1F* getGenDistHisto( vector<std::string> mcPath, vector<std::string> rdPath, string cutStep, vector<TString> decayMode, double scale, bool split , TString name ){
 
-  TH1F *hGen = new TH1F(Form("hTruth_%s",name.Data()), "truth distribution after reconstructed level selection",nGen,genBins);
+  TH1F *hGen = new TH1F("hGen","hGen",nGen,genBins);
 
   for(size_t i = 0; i< mcPath.size() ; i++){
     TFile * f_data = new TFile(rdPath[i].c_str());
     TCut cut((f_data->Get(Form("%s/cut", cutStep.c_str())))->GetTitle());
-
-    TCut cutStr = "";
-    if( weight != ""){
-      cutStr = Form("(%s)*(%s)", weight.c_str(), (const char*)cut );
-    }else{
-      cutStr = Form("%s", (const char*)cut );
-    }
 
     TFile * file = new TFile(mcPath[i].c_str());
     TTree * tree = (TTree *) file->Get(decayMode[i]+"/tree");
 
     int entries = tree->GetEntries();
 
-    TH1F *hGenDistTemp = new TH1F(Form("hGenDisTemp_%s_%s",name.Data(),decayMode[i].Data()),"hGenDisTemp",nGen,genBins);
+    TH1F *hGenDistTemp = new TH1F(Form("hGenDisTemp_%s_%s",name.Data(),decayMode[i].Data()),"h_genTTbar",nGen,genBins);
     if(split){
-      tree->Project(Form("hGenDisTemp_%s_%s",name.Data(),decayMode[i].Data()),"genttbarM", cutStr,"",entries/2, entries/2);  
+      tree->Project(Form("hGenDisTemp_%s_%s",name.Data(),decayMode[i].Data()),"genttbarM", cut,"",entries/2, entries/2);  
       hGenDistTemp->Scale(scale*2);
     } else{
-      tree->Project(Form("hGenDisTemp_%s_%s",name.Data(),decayMode[i].Data()),"genttbarM", cutStr);  
+      tree->Project(Form("hGenDisTemp_%s_%s",name.Data(),decayMode[i].Data()),"genttbarM", cut);  
       hGenDistTemp->Scale(scale);
     }
     hGen->Add(hGenDistTemp);
@@ -150,16 +110,6 @@ TH1F* getGenDistHisto( vector<std::string> mcPath, vector<std::string> rdPath, s
 
   return hGen;
 
-}
-
-TH1D* getTruthHisto(TFile * fDen, TString name, double scale, TCut visible ="" ){
-
-  TTree* genTree = (TTree*)fDen->Get("ttbarGenAna/tree");
-  TH1D* h_Gen = new TH1D(Form("hTruthFinal%s",name.Data()), Form("hGen%s",name.Data()), 1400, 0, 1400);
-  genTree->Project(Form("hTruthFinal%s",name.Data()), "ttbarGen.m()",visible);
-  h_Gen->Scale(scale);
-
-  return h_Gen;
 }
 
 TH1F* getAcceptanceHisto(vector<std::string> mcPath, vector<std::string> rdPath, string cutStep, vector<TString> decayMode, TString name, TCut visible =""){
@@ -231,7 +181,7 @@ TH1F* getAcceptanceHisto(vector<std::string> mcPath, vector<std::string> rdPath,
   cout << hDen->GetEntries() << endl;
   
   TGraphAsymmErrors* grpAccept = new TGraphAsymmErrors();
-  TH1F *hAccept = new TH1F(Form("hAccept_%s",name.Data()),Form("hAccept_%s",name.Data()),nGen, genBins);
+  TH1F *hAccept = new TH1F("hAccept","hAccept",nGen, genBins);
 
   for(int i=0; i < nGen; i++){
     int bin = i+1;

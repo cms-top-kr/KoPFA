@@ -13,14 +13,6 @@
 #include "TGraph.h"
 #include "TROOT.h"
 #include <iostream>
-
-//default
-float detBins[] = {0, 345, 400, 450, 500, 550, 600, 700, 800, 1400}; // 9 bins
-float genBins[] = {0, 345, 400, 450, 500, 550, 600, 700, 800, 1400}; // 9 bins
-
-int nDet = sizeof(detBins)/sizeof(float) - 1;
-int nGen = sizeof(genBins)/sizeof(float) - 1;
-
 #include "preUnfolding.h"
 
 void defaultStyle();
@@ -32,62 +24,29 @@ void preUnfolding(){
   vector<TString> decayMode;
   vector<std::string> mcPath;
   vector<std::string> mePath;
-  vector<std::string> mePath2;
-  vector<std::string> mePath3;
-  vector<std::string> mePathZprime;
   vector<std::string> rdPath;
-  vector<std::string> rdPathUp;
-  vector<std::string> rdPathDw;
 
   decayMode.push_back("MuEl");
   decayMode.push_back("ElEl");
   decayMode.push_back("MuMu");
 
-  //response matrix
-  mcPath.push_back("/data/export/common/Top/ntuple/MuEl/MC/Summer11_new/vallot_TTbarTuneZ2.root");
-  mcPath.push_back("/data/export/common/Top/ntuple/ElEl/MC/Summer11_new/vallot_TTbarTuneZ2.root");
-  mcPath.push_back("/data/export/common/Top/ntuple/MuMu/MC/Summer11_new/vallot_TTbarTuneZ2.root");
+  mcPath.push_back("/data/export/common/Top/ntuple/MuEl/MC/Summer11/vallot_TTbarTuneZ2.root");
+  mcPath.push_back("/data/export/common/Top/ntuple/ElEl/MC/Summer11/vallot_TTbarTuneZ2.root");
+  mcPath.push_back("/data/export/common/Top/ntuple/MuMu/MC/Summer11/vallot_TTbarTuneZ2.root");
 
-  //measured mc distribution after final cut
-  mePath.push_back("/data/export/common/Top/ntuple/MuEl/MC/Summer11_new/vallot_TTbarPowheg.root");
-  mePath.push_back("/data/export/common/Top/ntuple/ElEl/MC/Summer11_new/vallot_TTbarPowheg.root");
-  mePath.push_back("/data/export/common/Top/ntuple/MuMu/MC/Summer11_new/vallot_TTbarPowheg.root");
+  mePath.push_back("/data/export/common/Top/ntuple/MuEl/MC/Summer11/vallot_TTbarTuneZ2.root");
+  mePath.push_back("/data/export/common/Top/ntuple/ElEl/MC/Summer11/vallot_TTbarTuneZ2.root");
+  mePath.push_back("/data/export/common/Top/ntuple/MuMu/MC/Summer11/vallot_TTbarTuneZ2.root");
+  //mePath.push_back("ZPrime/MuEl/vallot_ZPrimeM500W50.root");
+  //mePath.push_back("ZPrime/ElEl/vallot_ZPrimeM500W50.root");
+  //mePath.push_back("ZPrime/MuMu/vallot_ZPrimeM500W50.root");
 
-  mePath2.push_back("/data/export/common/Top/ntuple/MuEl/MC/Summer11_new/vallot_TTbarPowhegPythia.root");
-  mePath2.push_back("/data/export/common/Top/ntuple/ElEl/MC/Summer11_new/vallot_TTbarPowhegPythia.root");
-  mePath2.push_back("/data/export/common/Top/ntuple/MuMu/MC/Summer11_new/vallot_TTbarPowhegPythia.root");
-
-  mePath3.push_back("/data/export/common/Top/ntuple/MuEl/MC/Summer11_new/vallot_TTbarPowhegHerwig.root");
-  mePath3.push_back("/data/export/common/Top/ntuple/ElEl/MC/Summer11_new/vallot_TTbarPowhegHerwig.root");
-  mePath3.push_back("/data/export/common/Top/ntuple/MuMu/MC/Summer11_new/vallot_TTbarPowhegHerwig.root");
-
-  mePathZprime.push_back("/data/export/common/Top/ntuple/MuEl/MC/Summer11_new/vallot_ZPrimeM500W1.root");
-  mePathZprime.push_back("/data/export/common/Top/ntuple/ElEl/MC/Summer11_new/vallot_ZPrimeM500W1.root");
-  mePathZprime.push_back("/data/export/common/Top/ntuple/MuMu/MC/Summer11_new/vallot_ZPrimeM500W1.root");
-   
-  //measured data distribution after final cut:version 6->take into account QCD
-  rdPath.push_back("/data/export/common/Top/finalHisto/v6/MuEl.root");
-  rdPath.push_back("/data/export/common/Top/finalHisto/v6/ElEl.root");
-  rdPath.push_back("/data/export/common/Top/finalHisto/v6/MuMu.root");
-
-  //background variation uncertainty
-  rdPathUp.push_back("/data/export/common/Top/finalHisto/v5/MuEl_DYll_up.root");
-  rdPathUp.push_back("/data/export/common/Top/finalHisto/v5/ElEl_DYll_up.root");
-  rdPathUp.push_back("/data/export/common/Top/finalHisto/v5/MuMu_DYll_up.root");
-
-  rdPathDw.push_back("/data/export/common/Top/finalHisto/v5/MuEl_DYll_dw.root");
-  rdPathDw.push_back("/data/export/common/Top/finalHisto/v5/ElEl_DYll_dw.root");
-  rdPathDw.push_back("/data/export/common/Top/finalHisto/v5/MuMu_DYll_dw.root");
-
-  //mc truth level for full phase space or visible
-  TFile * f_MadGraph = new TFile("/data/export/common/Top/ntuple/ttbarGen.root");
-  TFile * f_POWHEG = new TFile("/data/export/common/Top/ntuple/Gen/ttbarGen_TTTo2L2Nu2BTuneZ2_Powheg_Summer11_PUS4_v0.root");
-  TFile * f_MCNLO = new TFile("/data/export/common/Top/ntuple/ttbar_ntuple_cteq6m_dilepton_v20111028.root");
+  rdPath.push_back("MuEl_1fb_notrigger/MuEl.root");
+  rdPath.push_back("ElEl_1fb_notrigger/ElEl.root");
+  rdPath.push_back("MuMu_1fb_notrigger/MuMu.root");
 
   const std::string cutStep = "Step_7";
-  double lumi = 1143.22;
-  double scale = lumi/22222.22;
-  double scale_powheg = lumi/ ( 1000000.0 / (157.5 * 0.11) );
+  double scale = 1091.94/19047.62;//normalized to 1.1 fb-1 
   bool split = false;//use full statistics if it is false
   string recon = "vsum";
 
@@ -95,72 +54,23 @@ void preUnfolding(){
   TCut bquark = "ttbarGen.bQuarks_[0].pt() > 30 && ttbarGen.bQuarks_[1].pt() > 30 && abs(ttbarGen.bQuarks_[0].eta()) < 2.4 && abs(ttbarGen.bQuarks_[1].eta()) < 2.4";
   TCut visible = lepton && bquark;
 
-  //response matrix
-  cout << "producing repsonse matrix..." << endl;
   TH2F * h2ResponseM = getResponseM(mcPath, rdPath, cutStep,  "ttbar.M()", decayMode, split ,recon);
-  
-  //after final selection
-  cout << "producing reconstructed level distributions..." << endl;
-  TH1F * hData = getMeasuredHisto(rdPath, cutStep, "vsumMAlt", recon);  //real data
-  TH1F * hDataUp = getMeasuredHisto(rdPathUp, cutStep, "vsumMAlt", recon+"_up");  //real data
-  TH1F * hDataDw = getMeasuredHisto(rdPathDw, cutStep, "vsumMAlt", recon+"_dw");  //real data
-  TH1F * hDataPseudo = getMeasuredHistoPseudo(mcPath, rdPath, cutStep, "ttbar.M()", decayMode, scale, recon+"_MadGraph"); //pseudo data
-  TH1F * hDataPseudoWeighted = getMeasuredHistoPseudo(mcPath, rdPath, cutStep, "ttbar.M()", decayMode, scale, recon+"_MadGraph_Weighted", "1.0+(genttbarM-450)*0.005"); //pseudo data
-  TH1F * hDataPseudoPowheg = getMeasuredHistoPseudo(mePath, rdPath, cutStep, "ttbar.M()", decayMode, scale_powheg, recon+"_Powheg"); //pseudo data
-  TH1F * hDataPseudoPowhegPythia = getMeasuredHistoPseudo(mePath2, rdPath, cutStep, "ttbar.M()", decayMode, scale_powheg, recon+"_PowhegPythia"); //pseudo data
-  TH1F * hDataPseudoPowhegHerwig = getMeasuredHistoPseudo(mePath3, rdPath, cutStep, "ttbar.M()", decayMode, scale_powheg, recon+"_PowhegHerwig"); //pseudo data
-  TH1F * hDataPseudoZprime = getMeasuredHistoPseudo(mePathZprime, rdPath, cutStep, "ttbar.M()", decayMode, scale_powheg, recon+"_Zprime"); //pseudo data
-  
-  //truth level after final selection
-  cout << "producing truth level plots before correcting acceptance..." << endl;
-  TH1F * hGenDist = getGenDistHisto(mcPath, rdPath, cutStep, decayMode, scale, split, "MadGraph");
-  TH1F * hGenDistWeighted = getGenDistHisto(mcPath, rdPath, cutStep, decayMode, scale, split, "MadGraph_Weighted", "1.0+(genttbarM-450)*0.005");
-  TH1F * hGenDistPowheg = getGenDistHisto(mePath, rdPath, cutStep, decayMode, scale_powheg, split, "Powheg");
-  TH1F * hGenDistZprime = getGenDistHisto(mePathZprime, rdPath, cutStep, decayMode, scale_powheg, split, "Zprime");
 
-  //acceptance to visible phase space
-  cout << "producing acceptance plots..." << endl;
-  TH1F * hAccept =  getAcceptanceHisto(mcPath, rdPath, cutStep,  decayMode, recon, visible);
-  TH1F * hAcceptFull =  getAcceptanceHisto(mcPath, rdPath, cutStep,  decayMode, recon+"_Full");
+  TH1F * hData = getMeasuredHisto(rdPath, cutStep);  //real data
+  //TH1F * hData = getMeasuredHistoPseudo(mePath, rdPath, cutStep, "ttbar.M()", decayMode, scale, recon); //pseudo data
 
-  //truth level in visible phase space
-  cout << "producing truth level plots..." << endl;
-  TH1D* hMadGraph = getTruthHisto(f_MadGraph, "MADGRAPH", scale, visible);
-  TH1D* hPOWHEG = getTruthHisto(f_POWHEG, "POWHEG", scale_powheg, visible);
-  TH1D* hMadGraphFull = getTruthHisto(f_MadGraph, "MADGRAPH_Full", scale);
-  TH1D* hPOWHEGFull = getTruthHisto(f_POWHEG, "POWHEG_Full", scale_powheg);
-  TH1D* hMCNLO = (TH1D*) f_MCNLO->Get("hVisTTbarM");
-  TH1D* hMCNLO_Up = (TH1D*) f_MCNLO->Get("hVisTTbarM_Up");
-  TH1D* hMCNLO_Down = (TH1D*) f_MCNLO->Get("hVisTTbarM_Down");
+  TH1F * hGenDist = getGenDistHisto(mcPath, rdPath, cutStep, decayMode, scale, split, recon);
+  TH1F * hAccept =  getAcceptanceHisto(mcPath, rdPath, cutStep,  decayMode, recon);
+
+  //for visible phase space definition
+  //TH1F * hAccept =  getAcceptanceHisto(mcPath, rdPath, cutStep,  decayMode, recon, visible);
 
   TFile* f = TFile::Open("preUnfolding.root", "recreate");
 
-  //--------------Write into preUnfolding root file------------------------
-
   h2ResponseM->Write();
   hData->Write();
-  hDataUp->Write();
-  hDataDw->Write();
-  hDataPseudo->Write();
-  hDataPseudoWeighted->Write();
-  hDataPseudoPowheg->Write();
-  hDataPseudoPowhegPythia->Write();
-  hDataPseudoPowhegHerwig->Write();
-  hDataPseudoZprime->Write();
   hGenDist->Write();
-  hGenDistWeighted->Write();
-  hGenDistPowheg->Write();
-  hGenDistZprime->Write();
   hAccept->Write();
-  hAcceptFull->Write();
-
-  hMadGraph->Write();
-  hPOWHEG->Write();
-  hMadGraphFull->Write();
-  hPOWHEGFull->Write();
-  hMCNLO->Write();
-  hMCNLO_Up->Write();
-  hMCNLO_Down->Write();
 
   f->Write();  
   f->Close();
