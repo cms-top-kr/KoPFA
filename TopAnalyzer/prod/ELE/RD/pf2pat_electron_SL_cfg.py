@@ -26,7 +26,7 @@ process.out.outputCommands +=pf2patEventContent
 process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
 process.MessageLogger.cerr.FwkReport.reportEvery = 100
 
-process.acceptedElectrons.cut = cms.string("pt > 20 && abs(eta) < 2.5 && (chargedHadronsIso + neutralHadronIso + photonIso)/pt < 0.1")
+process.acceptedElectrons.cut = cms.string("pt > 20 && abs(eta) < 2.5 && (chargedHadronIso + neutralHadronIso + photonIso)/pt < 0.05")
 process.patMuonFilter.minNumber = 0 
 process.patElectronFilter.minNumber = 1 
 
@@ -39,7 +39,7 @@ process.source = cms.Source("PoolSource",
   )
 )
 
-#process.p += process.hltHighLevelElElRD
+process.p += process.hltHighLevelElElRD
 process.p += process.nEventsHLT
 process.p += getattr(process,"patPF2PATSequence"+postfix)
 process.p += process.looseLeptonSequence
