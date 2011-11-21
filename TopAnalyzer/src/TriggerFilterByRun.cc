@@ -29,7 +29,7 @@ public:
   typedef vector<edm::ParameterSet> VPSet;
 
 private:
-  //HLTConfigProvider hltConfig_;
+  HLTConfigProvider hltConfig_;
 
   struct TriggerSet
   {
@@ -96,6 +96,10 @@ bool TriggerFilterByRun::beginRun(edm::Run& run, const edm::EventSetup& eventSet
   using namespace std;
   using namespace edm;
 
+  const string& processName = triggerResultsLabel_.process();
+  bool isChanged = true;
+  hltConfig_.init(run, eventSetup, processName, isChanged);
+
   const int runNumber = run.run();
   // Find trigger sets corresponding to this run
   currentTriggerNames_.clear();
@@ -110,7 +114,15 @@ bool TriggerFilterByRun::beginRun(edm::Run& run, const edm::EventSetup& eventSet
     if ( runNumber < runBegin or runNumber > runEnd ) continue;
 
     const vector<string>& input = triggerSet->triggerNames_;
-    currentTriggerNames_.insert(currentTriggerNames_.end(), input.begin(), input.end());
+    for ( vector<string>::const_iterator triggerName = input.begin();
+          triggerName != input.end(); ++triggerName )
+    {
+      const vector<string> matchedPaths = hltConfig_.matched(hltConfig_.triggerNames(), *triggerName);
+      if ( matchedPaths.empty() ) continue;
+
+      currentTriggerNames_.insert(currentTriggerNames_.end(), matchedPaths.begin(), matchedPaths.end());
+    }
+    //currentTriggerNames_.insert(currentTriggerNames_.end(), input.begin(), input.end());
   }
 
   return true;
