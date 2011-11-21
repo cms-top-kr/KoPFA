@@ -13,7 +13,7 @@
 //
 // Original Author:  Tae Jeong Kim,40 R-A32,+41227678602,
 //         Created:  Fri Jun  4 17:19:29 CEST 2010
-// $Id: TopDILAnalyzer.h,v 1.56 2011/11/07 12:46:44 tjkim Exp $
+// $Id: TopDILAnalyzer.h,v 1.57 2011/11/19 19:25:14 tjkim Exp $
 //
 //
 
@@ -108,7 +108,7 @@ class TopDILAnalyzer : public edm::EDFilter {
     doJecFly_ = iConfig.getUntrackedParameter<bool>("doJecFly", true);
     doResJec_ = iConfig.getUntrackedParameter<bool>("doResJec", false);
     doJecUnc_ = iConfig.getUntrackedParameter<bool>("doJecUnc", false);
-    resolutionFactor_ = iConfig.getUntrackedParameter<double>("resolutionFactor");
+    resolutionFactor_ = iConfig.getUntrackedParameter<double>("resolutionFactor", 1.0);
     up_ = iConfig.getUntrackedParameter<bool>("up", true); // uncertainty up
     resJetCorrector_ = 0;
     jecUnc_ = 0;
