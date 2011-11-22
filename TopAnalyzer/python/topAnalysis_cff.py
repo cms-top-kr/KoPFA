@@ -85,7 +85,7 @@ ElEl = cms.EDFilter('TopElElAnalyzer',
     bTagAlgo = cms.untracked.string("trackCountingHighEffBJetTags"),
     minBTagValue = cms.untracked.double(1.7),
     PileUpRD = PileUpRD2011,
-    PileUpMC = PoissonIntDist,
+    PileUpMC = PoissonOneXDist,
 )
 
 MuMu = cms.EDFilter('TopMuMuAnalyzer',
@@ -110,7 +110,7 @@ MuMu = cms.EDFilter('TopMuMuAnalyzer',
     bTagAlgo = cms.untracked.string("trackCountingHighEffBJetTags"),
     minBTagValue = cms.untracked.double(1.7),
     PileUpRD = PileUpRD2011,
-    PileUpMC = PoissonIntDist,
+    PileUpMC = PoissonOneXDist,
 )
 
 MuEl = cms.EDFilter('TopMuElAnalyzer',
@@ -135,7 +135,7 @@ MuEl = cms.EDFilter('TopMuElAnalyzer',
     bTagAlgo = cms.untracked.string("trackCountingHighEffBJetTags"),
     minBTagValue = cms.untracked.double(1.7),
     PileUpRD = PileUpRD2011,
-    PileUpMC = PoissonIntDist,
+    PileUpMC = PoissonOneXDist,
 )
 
 from KoPFA.TopAnalyzer.ttbarNtupleProducer_cfi import *
