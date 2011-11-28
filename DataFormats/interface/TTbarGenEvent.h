@@ -4,6 +4,8 @@
 #include "DataFormats/Math/interface/LorentzVector.h"
 #include "DataFormats/Candidate/interface/Candidate.h"
 #include "DataFormats/HepMCCandidate/interface/GenParticle.h"
+#include "DataFormats/JetReco/interface/GenJet.h"
+#include "DataFormats/METReco/interface/GenMET.h"
 
 #include <vector>
 
@@ -16,29 +18,33 @@ public:
   TTbarGenEvent() {};
   ~TTbarGenEvent() {};
 
-  double m() const { return tt_.M(); };
-  double mass() const { return m(); };
-  double met() const { return met_; };
-  
-  void clear();
-  void set(reco::GenParticleCollection::const_iterator begin,
-           reco::GenParticleCollection::const_iterator end);
+  void set(const reco::GenParticleCollection* genParticles,
+           const reco::GenJetCollection* genJets,
+           const reco::GenMET* genMET);
 
 private:
-  math::XYZTLorentzVector tt_;
-  std::vector<math::XYZTLorentzVector> tQuarks_;
-  std::vector<math::XYZTLorentzVector> bQuarks_;
-  std::vector<math::XYZTLorentzVector> leptons_;
-  std::vector<math::XYZTLorentzVector> electrons_;
-  std::vector<math::XYZTLorentzVector> muons_;
-  std::vector<math::XYZTLorentzVector> taus_;
- 
+  void clear();
+
+private:
+  math::XYZTLorentzVector tA_, tB_;
+  math::XYZTLorentzVector bA_, bB_;
+  math::XYZTLorentzVector lA_, lB_;
+  math::XYZTLorentzVector jA_, jB_;
+
+  math::XYZTLorentzVector em1_, em2_;
+  math::XYZTLorentzVector j1_, j2_;
+
   int mumuDecay;
   int eeDecay;
   int emuDecay;
   int tauDecay;
  
-  double met_, metX_, metY_;
+  math::XYZTLorentzVector met_;
+  math::XYZTLorentzVector allNuXY_;
+
+  double m_tt;
+  double m_stable, m_stableBJets;
+  double m_hardTrue, m_hardNuXY, m_hardMET;
 
 };
 
