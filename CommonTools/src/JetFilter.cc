@@ -13,7 +13,7 @@
 //
 // Original Author:  Tae Jeong Kim
 //         Created:  Mon Dec 14 01:29:35 CET 2009
-// $Id: JetFilter.cc,v 1.1 2010/07/22 20:10:20 tjkim Exp $
+// $Id: JetFilter.cc,v 1.1 2011/02/24 20:58:18 taeyeon Exp $
 //
 //
 
@@ -35,8 +35,9 @@
 #include "DataFormats/Math/interface/LorentzVector.h"
 
 #include "DataFormats/PatCandidates/interface/Jet.h"
-#include "PFAnalyses/CommonTools/interface/PatJetIdSelector.h"
-#include "PFAnalyses/CommonTools/interface/CandidateSelector.h"
+//#include "PFAnalyses/CommonTools/interface/PatJetIdSelector.h"
+//#include "PFAnalyses/CommonTools/interface/CandidateSelector.h"
+#include "PhysicsTools/SelectorUtils/interface/PFJetIDSelectionFunctor.h"
 
 #include "DataFormats/TrackReco/interface/TrackFwd.h"
 #include "DataFormats/VertexReco/interface/VertexFwd.h"
@@ -86,6 +87,7 @@ class JetFilter : public edm::EDFilter {
       // Residual Jet energy correction for 38X
       FactorizedJetCorrector* resJetCorrector_;
       bool doResJec_;
+      edm::ParameterSet pfJetIdParams_;
 
 };
 
@@ -106,7 +108,8 @@ JetFilter::JetFilter(const edm::ParameterSet& ps)
   jetLabel_ =  ps.getParameter<edm::InputTag>("jetLabel");
   min_ = ps.getUntrackedParameter<unsigned int>("min",1);
   ptcut_ = ps.getUntrackedParameter<double>("ptcut",30.0);
-  looseJetIdSelector_.initialize( ps.getParameter<edm::ParameterSet> ("looseJetId") );
+  //looseJetIdSelector_.initialize( ps.getParameter<edm::ParameterSet> ("looseJetId") );
+  pfJetIdParams_ = ps.getParameter<edm::ParameterSet> ("looseJetId");
    // Residual Jet energy correction for 38X
   doResJec_ = ps.getUntrackedParameter<bool>("doResJec", false);
   resJetCorrector_ = 0;
@@ -148,6 +151,8 @@ JetFilter::filter(edm::Event& iEvent, const edm::EventSetup& iSetup)
 
   edm::Handle<pat::JetCollection> Jets;
   iEvent.getByLabel(jetLabel_,Jets);
+
+  PFJetIDSelectionFunctor looseJetIdSelector_(pfJetIdParams_);
 
   for (JI it = Jets->begin(); it != Jets->end(); ++it) {
 
