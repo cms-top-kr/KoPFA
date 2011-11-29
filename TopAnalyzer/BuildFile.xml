@@ -6,7 +6,6 @@
 <use   name="FWCore/ServiceRegistry"/>
 <use   name="DataFormats/Common"/>
 <use   name="CondFormats/JetMETObjects"/>
-<use   name="PFAnalyses/CommonTools"/>
 <use   name="DQMServices/Core"/>
 <use   name="KoPFA/DataFormats"/>
 <use   name="SimDataFormats/PileupSummaryInfo"/>

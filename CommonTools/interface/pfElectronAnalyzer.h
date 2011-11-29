@@ -10,8 +10,8 @@
 #include "FWCore/Framework/interface/EventSetup.h"
 #include "DataFormats/PatCandidates/interface/Electron.h"
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
-#include "PFAnalyses/CommonTools/interface/PatElectronSelector.h"
-#include "PFAnalyses/CommonTools/interface/PatLeptonSelector.h"
+//#include "PFAnalyses/CommonTools/interface/PatElectronSelector.h"
+//#include "PFAnalyses/CommonTools/interface/PatLeptonSelector.h"
 
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "FWCore/Utilities/interface/InputTag.h"
@@ -50,7 +50,7 @@ class pfElectronAnalyzer : public edm::EDAnalyzer
   edm::Handle<pat::ElectronCollection> electrons_;
   edm::Handle<reco::BeamSpot> beamSpot_;
 
-  vector<std::string> cutNames;
+  std::vector<std::string> cutNames;
 
   TH2F * id2iso; 
   TH2F * id2isoQCD;

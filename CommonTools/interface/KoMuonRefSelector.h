@@ -18,8 +18,9 @@
 
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
 #include "KoPFA/CommonTools/interface/MuonIDSelector.h"
-#include "PFAnalyses/CommonTools/interface/PatMuonSelector.h"
-#include "PFAnalyses/CommonTools/interface/PatLeptonSelector.h"
+//#include "PFAnalyses/CommonTools/interface/PatMuonSelector.h"
+//#include "PFAnalyses/CommonTools/interface/PatLeptonSelector.h"
+#include "KoPFA/CommonTools/interface/LeptonIsoSelector.h"
 
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "FWCore/Utilities/interface/InputTag.h"
@@ -50,8 +51,10 @@ class KoMuonRefSelector : public edm::EDProducer
   vector<std::string> cut_;
   vector<std::string> isocut_;
   edm::InputTag muonLabel_;
-  PatMuonSelector   muonIdSelector_;
-  PatMuonIsolationSelector muonIsoSelector_;
+  //PatMuonSelector   muonIdSelector_;
+  //PatMuonIsolationSelector muonIsoSelector_;
+  MuonIDSelector   muonIdSelector_;
+  MuonIsoSelector  muonIsoSelector_;
   edm::InputTag beamSpotLabel_;
  
   edm::Handle<edm::View<pat::Muon> > muons_;

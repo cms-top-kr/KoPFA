@@ -6,6 +6,7 @@
 <use   name="DataFormats/PatCandidates"/>
 <use   name="DataFormats/Candidate"/>
 <use   name="DataFormats/HLTReco"/>
+<use   name="DataFormats/Common"/>
 <use   name="SimDataFormats/PileupSummaryInfo"/>
 <use   name="PhysicsTools/Utilities"/>
 <use   name="HLTrigger/HLTcore"/>
@@ -13,7 +14,6 @@
 <use   name="CondFormats/HLTObjects"/>
 <use   name="PhysicsTools/UtilAlgos"/>
 <use   name="FWCore/ServiceRegistry"/>
-<use   name="PFAnalyses/CommonTools"/>
 <use   name="DQMServices/Core"/>
 <use   name="CondFormats/JetMETObjects"/>
 <flags   EDM_PLUGIN="1"/>

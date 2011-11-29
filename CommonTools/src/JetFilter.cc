@@ -13,7 +13,7 @@
 //
 // Original Author:  Tae Jeong Kim
 //         Created:  Mon Dec 14 01:29:35 CET 2009
-// $Id: JetFilter.cc,v 1.1 2011/02/24 20:58:18 taeyeon Exp $
+// $Id: JetFilter.cc,v 1.2 2011/11/29 13:08:37 tjkim Exp $
 //
 //
 
@@ -75,7 +75,7 @@ class JetFilter : public edm::EDFilter {
       typedef pat::JetCollection::const_iterator JI;
       edm::InputTag jetLabel_;
       /// loose jet ID. 
-      PatJetIdSelector looseJetIdSelector_;
+      //PatJetIdSelector looseJetIdSelector_;
       unsigned int min_;
       double ptcut_;
 
