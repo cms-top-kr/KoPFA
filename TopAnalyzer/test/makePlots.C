@@ -2,11 +2,17 @@
 TFile* fEE, * fME, * fMM;
 TString outDirName = ".";
 
-const int nBkg = 5;
-const char* bkgNames[] = {"Wl", "VV", "SingleTop", "DYtt", "DYll"};
+const int nBkg = 7;
+const char* bkgNames[] = {"hMC_TTbarOthers","hMC_Wl", "hMC_VV", "hMC_SingleTop", "hMC_DYtt", "hMC_DYll","hDataBkg_QCD"};
 const char* bkgLabels[] = {
-  "W #rightarrow l#nu", "Dibosons", "Single top",
-  "Z/#gamma* #rightarrow #tau#tau", "Z/#gamma* #rightarrow ll"
+  "t#bar{t} others","W #rightarrow l#nu", "Dibosons", "Single top",
+  "Z/#gamma* #rightarrow #tau#tau", "Z/#gamma* #rightarrow ll","QCD"
+};
+
+const int nSig = 1;
+const char* sigNames[] = {"hMCSig_TTbar"};
+const char* sigLabels[] = {
+  "t#bar{t}",
 };
 
 void cutStepPlots(const char* cutStep, const char* histName, const char* histTitle,
@@ -14,7 +20,7 @@ void cutStepPlots(const char* cutStep, const char* histName, const char* histTit
 TLegend* buildLegend();
 TPaveText* getHeader(double lumi, TString channelName = "");
 
-void makePlots(TString noteNumber = "AN-11-076")
+void makePlots(TString noteNumber = "Merged_Run2011Full_Zprime")
 {
   setTDRStyle();
 
@@ -27,42 +33,47 @@ void makePlots(TString noteNumber = "AN-11-076")
   outDirName += "/"+noteNumber;
   gSystem->Exec("mkdir "+outDirName);
 
-  cutStepPlots("Step_3", "METlog", "Missing E_{T}", 1, 1e8, true);
+  //cutStepPlots("Step_1", "Iso03lep1", "Relative Isolation (GeV)", 1, 1e12, true);
+  cutStepPlots("Step_3", "nVertex", "Vertex multiplicity", 0, 2e6, false);
+  cutStepPlots("Step_3", "METlog", "Missing E_{T}", 1, 1e9, true);
   cutStepPlots("Step_3", "nJetlog", "Jet multiplicity", 1, 1e9, true);
-  cutStepPlots("Step_3", "ZMass", "Z mass", 1, 1e8, true);
-  cutStepPlots("Step_4", "METlog", "Missing E_{T}", 1, 1e8, true);
-  cutStepPlots("Step_5", "MET", "Missing E_{T}", 1, 1e8, true);
-  cutStepPlots("Step_6", "nJet", "Jet multiplicity", 1, 1e8, true);
-  cutStepPlots("Step_6", "vsumMAlt", "t#bar{t} invariant mass", 0, 1000, false);
-  cutStepPlots("Step_7", "nbJet", "b-Jet multiplicity", 1, 1e7, true);
-  cutStepPlots("Step_7", "vsumMAlt", "t#bar{t} invariant mass", 0, 1000, false);
-  cutStepPlots("Step_7", "MET", "Missing E_{T}", 0, 1000, false);
+  cutStepPlots("Step_3", "ZMass", "Z mass", 1, 1e9, true);
+  cutStepPlots("Step_4", "METlog", "Missing E_{T}", 1, 1e9, true);
+  cutStepPlots("Step_5", "MET", "Missing E_{T}", 1, 1e9, true);
+  cutStepPlots("Step_6", "nJet", "Jet multiplicity", 1, 1e9, true);
+  cutStepPlots("Step_6", "MET", "Missing E_{T}", 1, 1e9, true); 
+  cutStepPlots("Step_6", "vsumM", "t#bar{t} invariant mass", 0, 4000, false);
+  cutStepPlots("Step_7", "nbJet", "b-Jet multiplicity", 1, 1e8, true);
+  cutStepPlots("Step_7", "vsumM", "t#bar{t} invariant mass", 0, 4000, false);
+  cutStepPlots("Step_7", "vsumMAlt", "t#bar{t} invariant mass", 0, 6000, false);
+  cutStepPlots("Step_7", "vsumMhigh", "t#bar{t} invariant mass", 1, 1e5, true);
+  cutStepPlots("Step_7", "MET", "Missing E_{T}", 0, 4000, false);
 
-  printCutFlow("MuMu", "-,-,METlog,METlog,MET,vsumMAlt,vsumMAlt");
-  printCutFlow("ElEl", "-,-,METlog,METlog,MET,vsumMAlt,vsumMAlt");
-  printCutFlow("MuEl", "-,-,METlog,METlog,MET,vsumMAlt,vsumMAlt");
+  //printCutFlow("MuMu", "-,-,METlog,METlog,MET,nJet,vsumMAlt");
+  //printCutFlow("ElEl", "-,-,METlog,METlog,MET,nJet,vsumMAlt");
+  //printCutFlow("MuEl", "-,-,METlog,METlog,MET,nJet,vsumMAlt");
 
   // Restore back DY scaling and apply +50% scaling
-  rescalePlots("Step_3", "DYll", "METlog,nJetlog,ZMass", 1/1.04*(1+.04*.5), 1/1.04*(1+.04*.5), 1);
-  rescalePlots("Step_4", "DYll", "METlog"              , 1/1.34*(1+.34*.5), 1/1.34*(1+.34*.5), 1);
-  rescalePlots("Step_5", "DYll", "MET"                 , 1/1.87*(1+.87*.5), 1/1.91*(1+.91*.5), 1);
-  rescalePlots("Step_6", "DYll", "nJet,vsumMAlt"       , 1/1.51*(1+.51*.5), 1/1.91*(1+.91*.5), 1);
-  rescalePlots("Step_7", "DYll", "nbJet,vsumMAlt,MET"  , 1/1.51*(1+.51*.5), 1/1.91*(1+.91*.5), 1);
+  //rescalePlots("Step_3", "DYll", "METlog,nJetlog,ZMass", 1/1.04*(1+.04*.5), 1/1.04*(1+.04*.5), 1);
+  //rescalePlots("Step_4", "DYll", "METlog"              , 1/1.34*(1+.34*.5), 1/1.34*(1+.34*.5), 1);
+  //rescalePlots("Step_5", "DYll", "MET"                 , 1/1.87*(1+.87*.5), 1/1.91*(1+.91*.5), 1);
+  //rescalePlots("Step_6", "DYll", "nJet,vsumMAlt"       , 1/1.51*(1+.51*.5), 1/1.91*(1+.91*.5), 1);
+  //rescalePlots("Step_7", "DYll", "nbJet,vsumMAlt,MET"  , 1/1.51*(1+.51*.5), 1/1.91*(1+.91*.5), 1);
 
-  printCutFlow("MuMu", "-,-,METlog,METlog,MET,vsumMAlt,vsumMAlt");
-  printCutFlow("ElEl", "-,-,METlog,METlog,MET,vsumMAlt,vsumMAlt");
-  printCutFlow("MuEl", "-,-,METlog,METlog,MET,vsumMAlt,vsumMAlt");
+  //printCutFlow("MuMu", "-,-,METlog,METlog,MET,vsumMAlt,vsumMAlt");
+  //printCutFlow("ElEl", "-,-,METlog,METlog,MET,vsumMAlt,vsumMAlt");
+  //printCutFlow("MuEl", "-,-,METlog,METlog,MET,vsumMAlt,vsumMAlt");
 
   // Restore back DY scaling again, and apply -50%
-  rescalePlots("Step_3", "DYll", "METlog,nJetlog,ZMass", 1/(1+.04*.5)*(1-.04*.5), 1/(1+.04*.5)*(1-.04*.5), 1);
-  rescalePlots("Step_4", "DYll", "METlog"              , 1/(1+.34*.5)*(1-.34*.5), 1/(1+.34*.5)*(1-.34*.5), 1);
-  rescalePlots("Step_5", "DYll", "MET"                 , 1/(1+.87*.5)*(1-.87*.5), 1/(1+.91*.5)*(1-.91*.5), 1);
-  rescalePlots("Step_6", "DYll", "nJet,vsumMAlt"       , 1/(1+.51*.5)*(1-.51*.5), 1/(1+.91*.5)*(1-.91*.5), 1);
-  rescalePlots("Step_7", "DYll", "nbJet,vsumMAlt,MET"  , 1/(1+.51*.5)*(1-.51*.5), 1/(1+.91*.5)*(1-.91*.5), 1);
+  //rescalePlots("Step_3", "DYll", "METlog,nJetlog,ZMass", 1/(1+.04*.5)*(1-.04*.5), 1/(1+.04*.5)*(1-.04*.5), 1);
+  //rescalePlots("Step_4", "DYll", "METlog"              , 1/(1+.34*.5)*(1-.34*.5), 1/(1+.34*.5)*(1-.34*.5), 1);
+  //rescalePlots("Step_5", "DYll", "MET"                 , 1/(1+.87*.5)*(1-.87*.5), 1/(1+.91*.5)*(1-.91*.5), 1);
+  //rescalePlots("Step_6", "DYll", "nJet,vsumMAlt"       , 1/(1+.51*.5)*(1-.51*.5), 1/(1+.91*.5)*(1-.91*.5), 1);
+  //rescalePlots("Step_7", "DYll", "nbJet,vsumMAlt,MET"  , 1/(1+.51*.5)*(1-.51*.5), 1/(1+.91*.5)*(1-.91*.5), 1);
 
-  printCutFlow("MuMu", "-,-,METlog,METlog,MET,vsumMAlt,vsumMAlt");
-  printCutFlow("ElEl", "-,-,METlog,METlog,MET,vsumMAlt,vsumMAlt");
-  printCutFlow("MuEl", "-,-,METlog,METlog,MET,vsumMAlt,vsumMAlt");
+  //printCutFlow("MuMu", "-,-,METlog,METlog,MET,vsumMAlt,vsumMAlt");
+  //printCutFlow("ElEl", "-,-,METlog,METlog,MET,vsumMAlt,vsumMAlt");
+  //printCutFlow("MuEl", "-,-,METlog,METlog,MET,vsumMAlt,vsumMAlt");
 }
 
 void printCutFlow(TString decayMode, TString histNamesStr)
@@ -97,11 +108,11 @@ void printCutFlow(TString decayMode, TString histNamesStr)
     for ( int j=0; j<histNames->GetEntries(); ++j )
     {
       TString histName = histNames->At(j)->GetName();
-
-      TH1F* hMC = (TH1F*)f->Get(Form("Step_%d/hMC_%s_Step_%d_%s", j+1, bkgNames[i], j+1, histName));
+      TH1F* hMC = (TH1F*)f->Get(Form("Step_%d/%s_Step_%d_%s", j+1, bkgNames[i], j+1, histName));
       if ( !hMC ) 
       {
         cout << "\t-";
+        cout << "<-ici";
         continue;
       }
 
@@ -186,7 +197,9 @@ void cutStepPlots(const char* cutStep, const char* histName, const char* histTit
   TH1F* hDataME = (TH1F*)fME->Get(Form("%s/hData_%s_%s", cutStep, cutStep, histName));
   TH1F* hDataMM = (TH1F*)fMM->Get(Form("%s/hData_%s_%s", cutStep, cutStep, histName));
 
-  if ( !hDataEE || !hDataME || !hDataMM ) { cout << "No data hist for " << histName << "\n"; return; }
+  if ( !hDataEE ) { cout << Form("%s/hData_%s_%s", cutStep, cutStep, histName) << " for EE " << "\n"; return; }
+  if ( !hDataME ) { cout << Form("%s/hData_%s_%s", cutStep, cutStep, histName) << " for ME " << "\n"; return; }
+  if ( !hDataMM ) { cout << Form("%s/hData_%s_%s", cutStep, cutStep, histName) << " for MM " << "\n"; return; }
 
   TH1F* hDataLL = (TH1F*)hDataEE->Clone(Form("hData_%s_%s", cutStep, histName));
   hDataLL->Reset();
@@ -199,22 +212,22 @@ void cutStepPlots(const char* cutStep, const char* histName, const char* histTit
   THStack* hStackMM = new THStack(TString("hMM_")+cutStep+"_"+histName, histTitle);
   THStack* hStackLL = new THStack(TString("hLL_")+cutStep+"_"+histName, histTitle);
 
-  TH1F* hSigEE = (TH1F*)fEE->Get(Form("%s/hMCSig_TTbar_%s_%s", cutStep, cutStep, histName));
-  TH1F* hSigME = (TH1F*)fME->Get(Form("%s/hMCSig_TTbar_%s_%s", cutStep, cutStep, histName));
-  TH1F* hSigMM = (TH1F*)fMM->Get(Form("%s/hMCSig_TTbar_%s_%s", cutStep, cutStep, histName));
+  TH1F* hSigEE = (TH1F*)fEE->Get(Form("%s/%s_%s_%s", cutStep, sigNames[0], cutStep, histName));
+  TH1F* hSigME = (TH1F*)fME->Get(Form("%s/%s_%s_%s", cutStep, sigNames[0], cutStep, histName));
+  TH1F* hSigMM = (TH1F*)fMM->Get(Form("%s/%s_%s_%s", cutStep, sigNames[0], cutStep, histName));
 
   if ( !hSigEE || !hSigME || !hSigMM ) { cout << "No signal hist for " << histName << "\n"; return; }
 
-  TH1F* hSigLL = (TH1F*)hSigEE->Clone(Form("hMCSig_TTbar_%s_%s", cutStep, histName));
+  TH1F* hSigLL = (TH1F*)hSigEE->Clone(Form("%s_%s_%s", sigNames[0], cutStep, histName));
   hSigLL->Reset();
   hSigLL->Add(hSigEE);
   hSigLL->Add(hSigME);
   hSigLL->Add(hSigMM);
 
-  hStackEE->Add(hSigEE);
-  hStackME->Add(hSigME);
-  hStackMM->Add(hSigMM);
-  hStackLL->Add(hSigLL);
+  //hStackEE->Add(hSigEE);
+  //hStackME->Add(hSigME);
+  //hStackMM->Add(hSigMM);
+  //hStackLL->Add(hSigLL);
 
   // Build legends
   TLegend* legEE = buildLegend();
@@ -234,13 +247,13 @@ void cutStepPlots(const char* cutStep, const char* histName, const char* histTit
 
   for ( int i=0; i<nBkg; ++i )
   {
-    TH1F* hEE = (TH1F*)fEE->Get(Form("%s/hMC_%s_%s_%s", cutStep, bkgNames[i], cutStep, histName));
-    TH1F* hME = (TH1F*)fME->Get(Form("%s/hMC_%s_%s_%s", cutStep, bkgNames[i], cutStep, histName));
-    TH1F* hMM = (TH1F*)fMM->Get(Form("%s/hMC_%s_%s_%s", cutStep, bkgNames[i], cutStep, histName));
+    TH1F* hEE = (TH1F*)fEE->Get(Form("%s/%s_%s_%s", cutStep, bkgNames[i], cutStep, histName));
+    TH1F* hME = (TH1F*)fME->Get(Form("%s/%s_%s_%s", cutStep, bkgNames[i], cutStep, histName));
+    TH1F* hMM = (TH1F*)fMM->Get(Form("%s/%s_%s_%s", cutStep, bkgNames[i], cutStep, histName));
 
     if ( !hEE || !hME || !hMM ) { cout << "No bkg hist " << bkgNames[i] << endl; continue; }
 
-    TH1F* hLL = (TH1F*)hEE->Clone(Form("hMC_%s_%s_%s", bkgNames[i], cutStep, histName));
+    TH1F* hLL = (TH1F*)hEE->Clone(Form("%s_%s_%s", bkgNames[i], cutStep, histName));
     hLL->Reset();
     hLL->Add(hEE);
     hLL->Add(hME);
@@ -265,10 +278,11 @@ void cutStepPlots(const char* cutStep, const char* histName, const char* histTit
     legLL->AddEntry(hLLs[i], bkgLabels[i], "f");
   }
 
-  legEE->AddEntry(hSigEE, "t#bar{t}", "f");
-  legME->AddEntry(hSigME, "t#bar{t}", "f");
-  legMM->AddEntry(hSigMM, "t#bar{t}", "f");
-  legLL->AddEntry(hSigLL, "t#bar{t}", "f");
+  legEE->AddEntry(hSigEE, sigLabels[0], "l");
+  legME->AddEntry(hSigME, sigLabels[0], "l");
+  legMM->AddEntry(hSigMM, sigLabels[0], "l");
+  legLL->AddEntry(hSigLL, sigLabels[0], "l");
+
 
   // Be ready for draw
   hDataEE->SetMinimum(minY);
@@ -276,17 +290,18 @@ void cutStepPlots(const char* cutStep, const char* histName, const char* histTit
   hDataMM->SetMinimum(minY);
   hDataLL->SetMinimum(minY);
 
-  hDataEE->SetMaximum(maxY);
-  hDataME->SetMaximum(maxY);
-  hDataMM->SetMaximum(maxY);
+  hDataEE->SetMaximum(maxY*0.25);
+  hDataME->SetMaximum(maxY*0.5);
+  hDataMM->SetMaximum(maxY*0.25);
   hDataLL->SetMaximum(maxY);
 
   TCanvas* cEE = new TCanvas(TString("cEE_")+cutStep+"_"+histName, TString("cEE_")+cutStep+"_"+histName, 1);
   if ( doLogY ) cEE->SetLogy();
   hDataEE->Draw();
   legEE->Draw();
-  getHeader(35.9, "ee channel")->Draw();
+  getHeader(4.7, "ee channel")->Draw();
   hStackEE->Draw("same");
+  hSigEE->Draw("same");
   hDataEE->Draw("same");
   hDataEE->Draw("sameaxis");
   cEE->Print(Form("%s/cEE_%s_%s.eps", outDirName.Data(), cutStep, histName));
@@ -295,8 +310,9 @@ void cutStepPlots(const char* cutStep, const char* histName, const char* histTit
   if ( doLogY ) cME->SetLogy();
   hDataME->Draw();
   legME->Draw();
-  getHeader(35.9, "#mue channel")->Draw();
+  getHeader(4.7, "#mue channel")->Draw();
   hStackME->Draw("same");
+  hSigME->Draw("same");
   hDataME->Draw("same");
   hDataME->Draw("sameaxis");
   cME->Print(Form("%s/cME_%s_%s.eps", outDirName.Data(), cutStep, histName));
@@ -305,8 +321,9 @@ void cutStepPlots(const char* cutStep, const char* histName, const char* histTit
   if ( doLogY ) cMM->SetLogy();
   hDataMM->Draw();
   legMM->Draw();
-  getHeader(35.9, "#mu#mu channel")->Draw();
+  getHeader(4.7, "#mu#mu channel")->Draw();
   hStackMM->Draw("same");
+  hSigMM->Draw("same");
   hDataMM->Draw("same");
   hDataMM->Draw("sameaxis");
   cMM->Print(Form("%s/cMM_%s_%s.eps", outDirName.Data(), cutStep, histName));
@@ -315,8 +332,9 @@ void cutStepPlots(const char* cutStep, const char* histName, const char* histTit
   if ( doLogY ) cLL->SetLogy();
   hDataLL->Draw();
   legLL->Draw();
-  getHeader(35.9, "All channel")->Draw();
+  getHeader(4.7, "All channel")->Draw();
   hStackLL->Draw("same");
+  hSigLL->Draw("same");
   hDataLL->Draw("same");
   hDataLL->Draw("sameaxis");
   cLL->Print(Form("%s/cLL_%s_%s.eps", outDirName.Data(), cutStep, histName));
@@ -353,7 +371,7 @@ TPaveText* getHeader(double lumi, TString channelName)
   pt->SetFillStyle(1001);
   pt->SetTextAlign(12);
   pt->AddText("CMS Preliminary");
-  pt->AddText(Form("%.1f pb^{-1} at  #sqrt{s} = 7 TeV", lumi));
+  pt->AddText(Form("%.1f fb^{-1} at  #sqrt{s} = 7 TeV", lumi));
   if ( channelName != "" ) pt->AddText(channelName);
 
   return pt;
