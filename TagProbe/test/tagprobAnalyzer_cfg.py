@@ -10,7 +10,7 @@ process.MessageLogger.cerr.FwkReport.reportEvery = 1000
 
 process.TagProbeFitTreeAnalyzer = cms.EDAnalyzer("TagProbeFitTreeAnalyzer",
     # IO parameters:
-    InputFileNames = cms.vstring("result6/tagprob.root"),
+    InputFileNames = cms.vstring("./batch/tagprob_Run2011B.root"),
     InputDirectoryName = cms.string("tnpTree"),
     InputTreeName = cms.string("fitter_tree"),
     OutputFileName = cms.string("Efficiency_ID.root"),
@@ -113,7 +113,7 @@ process.TagProbeFitTreeAnalyzer = cms.EDAnalyzer("TagProbeFitTreeAnalyzer",
 )
 
 process.TagProbeFitTreeAnalyzerIso = cms.EDAnalyzer("TagProbeFitTreeAnalyzer",
-    InputFileNames = cms.vstring("result6/tagprob.root"),
+    InputFileNames = cms.vstring("./batch/tagprob_Run2011B.root"),
     InputDirectoryName = cms.string("tnpTreeIso"),
     InputTreeName = cms.string("fitter_tree"),
     OutputFileName = cms.string("Efficiency_Iso.root"),
