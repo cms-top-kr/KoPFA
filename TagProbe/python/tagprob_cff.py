@@ -10,7 +10,7 @@ process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
 
 # register TFileService
 process.TFileService = cms.Service("TFileService",
-    fileName = cms.string('tagprob.root')
+    fileName = cms.string('tagprob_data.root')
 )
 
 #process.source = cms.Source("PoolSource", fileNames = cms.untracked.vstring(
@@ -19,17 +19,17 @@ process.TFileService = cms.Service("TFileService",
 #    )
 #)
 
-#process.load("PFAnalyses.TTbarDIL.Sources.MU.MC.Fall10.patTuple_Zmumu_cff")
+#process.load("KoPFA.TopAnalyzer.Sources.MU.MC.Spring11.patTuple_DYJetsToLL_cff")
 
 from KoPFA.TagProbe.common_variables_cff import *
 
 process.options   = cms.untracked.PSet( wantSummary = cms.untracked.bool(True))
 
 process.load("KoPFA.TagProbe.tnpLeptonSelector_cfi")
-
-process.load("KoPFA.DiMuonAnalyzer.triggerMatch_cfi")
+process.load("KoPFA.CommonTools.triggerMatch_cfi")
 process.patMuonTriggerMatch.src = "taggedMuons"
-process.patMuonTriggerMatch.pathNames = cms.vstring("HLT_Mu9","HLT_Mu11","HLT_Mu15_v1") 
+#process.patMuonTriggerMatch.pathNames = cms.vstring("HLT_Mu15_v*","HLT_Mu20_v*") 
+process.patMuonTriggerMatch.matchedCuts = cms.string( 'type( "TriggerMuon" ) && path("HLT_Mu15_v*||HLT_Mu20_v*")' )
 process.triggeredPatMuons.src = "taggedMuons"
 #PASS_HLT = "!triggerObjectMatchesByPath('%s').empty()" % ("HLT_Mu9",);
 
@@ -46,7 +46,8 @@ process.load("Geometry.CommonDetUnit.globalTrackingGeometry_cfi")
 process.load("TrackPropagation.SteppingHelixPropagator.SteppingHelixPropagatorAny_cfi")
 process.load("TrackPropagation.SteppingHelixPropagator.SteppingHelixPropagatorAlong_cfi")
 process.load("TrackPropagation.SteppingHelixPropagator.SteppingHelixPropagatorOpposite_cfi")
-process.GlobalTag.globaltag = cms.string('MC_3XY_V14::All')
+#process.GlobalTag.globaltag = cms.string('START311_V2::All')
+process.GlobalTag.globaltag = cms.string('START42_V12::All')
 
 process.goodTracks = cms.EDFilter("TrackSelector",
     src = cms.InputTag("generalTracks"), # or cms.InputTag("standAloneMuons","UpdatedAtVtx"), 
@@ -148,6 +149,7 @@ process.tnpTree = cms.EDAnalyzer("TagProbeFitTreeProducer",
         #isHLTMu3     = cms.string("!triggerObjectMatchesByFilter('hltSingleMu3L3Filtered3').empty()"),  
     ),
     ## DATA-related info
+
     addRunLumiInfo = cms.bool(True),
     ## MC-related info
     isMC = cms.bool(False), ## on MC you can set this to true, add some parameters and get extra info in the tree.
@@ -166,16 +168,16 @@ process.tnpTreeIso = cms.EDAnalyzer("TagProbeFitTreeProducer",
     arbitration   = cms.string("OneProbe"), ## that is, use only tags associated to a single probe.
     # probe variables
     variables = cms.PSet(
-      KinematicVariables
+#      KinematicVariables
+        pt     = cms.string("pt"),
+        abseta = cms.string("abs(eta)"),
     ),
     # choice of what defines a 'passing' probe
     flags = cms.PSet(
-        PFIsoMultiFlags,
-        DETIsoMultiFlags,
+        isIso = cms.InputTag("IsoMuons"),
     ),
     ## DATA-related info
     addRunLumiInfo = cms.bool(True),
-    addEventVariablesInfo = cms.bool(True),
     ## MC-related info
     isMC = cms.bool(False),
     motherPdgId = cms.vint32(22,23),
@@ -184,6 +186,7 @@ process.tnpTreeIso = cms.EDAnalyzer("TagProbeFitTreeProducer",
     tagMatches = cms.InputTag("muMcMatchTag"),
     probeMatches  = cms.InputTag("muMcMatchIDMuonProbe"),
     allProbes     = cms.InputTag("IDMuons"),
+#    eventWeight = cms.InputTag("PUweight")
 )
 
 process.p = cms.Path(

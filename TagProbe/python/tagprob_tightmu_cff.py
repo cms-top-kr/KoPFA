@@ -27,7 +27,7 @@ process.options   = cms.untracked.PSet( wantSummary = cms.untracked.bool(True))
 
 process.load("KoPFA.TagProbe.tnpLeptonSelector_cfi")
 
-process.load("KoPFA.DiMuonAnalyzer.triggerMatch_cfi")
+process.load("KoPFA.CommonTools.triggerMatch_cfi")
 process.patMuonTriggerMatch.src = "taggedTightMuons"
 process.patMuonTriggerMatch.pathNames = cms.vstring("HLT_Mu9","HLT_Mu11","HLT_Mu15_v1") 
 process.triggeredPatMuons.src = "taggedTightMuons"
