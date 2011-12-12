@@ -8,8 +8,11 @@ postfix = "PFlow"
 jetAlgo="AK5"
 usePF2PAT(process,runPF2PAT=True, jetAlgo=jetAlgo, runOnMC=True, postfix=postfix)
 
+process.pfPileUpIsoPFlow.checkClosestZVertex = cms.bool(False)
+process.pfPileUpIso.checkClosestZVertex = cms.bool(False)
+
 #change cone size
-changeConeSize(process)
+changeConeSize(process,postfix)
 
 #FastJet!
 applyFastJet(process,postfix)
@@ -41,7 +44,7 @@ process.MessageLogger.cerr.FwkReport.reportEvery = 100
 #process.p += process.hltHighLevelMuMuMC
 process.p += process.nEventsHLT
 process.p += getattr(process,"patPF2PATSequence"+postfix)
-process.p += process.looseLeptonSequence
+#process.p += process.looseLeptonSequence
 process.p += process.acceptedElectrons
 process.p += process.acceptedMuons
 process.p += process.patLeptonFilter

@@ -58,7 +58,7 @@ process.noscraping = cms.EDFilter("FilterOutScraping",
 )
 
 process.acceptedElectrons = cms.EDFilter("PATElectronSelector",
-    src = cms.InputTag("selectedPatElectronsLoosePFlow"),
+    src = cms.InputTag("selectedPatElectronsPFlow"),
     cut = cms.string("pt > 20 && abs(eta) < 2.5"),
     #cut = cms.string("pt > 20 && abs(eta) < 2.5 && ecalDrivenSeed")
     filter = cms.bool(False),
@@ -77,7 +77,7 @@ process.patElectronFilter = cms.EDFilter("CandViewCountFilter",
 )
 
 process.acceptedMuons = cms.EDFilter("PATMuonSelector",
-    src = cms.InputTag("selectedPatMuonsLoosePFlow"),
+    src = cms.InputTag("selectedPatMuonsPFlow"),
     cut =cms.string("pt > 20 && abs(eta) < 2.5"),
     filter = cms.bool(False),
 )

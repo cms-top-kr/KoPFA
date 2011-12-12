@@ -3,68 +3,19 @@ import os
 
 from PhysicsTools.PatAlgos.tools.pfTools import *
 
-def changeConeSize(process):
-        process.isoValElectronWithChargedPFlow.deposits = cms.VPSet( 
-          cms.PSet(
-          src = cms.InputTag("isoDepElectronWithChargedPFlow"),
-          deltaR = cms.double(0.3),
-          weight = cms.string('1'),
-          vetos = cms.vstring(),
-          skipDefaultVeto = cms.bool(True),
-          mode = cms.string('sum')
-          )
-        )
-        process.isoValElectronWithNeutralPFlow.deposits = cms.VPSet(
-          cms.PSet(
-	  src = cms.InputTag("isoDepElectronWithNeutralPFlow"),
-	  deltaR = cms.double(0.3),
-	  weight = cms.string('1'), # 0.3333,
-	  vetos = cms.vstring('Threshold(0.5)'),
-	  skipDefaultVeto = cms.bool(True),
-	  mode = cms.string('sum')
-	  )
-        )
-        process.isoValElectronWithPhotonsPFlow.deposits = cms.VPSet(
-          cms.PSet(
-	  src = cms.InputTag("isoDepElectronWithPhotonsPFlow"),
-	  deltaR = cms.double(0.3),
-	  weight = cms.string('1'),
-	  vetos = cms.vstring('Threshold(0.5)'),
-	  skipDefaultVeto = cms.bool(True),
-	  mode = cms.string('sum')
-          )
-        )
-        
-        process.isoValMuonWithChargedPFlow.deposits = cms.VPSet( 
-          cms.PSet(
-          src = cms.InputTag("isoDepMuonWithChargedPFlow"),
-          deltaR = cms.double(0.3),
-          weight = cms.string('1'),
-          vetos = cms.vstring(),
-          skipDefaultVeto = cms.bool(True),
-          mode = cms.string('sum')
-          )
-        )
-        process.isoValMuonWithNeutralPFlow.deposits = cms.VPSet(
-          cms.PSet(
-          src = cms.InputTag("isoDepMuonWithNeutralPFlow"),
-          deltaR = cms.double(0.3),
-          weight = cms.string('1'), # 0.3333,
-          vetos = cms.vstring('Threshold(0.5)'),
-          skipDefaultVeto = cms.bool(True),
-          mode = cms.string('sum')
-          )
-        )
-        process.isoValMuonWithPhotonsPFlow.deposits = cms.VPSet(
-          cms.PSet(
-          src = cms.InputTag("isoDepMuonWithPhotonsPFlow"),
-          deltaR = cms.double(0.3),
-          weight = cms.string('1'),
-          vetos = cms.vstring('Threshold(0.5)'),
-          skipDefaultVeto = cms.bool(True),
-          mode = cms.string('sum')
-          )
-        )
+def changeConeSize(process,postfix):
+        #muons
+        applyPostfix(process,"muPFIsoValueNeutral04",postfix).deposits[0].deltaR = cms.double(0.3)
+        applyPostfix(process,"muPFIsoValueCharged04",postfix).deposits[0].deltaR = cms.double(0.3)
+        applyPostfix(process,"muPFIsoValueChargedAll04",postfix).deposits[0].deltaR = cms.double(0.3)
+        applyPostfix(process,"muPFIsoValuePU04",postfix).deposits[0].deltaR = cms.double(0.3)
+        applyPostfix(process,"muPFIsoValueGamma04",postfix).deposits[0].deltaR = cms.double(0.3)
+        #electrons
+        applyPostfix(process,"elPFIsoValueNeutral04",postfix).deposits[0].deltaR = cms.double(0.3)
+        applyPostfix(process,"elPFIsoValueCharged04",postfix).deposits[0].deltaR = cms.double(0.3)
+        applyPostfix(process,"elPFIsoValueChargedAll04",postfix).deposits[0].deltaR = cms.double(0.3)
+        applyPostfix(process,"elPFIsoValuePU04",postfix).deposits[0].deltaR = cms.double(0.3)
+        applyPostfix(process,"elPFIsoValueGamma04",postfix).deposits[0].deltaR = cms.double(0.3)
 
 def applyFastJet(process,postfix):
 	process.pfPileUpPFlow.Enable = True
@@ -93,54 +44,9 @@ def applyFastJet(process,postfix):
 
 
 def addLooseLeptons(process):
-        #set isolation for muon to be usef for jet clustering    
-        process.pfIsolatedMuonsPFlow.combinedIsolationCut = cms.double(0.25)
-        process.pfIsolatedElectronsPFlow.combinedIsolationCut = cms.double(0.25)
-
-        #remove isolation for muon  
-	process.pfIsolatedMuonsLoosePFlow = process.pfIsolatedMuonsPFlow.clone(
-	    combinedIsolationCut = cms.double(999.0) 
-	    )
-
-	process.patMuonsLoosePFlow = process.patMuonsPFlow.clone(
-	    pfMuonSource = cms.InputTag("pfIsolatedMuonsLoosePFlow")
-	    )
-	#adaptPFMuons( process, process.patMuonsLoosePFlow, "PFlow")
-
-        #process.muonMatchLoosePFlow = process.muonMatchPFlow.clone(
-        #    src = cms.InputTag("pfIsolatedMuonsLoosePFlow")
-        #    )
-        #process.muonMatchPFlow.src = "pfIsolatedMuonsPFlow"
-
-        process.patMuonsLoosePFlow.addGenMatch = False
-
-	process.selectedPatMuonsLoosePFlow = process.selectedPatMuonsPFlow.clone(
-	    src = cms.InputTag("patMuonsLoosePFlow")
-	    )
-
-	process.pfIsolatedElectronsLoosePFlow = process.pfIsolatedElectronsPFlow.clone(
-	    combinedIsolationCut = cms.double(999.0) 
-	    )
-
-	process.patElectronsLoosePFlow = process.patElectronsPFlow.clone(
-	    pfElectronSource = cms.InputTag("pfIsolatedElectronsLoosePFlow")
-	    )
-	adaptPFElectrons( process, process.patElectronsLoosePFlow, "PFlow")
-
-	process.selectedPatElectronsLoosePFlow = process.selectedPatElectronsPFlow.clone(
-	    src = cms.InputTag("patElectronsLoosePFlow")
-	    )
-
-
-	process.looseLeptonSequence = cms.Sequence(
-	    process.pfIsolatedMuonsLoosePFlow +
-	    process.patMuonsLoosePFlow +
-	    process.selectedPatMuonsLoosePFlow +    
-	    process.pfIsolatedElectronsLoosePFlow +
-	    process.patElectronsLoosePFlow +
-	    process.selectedPatElectronsLoosePFlow
-	    )
-
+        process.patElectronsPFlow.pfElectronSource = "pfElectronsPFlow" 
+        process.patMuonsPFlow.pfMuonSource = "pfMuonsPFlow" 
+ 
 def topProjection(process, postfix=""):
 	# top projections in PF2PAT:
         getattr(process,"pfNoPileUp"+postfix).enable = True
