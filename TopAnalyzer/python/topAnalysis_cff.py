@@ -138,8 +138,6 @@ MuEl = cms.EDFilter('TopMuElAnalyzer',
     PileUpMC = PoissonOneXDist,
 )
 
-from KoPFA.TopAnalyzer.ttbarNtupleProducer_cfi import *
-
 removeDuplicate = cms.EDFilter("RemoveDuplicate",
     applyFilter = cms.untracked.bool( True )
 )
