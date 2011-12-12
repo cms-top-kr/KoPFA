@@ -10,6 +10,7 @@
 <use   name="KoPFA/DataFormats"/>
 <use   name="SimDataFormats/PileupSummaryInfo"/>
 <use   name="PhysicsTools/Utilities"/>
+<use   name="HLTrigger/HLTcore" />
 <use   name="rootminuit"/>
 <use   name="rootminuit2"/>
 <flags   EDM_PLUGIN="1"/>
