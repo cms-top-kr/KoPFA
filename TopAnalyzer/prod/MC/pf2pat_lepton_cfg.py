@@ -43,6 +43,8 @@ process.MessageLogger.cerr.FwkReport.reportEvery = 100
 
 #process.p += process.hltHighLevelMuMuMC
 process.p += process.nEventsHLT
+process.p += process.patDefaultSequence
+process.p += process.acceptedGsfElectrons
 process.p += getattr(process,"patPF2PATSequence"+postfix)
 #process.p += process.looseLeptonSequence
 process.p += process.acceptedElectrons
@@ -51,4 +53,8 @@ process.p += process.patLeptonFilter
 #process.p += process.patElectronFilter
 #process.p += process.patMuonFilter
 process.p += process.nEventsFiltered
+
+process.out.outputCommands +=[
+        'keep *_acceptedGsfElectrons_*_*',
+]
 
