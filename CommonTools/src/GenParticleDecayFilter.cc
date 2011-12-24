@@ -28,6 +28,7 @@ private:
   unsigned int motherPdgId_, pdgId_;
   std::vector<unsigned int> daughterPdgIds_;
   unsigned int minCount_, maxCount_;
+  int status_;
 };
 
 GenParticleDecayFilter::GenParticleDecayFilter(const edm::ParameterSet& pset)
@@ -38,13 +39,13 @@ GenParticleDecayFilter::GenParticleDecayFilter(const edm::ParameterSet& pset)
   daughterPdgIds_ = pset.getUntrackedParameter<std::vector<unsigned int> >("daughterPdgIds");
   minCount_ = pset.getUntrackedParameter<unsigned int>("minCount", 0);
   maxCount_ = pset.getUntrackedParameter<unsigned int>("maxCount", 9999);
+  status_ = pset.getUntrackedParameter<int>("status", 3);
 }
 
 bool GenParticleDecayFilter::filter(edm::Event& event, const edm::EventSetup& eventSetup)
 {
   if (!applyFilter_)
     return true;
-
 
   using namespace std;
   using namespace edm;
@@ -57,18 +58,19 @@ bool GenParticleDecayFilter::filter(edm::Event& event, const edm::EventSetup& ev
   for ( edm::View<reco::Candidate>::const_iterator particle = particles->begin();
         particle != particles->end(); ++particle )
   {
-    if ( particle->status() != 3 ) continue;
+    if ( status_ and particle->status() != status_ ) continue;
     if ( (unsigned int)abs(particle->pdgId()) != pdgId_ ) continue;
 
     if ( motherPdgId_ != 0 )
     {
-      // Find mother particle with status == 3
+      // Find mother particle
       const reco::Candidate* mother = particle->mother();
-      while ( mother != 0 and mother->status() != 3 )
+      while ( mother != 0 and mother->status() != status_ )
       {
         mother = mother->mother();
       }
-      if ( !mother or mother->status() != 3 ) continue;
+      if ( !mother ) continue;
+      if ( status_ and mother->status() != status_ ) continue;
       if ( (unsigned int)abs(mother->pdgId()) != motherPdgId_ ) continue;
     }
 
@@ -80,7 +82,8 @@ bool GenParticleDecayFilter::filter(edm::Event& event, const edm::EventSetup& ev
     for ( unsigned int i = 0; i < nDau; ++i )
     {
       const reco::Candidate* dau = particle->daughter(i);
-      if ( !dau or dau->status() != 3 ) continue;
+      if ( !dau ) continue;
+      if ( status_ and dau->status() != status_ ) continue;
 
       for ( unsigned int j = 0; j < nPdgId; ++j )
       {
