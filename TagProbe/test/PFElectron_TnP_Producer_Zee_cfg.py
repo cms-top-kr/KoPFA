@@ -23,8 +23,10 @@ process.source.fileNames = readFiles
 
 process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
 
+mode = "Data"
+
 process.TFileService = cms.Service("TFileService",
-    fileName = cms.string("tnpTree.root")
+    fileName = cms.string("tnpTree_%s.root" % mode)
 )
 
 #process.load("KoPFA.TagProbe.Electron_TnP_Producer_cff")
