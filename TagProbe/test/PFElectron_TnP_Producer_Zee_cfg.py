@@ -80,11 +80,30 @@ process.triggeredPatElectrons = cms.EDProducer("PATTriggerMatchElectronEmbedder"
     matches = cms.VInputTag( "patElectronTriggerMatch")
 )
 
+process.patPFElectronTriggerMatch = cms.EDProducer("PATTriggerMatcherDRDPtLessByR",
+    src = cms.InputTag( 'acceptedElectrons'),
+    matched = cms.InputTag( "patElectronTrigger" ),
+    andOr = cms.bool( False ),
+    filterIdsEnum = cms.vstring( '*' ),
+    filterIds = cms.vint32( 0 ),
+    filterLabels = cms.vstring( '*' ),
+    matchedCuts = cms.string( ""),
+    collectionTags = cms.vstring( '*' ),
+    maxDPtRel = cms.double( 0.5 ),
+    maxDeltaR = cms.double( 0.2 ),
+    resolveAmbiguities    = cms.bool( True ),
+    resolveByMatchQuality = cms.bool( False )
+)
+
+process.triggeredPatPFElectrons = cms.EDProducer("PATTriggerMatchElectronEmbedder",
+    src = cms.InputTag('acceptedElectrons'),
+    matches = cms.VInputTag( "patPFElectronTriggerMatch")
+)
 
 ###Tags###
 
 process.eleTag = cms.EDFilter("PATElectronSelector",
-    src = cms.InputTag("triggeredPatElectrons"),
+    src = cms.InputTag("triggeredPatPFElectrons"),
     cut = cms.string(
         relIso05 + "&&" + eidTightMC 
         + "&&" + "(" + "!triggerObjectMatchesByPath('HLT_Ele17_CaloIdT_TrkIdVL_CaloIsoVL_TrkIsoVL_Ele8_CaloIdT_TrkIdVL_CaloIsoVL_TrkIsoVL_v*',1,0).empty()"
@@ -114,9 +133,9 @@ process.eleIdTight = cms.EDFilter("PATElectronSelector",
 )
 
 process.elePFIdTight = cms.EDFilter("PATElectronSelector",
-    src = cms.InputTag("triggeredPatElectrons"),
+    src = cms.InputTag("triggeredPatPFElectrons"),
     cut = cms.string(
-        eidTightMC + "&&" + "mva > -0.1"
+        eidTightMC 
     ),
     filter = cms.bool(False),
 )
@@ -125,7 +144,7 @@ process.elePFIdTight = cms.EDFilter("PATElectronSelector",
 ###Z Pairs###
 
 process.zBase = cms.EDProducer("CandViewShallowCloneCombiner",
-    decay = cms.string("eleTag@+ acceptedGsfElectrons@-"),
+    decay = cms.string("eleTag@+ triggeredPatPFElectrons@-"),
     checkCharge = cms.bool(False),
     cut = cms.string("70 < mass < 110"),
 )
@@ -247,7 +266,10 @@ process.tnpTrigger = cms.EDAnalyzer("TagProbeFitTreeProducer",
 )   
 
 process.p = cms.Path(
-    process.patElectronTrigger + process.patElectronTriggerMatch + process.triggeredPatElectrons + process.eleTag #produce tag electron 
+    process.patElectronTrigger 
+  + process.patElectronTriggerMatch + process.triggeredPatElectrons 
+  + process.patPFElectronTriggerMatch + process.triggeredPatPFElectrons 
+  + process.eleTag #produce tag electron 
   + process.eleIdTight + process.elePFIdTight #produce probe electron
   + process.zBase + process.zIdTight + process.zPFIdTight #produce Z pair
   + process.tnpId + process.tnpPFId + process.tnpTightIdIso + process.tnpTrigger #produce trees for Id, isolation and trigger study
