@@ -16,36 +16,87 @@ process.GlobalTag.globaltag = cms.string( autoCond[ 'startup' ] )
 process.source = cms.Source("PoolSource", 
     fileNames = cms.untracked.vstring(),
 )
-#from KoPFA.TopAnalyzer.Sources.ELE.RD.patTuple_Run2011A_cff import readFiles
-#from KoPFA.TopAnalyzer.Sources.ELE.MC.Spring11.patTuple_ZJets_TnP_cff import readFiles
-from KoPFA.TopAnalyzer.Sources.ELE.MC.Spring11.patTuple_ZJets_cff import readFiles
+from KoPFA.TagProbe.Sources.ELE.RD.patTuple_Run2011B_cff import readFiles
 process.source.fileNames = readFiles
 
-process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(100000) )
+#process.load("KoPFA.TagProbe.Sources.ELE.RD.patTuple_Run2011B_cff")
+
+process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
 
 process.TFileService = cms.Service("TFileService",
-    fileName = cms.string("tnpTree_MC.root")
+    fileName = cms.string("tnpTree.root")
 )
 
 #process.load("KoPFA.TagProbe.Electron_TnP_Producer_cff")
 
-relIso10 = "(chargedHadronIso+neutralHadronIso+photonIso)/pfCandidateRef.p4.pt < 0.10"
-relIso15 = "(chargedHadronIso+neutralHadronIso+photonIso)/pfCandidateRef.p4.pt < 0.15"
-relIso17 = "(chargedHadronIso+neutralHadronIso+photonIso)/pfCandidateRef.p4.pt < 0.17"
-relIso20 = "(chargedHadronIso+neutralHadronIso+photonIso)/pfCandidateRef.p4.pt < 0.20"
+relIso05 = "(chargedHadronIso+neutralHadronIso+photonIso)/pt < 0.05"
+relIso10 = "(chargedHadronIso+neutralHadronIso+photonIso)/pt < 0.10"
+relIso15 = "(chargedHadronIso+neutralHadronIso+photonIso)/pt < 0.15"
+relIso17 = "(chargedHadronIso+neutralHadronIso+photonIso)/pt < 0.17"
+relIso20 = "(chargedHadronIso+neutralHadronIso+photonIso)/pt < 0.20"
+relIso05dbeta = "(chargedHadronIso+ max(0.0 , neutralHadronIso+photonIso - puChargedHadronIso) )/pt < 0.05"
+relIso10dbeta = "(chargedHadronIso+ max(0.0 , neutralHadronIso+photonIso - puChargedHadronIso) )/pt < 0.10"
+relIso15dbeta = "(chargedHadronIso+ max(0.0 , neutralHadronIso+photonIso - puChargedHadronIso) )/pt < 0.15"
+relIso17dbeta = "(chargedHadronIso+ max(0.0 , neutralHadronIso+photonIso - puChargedHadronIso) )/pt < 0.17"
+relIso20dbeta = "(chargedHadronIso+ max(0.0 , neutralHadronIso+photonIso - puChargedHadronIso) )/pt < 0.20"
+# FIXME:was not able to call pfCandidateRef for gsf electron
+#relIso10 = "(chargedHadronIso+neutralHadronIso+photonIso)/pfCandidateRef.p4.pt < 0.10"
+#relIso15 = "(chargedHadronIso+neutralHadronIso+photonIso)/pfCandidateRef.p4.pt < 0.15"
+#relIso17 = "(chargedHadronIso+neutralHadronIso+photonIso)/pfCandidateRef.p4.pt < 0.17"
+#relIso20 = "(chargedHadronIso+neutralHadronIso+photonIso)/pfCandidateRef.p4.pt < 0.20"
+
 eidMediumMC = "(electronID('eidMediumMC') == 5 || electronID('eidMediumMC') == 7 || electronID('eidMediumMC') == 15)"
 eidTightMC = "(electronID('eidTightMC') == 5 || electronID('eidTightMC') == 7 || electronID('eidTightMC') == 15)"
 
+###Trigger Matching###
+
+process.patElectronTrigger = cms.EDProducer("PATTriggerProducer",
+    processName = cms.string('HLT'),
+    triggerResults = cms.InputTag( "TriggerResults" ),
+    triggerEvent   = cms.InputTag( "hltTriggerSummaryAOD" ),
+    onlyStandAlone = cms.bool( False ),
+    addPathModuleLabels = cms.bool( False )
+)
+
+process.patElectronTriggerMatch = cms.EDProducer("PATTriggerMatcherDRDPtLessByR",
+    src = cms.InputTag( 'acceptedGsfElectrons'),
+    matched = cms.InputTag( "patElectronTrigger" ),
+    andOr = cms.bool( False ),
+    filterIdsEnum = cms.vstring( '*' ),
+    filterIds = cms.vint32( 0 ),
+    filterLabels = cms.vstring( '*' ),
+    matchedCuts = cms.string( ""),
+    collectionTags = cms.vstring( '*' ),
+    maxDPtRel = cms.double( 0.5 ),
+    maxDeltaR = cms.double( 0.2 ),
+    resolveAmbiguities    = cms.bool( True ),
+    resolveByMatchQuality = cms.bool( False )
+)
+
+process.triggeredPatElectrons = cms.EDProducer("PATTriggerMatchElectronEmbedder",
+    src = cms.InputTag('acceptedGsfElectrons'),
+    matches = cms.VInputTag( "patElectronTriggerMatch")
+)
+
+
+###Tags###
+
 process.eleTag = cms.EDFilter("PATElectronSelector",
-    src = cms.InputTag("acceptedElectrons"),
+    src = cms.InputTag("triggeredPatElectrons"),
     cut = cms.string(
-        relIso10 + "&&" + eidTightMC
+        relIso05 + "&&" + eidTightMC 
+        + "&&" + "(" + "!triggerObjectMatchesByPath('HLT_Ele17_CaloIdT_TrkIdVL_CaloIsoVL_TrkIsoVL_Ele8_CaloIdT_TrkIdVL_CaloIsoVL_TrkIsoVL_v*',1,0).empty()"
+        + "||" + "!triggerObjectMatchesByPath('HLT_Ele17_CaloIdL_CaloIsoVL_Ele8_CaloIdL_CaloIsoVL_v*',1,0).empty()"
+        + "||" + "!triggerObjectMatchesByPath('HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v*',1,0).empty()"
+        + ")"
     ),
     filter = cms.bool(True),
 )
 
+###Probes###
+
 process.eleIdMedium = cms.EDFilter("PATElectronSelector",
-    src = cms.InputTag("selectedPatElectronsLoosePFlow"),
+    src = cms.InputTag("acceptedGsfElectrons"),
     cut = cms.string(
         eidMediumMC
     ),  
@@ -53,15 +104,26 @@ process.eleIdMedium = cms.EDFilter("PATElectronSelector",
 )
 
 process.eleIdTight = cms.EDFilter("PATElectronSelector",
-    src = cms.InputTag("selectedPatElectronsLoosePFlow"),
+    src = cms.InputTag("triggeredPatElectrons"),
     cut = cms.string(
-        eidTightMC
+        eidTightMC 
     ),  
     filter = cms.bool(False),
 )
 
+process.elePFIdTight = cms.EDFilter("PATElectronSelector",
+    src = cms.InputTag("triggeredPatElectrons"),
+    cut = cms.string(
+        eidTightMC + "&&" + "mva > -0.1"
+    ),
+    filter = cms.bool(False),
+)
+
+
+###Z Pairs###
+
 process.zBase = cms.EDProducer("CandViewShallowCloneCombiner",
-    decay = cms.string("eleTag@+ selectedPatElectronsLoosePFlow@-"),
+    decay = cms.string("eleTag@+ acceptedGsfElectrons@-"),
     checkCharge = cms.bool(False),
     cut = cms.string("70 < mass < 110"),
 )
@@ -78,6 +140,14 @@ process.zIdTight = cms.EDProducer("CandViewShallowCloneCombiner",
     cut = cms.string("70 < mass < 110"),
 )
 
+process.zPFIdTight = cms.EDProducer("CandViewShallowCloneCombiner",
+    decay = cms.string("eleTag@+ elePFIdTight@-"),
+    checkCharge = cms.bool(False),
+    cut = cms.string("70 < mass < 110"),
+)
+
+###Fill Trees###
+
 process.tnpId = cms.EDAnalyzer("TagProbeFitTreeProducer",
     tagProbePairs = cms.InputTag("zBase"),
     arbitration = cms.string("OneProbe"),
@@ -86,11 +156,26 @@ process.tnpId = cms.EDAnalyzer("TagProbeFitTreeProducer",
         pt = cms.string("pt"),
         eta = cms.string("eta"),
         abseta = cms.string("abs(eta)"),
-        charge = cms.string("charge"),
     ),
     flags = cms.PSet(
         IdMedium = cms.string(eidMediumMC),
         IdTight = cms.string(eidTightMC),
+    ),
+    addRunLumiInfo = cms.bool(True),
+    isMC = cms.bool(False),
+)
+
+process.tnpPFId = cms.EDAnalyzer("TagProbeFitTreeProducer",
+    tagProbePairs = cms.InputTag("zIdTight"),
+    arbitration = cms.string("OneProbe"),
+    #arbitration = cms.string("BestMass"),
+    variables = cms.PSet(
+        pt = cms.string("pt"),
+        eta = cms.string("eta"),
+        abseta = cms.string("abs(eta)"),
+    ),
+    flags = cms.PSet(
+        PFId = cms.string("mva > -0.1"),
     ),
     addRunLumiInfo = cms.bool(True),
     isMC = cms.bool(False),
@@ -104,7 +189,6 @@ process.tnpMediumIdIso = cms.EDAnalyzer("TagProbeFitTreeProducer",
         pt = cms.string("pt"),
         eta = cms.string("eta"),
         abseta = cms.string("abs(eta)"),
-        charge = cms.string("charge"),
     ),
     flags = cms.PSet(
         Iso15 = cms.string(relIso15),
@@ -116,27 +200,58 @@ process.tnpMediumIdIso = cms.EDAnalyzer("TagProbeFitTreeProducer",
 )
 
 process.tnpTightIdIso = cms.EDAnalyzer("TagProbeFitTreeProducer",
-    tagProbePairs = cms.InputTag("zIdTight"),
+    tagProbePairs = cms.InputTag("zPFIdTight"),
     arbitration = cms.string("OneProbe"),
     #arbitration = cms.string("BestMass"),
     variables = cms.PSet(
         pt = cms.string("pt"),
         eta = cms.string("eta"),
         abseta = cms.string("abs(eta)"),
-        charge = cms.string("charge"),
     ),
     flags = cms.PSet(
+        Iso05 = cms.string(relIso05),
+        Iso10 = cms.string(relIso10),
         Iso15 = cms.string(relIso15),
         Iso17 = cms.string(relIso17),
         Iso20 = cms.string(relIso20),
+        Iso05dbeta = cms.string(relIso05dbeta),
+        Iso10dbeta = cms.string(relIso10dbeta),
+        Iso15dbeta = cms.string(relIso15dbeta),
+        Iso17dbeta = cms.string(relIso17dbeta),
+        Iso20dbeta = cms.string(relIso20dbeta),
     ),
     addRunLumiInfo = cms.bool(True),
     isMC = cms.bool(False),
 )
 
+process.tnpTrigger = cms.EDAnalyzer("TagProbeFitTreeProducer",
+    tagProbePairs = cms.InputTag("zPFIdTight"),
+    arbitration = cms.string("OneProbe"),
+    #arbitration = cms.string("BestMass"),
+    variables = cms.PSet(
+        pt = cms.string("pt"),
+        eta = cms.string("eta"),
+        abseta = cms.string("abs(eta)"),
+    ),
+    flags = cms.PSet(
+        Trigger = cms.string(
+          "!triggerObjectMatchesByPath('HLT_Ele17_CaloIdT_TrkIdVL_CaloIsoVL_TrkIsoVL_Ele8_CaloIdT_TrkIdVL_CaloIsoVL_TrkIsoVL_v*',1,0).empty()"
+          + "||" + "!triggerObjectMatchesByPath('HLT_Ele17_CaloIdL_CaloIsoVL_Ele8_CaloIdL_CaloIsoVL_v*',1,0).empty()"
+          + "||" + "!triggerObjectMatchesByPath('HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v*',1,0).empty()"
+        ),
+    ),
+    addRunLumiInfo = cms.bool(True),
+    isMC = cms.bool(False),
+)   
+
 process.p = cms.Path(
-    process.eleTag * process.eleIdMedium + process.eleIdTight
-  + process.zBase + process.zIdMedium + process.zIdTight
-  + process.tnpId + process.tnpMediumIdIso + process.tnpTightIdIso
+    process.patElectronTrigger + process.patElectronTriggerMatch + process.triggeredPatElectrons + process.eleTag #produce tag electron 
+  + process.eleIdTight + process.elePFIdTight #produce probe electron
+  + process.zBase + process.zIdTight + process.zPFIdTight #produce Z pair
+  + process.tnpId + process.tnpPFId + process.tnpTightIdIso + process.tnpTrigger #produce trees for Id, isolation and trigger study
+  #FIXME: if you want to get isolation efficiency with respect to Medium electron.
+  #+ process.eleIdMedium
+  #+ process.zIdMedium
+  #+ process.tnpMediumIdIso
 )
 
