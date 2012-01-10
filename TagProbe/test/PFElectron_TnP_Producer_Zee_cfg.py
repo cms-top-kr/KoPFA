@@ -16,12 +16,12 @@ process.GlobalTag.globaltag = cms.string( autoCond[ 'startup' ] )
 process.source = cms.Source("PoolSource", 
     fileNames = cms.untracked.vstring(),
 )
-from KoPFA.TagProbe.Sources.ELE.RD.patTuple_Run2011B_cff import readFiles
-process.source.fileNames = readFiles
+#from KoPFA.TagProbe.Sources.ELE.RD.patTuple_Run2011B_cff import readFiles
+#process.source.fileNames = readFiles
 
-#process.load("KoPFA.TagProbe.Sources.ELE.RD.patTuple_Run2011B_cff")
+process.load("KoPFA.TagProbe.Sources.ELE.RD.patTuple_Run2011B_cff")
 
-process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(1000) )
+process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
 
 mode = "Data"
 
