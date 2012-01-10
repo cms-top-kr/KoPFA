@@ -54,61 +54,8 @@ def tnpEffPSet(categories):
 
     return effSet
 
-process.tnpId = cms.EDAnalyzer("TagProbeFitTreeAnalyzer",
+process.tnpFit = cms.EDAnalyzer("TagProbeFitTreeAnalyzer",
     InputFileNames = cms.vstring("tnpTree_%s.root" % mode),
-    InputDirectoryName = cms.string("tnpId"),
-    InputTreeName = cms.string("fitter_tree"),
-    OutputFileName = cms.string("result_Id_%s.root" % mode),
-    NumCPU = cms.uint32(1),
-    SaveWorkspace = cms.bool(True),
-    floatShapeParameters = cms.bool(True),
-    Variables = cms.PSet(
-        mass = cms.vstring("Tag-Probe mass", "70.0", "110.0", "GeV/c^{2}"),
-        pt = cms.vstring("Probe p_{T}", "0", "1000", "GeV/c"),
-        abseta = cms.vstring("Probe |#eta|", "0", "2.4", ""),
-    ),
-
-    Categories = cms.PSet(
-        IdMedium = cms.vstring("IdMedium", "dummy[pass=1,fail=0]"),
-        IdTight = cms.vstring("IdTight", "dummy[pass=1,fail=0]"),
-    ),
-
-    PDFs = basicPDFs,
-
-    binnedFit = cms.bool(True),
-    binsForFit = cms.uint32(50),
-
-    Efficiencies = tnpEffPSet(["IdMedium", "IdTight"])
-)
-
-process.tnpPFId = cms.EDAnalyzer("TagProbeFitTreeAnalyzer",
-    InputFileNames = cms.vstring("tnpTree_%s.root" % mode),
-    InputDirectoryName = cms.string("tnpPFId"),
-    InputTreeName = cms.string("fitter_tree"),
-    OutputFileName = cms.string("result_PFId_%s.root" % mode),
-    NumCPU = cms.uint32(1),
-    SaveWorkspace = cms.bool(True),
-    floatShapeParameters = cms.bool(True),
-    Variables = cms.PSet(
-        mass = cms.vstring("Tag-Probe mass", "70.0", "110.0", "GeV/c^{2}"),
-        pt = cms.vstring("Probe p_{T}", "0", "1000", "GeV/c"),
-        abseta = cms.vstring("Probe |#eta|", "0", "2.4", ""),
-    ),
-
-    Categories = cms.PSet(
-        PFId = cms.vstring("PFId", "dummy[pass=1,fail=0]"),
-    ),
-
-    PDFs = basicPDFs,
-
-    binnedFit = cms.bool(True),
-    binsForFit = cms.uint32(50),
-
-    Efficiencies = tnpEffPSet(["PFId"])
-)
-
-process.tnpTrigger = cms.EDAnalyzer("TagProbeFitTreeAnalyzer",
-    InputFileNames = cms.vstring("tnpTree_%s*.root" % mode),
     InputDirectoryName = cms.string("tnpTrigger"),
     InputTreeName = cms.string("fitter_tree"),
     OutputFileName = cms.string("result_Trigger_%s.root" % mode),
@@ -133,42 +80,7 @@ process.tnpTrigger = cms.EDAnalyzer("TagProbeFitTreeAnalyzer",
     Efficiencies = tnpEffPSet(["Trigger"])
 )
 
-
-process.tnpTightIdIso = cms.EDAnalyzer("TagProbeFitTreeAnalyzer",
-    InputFileNames = cms.vstring("tnpTree_%s.root" % mode),
-    InputDirectoryName = cms.string("tnpTightIdIso"),
-    InputTreeName = cms.string("fitter_tree"),
-    OutputFileName = cms.string("result_TightIdIso_%s.root" % mode),
-    NumCPU = cms.uint32(1),
-    SaveWorkspace = cms.bool(True),
-    floatShapeParameters = cms.bool(True),
-    Variables = cms.PSet(
-        mass = cms.vstring("Tag-Probe mass", "70.0", "110.0", "GeV/c^{2}"),
-        pt = cms.vstring("Probe p_{T}", "0", "1000", "GeV/c"),
-        eta = cms.vstring("Probe #eta", "-2.4", "2.4", ""),
-        abseta = cms.vstring("Probe |#eta|", "0", "2.4", ""),
-    ),
-
-    Categories = cms.PSet(
-        Iso10 = cms.vstring("Iso10", "dummy[pass=1,fail=0]"),
-        Iso15 = cms.vstring("Iso15", "dummy[pass=1,fail=0]"),
-        Iso17 = cms.vstring("Iso17", "dummy[pass=1,fail=0]"),
-        Iso20 = cms.vstring("Iso20", "dummy[pass=1,fail=0]"),
-        Iso10dbeta = cms.vstring("Iso10dbeta", "dummy[pass=1,fail=0]"),
-        Iso15dbeta = cms.vstring("Iso15dbeta", "dummy[pass=1,fail=0]"),
-        Iso17dbeta = cms.vstring("Iso17dbeta", "dummy[pass=1,fail=0]"),
-        Iso20dbeta = cms.vstring("Iso20dbeta", "dummy[pass=1,fail=0]"),
-    ),
-
-    PDFs = basicPDFs,
-
-    binnedFit = cms.bool(True),
-    binsForFit = cms.uint32(50),
-
-    Efficiencies = tnpEffPSet(["Iso10","Iso15", "Iso17", "Iso20","Iso10dbeta","Iso15dbeta", "Iso17dbeta", "Iso20dbeta"]),
-)
-
 process.fit = cms.Path(
-   process.tnpTrigger
+   process.tnpFit
 )
 

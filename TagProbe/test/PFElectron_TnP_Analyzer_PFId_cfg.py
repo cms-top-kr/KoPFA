@@ -54,8 +54,8 @@ def tnpEffPSet(categories):
 
     return effSet
 
-process.tnpPFId = cms.EDAnalyzer("TagProbeFitTreeAnalyzer",
-    InputFileNames = cms.vstring("batch/Out/Res/Run2011A/tnpTree_%s*.root" % mode),
+process.tnpFit = cms.EDAnalyzer("TagProbeFitTreeAnalyzer",
+    InputFileNames = cms.vstring("tnpTree_%s.root" % mode),
     InputDirectoryName = cms.string("tnpPFId"),
     InputTreeName = cms.string("fitter_tree"),
     OutputFileName = cms.string("result_PFId_%s.root" % mode),
@@ -81,6 +81,6 @@ process.tnpPFId = cms.EDAnalyzer("TagProbeFitTreeAnalyzer",
 )
 
 process.fit = cms.Path(
-   process.tnpPFId
+   process.tnpFit
 )
 
