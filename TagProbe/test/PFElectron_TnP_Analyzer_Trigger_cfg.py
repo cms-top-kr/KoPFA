@@ -108,7 +108,7 @@ process.tnpPFId = cms.EDAnalyzer("TagProbeFitTreeAnalyzer",
 )
 
 process.tnpTrigger = cms.EDAnalyzer("TagProbeFitTreeAnalyzer",
-    InputFileNames = cms.vstring("tnpTree_%s.root" % mode),
+    InputFileNames = cms.vstring("tnpTree_%s*.root" % mode),
     InputDirectoryName = cms.string("tnpTrigger"),
     InputTreeName = cms.string("fitter_tree"),
     OutputFileName = cms.string("result_Trigger_%s.root" % mode),
