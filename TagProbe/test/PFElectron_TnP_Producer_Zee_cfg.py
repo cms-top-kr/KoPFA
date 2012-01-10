@@ -21,7 +21,7 @@ process.source.fileNames = readFiles
 
 #process.load("KoPFA.TagProbe.Sources.ELE.RD.patTuple_Run2011B_cff")
 
-process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
+process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(1000) )
 
 mode = "Data"
 
@@ -47,8 +47,16 @@ relIso20dbeta = "(chargedHadronIso+ max(0.0 , neutralHadronIso+photonIso - puCha
 #relIso17 = "(chargedHadronIso+neutralHadronIso+photonIso)/pfCandidateRef.p4.pt < 0.17"
 #relIso20 = "(chargedHadronIso+neutralHadronIso+photonIso)/pfCandidateRef.p4.pt < 0.20"
 
+eidLooseMC = "(electronID('eidLooseMC') == 5 || electronID('eidLooseMC') == 7 || electronID('eidLooseMC') == 15)"
 eidMediumMC = "(electronID('eidMediumMC') == 5 || electronID('eidMediumMC') == 7 || electronID('eidMediumMC') == 15)"
-eidTightMC = "(electronID('eidTightMC') == 5 || electronID('eidTightMC') == 7 || electronID('eidTightMC') == 15)"
+eidTightMC = "(electronID('eidTightMC') == 5 || electronID('eidTightMC')  == 7 || electronID('eidTightMC') == 15)" 
+eidSuperTightMC = "(electronID('eidSuperTightMC') == 5 || electronID('eidSuperTightMC') == 7 || electronID('eidSuperTightMC') == 15)" 
+eidHyperTight1MC = "(electronID('eidHyperTight1MC') == 5 || electronID('eidHyperTight1MC') == 7 || electronID('eidHyperTight1MC') == 15)"
+simpleEleId95relIso = "(electronID('simpleEleId95relIso') == 5 || electronID('simpleEleId95relIso') == 7 || electronID('simpleEleId95relIso') == 15)" 
+simpleEleId90relIso = "(electronID('simpleEleId90relIso') == 5 || electronID('simpleEleId90relIso') == 7 || electronID('simpleEleId90relIso') == 15)" 
+simpleEleId85relIso = "(electronID('simpleEleId85relIso') == 5 || electronID('simpleEleId85relIso') == 7 || electronID('simpleEleId85relIso') == 15)" 
+simpleEleId80relIso = "(electronID('simpleEleId80relIso') == 5 || electronID('simpleEleId80relIso') == 7 || electronID('simpleEleId80relIso') == 15)" 
+simpleEleId70relIso = "(electronID('simpleEleId70relIso') == 5 || electronID('simpleEleId70relIso') == 7 || electronID('simpleEleId70relIso') == 15)" 
 
 ###Trigger Matching###
 
@@ -179,8 +187,16 @@ process.tnpId = cms.EDAnalyzer("TagProbeFitTreeProducer",
         abseta = cms.string("abs(eta)"),
     ),
     flags = cms.PSet(
+        IdLoose = cms.string(eidLooseMC),
         IdMedium = cms.string(eidMediumMC),
         IdTight = cms.string(eidTightMC),
+        IdSuperTight = cms.string(eidSuperTightMC),
+        IdHyperTight1 = cms.string(eidHyperTight1MC),
+        IdsimpleEleId95relIso = cms.string(simpleEleId95relIso),
+        IdsimpleEleId90relIso = cms.string(simpleEleId90relIso),
+        IdsimpleEleId85relIso = cms.string(simpleEleId85relIso),
+        IdsimpleEleId80relIso = cms.string(simpleEleId80relIso),
+        IdsimpleEleId70relIso = cms.string(simpleEleId70relIso),
     ),
     addRunLumiInfo = cms.bool(True),
     isMC = cms.bool(False),
