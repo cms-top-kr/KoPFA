@@ -56,7 +56,7 @@ def tnpEffPSet(categories):
             EfficiencyCategoryAndState = cms.vstring(category, "pass"),
             UnbinnedVariables = cms.vstring("mass"),
             BinnedVariables = cms.PSet(
-                event_nPV = cms.vdouble(0, 4, 6, 8, 10, 13, 16, 20, 30),
+                event_nPV = cms.vdouble(0, 4, 7, 10, 13, 16, 30),
             ),
             BinToPDFmap = cms.vstring("bwResCBExp")
         ))
