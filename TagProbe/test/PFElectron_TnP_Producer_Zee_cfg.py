@@ -8,6 +8,9 @@ process.load('FWCore.MessageService.MessageLogger_cfi')
 
 process.options   = cms.untracked.PSet( wantSummary = cms.untracked.bool(True) )
 process.MessageLogger.cerr.FwkReport.reportEvery = 1000
+process.MessageLogger.suppressWarning = cms.untracked.vstring('patElectronTrigger')
+process.MessageLogger.suppressInfo = cms.untracked.vstring('patElectronTrigger')
+
 
 from Configuration.PyReleaseValidation.autoCond import autoCond
 process.GlobalTag.globaltag = cms.string( autoCond[ 'startup' ] )
@@ -113,7 +116,7 @@ process.triggeredPatPFElectrons = cms.EDProducer("PATTriggerMatchElectronEmbedde
 process.eleTag = cms.EDFilter("PATElectronSelector",
     src = cms.InputTag("triggeredPatPFElectrons"),
     cut = cms.string(
-        relIso05 + "&&" + eidTightMC 
+        relIso05 + "&&" + eidHyperTight1MC
         + "&&" + "(" + "!triggerObjectMatchesByPath('HLT_Ele17_CaloIdT_TrkIdVL_CaloIsoVL_TrkIsoVL_Ele8_CaloIdT_TrkIdVL_CaloIsoVL_TrkIsoVL_v*',1,0).empty()"
         + "||" + "!triggerObjectMatchesByPath('HLT_Ele17_CaloIdL_CaloIsoVL_Ele8_CaloIdL_CaloIsoVL_v*',1,0).empty()"
         + "||" + "!triggerObjectMatchesByPath('HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v*',1,0).empty()"
@@ -133,7 +136,7 @@ process.eleIdMedium = cms.EDFilter("PATElectronSelector",
 )
 
 process.eleIdTight = cms.EDFilter("PATElectronSelector",
-    src = cms.InputTag("triggeredPatElectrons"),
+    src = cms.InputTag("acceptedGsfElectrons"),
     cut = cms.string(
         eidTightMC 
     ),  
@@ -283,7 +286,7 @@ process.tnpTrigger = cms.EDAnalyzer("TagProbeFitTreeProducer",
 
 process.p = cms.Path(
     process.patElectronTrigger 
-  + process.patElectronTriggerMatch + process.triggeredPatElectrons 
+#  + process.patElectronTriggerMatch + process.triggeredPatElectrons 
   + process.patPFElectronTriggerMatch + process.triggeredPatPFElectrons 
   + process.eleTag #produce tag electron 
   + process.eleIdTight + process.elePFIdTight #produce probe electron
