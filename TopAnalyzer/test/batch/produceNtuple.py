@@ -16,7 +16,7 @@ mclist += ["DYee20to50", "DYee10to20"]
 #qcdlist = ["QCDPt20to30PCtoE","QCDPt30to80BCtoE","QCDPt80to170BCtoE","QCDPt20to30EM","QCDPt30to80EM","QCDPt80to170EM"]
 qcdlist = ["QCD"]
 
-datalist = ["Run2011A"]
+datalist = ["Run2011A", "Run2011B"]
 
 def processSample(sample, dir):
     os.system("rm -rf "+dir+"/Log/"+sample)

@@ -51,6 +51,7 @@ class CreateConfig:
         if dataType == 'RD':
             self.datasets = [
                 'Run2011A', 
+                'Run2011B', 
             ]
 
         else:
@@ -339,14 +340,17 @@ mcSet['MuEl'] = [
 
 rdSet['ElEl'] = [
     'Run2011A', 
+    'Run2011B', 
 ]
 
 rdSet['MuMu'] = [
     'Run2011A', 
+    'Run2011B', 
 ]
 
 rdSet['MuEl'] = [
     'Run2011A', 
+    'Run2011B', 
 ]
 
 mclist = mcSet[decay]
