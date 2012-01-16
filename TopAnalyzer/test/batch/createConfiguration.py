@@ -381,7 +381,7 @@ def mcsample(src):
   elif( decay == "ElEl"):
     dir = "ELE"
   script = """
-process.load("KoPFA.TopAnalyzer.Sources.%s.MC.Spring11.patTuple_%s_cff")
+process.load("KoPFA.TopAnalyzer.Sources.%s.MC.Summer11.patTuple_%s_cff")
 """ % (dir,src)
   return script
 
