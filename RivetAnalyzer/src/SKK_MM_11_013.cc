@@ -38,12 +38,12 @@ namespace Rivet {
     // Book histograms
     void init() {
       // Basic final state
-      const FinalState fs(-5.0, 5.0, 0*GeV);
+      const FinalState fs(-2.5, 2.5, 0*GeV);
 
       // Tracks and jets
 
       addProjection(ChargedFinalState(fs), "Tracks");
-      addProjection(FastJets(FinalState(-5.0, 5.0, 0*GeV), FastJets::ANTIKT, 0.5), "Jets");
+      addProjection(FastJets(FinalState(-2.4, 2.4, 0*GeV), FastJets::ANTIKT, 0.5), "Jets");
 
       IdentifiedFinalState mufs(fs);
       mufs.acceptIdPair(MUON);
@@ -97,12 +97,12 @@ namespace Rivet {
 */
       _hist_n_mu_nu   = bookHistogram1D("n-mu_nu", 11, -0.5, 10.5);
       _hist_phi_mu_nu = bookHistogram1D("phi-mu_nu", 50, -PI, PI);
-      _hist_eta_mu_nu = bookHistogram1D("eta-mu_nu", 50, -4, 4);
+      _hist_eta_mu_nu = bookHistogram1D("eta-mu_nu", 50, -6, 6);
       _hist_pt_mu_nu  = bookHistogram1D("pt-mu_nu", 50, 0.0, 500);
 
       _hist_n_mu   = bookHistogram1D("n-mu", 11, -0.5, 10.5);
       _hist_phi_mu = bookHistogram1D("phi-mu", 50, -PI, PI);
-      _hist_eta_mu = bookHistogram1D("eta-mu", 50, -4, 4);
+      _hist_eta_mu = bookHistogram1D("eta-mu", 50, -6.0, 6.0);
       _hist_pt_mu  = bookHistogram1D("pt-mu", 50, 0.0, 500);
 
       _hist_mup_lpt  = bookHistogram1D("mup_lpt", 50, 0.0, 500);
@@ -112,22 +112,23 @@ namespace Rivet {
 
       _hist_met = bookHistogram1D("Etmiss", 75, 0.0, 1500);
       _hist_met2 = bookHistogram1D("Etmiss2", 75, 0.0, 1500);
-      _hist_met4v = bookHistogram1D("Etmiss4v", 75, 0.0, 00);
+      _hist_met4v = bookHistogram1D("Etmiss4v", 75, 0.0, 1500);
+      _hist_met_eta = bookHistogram1D("Etmiss_eta", 50, -6.0, 6.0);
 
       _hist_mll_ossf_mumu = bookHistogram1D("mll-ossf-mumu", 50, 0.0, 500);
-      _hist_mll_all_ossf_mumu = bookHistogram1D("mll-all-ossf-mumu", 50, 0.0, 500);
       _hist_mll_2_ossf_mumu = bookHistogram1D("mll-2-ossf-mumu", 50, 0.0, 500);
       _hist_mll_ossf_mmf   = bookHistogram1D("mll-ossf-mmf", 50, 0.0, 500);
 
       _h_jet_1_pT = bookHistogram1D("jet_1_pT", 50, 0, 500);
       _h_jet_2_pT = bookHistogram1D("jet_2_pT", 50, 0, 500);
       _h_jet_HT   = bookHistogram1D("jet_HT", logspace(1, 2000, 50));
+      _h_jet_eta   = bookHistogram1D("jet_eta", 50, -6, 6);
 
       _h_bjet_1_pT = bookHistogram1D("bjet_1_pT", 50, 0, 500);
       _h_bjet_2_pT = bookHistogram1D("bjet_2_pT", 50, 0, 500);
 
       _h_njets = bookHistogram1D("mult_jet", 11, -0.5, 10.5);
-      _h_njets_0 = bookHistogram1D("mult_jet_nocut", 11, -0.5, 10.5);
+      _h_njets_nocut = bookHistogram1D("mult_jet_nocut", 60, 29.5, 89.5);
       _h_bjets = bookHistogram1D("mult_bjet", 11, -0.5, 10.5);
 
       _h_bjet_mass = bookHistogram1D("bjet_mass", 50, 0, 1400);
@@ -136,6 +137,7 @@ namespace Rivet {
       _h_WW_mass3 = bookHistogram1D("mass_WW3", 80, 0, 800);
       _h_WW_pT = bookHistogram1D("WW_pT", 50,0,1000);
       _h_ttbar_pT = bookHistogram1D("pT_ttbar", 50, 0, 700);
+      _h_ttbar_pT2 = bookHistogram1D("pT_ttbar2", 50, 0, 700);
       _h_ttbar_mass = bookHistogram1D("mass_ttbar", 50, 0, 1400);
       _h_ttbar_mass2 = bookHistogram1D("mass_ttbar2", 50, 0, 1400);
       _h_ttbar_mass3 = bookHistogram1D("mass_ttbar3", 50, 0, 1400);
@@ -243,7 +245,6 @@ namespace Rivet {
       const MissingMomentum& met = applyProjection<MissingMomentum>(evt, "MET");
       FourMomentum missvec(0.0,0.0,0.0,0.0);
       missvec = -met.visibleMomentum(); 
-//      double v4met=fabs(missvec.Et());
       missvec.setE(missvec.vector3().mod()); // assume neutrinos are massless
 //      MSG_DEBUG("Vector ET = " << met.vectorET()/GeV << " GeV");
 //      if (met.vectorET()/GeV < 30) {
@@ -251,12 +252,14 @@ namespace Rivet {
 //        vetoEvent;
 //      }
       _hist_met->fill(met.vectorET()/GeV);
+      _hist_met_eta->fill(missvec.eta());
 
 ///////////////////////
 
       const FastJets& jetpro = applyProjection<FastJets>(evt, "Jets");
       const Jets alljets = jetpro.jetsByPt();
-      _h_njets_0->fill(alljets.size(), weight);
+      _h_njets_nocut->fill(alljets.size(), weight);
+      foreach (const Jet& j, alljets) { _h_jet_eta->fill(j.momentum().eta(), weight); }
       if (alljets.size() < 2) {
         MSG_DEBUG("Event failed jet multiplicity cut");
         vetoEvent;
@@ -335,7 +338,6 @@ namespace Rivet {
             vetoEvent;
           }
 
-      const FourMomentum v4_ee = pmuplus + pmuminus;
         double v4m_mm = FourMomentum(pmuplus + pmuminus).mass();
         _hist_mll_ossf_mmf->fill(v4m_mm/GeV, weight);
         _sumwPassedWMass += weight;
@@ -348,6 +350,7 @@ namespace Rivet {
         _h_WW_mass3->fill(WW3.mass(), weight);
         _h_WW_pT->fill(WW.pT(), weight);
         _h_ttbar_pT->fill(ttbar.pT(), weight);
+        _h_ttbar_pT2->fill(ttbar2.pT(), weight);
         _h_ttbar_mass->fill(ttbar.mass(), weight);
         _h_ttbar_mass2->fill(ttbar2.mass(), weight);
         _h_ttbar_mass3->fill(ttbar2.mass(), weight);
@@ -390,6 +393,7 @@ namespace Rivet {
     AIDA::IHistogram1D *_hist_met;
     AIDA::IHistogram1D *_hist_met2;
     AIDA::IHistogram1D *_hist_met4v;
+    AIDA::IHistogram1D *_hist_met_eta;
 
     AIDA::IHistogram1D *_hist_mll_2_ossf_mumu;
     AIDA::IHistogram1D *_hist_mll_ossf_mumu;
@@ -398,10 +402,11 @@ namespace Rivet {
 
     AIDA::IHistogram1D *_h_jet_1_pT, *_h_jet_2_pT, *_h_jet_3_pT, *_h_jet_4_pT;
     AIDA::IHistogram1D *_h_jet_HT;
+    AIDA::IHistogram1D *_h_jet_eta;
     AIDA::IHistogram1D *_h_bjet_1_pT, *_h_bjet_2_pT;
 
     AIDA::IHistogram1D *_h_njets;
-    AIDA::IHistogram1D *_h_njets_0;
+    AIDA::IHistogram1D *_h_njets_nocut;
     AIDA::IHistogram1D *_h_bjets;
     AIDA::IHistogram1D *_h_bjet_mass ;
     AIDA::IHistogram1D *_h_WW_mass ;
@@ -409,6 +414,7 @@ namespace Rivet {
     AIDA::IHistogram1D *_h_WW_mass3 ;
     AIDA::IHistogram1D *_h_WW_pT ;
     AIDA::IHistogram1D *_h_ttbar_pT ;
+    AIDA::IHistogram1D *_h_ttbar_pT2 ;
     AIDA::IHistogram1D *_h_ttbar_mass ;
     AIDA::IHistogram1D *_h_ttbar_mass2 ;
     AIDA::IHistogram1D *_h_ttbar_mass3 ;
