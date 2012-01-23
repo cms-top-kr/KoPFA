@@ -24,6 +24,8 @@ namespace Rivet {
     {  
       setNeedsCrossSection(true);
 
+      _sumwPassedDiNeutrino = 0;
+      _sumwPassedDiMuon = 0;
       _sumwPassedDiLepton = 0;
       _sumwPassedLepJetMET = 0;
       _sumwPassedJetID = 0;
@@ -67,40 +69,18 @@ namespace Rivet {
 //      FastJets jetpro(jetinput, FastJets::KT, 0.5);
 //      addProjection(jetpro, "Jets");
 
-
-      // Tracks and jets
-/*
-      addProjection(ChargedFinalState(FinalState(-2.4, 2.4, 10*GeV)), "Tracks");
-      addProjection(FastJets(FinalState(-2.4, 2.4, 0.*GeV), FastJets::ANTIKT, 0.5), "Jets");
-
-      IdentifiedFinalState mufs(-2.4, 2.4, 10*GeV);
-      mufs.acceptIdPair(MUON);
-      addProjection(mufs, "Muons");
-
-      IdentifiedFinalState munufs(-5.0, 5.0, 10*GeV);
-      munufs.acceptIdPair(NU_MU);
-      addProjection(munufs, "MuonNus");
-
-      MissingMomentum missing(FinalState(-5.0, 5.0, 10.*GeV));
-      addProjection(missing, "MET");
-
-      LeadingParticlesFinalState lpfs(FinalState(-2.4, 2.4, 10*GeV));
-      lpfs.addParticleIdPair(MUON);
-      lpfs.addParticleIdPair(NU_MU);
-      addProjection(lpfs, "LeadingParticles");
-
-//      VetoedFinalState jetinput;
-//      jetinput
-//          .addVetoOnThisFinalState(munufs);
-//      FastJets jetpro(jetinput, FastJets::KT, 0.5);
-//      addProjection(jetpro, "Jets");
-*/
       _hist_n_mu_nu   = bookHistogram1D("n-mu_nu", 11, -0.5, 10.5);
+      _hist_n_mu_nu_sel   = bookHistogram1D("n-mu_nu_sel", 11, -0.5, 10.5);
+      _hist_n_mu_nu_p_sel   = bookHistogram1D("n-mu_nu_p_sel", 11, -0.5, 10.5);
+      _hist_n_mu_nu_m_sel   = bookHistogram1D("n-mu_nu_m_sel", 11, -0.5, 10.5);
       _hist_phi_mu_nu = bookHistogram1D("phi-mu_nu", 50, -PI, PI);
       _hist_eta_mu_nu = bookHistogram1D("eta-mu_nu", 50, -6, 6);
       _hist_pt_mu_nu  = bookHistogram1D("pt-mu_nu", 50, 0.0, 500);
 
       _hist_n_mu   = bookHistogram1D("n-mu", 11, -0.5, 10.5);
+      _hist_n_mu_sel   = bookHistogram1D("n-mu_sel", 11, -0.5, 10.5);
+      _hist_n_mu_p_sel   = bookHistogram1D("n-mu_p_sel", 11, -0.5, 10.5);
+      _hist_n_mu_m_sel   = bookHistogram1D("n-mu_m_sel", 11, -0.5, 10.5);
       _hist_phi_mu = bookHistogram1D("phi-mu", 50, -PI, PI);
       _hist_eta_mu = bookHistogram1D("eta-mu", 50, -6.0, 6.0);
       _hist_pt_mu  = bookHistogram1D("pt-mu", 50, 0.0, 500);
@@ -130,6 +110,8 @@ namespace Rivet {
       _h_njets = bookHistogram1D("mult_jet", 11, -0.5, 10.5);
       _h_njets_nocut = bookHistogram1D("mult_jet_nocut", 60, 29.5, 89.5);
       _h_bjets = bookHistogram1D("mult_bjet", 11, -0.5, 10.5);
+      _h_ljets = bookHistogram1D("mult_ljet", 11, -0.5, 10.5);
+      _h_seljets = bookHistogram1D("mult_seljet", 11, -0.5, 10.5);
 
       _h_bjet_mass = bookHistogram1D("bjet_mass", 50, 0, 1400);
       _h_WW_mass = bookHistogram1D("mass_WW", 80, 0, 800);
@@ -164,7 +146,9 @@ namespace Rivet {
       _sumw += weight;
 
       // Fill final state muon_neutrino/anti_muon_neutrino hisos
+      ParticleVector selMuNus, selMuNup, selMuNum;
       const FinalState& munufs = applyProjection<FinalState>(evt, "MuonNus");
+      //const ParticleVector selMuNus = applyProjection<IdentifiedFinalState>(evt, "MuonNus").particlesByPt();
       _hist_n_mu_nu->fill(munufs.size(), weight);
       vector<FourMomentum> pmunupes, pmunumes;
       foreach (const Particle& munu, munufs.particles()) {
@@ -174,12 +158,29 @@ namespace Rivet {
         _hist_pt_mu_nu->fill(p.pT()/GeV, weight);
         // Add sufficiently hard leptons to collections for m_ll histo
         if (p.pT()/GeV > 20) {
-          if (munu.pdgId() == 14) pmunupes += p; else pmunumes += p;
+          selMuNus.push_back(munu);
+          if (munu.pdgId() == 14) {
+          pmunupes += p; 
+          selMuNup.push_back(munu);
+          } else {
+          pmunumes += p;
+          selMuNum.push_back(munu);
+          }
         }
       }
+      _hist_n_mu_nu_sel->fill(selMuNus.size(), weight);
+      _hist_n_mu_nu_p_sel->fill(selMuNup.size(), weight);
+      _hist_n_mu_nu_m_sel->fill(selMuNum.size(), weight);
+      if ( selMuNus.size() < 1 ) {
+        MSG_DEBUG("Event failed di-electron multiplicity cut");
+        vetoEvent;
+      }
+      _sumwPassedDiNeutrino += weight;
 
       // Fill final state muon/antimuon histos
+      ParticleVector selMuons, selMuonp, selMuonm;
       const FinalState& mufs = applyProjection<FinalState>(evt, "Muons");
+      //const ParticleVector selMuons = applyProjection<IdentifiedFinalState>(evt, "Muons").particlesByPt();
       _hist_n_mu->fill(mufs.size(), weight);
       vector<FourMomentum> mupluses, muminuses;
       foreach (const Particle& mu, mufs.particles()) {
@@ -189,9 +190,24 @@ namespace Rivet {
         _hist_pt_mu->fill(p.pT()/GeV, weight);
         // Add sufficiently hard leptons to collections for m_ll histo
         if (p.pT()/GeV > 20) {
-          if (PID::threeCharge(mu.pdgId()) > 0) mupluses += p; else muminuses += p;
+          selMuons.push_back(mu);
+          if (PID::threeCharge(mu.pdgId()) > 0) {
+          mupluses += p; 
+          selMuonp.push_back(mu);
+          } else {
+          muminuses += p;
+          selMuonm.push_back(mu);
+          }
         }
       }
+      _hist_n_mu_sel->fill(selMuons.size(), weight);
+      _hist_n_mu_p_sel->fill(selMuonp.size(), weight);
+      _hist_n_mu_m_sel->fill(selMuonm.size(), weight);
+      if ( selMuons.size() < 1 ) {
+        MSG_DEBUG("Event failed di-electron multiplicity cut");
+        vetoEvent;
+      }
+      _sumwPassedDiMuon += weight;
 
       // Choose highest-pT leptons of each sign and flavour for dilepton mass edges
       const FinalState& lpfs = applyProjection<FinalState>(evt, "LeadingParticles");
@@ -223,7 +239,7 @@ namespace Rivet {
         }
       }
 
-      if (!(muminus_ok && munuminus_ok) || !(muplus_ok && munuplus_ok)) {
+      if (!(muminus_ok && munuminus_ok && muplus_ok && munuplus_ok)) {
         MSG_DEBUG("Event failed di-electron multiplicity cut");
         vetoEvent;
       }
@@ -280,9 +296,6 @@ namespace Rivet {
       _h_jet_HT->fill(ht/GeV, weight);
 
       if (jets.size() < 2) {
-//          jets[0].momentum().pT() < 60*GeV ||
-//          jets[1].momentum().pT() < 40*GeV) {
-//        MSG_DEBUG("Event failed jet cuts");
         vetoEvent;
       }
 
@@ -292,20 +305,24 @@ namespace Rivet {
       // each top decay, so our 4 hardest jets should include two b-jets. The
       // Jet::containsBottom() method is equivalent to perfect experimental
       // b-tagging, in a generator-independent way.
-      Jets bjets, ljets;
+      Jets bjets, ljets, seljets;
+      bjets.clear();
+      ljets.clear();
+      seljets.clear();
       foreach (const Jet& jet, jets) {
         // // Don't count jets that overlap with the hard leptons
         bool isolated = true;
-            //if (deltaR(jet.momentum(), lepton.momentum()) < 0.3) {
-            if (deltaR(jet.momentum(), pmuminus) < 0.3 ||deltaR(jet.momentum(), pmuplus) < 0.3) {
-            isolated = false;
-            break;   
-            }
+        foreach (const Particle& lepton, selMuons) {
+          if (deltaR(jet.momentum(), lepton.momentum()) < 0.3) {
+          isolated = false;
+          break;   
+          }
+        }
         if (!isolated) {
           MSG_DEBUG("Jet failed lepton isolation cut");
           break;
         }
-
+        seljets.push_back(jet);
         if (jet.containsBottom()) {
           bjets.push_back(jet);
         } else {
@@ -313,7 +330,9 @@ namespace Rivet {
         }
       }
 
+      _h_seljets->fill(seljets.size(), weight);
       _h_bjets->fill(bjets.size(), weight);
+      _h_ljets->fill(ljets.size(), weight);
 
       MSG_DEBUG("Number of b-jets = " << bjets.size());
       if (bjets.size() != 2) {
@@ -353,7 +372,7 @@ namespace Rivet {
         _h_ttbar_pT2->fill(ttbar2.pT(), weight);
         _h_ttbar_mass->fill(ttbar.mass(), weight);
         _h_ttbar_mass2->fill(ttbar2.mass(), weight);
-        _h_ttbar_mass3->fill(ttbar2.mass(), weight);
+        _h_ttbar_mass3->fill(ttbar3.mass(), weight);
         _h_ttbar_mass_ref->fill(ttbar.mass(), weight);
         _h_ttbar_mass_ref2->fill(ttbar2.mass(), weight);
         _h_ttbar_mass_ref3->fill(ttbar3.mass(), weight);
@@ -369,7 +388,9 @@ namespace Rivet {
       scale(_h_ttbar_mass_ref2, 1/_sumwPassedJetID);
       scale(_h_ttbar_mass_ref3, 1/_sumwPassedJetID);
 
-      cout << "Event weight = " << _sumw << endl;
+      cout << "_Event weight = " << _sumw << endl;
+      cout << "_sumwPassedDiNeutrino = " << _sumwPassedDiNeutrino << endl;
+      cout << "_sumwPassedDiMuon = " << _sumwPassedDiMuon << endl;
       cout << "_sumwPassedDiLepton = " << _sumwPassedDiLepton << endl;
       cout << "_sumwPassedLepJetMET = " << _sumwPassedLepJetMET << endl;
       cout << "_sumwPassedJetID = " << _sumwPassedJetID << endl;
@@ -384,9 +405,12 @@ namespace Rivet {
   private:
 
     double _sumwPassedDiLepton, _sumwPassedLepJetMET, _sumwPassedJetID, _sumwPassedWMass, _sumw;
+    double _sumwPassedDiNeutrino, _sumwPassedDiMuon;
 
-    AIDA::IHistogram1D *_hist_n_mu_nu, *_hist_phi_mu_nu, *_hist_eta_mu_nu, *_hist_pt_mu_nu;
-    AIDA::IHistogram1D *_hist_n_mu, *_hist_phi_mu, *_hist_eta_mu, *_hist_pt_mu;
+    AIDA::IHistogram1D *_hist_n_mu_nu, *_hist_n_mu_nu_sel, *_hist_n_mu_nu_p_sel, *_hist_n_mu_nu_m_sel;
+    AIDA::IHistogram1D *_hist_phi_mu_nu, *_hist_eta_mu_nu, *_hist_pt_mu_nu;
+    AIDA::IHistogram1D *_hist_n_mu, *_hist_n_mu_sel, *_hist_n_mu_p_sel, *_hist_n_mu_m_sel;
+    AIDA::IHistogram1D *_hist_phi_mu, *_hist_eta_mu, *_hist_pt_mu;
     AIDA::IHistogram1D *_hist_mup_lpt, *_hist_mum_lpt, *_hist_munup_lpt, *_hist_munum_lpt;
 
     AIDA::IHistogram1D *_hist_n_ees, *_hist_n_els, *_hist_n_pos; 
@@ -408,6 +432,8 @@ namespace Rivet {
     AIDA::IHistogram1D *_h_njets;
     AIDA::IHistogram1D *_h_njets_nocut;
     AIDA::IHistogram1D *_h_bjets;
+    AIDA::IHistogram1D *_h_ljets;
+    AIDA::IHistogram1D *_h_seljets;
     AIDA::IHistogram1D *_h_bjet_mass ;
     AIDA::IHistogram1D *_h_WW_mass ;
     AIDA::IHistogram1D *_h_WW_mass2 ;
