@@ -431,6 +431,36 @@ void plot2Eff(TFile *f1, TFile* f2, const TString & leg1, const TString & leg2, 
 
 }
 
+void plotMultiEff(TFile *f1, TFile *f2, const vector<TString>& dir, const vector<TString>& plot, const TString& printName, const TString& hName, const vector<TString>& lname, bool MC=false){
+
+  f1->cd(dir[0]);
+  TCanvas* c1 = (TCanvas*) gDirectory->FindKey(plot[0])->ReadObj();
+  setMarker(c1,0);
+  setRangeY(c1,0.5,1.1);
+  setTitleY(c1,Form("Efficiency:%s", hName.Data()));
+
+  TLegend *label = new TLegend(.45,.20 ,.55,.45 );
+  label->SetFillColor(0);
+  label->SetTextSize(0.04);
+  label->SetLineColor(0);
+
+  for(int i=0; i < dir.size() ; i++){
+    RooHist* h1 = getHist(f1, dir[i], plot[i], i+2, 1);
+    RooHist* h2 = getHist(f2, dir[i], plot[i], i+2, 2);
+    c1->Draw();
+    h1->Draw("P Same"); //Data
+    if(MC){
+      h2->Draw("P Same"); //MC
+    }
+    label->AddEntry(h1, Form("%s",lname[i].Data()), "LP");
+  }
+
+  label->Draw();
+
+  c1->Print(Form("c_eff_%s_%s.eps",printName.Data(),hName.Data()));
+  c1->Print(Form("c_eff_%s_%s.C",printName.Data(),hName.Data()));
+  c1->Print(Form("c_eff_%s_%s.png",printName.Data(),hName.Data()));
+}
 
 void plotEff(TFile* f, const TString& dir, const TString& hName){
   TCanvas * c = (TCanvas *) f->Get(Form("%s",dir.Data()));
