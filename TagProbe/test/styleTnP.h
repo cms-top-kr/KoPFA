@@ -186,6 +186,19 @@ void printEff(TH2* hRD, TH2* hMC, TString colTitle, TString rowTitle, TString fi
 //  return seff;
 //}
 
+void removeHistError(TCanvas *c){
+  for(size_t i=0, n = c->GetListOfPrimitives()->GetSize(); i <n; ++i){
+    TObject *o = c->GetListOfPrimitives()->At(i);
+    if(o->InheritsFrom("RooHist")) {
+      int nbins = ((RooHist*)o)->GetN();
+      for(int j=0; j < nbins; j++){
+         ((RooHist*)o)->SetPointEYhigh(j,0);
+         ((RooHist*)o)->SetPointEYlow(j,0);
+      }
+    }
+  }
+}
+
 void setRangeY(TCanvas *c, double min=0, double max=1.1){
   for(size_t i=0, n = c->GetListOfPrimitives()->GetSize(); i <n; ++i){
     TObject *o = c->GetListOfPrimitives()->At(i);
@@ -405,20 +418,22 @@ void plotNewEff(TFile *f1, TFile *f2, const TString & leg1, const TString & leg2
 
 }
 
-void plot2Eff(TFile *f1, TFile* f2, const TString & leg1, const TString & leg2, const TString& dir1, const TString &dir2, const TString& plot1, const TString & plot2, const TString& printName, const TString& hName){
+void plot2Eff(TFile *f1, TFile* f2, const TString & leg1, const TString & leg2, const TString& dir1, const TString &dir2, const TString& plot1, const TString & plot2, const TString& printName, const TString& hName, double ymax=0.5){
 
   f1->cd(dir1);
   TCanvas* c1 = (TCanvas*) gDirectory->FindKey(plot1)->ReadObj();
   c1->SetName("c_"+printName+"_"+hName);
-  setRangeY(c1,0.5,1.1);
+  setRangeY(c1,ymax,1.1);
   //getObjects(c1);
 
   RooHist* h1 = getHist(f1, dir1, plot1, 4, 20);
   cout << "data-----" << plot1 << "---" << hName << "----" << endl;
+  setError(h1);
   printEff(h1);
 
   RooHist* h2 = getHist(f2, dir2, plot2, 2, 20);
   cout << "MC-----" << plot2 << "---"<< hName << "---" << endl;
+  setError(h2);
   printEff(h2);
 
   c1->Draw();
@@ -438,6 +453,7 @@ void plotMultiEff(TFile *f1, TFile *f2, const vector<TString>& dir, const vector
   setMarker(c1,0);
   setRangeY(c1,0.5,1.1);
   setTitleY(c1,Form("Efficiency:%s", hName.Data()));
+  removeHistError(c1);
 
   TLegend *label = new TLegend(.45,.20 ,.55,.45 );
   label->SetFillColor(0);
@@ -447,8 +463,11 @@ void plotMultiEff(TFile *f1, TFile *f2, const vector<TString>& dir, const vector
   for(int i=0; i < dir.size() ; i++){
     RooHist* h1 = getHist(f1, dir[i], plot[i], i+2, 1);
     RooHist* h2 = getHist(f2, dir[i], plot[i], i+2, 2);
+    setError(h1);
+    setError(h2);
     c1->Draw();
     h1->Draw("P Same"); //Data
+    printEff(h1);
     if(MC){
       h2->Draw("P Same"); //MC
     }
@@ -460,6 +479,16 @@ void plotMultiEff(TFile *f1, TFile *f2, const vector<TString>& dir, const vector
   c1->Print(Form("c_eff_%s_%s.eps",printName.Data(),hName.Data()));
   c1->Print(Form("c_eff_%s_%s.C",printName.Data(),hName.Data()));
   c1->Print(Form("c_eff_%s_%s.png",printName.Data(),hName.Data()));
+}
+
+void setError(RooHist* h){
+  int nbins = h->GetN();
+  for(int i=0; i < nbins; i++){
+    double errh = h->GetErrorYhigh(i);
+    double errl = h->GetErrorYlow(i);
+    if(errh > 0.001) h->SetPointEYhigh(i, 0.001);
+    if(errl > 0.001) h->SetPointEYlow(i, 0.001);
+  }
 }
 
 void plotEff(TFile* f, const TString& dir, const TString& hName){

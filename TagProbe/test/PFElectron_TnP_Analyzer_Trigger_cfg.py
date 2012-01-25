@@ -10,7 +10,7 @@ process.MessageLogger.cerr.FwkReport.reportEvery = 1000
 
 import os
 if 'MODE' not in os.environ:
-    mode = 'Data'
+    mode = 'MC'
 else:
     mode = os.environ['MODE']
 
@@ -63,7 +63,7 @@ process.tnpFit = cms.EDAnalyzer("TagProbeFitTreeAnalyzer",
     SaveWorkspace = cms.bool(True),
     floatShapeParameters = cms.bool(True),
     Variables = cms.PSet(
-        mass = cms.vstring("Tag-Probe mass", "70.0", "110.0", "GeV/c^{2}"),
+        mass = cms.vstring("Tag-Probe mass", "50.0", "130.0", "GeV/c^{2}"),
         pt = cms.vstring("Probe p_{T}", "0", "1000", "GeV/c"),
         abseta = cms.vstring("Probe |#eta|", "0", "2.4", ""),
     ),

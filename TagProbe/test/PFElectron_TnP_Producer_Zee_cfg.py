@@ -116,7 +116,7 @@ process.triggeredPatPFElectrons = cms.EDProducer("PATTriggerMatchElectronEmbedde
 process.eleTag = cms.EDFilter("PATElectronSelector",
     src = cms.InputTag("triggeredPatPFElectrons"),
     cut = cms.string(
-        relIso05 + "&&" + eidHyperTight1MC
+        relIso10 + "&&" + eidTightMC
         + "&&" + "(" + "!triggerObjectMatchesByPath('HLT_Ele17_CaloIdT_TrkIdVL_CaloIsoVL_TrkIsoVL_Ele8_CaloIdT_TrkIdVL_CaloIsoVL_TrkIsoVL_v*',1,0).empty()"
         + "||" + "!triggerObjectMatchesByPath('HLT_Ele17_CaloIdL_CaloIsoVL_Ele8_CaloIdL_CaloIsoVL_v*',1,0).empty()"
         + "||" + "!triggerObjectMatchesByPath('HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v*',1,0).empty()"
@@ -157,25 +157,25 @@ process.elePFIdTight = cms.EDFilter("PATElectronSelector",
 process.zBase = cms.EDProducer("CandViewShallowCloneCombiner",
     decay = cms.string("eleTag@+ triggeredPatPFElectrons@-"),
     checkCharge = cms.bool(False),
-    cut = cms.string("70 < mass < 110"),
+    cut = cms.string("50 < mass < 130"),
 )
 
 process.zIdMedium = cms.EDProducer("CandViewShallowCloneCombiner",
     decay = cms.string("eleTag@+ eleIdMedium@-"),
     checkCharge = cms.bool(False),
-    cut = cms.string("70 < mass < 110"),
+    cut = cms.string("50 < mass < 130"),
 )
 
 process.zIdTight = cms.EDProducer("CandViewShallowCloneCombiner",
     decay = cms.string("eleTag@+ eleIdTight@-"),
     checkCharge = cms.bool(False),
-    cut = cms.string("70 < mass < 110"),
+    cut = cms.string("50 < mass < 130"),
 )
 
 process.zPFIdTight = cms.EDProducer("CandViewShallowCloneCombiner",
     decay = cms.string("eleTag@+ elePFIdTight@-"),
     checkCharge = cms.bool(False),
-    cut = cms.string("70 < mass < 110"),
+    cut = cms.string("50 < mass < 130"),
 )
 
 ###Fill Trees###
@@ -291,7 +291,8 @@ process.p = cms.Path(
   + process.eleTag #produce tag electron 
   + process.eleIdTight + process.elePFIdTight #produce probe electron
   + process.zBase + process.zIdTight + process.zPFIdTight #produce Z pair
-  + process.tnpId + process.tnpPFId + process.tnpTightIdIso + process.tnpTrigger #produce trees for Id, isolation and trigger study
+  + process.tnpId + process.tnpPFId + process.tnpTightIdIso #produce trees for Id, isolation
+  + process.tnpTrigger #trigger study
   #FIXME: if you want to get isolation efficiency with respect to Medium electron.
   #+ process.eleIdMedium
   #+ process.zIdMedium

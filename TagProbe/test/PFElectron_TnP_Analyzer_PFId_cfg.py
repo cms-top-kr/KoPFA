@@ -10,7 +10,7 @@ process.MessageLogger.cerr.FwkReport.reportEvery = 1000
 
 import os
 if 'MODE' not in os.environ:
-    mode = 'Data'
+    mode = 'MC'
 else:
     mode = os.environ['MODE']
 
@@ -34,7 +34,7 @@ def tnpEffPSet(categories):
             EfficiencyCategoryAndState = cms.vstring(category, "pass"),
             UnbinnedVariables = cms.vstring("mass"),
             BinnedVariables = cms.PSet(
-                abseta = cms.vdouble(0.0, 1.4, 1.6, 2.4)
+                abseta = cms.vdouble(0.0, 0.5, 1.0, 1.4, 1.6, 1.8, 2.0, 2.2, 2.4)
                 #abseta = cms.vdouble(0.0, 1.5, 2.4)
             ),
             BinToPDFmap = cms.vstring("bwResCBExp")
@@ -55,7 +55,7 @@ def tnpEffPSet(categories):
     return effSet
 
 process.tnpFit = cms.EDAnalyzer("TagProbeFitTreeAnalyzer",
-    InputFileNames = cms.vstring("tnpTree_%s.root" % mode),
+    InputFileNames = cms.vstring("batch/Out/Res/tnpTree_%s.root" % mode),
     InputDirectoryName = cms.string("tnpPFId"),
     InputTreeName = cms.string("fitter_tree"),
     OutputFileName = cms.string("result_PFId_%s.root" % mode),
@@ -63,7 +63,7 @@ process.tnpFit = cms.EDAnalyzer("TagProbeFitTreeAnalyzer",
     SaveWorkspace = cms.bool(True),
     floatShapeParameters = cms.bool(True),
     Variables = cms.PSet(
-        mass = cms.vstring("Tag-Probe mass", "70.0", "110.0", "GeV/c^{2}"),
+        mass = cms.vstring("Tag-Probe mass", "50.0", "130.0", "GeV/c^{2}"),
         pt = cms.vstring("Probe p_{T}", "0", "1000", "GeV/c"),
         abseta = cms.vstring("Probe |#eta|", "0", "2.4", ""),
     ),
