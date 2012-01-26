@@ -9,7 +9,7 @@ jetAlgo="AK5"
 usePF2PAT(process,runPF2PAT=True, jetAlgo=jetAlgo, runOnMC=False, postfix=postfix)
 
 #change cone size
-changeConeSize(process)
+changeConeSize(process,postfix)
 
 #FastJet!
 applyFastJet(process,postfix)
