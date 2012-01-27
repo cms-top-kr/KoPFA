@@ -64,12 +64,17 @@ DYmmFilter = cms.EDFilter("ZmmFilter",
   max = cms.double(99999),
 )
 
+correctedPatJetsPFlow = cms.EDProducer('KoCorrectJetProducer',
+    src = cms.InputTag('selectedPatJetsPFlow'),
+    correctors = cms.vstring('ak5PFL2L3')
+)
+
 ElEl = cms.EDFilter('TopElElAnalyzer',
     genParticlesLabel = cms.InputTag('genParticles'),
     muonLabel1 =  cms.InputTag('Electrons'),
     muonLabel2 =  cms.InputTag('Electrons'),
     metLabel =  cms.InputTag('patMETsPFlow'),
-    jetLabel =  cms.InputTag('selectedPatJetsPFlow'),
+    jetLabel =  cms.InputTag('correctedPatJetsPFlow'),
     vertexLabel = cms.untracked.InputTag('goodOfflinePrimaryVertices'),
     useEventCounter = cms.bool( True ),
     filters = cms.untracked.vstring(
@@ -93,7 +98,7 @@ MuMu = cms.EDFilter('TopMuMuAnalyzer',
     muonLabel1 =  cms.InputTag('Muons'),
     muonLabel2 =  cms.InputTag('Muons'),
     metLabel =  cms.InputTag('patMETsPFlow'),
-    jetLabel =  cms.InputTag('selectedPatJetsPFlow'),
+    jetLabel =  cms.InputTag('correctedPatJetsPFlow'),
     vertexLabel = cms.untracked.InputTag('goodOfflinePrimaryVertices'),
     useEventCounter = cms.bool( True ),
     filters = cms.untracked.vstring(
@@ -118,7 +123,7 @@ MuEl = cms.EDFilter('TopMuElAnalyzer',
     muonLabel1 =  cms.InputTag('Muons'),
     muonLabel2 =  cms.InputTag('Electrons'),
     metLabel =  cms.InputTag('patMETsPFlow'),
-    jetLabel =  cms.InputTag('selectedPatJetsPFlow'),
+    jetLabel =  cms.InputTag('correctedPatJetsPFlow'),
     vertexLabel = cms.untracked.InputTag('goodOfflinePrimaryVertices'),
     useEventCounter = cms.bool( True ),
     filters = cms.untracked.vstring(
@@ -156,6 +161,7 @@ topElElAnalysisMCSequence = cms.Sequence(
     nEventsPatHLT*
     topWLeptonGenFilter*
     GenZmassFilter*
+    correctedPatJetsPFlow*
 #    PUweight*
 #    ElectronAna*
     Electrons*
@@ -169,6 +175,7 @@ topElElAnalysisRealDataSequence = cms.Sequence(
 #    electronTriggerFilterByRun*
     nEventsPatHLT*
     removeDuplicate*
+    correctedPatJetsPFlow*
 #    ElectronAna*
     Electrons*
     patElectronFilter*
@@ -181,6 +188,7 @@ topMuMuAnalysisMCSequence = cms.Sequence(
     nEventsPatHLT*
     topWLeptonGenFilter*
     GenZmassFilter*
+    correctedPatJetsPFlow*
 #    PUweight*
 #    DYmmFilter*
     Muons*
@@ -195,6 +203,7 @@ topMuMuAnalysisRealDataSequence = cms.Sequence(
     nEventsPatHLT*
     removeDuplicate*
 #    DYmmFilter*
+    correctedPatJetsPFlow*
     Muons*
     patMuonFilter*
     MuMu
@@ -206,6 +215,7 @@ topMuElAnalysisMCSequence = cms.Sequence(
     nEventsPatHLT*
     topWLeptonGenFilter*
     GenZmassFilter*
+    correctedPatJetsPFlow*
 #    PUweight*
     Muons * Electrons *
     patMuonFilterForMuEl * patElectronFilterForMuEl *
@@ -218,6 +228,7 @@ topMuElAnalysisRealDataSequence = cms.Sequence(
 #    muonTriggerFilterByRun*
     nEventsPatHLT*
     removeDuplicate*
+    correctedPatJetsPFlow*
     Muons * Electrons *
     patMuonFilterForMuEl * patElectronFilterForMuEl *
     MuEl
