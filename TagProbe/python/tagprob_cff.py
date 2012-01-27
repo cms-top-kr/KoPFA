@@ -23,6 +23,17 @@ process.TFileService = cms.Service("TFileService",
 
 from KoPFA.TagProbe.common_variables_cff import *
 
+relIso05 = "(chargedHadronIso+neutralHadronIso+photonIso)/pt < 0.05"
+relIso10 = "(chargedHadronIso+neutralHadronIso+photonIso)/pt < 0.10"
+relIso15 = "(chargedHadronIso+neutralHadronIso+photonIso)/pt < 0.15"
+relIso17 = "(chargedHadronIso+neutralHadronIso+photonIso)/pt < 0.17"
+relIso20 = "(chargedHadronIso+neutralHadronIso+photonIso)/pt < 0.20"
+relIso05dbeta = "(chargedHadronIso+ max(0.0 , neutralHadronIso+photonIso - 0.5*puChargedHadronIso) )/pt < 0.05"
+relIso10dbeta = "(chargedHadronIso+ max(0.0 , neutralHadronIso+photonIso - 0.5*puChargedHadronIso) )/pt < 0.10"
+relIso15dbeta = "(chargedHadronIso+ max(0.0 , neutralHadronIso+photonIso - 0.5*puChargedHadronIso) )/pt < 0.15"
+relIso17dbeta = "(chargedHadronIso+ max(0.0 , neutralHadronIso+photonIso - 0.5*puChargedHadronIso) )/pt < 0.17"
+relIso20dbeta = "(chargedHadronIso+ max(0.0 , neutralHadronIso+photonIso - 0.5*puChargedHadronIso) )/pt < 0.20"
+
 process.options   = cms.untracked.PSet( wantSummary = cms.untracked.bool(True))
 
 process.load("KoPFA.TagProbe.tnpLeptonSelector_cfi")
@@ -174,7 +185,13 @@ process.tnpTreeIso = cms.EDAnalyzer("TagProbeFitTreeProducer",
     ),
     # choice of what defines a 'passing' probe
     flags = cms.PSet(
-        isIso = cms.InputTag("IsoMuons"),
+        #isIso = cms.InputTag("IsoMuons"),
+        Iso10 = cms.string(relIso10),
+        Iso15 = cms.string(relIso15),
+        Iso20 = cms.string(relIso20),
+        Iso10dbeta = cms.string(relIso10dbeta),
+        Iso15dbeta = cms.string(relIso15dbeta),
+        Iso20dbeta = cms.string(relIso20dbeta),
     ),
     ## DATA-related info
     addRunLumiInfo = cms.bool(True),
