@@ -16,6 +16,7 @@
 <use   name="FWCore/ServiceRegistry"/>
 <use   name="DQMServices/Core"/>
 <use   name="CondFormats/JetMETObjects"/>
+<use   name="JetMETCorrections/Algorithms" />
 <flags   EDM_PLUGIN="1"/>
 <export>
   <lib   name="1"/>
