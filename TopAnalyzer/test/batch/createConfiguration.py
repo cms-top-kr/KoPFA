@@ -47,6 +47,12 @@ class CreateConfig:
             return
         self.decay = decay
 
+        ## Set GlobalTag
+        if dataType == 'RD':
+            self.globalTag = 'GR_R_42_V23'
+        else:
+            self.globalTag = 'START42_V17' 
+
         ## Set dataset
         if dataType == 'RD':
             self.datasets = [
@@ -70,10 +76,10 @@ class CreateConfig:
             if 'El' in self.decay:
                 self.datasets.extend(['DYee20to50', 'DYee10to20']) 
 
-            if self.decay == 'ElEl':
-                self.datasets.extend(['QCDPt20to30BCtoE', 'QCDPt30to80BCtoE', 'QCDPt80to170BCtoE'])
-            else:
-                self.datasets.extend(['QCDPt20MuPt15']) 
+            #if self.decay == 'ElEl':
+            #    self.datasets.extend(['QCDPt20to30BCtoE', 'QCDPt30to80BCtoE', 'QCDPt80to170BCtoE'])
+            #else:
+            #    self.datasets.extend(['QCDPt20MuPt15']) 
 
         ## Set base directory
         if dataType == 'RD':
@@ -157,6 +163,11 @@ process.TFileService = cms.Service("TFileService",
     fileName = cms.string('vallot.root')
 )
 """
+
+        self.header += """
+process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_cff")
+process.GlobalTag.globaltag = cms.string("%s::All")
+""" % self.globalTag
 
         if dataType == 'RD':
             self.footer = """
@@ -314,8 +325,8 @@ mcSet['ElEl'] = [
     'ZJets', 'DYee20to50', 'DYee10to20', 'DYmm20to50', 'DYmm10to20',
     'ZtauDecay', 'DYtt20to50', 'DYtt10to20',
     'WJetsToLNu', 'VVJets',
-    'QCDPt20to30BCtoE', 'QCDPt30to80BCtoE', 'QCDPt80to170BCtoE',
-    'QCDPt20to30EM', 'QCDPt30to80EM', 'QCDPt80to170EM',
+#    'QCDPt20to30BCtoE', 'QCDPt30to80BCtoE', 'QCDPt80to170BCtoE',
+#    'QCDPt20to30EM', 'QCDPt30to80EM', 'QCDPt80to170EM',
 ]
 
 mcSet['MuMu'] = [
@@ -324,7 +335,7 @@ mcSet['MuMu'] = [
     'ZJets', 'DYee20to50', 'DYee10to20', 'DYmm20to50', 'DYmm10to20',
     'ZtauDecay', 'DYtt20to50', 'DYtt10to20',
     'WJetsToLNu', 'VVJets',
-    'QCDPt20MuPt15',
+#    'QCDPt20MuPt15',
 ]
 
 mcSet['MuEl'] = [
@@ -333,9 +344,9 @@ mcSet['MuEl'] = [
     'ZJets', 'DYee20to50', 'DYee10to20', 'DYmm20to50', 'DYmm10to20',
     'ZtauDecay', 'DYtt20to50', 'DYtt10to20',
     'WJetsToLNu', 'VVJets',
-    'QCDPt20to30BCtoE', 'QCDPt30to80BCtoE', 'QCDPt80to170BCtoE',
-    'QCDPt20to30EM', 'QCDPt30to80EM', 'QCDPt80to170EM',
-	'QCDPt20MuPt15',
+#    'QCDPt20to30BCtoE', 'QCDPt30to80BCtoE', 'QCDPt80to170BCtoE',
+#    'QCDPt20to30EM', 'QCDPt30to80EM', 'QCDPt80to170EM',
+#	'QCDPt20MuPt15',
 ]
 
 rdSet['ElEl'] = [
@@ -356,6 +367,9 @@ rdSet['MuEl'] = [
 mclist = mcSet[decay]
 datalist = rdSet[decay]
 
+mcGlobalTag = "START42_V17"
+rdGlobalTag = "GR_R_42_V23"
+
 def common():
   script = """import FWCore.ParameterSet.Config as cms
 
@@ -373,6 +387,8 @@ process.load("FWCore.MessageService.MessageLogger_cfi")
 process.MessageLogger.cerr.FwkReport.reportEvery = 100
 
 process.load("KoPFA.TopAnalyzer.topAnalysis_cff")
+
+process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_cff")
 """
   return script
 
@@ -466,10 +482,11 @@ process.GenZmassFilter.max = 50
 #os.system("mkdir "+decay)
 if not os.path.exists(decay):
     os.mkdir(decay)
- 
+
 for src in mclist:
     out = open(decay+'/top'+decay+'Analyzer_'+src+'_cfg.py','w')
     out.write(common())
+    out.write("process.GlobalTag.globaltag = cms.string('%s::All')" % mcGlobalTag)
     out.write(mcpath())
     out.write(outfile(src))
     if src.find("ZtauDecay") != -1:
@@ -493,6 +510,7 @@ for src in mclist:
 for src in datalist:
     out = open(decay+'/top'+decay+'Analyzer_'+src+'_cfg.py','w')
     out.write(common())
+    out.write("process.GlobalTag.globaltag = cms.string('%s::All')" % rdGlobalTag)
     out.write(rdpath())
     out.write(outfile(src))
     out.write(rdsample(src))
