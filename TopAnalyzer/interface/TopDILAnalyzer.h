@@ -13,7 +13,7 @@
 //
 // Original Author:  Tae Jeong Kim,40 R-A32,+41227678602,
 //         Created:  Fri Jun  4 17:19:29 CEST 2010
-// $Id: TopDILAnalyzer.h,v 1.57 2011/11/19 19:25:14 tjkim Exp $
+// $Id: TopDILAnalyzer.h,v 1.58 2011/11/21 10:45:11 tjkim Exp $
 //
 //
 
@@ -106,7 +106,26 @@ class TopDILAnalyzer : public edm::EDFilter {
     PileUpMC_ = iConfig.getParameter< std::vector<double> >("PileUpMC"),
 
     doJecFly_ = iConfig.getUntrackedParameter<bool>("doJecFly", true);
-    doResJec_ = iConfig.getUntrackedParameter<bool>("doResJec", false);
+    if ( doJecFly_ )
+    {
+      const string jecFilePath = iConfig.getUntrackedParameter<string>("jecFilePath", "KoPFA/TopAnalyzer/python/JEC");
+      const string jecPrefix = iConfig.getUntrackedParameter<string>("jecPrefix", "chs/GR_R_42_V19_AK5PFchs");
+
+      edm::FileInPath jecL1File(jecFilePath+"/"+jecPrefix+"_L1FastJet.txt");
+      edm::FileInPath jecL2File(jecFilePath+"/"+jecPrefix+"_L2Relative.txt");
+      edm::FileInPath jecL3File(jecFilePath+"/"+jecPrefix+"_L3Absolute.txt");
+
+      jecParams_.push_back(JetCorrectorParameters(jecL1File.fullPath()));
+      jecParams_.push_back(JetCorrectorParameters(jecL2File.fullPath()));
+      jecParams_.push_back(JetCorrectorParameters(jecL3File.fullPath()));
+
+      doResJec_ = iConfig.getUntrackedParameter<bool>("doResJec", false);
+      if ( doResJec_ )
+      {
+        edm::FileInPath jecL2L3File(jecFilePath+"/"+jecPrefix+"_L2L3Residual.txt");
+        jecParams_.push_back(JetCorrectorParameters(jecL2L3File.fullPath()));
+      }
+    }
     doJecUnc_ = iConfig.getUntrackedParameter<bool>("doJecUnc", false);
     resolutionFactor_ = iConfig.getUntrackedParameter<double>("resolutionFactor", 1.0);
     up_ = iConfig.getUntrackedParameter<bool>("up", true); // uncertainty up
@@ -202,18 +221,7 @@ class TopDILAnalyzer : public edm::EDFilter {
     // Jet energy correction for 38X
     if ( doJecFly_ )
     {
-      edm::FileInPath jecL1File("KoPFA/TopAnalyzer/python/JEC/chs/GR_R_42_V19_AK5PFchs_L1FastJet.txt");
-      edm::FileInPath jecL2File("KoPFA/TopAnalyzer/python/JEC/chs/GR_R_42_V19_AK5PFchs_L2Relative.txt");
-      edm::FileInPath jecL3File("KoPFA/TopAnalyzer/python/JEC/chs/GR_R_42_V19_AK5PFchs_L3Absolute.txt");
-      edm::FileInPath jecL2L3File("KoPFA/TopAnalyzer/python/JEC/chs/GR_R_42_V19_AK5PFchs_L2L3Residual.txt");
-      std::vector<JetCorrectorParameters> jecParams;
-      jecParams.push_back(JetCorrectorParameters(jecL1File.fullPath()));
-      jecParams.push_back(JetCorrectorParameters(jecL2File.fullPath()));
-      jecParams.push_back(JetCorrectorParameters(jecL3File.fullPath()));
-      if( doResJec_ ) {
-        jecParams.push_back(JetCorrectorParameters(jecL2L3File.fullPath()));
-      }
-      resJetCorrector_ = new FactorizedJetCorrector(jecParams);
+      resJetCorrector_ = new FactorizedJetCorrector(jecParams_);
     }
 
     if ( doJecUnc_){
@@ -792,6 +800,7 @@ class TopDILAnalyzer : public edm::EDFilter {
   bool doResJec_;
   bool doJecUnc_;
   bool up_;
+  std::vector<JetCorrectorParameters> jecParams_;
   FactorizedJetCorrector* resJetCorrector_;
   JetCorrectionUncertainty *jecUnc_;
   double resolutionFactor_;
