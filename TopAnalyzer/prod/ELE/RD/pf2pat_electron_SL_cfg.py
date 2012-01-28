@@ -42,7 +42,6 @@ process.source = cms.Source("PoolSource",
 process.p += process.hltHighLevelElElRD
 process.p += process.nEventsHLT
 process.p += getattr(process,"patPF2PATSequence"+postfix)
-process.p += process.looseLeptonSequence
 process.p += process.acceptedElectrons
 process.p += process.acceptedMuons
 process.p += process.patElectronFilter
