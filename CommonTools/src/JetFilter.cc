@@ -13,7 +13,7 @@
 //
 // Original Author:  Tae Jeong Kim
 //         Created:  Mon Dec 14 01:29:35 CET 2009
-// $Id: JetFilter.cc,v 1.2 2011/11/29 13:08:37 tjkim Exp $
+// $Id: JetFilter.cc,v 1.3 2011/11/29 14:30:47 tjkim Exp $
 //
 //
 
@@ -33,10 +33,9 @@
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "DataFormats/PatCandidates/interface/Muon.h"
 #include "DataFormats/Math/interface/LorentzVector.h"
+#include "DataFormats/PatCandidates/interface/MET.h"
 
 #include "DataFormats/PatCandidates/interface/Jet.h"
-//#include "PFAnalyses/CommonTools/interface/PatJetIdSelector.h"
-//#include "PFAnalyses/CommonTools/interface/CandidateSelector.h"
 #include "PhysicsTools/SelectorUtils/interface/PFJetIDSelectionFunctor.h"
 
 #include "DataFormats/TrackReco/interface/TrackFwd.h"
@@ -46,8 +45,10 @@
 #include "DataFormats/Math/interface/Point3D.h"
 #include "RecoVertex/VertexPrimitives/interface/TransientVertex.h"
 
+#include "JetMETCorrections/Objects/interface/JetCorrector.h"
 #include "CondFormats/JetMETObjects/interface/JetCorrectorParameters.h"
 #include "CondFormats/JetMETObjects/interface/FactorizedJetCorrector.h"
+#include "CondFormats/JetMETObjects/interface/JetCorrectionUncertainty.h"
 
 #include "TTree.h"
 #include "TFile.h"
@@ -70,23 +71,33 @@ class JetFilter : public edm::EDFilter {
       virtual void beginJob() ;
       virtual bool filter(edm::Event&, const edm::EventSetup&);
       virtual void endJob() ;
+      double resolutionFactor(const pat::Jet&);
       // ----------member data ---------------------------
 
       typedef pat::JetCollection::const_iterator JI;
+
+      bool applyFilter_;
       edm::InputTag jetLabel_;
+      edm::InputTag metLabel_;
+      string outputJetLabel_;
+      string outputMETLabel_;
+      edm::InputTag vertexLabel_;
       /// loose jet ID. 
-      //PatJetIdSelector looseJetIdSelector_;
+
       unsigned int min_;
       double ptcut_;
-
-      TTree* tree;
-
-      std::vector<math::XYZTLorentzVector>* jets;
-      std::vector<math::XYZTLorentzVector>* jetspt30;
-
-      // Residual Jet energy correction for 38X
-      FactorizedJetCorrector* resJetCorrector_;
+      double absetacut_;
+      bool doJecFly_;
       bool doResJec_;
+      bool doJecUnc_;
+      bool up_;
+      bool doJERUnc_;
+      double resolutionFactor_;
+      string globalTag_;
+
+      FactorizedJetCorrector* resJetCorrector_;
+      JetCorrectionUncertainty *jecUnc_;
+
       edm::ParameterSet pfJetIdParams_;
 
 };
@@ -105,21 +116,30 @@ class JetFilter : public edm::EDFilter {
 JetFilter::JetFilter(const edm::ParameterSet& ps)
 {
    //now do what ever initialization is needed
+  applyFilter_=ps.getUntrackedParameter<bool>("applyFilter",false);
   jetLabel_ =  ps.getParameter<edm::InputTag>("jetLabel");
+  metLabel_ = ps.getParameter<edm::InputTag>("metLabel");
+  vertexLabel_ =  ps.getUntrackedParameter<edm::InputTag>("vertexLabel");
   min_ = ps.getUntrackedParameter<unsigned int>("min",1);
   ptcut_ = ps.getUntrackedParameter<double>("ptcut",30.0);
-  //looseJetIdSelector_.initialize( ps.getParameter<edm::ParameterSet> ("looseJetId") );
+  absetacut_ = ps.getUntrackedParameter<double>("absetacut",2.5);
   pfJetIdParams_ = ps.getParameter<edm::ParameterSet> ("looseJetId");
-   // Residual Jet energy correction for 38X
+  doJecFly_ = ps.getUntrackedParameter<bool>("doJecFly", true);
   doResJec_ = ps.getUntrackedParameter<bool>("doResJec", false);
+  doJecUnc_ = ps.getUntrackedParameter<bool>("doJecUnc", false);
+  up_ = ps.getUntrackedParameter<bool>("up", true); // uncertainty up
+  doJERUnc_ = ps.getUntrackedParameter<bool>("doJERUnc", false);
+  resolutionFactor_ = ps.getUntrackedParameter<double>("resolutionFactor", 1.0);
+  globalTag_ = ps.getUntrackedParameter<string>("globalTag","GR_R_42_V23");
+
   resJetCorrector_ = 0;
+  jecUnc_ = 0;
 
+  outputJetLabel_ = jetLabel_.label(); 
+  outputMETLabel_ = metLabel_.label(); 
 
-  edm::Service<TFileService> fs;
-  tree = fs->make<TTree>("tree", "Tree for JetFilter");
-
-  jets = new std::vector<math::XYZTLorentzVector>();
-  jetspt30 = new std::vector<math::XYZTLorentzVector>();
+  produces<std::vector<pat::Jet> >(outputJetLabel_);
+  produces<std::vector<pat::MET> >(outputMETLabel_);
 
 }
 
@@ -146,68 +166,140 @@ JetFilter::filter(edm::Event& iEvent, const edm::EventSetup& iSetup)
   using namespace std;
   using namespace reco;
 
-  jets->clear();
-  jetspt30->clear();
+  std::auto_ptr<std::vector<pat::Jet> > corrJets(new std::vector<pat::Jet>());
+  std::auto_ptr<std::vector<pat::MET> > corrMETs(new std::vector<pat::MET>());
 
   edm::Handle<pat::JetCollection> Jets;
   iEvent.getByLabel(jetLabel_,Jets);
 
+  edm::Handle<pat::METCollection> MET;
+  iEvent.getByLabel(metLabel_,MET);
+  pat::METCollection::const_iterator met = MET->begin();
+  double met_x = met->px();
+  double met_y = met->py();
+
+  edm::Handle<double>  rho;
+  iEvent.getByLabel(edm::InputTag("kt6PFJetsPFlow","rho"), rho);
+
+  edm::Handle<reco::VertexCollection> recVtxs_;
+  iEvent.getByLabel(vertexLabel_,recVtxs_);
+
+  int nv = recVtxs_->size();
+
   PFJetIDSelectionFunctor looseJetIdSelector_(pfJetIdParams_);
 
   for (JI it = Jets->begin(); it != Jets->end(); ++it) {
+    pat::Jet correctedJet = *it;
+
+    //unsigned int idx = it - Jets->begin();
 
     if(abs(it->eta()) >= 2.4) continue; 
 
     pat::strbitset looseJetIdSel = looseJetIdSelector_.getBitTemplate();
     bool passId = looseJetIdSelector_( *it, looseJetIdSel);
 
-    if(passId){
+    if(!passId) continue;
 
-       ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > corrjet;
-       corrjet.SetPxPyPzE(it->px(),it->py(),it->pz(),it->energy());
+    double scaleF = 1.0;
+    if(doJecFly_){
+      correctedJet.scaleEnergy( it->jecFactor(0) ); //set it to uncorrected jet energy
+      //debug 
+      //cout << "uncorrected jet pt= " << correctedJet.pt() << endl;
+      reco::Candidate::LorentzVector uncorrJet = it->correctedP4(0);
 
+      resJetCorrector_->setJetEta( uncorrJet.eta() );
+      resJetCorrector_->setJetPt ( uncorrJet.pt() );
+      resJetCorrector_->setJetE  ( uncorrJet.energy() );
+      resJetCorrector_->setJetA  ( it->jetArea() );
+      resJetCorrector_->setRho   ( *(rho.product()) );
+      resJetCorrector_->setNPV   ( nv );
 
-       if(doResJec_){
-         resJetCorrector_->setJetEta(it->eta());
-         resJetCorrector_->setJetPt(it->pt());
-         const double scaleF = resJetCorrector_->getCorrection();
-         corrjet *= scaleF;
-        }
+      scaleF = resJetCorrector_->getCorrection();
+    }
 
-      jets->push_back(corrjet);
+    correctedJet.scaleEnergy( scaleF );
 
-      if( corrjet.pt() > ptcut_ )
-        jetspt30->push_back(corrjet);
-     }
+    if(doJecUnc_){
+      jecUnc_->setJetEta(correctedJet.eta());
+      jecUnc_->setJetPt(correctedJet.pt());
+      met_x += correctedJet.px();
+      met_y += correctedJet.py();
+      double unc = jecUnc_->getUncertainty(up_);
+      double ptscaleunc = 0;
+      if(up_) ptscaleunc = 1 + unc;
+      else ptscaleunc = 1 - unc;
+      correctedJet.scaleEnergy( ptscaleunc );
+      met_x -= correctedJet.px();
+      met_y -= correctedJet.py();
+    }
 
-   }
+    if(doJERUnc_){
+      double jetpx = correctedJet.px();
+      double jetpy = correctedJet.py();
+      correctedJet.scaleEnergy( resolutionFactor(correctedJet)  );
+      double dpx = correctedJet.px() - jetpx;
+      double dpy = correctedJet.py() - jetpy;
+      met_x -= dpx;
+      met_y -= dpy;
+    } 
 
-  if( jetspt30->size() >= min_ ) accepted = true;
+    //debug 
+    //cout << "corrected= " << correctedJet.pt() << " default= " << it->pt() << endl;
+ 
+    if( correctedJet.pt() <= ptcut_ ) continue;
 
-  tree->Fill();
-  return accepted;
+    corrJets->push_back(correctedJet);
+
+  }
+
+  if( corrJets->size() >= min_ ) accepted = true;
+
+  pat::MET corrMET(reco::MET ( sqrt(met_x*met_x + met_y*met_y)   , reco::MET::LorentzVector(met_x,met_y,0,sqrt(met_x*met_x + met_y*met_y))  , reco::MET::Point(0,0,0)));
+
+  corrMETs->push_back(corrMET);  
+
+  iEvent.put(corrJets, outputJetLabel_);
+  iEvent.put(corrMETs, outputMETLabel_);
+
+  if( applyFilter_ ) return accepted;
+  else return true;
 
 }
    
-
+double 
+JetFilter::resolutionFactor(const pat::Jet& jet)
+{
+    if(!jet.genJet()) { 
+      return 1.; 
+    }
+    double factor = 1. + (resolutionFactor_-1.)*(jet.pt() - jet.genJet()->pt())/jet.pt();
+    return (factor<0 ? 0. : factor);
+}
 
 // ------------ method called once each job just before starting event loop  ------------
 void 
 JetFilter::beginJob()
 {
 
-  tree->Branch("jets","std::vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >", &jets);
-  tree->Branch("jetspt30","std::vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >", &jetspt30);
-
-  // Jet energy correction for 38X
-  if ( doResJec_ )
-  {
-    edm::FileInPath jecFile("CondFormats/JetMETObjects/data/Spring10DataV2_L2L3Residual_AK5PF.txt");
+  if ( doJecFly_ ){
+    edm::FileInPath jecL1File("KoPFA/CommonTools/python/JEC/chs/"+globalTag_+"_L1FastJet_AK5PFchs.txt");
+    edm::FileInPath jecL2File("KoPFA/CommonTools/python/JEC/chs/"+globalTag_+"_L2Relative_AK5PFchs.txt");
+    edm::FileInPath jecL3File("KoPFA/CommonTools/python/JEC/chs/"+globalTag_+"_L3Absolute_AK5PFchs.txt");
+    edm::FileInPath jecL2L3File("KoPFA/CommonTools/python/JEC/chs/"+globalTag_+"_L2L3Residual_AK5PFchs.txt");
     std::vector<JetCorrectorParameters> jecParams;
-    jecParams.push_back(JetCorrectorParameters(jecFile.fullPath()));
+    jecParams.push_back(JetCorrectorParameters(jecL1File.fullPath()));
+    jecParams.push_back(JetCorrectorParameters(jecL2File.fullPath()));
+    jecParams.push_back(JetCorrectorParameters(jecL3File.fullPath()));
+    if( doResJec_ ) {
+      jecParams.push_back(JetCorrectorParameters(jecL2L3File.fullPath()));
+    }
     resJetCorrector_ = new FactorizedJetCorrector(jecParams);
   }
 
+  if ( doJecUnc_){
+    edm::FileInPath jecUncFile("KoPFA/CommonTools/python/JEC/chs/"+globalTag_+"_Uncertainty_AK5PFchs.txt");
+    jecUnc_ = new JetCorrectionUncertainty(jecUncFile.fullPath());
+  }
 
 }
 
