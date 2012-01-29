@@ -401,7 +401,7 @@ def mcsample(src):
   elif( decay == "ElEl"):
     dir = "ELE"
   script = """
-process.load("KoPFA.TopAnalyzer.Sources.%s.MC.Summer11.patTuple_%s_cff")
+process.load("KoPFA.TopAnalyzer.Sources.%s.MC.Fall11.patTuple_%s_cff")
 """ % (dir,src)
   return script
 
@@ -429,12 +429,12 @@ process.load("KoPFA.TopAnalyzer.Sources.%s.RD.patTuple_%s_cff")
 
 def rdpath():
   script = """
-process.%s.doResJec = cms.untracked.bool(True)
+process.JetEnergyScale.doResJec = cms.untracked.bool(True)
 
 process.p = cms.Path(
     process.top%sAnalysisRealDataSequence
 ) 
-""" % (decay, decay)
+""" % decay
   return script
 
 def outfile(src):
@@ -486,7 +486,8 @@ if not os.path.exists(decay):
 for src in mclist:
     out = open(decay+'/top'+decay+'Analyzer_'+src+'_cfg.py','w')
     out.write(common())
-    out.write("process.GlobalTag.globaltag = cms.string('%s::All')" % mcGlobalTag)
+    out.write("process.GlobalTag.globaltag = cms.string('%s::All')\n" % mcGlobalTag)
+    out.write("process.JetEnergyScale.globalTag = cms.untracked.string('%s')" % mcGlobalTag)
     out.write(mcpath())
     out.write(outfile(src))
     if src.find("ZtauDecay") != -1:
@@ -510,7 +511,8 @@ for src in mclist:
 for src in datalist:
     out = open(decay+'/top'+decay+'Analyzer_'+src+'_cfg.py','w')
     out.write(common())
-    out.write("process.GlobalTag.globaltag = cms.string('%s::All')" % rdGlobalTag)
+    out.write("process.GlobalTag.globaltag = cms.string('%s::All')\n" % rdGlobalTag)
+    out.write("process.JetEnergyScale.globalTag = cms.untracked.string('%s')" % rdGlobalTag)
     out.write(rdpath())
     out.write(outfile(src))
     out.write(rdsample(src))
