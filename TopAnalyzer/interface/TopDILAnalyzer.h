@@ -13,7 +13,7 @@
 //
 // Original Author:  Tae Jeong Kim,40 R-A32,+41227678602,
 //         Created:  Fri Jun  4 17:19:29 CEST 2010
-// $Id: TopDILAnalyzer.h,v 1.58 2011/11/21 10:45:11 tjkim Exp $
+// $Id: TopDILAnalyzer.h,v 1.59 2012/01/28 10:40:05 jhgoh Exp $
 //
 //
 
@@ -94,7 +94,6 @@ class TopDILAnalyzer : public edm::EDFilter {
     metStudy_ = iConfig.getUntrackedParameter<bool>("metStudy",false);
     useEventCounter_ = iConfig.getParameter<bool>("useEventCounter");
     filters_ = iConfig.getUntrackedParameter<std::vector<std::string> >("filters");
-    pfJetIdParams_ = iConfig.getParameter<edm::ParameterSet> ("looseJetId");
     relIso1_ = iConfig.getUntrackedParameter<double>("relIso1");
     relIso2_ = iConfig.getUntrackedParameter<double>("relIso2");
     applyIso_ = iConfig.getUntrackedParameter<bool>("applyIso",true);
@@ -102,35 +101,8 @@ class TopDILAnalyzer : public edm::EDFilter {
     bTagAlgo_ = iConfig.getUntrackedParameter<std::string>("bTagAlgo");
     minBTagValue_ = iConfig.getUntrackedParameter<double>("minBTagValue");
     
-    PileUpRD_ = iConfig.getParameter< std::vector<double> >("PileUpRD"),
-    PileUpMC_ = iConfig.getParameter< std::vector<double> >("PileUpMC"),
-
-    doJecFly_ = iConfig.getUntrackedParameter<bool>("doJecFly", true);
-    if ( doJecFly_ )
-    {
-      const string jecFilePath = iConfig.getUntrackedParameter<string>("jecFilePath", "KoPFA/TopAnalyzer/python/JEC");
-      const string jecPrefix = iConfig.getUntrackedParameter<string>("jecPrefix", "chs/GR_R_42_V19_AK5PFchs");
-
-      edm::FileInPath jecL1File(jecFilePath+"/"+jecPrefix+"_L1FastJet.txt");
-      edm::FileInPath jecL2File(jecFilePath+"/"+jecPrefix+"_L2Relative.txt");
-      edm::FileInPath jecL3File(jecFilePath+"/"+jecPrefix+"_L3Absolute.txt");
-
-      jecParams_.push_back(JetCorrectorParameters(jecL1File.fullPath()));
-      jecParams_.push_back(JetCorrectorParameters(jecL2File.fullPath()));
-      jecParams_.push_back(JetCorrectorParameters(jecL3File.fullPath()));
-
-      doResJec_ = iConfig.getUntrackedParameter<bool>("doResJec", false);
-      if ( doResJec_ )
-      {
-        edm::FileInPath jecL2L3File(jecFilePath+"/"+jecPrefix+"_L2L3Residual.txt");
-        jecParams_.push_back(JetCorrectorParameters(jecL2L3File.fullPath()));
-      }
-    }
-    doJecUnc_ = iConfig.getUntrackedParameter<bool>("doJecUnc", false);
-    resolutionFactor_ = iConfig.getUntrackedParameter<double>("resolutionFactor", 1.0);
-    up_ = iConfig.getUntrackedParameter<bool>("up", true); // uncertainty up
-    resJetCorrector_ = 0;
-    jecUnc_ = 0;
+    PileUpRD_ = iConfig.getParameter< std::vector<double> >("PileUpRD");
+    PileUpMC_ = iConfig.getParameter< std::vector<double> >("PileUpMC");
 
     edm::Service<TFileService> fs;
     tree = fs->make<TTree>("tree", "Tree for Top quark study");
@@ -162,8 +134,6 @@ class TopDILAnalyzer : public edm::EDFilter {
 
   ~TopDILAnalyzer()
   {
-    if ( resJetCorrector_ ) delete resJetCorrector_;
-    if ( jecUnc_ ) delete jecUnc_;
   }
 
  private:
@@ -217,17 +187,6 @@ class TopDILAnalyzer : public edm::EDFilter {
     //tree->Branch("photonEt",&photonEt,"photonEt/d");
     //tree->Branch("chargedHadronEt",&chargedHadronEt,"chargedHadronEt/d");
     //tree->Branch("neutralHadronEt",&neutralHadronEt,"neutralHadronEt/d");
-
-    // Jet energy correction for 38X
-    if ( doJecFly_ )
-    {
-      resJetCorrector_ = new FactorizedJetCorrector(jecParams_);
-    }
-
-    if ( doJecUnc_){
-        edm::FileInPath jecUncFile("KoPFA/TopAnalyzer/python/JEC/Jec11_V2_AK5PF_Uncertainty.txt");
-        jecUnc_ = new JetCorrectionUncertainty(jecUncFile.fullPath());
-    }
 
     std::vector< float > Wlumi ;
     std::vector< float > TrueDist2011;
@@ -361,8 +320,6 @@ class TopDILAnalyzer : public edm::EDFilter {
     edm::Handle<reco::GenParticleCollection> genParticles_;
     iEvent.getByLabel(genParticlesLabel_,genParticles_);
 
-    PFJetIDSelectionFunctor looseJetIdSelector_(pfJetIdParams_);
-
     for(unsigned i = 0; i != muons1_->size(); i++){
       for(unsigned j = 0; j != muons2_->size(); j++){
         T1 it1 = muons1_->at(i);
@@ -454,79 +411,19 @@ class TopDILAnalyzer : public edm::EDFilter {
       break;
     }
 
-    double met_x = mi->px();
-    double met_y = mi->py();
-
     //Jet selection by checking overlap with selected leptons
+    //cout << "new jet multiplicity= " << Jets->size() << endl;
     for (JI jit = Jets->begin(); jit != Jets->end(); ++jit) {
-
       ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > corrjet;
       corrjet.SetPxPyPzE(jit->px(),jit->py(),jit->pz(),jit->energy());
 
-      double scaleF = 1.0;
-      if(doJecFly_){
-	reco::Candidate::LorentzVector uncorrJet = jit->correctedP4(0);
+      jets->push_back(corrjet);
 
-	corrjet.SetPxPyPzE(uncorrJet.px(),uncorrJet.py(),uncorrJet.pz(),uncorrJet.energy());
-	resJetCorrector_->setJetEta( uncorrJet.eta() );
-	resJetCorrector_->setJetPt ( uncorrJet.pt() );
-	resJetCorrector_->setJetE  ( uncorrJet.energy() );
-	resJetCorrector_->setJetA  ( jit->jetArea() );
-	resJetCorrector_->setRho   ( *(rho.product()) );
-	resJetCorrector_->setNPV   ( nv );
-
-	scaleF = resJetCorrector_->getCorrection();
-	corrjet *= scaleF;
-      }
-
-      if(doJecUnc_){
-	jecUnc_->setJetEta(corrjet.eta());
-	jecUnc_->setJetPt(corrjet.pt());
-	met_x += corrjet.px();
-	met_y += corrjet.py();
-	double unc = jecUnc_->getUncertainty(up_);
-	//double c_sw = 0.015; //for release differences and calibration changes
-	double c_sw = 0.0; //for release differences and calibration changes
-	//double c_pu = 0.2*0.8*2.2/(corrjet.pt()); // PU uncertainty
-	double c_pu = 0.0; // PU uncertainty
-	double c_bjets = 0.03; // bjet uncertainty
-	//if(corrjet.pt() > 50 && corrjet.pt() < 200 && fabs(corrjet.eta()) < 2.0) {
-	//  c_bjets = 0.02;
-	//}else c_bjets = 0.03;
-
-	double cor = sqrt(c_sw*c_sw + c_pu*c_pu+c_bjets*c_bjets);
-	unc = sqrt(unc*unc + cor*cor);
-	double ptscaleunc = 0;
-	if(up_) ptscaleunc = 1 + unc;
-	else ptscaleunc = 1 - unc;
-	corrjet *= ptscaleunc;
-	met_x -= corrjet.px();
-	met_y -= corrjet.py();
-      }
-
-      //geometric acceptance
-      if(fabs(jit->eta()) >= 2.4) continue;
-
-      pat::strbitset looseJetIdSel = looseJetIdSelector_.getBitTemplate();
-      bool passId = looseJetIdSelector_( *jit, looseJetIdSel);
-
-      //jet id
-      if(passId){
-	//const double dRval1 = deltaR(jit->eta(), jit->phi(), it1.eta(), it1.phi());
-	//const double dRval2 = deltaR(jit->eta(), jit->phi(), it2.eta(), it2.phi());
-	//bool overlap = checkOverlap(jit->eta(), jit->phi(), dRval1, lepton1->back().relpfIso03(), dRval2, lepton2->back().relpfIso03());
-
-	//jet cleaning
-	//if( overlap ) continue;
-
-	jets->push_back(corrjet);
-
-	if(corrjet.pt() > 30){
-	  jetspt30->push_back(corrjet);
-	  discr = jit->bDiscriminator(bTagAlgo_);
-	  if(discr > minBTagValue_){
-	    bjets->push_back(corrjet);
-	  }
+      if(corrjet.pt() > 30){
+        jetspt30->push_back(corrjet);
+	discr = jit->bDiscriminator(bTagAlgo_);
+	if(discr > minBTagValue_){
+	  bjets->push_back(corrjet);
 	}
       }
     }
@@ -535,6 +432,7 @@ class TopDILAnalyzer : public edm::EDFilter {
       dphimetjet1 = fabs(deltaPhi(mi->phi(),jetspt30->at(0).phi()));
       dphimetjet2 = fabs(deltaPhi(mi->phi(),jetspt30->at(1).phi()));
     }
+    //cout << "default jet multiplicity= " << jetspt30->size() << endl;
 
     h_jet_multi->Fill(jets->size());
     h_jetpt30_multi->Fill(jetspt30->size());
@@ -543,8 +441,8 @@ class TopDILAnalyzer : public edm::EDFilter {
     nbjets = bjets->size();
 
     ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > corrmet;
-    corrmet.SetPxPyPzE(met_x,met_y,0,sqrt(met_x*met_x + met_y*met_y));
-    MET = sqrt(met_x*met_x + met_y*met_y);
+    corrmet.SetPxPyPzE(mi->px(),mi->py(),0,mi->pt());
+    MET = mi->pt();
     met->push_back(corrmet);
 
     if(metStudy_){
@@ -690,13 +588,6 @@ class TopDILAnalyzer : public edm::EDFilter {
     else        return ( dRval < 0.025 && dPtRel < 0.025 );
   }
 
-  double resolutionFactor(const pat::Jet& jet)
-  {
-    if(!jet.genJet()) { return 1.; }
-    double factor = 1. + (resolutionFactor_-1.)*(jet.pt() - jet.genJet()->pt())/jet.pt();
-    return (factor<0 ? 0. : factor);
-  }
-
   typedef pat::JetCollection::const_iterator JI;
 
   edm::InputTag muonLabel1_;
@@ -795,17 +686,6 @@ class TopDILAnalyzer : public edm::EDFilter {
 
   bool applyIso_;
   bool oppPair_;
-  // Residual Jet energy correction for 38X
-  bool doJecFly_;
-  bool doResJec_;
-  bool doJecUnc_;
-  bool up_;
-  std::vector<JetCorrectorParameters> jecParams_;
-  FactorizedJetCorrector* resJetCorrector_;
-  JetCorrectionUncertainty *jecUnc_;
-  double resolutionFactor_;
-
-  edm::ParameterSet pfJetIdParams_;
 
 };
 

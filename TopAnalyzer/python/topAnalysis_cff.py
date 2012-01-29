@@ -1,10 +1,5 @@
 import FWCore.ParameterSet.Config as cms
 
-#from PFAnalyses.CommonTools.countingSequences_cfi import *
-#from PFAnalyses.CommonTools.Selectors.looseJetIdPSet_cff import looseJetIdPSet
-#myJetId = looseJetIdPSet.clone()
-#myJetId.verbose = False
-
 from KoPFA.CommonTools.countingSequences_cfi import *
 from PhysicsTools.SelectorUtils.pfJetIDSelector_cfi import pfJetIDSelector
 myJetId = pfJetIDSelector.clone()
@@ -13,6 +8,7 @@ from KoPFA.TopAnalyzer.topLeptonSelector_cfi import *
 from KoPFA.TopAnalyzer.triggerFilterByRun_cfi import *
 from KoPFA.TopAnalyzer.topHLTfilter_cff import *
 from KoPFA.TopAnalyzer.PileUpWeight_cff import *
+from KoPFA.CommonTools.JetEnergyScale_cfi import *
 
 PUweight = cms.EDProducer("EventWeightProducer",
   PileUpRD = PileUpRD2011, 
@@ -73,8 +69,8 @@ ElEl = cms.EDFilter('TopElElAnalyzer',
     genParticlesLabel = cms.InputTag('genParticles'),
     muonLabel1 =  cms.InputTag('Electrons'),
     muonLabel2 =  cms.InputTag('Electrons'),
-    metLabel =  cms.InputTag('patMETsPFlow'),
-    jetLabel =  cms.InputTag('selectedPatJetsPFlow'),
+    metLabel =  cms.InputTag('JetEnergyScale','patMETsPFlow'),
+    jetLabel =  cms.InputTag('JetEnergyScale','selectedPatJetsPFlow'),
     vertexLabel = cms.untracked.InputTag('goodOfflinePrimaryVertices'),
     useEventCounter = cms.bool( True ),
     filters = cms.untracked.vstring(
@@ -84,7 +80,6 @@ ElEl = cms.EDFilter('TopElElAnalyzer',
         'nEventsFiltered',
         'nEventsPatHLT',
     ),
-    looseJetId = myJetId,
     relIso1 = cms.untracked.double(0.17),
     relIso2 = cms.untracked.double(0.17),
     bTagAlgo = cms.untracked.string("trackCountingHighEffBJetTags"),
@@ -97,8 +92,8 @@ MuMu = cms.EDFilter('TopMuMuAnalyzer',
     genParticlesLabel = cms.InputTag('genParticles'),
     muonLabel1 =  cms.InputTag('Muons'),
     muonLabel2 =  cms.InputTag('Muons'),
-    metLabel =  cms.InputTag('patMETsPFlow'),
-    jetLabel =  cms.InputTag('selectedPatJetsPFlow'),
+    metLabel =  cms.InputTag('JetEnergyScale','patMETsPFlow'),
+    jetLabel =  cms.InputTag('JetEnergyScale','selectedPatJetsPFlow'),
     vertexLabel = cms.untracked.InputTag('goodOfflinePrimaryVertices'),
     useEventCounter = cms.bool( True ),
     filters = cms.untracked.vstring(
@@ -108,7 +103,6 @@ MuMu = cms.EDFilter('TopMuMuAnalyzer',
         'nEventsFiltered',
         'nEventsPatHLT',
     ),
-    looseJetId = myJetId, 
     #for jet cleaning overlapping with isolated epton within 0.4
     relIso1 = cms.untracked.double(0.20),
     relIso2 = cms.untracked.double(0.20),
@@ -122,8 +116,8 @@ MuEl = cms.EDFilter('TopMuElAnalyzer',
     genParticlesLabel = cms.InputTag('genParticles'),
     muonLabel1 =  cms.InputTag('Muons'),
     muonLabel2 =  cms.InputTag('Electrons'),
-    metLabel =  cms.InputTag('patMETsPFlow'),
-    jetLabel =  cms.InputTag('selectedPatJetsPFlow'),
+    metLabel =  cms.InputTag('JetEnergyScale','patMETsPFlow'),
+    jetLabel =  cms.InputTag('JetEnergyScale','selectedPatJetsPFlow'),
     vertexLabel = cms.untracked.InputTag('goodOfflinePrimaryVertices'),
     useEventCounter = cms.bool( True ),
     filters = cms.untracked.vstring(
@@ -133,7 +127,6 @@ MuEl = cms.EDFilter('TopMuElAnalyzer',
         'nEventsFiltered',
         'nEventsPatHLT',
     ),
-    looseJetId = myJetId, 
     #for jet cleaning overlapping with isolated epton within 0.4
     relIso1 = cms.untracked.double(0.20),
     relIso2 = cms.untracked.double(0.17),
@@ -166,6 +159,7 @@ topElElAnalysisMCSequence = cms.Sequence(
 #    ElectronAna*
     Electrons*
     patElectronFilter*
+    JetEnergyScale*
     ElEl
 #    ee
 )
@@ -179,6 +173,7 @@ topElElAnalysisRealDataSequence = cms.Sequence(
 #    ElectronAna*
     Electrons*
     patElectronFilter*
+    JetEnergyScale*
     ElEl
 #    ee
 )
@@ -193,6 +188,7 @@ topMuMuAnalysisMCSequence = cms.Sequence(
 #    DYmmFilter*
     Muons*
     patMuonFilter*
+    JetEnergyScale*
     MuMu
 #    mm
 )
@@ -206,6 +202,7 @@ topMuMuAnalysisRealDataSequence = cms.Sequence(
 #    selectedPatJetsPFlow*
     Muons*
     patMuonFilter*
+    JetEnergyScale*
     MuMu
 #    mm
 )
@@ -219,6 +216,7 @@ topMuElAnalysisMCSequence = cms.Sequence(
 #    PUweight*
     Muons * Electrons *
     patMuonFilterForMuEl * patElectronFilterForMuEl *
+    JetEnergyScale*
     MuEl
 #    em
 )
@@ -230,6 +228,7 @@ topMuElAnalysisRealDataSequence = cms.Sequence(
     removeDuplicate*
     Muons * Electrons *
     patMuonFilterForMuEl * patElectronFilterForMuEl *
+    JetEnergyScale*
     MuEl
 #    em
 )
