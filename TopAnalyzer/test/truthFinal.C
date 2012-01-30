@@ -25,46 +25,43 @@ int nGen = sizeof(genBins)/sizeof(float) - 1;
 
 void defaultStyle();
 
-void acceptance(){
+void truthFinal(){
 
   defaultStyle();
 
-  vector<TString> decayMode;
-  vector<std::string> mcPath;
-  vector<std::string> rdPath;
+  //mc truth level for full phase space or visible
+  TFile * f_MadGraph = new TFile("/data/export/common/Top/ntuple/ttbarGen.root");
+  TFile * f_POWHEG = new TFile("/data/export/common/Top/ntuple/Gen/ttbarGen_TTTo2L2Nu2BTuneZ2_Powheg_Summer11_PUS4_v0.root");
+  TFile * f_MCNLO = new TFile("/data/export/common/Top/ntuple/ttbar_ntuple_cteq6m_dilepton_v20111028.root");
 
-  decayMode.push_back("MuEl");
-  decayMode.push_back("ElEl");
-  decayMode.push_back("MuMu");
-
-  //MC
-  mcPath.push_back("/data/export/common/Top/ntuple/MuEl/MC/Summer11_new/vallot_TTbarTuneZ2.root");
-  mcPath.push_back("/data/export/common/Top/ntuple/ElEl/MC/Summer11_new/vallot_TTbarTuneZ2.root");
-  mcPath.push_back("/data/export/common/Top/ntuple/MuMu/MC/Summer11_new/vallot_TTbarTuneZ2.root");
-
-  //measured data distribution after final cut:version 6->take into account QCD
-  rdPath.push_back("/data/export/common/Top/finalHisto/v6/MuEl.root");
-  rdPath.push_back("/data/export/common/Top/finalHisto/v6/ElEl.root");
-  rdPath.push_back("/data/export/common/Top/finalHisto/v6/MuMu.root");
-
-  const std::string cutStep = "Step_7";
-  string recon = "vsum";
+  double lumi = 1143.22;
+  double scale = lumi/22222.22;
+  double scale_powheg = lumi/ ( 1000000.0 / (157.5 * 0.11) );
+  bool split = false;//use full statistics if it is false
 
   TCut lepton = "ttbarGen.leptons_[0].pt() > 20 && ttbarGen.leptons_[1].pt() > 20 && abs(ttbarGen.leptons_[0].eta()) < 2.4 && abs(ttbarGen.leptons_[1].eta()) < 2.4";
   TCut bquark = "ttbarGen.bQuarks_[0].pt() > 30 && ttbarGen.bQuarks_[1].pt() > 30 && abs(ttbarGen.bQuarks_[0].eta()) < 2.4 && abs(ttbarGen.bQuarks_[1].eta()) < 2.4";
   TCut visible = lepton && bquark;
 
-  //acceptance to visible phase space
-  cout << "producing acceptance plots..." << endl;
-  TH1F * hAccept =  getAcceptanceHisto(mcPath, rdPath, cutStep,  decayMode, recon, visible);
-  TH1F * hAcceptFull =  getAcceptanceHisto(mcPath, rdPath, cutStep,  decayMode, recon+"_Full");
+  //truth level in visible phase space
+  cout << "producing truth level plots..." << endl;
+  TH1D* hMadGraph = getTruthHisto(f_MadGraph, "MADGRAPH", scale, visible);
+  TH1D* hPOWHEG = getTruthHisto(f_POWHEG, "POWHEG", scale_powheg, visible);
+  TH1D* hMadGraphFull = getTruthHisto(f_MadGraph, "MADGRAPH_Full", scale);
+  TH1D* hPOWHEGFull = getTruthHisto(f_POWHEG, "POWHEG_Full", scale_powheg);
+  TH1D* hMCNLO = (TH1D*) f_MCNLO->Get("hVisTTbarM");
+  TH1D* hMCNLO_Up = (TH1D*) f_MCNLO->Get("hVisTTbarM_Up");
+  TH1D* hMCNLO_Down = (TH1D*) f_MCNLO->Get("hVisTTbarM_Down");
 
-  TFile* f = TFile::Open("acceptance.root", "recreate");
+  TFile* f = TFile::Open("truthFinal.root", "recreate");
 
-  //--------------Write into preUnfolding root file------------------------
-
-  hAccept->Write();
-  hAcceptFull->Write();
+  hMadGraph->Write();
+  hPOWHEG->Write();
+  hMadGraphFull->Write();
+  hPOWHEGFull->Write();
+  hMCNLO->Write();
+  hMCNLO_Up->Write();
+  hMCNLO_Down->Write();
 
   f->Write();  
   f->Close();

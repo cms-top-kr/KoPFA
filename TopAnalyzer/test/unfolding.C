@@ -35,6 +35,8 @@ void unfolding(int k=4){
   gStyle->SetOptFit(0011);
 
   TFile * file = new TFile("preUnfolding.root");
+  TFile * file_acceptance = new TFile("acceptance.root");
+  TFile * file_truthFinal = new TFile("truthFinal.root");
   //response matrix
   TH2F * h2ResponseM = (TH2F*) file->Get("h2_response_m");
   //measured distribution
@@ -46,16 +48,17 @@ void unfolding(int k=4){
   //truth level after reconstruction level selection
   TH1F * hGenDistMADGRAPH = (TH1F*) file->Get("hTruth_MadGraph");
   TH1F * hGenDistPOWHEG = (TH1F*) file->Get("hTruth_Powheg");
-  TH1F * hAcceptDist = (TH1F*) file->Get("hAccept_vsum");
-  TH1F * hAcceptDistFull = (TH1F*) file->Get("hAccept_vsum_Full");
+  //acceptance 
+  TH1F * hAcceptDist = (TH1F*) file_acceptance->Get("hAccept_vsum");
+  TH1F * hAcceptDistFull = (TH1F*) file_acceptance->Get("hAccept_vsum_Full");
   //truth level for final
-  TH1D * hGenMADGRAPH = (TH1D*) file->Get("hTruthFinalMADGRAPH");
-  TH1D * hGenPOWHEG = (TH1D*) file->Get("hTruthFinalPOWHEG");
-  TH1D * hGenMADGRAPH_Full = (TH1D*) file->Get("hTruthFinalMADGRAPH_Full");
-  TH1D * hGenPOWHEG_Full = (TH1D*) file->Get("hTruthFinalPOWHEG_Full");
-  TH1D * hGenMCNLO = (TH1D*) file->Get("hVisTTbarM");
-  TH1D * hGenMCNLO_Up = (TH1D*) file->Get("hVisTTbarM_Up");
-  TH1D * hGenMCNLO_Down = (TH1D*) file->Get("hVisTTbarM_Down");
+  TH1D * hGenMADGRAPH = (TH1D*) file_truthFinal->Get("hTruthFinalMADGRAPH");
+  TH1D * hGenPOWHEG = (TH1D*) file_truthFinal->Get("hTruthFinalPOWHEG");
+  TH1D * hGenMADGRAPH_Full = (TH1D*) file_truthFinal->Get("hTruthFinalMADGRAPH_Full");
+  TH1D * hGenPOWHEG_Full = (TH1D*) file_truthFinal->Get("hTruthFinalPOWHEG_Full");
+  TH1D * hGenMCNLO = (TH1D*) file_truthFinal->Get("hVisTTbarM");
+  TH1D * hGenMCNLO_Up = (TH1D*) file_truthFinal->Get("hVisTTbarM_Up");
+  TH1D * hGenMCNLO_Down = (TH1D*) file_truthFinal->Get("hVisTTbarM_Down");
 
   double lumi = 1143.22;
   bool print = true; //save plots

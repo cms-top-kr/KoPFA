@@ -79,11 +79,6 @@ void preUnfolding(){
   rdPathDw.push_back("/data/export/common/Top/finalHisto/v5/ElEl_DYll_dw.root");
   rdPathDw.push_back("/data/export/common/Top/finalHisto/v5/MuMu_DYll_dw.root");
 
-  //mc truth level for full phase space or visible
-  TFile * f_MadGraph = new TFile("/data/export/common/Top/ntuple/ttbarGen.root");
-  TFile * f_POWHEG = new TFile("/data/export/common/Top/ntuple/Gen/ttbarGen_TTTo2L2Nu2BTuneZ2_Powheg_Summer11_PUS4_v0.root");
-  TFile * f_MCNLO = new TFile("/data/export/common/Top/ntuple/ttbar_ntuple_cteq6m_dilepton_v20111028.root");
-
   const std::string cutStep = "Step_7";
   double lumi = 1143.22;
   double scale = lumi/22222.22;
@@ -118,21 +113,6 @@ void preUnfolding(){
   TH1F * hGenDistPowheg = getGenDistHisto(mePath, rdPath, cutStep, decayMode, scale_powheg, split, "Powheg");
   TH1F * hGenDistZprime = getGenDistHisto(mePathZprime, rdPath, cutStep, decayMode, scale_powheg, split, "Zprime");
 
-  //acceptance to visible phase space
-  cout << "producing acceptance plots..." << endl;
-  TH1F * hAccept =  getAcceptanceHisto(mcPath, rdPath, cutStep,  decayMode, recon, visible);
-  TH1F * hAcceptFull =  getAcceptanceHisto(mcPath, rdPath, cutStep,  decayMode, recon+"_Full");
-
-  //truth level in visible phase space
-  cout << "producing truth level plots..." << endl;
-  TH1D* hMadGraph = getTruthHisto(f_MadGraph, "MADGRAPH", scale, visible);
-  TH1D* hPOWHEG = getTruthHisto(f_POWHEG, "POWHEG", scale_powheg, visible);
-  TH1D* hMadGraphFull = getTruthHisto(f_MadGraph, "MADGRAPH_Full", scale);
-  TH1D* hPOWHEGFull = getTruthHisto(f_POWHEG, "POWHEG_Full", scale_powheg);
-  TH1D* hMCNLO = (TH1D*) f_MCNLO->Get("hVisTTbarM");
-  TH1D* hMCNLO_Up = (TH1D*) f_MCNLO->Get("hVisTTbarM_Up");
-  TH1D* hMCNLO_Down = (TH1D*) f_MCNLO->Get("hVisTTbarM_Down");
-
   TFile* f = TFile::Open("preUnfolding.root", "recreate");
 
   //--------------Write into preUnfolding root file------------------------
@@ -151,16 +131,6 @@ void preUnfolding(){
   hGenDistWeighted->Write();
   hGenDistPowheg->Write();
   hGenDistZprime->Write();
-  hAccept->Write();
-  hAcceptFull->Write();
-
-  hMadGraph->Write();
-  hPOWHEG->Write();
-  hMadGraphFull->Write();
-  hPOWHEGFull->Write();
-  hMCNLO->Write();
-  hMCNLO_Up->Write();
-  hMCNLO_Down->Write();
 
   f->Write();  
   f->Close();
