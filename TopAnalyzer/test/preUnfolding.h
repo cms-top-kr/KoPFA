@@ -99,16 +99,34 @@ TH2F* getResponseM( vector<std::string> mcPath, vector<std::string> rdPath, stri
 
     int entries = tree->GetEntries();
 
+    TCut mcCutStr = "";
+    mcCutStr = Form("%s*(%s)", "weightin", (const char*)(cut));
+
     TH2F *h2Temp = new TH2F(Form("h2_response_m_%s_%s",name.Data(),decayMode[i].Data()),Form("h2_response_m_%s",var.Data()),nDet,detBins,nGen,genBins);
     if(split)
-      tree->Project(Form("h2_response_m_%s_%s",name.Data(),decayMode[i].Data()),Form("genttbarM:%s",var.Data()),cut, "", entries/2, 0);
+      tree->Project(Form("h2_response_m_%s_%s",name.Data(),decayMode[i].Data()),Form("genttbarM:%s",var.Data()),mcCutStr, "", entries/2, 0);
     else 
-      tree->Project(Form("h2_response_m_%s_%s",name.Data(),decayMode[i].Data()),Form("genttbarM:%s",var.Data()),cut);
+      tree->Project(Form("h2_response_m_%s_%s",name.Data(),decayMode[i].Data()),Form("genttbarM:%s",var.Data()),mcCutStr);
     h2_response_m->Add(h2Temp);
   }
 
   return h2_response_m;
 }
+
+
+TH1F* getGenDistHisto( vector<std::string> rdPath, string cutStep, TString var = "genttbarM2" , TString name = ""){
+
+  TH1F *hGen = new TH1F(Form("hTruth_%s",name.Data()), "truth distribution after reconstructed level selection",nGen,genBins);
+
+  for(size_t i = 0; i < rdPath.size() ; i++){
+    TFile * f = new TFile(rdPath[i].c_str());
+    TH1F *hTemp = (TH1F*) f->Get(Form("%s/hMCSig_TTbar_%s_%s", cutStep.c_str(), cutStep.c_str(), var.Data()));
+    hGen->Add(hTemp);
+  }
+
+  return hGen;
+}
+
 
 TH1F* getGenDistHisto( vector<std::string> mcPath, vector<std::string> rdPath, string cutStep, vector<TString> decayMode, double scale, bool split , TString name, string weight="" ){
 
