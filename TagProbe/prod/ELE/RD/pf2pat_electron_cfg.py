@@ -46,6 +46,34 @@ process.source = cms.Source("PoolSource",
 # remove MC matching from the default sequence
 removeMCMatching(process, ['All'])
 
+process.patElectronTrigger = cms.EDProducer("PATTriggerProducer",
+    processName = cms.string('HLT'),
+    triggerResults = cms.InputTag( "TriggerResults" ),
+    triggerEvent   = cms.InputTag( "hltTriggerSummaryAOD" ),
+    onlyStandAlone = cms.bool( False ),
+    addPathModuleLabels = cms.bool( False )
+)
+
+process.patElectronTriggerMatch = cms.EDProducer("PATTriggerMatcherDRDPtLessByR",
+    src = cms.InputTag( 'acceptedElectrons'),
+    matched = cms.InputTag( "patElectronTrigger" ),
+    andOr = cms.bool( False ),
+    filterIdsEnum = cms.vstring( '*' ),
+    filterIds = cms.vint32( 0 ),
+    filterLabels = cms.vstring( '*' ),
+    matchedCuts = cms.string( ""),
+    collectionTags = cms.vstring( '*' ),
+    maxDPtRel = cms.double( 0.5 ),
+    maxDeltaR = cms.double( 0.2 ),
+    resolveAmbiguities    = cms.bool( True ),
+    resolveByMatchQuality = cms.bool( False )
+)
+
+process.triggeredElectrons = cms.EDProducer("PATTriggerMatchElectronEmbedder",
+    src = cms.InputTag('acceptedElectrons'),
+    matches = cms.VInputTag( "patElectronTriggerMatch")
+)
+
 #process.p += process.hltHighLevelElElRD
 process.p += process.nEventsHLT
 process.p += process.patDefaultSequence
@@ -57,7 +85,12 @@ process.p += process.acceptedMuons
 process.p += process.patElectronFilter
 process.p += process.patMuonFilter
 process.p += process.nEventsFiltered
+#trigger embedded 
+process.p += process.patElectronTrigger
+process.p += process.patElectronTriggerMatch
+process.p += process.triggeredElectrons
 
 process.out.outputCommands +=[
         'keep *_acceptedGsfElectrons_*_*',
+        'keep *_triggeredElectrons_*_*',
 ]
