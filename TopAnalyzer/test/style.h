@@ -18,10 +18,17 @@ void SetLabel(double x, double y, double lumi){
   label->DrawLatex(x,y-0.05,Form("%1.1f fb^{-1} at #sqrt{s} = 7 TeV",lumi/1000));
 }
 
-void SetLegendStyle(TLegend *l){
+void SetLegendStyle(TLegend *l, bool dynamic=false){
   l->SetTextSize(0.04);
   l->SetFillColor(0);
   l->SetLineColor(0);
+
+  if( dynamic ){
+    l->SetX1NDC(1.0 - gStyle->GetPadRightMargin() - gStyle->GetTickLength() - 0.25);
+    l->SetY1NDC(1.0 - gStyle->GetPadTopMargin()   - gStyle->GetTickLength() - 0.05 - (double)l->GetNRows()*0.04);
+    l->SetX2NDC(1.0 - gStyle->GetPadRightMargin() - gStyle->GetTickLength());
+    l->SetY2NDC(1.0 - gStyle->GetPadTopMargin()   - gStyle->GetTickLength());
+  }
 }
 
 void SetLegend(TH1* h1, TH1* h2, TString& leg1, TString& leg2, TString& o1, TString& o2,double x1, double y1, double x2, double y2){
@@ -136,7 +143,6 @@ void SetGraphStyle(TGraph* h, double lwidth, double lcolor, double lstyle, doubl
   h->SetMarkerStyle(mstyle);
   h->SetMaximum(max);
   h->SetMinimum(min);
-  h->SetStats(0);
   h->SetTitle(0);
   h->GetXaxis()->SetTitle(xtitle.Data());
   h->GetYaxis()->SetTitle(ytitle.Data());
@@ -155,6 +161,36 @@ void SetHistoStyle(TH1* h, double lwidth, double lcolor, double lstyle, double m
   h->SetTitle(0);
   h->GetXaxis()->SetTitle(xtitle.Data());
   h->GetYaxis()->SetTitle(ytitle.Data());
+}
+
+void SetHistoStyle_TOP11013(TH1* h, double lwidth, double lcolor, double lstyle, double msize, double mcolor, double mstyle, double min, double max, TString& xtitle, TString& ytitle){
+  h->SetLineWidth(lwidth);
+  h->SetLineColor(lcolor);
+  h->SetLineStyle(lstyle);
+  h->SetMarkerSize(msize);
+  h->SetMarkerColor(mcolor);
+  h->SetMarkerStyle(mstyle);
+  h->SetMaximum(max);
+  h->SetMinimum(min);
+  h->SetStats(0);
+  h->SetTitle(0);
+  h->GetXaxis()->SetTitle(xtitle.Data());
+  h->GetYaxis()->SetTitle(ytitle.Data());
+  h->GetXaxis()->SetTitleSize(0.04);
+  h->GetXaxis()->SetLabelSize(0.04);
+  h->GetXaxis()->SetLabelFont(42);
+  h->GetXaxis()->SetLabelOffset(0.007);
+  h->GetXaxis()->SetTitleOffset(1.25);
+  h->GetXaxis()->SetTitleFont(42);
+  h->GetYaxis()->SetTitleSize(0.04);
+  h->GetYaxis()->SetLabelSize(0.04);
+  h->GetYaxis()->SetLabelFont(42);
+  h->GetYaxis()->SetLabelOffset(0.007);
+  h->GetYaxis()->SetTitleOffset(1.6);
+  h->GetYaxis()->SetTitleFont(42);
+  h->GetZaxis()->SetLabelFont(42);
+  h->GetZaxis()->SetLabelOffset(0.007);
+  h->GetZaxis()->SetTitleFont(42);
 }
 
 void StyleSimple(TH1* h1, TH1* h2, TString& xtitle, TString& ytitle ){
