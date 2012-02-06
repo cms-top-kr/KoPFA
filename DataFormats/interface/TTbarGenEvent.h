@@ -30,9 +30,11 @@ private:
   math::XYZTLorentzVector bA_, bB_;
   math::XYZTLorentzVector lA_, lB_;
   math::XYZTLorentzVector jA_, jB_;
+  math::XYZTLorentzVector jC_, jD_;
 
   math::XYZTLorentzVector em1_, em2_;
   math::XYZTLorentzVector j1_, j2_;
+  math::XYZTLorentzVector j3_, j4_;
 
   int mumuDecay;
   int eeDecay;
