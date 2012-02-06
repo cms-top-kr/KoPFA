@@ -523,16 +523,17 @@ void TOP11013Plot(TH1F* h_unfold, TH1F* hgen, TH1F* accept, TH1D* hTr1, TH1D* hT
   TGaxis::SetMaxDigits(4);
   if(log) c_dsigma->SetLogy();
 
-  TF1* fSigmaTruth = getFitFunction(hTr1, kRed+1,1,2);
-  TF1* fSigmaTruth2 = getFitFunction(hTr2, kAzure,1,2);
-  TF1* fSigmaTruth3 = getFitFunction(hTr3, kGreen+1,1,2);
+  TH1F* fSigmaTruth = getFitHistogram(hTr1, "madgraph");
+  TH1F* fSigmaTruth2 = getFitHistogram(hTr2, "mcatnlo");
+  TH1F* fSigmaTruth3 = getFitHistogram(hTr3, "powheg");
 
-  TF1* fSigmaTruth2_up = getFitFunction(hTr2_up, 1, 1, 2);
-  TF1* fSigmaTruth2_dw = getFitFunction(hTr2_dw, 1, 1, 2);
-  TH1F* h_mcatnlo = fSigmaTruth2->GetHistogram();
-  TH1F* h_mcatnlo_up = fSigmaTruth2_up->GetHistogram();
-  TH1F* h_mcatnlo_dw = fSigmaTruth2_dw->GetHistogram();
-  dsigmaTruth = getGraphAsymmErrors( h_mcatnlo, true, h_mcatnlo_up, h_mcatnlo_dw);
+  SetHistoStyle(fSigmaTruth, 2,kRed+1,1,0,0,0,min,max,"","");
+  SetHistoStyle(fSigmaTruth2, 2,kAzure,1,0,0,0,min,max,"","");
+  SetHistoStyle(fSigmaTruth3, 2,kGreen+1,1,0,0,0,min,max,"","");
+
+  TH1F* fSigmaTruth2_up = getFitHistogram(hTr2_up, "mcatnlo");
+  TH1F* fSigmaTruth2_dw = getFitHistogram(hTr2_dw, "mcatnlo");
+  dsigmaTruth = getGraphAsymmErrors( fSigmaTruth2, true, fSigmaTruth2_up, fSigmaTruth2_dw);
 
   SetHistoStyle_TOP11013(hSigmaTruthHisto, 2,kRed+1,1,1.2,0,20,min,max,"m_{t#bar{t}} #left[#frac{GeV}{c^{2}}#right]","#frac{1}{#sigma} #frac{d#sigma}{dm_{t#bar{t}}} #left[#left(#frac{GeV}{c^{2}}#right)^{-1}#right]");
 
@@ -544,9 +545,9 @@ void TOP11013Plot(TH1F* h_unfold, TH1F* hgen, TH1F* accept, TH1D* hTr1, TH1D* hT
   dsigmaTruth->Draw("e3");
 
   hSigmaTruthHisto->Draw("same");
-  fSigmaTruth->Draw("same");
-  fSigmaTruth2->Draw("same");
-  fSigmaTruth3->Draw("same");
+  fSigmaTruth->Draw("hist c same");
+  fSigmaTruth2->Draw("hist c same");
+  fSigmaTruth3->Draw("hist c same");
 
   TGraphAsymmErrors* dsigmaDataCentered = BinCenterCorrection(dsigmaData, hSigmaTruthHisto, hSigmaTruth);
   TGraphAsymmErrors* dsigmaDataCenteredOnlyWithStats = BinCenterCorrection(dsigmaDataOnlyWithStat, hSigmaTruthHisto, hSigmaTruth);
@@ -787,7 +788,7 @@ TGraphAsymmErrors* BinCenterCorrection( TGraphAsymmErrors* data, TH1* gen_histo,
   TGraphAsymmErrors* dsigma = new TGraphAsymmErrors;
   int nbins = gen_histo->GetNbinsX();
 
-  double centerpoints[] = { 172.5, 370, 425, 475, 525, 575, 645, 745, 1000};
+  double centerpoints[] = { 172.5, 363, 427, 472, 522, 575, 646, 741, 975};
 
   for(int i=1; i <=  nbins; i++){
     double x;
@@ -879,6 +880,137 @@ TF1 * getFitFunction(TH1D* h, int color, int style, int width){
 
   return function;
 }
+
+TH1F * getFitHistogram(TH1D* h, string model){
+
+  TH1F* tmp=(TH1F*) h->Clone();
+  double scale = tmp->Integral();
+  tmp->Scale(1.0/scale);
+
+  TH1F* result=(TH1F*) h->Clone();
+  result->Reset();
+
+  double fitLowEdge=0;
+  double fitHighEdge=0;
+  TString def="";
+  double a=0.;
+  double b=0.;
+  double c=0.;
+  // define fit function B
+  double fitLowEdgeB=0;
+  double fitHighEdgeB=0;
+  TString defB="";
+  double aB=0.;
+  double bB=0.;
+  double cB=0.;
+  TString addOptB="";
+  // define fit function C
+  double fitLowEdgeC=0;
+  double fitHighEdgeC=0;
+  TString defC="";
+  double aC=0.;
+  double bC=0.;
+  double cC=0.;
+
+  if(model=="mcatnlo"){
+    //tail:
+    fitLowEdge=440.;
+    fitHighEdge=1400.;
+    def="[0]*exp([1]*x)+[2]";
+    a=0.11;
+    b=-0.0074;
+    c=0.00001;
+    // start:
+    fitLowEdgeB=345.;
+    fitHighEdgeB=440.;
+    defB="TMath::GammaDist(x,[0],[1],[2])";
+    aB=1.53;
+    bB=345.;
+    cB=96.2;
+    // very early start:
+    fitLowEdgeC=300.;
+    fitHighEdgeC=345.;
+    defC="[0]*exp([1]*x)+[2]";
+    aC=0.00000373757;
+    bC=0.0125775;
+    cC=-0.000194989;
+  }
+  else if(model=="madgraph"){
+    //tail:
+    fitLowEdge=440.;
+    fitHighEdge=1400.;
+    def="[0]*exp([1]*x)+[2]";
+    a=28165.;
+    b=-0.00756;
+    c=2.77;
+    // start:
+    fitLowEdgeB=340.;
+    fitHighEdgeB=440.;
+    defB="[3]*TMath::GammaDist(x,[0],[1],[2])";
+    aB=1.56;
+    bB=344.8;
+    cB=80.8;
+  }
+  else if(model=="powheg"){
+    fitLowEdge=440.;
+    fitHighEdge=1400.;
+    def="[0]*exp([1]*x)+[2]";
+    a=40556.;
+    b=-0.007;
+    c=3.1;
+    // start:
+    fitLowEdgeB=345.;
+    fitHighEdgeB=440.;
+    defB="[3]*TMath::GammaDist(x,[0],[1],[2])";
+    aB=1.58;
+    bB=344.;
+    cB=86.6;
+    addOptB="LL";
+    // very early start:
+    fitLowEdgeC=295.;
+    fitHighEdgeC=345.;
+    defC="[0]*exp([1]*x)+[2]";
+    aC=0.000000000530501;
+    bC=0.075;
+    cC=3.81;
+  }
+
+  TF1* function=new TF1("function",def,fitLowEdge,fitHighEdge);
+  function->SetParLimits(0, 0.0, 0.2);
+  function->SetParLimits(1, -0.01, 0.01);
+  function->SetParLimits(2, 0.0, 0.1);
+
+  //FIXME: it does not work
+  //function->SetParameter(0,a);
+  //function->SetParLimits(1,0.85*b,1.15*b);
+  //function->SetParameter(2,c);
+
+  TF1* functionB=new TF1("functionB",defB,fitLowEdgeB, fitHighEdgeB);
+  functionB->SetParameter(0,aB);
+  functionB->SetParameter(1,bB);
+  if(bB<0.) functionB->SetParLimits(1,1.15*bB,0.85*bB);
+  if(bB>0.) functionB->SetParLimits(1,0.85*bB,1.15*bB);
+  functionB->SetParameter(2,cB);
+
+  TF1* functionC=new TF1("functionC",defC, fitLowEdgeC, fitHighEdgeC);
+  functionC->SetParameter(0,aC);
+  functionC->SetParameter(1,bC);
+  functionC->SetParLimits(1,0.85*bC,1.15*bC);
+  functionC->SetParameter(2,cC);
+
+  tmp->Fit(function,"R","same", fitLowEdge, fitHighEdge);
+  result->Add(function);
+  tmp->Fit(functionB,"R+","same", fitLowEdgeB, fitHighEdgeB);
+  result->Add(functionB);
+
+  if( model != "madgraph" ){
+    tmp->Fit(functionC,"R+","same", fitLowEdgeC, fitHighEdgeC);
+    result->Add(functionC);
+  }
+
+  return result;
+}
+
 
 TGraphAsymmErrors* DESYPlot(TH1F* accept){
 
