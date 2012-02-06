@@ -976,9 +976,9 @@ TH1F * getFitHistogram(TH1D* h, string model){
   }
 
   TF1* function=new TF1("function",def,fitLowEdge,fitHighEdge);
-  function->SetParLimits(0, 0.0, 0.2);
-  function->SetParLimits(1, -0.01, 0.01);
-  function->SetParLimits(2, 0.0, 0.1);
+  function->SetParLimits(0, 0.0, 0.1442);
+  function->SetParLimits(1, -0.01, 0.00);
+  function->SetParLimits(2, 0.0, 0.0000036);
 
   //FIXME: it does not work
   //function->SetParameter(0,a);
