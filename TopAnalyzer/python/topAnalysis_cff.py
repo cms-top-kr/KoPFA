@@ -7,7 +7,7 @@ myJetId = pfJetIDSelector.clone()
 from KoPFA.TopAnalyzer.topLeptonSelector_cfi import *
 from KoPFA.TopAnalyzer.triggerFilterByRun_cfi import *
 from KoPFA.TopAnalyzer.topHLTfilter_cff import *
-from KoPFA.TopAnalyzer.PileUpWeight_cff import *
+from KoPFA.CommonTools.PileUpWeight_cff import *
 from KoPFA.CommonTools.JetEnergyScale_cfi import *
 
 PUweight = cms.EDProducer("EventWeightProducer",

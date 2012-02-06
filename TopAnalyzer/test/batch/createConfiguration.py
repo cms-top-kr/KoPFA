@@ -42,6 +42,10 @@ class CreateConfig:
             decay = 'MuMu'
         elif decay in ('MuEl', 'muel', 'elmu', 'MUEL', 'ELMU', 'em', 'me', 'EM', 'ME', 'EMU', 'emu'):
             decay = 'MuEl'
+        elif decay in ('MuJet', 'mj'):
+            decay = 'MuJet'
+        elif decay in ('ElJet', 'ej'):
+            decay = 'ElJet'
         else:
             print 'Invalid decay mode :', decay
             return
@@ -89,6 +93,10 @@ class CreateConfig:
                 self.sourceDir += '/MU'
             elif decay == 'MuEl':
                 self.sourceDir += '/EMU'
+            elif decay == 'MuJet':
+                self.sourceDir += '/MUJET'
+            elif decay == 'ElJet':
+                self.sourceDir += '/ELEJET'
 
             self.sourceDir += '/RD'
         else:
@@ -98,6 +106,10 @@ class CreateConfig:
                 self.sourceDir += '/MU'
             elif decay == 'MuEl':
                 self.sourceDir += '/EMU'
+            elif decay == 'MuJet':
+                self.sourceDir += '/MUJET'
+            elif decay == 'ElJet':
+                self.sourceDir += '/ELEJET'
             
             self.sourceDir += '/MC/'+self.mcReign
 
@@ -236,12 +248,22 @@ mv vallot_*.root $OUTDIR/
             ## Decay mode specific configurations
             specificCfg = "\n## Decay mode specific configurations"
             if 'TTbar' in dataset:
-                specificCfg += """
+				if decay in ('MuMu','ElEl','MuEl'):
+					specificCfg += """
 process.topWLeptonGenFilter.applyFilter = True
 """
+				elif decay in ('MuJet','ElJet'):
+					specificCfg += """
+process.topWLeptonGenFilterForLJ.applyFilter = True
+"""
             if 'TTbarOthers' in dataset:
-                specificCfg += """
+				if decay in ('MuMu','ElEl','MuEl'):
+					specificCfg += """
 process.top%sAnalysisMCSequence.replace(process.topWLeptonGenFilter,~process.topWLeptonGenFilter)
+""" % self.decay
+				elif decay in ('MuJet','ElJet'):
+					specificCfg += """
+process.top%sAnalysisMCSequence.replace(process.topWLeptonGenFilterForLJ,~process.topWLeptonGenFilterForLJ)
 """ % self.decay
             if dataset in ('ZJets'):
                 specificCfg += """
@@ -307,10 +329,14 @@ if newSubmit == True:
     CreateConfig('RD', 'ElEl')
     CreateConfig('RD', 'MuEl')
     CreateConfig('RD', 'MuMu')
+    CreateConfig('RD', 'MuJet')
+    CreateConfig('RD', 'ElJet')
 
     CreateConfig('MC', 'ElEl')
     CreateConfig('MC', 'MuEl')
     CreateConfig('MC', 'MuMu')
+    CreateConfig('RD', 'MuJet')
+    CreateConfig('RD', 'ElJet')
 
     sys.exit(0)
 
@@ -349,6 +375,28 @@ mcSet['MuEl'] = [
 #	'QCDPt20MuPt15',
 ]
 
+mcSet['MuJet'] = [
+    'TTbarTuneZ2', 'TTbarOthers',
+    'SingleToptW', 'SingleTopt', 'SingleTops',
+    'ZJets', 'DYee20to50', 'DYee10to20', 'DYmm20to50', 'DYmm10to20',
+    'ZtauDecay', 'DYtt20to50', 'DYtt10to20',
+    'WJetsToLNu', 'VVJets',
+    'QCDPt20to30BCtoE', 'QCDPt30to80BCtoE', 'QCDPt80to170BCtoE',
+    'QCDPt20to30EM', 'QCDPt30to80EM', 'QCDPt80to170EM',
+	'QCDPt20MuPt15',
+]
+
+mcSet['ElJet'] = [
+    'TTbarTuneZ2', 'TTbarOthers',
+    'SingleToptW', 'SingleTopt', 'SingleTops',
+    'ZJets', 'DYee20to50', 'DYee10to20', 'DYmm20to50', 'DYmm10to20',
+    'ZtauDecay', 'DYtt20to50', 'DYtt10to20',
+    'WJetsToLNu', 'VVJets',
+    'QCDPt20to30BCtoE', 'QCDPt30to80BCtoE', 'QCDPt80to170BCtoE',
+    'QCDPt20to30EM', 'QCDPt30to80EM', 'QCDPt80to170EM',
+	'QCDPt20MuPt15',
+]
+
 rdSet['ElEl'] = [
     'Run2011A', 
     'Run2011B', 
@@ -360,6 +408,16 @@ rdSet['MuMu'] = [
 ]
 
 rdSet['MuEl'] = [
+    'Run2011A', 
+    'Run2011B', 
+]
+
+rdSet['MuJet'] = [
+    'Run2011A', 
+    'Run2011B', 
+]
+
+rdSet['ElJet'] = [
     'Run2011A', 
     'Run2011B', 
 ]
@@ -400,6 +458,10 @@ def mcsample(src):
     dir = "MU"
   elif( decay == "ElEl"):
     dir = "ELE"
+  elif( decay == "MuJet"):
+    dir = "MUJET"
+  elif( decay == "ElJet"):
+    dir = "ELEJET"
   script = """
 process.load("KoPFA.TopAnalyzer.Sources.%s.MC.Fall11.patTuple_%s_cff")
 """ % (dir,src)
@@ -421,6 +483,10 @@ def rdsample(src):
     dir = "MU"
   elif( decay == "ElEl"):
     dir = "ELE"
+  elif( decay == "MuJet"):
+    dir = "MUJET"
+  elif( decay == "ElJet"):
+    dir = "ELEJET"
   script = """
 process.load("KoPFA.TopAnalyzer.Sources.%s.RD.patTuple_%s_cff")
 """ % (dir,src)
@@ -445,16 +511,29 @@ process.TFileService = cms.Service("TFileService",
 """ % src
   return script
 
-def ttbarfilter():
+def ttbardileptonfilter():
   script = """
 process.topWLeptonGenFilter.applyFilter = True
 """
   return script
 
-def ttbarothersfilter():
+def ttbarleptonjetfilter():
+  script = """
+process.topWLeptonGenFilterForLJ.applyFilter = True
+"""
+  return script
+
+def ttbardileptonothersfilter():
   script = """
 process.topWLeptonGenFilter.applyFilter = True
 process.top%sAnalysisMCSequence.replace(process.topWLeptonGenFilter,~process.topWLeptonGenFilter)
+""" % decay
+  return script
+
+def ttbarleptonjetothersfilter():
+  script = """
+process.topWLeptonGenFilterForLJ.applyFilter = True
+process.top%sAnalysisMCSequence.replace(process.topWLeptonGenFilterForLJ,~process.topWLeptonGenFilterForLJ)
 """ % decay
   return script
 
@@ -497,9 +576,15 @@ for src in mclist:
     else:
       out.write(mcsample(src))
     if src.find("TTbarTuneZ2") != -1:
-      out.write(ttbarfilter())
+		if decay in ('MuMu','ElEl','MuEl'):
+			out.write(ttbardileptonfilter())
+		if decay in ('MuJet','ElJet'):
+			out.write(ttbarleptonjetfilter())
     if src.find("TTbarOthers") != -1:
-      out.write(ttbarothersfilter())
+		if decay in ('MuMu','ElEl','MuEl'):
+			out.write(ttbardileptonothersfilter())
+		if decay in ('MuJet','ElJet'):
+			out.write(ttbarleptonjetothersfilter())
     if src.find("ZJets") != -1:
       out.write(genzmassfilter())
     if src.find("ZtauDecay") != -1:
