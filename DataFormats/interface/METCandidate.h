@@ -9,16 +9,11 @@
 
 namespace Ko{
 
-  typedef reco::Candidate::LorentzVector LorentzVector;
-
-  class METCandidate : public LorentzVector{
+  class METCandidate{
   public:
     METCandidate(){}
     virtual ~METCandidate(){}
 
-    METCandidate(const reco::Candidate::LorentzVector& p4);
-    const double pt() const { return pt_; }
-    const double eta() const { return eta_; }
     METCandidate(double MET, double sumEt, double photonEtFrac, double neutralHadEtFrac, double chargedHadEtFrac, double electronEtFrac, double muonEtFrac) {
       MET_ = MET;
       sumEt_ = sumEt;
@@ -39,8 +34,6 @@ namespace Ko{
 
   private:
 
-    double pt_;
-	double eta_;
 	double MET_;
     double sumEt_;
     double photonEt_;

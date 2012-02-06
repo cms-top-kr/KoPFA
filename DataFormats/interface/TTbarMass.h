@@ -23,15 +23,10 @@ namespace Ko{
     float maosM() const { return maosM_; }
     float user1M() const { return user1M_; } 
     float user2M() const { return user2M_; }
-    
-	TTbarMass(const reco::Candidate::LorentzVector& lep, const reco::Candidate::LorentzVector& jet1, const reco::Candidate::LorentzVector& jet2, const reco::Candidate::LorentzVector& jet3, const reco::Candidate::LorentzVector& jet4, const reco::Candidate::LorentzVector& met);
-
-    const TLorentzVector& leg() const { return leg_; }
 
   private:
 
-    void SetM(const reco::Candidate::LorentzVector& lep1, const reco::Candidate::LorentzVector& lep2, const reco::Candidate::LorentzVector& jet1, const reco::Candidate::LorentzVector& jet2, const reco::Candidate::LorentzVector& met);
-    void SetM(const reco::Candidate::LorentzVector& lep, const reco::Candidate::LorentzVector& jet1, const reco::Candidate::LorentzVector& jet2, const reco::Candidate::LorentzVector& jet3, const reco::Candidate::LorentzVector& jet4, const reco::Candidate::LorentzVector& met);
+    void SetM();
     void SetMaosM();
     void SetUser1M( const reco::Candidate::LorentzVector& bq1, const reco::Candidate::LorentzVector& bq2, const reco::Candidate::LorentzVector& le1, const reco::Candidate::LorentzVector& le2, const reco::Candidate::LorentzVector& met);
     void SetUser2M( const reco::Candidate::LorentzVector& bq1, const reco::Candidate::LorentzVector& bq2, const reco::Candidate::LorentzVector& le1, const reco::Candidate::LorentzVector& le2, const reco::Candidate::LorentzVector& met);
@@ -42,14 +37,10 @@ namespace Ko{
     reco::Candidate::LorentzVector lep2_;
     reco::Candidate::LorentzVector jet1_;
     reco::Candidate::LorentzVector jet2_;
-    reco::Candidate::LorentzVector lep_;
-    reco::Candidate::LorentzVector jet3_;
-    reco::Candidate::LorentzVector jet4_;
     reco::Candidate::LorentzVector met_;
 
     TLorentzVector leg1_;
     TLorentzVector leg2_;
-    TLorentzVector leg_;
     float M_;
     float Mt2_;    
     float maosM_;
