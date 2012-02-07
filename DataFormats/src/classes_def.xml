@@ -6,12 +6,6 @@
   <class name="edm::Wrapper<std::vector<Ko::ZCandidate> >"/>
   <class name="edm::Ptr<Ko::ZCandidate>"/>
 
-  <class name="Ko::WCandidate"/>
-  <class name="std::vector<Ko::WCandidate>"/>
-  <class name="edm::Wrapper<Ko::WCandidate>"/>
-  <class name="edm::Wrapper<std::vector<Ko::WCandidate> >"/>
-  <class name="edm::Ptr<Ko::WCandidate>"/>
-
   <class name="Ko::Lepton"/>
   <class name="std::vector<Ko::Lepton>"/>
   <class name="edm::Wrapper<Ko::Lepton>"/>

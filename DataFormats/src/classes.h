@@ -1,7 +1,6 @@
 #include "DataFormats/Common/interface/Wrapper.h"
 
 #include "KoPFA/DataFormats/interface/ZCandidate.h"
-#include "KoPFA/DataFormats/interface/WCandidate.h"
 #include "KoPFA/DataFormats/interface/Lepton.h"
 #include "KoPFA/DataFormats/interface/METCandidate.h"
 #include "KoPFA/DataFormats/interface/TTbarEvent.h"
@@ -19,12 +18,6 @@ namespace {
     std::vector<Ko::ZCandidate> dummyZCandidateCollection;
     edm::Wrapper<std::vector<Ko::ZCandidate> > dummyZCandidateCollectionWrapper;
     edm::Ptr<Ko::ZCandidate> dummyZCandidatePtr;
-
-    Ko::WCandidate dummyWCandidate;
-    edm::Wrapper<Ko::WCandidate> dummyWCandidateWrapper;
-    std::vector<Ko::WCandidate> dummyWCandidateCollection;
-    edm::Wrapper<std::vector<Ko::WCandidate> > dummyWCandidateCollectionWrapper;
-    edm::Ptr<Ko::WCandidate> dummyWCandidatePtr;
 
     Ko::Lepton dummyLepton;
     edm::Wrapper<Ko::Lepton> dummyLeptonWrapper;
