@@ -19,32 +19,37 @@ public:
   ~TTbarGenEvent() {};
 
   void set(const reco::GenParticleCollection* genParticles,
-           const reco::GenJetCollection* genJets,
-           const reco::GenMET* genMET);
+           const reco::GenJetCollection* genJets = 0,
+           const reco::GenMET* genMET = 0);
+
+  double m() const { return mTT_; };
+  double mass() const { return m(); };
+  double met() const { return met_; };
 
 private:
   void clear();
+  const reco::GenParticle* getDaughter(const reco::GenParticle* mother, const int absPdgId);
 
-private:
-  math::XYZTLorentzVector tA_, tB_;
-  math::XYZTLorentzVector bA_, bB_;
-  math::XYZTLorentzVector lA_, lB_;
-  math::XYZTLorentzVector jA_, jB_;
+  double mTT_;
+  math::XYZTLorentzVector t1_, t2_;
+  math::XYZTLorentzVector b1_, b2_;
 
-  math::XYZTLorentzVector em1_, em2_;
-  math::XYZTLorentzVector j1_, j2_;
+  std::vector<math::XYZTLorentzVector> qcdBquarks_;
 
-  int mumuDecay;
-  int eeDecay;
-  int emuDecay;
+  std::vector<math::XYZTLorentzVector> leptons_;
+  std::vector<math::XYZTLorentzVector> acceptedLeptons_;
+  //std::vector<math::XYZTLorentzVector> electrons_;
+  //std::vector<math::XYZTLorentzVector> muons_;
+  //std::vector<math::XYZTLorentzVector> taus_;
+
+  std::vector<math::XYZTLorentzVector> jets_;
+  std::vector<math::XYZTLorentzVector> bJets_;
+
+  int lep1Type_;
+  int lep2Type_;
   int tauDecay;
- 
-  math::XYZTLorentzVector met_;
-  math::XYZTLorentzVector allNuXY_;
 
-  double m_tt;
-  double m_stable, m_stableBJets;
-  double m_hardTrue, m_hardNuXY, m_hardMET;
+  double met_, metX_, metY_;
 
 };
 

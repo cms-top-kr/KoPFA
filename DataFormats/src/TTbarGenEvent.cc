@@ -1,109 +1,32 @@
 #include "KoPFA/DataFormats/interface/TTbarGenEvent.h"
 #include "DataFormats/Math/interface/deltaR.h"
-#include "TMath.h"
 
 using namespace Ko;
-using namespace reco;
 
-bool isOverlap(const reco::GenJet* j, const reco::GenParticle* p)
+const reco::GenParticle* TTbarGenEvent::getDaughter(const reco::GenParticle* mother, const int absPdgId)
 {
-  if ( !j or !p ) return false;
+  if ( !mother ) return 0;
 
-  std::vector<const GenParticle*> constituents = j->getGenConstituents();
-  for ( std::vector<const GenParticle*>::const_iterator constituent = constituents.begin();
-        constituent != constituents.end(); ++constituent)
+  for ( int i=0, n = mother->numberOfDaughters(); i < n; ++i )
   {
-    const reco::GenParticle* jp = *constituent;
-
-    if ( jp->pdgId() == p->pdgId() and
-         (jp->p4()-p->p4()).P() < 1e-3 ) return true;
+    const reco::GenParticle* p = dynamic_cast<const reco::GenParticle*>(mother->daughter(i));
+    if ( !p ) return 0;
+    if ( abs(p->pdgId()) == absPdgId ) return p;
   }
-
-  return false;
-}
-
-bool isJetDecayFrom(const reco::GenParticle* genParticle, const reco::GenJet* jet)
-{
-  if ( deltaR(*genParticle, *jet) < 0.4 ) return true;
-  else return false;
-
-  std::vector<const GenParticle*> constituents = jet->getGenConstituents();
-  for ( std::vector<const GenParticle*>::const_iterator constituent = constituents.begin();
-        constituent != constituents.end(); ++constituent )
-  {
-    const reco::GenParticle* p = *constituent;
-    while ( p )
-    {
-      if ( genParticle->pdgId() == p->pdgId() and 
-           (genParticle->p4()-p->p4()).P() < 1e-3 ) return true;
-      else p = dynamic_cast<const reco::GenParticle*>(p->mother());
-    }
-  }
-
-  return false;
-}
-
-const reco::GenParticle* findDaughter(const reco::GenParticle* genParticle, const int pdgId)
-{
-  if ( !genParticle ) return 0;
-
-  for ( reco::candidate::const_iterator daughter = genParticle->begin();
-        daughter != genParticle->end(); ++daughter )
-  {
-    const reco::GenParticle* genDaughter = dynamic_cast<const reco::GenParticle*>(&*daughter);
-    if ( !genDaughter ) return 0;
-
-    //if ( daughter->status() == 3 and abs(daughter->pdgId()) == pdgId ) return genDaughter;
-    if ( abs(genDaughter->pdgId()) == pdgId )
-    {
-      if ( genDaughter->status() == 3 or genDaughter->status() == 1 ) return genDaughter;
-      else return findDaughter(genDaughter, pdgId);
-    }
-    else if ( genDaughter->pdgId() == genParticle->pdgId() ) return findDaughter(genDaughter, pdgId);
-
-  }
+  
   return 0;
-}
-
-template<typename T>
-void setLeadingParticle(T* p, T*& p1, T*& p2)
-{
-  if ( !p1 ) p1 = p;
-  else
-  {
-    if ( !p2 ) p2 = p;
-    if ( p2->pt() < p->pt() ) p2 = p;
-    if ( p1->pt() < p2->pt() ) std::swap(p1, p2);
-  }
 }
 
 void TTbarGenEvent::clear()
 {
-  tA_.SetPxPyPzE(0,0,0,0);
-  tB_.SetPxPyPzE(0,0,0,0);
-  bA_.SetPxPyPzE(0,0,0,0);
-  bB_.SetPxPyPzE(0,0,0,0);
-  lA_.SetPxPyPzE(0,0,0,0);
-  lB_.SetPxPyPzE(0,0,0,0);
-  jA_.SetPxPyPzE(0,0,0,0);
-  jB_.SetPxPyPzE(0,0,0,0);
+  mTT_ = -1;
+  qcdBquarks_.clear();
+  leptons_.clear();
+  acceptedLeptons_.clear();
+  jets_.clear();
+  bJets_.clear();
 
-  em1_.SetPxPyPzE(0,0,0,0);
-  em2_.SetPxPyPzE(0,0,0,0);
-  j1_.SetPxPyPzE(0,0,0,0);
-  j2_.SetPxPyPzE(0,0,0,0);
-
-  mumuDecay = 0;
-  eeDecay = 0;
-  emuDecay = 0;
-  tauDecay = 0;
-
-  met_.SetPxPyPzE(0,0,0,0);
-  allNuXY_.SetPxPyPzE(0,0,0,0);
-
-  m_tt = 0;
-  m_stable = m_stableBJets = 0;
-  m_hardTrue = m_hardNuXY = m_hardMET = 0;
+  met_ = metX_ = metY_ = 0;
 }
 
 void TTbarGenEvent::set(const reco::GenParticleCollection* genParticles,
@@ -112,125 +35,215 @@ void TTbarGenEvent::set(const reco::GenParticleCollection* genParticles,
 {
   clear();
 
-  math::XYZTLorentzVector allNuLVec;
-  double allNuXY_x = 0, allNuXY_y = 0;
-
-  const reco::GenParticle* tA = 0, * tB = 0;
-  const reco::GenParticle* em1 = 0, * em2 = 0;
-  for ( reco::GenParticleCollection::const_iterator genParticle = genParticles->begin();
-        genParticle != genParticles->end(); ++genParticle )
+  // Find TTbar pair
+  const reco::GenParticle* t1 = 0, * t2 = 0;
+  const reco::GenParticleCollection::const_iterator begin = genParticles->begin();
+  const  reco::GenParticleCollection::const_iterator end = genParticles->end();
+  for ( reco::GenParticleCollection::const_iterator p = begin; p != end; ++p )
   {
-    const reco::GenParticle* p = &*genParticle;
+    if ( p->status() != 3 ) continue;
+    if ( p->pdgId() ==  6 ) t1 = &*p;
+    else if ( p->pdgId() == -6 ) t2 = &*p;
 
-    if ( p->status() == 3 )
+    if ( t1 and t2 ) break;
+  }
+
+  // We don't have to analyze non-ttbar events
+  if ( !t1 or !t2 ) return;
+
+  // Get daughters of top quarks
+  const reco::GenParticle* w1 = 0, * w2 = 0;
+  const reco::GenParticle* b1 = 0, * b2 = 0;
+  for ( int i = 0, n = t1->numberOfDaughters(); i < n; ++i )
+  {
+    const reco::GenParticle* p = dynamic_cast<const reco::GenParticle*>(t1->daughter(i));
+    if ( !p ) continue;
+    if ( p->status() != 3 ) continue;
+    if ( abs(p->pdgId()) == 24 ) w1 = p;
+    else if ( abs(p->pdgId()) == 5 ) b1 = p;
+  }
+  for ( int i = 0, n = t2->numberOfDaughters(); i < n; ++i )
+  {
+    const reco::GenParticle* p = dynamic_cast<const reco::GenParticle*>(t2->daughter(i));
+    if ( !p ) continue;
+    if ( p->status() != 3 ) continue;
+    if ( abs(p->pdgId()) == 24 ) w2 = p;
+    else if ( abs(p->pdgId()) == 5 ) b2 = p;
+  }
+  if ( !b1 or !b2 ) return; // This will not happen, all top quarks decay to W and b
+
+  t1_ = t1->p4();
+  t2_ = t2->p4();
+  mTT_ = (t1_+t2_).M();
+  b1_ = b1->p4();
+  b2_ = b2->p4();
+
+  // Get leptons from W decay
+  const reco::GenParticle* l1 = 0, * l2 = 0;
+  const reco::GenParticle* tau1 = 0, * tau2 = 0; 
+  for ( int i = 0, n = w1->numberOfDaughters(); i < n; ++i )
+  {
+    const reco::GenParticle* p = dynamic_cast<const reco::GenParticle*>(w1->daughter(i));
+    if ( !p ) continue;
+    if ( p->status() != 3 ) continue;
+    const int absPdgId = abs(p->pdgId());
+    if ( absPdgId == 11 or absPdgId == 13 )
     {
-      switch ( p->pdgId() )
+      l1 = p;
+      break;
+    }
+    else if ( absPdgId == 15 )
+    {
+      tau1 = p;
+      break;
+    }
+  }
+  for ( int i=0, n = w2->numberOfDaughters(); i < n; ++i )
+  {
+    const reco::GenParticle* p = dynamic_cast<const reco::GenParticle*>(w2->daughter(i));
+    if ( !p ) continue;
+    if ( p->status() != 3 ) continue;
+    const int absPdgId = abs(p->pdgId());
+    if ( absPdgId == 11 or absPdgId == 13 )
+    {
+      l2 = p;
+      break;
+    }
+    else if ( absPdgId == 15 )
+    {
+      tau2 = p;
+      break;
+    }
+  }
+
+  // Special care is needed for tau->lepton decay
+  if ( tau1 and tau1->numberOfDaughters() >= 2 )
+  {
+    const reco::GenParticle* tauW = getDaughter(tau1, 24);
+    if ( tauW )
+    {
+      if ( !l1 ) l1 = getDaughter(tauW, 11);
+      if ( !l1 ) l1 = getDaughter(tauW, 13);
+      if ( l1 ) ++tauDecay;
+    }
+  }
+  if ( tau2 and tau2->numberOfDaughters() >= 2 )
+  {
+    const reco::GenParticle* tauW = getDaughter(tau2, 24);
+    if ( tauW )
+    {
+      if ( !l2 ) l2 = getDaughter(tauW, 11);
+      if ( !l2 ) l2 = getDaughter(tauW, 13);
+      if ( l2 ) ++tauDecay;
+    }
+  }
+
+  // Get particles which were not considered yet
+  std::vector<const reco::GenParticle*> acceptedLeptons;
+  std::vector<const reco::GenParticle*> qcdBquarks;
+  for ( reco::GenParticleCollection::const_iterator p = begin;
+        p != end; ++p )
+  {
+    const int status = p->status();
+    const int absPdgId = abs(p->pdgId());
+
+    // Collect stable leptons within acceptance
+    if ( status == 1 )
+    {
+      if ( absPdgId == 11 or absPdgId == 13 )
       {
-        case  6: tA = p; break;
-        case -6: tB = p; break;
-        default: break;
+        if ( p->pt() < 20 or abs(p->eta()) > 2.4 ) continue;
+
+        acceptedLeptons.push_back(&*p);
+      }
+      else if ( genMET and (absPdgId == 12 or absPdgId == 14 or absPdgId == 16) )
+      {
+        metX_ += p->px();
+        metY_ += p->py();
       }
     }
-    else if ( p->status() == 1 )
+
+    // Collect B quarks not from Top quark decay (and itself)
+    if ( status == 2 and absPdgId == 5 )
     {
-      switch ( abs(p->pdgId()) )
+      const int motherAbsPdgId = abs(p->mother()->pdgId()); 
+      if ( motherAbsPdgId == 6 ) continue;
+
+      bool isWeekDecay = true;
+      for ( int i = 0, n = p->numberOfDaughters(); i < n; ++i )
       {
-        case 11:
-        case 13:
-          setLeadingParticle(p, em1, em2);
+        const reco::GenParticle* pp = dynamic_cast<const reco::GenParticle*>(p->daughter(i));
+        if ( !pp ) continue;
+        if ( abs(pp->pdgId()) == 6 )
+        {
+          isWeekDecay = false;
           break;
-        case 12:
-        case 14:
-        case 16:
-          allNuXY_x += p->px();
-          allNuXY_y += p->py();
-          allNuLVec += p->p4();
-        default: break;
+        }
+      }
+
+      if ( isWeekDecay ) qcdBquarks.push_back(&*p);
+    }
+  }
+
+  for ( int i = 0, n = acceptedLeptons.size(); i < n; ++i )
+  {
+    acceptedLeptons_.push_back(acceptedLeptons[i]->p4());
+  }
+
+  if ( genJets )
+  {
+    const reco::GenJetCollection::const_iterator begin = genJets->begin();
+    const reco::GenJetCollection::const_iterator end = genJets->end();
+
+    for ( reco::GenJetCollection::const_iterator jet = begin; jet != end; ++jet )
+    {
+      const double jetPt = jet->pt();
+      if ( jetPt < 30 or abs(jet->eta()) > 2.4 ) continue;
+
+      const math::XYZTLorentzVector jetP4 = jet->p4();
+      jets_.push_back(jetP4);
+
+      // Find b quark matching genJet
+      if ( (deltaR(jetP4, b1_) < 0.4 and abs(jetPt-b1_.pt())/jetPt < 3.0) or 
+           (deltaR(jetP4, b2_) < 0.4 and abs(jetPt-b2_.pt())/jetPt < 3.0) ) bJets_.push_back(jetP4);
+      else
+      {
+        for ( int i = 0, n = qcdBquarks_.size(); i < n; ++i )
+        {
+          if ( deltaR(jetP4, qcdBquarks_[i]) < 0.4 and abs(jetPt-qcdBquarks_[i].pt())/jetPt < 3.0 )
+          {
+            bJets_.push_back(jetP4);
+            break;
+          }
+        }
       }
     }
   }
 
-  if ( tA ) tA_ = tA->p4();
-  if ( tB ) tB_ = tB->p4();
-  if ( em1 ) em1_ = em1->p4();
-  if ( em2 ) em2_ = em2->p4();
-
-  // Set Missing E_T
-  met_.SetPxPyPzE(genMET->px(), genMET->py(), 0, genMET->pt());
-  allNuXY_.SetPxPyPzE(allNuXY_x, allNuXY_y, 0, TMath::Hypot(allNuXY_x, allNuXY_y));
-
-  const reco::GenParticle* bA = findDaughter(tA, 5);
-  const reco::GenParticle* bB = findDaughter(tB, 5);
-  if ( bA ) bA_ = bA->p4();
-  if ( bB ) bB_ = bB->p4();
-
-  const reco::GenParticle* wA = findDaughter(tA, 24);
-  const reco::GenParticle* wB = findDaughter(tB, 24);
-
-  const reco::GenParticle* lA = 0;
-  if ( (lA = findDaughter(wA, 11)) ) ++eeDecay;
-  else if ( (lA = findDaughter(wA, 13)) ) ++mumuDecay;
-  else if ( (lA = findDaughter(wA, 15)) )
+  if ( genMET )
   {
-    ++tauDecay;
-    const reco::GenParticle* dau = 0;
-    if ( (dau = findDaughter(lA, 11)) ) ++eeDecay;
-    else if ( (dau = findDaughter(lA, 13)) ) ++mumuDecay;
+    metX_ = genMET->px();
+    metY_ = genMET->py();
   }
+  met_ = hypot(metX_, metY_);
 
-  const reco::GenParticle* lB = 0;
-  if ( (lB = findDaughter(wB, 11)) ) ++eeDecay;
-  else if ( (lB = findDaughter(wB, 13)) ) ++mumuDecay;
-  else if ( (lB = findDaughter(wB, 15)) )
+  // TTbar decay modes
+  if ( l1 and l2 )
   {
-    ++tauDecay;
-    const reco::GenParticle* dau = 0;
-    if ( (dau = findDaughter(lB, 11)) ) ++eeDecay;
-    else if ( (dau = findDaughter(lB, 13)) ) ++mumuDecay;
-  }
+    // Dilepton channels 
+    leptons_.push_back(l1->p4());
+    leptons_.push_back(l2->p4());
 
-  if ( eeDecay == 1 and mumuDecay == 1 )
+    lep1Type_ = l1->pdgId();
+    lep2Type_ = l2->pdgId();
+  }
+  else if ( l1 or l2 )
   {
-    eeDecay = mumuDecay = 0;
-    emuDecay = 1;
+    // Lepton+Jet channels
+    leptons_.push_back(l1->p4());
+
+    lep1Type_ = l1 ? l1->pdgId() : 0;
+    lep2Type_ = l2 ? l2->pdgId() : 0;
   }
-
-  if ( lA ) lA_ = lA->p4();
-  if ( lB ) lB_ = lB->p4();
-
-  const reco::GenJet* jA = 0, * jB = 0;
-  const reco::GenJet* j1 = 0, * j2 = 0;
-  for ( reco::GenJetCollection::const_iterator genJet = genJets->begin();
-        genJet != genJets->end(); ++genJet )
-  {
-    const reco::GenJet* j = &*genJet;
-
-    if ( isJetDecayFrom(bA, j) and ( !jA or jA->pt() < j->pt() ) ) jA = j;
-    if ( isJetDecayFrom(bB, j) and ( !jB or jB->pt() < j->pt() ) ) jB = j;
-
-    //if ( isOverlap(j, lA) or isOverlap(j, lB) ) continue;
-    if ( isOverlap(j, em1) or isOverlap(j, em2) ) continue;
-
-    setLeadingParticle(j, j1, j2);
-  }
-  if ( jA ) jA_.SetXYZT(jA->px(), jA->py(), jA->pz(), jA->p());
-  if ( jB ) jB_.SetXYZT(jB->px(), jB->py(), jB->pz(), jB->p());
-  if ( j1 ) j1_.SetXYZT(j1->px(), j1->py(), j1->pz(), j1->p());
-  if ( j2 ) j2_.SetXYZT(j2->px(), j2->py(), j2->pz(), j2->p());
-
-  // Fill mass variables
-  if ( tA and tB ) m_tt = (tA_+tB_).M();
-  if ( em1 and em2 and j1 and j2 ) m_stable = (em1_+em2_+j1_+j2_+met_).M();
-  if ( lA and lB )
-  {
-    const math::XYZTLorentzVector zLVec = lA_+lB_;
-    const math::XYZTLorentzVector allVisTrue = zLVec+bA_+bB_;
-    m_hardTrue = (allVisTrue+allNuLVec).M();
-    m_hardNuXY = (allVisTrue+allNuXY_).M();
-    m_hardMET = (allVisTrue+met_).M();
-
-    if ( jA and jB ) m_stableBJets = (zLVec+jA_+jB_+met_).M();
-  }
-
 }
 
