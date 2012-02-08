@@ -48,13 +48,18 @@ private:
   edm::InputTag genJetLabel_;
   edm::InputTag genMETLabel_;
 
+  double minLeptonPtCut_, maxLeptonEtaCut_;
+  double minBquarkPtCut_, maxBquarkEtaCut_;
+  double minJetPtCut_, maxJetEtaCut_;
+
   TH1F* hGenTTbarM_;
 
   TTree* tree_;
 
   int br_nLeptonsTrue_;
-  int br_nLeptons_; // Number of stable leptons with pT > 20 and eta < 2.5
-  int br_nJets_; // Number of Jets with pT > 30 and eta < 2.5
+  int br_nLeptons_; // Number of stable leptons with pT > 20 and eta < 2.4
+  int br_nJets_; // Number of Jets with pT > 30 and eta < 2.4
+  int br_nBquarks_; // Number of Bquarks with pT > 30 and eta < 2.4
 
   double br_mTT_;
 
@@ -76,6 +81,14 @@ TTbarGenLevelAnalyzer::TTbarGenLevelAnalyzer(const edm::ParameterSet& pset)
   genParticleLabel_ = pset.getParameter<edm::InputTag>("genParticle");
   genJetLabel_ = pset.getParameter<edm::InputTag>("genJet");
   genMETLabel_ = pset.getParameter<edm::InputTag>("genMET");
+
+  minLeptonPtCut_ = 20;
+  minBquarkPtCut_ = 30;
+  minJetPtCut_    = 30;
+
+  maxLeptonEtaCut_ = 2.4;
+  maxBquarkEtaCut_ = 2.4;
+  maxJetEtaCut_    = 2.4;
 
   br_mLL_      = new std::vector<double>;
   br_mLLJJMet_ = new std::vector<double>;
@@ -115,6 +128,7 @@ void TTbarGenLevelAnalyzer::beginJob()
   tree_->Branch("nLeptonsTrue", &br_nLeptonsTrue_, "nLeptonsTrue/I");
   tree_->Branch("nLeptons"    , &br_nLeptons_    , "nLeptons/I"    );
   tree_->Branch("nJets"       , &br_nJets_       , "nJets/I"       );
+  tree_->Branch("nBquarks"    , &br_nBquarks_    , "nBquarks/I"    );
 
   tree_->Branch("mTT", &br_mTT_, "mTT/D");
   tree_->Branch("mLL"      , "std::vector<double>", &br_mLL_     );
@@ -146,6 +160,7 @@ void TTbarGenLevelAnalyzer::analyze(const edm::Event& event, const edm::EventSet
   br_nLeptonsTrue_ = 0;
   br_nLeptons_     = 0;
   br_nJets_        = 0;
+  br_nBquarks_     = 0;
 
   br_mTT_ = 0;
   br_mLL_     ->clear();
@@ -177,7 +192,7 @@ void TTbarGenLevelAnalyzer::analyze(const edm::Event& event, const edm::EventSet
         case 13:
           leptons.push_back(p);
 
-          if ( genParticle->pt() > 20 and abs(genParticle->eta()) < 2.5 ) ++br_nLeptons_;
+          if ( genParticle->pt() > minLeptonPtCut_ and abs(genParticle->eta()) < maxLeptonEtaCut_ ) ++br_nLeptons_;
           break;
       }
     }
@@ -192,6 +207,12 @@ void TTbarGenLevelAnalyzer::analyze(const edm::Event& event, const edm::EventSet
   br_mTT_ = mTT;
   hGenTTbarM_->Fill(mTT);
 
+  // Bquarks
+  const reco::GenParticle* b1 = getDaughter(t1, 5);
+  const reco::GenParticle* b2 = getDaughter(t2, 5);
+  if ( b1->pt() > minBquarkPtCut_ and abs(b1->eta()) < maxBquarkEtaCut_ ) ++br_nBquarks_;
+  if ( b2->pt() > minBquarkPtCut_ and abs(b2->eta()) < maxBquarkEtaCut_ ) ++br_nBquarks_;
+
   // Leptons
   const reco::GenParticle* w1 = getDaughter(t1, 24);
   const reco::GenParticle* w2 = getDaughter(t2, 24);
@@ -205,7 +226,7 @@ void TTbarGenLevelAnalyzer::analyze(const edm::Event& event, const edm::EventSet
   {
     genJets.push_back(&*genJet);
 
-    if ( genJet->pt() > 30 and abs(genJet->eta()) < 2.5 ) ++br_nJets_;
+    if ( genJet->pt() > minJetPtCut_ and abs(genJet->eta()) < maxJetEtaCut_ ) ++br_nJets_;
   }
   std::sort(genJets.begin(), genJets.end(), greaterByPtPtr_);
 
