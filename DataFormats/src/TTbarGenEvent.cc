@@ -1,5 +1,6 @@
 #include "KoPFA/DataFormats/interface/TTbarGenEvent.h"
 #include "DataFormats/Math/interface/deltaR.h"
+#include "CommonTools/Utils/interface/PtComparator.h"
 
 using namespace Ko;
 
@@ -169,19 +170,8 @@ void TTbarGenEvent::set(const reco::GenParticleCollection* genParticles,
       const int motherAbsPdgId = abs(p->mother()->pdgId()); 
       if ( motherAbsPdgId == 6 ) continue;
 
-      bool isWeekDecay = true;
-      for ( int i = 0, n = p->numberOfDaughters(); i < n; ++i )
-      {
-        const reco::GenParticle* pp = dynamic_cast<const reco::GenParticle*>(p->daughter(i));
-        if ( !pp ) continue;
-        if ( abs(pp->pdgId()) == 6 )
-        {
-          isWeekDecay = false;
-          break;
-        }
-      }
-
-      if ( isWeekDecay ) qcdBquarks.push_back(&*p);
+      if ( motherAbsPdgId == 2212 or motherAbsPdgId == 21 or
+           motherAbsPdgId <= 4 ) qcdBquarks.push_back(&*p);
     }
   }
 
@@ -189,6 +179,7 @@ void TTbarGenEvent::set(const reco::GenParticleCollection* genParticles,
   {
     acceptedLeptons_.push_back(acceptedLeptons[i]->p4());
   }
+  std::sort(acceptedLeptons_.begin(), acceptedLeptons_.end(), GreaterByPt<reco::Candidate::LorentzVector>());
 
   if ( genJets )
   {
