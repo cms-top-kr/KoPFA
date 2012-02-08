@@ -25,6 +25,9 @@ public:
 
 private:
   bool applyFilter_;
+  bool semiLeptonic_;
+  bool semiLeptonicMuon_;
+  bool semiLeptonicElectron_;
   bool diLeptonic_;
   bool diLeptonicMuoMuo_;
   bool diLeptonicEleEle_;
@@ -35,6 +38,9 @@ TopDecayGenFilter::TopDecayGenFilter(const edm::ParameterSet& pset)
 {
   applyFilter_= pset.getUntrackedParameter<bool>("applyFilter",false);
 
+  semiLeptonic_ = pset.getParameter<bool>("semiLeptonic"),
+  semiLeptonicMuon_ = pset.getParameter<bool>("semiLeptonicMuon"),
+  semiLeptonicElectron_ = pset.getParameter<bool>("semiLeptonicElectron"),
   diLeptonic_ = pset.getParameter<bool>("diLeptonic");
   diLeptonicMuoMuo_ = pset.getParameter<bool>("diLeptonicMuoMuo");
   diLeptonicEleEle_ = pset.getParameter<bool>("diLeptonicEleEle");       
@@ -51,6 +57,8 @@ bool TopDecayGenFilter::filter(edm::Event& iEvent, const edm::EventSetup& eventS
   std::vector<bool> leptonic(2,static_cast<bool>(false));
   std::vector<bool> electronic(2,static_cast<bool>(false));
   std::vector<bool> muonic(2,static_cast<bool>(false));
+  std::vector<bool> taunic(2,static_cast<bool>(false));
+  std::vector<bool> hadronic(2,static_cast<bool>(false));
 
   using namespace std;
   using namespace edm;
@@ -91,6 +99,7 @@ bool TopDecayGenFilter::filter(edm::Event& iEvent, const edm::EventSetup& eventS
 	  leptonic[ntop] = true;
 	  break;
 	} else if ( decayId == 15 || decayId == 16 ) {  
+          taunic[ntop] = true;
           unsigned int nTauDaughters = decay->numberOfDaughters();
           for ( unsigned iTauDaughter=0; iTauDaughter<nTauDaughters; ++iTauDaughter ) {
             const reco::Candidate* tauDecay = decay->daughter(iTauDaughter);
@@ -124,7 +133,9 @@ bool TopDecayGenFilter::filter(edm::Event& iEvent, const edm::EventSetup& eventS
               continue;
             }
           }
-	} else {  
+	} else if( decayId < 6 ){
+          hadronic[ntop] = true;
+        } else {  
 	  continue;
 	}
       }
@@ -133,8 +144,24 @@ bool TopDecayGenFilter::filter(edm::Event& iEvent, const edm::EventSetup& eventS
     ++ntop;
   }
 
+  if ( semiLeptonic_ && 
+	( ( hadronic[0] && !hadronic[1] ) ||  
+	  (!hadronic[0] &&  hadronic[1] ) ) ) {
+     // All semi leptonic decays
+    accepted = true;
+    // Reject specific semi-leptonic decays
+    // Electron
+    if ( !semiLeptonicElectron_ && 
+	  ( ( hadronic[0] && electronic[1] ) ||  
+	    ( hadronic[1] && electronic[0] ) ) ) accepted = false; 
+     // Muon
+    if ( !semiLeptonicMuon_ && 
+	  ( ( hadronic[0] && muonic[1] ) ||  
+	    ( hadronic[1] && muonic[0] ) ) ) accepted = false; 
+  }
+
   // Di-Leptonic
-  if ( diLeptonic_ && leptonic[0] && leptonic[1] ) { 
+  if ( diLeptonic_ && !leptonic[0] && leptonic[1] ) { 
     // All di-leptonic decays
     accepted = true;
     // Reject specific di-leptonic decays
