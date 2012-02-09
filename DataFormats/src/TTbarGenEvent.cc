@@ -231,10 +231,19 @@ void TTbarGenEvent::set(const reco::GenParticleCollection* genParticles,
   else if ( l1 or l2 )
   {
     // Lepton+Jet channels
-    leptons_.push_back(l1->p4());
+    if ( l1 )
+    {
+      leptons_.push_back(l1->p4());
+      lep1Type_ = l1->pdgId();
+    }
+    else lep1Type_ = 0;
 
-    lep1Type_ = l1 ? l1->pdgId() : 0;
-    lep2Type_ = l2 ? l2->pdgId() : 0;
+    if ( l2 )
+    {
+      leptons_.push_back(l2->p4());
+      lep2Type_ = l2->pdgId();
+    }
+    else lep2Type_ = 0;
   }
 }
 
