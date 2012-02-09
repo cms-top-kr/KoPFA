@@ -37,8 +37,10 @@ private:
   std::vector<math::XYZTLorentzVector> qcdBquarks_;
 
   std::vector<math::XYZTLorentzVector> leptons_;
-  std::vector<math::XYZTLorentzVector> acceptedLeptons_;
+  std::vector<math::XYZTLorentzVector> acceptedElectrons_;
+  std::vector<math::XYZTLorentzVector> acceptedMuons_;
   //std::vector<math::XYZTLorentzVector> electrons_;
+
   //std::vector<math::XYZTLorentzVector> muons_;
   //std::vector<math::XYZTLorentzVector> taus_;
 
@@ -47,7 +49,7 @@ private:
 
   int lep1Type_;
   int lep2Type_;
-  int tauDecay;
+  int tauDecay_;
 
   double met_, metX_, metY_;
 

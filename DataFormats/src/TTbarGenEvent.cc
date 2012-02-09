@@ -23,9 +23,15 @@ void TTbarGenEvent::clear()
   mTT_ = -1;
   qcdBquarks_.clear();
   leptons_.clear();
-  acceptedLeptons_.clear();
+
+  acceptedMuons_.clear();
+  acceptedElectrons_.clear();
   jets_.clear();
   bJets_.clear();
+
+  lep1Type_ = 0;
+  lep2Type_ = 0;
+  tauDecay_ = 0;
 
   met_ = metX_ = metY_ = 0;
 }
@@ -39,7 +45,7 @@ void TTbarGenEvent::set(const reco::GenParticleCollection* genParticles,
   // Find TTbar pair
   const reco::GenParticle* t1 = 0, * t2 = 0;
   const reco::GenParticleCollection::const_iterator begin = genParticles->begin();
-  const  reco::GenParticleCollection::const_iterator end = genParticles->end();
+  const reco::GenParticleCollection::const_iterator end = genParticles->end();
   for ( reco::GenParticleCollection::const_iterator p = begin; p != end; ++p )
   {
     if ( p->status() != 3 ) continue;
@@ -125,7 +131,7 @@ void TTbarGenEvent::set(const reco::GenParticleCollection* genParticles,
     {
       if ( !l1 ) l1 = getDaughter(tauW, 11);
       if ( !l1 ) l1 = getDaughter(tauW, 13);
-      if ( l1 ) ++tauDecay;
+      if ( l1 ) ++tauDecay_;
     }
   }
   if ( tau2 and tau2->numberOfDaughters() >= 2 )
@@ -135,12 +141,13 @@ void TTbarGenEvent::set(const reco::GenParticleCollection* genParticles,
     {
       if ( !l2 ) l2 = getDaughter(tauW, 11);
       if ( !l2 ) l2 = getDaughter(tauW, 13);
-      if ( l2 ) ++tauDecay;
+      if ( l2 ) ++tauDecay_;
     }
   }
 
   // Get particles which were not considered yet
-  std::vector<const reco::GenParticle*> acceptedLeptons;
+  std::vector<const reco::GenParticle*> acceptedMuons;
+  std::vector<const reco::GenParticle*> acceptedElectrons;
   std::vector<const reco::GenParticle*> qcdBquarks;
   for ( reco::GenParticleCollection::const_iterator p = begin;
         p != end; ++p )
@@ -151,11 +158,13 @@ void TTbarGenEvent::set(const reco::GenParticleCollection* genParticles,
     // Collect stable leptons within acceptance
     if ( status == 1 )
     {
-      if ( absPdgId == 11 or absPdgId == 13 )
+      if ( absPdgId == 11 and p->pt() < 20 and abs(p->eta()) < 2.4 )
       {
-        if ( p->pt() < 20 or abs(p->eta()) > 2.4 ) continue;
-
-        acceptedLeptons.push_back(&*p);
+        acceptedElectrons_.push_back(p->p4());
+      }
+      else if ( absPdgId == 13 and p->pt() < 20 and abs(p->eta()) < 2.4 )
+      {
+        acceptedMuons_.push_back(p->p4());
       }
       else if ( genMET and (absPdgId == 12 or absPdgId == 14 or absPdgId == 16) )
       {
@@ -175,11 +184,8 @@ void TTbarGenEvent::set(const reco::GenParticleCollection* genParticles,
     }
   }
 
-  for ( int i = 0, n = acceptedLeptons.size(); i < n; ++i )
-  {
-    acceptedLeptons_.push_back(acceptedLeptons[i]->p4());
-  }
-  std::sort(acceptedLeptons_.begin(), acceptedLeptons_.end(), GreaterByPt<reco::Candidate::LorentzVector>());
+  std::sort(acceptedElectrons_.begin(), acceptedElectrons_.end(), GreaterByPt<reco::Candidate::LorentzVector>());
+  std::sort(acceptedMuons_.begin(), acceptedMuons_.end(), GreaterByPt<reco::Candidate::LorentzVector>());
 
   if ( genJets )
   {
@@ -236,14 +242,12 @@ void TTbarGenEvent::set(const reco::GenParticleCollection* genParticles,
       leptons_.push_back(l1->p4());
       lep1Type_ = l1->pdgId();
     }
-    else lep1Type_ = 0;
 
     if ( l2 )
     {
       leptons_.push_back(l2->p4());
       lep2Type_ = l2->pdgId();
     }
-    else lep2Type_ = 0;
   }
 }
 
