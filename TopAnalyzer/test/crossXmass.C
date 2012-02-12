@@ -44,19 +44,16 @@ void crossXmass(int k=4){
   gStyle->SetOptFit(0011);
 
   TFile * file = new TFile("preUnfolding.root");
+  TFile * file_unfolded = new TFile("unfolded.root");
   TFile * file_acceptance = new TFile("acceptance.root");
   TFile * file_truthFinal = new TFile("truthFinal.root");
   TFile * file_zprime = new TFile("ZPrimeM1000W1.root");
 
-  //response matrix
-  TH2F * h2ResponseM = (TH2F*) file->Get("h2_response_m");
-  //measured distribution
-  TH1F * hDataDist = (TH1F*) file->Get("hData_vsum");
-  TH1F * hPseudoDataMADGRAPH = (TH1F*) file->Get("hPseudoData_vsum_MadGraph");
-  TH1F * hPseudoDataPOWHEG = (TH1F*) file->Get("hPseudoData_vsum_Powheg");
   //truth level after reconstruction level selection
   TH1F * hGenDistMADGRAPH = (TH1F*) file->Get("hTruth_MadGraph");
   TH1F * hGenDistPOWHEG = (TH1F*) file->Get("hTruth_Powheg");
+  //unfolded plot
+  TH1F * h_unfold = (TH1F*) file_unfolded->Get("unfolded");
   //acceptance 
   TH1F * hAcceptDist = (TH1F*) file_acceptance->Get("hAccept_vsum");
   TH1F * hAcceptDistFull = (TH1F*) file_acceptance->Get("hAccept_vsum_Full");
@@ -65,27 +62,11 @@ void crossXmass(int k=4){
   TH1D * hGenPOWHEG = (TH1D*) file_truthFinal->Get("hTruthFinalPOWHEG");
   TH1D * hGenMADGRAPH_Full = (TH1D*) file_truthFinal->Get("hTruthFinalMADGRAPH_Full");
   TH1D * hGenPOWHEG_Full = (TH1D*) file_truthFinal->Get("hTruthFinalPOWHEG_Full");
-  TH1D * hGenMCNLO = (TH1D*) file_truthFinal->Get("hVisTTbarM");
-  TH1D * hGenMCNLO_Up = (TH1D*) file_truthFinal->Get("hVisTTbarM_Up");
-  TH1D * hGenMCNLO_Down = (TH1D*) file_truthFinal->Get("hVisTTbarM_Down");
 
   double lumi = 1143.22;
   double xsection = 0.820761719054490;
-  double lumi_z = 209447.0/0.820761719054490;
-  double scale = lumi/lumi_z;
 
-  bool print = true; //save plots
   bool printX = true; //print cross section
-  bool pseudo = false;
-  bool toytest = false;
-
-  //RooUnfold::ErrorTreatment err = RooUnfold::kNoError;  //0
-  //RooUnfold::ErrorTreatment err = RooUnfold::kErrors;  //1
-  RooUnfold::ErrorTreatment err = RooUnfold::kCovariance; //2
-  //RooUnfold::ErrorTreatment err = RooUnfold::kCovToy; //3
-
-  int method = 2; // BinByBin:0 Invert:1 SVD:2 Bayes:3 
-  TH1F* h_unfold = unfoldingPlot(method, h2ResponseM,  hDataDist, hGenDistMADGRAPH, "vusm", lumi, k, err, print, pseudo, toytest);
 
   bool norm = false;
   TH1F* hSigmaData = getMeasuredCrossSection(h_unfold, hAcceptDistFull,lumi,norm, true, "unfolded",false);   
