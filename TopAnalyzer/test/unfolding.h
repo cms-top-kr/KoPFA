@@ -256,7 +256,7 @@ o     if ( i == 9999) cout << total_unfolded << " " << total_gen << endl;
   //================================================================================================== 
 
   //Printing chi2
-  chi2.push_back(unfold->Chi2(hgen, err)); 
+  //chi2.push_back(unfold->Chi2(hgen, err)); 
   cout << "chi2 : " << unfold->Chi2(hgen, err) << endl;
 
   //Saving canvas 
@@ -280,7 +280,8 @@ o     if ( i == 9999) cout << total_unfolded << " " << total_gen << endl;
       //c_toy_Ntrue->Print(Form("Unfold_plot/cUF_toy_Ntrue_%s.png",name.Data()));
   }
 
- 
+  h_unfold->SetName("unfolded");
+  h_unfold->SetTitle("unfolded"); 
   return h_unfold;
 }
 
@@ -584,7 +585,7 @@ TH1* getMeasuredCrossSection( TH1F* h_unfold, TH1F* accept, double lumi, bool no
   for(int i=1; i <=  nbins; i++){
     double acceptance = accept->GetBinContent(i);
     double unfolded = h_unfold->GetBinContent(i);
-    double width = hgen->GetBinWidth(i);
+    double width = h_unfold->GetBinWidth(i);
     double sigma = 0;
     if( acceptance != 0) sigma = unfolded/( acceptance * lumi * width ) ;
     totalN += unfolded;
@@ -597,7 +598,7 @@ TH1* getMeasuredCrossSection( TH1F* h_unfold, TH1F* accept, double lumi, bool no
     double acceptance = accept->GetBinContent(i);
     double unfolded = h_unfold->GetBinContent(i);
     double abserr = h_unfold->GetBinError(i);
-    double width = hgen->GetBinWidth(i);
+    double width = h_unfold->GetBinWidth(i);
 
     double sigma = 0;
     double sigmaErr = 0;
