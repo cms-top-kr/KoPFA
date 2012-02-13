@@ -23,6 +23,8 @@
 #include "unfold/RooUnfold-1.0.3/src/RooUnfoldInvert.h"
 #include "HHStyle.h"
 #include "unfolding.h"
+#include "bump/limit/zprimex.h"
+
 vector<double> chi2;
 
 //default
@@ -47,7 +49,8 @@ void crossXmass(int k=4){
   TFile * file_unfolded = new TFile("unfolded.root");
   TFile * file_acceptance = new TFile("acceptance.root");
   TFile * file_truthFinal = new TFile("truthFinal.root");
-  TFile * file_zprime = new TFile("ZPrimeM1000W1.root");
+  TFile * file_zprimeM1000W1 = new TFile("zprime/ZPrimeM1000W1.root");
+  TFile * file_zprimeM2000W1 = new TFile("zprime/ZPrimeM2000W1.root");
 
   //truth level after reconstruction level selection
   TH1F * hGenDistMADGRAPH = (TH1F*) file->Get("hTruth_MadGraph");
@@ -64,34 +67,26 @@ void crossXmass(int k=4){
   TH1D * hGenPOWHEG_Full = (TH1D*) file_truthFinal->Get("hTruthFinalPOWHEG_Full");
 
   double lumi = 1143.22;
-  double xsection = 0.820761719054490;
-
   bool printX = true; //print cross section
 
   bool norm = false;
   TH1F* hSigmaData = getMeasuredCrossSection(h_unfold, hAcceptDistFull,lumi,norm, true, "unfolded",false);   
   TH1F* hSigmaTruthHisto = getTruthCrossSection(hGenDistMADGRAPH, hGenMADGRAPH_Full, lumi, norm, false, 1, printX);
-
-  TTree* genTree = (TTree*)file_zprime->Get("ttbarGenAna/tree");
-  TH1D* hZPrime = new TH1D("hZPrime","hZPrime",nGen, genBins);
-  genTree->Project("hZPrime", "mTT");
-  TH1F* hSigmaZPrimeHisto = new TH1F("hSigmaZPrimeHisto","hSigmaZPrimeHisto", nGen, genBins);
-  for(int i=1; i <= hSigmaZPrimeHisto->GetNbinsX(); i++){
-    double dsigma = xsection * hZPrime->GetBinContent(i) / ( hZPrime->GetBinWidth(i) * hZPrime->Integral() );
-    hSigmaZPrimeHisto->SetBinContent(i,dsigma);
-  }
+  TH1F* hSigmazprimeM1000W1 = getTruthCrossSection(file_zprimeM1000W1, ZXsectionW1[7], "M1000W1");
+  TH1F* hSigmazprimeM2000W1 = getTruthCrossSection(file_zprimeM2000W1, ZXsectionW1[18], "M2000W1");
+  TH1F* hSigmazprime = hSigmazprimeM1000W1;
 
   TCanvas * c_Xmass = new TCanvas("c_Xmass","c_Xmass",1);
   c_Xmass->SetLogy();
 
   TH1F* h_Xmass = (TH1F*)h_unfold->Clone("hSigmaData");     
   TH1F* h_Xmass_ttbar = (TH1F*)h_unfold->Clone("hSigmaData");     
-  TH1F* h_Xmass_zprime = (TH1F*)h_unfold->Clone("hSigmaData");     
+  TH1F* h_Xmass_zprime = (TH1F*) h_unfold->Clone("hSigmaData");     
 
   h_Xmass->Reset();
   h_Xmass_ttbar->Reset();
   h_Xmass_zprime->Reset();
-
+  
   int nbins = h_unfold->GetNbinsX();
   double total = 0;
   double total_ttbar = 0;
@@ -100,11 +95,11 @@ void crossXmass(int k=4){
   for(int i=nbins; i >= 1 ;i--){
     double sigma = hSigmaData->GetBinContent(i)*hSigmaData->GetBinWidth(i);
     double sigma_ttbar = hSigmaTruthHisto->GetBinContent(i)*hSigmaTruthHisto->GetBinWidth(i);
-    double sigma_zprime = hSigmaZPrimeHisto->GetBinContent(i)*hSigmaZPrimeHisto->GetBinWidth(i);
+    double sigma_zprime = hSigmazprime->GetBinContent(i)*hSigmazprime->GetBinWidth(i);
     total += sigma;
     total_ttbar += sigma_ttbar;
     total_zprime += sigma_zprime;
-    cout << hSigmaZPrimeHisto->GetBinContent(i)*hSigmaZPrimeHisto->GetBinWidth(i) << endl;
+    cout << hSigmazprime->GetBinContent(i)*hSigmazprime->GetBinWidth(i) << endl;
     h_Xmass->SetBinContent(i, total);
     h_Xmass_ttbar->SetBinContent(i, total_ttbar);
     h_Xmass_zprime->SetBinContent(i, total_zprime);
@@ -116,11 +111,32 @@ void crossXmass(int k=4){
   h_Xmass_zprime->SetLineWidth(2);
   hs->Add(h_Xmass_ttbar);
   hs->Add(h_Xmass_zprime);
-  //h_Xmass->GetYaxis()->SetTitle("#int_{x}^{infty} d#sigma/dM_{t#bar{t}} dm_{t#bar{t}}");
-  //h_Xmass->GetXaxis()->SetTitle(" M_{t#bar{t}}");
   hs->Draw();
-  h_Xmass->Draw("same");
+  hs->GetYaxis()->SetTitle("#int_{x}^{#infty} d#sigma/dm_{t#bar{t}} dm_{t#bar{t}}");
+  hs->GetXaxis()->SetTitle(" m_{t#bar{t}}");
+  h_Xmass->Draw("p same");
+
+  TLegend *l= new TLegend();
+  l->AddEntry(h_Xmass, "Data" ,"p");
+  l->AddEntry(h_Xmass_ttbar, "t#bar{t}" ,"F");
+  l->AddEntry(h_Xmass_zprime, "zprime" ,"L");
+  SetLegendStyle(l,true);
+  l->Draw("same");
 
 }
 
+TH1F* getTruthCrossSection(TFile *file, double x, TString name){
 
+  TTree* genTree = (TTree*)file->Get("ttbarGenAna/tree");
+  TH1D* h = new TH1D(Form("h_%s",name.Data()),"h",nGen, genBins);
+  genTree->Project(Form("h_%s",name.Data()), "mTT");
+  TH1F* hSigma = new TH1F(Form("hSigma_%s",name.Data()),"hSigma", nGen, genBins);
+
+  for(int i=1; i <= nGen; i++){
+    double dsigma = x * h->GetBinContent(i) / ( h->GetBinWidth(i) * h->Integral() );
+    hSigma->SetBinContent(i,dsigma);
+  }
+
+  return hSigma;
+
+}
