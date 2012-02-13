@@ -11,32 +11,15 @@ TTbarMass::TTbarMass(const reco::Candidate::LorentzVector& lep1, const reco::Can
   lep2_ = lep2;    
   met_ = met;    
 
-  SetM(lep1_, lep2_, jet1_, jet2_, met_);
+  SetM();
   SetMaosM();
   SetUser1M(jet1_, jet2_, lep1_, lep2_, met_);
   SetUser2M(jet1_, jet2_, lep1_, lep2_, met_);
 
 }
 
-TTbarMass::TTbarMass(const reco::Candidate::LorentzVector& lep, const reco::Candidate::LorentzVector& jet1, const reco::Candidate::LorentzVector& jet2, const reco::Candidate::LorentzVector& jet3, const reco::Candidate::LorentzVector& jet4, const reco::Candidate::LorentzVector& met) {
-
-  jet1_ = jet1;
-  jet2_ = jet2;    
-  jet3_ = jet3;    
-  jet4_ = jet4;    
-  lep_ = lep;    
-  met_ = met;    
-
-  SetM(lep_, jet1_, jet2_, jet3_, jet4_, met_);
-
-}
-
-void TTbarMass::SetM(const reco::Candidate::LorentzVector& lep1, const reco::Candidate::LorentzVector& lep2, const reco::Candidate::LorentzVector& jet1, const reco::Candidate::LorentzVector& jet2, const reco::Candidate::LorentzVector& met){
+void TTbarMass::SetM(){
   M_ = (lep1_ + lep2_ + jet1_ + jet2_ + met_).M();
-}
-
-void TTbarMass::SetM(const reco::Candidate::LorentzVector& lep, const reco::Candidate::LorentzVector& jet1, const reco::Candidate::LorentzVector& jet2, const reco::Candidate::LorentzVector& jet3, const reco::Candidate::LorentzVector& jet4, const reco::Candidate::LorentzVector& met){
-  M_ = (lep_ + jet1_ + jet2_ + jet3_ + jet4_ + met_).M();
 }
 
 void TTbarMass::SetMaosM() {
