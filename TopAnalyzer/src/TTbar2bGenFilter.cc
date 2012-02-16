@@ -29,6 +29,10 @@ public:
   void beginJob() {};
   bool filter(edm::Event& event, const edm::EventSetup& eventSetup);
   void endJob() {};
+  bool isLastbottom(const reco::GenParticle&);
+  bool isFromtop(const reco::GenParticle&);
+
+  string debug;
 
 private:
   bool applyFilter_;
@@ -53,8 +57,6 @@ TTbar2bGenFilter::TTbar2bGenFilter(const edm::ParameterSet& pset)
 
   edm::Service<TFileService> fs;
 
-  b_status3_daughterid = fs->make<TH1F>( "b_status3_daughterid"  , "Daughter PdgId", 10,  0, 10 );
-
   b_from_top_pt  = fs->make<TH1F>( "b_from_top_pt"  , "p_{T}", 100,  0., 150. );
   b_from_top_multi  = fs->make<TH1F>( "b_from_top_multi"  , "Multiplicity", 10,  0, 10 );
   b_from_top_motherid  = fs->make<TH1F>( "b_from_top_motherid"  , "Mother PdgId", 3000,  0, 3000 );
@@ -75,7 +77,8 @@ bool TTbar2bGenFilter::filter(edm::Event& iEvent, const edm::EventSetup& eventSe
   using namespace std;
   using namespace edm;
   using namespace reco;
-
+  debug = "";
+  debug += "---------EVENT start---------\n" ;
   const reco::GenParticleCollection* myGenParticles = 0;
 
   Handle<reco::GenParticleCollection> genEvt;
@@ -87,45 +90,23 @@ bool TTbar2bGenFilter::filter(edm::Event& iEvent, const edm::EventSetup& eventSe
 
   int nb_from_top = 0;
   int nb_from_nontop = 0;
+
   for ( unsigned int ip=0; ip<nParticles; ++ip ) { 
 
     const reco::GenParticle& p = (*myGenParticles)[ip];
    
     if ( abs(p.pdgId()) != 5 ) continue;
+    bool isLast = isLastbottom(p);
+    if (isLast != true) continue;
+ 
     int status = p.status();
 
-    //debug to see if b (status 3) decays to b ( status 2)
-    if( status == 3){
-      unsigned int nDaughters = p.numberOfDaughters();
-      bool foundb = false;
-      for ( unsigned iDaughter=0; iDaughter<nDaughters; ++iDaughter ) {
-        const reco::Candidate* daugh = p.daughter(iDaughter);
-        if( daugh->pdgId() == 5) {
-          b_status3_daughterid->Fill(daugh->pdgId());
-          foundb = true;
-          break;
-        }
-      }
-      if( foundb == false )  b_status3_daughterid->Fill(0); 
-    }
-
-    if ( status != 2 ) continue;
-
     const reco::GenParticle* mother = dynamic_cast<const reco::GenParticle*>(p.mother());
-    const reco::GenParticle* grandMother = dynamic_cast<const reco::GenParticle*>(mother->mother());
     int motherAbsPdgId = abs(mother->pdgId());
-    int motherStatus = mother->status();
- 
-    //Grand mother information  
-    int grandMotherAbsPdgId = -1;
-    int grandMotherStatus = -1;
 
-    if( grandMother != 0 ){ 
-      grandMotherAbsPdgId = abs(grandMother->pdgId());
-      grandMotherStatus = grandMother->status();
-    }
+    bool isfromtop = isFromtop(p);
 
-    if( !(motherAbsPdgId ==6 || grandMotherAbsPdgId ==6)) {  
+    if( !isfromtop ) {  
       accepted = true;
       b_from_nontop_status->Fill(status);
       b_from_nontop_motherid->Fill(motherAbsPdgId);
@@ -140,6 +121,9 @@ bool TTbar2bGenFilter::filter(edm::Event& iEvent, const edm::EventSetup& eventSe
     }
   }
 
+  if( nb_from_top  > 2 ) {
+    //cout << debug << endl;
+  }
   b_from_top_multi->Fill(nb_from_top);
   b_from_nontop_multi->Fill(nb_from_nontop);
 
@@ -147,6 +131,43 @@ bool TTbar2bGenFilter::filter(edm::Event& iEvent, const edm::EventSetup& eventSe
     return true;
 
   return accepted;
+}
+
+bool TTbar2bGenFilter::isLastbottom( const reco::GenParticle& p ){
+   bool out = true;
+
+   unsigned int nDaughters = p.numberOfDaughters();
+   for ( unsigned iDaughter=0; iDaughter<nDaughters; ++iDaughter ) {
+     const reco::Candidate* daugh = p.daughter(iDaughter);
+     if( abs(daugh->pdgId()) == 5) {
+       out = false;
+       break;
+     }
+   }
+
+   return out;
+}
+
+bool TTbar2bGenFilter::isFromtop( const reco::GenParticle& p){
+  bool out = false;
+  string tmp = "";
+  tmp += "Let's study this b quark \n";
+  string pt = Form("%f", p.pt());
+  string pdgid = Form("%i",p.pdgId());
+  tmp += "pt = " + pt + " id= " + pdgid + "\n";
+  const reco::GenParticle* mother = dynamic_cast<const reco::GenParticle*>(p.mother());
+  while( mother != 0 ){
+    string id = Form("%i", mother->pdgId());
+    string mopt = Form("%f", mother->pt());
+    tmp += "mother pdgid= " + id + " pt= " + mopt +"\n";
+    if( abs(mother->pdgId()) == 6 ) { 
+      out = true;
+    }
+    mother = dynamic_cast<const reco::GenParticle*>(mother->mother());
+  }
+ 
+  if(out) debug += tmp; 
+  return out;
 }
 
 DEFINE_FWK_MODULE(TTbar2bGenFilter);
