@@ -13,7 +13,7 @@
 //
 // Original Author:  Tae Jeong Kim,40 R-A32,+41227678602,
 //         Created:  Fri Jun  4 17:19:29 CEST 2010
-// $Id: TopDILAnalyzer.h,v 1.59 2012/01/28 10:40:05 jhgoh Exp $
+// $Id: TopDILAnalyzer.h,v 1.60 2012/01/29 20:30:23 tjkim Exp $
 //
 //
 
@@ -190,8 +190,8 @@ class TopDILAnalyzer : public edm::EDFilter {
 
     std::vector< float > Wlumi ;
     std::vector< float > TrueDist2011;
-
-    for( int i=0; i<25; ++i) {
+    
+    for( int i=0; i< 50; ++i) {
       TrueDist2011.push_back((float)PileUpRD_[i]);
       Wlumi.push_back((float)PileUpMC_[i]);
     }
@@ -224,8 +224,10 @@ class TopDILAnalyzer : public edm::EDFilter {
     std::vector<PileupSummaryInfo>::const_iterator PVI;
 
     int npv = -1;
+    int npvin = -1;
     float sum_nvtx = 0;
     float ave_nvtx = 0;
+
     if( PupInfo.isValid()){
       for(PVI = PupInfo->begin(); PVI != PupInfo->end(); ++PVI) {
         int tmpnpv = PVI->getPU_NumInteractions();
@@ -234,7 +236,8 @@ class TopDILAnalyzer : public edm::EDFilter {
         int BX = PVI->getBunchCrossing();
 
         if(BX == 0) {
-          npv = PVI->getPU_NumInteractions();
+          npvin = PVI->getPU_NumInteractions();
+          npv = PVI->getTrueNumInteractions();
           continue;
         }
 
@@ -242,15 +245,15 @@ class TopDILAnalyzer : public edm::EDFilter {
 
       ave_nvtx = sum_nvtx/3.;
 
-      weightin = LumiWeights_.weight( npv );
-      weight = LumiWeights_.weight3BX( ave_nvtx );
-      weightplus  = weight*PShiftUp_.ShiftWeight( ave_nvtx );
-      weightminus = weight*PShiftDown_.ShiftWeight( ave_nvtx );
-    }else{
-      weightin = 1.0;
-      weight = 1.0;
-      weightplus = 1.0;
-      weightminus = 1.0;
+      double win = LumiWeights_.weight( npvin );
+      double w = LumiWeights_.weight( npv );
+      //weight = LumiWeights_.weight3BX( ave_nvtx );
+      double wplus  = weight*PShiftUp_.ShiftWeight( npv );
+      double wminus = weight*PShiftDown_.ShiftWeight( npv );
+      weightin = win; 
+      weight = w;
+      weightplus = wplus;
+      weightminus = wminus;
     }
 
     h_npileupin->Fill(npv);
@@ -505,6 +508,7 @@ class TopDILAnalyzer : public edm::EDFilter {
     nbjets = -999;
 
     weight = 1.0;
+    weightin = 1.0;
     weightplus = 1.0;
     weightminus = 1.0;
 
