@@ -13,7 +13,7 @@
 //
 // Original Author:  Tae Jeong Kim,40 R-A32,+41227678602,
 //         Created:  Fri Jun  4 17:19:29 CEST 2010
-// $Id: TopDILAnalyzer.h,v 1.60 2012/01/29 20:30:23 tjkim Exp $
+// $Id: TopDILAnalyzer.h,v 1.61 2012/02/17 16:55:01 tjkim Exp $
 //
 //
 
@@ -52,9 +52,6 @@
 #include "KoPFA/DataFormats/interface/METCandidate.h"
 #include "PhysicsTools/SelectorUtils/interface/PFJetIDSelectionFunctor.h"
 
-#include "DQMServices/Core/interface/MonitorElement.h"
-#include "DQMServices/Core/interface/DQMStore.h"
-
 #include "DataFormats/RecoCandidate/interface/IsoDepositDirection.h"
 #include "DataFormats/RecoCandidate/interface/IsoDeposit.h"
 #include "DataFormats/RecoCandidate/interface/IsoDepositVetos.h"
@@ -62,10 +59,6 @@
 #include "SimDataFormats/PileupSummaryInfo/interface/PileupSummaryInfo.h"
 #include "PhysicsTools/Utilities/interface/LumiReWeighting.h"
 
-#include "JetMETCorrections/Objects/interface/JetCorrector.h"
-#include "CondFormats/JetMETObjects/interface/JetCorrectorParameters.h"
-#include "CondFormats/JetMETObjects/interface/FactorizedJetCorrector.h"
-#include "CondFormats/JetMETObjects/interface/JetCorrectionUncertainty.h"
 #include "KoPFA/DataFormats/interface/Maos.h"
 #include "TFile.h"
 #include "TTree.h"
@@ -206,7 +199,6 @@ class TopDILAnalyzer : public edm::EDFilter {
   //virtual void produce(const edm::Event& iEvent, const edm::EventSetup& iSetup)
   virtual bool filter(edm::Event& iEvent, const edm::EventSetup& iSetup)
   {
-
     bool accept = false;
 
     clear();
@@ -268,7 +260,7 @@ class TopDILAnalyzer : public edm::EDFilter {
 
     for(reco::VertexCollection::const_iterator v=recVtxs_->begin();  v!=recVtxs_->end(); ++v){
       if (!(v->isFake()) && (v->ndof()>4) && (fabs(v->z())<=24.0) && (v->position().Rho()<=2.0) ) {
-            nv++;
+        nv++;
       }
     }
 
@@ -424,10 +416,10 @@ class TopDILAnalyzer : public edm::EDFilter {
 
       if(corrjet.pt() > 30){
         jetspt30->push_back(corrjet);
-	discr = jit->bDiscriminator(bTagAlgo_);
-	if(discr > minBTagValue_){
-	  bjets->push_back(corrjet);
-	}
+        discr = jit->bDiscriminator(bTagAlgo_);
+        if(discr > minBTagValue_){
+          bjets->push_back(corrjet);
+        }
       }
     }
 
@@ -465,23 +457,19 @@ class TopDILAnalyzer : public edm::EDFilter {
       ttbar->push_back(ttbarMass);
 
       if(genParticles_.isValid()){
+        reco::Candidate::LorentzVector ttbarGen;
+        for (reco::GenParticleCollection::const_iterator mcIter=genParticles_->begin(); mcIter != genParticles_->end(); mcIter++ ) {
+          int genId = mcIter->pdgId();
+          if( abs(genId) == 6){
+            ttbarGen += mcIter->p4();
+          }
+        }
 
-	TLorentzVector ttbarGen(0,0,0,0);
-	for (reco::GenParticleCollection::const_iterator mcIter=genParticles_->begin(); mcIter != genParticles_->end(); mcIter++ ) {
-	  int genId = mcIter->pdgId();
-	  if( fabs(genId) == 6){
-	    //double mass = mcIter->p4().M(); 
-	    TLorentzVector top(mcIter->p4().Px(), mcIter->p4().Py(), mcIter->p4().Pz(), mcIter->p4().E());
-	    ttbarGen = ttbarGen+top;
-	  }
-
-	}
-
-	genttbarM = ttbarGen.M();
-	resmaosM = ttbar->back().maosM() - ttbarGen.M();
-	resvsumM = ttbar->back().M() - ttbarGen.M();
-	resuser1M = ttbar->back().user1M() - ttbarGen.M();
-	resuser2M = ttbar->back().user2M() - ttbarGen.M();
+        genttbarM = ttbarGen.M();
+        resmaosM = ttbar->back().maosM() - ttbarGen.M();
+        resvsumM = ttbar->back().M() - ttbarGen.M();
+        resuser1M = ttbar->back().user1M() - ttbarGen.M();
+        resuser2M = ttbar->back().user2M() - ttbarGen.M();
       }
     }
 
