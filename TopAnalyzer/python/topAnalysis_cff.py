@@ -103,8 +103,7 @@ ElEl = cms.EDFilter('TopElElAnalyzer',
     bTagAlgo = cms.untracked.string("trackCountingHighEffBJetTags"),
     minBTagValue = cms.untracked.double(1.7),
     PileUpRD = PileUpRD2011,
-    PileUpMC = PoissonOneXDist,#Summer11 PU_S4 in-time
-    #PileUpMC = Fall2011_InTime,#Fall11 PU_S6 in-time
+    PileUpMC = Fall11,
 )
 
 MuMu = cms.EDFilter('TopMuMuAnalyzer',
@@ -128,8 +127,7 @@ MuMu = cms.EDFilter('TopMuMuAnalyzer',
     bTagAlgo = cms.untracked.string("trackCountingHighEffBJetTags"),
     minBTagValue = cms.untracked.double(1.7),
     PileUpRD = PileUpRD2011,
-    PileUpMC = PoissonOneXDist,#Summer11 PU_S4 in-time
-    #PileUpMC = Fall2011_InTime,#Fall11 PU_S6 in-time
+    PileUpMC = Fall11,
 )
 
 MuEl = cms.EDFilter('TopMuElAnalyzer',
@@ -153,8 +151,7 @@ MuEl = cms.EDFilter('TopMuElAnalyzer',
     bTagAlgo = cms.untracked.string("trackCountingHighEffBJetTags"),
     minBTagValue = cms.untracked.double(1.7),
     PileUpRD = PileUpRD2011,
-    PileUpMC = PoissonOneXDist,#Summer11 PU_S4 in-time
-    #PileUpMC = Fall2011_InTime,#Fall11 PU_S6 in-time
+    PileUpMC = Fall11,
 )
 
 MuJet = cms.EDFilter('TopMuJetAnalyzer',
