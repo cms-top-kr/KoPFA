@@ -4,8 +4,6 @@
 #include "DataFormats/Math/interface/LorentzVector.h"
 #include "DataFormats/Candidate/interface/Candidate.h"
 #include "DataFormats/HepMCCandidate/interface/GenParticle.h"
-#include "DataFormats/JetReco/interface/GenJet.h"
-#include "DataFormats/METReco/interface/GenMET.h"
 
 #include <vector>
 
@@ -18,39 +16,28 @@ public:
   TTbarGenEvent() {};
   ~TTbarGenEvent() {};
 
-  void set(const reco::GenParticleCollection* genParticles,
-           const reco::GenJetCollection* genJets = 0,
-           const reco::GenMET* genMET = 0);
-
-  double m() const { return mTT_; };
+  double m() const { return tt_.M(); };
   double mass() const { return m(); };
   double met() const { return met_; };
+  
+  void clear();
+  void set(reco::GenParticleCollection::const_iterator begin,
+           reco::GenParticleCollection::const_iterator end);
 
 private:
-  void clear();
-  const reco::GenParticle* getDaughter(const reco::GenParticle* mother, const int absPdgId);
-
-  double mTT_;
-  math::XYZTLorentzVector t1_, t2_;
-  math::XYZTLorentzVector b1_, b2_;
-
-  std::vector<math::XYZTLorentzVector> qcdBquarks_;
-
+  math::XYZTLorentzVector tt_;
+  std::vector<math::XYZTLorentzVector> tQuarks_;
+  std::vector<math::XYZTLorentzVector> bQuarks_;
   std::vector<math::XYZTLorentzVector> leptons_;
-  std::vector<math::XYZTLorentzVector> acceptedElectrons_;
-  std::vector<math::XYZTLorentzVector> acceptedMuons_;
-  //std::vector<math::XYZTLorentzVector> electrons_;
-
-  //std::vector<math::XYZTLorentzVector> muons_;
-  //std::vector<math::XYZTLorentzVector> taus_;
-
-  std::vector<math::XYZTLorentzVector> jets_;
-  std::vector<math::XYZTLorentzVector> bJets_;
-
-  int lep1Type_;
-  int lep2Type_;
-  int tauDecay_;
-
+  std::vector<math::XYZTLorentzVector> electrons_;
+  std::vector<math::XYZTLorentzVector> muons_;
+  std::vector<math::XYZTLorentzVector> taus_;
+ 
+  int mumuDecay;
+  int eeDecay;
+  int emuDecay;
+  int tauDecay;
+ 
   double met_, metX_, metY_;
 
 };
