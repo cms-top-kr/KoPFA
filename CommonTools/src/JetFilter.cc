@@ -13,7 +13,7 @@
 //
 // Original Author:  Tae Jeong Kim
 //         Created:  Mon Dec 14 01:29:35 CET 2009
-// $Id: JetFilter.cc,v 1.3 2011/11/29 14:30:47 tjkim Exp $
+// $Id: JetFilter.cc,v 1.4 2012/01/29 13:07:52 tjkim Exp $
 //
 //
 
@@ -188,6 +188,9 @@ JetFilter::filter(edm::Event& iEvent, const edm::EventSetup& iSetup)
 
   PFJetIDSelectionFunctor looseJetIdSelector_(pfJetIdParams_);
 
+  typedef map< double, pat::Jet, greater<double> > PtMap;
+  PtMap sortedJets;
+
   for (JI it = Jets->begin(); it != Jets->end(); ++it) {
     pat::Jet correctedJet = *it;
 
@@ -248,8 +251,7 @@ JetFilter::filter(edm::Event& iEvent, const edm::EventSetup& iSetup)
  
     if( correctedJet.pt() <= ptcut_ ) continue;
 
-    corrJets->push_back(correctedJet);
-
+    sortedJets.insert( make_pair(correctedJet.pt(), correctedJet) );
   }
 
   if( corrJets->size() >= min_ ) accepted = true;
@@ -257,6 +259,11 @@ JetFilter::filter(edm::Event& iEvent, const edm::EventSetup& iSetup)
   pat::MET corrMET(reco::MET ( sqrt(met_x*met_x + met_y*met_y)   , reco::MET::LorentzVector(met_x,met_y,0,sqrt(met_x*met_x + met_y*met_y))  , reco::MET::Point(0,0,0)));
 
   corrMETs->push_back(corrMET);  
+
+  // Jets passing identification criteria are sorted by decreasing pT
+  for (PtMap::iterator it=sortedJets.begin(); it != sortedJets.end(); it++){
+    corrJets->push_back( it->second );
+  }
 
   iEvent.put(corrJets, outputJetLabel_);
   iEvent.put(corrMETs, outputMETLabel_);
