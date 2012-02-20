@@ -13,7 +13,7 @@
 //
 // Original Author:  Tae Jeong Kim,40 R-A32,+41227678602,
 //         Created:  Fri Jun  4 17:19:29 CEST 2010
-// $Id: TopDILAnalyzer.h,v 1.61 2012/02/17 16:55:01 tjkim Exp $
+// $Id: TopDILAnalyzer.h,v 1.62 2012/02/19 15:47:32 jhgoh Exp $
 //
 //
 
@@ -160,7 +160,10 @@ class TopDILAnalyzer : public edm::EDFilter {
 
     //tree->Branch("met","std::vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >", &met);
     //tree->Branch("jets","std::vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >", &jets);
-    tree->Branch("jetspt30","std::vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >", &jetspt30);
+    //tree->Branch("jetspt30","std::vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >", &jetspt30);
+    tree->Branch("jetpt1",&jetpt1,"jetpt1/d");
+    tree->Branch("jetpt2",&jetpt2,"jetpt2/d");
+    tree->Branch("njets",&njets, "njets/d");
     //tree->Branch("bjets","std::vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >", &bjets);
     tree->Branch("nbjets",&nbjets,"nbjets/d");
 
@@ -406,8 +409,6 @@ class TopDILAnalyzer : public edm::EDFilter {
       break;
     }
 
-    //Jet selection by checking overlap with selected leptons
-    //cout << "new jet multiplicity= " << Jets->size() << endl;
     for (JI jit = Jets->begin(); jit != Jets->end(); ++jit) {
       ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > corrjet;
       corrjet.SetPxPyPzE(jit->px(),jit->py(),jit->pz(),jit->energy());
@@ -415,7 +416,7 @@ class TopDILAnalyzer : public edm::EDFilter {
       jets->push_back(corrjet);
 
       if(corrjet.pt() > 30){
-        jetspt30->push_back(corrjet);
+        jetspt30->push_back(corrjet);        
         discr = jit->bDiscriminator(bTagAlgo_);
         if(discr > minBTagValue_){
           bjets->push_back(corrjet);
@@ -423,16 +424,20 @@ class TopDILAnalyzer : public edm::EDFilter {
       }
     }
 
+    if( jetspt30->size() >= 1 ){
+      jetpt1 = jetspt30->at(0).pt();
+    }
     if( jetspt30->size() >= 2 ){
+      jetpt2 = jetspt30->at(1).pt();
       dphimetjet1 = fabs(deltaPhi(mi->phi(),jetspt30->at(0).phi()));
       dphimetjet2 = fabs(deltaPhi(mi->phi(),jetspt30->at(1).phi()));
     }
-    //cout << "default jet multiplicity= " << jetspt30->size() << endl;
 
     h_jet_multi->Fill(jets->size());
     h_jetpt30_multi->Fill(jetspt30->size());
     h_bjet_multi->Fill(bjets->size());
 
+    njets = jetspt30->size();
     nbjets = bjets->size();
 
     ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > corrmet;
@@ -493,6 +498,7 @@ class TopDILAnalyzer : public edm::EDFilter {
     jetspt30->clear();
     bjets->clear();
 
+    njets = -999;
     nbjets = -999;
 
     weight = 1.0;
@@ -514,6 +520,9 @@ class TopDILAnalyzer : public edm::EDFilter {
     pt2 = -999;
     eta1 = -999;
     eta2 = -999;
+
+    jetpt1 = -999;
+    jetpt2 = -999;
 
     genttbarM = -999;
     resmaosM = -999; 
@@ -639,7 +648,10 @@ class TopDILAnalyzer : public edm::EDFilter {
   double eta1;
   double eta2;
 
+  double jetpt1;
+  double jetpt2;
   double nbjets;
+  double njets;
 
   double discr;
 
