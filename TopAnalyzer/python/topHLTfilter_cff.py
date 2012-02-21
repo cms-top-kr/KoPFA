@@ -5,9 +5,7 @@ from HLTrigger.HLTfilters.hltHighLevel_cfi import *
 #for MuEG dataset
 #MC
 hltHighLevelMuElMC = hltHighLevel.clone()
-#hltHighLevelMuElMC.TriggerResultsTag = cms.InputTag("TriggerResults","","REDIGI311X") //Spring 11
 hltHighLevelMuElMC.TriggerResultsTag = cms.InputTag("TriggerResults","","HLT")
-#hltHighLevelMuElMC.HLTPaths = cms.vstring('HLT_Mu8_Ele8_v1','HLT_Mu11_Ele8_v1','HLT_Mu5_Ele13_v2','HLT_Mu5_Ele17_v2') //Spring 11
 hltHighLevelMuElMC.HLTPaths = cms.vstring('HLT_Mu10_Ele10_CaloIdL_v*','HLT_Mu17_Ele8_CaloIdL_v*','HLT_Mu8_Ele17_CaloIdL_v*')
 hltHighLevelMuElMC.throw = cms.bool(False)
 #RD
@@ -19,12 +17,9 @@ hltHighLevelMuElRD.throw = cms.bool(False)
 #for DoubleElectron dataset
 #MC
 hltHighLevelElElMC = hltHighLevel.clone()
-#hltHighLevelElElMC.TriggerResultsTag = cms.InputTag("TriggerResults","","REDIGI311X")
 hltHighLevelElElMC.TriggerResultsTag = cms.InputTag("TriggerResults","","HLT")
-#hltHighLevelElElMC.HLTPaths = cms.vstring('HLT_Ele17_SW_TightCaloEleId_Ele8HE_L1R_v2')
 hltHighLevelElElMC.HLTPaths = cms.vstring(
-    'HLT_Ele17_CaloIdT_TrkIdVL_CaloIsoVL_TrkIsoVL_Ele8_CaloIdT_TrkIdVL_CaloIsoVL_TrkIsoVL_v*',
-    'HLT_Ele17_CaloIdL_CaloIsoVL_Ele8_CaloIdL_CaloIsoVL_v*',
+    'HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v*',
 )
 hltHighLevelElElMC.throw = cms.bool(False)
 #RD
@@ -40,9 +35,7 @@ hltHighLevelElElRD.throw = cms.bool(False)
 #for DoubleMuon dataset
 #MC
 hltHighLevelMuMuMC = hltHighLevel.clone()
-#hltHighLevelMuMuMC.TriggerResultsTag = cms.InputTag("TriggerResults","","REDIGI311X")
 hltHighLevelMuMuMC.TriggerResultsTag = cms.InputTag("TriggerResults","","HLT")
-#hltHighLevelMuMuMC.HLTPaths = cms.vstring('HLT_DoubleMu3_v*','HLT_DoubleMu6_v*','HLT_DoubleMu7_v*')
 hltHighLevelMuMuMC.HLTPaths = cms.vstring('HLT_DoubleMu6_v*')
 hltHighLevelMuMuMC.throw = cms.bool(False)
 #RD
