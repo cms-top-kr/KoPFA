@@ -13,7 +13,7 @@
 //
 // Original Author:  Tae Jeong Kim,40 R-A32,+41227678602,
 //         Created:  Fri Jun  4 17:19:29 CEST 2010
-// $Id: TopDILAnalyzer.h,v 1.62 2012/02/19 15:47:32 jhgoh Exp $
+// $Id: TopDILAnalyzer.h,v 1.63 2012/02/20 10:16:54 tjkim Exp $
 //
 //
 
@@ -105,9 +105,7 @@ class TopDILAnalyzer : public edm::EDFilter {
     h_secondpt    = fs->make<TH1F>( "h_secondpt"  , "p_{t}", 50,  0., 100. );
     h_mass      = fs->make<TH1F>( "h_mass", "Mass", 100, 0., 200. );
     h_MET       = fs->make<TH1F>( "h_MET", "MET", 40, 0, 80);
-    h_jet_multi = fs->make<TH1F>( "h_jet_multi", "jet_multi", 10, 0, 10);
     h_jetpt30_multi = fs->make<TH1F>( "h_jetpt30_multi", "jet30pt_multi", 10, 0, 10);
-    h_bjet_multi = fs->make<TH1F>( "h_bjet_multi", "bjet_multi", 10, 0, 10);
     h_npileupin = fs->make<TH1F>( "h_npileupin", "npileupin", 30, 0, 30);
     h_npileup = fs->make<TH1F>( "h_npileup", "npileup", 30, 0, 30);
     h_nvertex = fs->make<TH1F>( "h_nvertex", "nvertex", 30, 0, 30);
@@ -118,9 +116,12 @@ class TopDILAnalyzer : public edm::EDFilter {
     pfMet = new std::vector<Ko::METCandidate>();
     ttbar = new std::vector<Ko::TTbarMass>();
     met = new std::vector<math::XYZTLorentzVector>();
-    jets = new std::vector<math::XYZTLorentzVector>();
     jetspt30 = new std::vector<math::XYZTLorentzVector>();
-    bjets = new std::vector<math::XYZTLorentzVector>();
+    bjets_TCHEL = new std::vector<math::XYZTLorentzVector>();
+    bjets_CSVL = new std::vector<math::XYZTLorentzVector>();
+    bjets_CSVM = new std::vector<math::XYZTLorentzVector>();
+    bjets_CSVT = new std::vector<math::XYZTLorentzVector>();
+    bjets_SSVHEM = new std::vector<math::XYZTLorentzVector>();
  
   }
 
@@ -151,6 +152,8 @@ class TopDILAnalyzer : public edm::EDFilter {
     tree->Branch("pt2",&pt2,"pt2/d");
     tree->Branch("eta1",&eta1,"eta1/d");
     tree->Branch("eta2",&eta2,"eta2/d");
+    tree->Branch("phi1",&phi1,"phi1/d");
+    tree->Branch("phi2",&phi2,"phi2/d");
 
     //tree->Branch("Z","std::vector<Ko::ZCandidate>", &Z);
     //tree->Branch("lepton1","std::vector<Ko::Lepton>", &lepton1);
@@ -159,14 +162,19 @@ class TopDILAnalyzer : public edm::EDFilter {
     tree->Branch("ttbar","std::vector<Ko::TTbarMass>", &ttbar);
 
     //tree->Branch("met","std::vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >", &met);
-    //tree->Branch("jets","std::vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >", &jets);
-    //tree->Branch("jetspt30","std::vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >", &jetspt30);
-    tree->Branch("jetpt1",&jetpt1,"jetpt1/d");
-    tree->Branch("jetpt2",&jetpt2,"jetpt2/d");
-    tree->Branch("njets",&njets, "njets/d");
-    //tree->Branch("bjets","std::vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >", &bjets);
-    tree->Branch("nbjets",&nbjets,"nbjets/d");
+    tree->Branch("jetspt30","std::vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >", &jetspt30);
+    tree->Branch("nbjets_TCHEL",&nbjets_TCHEL,"nbjets_TCHEL/i");    
+    tree->Branch("nbjets_CSVL",&nbjets_CSVL,"nbjets_CSVL/i");    
+    tree->Branch("nbjets_CSVM",&nbjets_CSVM,"nbjets_CSVM/i");    
+    tree->Branch("nbjets_CSVT",&nbjets_CSVT,"nbjets_CSVT/i");    
+    tree->Branch("nbjets_SSVHEM",&nbjets_SSVHEM,"nbjets_SSVHEM/i");    
 
+    //tree->Branch("bjets_TCHEL","std::vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >", &bjets_TCHEL);
+    //tree->Branch("bjets_CSVL","std::vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >", &bjets_CSVL);
+    //tree->Branch("bjets_CSVM","std::vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >", &bjets_CSVM);
+    //tree->Branch("bjets_CSVT","std::vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >", &bjets_CSVT);
+    //tree->Branch("bjets_SSVHEM","std::vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >", &bjets_SSVHEM);
+    
     tree->Branch("MET",&MET,"MET/d");
     tree->Branch("dphimetlepton1",&dphimetlepton1,"dphimetlepton1/d");
     tree->Branch("dphimetlepton2",&dphimetlepton2,"dphimetlepton2/d");
@@ -174,15 +182,6 @@ class TopDILAnalyzer : public edm::EDFilter {
     tree->Branch("dphimetjet2",&dphimetjet2,"dphimetjet2/d");
 
     tree->Branch("genttbarM",&genttbarM,"genttbarM/d");
-    //tree->Branch("resmaosM",&resmaosM,"resmaosM/d");
-    //tree->Branch("resvsumM",&resvsumM,"resvsumM/d");
-    //tree->Branch("resuser1M",&resuser1M,"resuser1M/d");
-    //tree->Branch("resuser2M",&resuser2M,"resuser2M/d");
-
-    //tree->Branch("sumEt",&sumEt,"sumEt/d");
-    //tree->Branch("photonEt",&photonEt,"photonEt/d");
-    //tree->Branch("chargedHadronEt",&chargedHadronEt,"chargedHadronEt/d");
-    //tree->Branch("neutralHadronEt",&neutralHadronEt,"neutralHadronEt/d");
 
     std::vector< float > Wlumi ;
     std::vector< float > TrueDist2011;
@@ -288,35 +287,18 @@ class TopDILAnalyzer : public edm::EDFilter {
     iEvent.getByLabel(metLabel_,MET_);
 
     pat::METCollection::const_iterator mi = MET_->begin();
-    //MET = mi->pt();
-    //met->push_back(mi->p4());
-    //h_MET->Fill(MET);
+
     edm::Handle< reco::PFCandidateCollection > pfCandidates_;
     typedef reco::PFCandidateCollection::const_iterator CI;
     iEvent.getByLabel("particleFlow",pfCandidates_);
-
-    sumEt = 0;
-    photonEt = 0;
-    chargedHadronEt = 0;
-    neutralHadronEt = 0;
-
-    //for(CI ci = pfCandidates_->begin(); ci!=pfCandidates_->end(); ++ci) {
-    //  const reco::PFCandidate& pfc = *ci;
-    //  double E = pfc.energy();
-    //  double theta = pfc.theta();
-    //  double sintheta = sin(theta);
-    //  double et = E*sintheta;
-    //  sumEt += et;
-    //  if( pfc.particleId() == 1 ) chargedHadronEt += et;
-    //  if( pfc.particleId() == 5 ) neutralHadronEt += et;
-    //  if( pfc.particleId() == 4 ) photonEt += et; 
-    //} 
 
     edm::Handle<pat::JetCollection> Jets;
     iEvent.getByLabel(jetLabel_, Jets);
 
     edm::Handle<reco::GenParticleCollection> genParticles_;
     iEvent.getByLabel(genParticlesLabel_,genParticles_);
+
+    bool selected = false;
 
     for(unsigned i = 0; i != muons1_->size(); i++){
       for(unsigned j = 0; j != muons2_->size(); j++){
@@ -367,7 +349,6 @@ class TopDILAnalyzer : public edm::EDFilter {
         //bool noiso = lepton1->back().relpfIso03() > relIso1_ && lepton2->back().relpfIso03() > relIso2_;
         bool opp = it1.charge() * it2.charge() < 0;
 
-        bool selected = false;
         if(!selected) {
           selected = true;
           Z->push_back(dimuon);
@@ -379,6 +360,8 @@ class TopDILAnalyzer : public edm::EDFilter {
           pt2 = it2.pt();
           eta1 = it1.eta();
           eta2 = it2.eta();
+          phi1 = it1.phi();
+          phi2 = it2.phi();
           if( iso ) isIso = 1;  
         }
 
@@ -398,6 +381,8 @@ class TopDILAnalyzer : public edm::EDFilter {
         pt2 = it2.pt();
         eta1 = it1.eta();
         eta2 = it2.eta();
+        phi1 = it1.phi();
+        phi2 = it2.phi();
         if( iso ) isIso = 1;       
         
         h_leadingpt->Fill(it1.pt());
@@ -409,36 +394,47 @@ class TopDILAnalyzer : public edm::EDFilter {
       break;
     }
 
+    int nTCHEL = 0;
+    int nCSVL = 0;
+    int nCSVM = 0;
+    int nCSVT = 0;
+    int nSSVHEM = 0;
+
     for (JI jit = Jets->begin(); jit != Jets->end(); ++jit) {
       ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > corrjet;
       corrjet.SetPxPyPzE(jit->px(),jit->py(),jit->pz(),jit->energy());
 
-      jets->push_back(corrjet);
+      jetspt30->push_back(corrjet);        
 
-      if(corrjet.pt() > 30){
-        jetspt30->push_back(corrjet);        
-        discr = jit->bDiscriminator(bTagAlgo_);
-        if(discr > minBTagValue_){
-          bjets->push_back(corrjet);
-        }
+      if( jit->bDiscriminator("trackCountingHighEffBJetTags")  > 1.7){
+        nTCHEL++;
+      }
+      if( jit->bDiscriminator("combinedSecondaryVertexBJetTags")  > 0.244){
+        nCSVL++;
+      }
+      if( jit->bDiscriminator("combinedSecondaryVertexBJetTags")  > 0.679){
+        nCSVM++;
+      }
+      if( jit->bDiscriminator("combinedSecondaryVertexBJetTags")  > 0.898){
+        nCSVT++;
+      }
+      if( jit->bDiscriminator("simpleSecondaryVertexHighEffBJetTags") > 1.74){
+        nSSVHEM++;
       }
     }
 
-    if( jetspt30->size() >= 1 ){
-      jetpt1 = jetspt30->at(0).pt();
-    }
+    nbjets_TCHEL = nTCHEL;
+    nbjets_CSVL= nCSVL;
+    nbjets_CSVM = nCSVM;
+    nbjets_CSVT = nCSVT;
+    nbjets_SSVHEM = nSSVHEM;
+
     if( jetspt30->size() >= 2 ){
-      jetpt2 = jetspt30->at(1).pt();
       dphimetjet1 = fabs(deltaPhi(mi->phi(),jetspt30->at(0).phi()));
       dphimetjet2 = fabs(deltaPhi(mi->phi(),jetspt30->at(1).phi()));
     }
 
-    h_jet_multi->Fill(jets->size());
     h_jetpt30_multi->Fill(jetspt30->size());
-    h_bjet_multi->Fill(bjets->size());
-
-    njets = jetspt30->size();
-    nbjets = bjets->size();
 
     ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > corrmet;
     corrmet.SetPxPyPzE(mi->px(),mi->py(),0,mi->pt());
@@ -471,10 +467,6 @@ class TopDILAnalyzer : public edm::EDFilter {
         }
 
         genttbarM = ttbarGen.M();
-        resmaosM = ttbar->back().maosM() - ttbarGen.M();
-        resvsumM = ttbar->back().M() - ttbarGen.M();
-        resuser1M = ttbar->back().user1M() - ttbarGen.M();
-        resuser2M = ttbar->back().user2M() - ttbarGen.M();
       }
     }
 
@@ -494,12 +486,18 @@ class TopDILAnalyzer : public edm::EDFilter {
     pfMet->clear();
     ttbar->clear();
     met->clear();
-    jets->clear();
     jetspt30->clear();
-    bjets->clear();
+    //bjets_TCHEL->clear();
+    //bjets_CSVL->clear();
+    //bjets_CSVM->clear();
+    //bjets_CSVT->clear();
+    //bjets_SSVHEM->clear();
 
-    njets = -999;
-    nbjets = -999;
+    nbjets_TCHEL = -999;
+    nbjets_CSVL= -999;
+    nbjets_CSVM = -999;
+    nbjets_CSVT = -999;
+    nbjets_SSVHEM = -999;
 
     weight = 1.0;
     weightin = 1.0;
@@ -520,20 +518,10 @@ class TopDILAnalyzer : public edm::EDFilter {
     pt2 = -999;
     eta1 = -999;
     eta2 = -999;
-
-    jetpt1 = -999;
-    jetpt2 = -999;
+    phi1 = -999;
+    phi2 = -999;
 
     genttbarM = -999;
-    resmaosM = -999; 
-    resvsumM = -999;
-    resuser1M = -999;
-    resuser2M = -999;
-
-    sumEt = -1;
-    photonEt = -1;
-    chargedHadronEt = -1;
-    neutralHadronEt = -1;
 
   }
 
@@ -616,9 +604,7 @@ class TopDILAnalyzer : public edm::EDFilter {
   TH1F * h_secondpt;
   TH1F * h_mass;
   TH1F * h_MET;
-  TH1F * h_jet_multi;
   TH1F * h_jetpt30_multi;
-  TH1F * h_bjet_multi;
   TH1F * h_npileupin;
   TH1F * h_npileup;
   TH1F * h_nvertex;
@@ -629,10 +615,19 @@ class TopDILAnalyzer : public edm::EDFilter {
   std::vector<Ko::METCandidate>* pfMet;
   std::vector<Ko::TTbarMass>* ttbar;
   std::vector<math::XYZTLorentzVector>* met;
-  std::vector<math::XYZTLorentzVector>* jets;
   std::vector<math::XYZTLorentzVector>* jetspt30;
-  std::vector<math::XYZTLorentzVector>* bjets;
-  
+  std::vector<math::XYZTLorentzVector>* bjets_TCHEL;
+  std::vector<math::XYZTLorentzVector>* bjets_CSVL;
+  std::vector<math::XYZTLorentzVector>* bjets_CSVM;
+  std::vector<math::XYZTLorentzVector>* bjets_CSVT;
+  std::vector<math::XYZTLorentzVector>* bjets_SSVHEM;
+ 
+  int nbjets_TCHEL;
+  int nbjets_CSVL;
+  int nbjets_CSVM;
+  int nbjets_CSVT;
+  int nbjets_SSVHEM;
+ 
   double MET;
   double dphimetlepton1;
   double dphimetlepton2;
@@ -647,24 +642,12 @@ class TopDILAnalyzer : public edm::EDFilter {
   double pt2;
   double eta1;
   double eta2;
-
-  double jetpt1;
-  double jetpt2;
-  double nbjets;
-  double njets;
+  double phi1;
+  double phi2;
 
   double discr;
 
   double genttbarM;
-  double resmaosM;
-  double resvsumM;
-  double resuser1M;
-  double resuser2M;
-
-  double sumEt;
-  double photonEt;
-  double chargedHadronEt;
-  double neutralHadronEt;
 
 
   // ----------member data ---------------------------
