@@ -1,4 +1,5 @@
 #include "KoPFA/DataFormats/interface/TTbarGenEvent.h"
+#include "DataFormats/Math/interface/deltaR.h"
 
 using namespace Ko;
 
@@ -18,13 +19,22 @@ void TTbarGenEvent::clear()
   muons_.clear();
   taus_.clear();
   met_ = metX_ = metY_ = 0;
+
+  stableElectrons_.clear();
+  stableMuons_.clear();
+  jets_.clear();
+  jetsBMatch_.clear();
 }
 
-void TTbarGenEvent::set(reco::GenParticleCollection::const_iterator begin,
-                        reco::GenParticleCollection::const_iterator end)
+void TTbarGenEvent::set(const reco::GenParticleCollection* genParticles,
+                        const reco::GenJetCollection* genJets,
+                        const reco::GenMET* genMET)
 {
-  for ( reco::GenParticleCollection::const_iterator genParticle = begin;
-        genParticle != end; ++genParticle )
+  clear();
+
+  // Do parton level variables
+  for ( reco::GenParticleCollection::const_iterator genParticle = genParticles->begin();
+        genParticle != genParticles->end(); ++genParticle )
   {
     if ( genParticle->status() != 3 ) continue;
 
@@ -128,5 +138,166 @@ void TTbarGenEvent::set(reco::GenParticleCollection::const_iterator begin,
 
   }
   met_ = hypot(metX_, metY_);
+
+  // Do particle level variables
+  // For a clearity, genParticle loop will be done separately
+  std::vector<const reco::GenParticle*> bHadrons;
+  std::vector<const reco::GenParticle*> finalBQuarks;
+  for ( int i=0, n=genParticles->size(); i<n; ++i )
+  {
+    const reco::GenParticle& p = genParticles->at(i);
+
+    const int status = p.status();
+    const int absPdgId = p.pdgId();
+
+    if ( status == 1 )
+    {
+      if ( absPdgId == 11 and p.pt() >= 20 and abs(p.eta()) <= 2.4 )
+      {
+        stableElectrons_.push_back(p.p4());
+      }
+      else if ( absPdgId == 13 and p.pt() >= 20 and abs(p.eta()) <= 2.4 )
+      {
+        stableMuons_.push_back(p.p4());
+      }
+    }
+    else
+    {
+      if ( absPdgId == 5 )
+      {
+        bool isFinalBquark = true;
+        for ( int j=0,m=p.numberOfDaughters(); j<m; ++j )
+        {
+          const reco::GenParticle* dau = dynamic_cast<const reco::GenParticle*>(p.daughter(j));
+          if ( !dau ) continue;
+
+          if ( abs(dau->pdgId()) == 5 )
+          {
+            isFinalBquark = false;
+            break;
+          }
+        }
+        if ( isFinalBquark ) finalBQuarks.push_back(&p);
+      }
+      else if ( isBHadron(absPdgId) )
+      {
+        bool hasBDaughter = false;
+        for ( int j=0,m=p.numberOfDaughters(); j<m; ++j )
+        {
+          const reco::GenParticle* dau = dynamic_cast<const reco::GenParticle*>(p.daughter(j));
+          if ( !dau ) continue;
+
+          if ( isBHadron(dau->pdgId()) )
+          {
+            hasBDaughter = true;
+            break;
+          }
+        }
+        if ( !hasBDaughter ) bHadrons.push_back(&p);
+      }
+    }
+  }
+
+  // Collect genJets
+  std::vector<const reco::GenJet*> selectedGenJets;
+  for ( int i=0, n=genJets->size(); i<n; ++i )
+  {
+    const reco::GenJet& jet = genJets->at(i);
+    if ( jet.pt() < 30 or abs(jet.eta()) > 2.4 ) continue;
+
+    selectedGenJets.push_back(&jet);
+    jets_.push_back(jet.p4());
+    jetsBMatch_.push_back(0);
+  }
+  // First try to find BHadron to jet association
+  std::vector<const reco::GenParticle*> bHadronDaughters;
+  using namespace std;
+  
+  for ( int i=0, n=bHadrons.size(); i<n; ++i )
+  {
+    const reco::GenParticle* bHadron = bHadrons[i];
+    bHadronDaughters.clear();
+    findStableDaughters(bHadron, bHadronDaughters);
+
+    int bestNMatch = 0;
+    double bestDR = 999;
+    const reco::GenJet* bestMatchedJet = 0;
+    int bestMatchedJetIndex = -1;
+    for ( int j=0, m=selectedGenJets.size(); j<m; ++j )
+    {
+      const reco::GenJet* jet = selectedGenJets.at(j);
+      int nMatch = 0;
+      if ( isOverlap(jet->getGenConstituents(), bHadronDaughters, nMatch) )
+      {
+        const double dR = deltaR(*jet, *bHadron);
+        if ( dR < bestDR )
+        {
+          bestDR = dR;
+          bestMatchedJet = jet;
+          bestMatchedJetIndex = j;
+          bestNMatch = nMatch;
+        }
+      }
+    }
+    if ( bestMatchedJet ) jetsBMatch_[bestMatchedJetIndex] = bestNMatch;
+  }
+
+}
+
+bool TTbarGenEvent::isOverlap(const std::vector<const reco::GenParticle*>& pColl1,
+                              const std::vector<const reco::GenParticle*>& pColl2,
+                              int& nMatch)
+{
+  nMatch = 0;
+  for ( int i=0, n=pColl1.size(); i<n; ++i )
+  {
+    const reco::GenParticle* p1 = pColl1[i];
+    for ( int j=0, m=pColl2.size(); j<m; ++j )
+    {
+      const reco::GenParticle* p2 = pColl2[i];
+
+      if ( p1 == p2 ) ++nMatch;
+    }
+  }
+
+  return nMatch > 0;
+}
+
+using namespace std;
+void TTbarGenEvent::findStableDaughters(const reco::GenParticle* p,
+                                        std::vector<const reco::GenParticle*>& stableDaughters)
+{
+  for ( int i=0, n=p->numberOfDaughters(); i<n; ++i )
+  {
+    const reco::GenParticle* dau = dynamic_cast<const reco::GenParticle*>(p->daughter(i));
+    if ( !dau ) continue;
+    if ( dau->status() != 1 ) findStableDaughters(dau, stableDaughters);
+
+    const int absPdgId = abs(dau->pdgId());
+    if ( absPdgId == 12 or absPdgId == 14 or absPdgId == 16 ) continue;
+
+    stableDaughters.push_back(dau);
+  }
+}
+
+bool TTbarGenEvent::isBHadron(const int pdgId)
+{
+  int absPdgId = abs(pdgId);
+  if ( absPdgId <= 100 ) return false; // Fundamental particles and MC internals
+  if ( absPdgId >= 1000000000 ) return false; // Nuclears, +-10LZZZAAAI
+
+  // General form of PDG ID is 7 digit form
+  // +- n nr nL nq1 nq2 nq3 nJ
+  const int nJ = absPdgId % 10;
+  const int nq3 = (absPdgId / 10) % 10;
+  const int nq2 = (absPdgId / 100) % 10;
+  const int nq1 = (absPdgId / 1000) % 10;
+
+  if ( nq3 == 0 ) return false; // Diquarks
+  if ( nq1 == 0 and nq2 == 5 ) return true; // B Mesons
+  if ( nq1 == 5 ) return true; // B Baryons
+
+  else return false;
+
 }
 
