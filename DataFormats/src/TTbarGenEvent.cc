@@ -1,5 +1,6 @@
 #include "KoPFA/DataFormats/interface/TTbarGenEvent.h"
 #include "DataFormats/Math/interface/deltaR.h"
+#include "TMath.h"
 
 using namespace Ko;
 
@@ -252,11 +253,20 @@ bool TTbarGenEvent::isOverlap(const std::vector<const reco::GenParticle*>& pColl
   for ( int i=0, n=pColl1.size(); i<n; ++i )
   {
     const reco::GenParticle* p1 = pColl1[i];
+    if ( !p1 ) continue;
     for ( int j=0, m=pColl2.size(); j<m; ++j )
     {
-      const reco::GenParticle* p2 = pColl2[i];
+      const reco::GenParticle* p2 = pColl2[j];
+      if ( !p2 ) continue;
 
+      //if ( p1->status() != p2->status() ) continue;
+      //if ( p1->pdgId() != p2->pdgId() ) continue;
+      //if ( p1->numberOfMothers() != p2->numberOfMothers() ) continue;
+      //if ( p1->numberOfDaughters() != p2->numberOfDaughters() ) continue;
+      //if ( p1->p4() != p2->p4() ) continue;
       if ( p1 == p2 ) ++nMatch;
+
+      ++nMatch;
     }
   }
 
@@ -299,5 +309,108 @@ bool TTbarGenEvent::isBHadron(const int pdgId)
 
   else return false;
 
+}
+
+int TTbarGenEvent::nBJets() const
+{
+  const unsigned int nJetsBMatch = jetsBMatch_.size();
+  if ( jets_.size() != nJetsBMatch )
+  {
+    std::cout << "TTbarGenEvent::nBJets() : Jets and jetBMatch size does not match\n";
+    return -1;
+  }
+  int retVal = 0;
+  for ( unsigned int i=0, n=nJetsBMatch; i<n; ++i )
+  {
+    if ( jetsBMatch_[i] ) ++retVal;
+  }
+  return retVal;
+}
+
+std::vector<math::XYZTLorentzVector> TTbarGenEvent::bJets() const
+{
+  std::vector<math::XYZTLorentzVector> retVal;
+  const unsigned int nJetsBMatch = jetsBMatch_.size();
+  if ( jets_.size() != nJetsBMatch )
+  {
+    std::cout << "TTbarGenEvent::bJets() : Jets and jetBMatch size does not match\n";
+    return retVal;
+  }
+  retVal.reserve(nJetsBMatch);
+  for ( unsigned int i=0, n=nJetsBMatch; i<n; ++i )
+  {
+    if ( jetsBMatch_[i] ) retVal.push_back(jets_[i]);
+  }
+  return retVal;
+}
+
+math::XYZTLorentzVector TTbarGenEvent::partonTTbar() const
+{
+  return tt_;
+}
+
+math::XYZTLorentzVector TTbarGenEvent::partonLLBBMet() const
+{
+  math::XYZTLorentzVector retVal;
+  if ( leptons_.size() < 2 ) return retVal;
+  if ( bQuarks_.size() < 2 ) return retVal;
+
+  retVal += leptons_[0]+leptons_[1];
+  retVal += bQuarks_[0]+bQuarks_[1];
+
+  retVal += math::XYZTLorentzVector(metX_, metY_, 0, met_);
+
+  return retVal;
+}
+
+math::XYZTLorentzVector TTbarGenEvent::particleLLJJMet() const
+{
+  math::XYZTLorentzVector retVal;
+  if ( emuDecay > 0 and stableElectrons_.size() > 0 and stableMuons_.size() > 0 )
+  {
+    retVal += stableElectrons_[0];
+    retVal += stableMuons_[0];
+  }
+  else if ( eeDecay > 0 and stableElectrons_.size() > 1 )
+  {
+    retVal += stableElectrons_[0] + stableElectrons_[1];
+  }
+  else if ( mumuDecay > 0 and stableMuons_.size() > 1 )
+  {
+    retVal += stableMuons_[0] + stableMuons_[1];
+  }
+  else return math::XYZTLorentzVector();
+
+  if ( jets_.size() > 1 ) retVal += jets_[0] + jets_[1];
+  else return math::XYZTLorentzVector();
+
+  retVal += math::XYZTLorentzVector(metX_, metY_, 0, TMath::Hypot(metX_, metY_));
+
+  return retVal;
+}
+
+math::XYZTLorentzVector TTbarGenEvent::particleLLBjBjMet() const
+{
+  math::XYZTLorentzVector retVal;
+  if ( emuDecay > 0 and stableElectrons_.size() > 0 and stableMuons_.size() > 0 )
+  {
+    retVal += stableElectrons_[0];
+    retVal += stableMuons_[0];
+  }
+  else if ( eeDecay > 0 and stableElectrons_.size() > 1 )
+  {
+    retVal += stableElectrons_[0] + stableElectrons_[1];
+  }
+  else if ( mumuDecay > 0 and stableMuons_.size() > 1 )
+  {
+    retVal += stableMuons_[0] + stableMuons_[1];
+  }
+  else return math::XYZTLorentzVector();
+
+  std::vector<math::XYZTLorentzVector> bJets = TTbarGenEvent::bJets();
+  if ( bJets.size() > 1 ) retVal += bJets[0] + bJets[1];
+  else return math::XYZTLorentzVector();
+
+  return retVal;
 }
 

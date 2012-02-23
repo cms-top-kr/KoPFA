@@ -20,9 +20,19 @@ public:
 
   double m() const { return tt_.M(); };
   double mass() const { return m(); };
+
   double met() const { return met_; };
+  int nJets() const { return jets_.size(); };
+  int nBJets() const;
+  std::vector<math::XYZTLorentzVector> bJets() const;
   
-  void clear();
+  // Various definition of generator level mass algorithms
+  // Return (X,Y,Z,T) = (0,0,0,0) if combination is impossible
+  math::XYZTLorentzVector partonTTbar() const;
+  math::XYZTLorentzVector partonLLBBMet() const;
+  math::XYZTLorentzVector particleLLJJMet() const;
+  math::XYZTLorentzVector particleLLBjBjMet() const;
+
   void set(const reco::GenParticleCollection* genParticles,
            const reco::GenJetCollection* genJets,
            const reco::GenMET* genMET);
@@ -50,6 +60,7 @@ private:
   std::vector<int> jetsBMatch_;
 
 private:
+  void clear();
   bool isOverlap(const std::vector<const reco::GenParticle*>& pColl1,
                                 const std::vector<const reco::GenParticle*>& pColl2,
                                 int& nMatch);
