@@ -259,14 +259,7 @@ bool TTbarGenEvent::isOverlap(const std::vector<const reco::GenParticle*>& pColl
       const reco::GenParticle* p2 = pColl2[j];
       if ( !p2 ) continue;
 
-      //if ( p1->status() != p2->status() ) continue;
-      //if ( p1->pdgId() != p2->pdgId() ) continue;
-      //if ( p1->numberOfMothers() != p2->numberOfMothers() ) continue;
-      //if ( p1->numberOfDaughters() != p2->numberOfDaughters() ) continue;
-      //if ( p1->p4() != p2->p4() ) continue;
       if ( p1 == p2 ) ++nMatch;
-
-      ++nMatch;
     }
   }
 
@@ -298,7 +291,7 @@ bool TTbarGenEvent::isBHadron(const int pdgId)
 
   // General form of PDG ID is 7 digit form
   // +- n nr nL nq1 nq2 nq3 nJ
-  const int nJ = absPdgId % 10;
+  //const int nJ = absPdgId % 10; // Spin
   const int nq3 = (absPdgId / 10) % 10;
   const int nq2 = (absPdgId / 100) % 10;
   const int nq1 = (absPdgId / 1000) % 10;
