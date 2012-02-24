@@ -6,6 +6,7 @@
 #include "DataFormats/HepMCCandidate/interface/GenParticle.h"
 #include "DataFormats/JetReco/interface/GenJet.h"
 #include "DataFormats/METReco/interface/GenMET.h"
+#include "TMath.h"
 
 #include <vector>
 
@@ -22,9 +23,9 @@ public:
   double mass() const { return m(); };
 
   double met() const { return met_; };
+  double genMet() const { return TMath::Hypot(genMetX_, genMetY_); };
   int nJets() const { return jets_.size(); };
   int nBJets() const;
-  std::vector<math::XYZTLorentzVector> bJets() const;
   
   // Various definition of generator level mass algorithms
   // Return (X,Y,Z,T) = (0,0,0,0) if combination is impossible
@@ -52,6 +53,7 @@ private:
   int tauDecay;
  
   double met_, metX_, metY_;
+  double genMetX_, genMetY_;
 
   // Particle level objects
   std::vector<math::XYZTLorentzVector> stableElectrons_;
@@ -67,6 +69,7 @@ private:
   void findStableDaughters(const reco::GenParticle* p,
                            std::vector<const reco::GenParticle*>& stableDaughters);
   bool isBHadron(const int absPdgId);
+  std::vector<math::XYZTLorentzVector> bJets() const;
 
 };
 

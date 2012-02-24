@@ -1,7 +1,9 @@
 #include "KoPFA/DataFormats/interface/TTbarGenEvent.h"
 #include "DataFormats/Math/interface/deltaR.h"
+#include "CommonTools/Utils/interface/PtComparator.h"
 #include "TMath.h"
 
+using namespace std;
 using namespace Ko;
 
 void TTbarGenEvent::clear()
@@ -25,6 +27,7 @@ void TTbarGenEvent::clear()
   stableMuons_.clear();
   jets_.clear();
   jetsBMatch_.clear();
+  genMetX_ = genMetY_ = 0;
 }
 
 void TTbarGenEvent::set(const reco::GenParticleCollection* genParticles,
@@ -120,6 +123,11 @@ void TTbarGenEvent::set(const reco::GenParticleCollection* genParticles,
       }
     }
   }
+  std::sort(electrons_.begin(), electrons_.end(), GreaterByPt<reco::Candidate::LorentzVector>());
+  std::sort(muons_.begin(), muons_.end(), GreaterByPt<reco::Candidate::LorentzVector>());
+  std::sort(leptons_.begin(), leptons_.end(), GreaterByPt<reco::Candidate::LorentzVector>());
+  std::sort(taus_.begin(), taus_.end(), GreaterByPt<reco::Candidate::LorentzVector>());
+  std::sort(bQuarks_.begin(), bQuarks_.end(), GreaterByPt<reco::Candidate::LorentzVector>());
 
   if( leptons_.size() >= 2 ){
 
@@ -198,13 +206,20 @@ void TTbarGenEvent::set(const reco::GenParticleCollection* genParticles,
       }
     }
   }
+  // Sort leptons by pT
+  std::sort(stableElectrons_.begin(), stableElectrons_.end(), GreaterByPt<reco::Candidate::LorentzVector>());
+  std::sort(stableMuons_.begin(), stableMuons_.end(), GreaterByPt<reco::Candidate::LorentzVector>());
+
+  // Set genMET info
+  genMetX_ = genMET->px();
+  genMetY_ = genMET->py();
 
   // Collect genJets
   std::vector<const reco::GenJet*> selectedGenJets;
   for ( int i=0, n=genJets->size(); i<n; ++i )
   {
     const reco::GenJet& jet = genJets->at(i);
-    if ( jet.pt() < 30 or abs(jet.eta()) > 2.4 ) continue;
+    if ( jet.pt() < 20 or abs(jet.eta()) > 2.4 ) continue;
 
     selectedGenJets.push_back(&jet);
     jets_.push_back(jet.p4());
@@ -212,7 +227,6 @@ void TTbarGenEvent::set(const reco::GenParticleCollection* genParticles,
   }
   // First try to find BHadron to jet association
   std::vector<const reco::GenParticle*> bHadronDaughters;
-  using namespace std;
   
   for ( int i=0, n=bHadrons.size(); i<n; ++i )
   {
