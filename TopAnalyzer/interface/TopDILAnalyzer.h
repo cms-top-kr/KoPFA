@@ -13,7 +13,7 @@
 //
 // Original Author:  Tae Jeong Kim,40 R-A32,+41227678602,
 //         Created:  Fri Jun  4 17:19:29 CEST 2010
-// $Id: TopDILAnalyzer.h,v 1.63 2012/02/20 10:16:54 tjkim Exp $
+// $Id: TopDILAnalyzer.h,v 1.64 2012/02/21 17:30:22 tjkim Exp $
 //
 //
 
@@ -91,8 +91,32 @@ class TopDILAnalyzer : public edm::EDFilter {
     relIso2_ = iConfig.getUntrackedParameter<double>("relIso2");
     applyIso_ = iConfig.getUntrackedParameter<bool>("applyIso",true);
     oppPair_ = iConfig.getUntrackedParameter<bool>("oppPair",true);
-    bTagAlgo_ = iConfig.getUntrackedParameter<std::string>("bTagAlgo");
-    minBTagValue_ = iConfig.getUntrackedParameter<double>("minBTagValue");
+    std::vector<edm::ParameterSet> bTagSets = iConfig.getUntrackedParameter<std::vector<edm::ParameterSet> >("bTagSets");
+    for ( int i=0, n=bTagSets.size(); i<n; ++i )
+    {
+      edm::ParameterSet& bTagSet = bTagSets[i];
+      const std::string algo = bTagSet.getUntrackedParameter<std::string>("algo");
+      const std::string name = bTagSet.getUntrackedParameter<std::string>("name");
+      const double cutValue = bTagSet.getUntrackedParameter<double>("cutValue");
+      const bool isCutMin = bTagSet.getUntrackedParameter<bool>("isCutMin", true); // True : reject jets with smaller than cutValue 
+
+      std::vector<std::string>::iterator foundBtagName = std::find(bTagNames_.begin(), bTagNames_.end(), name);
+      if ( foundBtagName == bTagNames_.end() )
+      {
+        bTagAlgos_.push_back(algo);
+        bTagNames_.push_back(name);
+        bTagCutValues_.push_back(cutValue);
+        bTagIsCutMin_.push_back(isCutMin);
+        nbjetsCache_.push_back(-999);
+      }
+      else
+      {
+        const int index = foundBtagName - bTagNames_.begin();
+        bTagAlgos_[index] = algo;
+        bTagCutValues_[index] = cutValue;
+        bTagIsCutMin_[index] = isCutMin;
+      }
+    }
     
     PileUpRD_ = iConfig.getParameter< std::vector<double> >("PileUpRD");
     PileUpMC_ = iConfig.getParameter< std::vector<double> >("PileUpMC");
@@ -117,12 +141,6 @@ class TopDILAnalyzer : public edm::EDFilter {
     ttbar = new std::vector<Ko::TTbarMass>();
     met = new std::vector<math::XYZTLorentzVector>();
     jetspt30 = new std::vector<math::XYZTLorentzVector>();
-    bjets_TCHEL = new std::vector<math::XYZTLorentzVector>();
-    bjets_CSVL = new std::vector<math::XYZTLorentzVector>();
-    bjets_CSVM = new std::vector<math::XYZTLorentzVector>();
-    bjets_CSVT = new std::vector<math::XYZTLorentzVector>();
-    bjets_SSVHEM = new std::vector<math::XYZTLorentzVector>();
- 
   }
 
 
@@ -163,18 +181,12 @@ class TopDILAnalyzer : public edm::EDFilter {
 
     //tree->Branch("met","std::vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >", &met);
     tree->Branch("jetspt30","std::vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >", &jetspt30);
-    tree->Branch("nbjets_TCHEL",&nbjets_TCHEL,"nbjets_TCHEL/i");    
-    tree->Branch("nbjets_CSVL",&nbjets_CSVL,"nbjets_CSVL/i");    
-    tree->Branch("nbjets_CSVM",&nbjets_CSVM,"nbjets_CSVM/i");    
-    tree->Branch("nbjets_CSVT",&nbjets_CSVT,"nbjets_CSVT/i");    
-    tree->Branch("nbjets_SSVHEM",&nbjets_SSVHEM,"nbjets_SSVHEM/i");    
+    for ( int i=0, n=bTagAlgos_.size(); i<n; ++i )
+    {
+      const std::string& name = bTagNames_[i];
+      tree->Branch(("nbjets_"+name).c_str(), &(nbjetsCache_[i]), ("nbjets_"+name+"/i").c_str());
+    }
 
-    //tree->Branch("bjets_TCHEL","std::vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >", &bjets_TCHEL);
-    //tree->Branch("bjets_CSVL","std::vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >", &bjets_CSVL);
-    //tree->Branch("bjets_CSVM","std::vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >", &bjets_CSVM);
-    //tree->Branch("bjets_CSVT","std::vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >", &bjets_CSVT);
-    //tree->Branch("bjets_SSVHEM","std::vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >", &bjets_SSVHEM);
-    
     tree->Branch("MET",&MET,"MET/d");
     tree->Branch("dphimetlepton1",&dphimetlepton1,"dphimetlepton1/d");
     tree->Branch("dphimetlepton2",&dphimetlepton2,"dphimetlepton2/d");
@@ -394,11 +406,10 @@ class TopDILAnalyzer : public edm::EDFilter {
       break;
     }
 
-    int nTCHEL = 0;
-    int nCSVL = 0;
-    int nCSVM = 0;
-    int nCSVT = 0;
-    int nSSVHEM = 0;
+    for ( int bTagIndex=0, nBTag=nbjetsCache_.size(); bTagIndex<nBTag; ++bTagIndex )
+    {
+      nbjetsCache_[bTagIndex] = 0;
+    }
 
     for (JI jit = Jets->begin(); jit != Jets->end(); ++jit) {
       ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > corrjet;
@@ -406,28 +417,12 @@ class TopDILAnalyzer : public edm::EDFilter {
 
       jetspt30->push_back(corrjet);        
 
-      if( jit->bDiscriminator("trackCountingHighEffBJetTags")  > 1.7){
-        nTCHEL++;
-      }
-      if( jit->bDiscriminator("combinedSecondaryVertexBJetTags")  > 0.244){
-        nCSVL++;
-      }
-      if( jit->bDiscriminator("combinedSecondaryVertexBJetTags")  > 0.679){
-        nCSVM++;
-      }
-      if( jit->bDiscriminator("combinedSecondaryVertexBJetTags")  > 0.898){
-        nCSVT++;
-      }
-      if( jit->bDiscriminator("simpleSecondaryVertexHighEffBJetTags") > 1.74){
-        nSSVHEM++;
+      for ( int bTagIndex=0, nBTagAlgo=bTagAlgos_.size(); bTagIndex<nBTagAlgo; ++bTagIndex )
+      {
+        const double bTagValue = jit->bDiscriminator(bTagAlgos_[bTagIndex]);
+        if ( (bTagIsCutMin_[bTagIndex]) xor (bTagValue < bTagCutValues_[bTagIndex]) ) ++nbjetsCache_[bTagIndex];
       }
     }
-
-    nbjets_TCHEL = nTCHEL;
-    nbjets_CSVL= nCSVL;
-    nbjets_CSVM = nCSVM;
-    nbjets_CSVT = nCSVT;
-    nbjets_SSVHEM = nSSVHEM;
 
     if( jetspt30->size() >= 2 ){
       dphimetjet1 = fabs(deltaPhi(mi->phi(),jetspt30->at(0).phi()));
@@ -487,17 +482,11 @@ class TopDILAnalyzer : public edm::EDFilter {
     ttbar->clear();
     met->clear();
     jetspt30->clear();
-    //bjets_TCHEL->clear();
-    //bjets_CSVL->clear();
-    //bjets_CSVM->clear();
-    //bjets_CSVT->clear();
-    //bjets_SSVHEM->clear();
 
-    nbjets_TCHEL = -999;
-    nbjets_CSVL= -999;
-    nbjets_CSVM = -999;
-    nbjets_CSVT = -999;
-    nbjets_SSVHEM = -999;
+    for ( int bTagIndex=0, nBTag=nbjetsCache_.size(); bTagIndex<nBTag; ++bTagIndex )
+    {
+      nbjetsCache_[bTagIndex] = -999;
+    }
 
     weight = 1.0;
     weightin = 1.0;
@@ -594,8 +583,13 @@ class TopDILAnalyzer : public edm::EDFilter {
   double relIso1_;
   double relIso2_;
   // btag Discriminator
-  std::string bTagAlgo_;
-  double minBTagValue_;
+  std::vector<std::string> bTagAlgos_;
+  std::vector<std::string> bTagNames_;
+  std::vector<double> bTagCutValues_;
+  std::vector<bool> bTagIsCutMin_;
+  std::vector<int> nbjetsCache_;
+  //std::string bTagAlgo_;
+  //double minBTagValue_;
 
   TTree* tree;
 
@@ -616,18 +610,7 @@ class TopDILAnalyzer : public edm::EDFilter {
   std::vector<Ko::TTbarMass>* ttbar;
   std::vector<math::XYZTLorentzVector>* met;
   std::vector<math::XYZTLorentzVector>* jetspt30;
-  std::vector<math::XYZTLorentzVector>* bjets_TCHEL;
-  std::vector<math::XYZTLorentzVector>* bjets_CSVL;
-  std::vector<math::XYZTLorentzVector>* bjets_CSVM;
-  std::vector<math::XYZTLorentzVector>* bjets_CSVT;
-  std::vector<math::XYZTLorentzVector>* bjets_SSVHEM;
- 
-  int nbjets_TCHEL;
-  int nbjets_CSVL;
-  int nbjets_CSVM;
-  int nbjets_CSVT;
-  int nbjets_SSVHEM;
- 
+
   double MET;
   double dphimetlepton1;
   double dphimetlepton2;
