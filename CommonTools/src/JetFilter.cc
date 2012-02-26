@@ -13,7 +13,7 @@
 //
 // Original Author:  Tae Jeong Kim
 //         Created:  Mon Dec 14 01:29:35 CET 2009
-// $Id: JetFilter.cc,v 1.4 2012/01/29 13:07:52 tjkim Exp $
+// $Id: JetFilter.cc,v 1.5 2012/02/20 10:14:40 tjkim Exp $
 //
 //
 
@@ -22,39 +22,22 @@
 
 // user include files
 #include "FWCore/Framework/interface/Frameworkfwd.h"
-#include "FWCore/Framework/interface/EDAnalyzer.h"
+#include "FWCore/Framework/interface/MakerMacros.h"
 #include "FWCore/Framework/interface/EDFilter.h"
-#include "FWCore/ServiceRegistry/interface/Service.h"
-#include "CommonTools/UtilAlgos/interface/TFileService.h"
 
 #include "FWCore/Framework/interface/Event.h"
-#include "FWCore/Framework/interface/MakerMacros.h"
-
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
-#include "DataFormats/PatCandidates/interface/Muon.h"
-#include "DataFormats/Math/interface/LorentzVector.h"
+
 #include "DataFormats/PatCandidates/interface/MET.h"
-
 #include "DataFormats/PatCandidates/interface/Jet.h"
+
 #include "PhysicsTools/SelectorUtils/interface/PFJetIDSelectionFunctor.h"
-
-#include "DataFormats/TrackReco/interface/TrackFwd.h"
-#include "DataFormats/VertexReco/interface/VertexFwd.h"
-#include "DataFormats/TrackReco/interface/Track.h"
-#include "DataFormats/VertexReco/interface/Vertex.h"
-#include "DataFormats/Math/interface/Point3D.h"
-#include "RecoVertex/VertexPrimitives/interface/TransientVertex.h"
-
-#include "JetMETCorrections/Objects/interface/JetCorrector.h"
+//#include "JetMETCorrections/Objects/interface/JetCorrector.h"
 #include "CondFormats/JetMETObjects/interface/JetCorrectorParameters.h"
 #include "CondFormats/JetMETObjects/interface/FactorizedJetCorrector.h"
 #include "CondFormats/JetMETObjects/interface/JetCorrectionUncertainty.h"
 
-#include "TTree.h"
-#include "TFile.h"
-#include "TH1.h"
-
-
+#include "CommonTools/Utils/interface/PtComparator.h"
 
 //
 // class declaration
@@ -188,9 +171,6 @@ JetFilter::filter(edm::Event& iEvent, const edm::EventSetup& iSetup)
 
   PFJetIDSelectionFunctor looseJetIdSelector_(pfJetIdParams_);
 
-  typedef map< double, pat::Jet, greater<double> > PtMap;
-  PtMap sortedJets;
-
   for (JI it = Jets->begin(); it != Jets->end(); ++it) {
     pat::Jet correctedJet = *it;
 
@@ -251,7 +231,7 @@ JetFilter::filter(edm::Event& iEvent, const edm::EventSetup& iSetup)
  
     if( correctedJet.pt() <= ptcut_ ) continue;
 
-    sortedJets.insert( make_pair(correctedJet.pt(), correctedJet) );
+    corrJets->push_back(correctedJet);
   }
 
   if( corrJets->size() >= min_ ) accepted = true;
@@ -261,9 +241,7 @@ JetFilter::filter(edm::Event& iEvent, const edm::EventSetup& iSetup)
   corrMETs->push_back(corrMET);  
 
   // Jets passing identification criteria are sorted by decreasing pT
-  for (PtMap::iterator it=sortedJets.begin(); it != sortedJets.end(); it++){
-    corrJets->push_back( it->second );
-  }
+  std::sort(corrJets->begin(), corrJets->end(), GreaterByPt<pat::Jet>());
 
   iEvent.put(corrJets, outputJetLabel_);
   iEvent.put(corrMETs, outputMETLabel_);
