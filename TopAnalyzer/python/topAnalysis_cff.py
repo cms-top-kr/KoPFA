@@ -83,39 +83,6 @@ DYmmFilter = cms.EDFilter("ZmmFilter",
 #    correctors = cms.vstring('ak5PFL2L3')
 #)
 
-bTagSets = cms.untracked.VPSet(
-    cms.untracked.PSet(
-        algo = cms.untracked.string("trackCountingHighEffBJetTags"),
-        name = cms.untracked.string("TCHEL"),
-        cutValue = cms.untracked.double(1.7),
-        isCutMin = cms.untracked.bool(True),
-    ),
-    cms.untracked.PSet(
-        algo = cms.untracked.string("combinedSecondaryVertexBJetTags"),
-        name = cms.untracked.string("CSVL"),
-        cutValue = cms.untracked.double(0.244),
-        isCutMin = cms.untracked.bool(True),
-    ),
-    cms.untracked.PSet(
-        algo = cms.untracked.string("combinedSecondaryVertexBJetTags"),
-        name = cms.untracked.string("CSVM"),
-        cutValue = cms.untracked.double(0.679),
-        isCutMin = cms.untracked.bool(True),
-    ),
-    cms.untracked.PSet(
-        algo = cms.untracked.string("combinedSecondaryVertexBJetTags"),
-        name = cms.untracked.string("CSVT"),
-        cutValue = cms.untracked.double(0.898),
-        isCutMin = cms.untracked.bool(True),
-    ),
-    cms.untracked.PSet(
-        algo = cms.untracked.string("simpleSecondaryVertexHighEffBJetTags"),
-        name = cms.untracked.string("SSVHEM"),
-        cutValue = cms.untracked.double(1.74),
-        isCutMin = cms.untracked.bool(True),
-    ),
-)
-
 ElEl = cms.EDFilter('TopElElAnalyzer',
     genParticlesLabel = cms.InputTag('genParticles'),
     muonLabel1 =  cms.InputTag('Electrons'),
@@ -133,7 +100,8 @@ ElEl = cms.EDFilter('TopElElAnalyzer',
     ),
     relIso1 = cms.untracked.double(0.17),
     relIso2 = cms.untracked.double(0.17),
-    bTagSets = bTagSets,
+    bTagAlgo = cms.untracked.string("trackCountingHighEffBJetTags"),
+    minBTagValue = cms.untracked.double(1.7),
     PileUpRD = PileUpRD2011,
     PileUpMC = Fall11,
 )
@@ -156,7 +124,8 @@ MuMu = cms.EDFilter('TopMuMuAnalyzer',
     #for jet cleaning overlapping with isolated epton within 0.4
     relIso1 = cms.untracked.double(0.20),
     relIso2 = cms.untracked.double(0.20),
-    bTagSets = bTagSets,
+    bTagAlgo = cms.untracked.string("trackCountingHighEffBJetTags"),
+    minBTagValue = cms.untracked.double(1.7),
     PileUpRD = PileUpRD2011,
     PileUpMC = Fall11,
 )
@@ -179,7 +148,8 @@ MuEl = cms.EDFilter('TopMuElAnalyzer',
     #for jet cleaning overlapping with isolated epton within 0.4
     relIso1 = cms.untracked.double(0.20),
     relIso2 = cms.untracked.double(0.17),
-    bTagSets = bTagSets,
+    bTagAlgo = cms.untracked.string("trackCountingHighEffBJetTags"),
+    minBTagValue = cms.untracked.double(1.7),
     PileUpRD = PileUpRD2011,
     PileUpMC = Fall11,
 )
