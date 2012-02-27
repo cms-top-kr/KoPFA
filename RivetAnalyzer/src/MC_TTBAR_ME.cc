@@ -129,7 +129,8 @@ namespace Rivet {
 
       _sumwPassedLep += weight;
 
-      _h_nleps->fill(sortedMuons.size(), weight);
+      int lepsize= sortedMuons.size()+sortedElectrons.size();
+      _h_nleps->fill(lepsize, weight);
       _h_lep_1_pT->fill(sortedMuons[0].momentum().pT(), weight);
       _h_lep_2_pT->fill(sortedElectrons[0].momentum().pT(), weight);
 
