@@ -136,8 +136,6 @@ namespace Rivet {
         vetoEvent;
       }
 
-      _sumwPassedJet += weight;
-
       _h_jet_1_pT->fill(alljets[0].momentum().pT(), weight);
       _h_jet_2_pT->fill(alljets[1].momentum().pT(), weight);
 
@@ -150,6 +148,8 @@ namespace Rivet {
         MSG_DEBUG("Event failed jet pT cut");
         vetoEvent;
       }
+
+      _sumwPassedJet += weight;
 
       Jets bjets;
       foreach (const Jet& jet, jets) {
