@@ -71,7 +71,7 @@ void TTbarGenEvent::set(const reco::GenParticleCollection* genParticles,
         electrons_.push_back(genParticle->p4());
         leptons_.push_back(genParticle->p4());
       }
-      else if ( absPdgId == 13 ) 
+      else if ( absPdgId == 13 )
       {
         muons_.push_back(genParticle->p4());
         leptons_.push_back(genParticle->p4());
@@ -134,7 +134,7 @@ void TTbarGenEvent::set(const reco::GenParticleCollection* genParticles,
     if( taus_.size() > 0 ){
       tauDecay = 1;
     }
-   
+
     if( muons_.size() >= 2 ){
       mumuDecay = 1;
     }else if( electrons_.size() >= 2){
@@ -219,7 +219,7 @@ void TTbarGenEvent::set(const reco::GenParticleCollection* genParticles,
   for ( int i=0, n=genJets->size(); i<n; ++i )
   {
     const reco::GenJet& jet = genJets->at(i);
-    if ( jet.pt() < 20 or abs(jet.eta()) > 2.4 ) continue;
+    if ( jet.pt() < 30 or abs(jet.eta()) > 2.4 ) continue;
 
     selectedGenJets.push_back(&jet);
     jets_.push_back(jet.p4());
@@ -227,7 +227,7 @@ void TTbarGenEvent::set(const reco::GenParticleCollection* genParticles,
   }
   // First try to find BHadron to jet association
   std::vector<const reco::GenParticle*> bHadronDaughters;
-  
+
   for ( int i=0, n=bHadrons.size(); i<n; ++i )
   {
     const reco::GenParticle* bHadron = bHadrons[i];
@@ -391,7 +391,7 @@ math::XYZTLorentzVector TTbarGenEvent::particleLLJJMet() const
   if ( jets_.size() > 1 ) retVal += jets_[0] + jets_[1];
   else return math::XYZTLorentzVector();
 
-  retVal += math::XYZTLorentzVector(metX_, metY_, 0, TMath::Hypot(metX_, metY_));
+  retVal += math::XYZTLorentzVector(genMetX_, genMetY_, 0, TMath::Hypot(genMetX_, genMetY_));
 
   return retVal;
 }
@@ -417,6 +417,8 @@ math::XYZTLorentzVector TTbarGenEvent::particleLLBjBjMet() const
   std::vector<math::XYZTLorentzVector> bJets = TTbarGenEvent::bJets();
   if ( bJets.size() > 1 ) retVal += bJets[0] + bJets[1];
   else return math::XYZTLorentzVector();
+
+  retVal += math::XYZTLorentzVector(genMetX_, genMetY_, 0, TMath::Hypot(genMetX_, genMetY_));
 
   return retVal;
 }

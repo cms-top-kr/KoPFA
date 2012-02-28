@@ -13,6 +13,8 @@
 namespace Ko
 {
 
+class TTbarGenLevelAnalyzer;
+
 class TTbarGenEvent
 {
 public:
@@ -37,8 +39,8 @@ public:
   void set(const reco::GenParticleCollection* genParticles,
            const reco::GenJetCollection* genJets,
            const reco::GenMET* genMET);
+  std::vector<math::XYZTLorentzVector> bJets() const;
 
-private:
   math::XYZTLorentzVector tt_;
   std::vector<math::XYZTLorentzVector> tQuarks_;
   std::vector<math::XYZTLorentzVector> bQuarks_;
@@ -61,7 +63,6 @@ private:
   std::vector<math::XYZTLorentzVector> jets_;
   std::vector<int> jetsBMatch_;
 
-private:
   void clear();
   bool isOverlap(const std::vector<const reco::GenParticle*>& pColl1,
                                 const std::vector<const reco::GenParticle*>& pColl2,
@@ -69,7 +70,6 @@ private:
   void findStableDaughters(const reco::GenParticle* p,
                            std::vector<const reco::GenParticle*>& stableDaughters);
   bool isBHadron(const int absPdgId);
-  std::vector<math::XYZTLorentzVector> bJets() const;
 
 };
 
