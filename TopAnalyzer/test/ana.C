@@ -26,10 +26,10 @@ void ana(string decayMode, string imageOutDir)
 {
   TopAnalyzerLite* analyzer = new TopAnalyzerLite(decayMode, imageOutDir);
 
-  const std::string mcPath = "/data/export/common/Top/ntuple/"+decayMode+"/MC/Summer11_new/";
-  const std::string rdPath = "/data/export/common/Top/ntuple/"+decayMode+"/RD/Oct05/";
+  const std::string mcPath = "/data/export/common/Top/ntuple/"+decayMode+"/MC/Fall11_v0/";
+  const std::string rdPath = "/data/export/common/Top/ntuple/"+decayMode+"/RD/2011Full_v0/";
 
-  analyzer->addRealData(rdPath+"vallot.root", 1143.221);
+  analyzer->addRealData(rdPath+"vallot.root", 5000);
 
   analyzer->addMCSig("TTbar", "t#bar{t}", mcPath+"vallot_TTbarTuneZ2.root", 157.5, kRed+1);
   analyzer->addMCBkg("Wl", "W#rightarrowl#nu", mcPath+"vallot_WJetsToLNu.root", 31314, kGreen-3);
@@ -53,26 +53,29 @@ void ana(string decayMode, string imageOutDir)
 */
 
   analyzer->addMCBkg("DYtt"       , "Z/#gamma*#rightarrow#tau^{+}#tau^{-}", mcPath+"vallot_ZtauDecay.root" , 3048, kAzure+8);
-  analyzer->addMCBkg("DYtt_10to20", "Z/#gamma*#rightarrow#tau^{+}#tau^{-}", mcPath+"vallot_DYtt10to20.root", 3457, kAzure+8);
-  analyzer->addMCBkg("DYtt_20to50", "Z/#gamma*#rightarrow#tau^{+}#tau^{-}", mcPath+"vallot_DYtt20to50.root", 1666, kAzure+8);
+ // analyzer->addMCBkg("DYtt_10to20", "Z/#gamma*#rightarrow#tau^{+}#tau^{-}", mcPath+"vallot_DYtt10to20.root", 3457, kAzure+8);
+ // analyzer->addMCBkg("DYtt_20to50", "Z/#gamma*#rightarrow#tau^{+}#tau^{-}", mcPath+"vallot_DYtt20to50.root", 1666, kAzure+8);
 
   analyzer->addMCBkg("DYll", "Z/#gamma*#rightarrowl^{+}l^{-}", mcPath+"vallot_ZJets.root", 3048, kAzure-2);
+  analyzer->addMCBkg("DYll10To50", "Z/#gamma*#rightarrowl^{+}l^{-}", mcPath+"/vallot_ZJets10To50.root", 11908.83, kAzure-2);
+
+
   if (decayMode == "ElEl")
   {
-    analyzer->addMCBkg("DYee10to20", "Z/#gamma*#rightarrowl^{+}l^{-}", mcPath+"vallot_DYee10to20.root", 3457, kAzure-2);
-    analyzer->addMCBkg("DYee20to50", "Z/#gamma*#rightarrowl^{+}l^{-}", mcPath+"vallot_DYee20to50.root", 1666, kAzure-2);
+  //  analyzer->addMCBkg("DYee10to20", "Z/#gamma*#rightarrowl^{+}l^{-}", mcPath+"vallot_DYee10to20.root", 3457, kAzure-2);
+  //  analyzer->addMCBkg("DYee20to50", "Z/#gamma*#rightarrowl^{+}l^{-}", mcPath+"vallot_DYee20to50.root", 1666, kAzure-2);
   }
   else if (decayMode == "MuMu")
   {
-    analyzer->addMCBkg("DYmm10to20", "Z/#gamma*#rightarrowl^{+}l^{-}", mcPath+"vallot_DYmm10to20.root", 3457, kAzure-2);
-    analyzer->addMCBkg("DYmm20to50", "Z/#gamma*#rightarrowl^{+}l^{-}", mcPath+"vallot_DYmm20to50.root", 1666, kAzure-2);
+  //  analyzer->addMCBkg("DYmm10to20", "Z/#gamma*#rightarrowl^{+}l^{-}", mcPath+"vallot_DYmm10to20.root", 3457, kAzure-2);
+  //  analyzer->addMCBkg("DYmm20to50", "Z/#gamma*#rightarrowl^{+}l^{-}", mcPath+"vallot_DYmm20to50.root", 1666, kAzure-2);
   }
   else if (decayMode == "MuEl")
   {
-    analyzer->addMCBkg("DYee10to20", "Z/#gamma*#rightarrowl^{+}l^{-}", mcPath+"vallot_DYee10to20.root", 3457, kAzure-2);
-    analyzer->addMCBkg("DYee20to50", "Z/#gamma*#rightarrowl^{+}l^{-}", mcPath+"vallot_DYee20to50.root", 1666, kAzure-2);
-    analyzer->addMCBkg("DYmm10to20", "Z/#gamma*#rightarrowl^{+}l^{-}", mcPath+"vallot_DYmm10to20.root", 3457, kAzure-2);
-    analyzer->addMCBkg("DYmm20to50", "Z/#gamma*#rightarrowl^{+}l^{-}", mcPath+"vallot_DYmm20to50.root", 1666, kAzure-2);
+   // analyzer->addMCBkg("DYee10to20", "Z/#gamma*#rightarrowl^{+}l^{-}", mcPath+"vallot_DYee10to20.root", 3457, kAzure-2);
+   // analyzer->addMCBkg("DYee20to50", "Z/#gamma*#rightarrowl^{+}l^{-}", mcPath+"vallot_DYee20to50.root", 1666, kAzure-2);
+  //  analyzer->addMCBkg("DYmm10to20", "Z/#gamma*#rightarrowl^{+}l^{-}", mcPath+"vallot_DYmm10to20.root", 3457, kAzure-2);
+  //  analyzer->addMCBkg("DYmm20to50", "Z/#gamma*#rightarrowl^{+}l^{-}", mcPath+"vallot_DYmm20to50.root", 1666, kAzure-2);
   }
 
   //addMonitorPlot
@@ -87,7 +90,17 @@ void ana(string decayMode, string imageOutDir)
   analyzer->addCutStep("ZMass > 12", "", 1.5);
 
   //STEP2 : isolation
-  analyzer->addCutStep("isIso", "");
+   if ( decayMode == "MuMu" )
+  {
+    analyzer->addCutStep("relIso1 < 0.20 && relIso2 < 0.20", "");
+  }
+  else if ( decayMode == "ElEl" )
+  {
+    analyzer->addCutStep("relIso1 < 0.17 && relIso2 < 0.17", "");
+  }else if ( decayMode == "MuEl" )
+  {
+    analyzer->addCutStep("relIso1 < 0.20 && relIso2 < 0.17", "");
+  }
 
   //STEP3 : opposite sign
   analyzer->addCutStep("PairSign < 0", "ZMass,nJetlog,METlog");
@@ -106,32 +119,41 @@ void ana(string decayMode, string imageOutDir)
   //STEP6: MET cut
   if ( decayMode == "MuEl")
   {
-    analyzer->addCutStep("MET > -999", "nJet,vsumM,vsumMAlt", 0.5);
+    analyzer->addCutStep("MET > -999", "nJet,nbJet_CSVL, nbJet_CSVM, nbJet_CVST, vsumM,vsumMAlt", 0.5);
   }else{
-    analyzer->addCutStep("MET > 30", "nJet,vsumM,vsumMAlt", 0.5);
+    analyzer->addCutStep("MET > 30", "nJet,nbJet_CSVL, nbJet_CSVM, nbJet_CVST, vsumM,vsumMAlt", 0.5);
   }
 
   //STEP7 : b-tagging
-  analyzer->addCutStep("nbjets >= 1", "MET,nbJet,vsumM,vsumMAlt,genttbarM", 0.5);  
+  analyzer->addCutStep("nbjets_CSVM >= 1", "MET,nbJet_CSVM,vsumM,vsumMAlt,genttbarM", 0.5);  
 
-  analyzer->setEventWeightVar("weightin");
+  analyzer->setEventWeightVar("weight");
   
   if ( decayMode == "MuMu"){
-    analyzer->replaceDataBkgCut("QCD", "isIso", "relIso1 > 0.20 && relIso2 > 0.20");
+    analyzer->replaceDataBkgCut("QCD", "relIso1 < 0.20 && relIso2 < 0.20", "relIso1 > 0.20 && relIso2 > 0.20");
     analyzer->replaceDataBkgCut("QCD", "ZMass > 12", "ZMass > 12 && relIso1 > 0.20 && relIso2 > 0.20");
   }else if( decayMode == "ElEl"){
-    analyzer->replaceDataBkgCut("QCD", "isIso", "relIso1 > 0.17 && relIso2 > 0.17");
+    analyzer->replaceDataBkgCut("QCD", "relIso1 < 0.17 && relIso2 < 0.17", "relIso1 > 0.17 && relIso2 > 0.17");
     analyzer->replaceDataBkgCut("QCD", "ZMass > 12", "ZMass > 12 && relIso1 > 0.17 && relIso2 > 0.17");
   }else if( decayMode == "MuEl"){
-    analyzer->replaceDataBkgCut("QCD", "isIso", "relIso1 > 0.20 && relIso2 > 0.17");
+    analyzer->replaceDataBkgCut("QCD", "relIso1 < 0.20 && relIso2 < 0.17", "relIso1 > 0.20 && relIso2 > 0.17");
     analyzer->replaceDataBkgCut("QCD", "ZMass > 12", "ZMass > 12 && relIso1 > 0.20 && relIso2 > 0.17");
   }
 
-  const double wDYmm[] = {1.0,1.0,1.0,1.02,0.96,1.07,1.20};
-  const double wDYee[] = {1.0,1.0,1.0,1.03,1.00,1.22,1.33};
-  const double wQCDee[] = {1.0,1.0,1.70*0.1250,1.60*0.0679,1.21*0.0093,1.34*0.0303,1.40*0.0347};
-  const double wQCDmm[] = {1.0,1.0,1.08*0.0071,1.08*0.0063,1.03*0.0019,1.03*0.0075,1.01*0.0064};
-  const double wQCDem[] = {1.0,1.0,1.18*0.0149,1.18*0.0149,1.07*0.0020,1.07*0.0020,1.06*0.0017};
+  analyzer->setEventWeightVar("weight");
+  //Full 2011
+  const double wDYmm[] = {1.0,1.0,1.0,1.01,1.01,1.66,1.66};
+  const double wDYee[] = {1.0,1.0,1.0,0.98,1.01,1.77,1.82};
+  //using NLO
+  //Full 2011
+  const double wQCDee[] = {1.0,1.0,1.6306*0.0695,1.6115*0.0700,1.1924*0.0101,1.1249*0.0305,1.0971*0.0231};
+  const double wQCDmm[] = {1.0,1.0,1.0696*0.0068,1.0678*0.0067,1.0222*0.0021,1.0297*0.0067,1.0220*0.0036};
+  const double wQCDem[] = {1.0,1.0,1.1775*0.0158,1.1775*0.0158,1.0714*0.0023,1.0714*0.0023,1.0609*0.0021};
+  //using 169.9 pb-1
+  //const double wQCDee[] = {1.0,1.0,1.6268*0.0694,1.6077*0.0698,1.1881*0.0097,1.0956*0.0280,1.0441*0.0181};
+  //const double wQCDmm[] = {1.0,1.0,1.0620*0.0068,1.0605*0.0067,1.0151*0.0021,1.0052*0.0066,0.9954*0.0036};
+  //const double wQCDem[] = {1.0,1.0,1.1730*0.0158,1.1730*0.0158,1.0668*0.0022,1.0668*0.0022,1.0550*0.0019};
+
   int n = sizeof(wDYmm)/sizeof(wDYmm[0]);
   if( decayMode == "MuMu" ){
     analyzer->setEventWeight("Z/#gamma* #rightarrow ll", wDYmm, n);
