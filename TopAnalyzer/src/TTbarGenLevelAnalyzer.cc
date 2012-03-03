@@ -15,6 +15,7 @@
 #include "KoPFA/DataFormats/interface/TTbarGenEvent.h"
 
 #include "TH1F.h"
+#include "TH2F.h"
 #include "TTree.h"
 
 #include <memory>
@@ -45,10 +46,12 @@ private:
   Ko::TTbarGenEvent* ttbarGenEvent_;
 
   TH1F* hmTT_Full_; // mTT in the full PS
-  TH1F* hmTT_Vprt_; // mTT in the visible PS with patons
-  TH1F* hmTT_Vstb_; // mTT in the isible PS with particles
-  TH1F* hmLLBBMet_Vstb_; // mLLBBMet in the visible PS with particles
-  TH1F* hmLLJJMet_Vstb_; // mLLJJMet in the visible PS with particles
+  TH1F* hmTT_Pton_; // mTT in the visible PS with partons
+  TH1F* hmTT_Ptcl_; // mTT in the isible PS with particles
+  TH1F* hmLLBBMet_Ptcl_; // mLLBBMet in the visible PS with particles
+  TH1F* hmLLJJMet_Ptcl_; // mLLJJMet in the visible PS with particles
+
+  TH2F* hPartonVsParticle_;
 
   bool doTree_;
 };
@@ -76,10 +79,17 @@ void TTbarGenLevelAnalyzer::beginJob()
   }
 
   hmTT_Full_ = fs->make<TH1F>("hmTT_Full", "m(t#bar{t}) in the full phase space;Mass [GeV/c^{2}];Events per 1GeV", 2000, 0, 2000);
-  hmTT_Vprt_ = fs->make<TH1F>("hmTT_Vprt", "m(t#bar{t}) in the visible phase space with parton level cuts;Mass [GeV/c^{2}];Events per 1GeV", 2000, 0, 2000);
-  hmTT_Vstb_ = fs->make<TH1F>("hmTT_Vstb", "m(t#bar{t}) in the visible phase space with particle level cuts;Mass [GeV/c^{2}];Events per 1GeV", 2000, 0, 2000);
-  hmLLBBMet_Vstb_ = fs->make<TH1F>("hmLLBBMet_Vstb", "m(llbbMet) in the visible phase space with particle level cuts;Mass [GeV/c^{2}];Events per 1GeV", 2000, 0, 2000);
-  hmLLJJMet_Vstb_ = fs->make<TH1F>("hmLLJJMet_Vstb", "m(lljjMet) in the visible phase space with particle level cuts;Mass [GeV/c^{2}];Events per 1GeV", 2000, 0, 2000);
+  hmTT_Pton_ = fs->make<TH1F>("hmTT_Pton", "m(t#bar{t}) in the visible phase space with parton level cuts;Mass [GeV/c^{2}];Events per 1GeV", 2000, 0, 2000);
+  hmTT_Ptcl_ = fs->make<TH1F>("hmTT_Ptcl", "m(t#bar{t}) in the visible phase space with particle level cuts;Mass [GeV/c^{2}];Events per 1GeV", 2000, 0, 2000);
+  hmLLBBMet_Ptcl_ = fs->make<TH1F>("hmLLBBMet_Ptcl", "m(llbbMet) in the visible phase space with particle level cuts;Mass [GeV/c^{2}];Events per 1GeV", 2000, 0, 2000);
+  hmLLJJMet_Ptcl_ = fs->make<TH1F>("hmLLJJMet_Ptcl", "m(lljjMet) in the visible phase space with particle level cuts;Mass [GeV/c^{2}];Events per 1GeV", 2000, 0, 2000);
+
+  hPartonVsParticle_ = fs->make<TH2F>("hPartonVsParticle", "Visible phase space correlation;Parton level;Particle level", 2, 0, 2, 2, 0, 2);
+  hPartonVsParticle_->GetXaxis()->SetBinLabel(1, "T");
+  hPartonVsParticle_->GetXaxis()->SetBinLabel(2, "F");
+  hPartonVsParticle_->GetYaxis()->SetBinLabel(1, "T");
+  hPartonVsParticle_->GetYaxis()->SetBinLabel(2, "F");
+  hPartonVsParticle_->SetOption("COLZ");
 }
 
 void TTbarGenLevelAnalyzer::analyze(const edm::Event& event, const edm::EventSetup& eventSetup)
@@ -105,6 +115,7 @@ void TTbarGenLevelAnalyzer::analyze(const edm::Event& event, const edm::EventSet
   const double mLLBjBjMet = ttbarGenEvent_->particleLLBjBjMet().M();
 
   hmTT_Full_->Fill(mTT);
+  bool isPartonLevel = false;
   if ( mLLBBMet > 0 ) // At least two leptons and b quarks are found
   {
     // Parton level visible space cut
@@ -113,18 +124,26 @@ void TTbarGenLevelAnalyzer::analyze(const edm::Event& event, const edm::EventSet
          abs(ttbarGenEvent_->leptons_[0].eta()) <= 2.4 and abs(ttbarGenEvent_->leptons_[1].eta()) <= 2.4 and
          abs(ttbarGenEvent_->bQuarks_[0].eta()) <= 2.4 and abs(ttbarGenEvent_->bQuarks_[1].eta()) <= 2.4 )
     {
-      hmTT_Vprt_->Fill(mLLBBMet);
+      isPartonLevel = true;
+      hmTT_Pton_->Fill(mTT);
     }
   }
 
   // At least two stable leptons and b jets are found
   // Stable leptons and b jets are defined in the visible phase space
+  bool isParticleLevel = false;
   if ( mLLBjBjMet > 0 ) 
   {
-    hmTT_Vstb_->Fill(mTT);
-    hmLLBBMet_Vstb_->Fill(mLLBBMet);
-    hmLLJJMet_Vstb_->Fill(mLLJJMet);
+    isParticleLevel = true;
+    hmTT_Ptcl_->Fill(mTT);
+    hmLLBBMet_Ptcl_->Fill(mLLBBMet);
+    hmLLJJMet_Ptcl_->Fill(mLLJJMet);
   }
+
+  if ( isPartonLevel and isParticleLevel ) hPartonVsParticle_->Fill(1.,1.);
+  else if ( isPartonLevel and !isParticleLevel ) hPartonVsParticle_->Fill(1.,0.);
+  else if ( !isPartonLevel and isParticleLevel ) hPartonVsParticle_->Fill(0.,1.);
+  else hPartonVsParticle_->Fill(0.,0.);
 
   if ( doTree_ ) tree_->Fill();
 }
