@@ -9,7 +9,13 @@ import time
 
 #os.system("voms-proxy-init -voms cms")
 
-location = "srm://maite.iihe.ac.be:8443/srm/managerv2?SFN=/pnfs/iihe/cms/ph/sc4"
+pfnBaseURLs = {}
+pfnBaseURLs['T2_BE_IIHE'] = 'srm://maite.iihe.ac.be:8443/srm/managerv2?SFN=/pnfs/iihe/cms/ph/sc4'
+pfnBaseURLs['T2_UK_London_IC'] = 'srm://gfe02.grid.hep.ph.ic.ac.uk/pnfs/hep.ph.ic.ac.uk/data/cms'
+pfnBaseURLs['T2_IT_Roma'] = 'srm://cmsrm-se01.roma1.infn.it/pnfs/roma1.infn.it/data/cms'
+pfnBaseURLs['T2_US_Florida'] = 'srm://srmb.ihepa.ufl.edu/cms/data'
+
+location = pfnBaseURLs['T2_BE_IIHE']
 fileNames = [
         '/store/mc/Fall10/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/AODSIM/START38_V12-v2/0005/36D94209-ADE3-DF11-9040-00145E551385.root',
         '/store/mc/Fall10/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/AODSIM/START38_V12-v2/0004/DC31018F-06E3-DF11-9F4F-001D09675288.root',
