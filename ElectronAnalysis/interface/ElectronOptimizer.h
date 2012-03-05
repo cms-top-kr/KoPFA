@@ -60,7 +60,7 @@ class ElectronOptimizer : public edm::EDAnalyzer
   int LUMI;
   int EVENT;
 
-  int multipliciy;
+  int multiplicity;
   double mt;
   double MET;
   double dphi;
@@ -83,6 +83,16 @@ class ElectronOptimizer : public edm::EDAnalyzer
   double ele2_relIso;  
   double ele1_charge;
   double ele2_charge;
+
+  double ele1_reco_chIso;
+  double ele2_reco_chIso;
+  double ele1_reco_nhIso;
+  double ele2_reco_nhIso;
+  double ele1_reco_phIso;
+  double ele2_reco_phIso;
+  double ele1_reco_relIso;
+  double ele2_reco_relIso;
+
 
   std::map<std::string, int> ele1_Id;
   std::map<std::string, int> ele2_Id;

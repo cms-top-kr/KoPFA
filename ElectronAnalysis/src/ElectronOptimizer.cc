@@ -62,13 +62,53 @@ void ElectronOptimizer::analyze(const edm::Event& iEvent, const edm::EventSetup&
   RUN    = iEvent.id().run();
   LUMI   = iEvent.id().luminosityBlock();
 
+  multiplicity = -9;
+  mt = -9;
+  MET = -9;
+  dphi = -9;
+  njets = -9;
+  dimass = -9;
+
+  ele1_mva = -9;
+  ele2_mva = -9;
+  ele1_pt = -9;
+  ele2_pt = -9;
+  ele1_eta = -9;
+  ele2_eta = -9;
+
+  ele1_chIso = -9;
+  ele2_chIso = -9;
+  ele1_nhIso = -9;
+  ele2_nhIso = -9;
+  ele1_phIso = -9;
+  ele2_phIso = -9;
+  ele1_relIso = -9;
+  ele2_relIso = -9;
+  ele1_charge = -9;
+  ele2_charge = -9;
+
+  ele1_reco_chIso = -9;
+  ele2_reco_chIso = -9;
+  ele1_reco_nhIso = -9;
+  ele2_reco_nhIso = -9;
+  ele1_reco_phIso = -9;
+  ele2_reco_phIso = -9;
+  ele1_reco_relIso = -9;
+  ele2_reco_relIso = -9;
+
+  for ( std::vector<std::string>::const_iterator idName = idNames_.begin();
+          idName != idNames_.end(); ++idName ) {
+    ele1_Id[*idName] = -9;
+    ele2_Id[*idName] = -9;
+  }
+
   iEvent.getByLabel(electronLabel_, electrons_);
   iEvent.getByLabel("offlineBeamSpot",beamSpot_); 
   iEvent.getByLabel(metLabel_,pfMET);
   iEvent.getByLabel(jetLabel_,pfJet);
  
-  if( electrons_->size() < 2 ) {
-    cout << "ERROR: currently it should bd at least 2" << endl;
+  if( electrons_->size() < 1 ) {
+    cout << "ERROR: currently it should bd at least 1" << endl;
   }
  
   njets = 0;
@@ -79,33 +119,51 @@ void ElectronOptimizer::analyze(const edm::Event& iEvent, const edm::EventSetup&
   pat::METCollection::const_iterator mi = pfMET->begin();
   MET = mi->pt();
   pat::Electron leading = electrons_->at(0);
-  pat::Electron secondleading = electrons_->at(1);
   mt = transverseMass( leading.p4(), mi->p4() );
   dphi = fabs(deltaPhi(leading.phi(), mi->p4().phi()));
-  multipliciy = electrons_->size();
-  dimass = (leading.p4() + secondleading.p4()).M();
+  multiplicity = electrons_->size();
 
   ele1_mva = leading.mva();
-  ele2_mva = secondleading.mva();
   ele1_pt = leading.pt();
-  ele2_pt = secondleading.pt();
   ele1_eta = leading.eta();
-  ele2_eta = secondleading.eta();
   ele1_chIso = leading.chargedHadronIso();
-  ele2_chIso = secondleading.chargedHadronIso();
   ele1_nhIso = leading.neutralHadronIso();
-  ele2_nhIso = secondleading.neutralHadronIso();
   ele1_phIso = leading.photonIso();
-  ele2_phIso = secondleading.photonIso();
   ele1_relIso = (leading.chargedHadronIso() + leading.neutralHadronIso() + leading.photonIso()) / leading.pt() ;
-  ele2_relIso = (secondleading.chargedHadronIso() + secondleading.neutralHadronIso() + secondleading.photonIso()) / secondleading.pt() ;
-  ele1_charge = leading.charge();
-  ele2_charge = secondleading.charge();
 
-  for ( std::vector<std::string>::const_iterator idName = idNames_.begin();
-          idName != idNames_.end(); ++idName ) {
+  ele1_reco_chIso = leading.pfIsolationVariables().chargedHadronIso;
+  ele1_reco_nhIso = leading.pfIsolationVariables().neutralHadronIso;
+  ele1_reco_phIso = leading.pfIsolationVariables().photonIso;
+  ele1_reco_relIso = ( ele1_reco_chIso + ele1_reco_nhIso + ele1_reco_phIso ) / leading.pt() ;
+
+  ele1_charge = leading.charge();
+
+  for ( std::vector<std::string>::const_iterator idName = idNames_.begin(); idName != idNames_.end(); ++idName ) {
     ele1_Id[*idName] = ((int) leading.electronID(*idName) & 5) == 5;
-    ele2_Id[*idName] = ((int) secondleading.electronID(*idName) & 5) == 5;
+  }
+
+
+  if(multiplicity > 1){
+    pat::Electron secondleading = electrons_->at(1);
+    dimass = (leading.p4() + secondleading.p4()).M();
+    ele2_mva = secondleading.mva();
+    ele2_pt = secondleading.pt();
+    ele2_eta = secondleading.eta();
+    ele2_chIso = secondleading.chargedHadronIso();
+    ele2_nhIso = secondleading.neutralHadronIso();
+    ele2_phIso = secondleading.photonIso();
+    ele2_relIso = (secondleading.chargedHadronIso() + secondleading.neutralHadronIso() + secondleading.photonIso()) / secondleading.pt() ;
+
+    ele2_reco_chIso = secondleading.pfIsolationVariables().chargedHadronIso;
+    ele2_reco_nhIso = secondleading.pfIsolationVariables().neutralHadronIso;
+    ele2_reco_phIso = secondleading.pfIsolationVariables().photonIso;
+    ele2_reco_relIso = ( ele2_reco_chIso + ele2_reco_nhIso + ele2_reco_phIso ) / secondleading.pt() ;
+
+    ele2_charge = secondleading.charge();
+    for ( std::vector<std::string>::const_iterator idName = idNames_.begin(); idName != idNames_.end(); ++idName ) {
+      ele2_Id[*idName] = ((int) secondleading.electronID(*idName) & 5) == 5;
+    }
+    
   }
 
   tree->Fill();
@@ -122,7 +180,7 @@ ElectronOptimizer::beginJob(){
   tree->Branch("dimass",&dimass,"dimass/d");
   tree->Branch("MET",&MET,"MET/d");
   tree->Branch("dphi",&dphi,"dphi/d");
-  tree->Branch("multipliciy",&multipliciy,"multipliciy/i");
+  tree->Branch("multiplicity",&multiplicity,"multiplicity/i");
   tree->Branch("njets",&njets,"njets/i");
 
   tree->Branch("ele1_mva",&ele1_mva,"ele1_mva/D");
@@ -144,7 +202,16 @@ ElectronOptimizer::beginJob(){
   tree->Branch("ele2_phIso",&ele2_phIso,"ele2_phIso/D");
   tree->Branch("ele2_relIso",&ele2_relIso,"ele2_relIso/D");
 
-  
+  tree->Branch("ele1_reco_chIso",&ele1_reco_chIso,"ele1_reco_chIso/D");
+  tree->Branch("ele1_reco_nhIso",&ele1_reco_nhIso,"ele1_reco_nhIso/D");
+  tree->Branch("ele1_reco_phIso",&ele1_reco_phIso,"ele1_reco_phIso/D");
+  tree->Branch("ele1_reco_relIso",&ele1_reco_relIso,"ele1_reco_relIso/D");
+
+  tree->Branch("ele2_reco_chIso",&ele2_reco_chIso,"ele2_reco_chIso/D");
+  tree->Branch("ele2_reco_nhIso",&ele2_reco_nhIso,"ele2_reco_nhIso/D");
+  tree->Branch("ele2_reco_phIso",&ele2_reco_phIso,"ele2_reco_phIso/D");
+  tree->Branch("ele2_reco_relIso",&ele2_reco_relIso,"ele2_reco_relIso/D");
+ 
 
   for ( std::vector<std::string>::const_iterator idName = idNames_.begin();
         idName != idNames_.end(); ++idName )
