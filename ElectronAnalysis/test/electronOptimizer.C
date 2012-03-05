@@ -7,72 +7,100 @@
 #include "TTree.h"
 #include "TCut.h"
 
+void cicHisto(TTree* t, TH1* h, TString electron, TCut cut){
+
+  double n_eidVeryLooseMC = t->GetEntries(Form("%s_eidVeryLooseMC == 1",electron.Data()) + cut);
+  double n_eidLooseMC = t->GetEntries(Form("%s_eidLooseMC == 1",electron.Data()) + cut);
+  double n_eidMediumMC = t->GetEntries(Form("%s_eidMediumMC == 1",electron.Data()) + cut);
+  double n_eidTightMC = t->GetEntries(Form("%s_eidTightMC == 1",electron.Data()) + cut);
+  double n_eidSuperTightMC = t->GetEntries(Form("%s_eidSuperTightMC == 1",electron.Data()) + cut);
+  double n_eidHyperTight1MC = t->GetEntries(Form("%s_eidHyperTight1MC == 1",electron.Data()) + cut);
+
+  h->SetBinContent(1, n_eidVeryLooseMC);
+  h->SetBinContent(2, n_eidLooseMC);
+  h->SetBinContent(3, n_eidMediumMC);
+  h->SetBinContent(4, n_eidTightMC);
+  h->SetBinContent(5, n_eidSuperTightMC);
+  h->SetBinContent(6, n_eidHyperTight1MC);
+
+}
+
+void Draw(TH1* h1, TH1* h2, TString leg1, TString leg2, TString ytitle, TString xtitle, TString name, bool setrange = false, double min = 0, double max = 1){
+
+  TCanvas *c = new TCanvas(Form("c_%s",name.Data()), Form("c_%s",name.Data()) , 1);
+  h1->SetLineColor(2);
+  h1->SetStats(0);
+  h1->SetTitle(0);
+  h1->GetYaxis()->SetTitle(ytitle.Data());
+  h1->GetXaxis()->SetTitle(xtitle.Data());
+  if(setrange){
+    h1->SetMaximum(max);
+    h1->SetMinimum(min);
+  }
+  h1->Draw();
+  h2->Draw("same");
+
+  TLegend *l = new TLegend(0.7,0.65,0.9,0.85);
+  l->AddEntry(h1,leg1.Data(),"L");
+  l->AddEntry(h2,leg2.Data(),"L");
+  l->SetTextSize(0.04);
+  l->SetFillColor(0);
+  l->SetLineColor(0);
+  l->Draw();
+
+  c->Print(Form("c_%s.eps",name.Data()));
+}
+
 void electronOptimizer(){
-  TFile* f_data = new TFile("batch/Out/ElEl/Res/vallot_Run2011B.root");
+  TFile* f_data = new TFile("batch/Out/ElEl/Res/vallot.root");
   TFile* f_ttbar = new TFile("batch/Out/ElEl/Res/vallot_TTbarTuneZ2.root");
 
   TTree* t_data = (TTree*)f_data->Get("eleOpt/tree");
   TTree* t_ttbar = (TTree*)f_ttbar->Get("eleOpt/tree");
 
   TH1 * h_mva_qcd = new TH1F("h_mva_qcd","h_mva_qcd",200, -1,1) ;
+  TH1 * h_mva_qcd1 = (TH1F*) h_mva_qcd->Clone("h_mva_qcd1");
+  TH1 * h_mva_qcd2 = (TH1F*) h_mva_qcd->Clone("h_mva_qcd2");
   TH1 * h_cic_qcd = new TH1F("h_cic_qcd","h_cic_qcd",6,-0.5,5.5);
+  TH1 * h_cic_qcd1 = (TH1F*) h_cic_qcd->Clone("h_cic_qcd1");
+  TH1 * h_cic_qcd2 = (TH1F*) h_cic_qcd->Clone("h_cic_qcd2");
 
   TH1 * h_mva_ttbar = new TH1F("h_mva_ttbar","h_mva_ttbar",200, -1,1) ;
-  TH1 * h_mva_ttbar1 = new TH1F("h_mva_ttbar1","h_mva_ttbar1",200, -1,1) ;
-  TH1 * h_mva_ttbar2 = new TH1F("h_mva_ttbar2","h_mva_ttbar2",200, -1,1) ;
+  TH1 * h_mva_ttbar1 = (TH1F*) h_mva_ttbar->Clone("h_mva_ttbar1");
+  TH1 * h_mva_ttbar2 = (TH1F*) h_mva_ttbar->Clone("h_mva_ttbar2");
   TH1 * h_cic_ttbar = new TH1F("h_cic_ttbar","h_cic_ttbar",6,-0.5,5.5);
-  TH1 * h_cic_ttbar1 = new TH1F("h_cic_ttbar1","h_cic_ttbar1",6,-0.5,5.5);
-  TH1 * h_cic_ttbar2 = new TH1F("h_cic_ttbar2","h_cic_ttbar2",6,-0.5,5.5);
+  TH1 * h_cic_ttbar1 = (TH1F*) h_cic_ttbar->Clone("h_cic_ttbar1");
+  TH1 * h_cic_ttbar2 = (TH1F*) h_cic_ttbar->Clone("h_cic_ttbar2");
 
-  //TCut kinematic = "ele1_pt < 30 && ele2_pt < 30";
-  TCut kinematic;
-  TCut qcd = "ele2_relIso > 0.5 && abs(dimass - 91.2) > 30";
+  //TCut acceptance = "abs(ele1_eta) < 1.49 && abs(ele2_eta) < 1.49";
+  TCut acceptance;
+  TCut qcd1 = "ele2_relIso > 0.5 && abs(dimass - 91.2) > 30";
+  TCut qcd2 = "ele1_relIso > 0.5 && abs(dimass - 91.2) > 30";
+  //for gsf electron
+  //TCut qcd1 = "ele2_reco_relIso > 0.5 && abs(dimass - 91.2) > 30";
+  //TCut qcd2 = "ele1_reco_relIso > 0.5 && abs(dimass - 91.2) > 30";
+  //for single electron skim
+  //TCut qcd1 = "multiplicity == 1 && njets >=1 && mt < 20 && dphi < 1.5";
+  //TCut qcd2 = "multiplicity == 1 && njets >=1 && mt < 20 && dphi < 1.5";
 
-  t_data->Project("h_mva_qcd","ele1_mva",qcd + kinematic);  
-  t_ttbar->Project("h_mva_ttbar1","ele1_mva", kinematic);  
-  t_ttbar->Project("h_mva_ttbar2","ele2_mva", kinematic);  
+  TCut signal;
 
-  double n_eidVeryLooseMC_qcd = t_data->GetEntries("ele1_eidVeryLooseMC == 1" + qcd + kinematic);  
-  double n_eidLooseMC_qcd = t_data->GetEntries("ele1_eidLooseMC == 1" + qcd + kinematic);  
-  double n_eidMediumMC_qcd = t_data->GetEntries("ele1_eidMediumMC == 1" + qcd + kinematic);  
-  double n_eidTightMC_qcd = t_data->GetEntries("ele1_eidTightMC == 1" + qcd + kinematic);  
-  double n_eidSuperTightMC_qcd = t_data->GetEntries("ele1_eidSuperTightMC == 1" + qcd + kinematic);  
-  double n_eidHyperTight1MC_qcd = t_data->GetEntries("ele1_eidHyperTight1MC == 1" + qcd + kinematic);  
+  t_data->Project("h_mva_qcd1","ele1_mva",qcd1 + acceptance);  
+  t_data->Project("h_mva_qcd2","ele2_mva",qcd2 + acceptance);  
+  t_ttbar->Project("h_mva_ttbar1","ele1_mva", acceptance);  
+  t_ttbar->Project("h_mva_ttbar2","ele2_mva", acceptance);  
 
-  h_cic_qcd->SetBinContent(1, n_eidVeryLooseMC_qcd);
-  h_cic_qcd->SetBinContent(2, n_eidLooseMC_qcd);
-  h_cic_qcd->SetBinContent(3, n_eidMediumMC_qcd);
-  h_cic_qcd->SetBinContent(4, n_eidTightMC_qcd);
-  h_cic_qcd->SetBinContent(5, n_eidSuperTightMC_qcd);
-  h_cic_qcd->SetBinContent(6, n_eidHyperTight1MC_qcd);
+  cicHisto(t_data, h_cic_qcd1, "ele1", qcd1 + acceptance);
+  cicHisto(t_data, h_cic_qcd2, "ele2", qcd2 + acceptance);
+
+  h_mva_qcd = h_mva_qcd1;
+  h_mva_qcd->Add(h_mva_qcd2);
+
+  h_cic_qcd = h_cic_qcd1;
+  h_cic_qcd->Add(h_cic_qcd2);
  
-  double n_eidVeryLooseMC_ttbar1 = t_ttbar->GetEntries("ele1_eidVeryLooseMC == 1" + kinematic);
-  double n_eidLooseMC_ttbar1 = t_ttbar->GetEntries("ele1_eidLooseMC == 1" + kinematic);
-  double n_eidMediumMC_ttbar1 = t_ttbar->GetEntries("ele1_eidMediumMC == 1" + kinematic);
-  double n_eidTightMC_ttbar1 = t_ttbar->GetEntries("ele1_eidTightMC == 1" + kinematic);
-  double n_eidSuperTightMC_ttbar1 = t_ttbar->GetEntries("ele1_eidSuperTightMC == 1" + kinematic);
-  double n_eidHyperTight1MC_ttbar1 = t_ttbar->GetEntries("ele1_eidHyperTight1MC == 1" + kinematic);
-
-  h_cic_ttbar1->SetBinContent(1, n_eidVeryLooseMC_ttbar1);
-  h_cic_ttbar1->SetBinContent(2, n_eidLooseMC_ttbar1);
-  h_cic_ttbar1->SetBinContent(3, n_eidMediumMC_ttbar1);
-  h_cic_ttbar1->SetBinContent(4, n_eidTightMC_ttbar1);
-  h_cic_ttbar1->SetBinContent(5, n_eidSuperTightMC_ttbar1);
-  h_cic_ttbar1->SetBinContent(6, n_eidHyperTight1MC_ttbar1);
- 
-  double n_eidVeryLooseMC_ttbar2 = t_ttbar->GetEntries("ele1_eidVeryLooseMC == 1" + kinematic);
-  double n_eidLooseMC_ttbar2 = t_ttbar->GetEntries("ele1_eidLooseMC == 1" + kinematic);
-  double n_eidMediumMC_ttbar2 = t_ttbar->GetEntries("ele1_eidMediumMC == 1" + kinematic);
-  double n_eidTightMC_ttbar2 = t_ttbar->GetEntries("ele1_eidTightMC == 1" + kinematic);
-  double n_eidSuperTightMC_ttbar2 = t_ttbar->GetEntries("ele1_eidSuperTightMC == 1" + kinematic);
-  double n_eidHyperTight1MC_ttbar2 = t_ttbar->GetEntries("ele1_eidHyperTight1MC == 1" + kinematic);
-
-  h_cic_ttbar2->SetBinContent(1, n_eidVeryLooseMC_ttbar2);
-  h_cic_ttbar2->SetBinContent(2, n_eidLooseMC_ttbar2);
-  h_cic_ttbar2->SetBinContent(3, n_eidMediumMC_ttbar2);
-  h_cic_ttbar2->SetBinContent(4, n_eidTightMC_ttbar2);
-  h_cic_ttbar2->SetBinContent(5, n_eidSuperTightMC_ttbar2);
-  h_cic_ttbar2->SetBinContent(6, n_eidHyperTight1MC_ttbar2);
+  cicHisto(t_ttbar, h_cic_ttbar1, "ele1", signal + acceptance);
+  cicHisto(t_ttbar, h_cic_ttbar2, "ele2", signal + acceptance);
 
   h_mva_ttbar = h_mva_ttbar1; 
   h_mva_ttbar->Add(h_mva_ttbar2); 
@@ -93,6 +121,8 @@ void electronOptimizer(){
   double nDen_ttbar = h_mva_ttbar->Integral();
   double nDen_qcd = h_mva_qcd->Integral();
 
+  cout << "Number of ttbar electrons = " << nDen_ttbar << " : Number of QCD electrosn = " << nDen_qcd << endl;
+
   TGraphAsymmErrors* roc_mva = new TGraphAsymmErrors; 
   int nbins =  h_mva_ttbar->GetNbinsX();
   for(int i=0 ; i < nbins ; i++){
@@ -105,33 +135,11 @@ void electronOptimizer(){
     roc_mva->SetPoint(nbins-i-1, eff_qcd, eff_ttbar);
   }
 
-  TCanvas *c_mva = new TCanvas("c_mva","c_mva",1);
   h_mva_ttbar->Scale(1.0/nDen_ttbar);
   h_mva_qcd->Scale(1.0/nDen_qcd);
-  h_mva_ttbar->SetLineColor(2);
-  h_mva_ttbar->Draw();
-  h_mva_qcd->Draw("same");
 
-  TLegend *l_mva= new TLegend(0.7,0.7,0.9,0.9);
-  l_mva->AddEntry(h_mva_ttbar,"t#bar{t}","L");
-  l_mva->AddEntry(h_mva_qcd,"QCD","L");
-  l_mva->SetTextSize(0.04);
-  l_mva->SetFillColor(0);
-  l_mva->SetLineColor(0);
-  l_mva->Draw();
-
-  TCanvas *c_eff = new TCanvas("c_eff","c_eff",1);
-  h_mva_ttbar_eff->SetLineColor(2);
-  h_mva_ttbar_eff->Draw();
-  h_mva_qcd_eff->Draw("same");
-
-  TLegend *l_eff= new TLegend(0.7,0.7,0.9,0.9);
-  l_eff->AddEntry(h_mva_ttbar_eff,"t#bar{t}","L");
-  l_eff->AddEntry(h_mva_qcd_eff,"QCD","L");
-  l_eff->SetTextSize(0.04);
-  l_eff->SetFillColor(0);
-  l_eff->SetLineColor(0);
-  l_eff->Draw();
+  Draw(h_mva_ttbar, h_mva_qcd, "t#bar{t}", "QCD", "Entries", "MVA", "mva");
+  Draw(h_mva_ttbar_eff, h_mva_qcd_eff, "t#bar{t}", "QCD", "Efficiency", "MVA Id", "mva_eff", true, 0, 1.2);
 
   TGraphAsymmErrors* roc_cic = new TGraphAsymmErrors;
   int cicnbins = h_cic_ttbar->GetNbinsX();
@@ -143,20 +151,27 @@ void electronOptimizer(){
     double eff_qcd = nNum_qcd/nDen_qcd;
     h_cic_ttbar_eff->SetBinContent(i+1,eff_ttbar);
     h_cic_qcd_eff->SetBinContent(i+1,eff_qcd);
-    std::cout << "CiC : " << " ( " << cicnbins-i << " ) " << " QCD = " << eff_qcd << " Signal= " << eff_ttbar << endl;
+    std::cout << "CiC : " << " ( " << cicnbins-i << " ) " << " QCD = (" << nNum_qcd << ") " << eff_qcd << " Signal= (" << nNum_ttbar << ") " << eff_ttbar << endl;
     roc_cic->SetPoint(cicnbins-i-1, eff_qcd, eff_ttbar);
   }
 
+  Draw(h_cic_ttbar_eff, h_cic_qcd_eff, "t#bar{t}", "QCD", "Efficiency", "CiC Id", "cic_eff", true, 0, 1.2);
+
+
+  //Draw ROC canvas
   TCanvas *c_roc = new TCanvas("c_roc","c_roc",1);
   roc_mva->Draw("ALP");
-  roc_mva->SetMarkerSize(2);
+  roc_mva->SetMarkerSize(0.8);
+  roc_mva->SetMarkerStyle(20);
+  roc_mva->SetMarkerColor(2);
   roc_mva->SetLineWidth(2);
   roc_mva->SetLineColor(2);
-  roc_mva->GetYaxis()->SetTitle("Signal Eff.");
-  roc_mva->GetXaxis()->SetTitle("Background Eff.");
+  roc_mva->GetYaxis()->SetTitle("Signal Efficiency");
+  roc_mva->GetXaxis()->SetTitle("Background Efficiency");
   roc_cic->SetLineWidth(2);
+  roc_cic->SetMarkerSize(0.8);
+  roc_cic->SetMarkerStyle(20);
   roc_cic->Draw("SameLP");
-  roc_cic->SetMarkerSize(2);
 
   TLegend *l_roc= new TLegend(0.7,0.4,0.9,0.6);
   l_roc->AddEntry(roc_mva,"Mva","L");
@@ -165,5 +180,7 @@ void electronOptimizer(){
   l_roc->SetFillColor(0);
   l_roc->SetLineColor(0);
   l_roc->Draw();
+
+  c_roc->Print("c_roc.eps");
 
 }
