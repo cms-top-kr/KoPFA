@@ -348,8 +348,8 @@ rdSet = {}
 mcSet['ElEl'] = [
     'TTbarTuneZ2', 'TTbarOthers',
     'SingleToptW', 'SingleTopt', 'SingleTops',
-    'ZJets', 'DYee20to50', 'DYee10to20', 'DYmm20to50', 'DYmm10to20',
-    'ZtauDecay', 'DYtt20to50', 'DYtt10to20',
+    'ZJets', 'ZJets10To50', 'DYee20to50', 'DYee10to20', 'DYmm20to50', 'DYmm10to20',
+    'ZtauDecay', 'ZtauDecay10To50','DYtt20to50', 'DYtt10to20',
     'WJetsToLNu', 'VVJets','WW','WZ','ZZ'
 #    'QCDPt20to30BCtoE', 'QCDPt30to80BCtoE', 'QCDPt80to170BCtoE',
 #    'QCDPt20to30EM', 'QCDPt30to80EM', 'QCDPt80to170EM',
@@ -358,8 +358,8 @@ mcSet['ElEl'] = [
 mcSet['MuMu'] = [
     'TTbarTuneZ2', 'TTbarOthers',
     'SingleToptW', 'SingleTopt', 'SingleTops',
-    'ZJets', 'DYee20to50', 'DYee10to20', 'DYmm20to50', 'DYmm10to20',
-    'ZtauDecay', 'DYtt20to50', 'DYtt10to20',
+    'ZJets', 'ZJets10To50', 'DYee20to50', 'DYee10to20', 'DYmm20to50', 'DYmm10to20',
+    'ZtauDecay', 'ZtauDecay10To50', 'DYtt20to50', 'DYtt10to20',
     'WJetsToLNu', 'VVJets','WW','WZ','ZZ'
 #    'QCDPt20MuPt15',
 ]
@@ -367,8 +367,8 @@ mcSet['MuMu'] = [
 mcSet['MuEl'] = [
     'TTbarTuneZ2', 'TTbarOthers',
     'SingleToptW', 'SingleTopt', 'SingleTops',
-    'ZJets', 'DYee20to50', 'DYee10to20', 'DYmm20to50', 'DYmm10to20',
-    'ZtauDecay', 'DYtt20to50', 'DYtt10to20',
+    'ZJets', 'ZJets10To50', 'DYee20to50', 'DYee10to20', 'DYmm20to50', 'DYmm10to20',
+    'ZtauDecay', 'ZtauDecay10To50', 'DYtt20to50', 'DYtt10to20',
     'WJetsToLNu', 'VVJets','WW','WZ','ZZ'
 #    'QCDPt20to30BCtoE', 'QCDPt30to80BCtoE', 'QCDPt80to170BCtoE',
 #    'QCDPt20to30EM', 'QCDPt30to80EM', 'QCDPt80to170EM',
@@ -570,7 +570,7 @@ for src in mclist:
     out.write(mcpath())
     out.write(outfile(src))
     if src.find("ZtauDecay") != -1:
-      out.write(mcsample("ZJets"))
+      out.write(mcsample( src.replace("ZtauDecay","ZJets") ))
     elif src.find("TTbarOthers") != -1:
       out.write(mcsample("TTbarTuneZ2"))
     else:
