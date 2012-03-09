@@ -197,7 +197,7 @@ MuJet = cms.EDFilter('TopMuJetAnalyzer',
     bTagAlgo = cms.untracked.string("trackCountingHighEffBJetTags"),
     minBTagValue = cms.untracked.double(1.7),
     PileUpRD = PileUpRD2011,
-    PileUpMC = PoissonOneXDist,#Summer11 PU_S4 in-time
+    PileUpMC = Fall11,#Summer11 PU_S4 in-time
     #PileUpMC = Fall2011_InTime,#Fall11 PU_S6 in-time
 )
 
@@ -221,7 +221,7 @@ ElJet = cms.EDFilter('TopElJetAnalyzer',
     bTagAlgo = cms.untracked.string("trackCountingHighEffBJetTags"),
     minBTagValue = cms.untracked.double(1.7),
     PileUpRD = PileUpRD2011,
-    PileUpMC = PoissonOneXDist,#Summer11 PU_S4 in-time
+    PileUpMC = Fall11,#Summer11 PU_S4 in-time
     #PileUpMC = Fall2011_InTime,#Fall11 PU_S6 in-time
 )
 
