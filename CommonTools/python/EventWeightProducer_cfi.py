@@ -4,5 +4,5 @@ from KoPFA.CommonTools.PileUpWeight_cff import *
 
 PUweight = cms.EDProducer("EventWeightProducer",
   PileUpRD = PileUpRD2011,
-  PileUpMC = PoissonOneXDist,
+  PileUpMC = Fall11,
 )
