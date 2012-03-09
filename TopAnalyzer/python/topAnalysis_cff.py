@@ -10,13 +10,6 @@ from KoPFA.TopAnalyzer.topHLTfilter_cff import *
 from KoPFA.CommonTools.PileUpWeight_cff import *
 from KoPFA.CommonTools.JetEnergyScale_cfi import *
 
-PUweight = cms.EDProducer("EventWeightProducer",
-  PileUpRD = PileUpRD2011, 
-  #PileUpMC = PoissonIntDist #probdistFlat10, PoissonOneXDist 
-  PileUpMC = PoissonIntDist #Summer11 PU_S4 true mean
-  #PileUpMC = Fall2011 #Fall PU_S6
-)
-
 VertexFilter = cms.EDFilter('VertexFilter',
     vertexLabel =  cms.InputTag('offlinePrimaryVertices'),
     min = cms.untracked.int32(1),
