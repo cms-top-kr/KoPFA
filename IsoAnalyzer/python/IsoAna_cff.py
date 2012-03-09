@@ -29,12 +29,12 @@ process.VertexFilter = cms.EDFilter('VertexFilter',
     max = cms.untracked.int32(999),
 )
 
-process.load("PFAnalyses.CommonTools.countingSequences_cfi")
-
-from PFAnalyses.CommonTools.Selectors.muonSelectorPSet_cff import muonSelectorPSet
+from KoPFA.CommonTools.muonSelectorPSet_cff import muonSelectorPSet
+from KoPFA.CommonTools.muonIsoSelectorPSet_cff import muonIsoSelectorPSet
 muonId = muonSelectorPSet.clone()
+muonId.verbose = False
 muonId.dxy = 0.02
-muonId.eta = 2.5
+muonId.eta = 2.4
 muonId.pt = 20
 
 process.Muons = cms.EDProducer(
@@ -50,10 +50,6 @@ process.patMuonFilter = cms.EDFilter("CandViewCountFilter",
   minNumber = cms.uint32(1)
 )
 
-from PFAnalyses.CommonTools.Selectors.looseJetIdPSet_cff import looseJetIdPSet
-myJetId = looseJetIdPSet.clone()
-myJetId.verbose = False 
-
 process.load("HLTrigger.HLTfilters.hltHighLevel_cfi")
 process.hltHighLevel.HLTPaths = cms.vstring('HLT_Mu9')
 process.load("KoPFA.IsoAnalyzer.Isolation_cfi")
@@ -66,7 +62,6 @@ process.load("KoPFA.IsoAnalyzer.WFilter_cff")
 process.WmunuMtCut.muonLabel = "Muons"
 
 process.p = cms.Path(
-                     process.loadHistosFromRunInfo*
                      process.hltHighLevel*
                      process.Muons*
                      process.patMuonFilter*

@@ -16,8 +16,6 @@
 #include "DataFormats/PatCandidates/interface/MET.h"
 
 #include "DataFormats/Math/interface/LorentzVector.h"
-#include "PFAnalyses/CommonTools/interface/CandidateSelector.h"
-#include "PFAnalyses/CommonTools/interface/PatJetIdSelector.h"
 
 #include "CondFormats/JetMETObjects/interface/JetCorrectorParameters.h"
 #include "CondFormats/JetMETObjects/interface/FactorizedJetCorrector.h"
@@ -57,8 +55,6 @@ private:
 
   edm::InputTag collectionLabel_;
   edm::InputTag jetLabel_;
-
-  PatJetIdSelector looseJetIdSelector_;
 
   // Residual Jet energy correction for 38X
   FactorizedJetCorrector* resJetCorrector_;
@@ -117,10 +113,6 @@ MuonIsolationAnalyzer::MuonIsolationAnalyzer(const edm::ParameterSet& iConfig)
 {
    collectionLabel_ =  iConfig.getParameter<edm::InputTag>("collectionLabel");
    jetLabel_ = iConfig.getParameter<edm::InputTag>("jetLabel");
-   looseJetIdSelector_.initialize( iConfig.getParameter<edm::ParameterSet> ("looseJetId") );
-   // Residual Jet energy correction for 38X
-   doResJec_ = iConfig.getUntrackedParameter<bool>("doResJec", false);
-   resJetCorrector_ = 0;
 
    // For mt cut
    metLabel_ = iConfig.getParameter<edm::InputTag>("metLabel");
@@ -282,14 +274,9 @@ void MuonIsolationAnalyzer::analyze( const edm::Event& iEvent, const edm::EventS
 
      if(abs(it->eta()) >= 2.4) continue; 
 
-     pat::strbitset looseJetIdSel = looseJetIdSelector_.getBitTemplate();
-     bool passId = looseJetIdSelector_( *it, looseJetIdSel);
+    jets->push_back(it->p4());
+    if( it->pt() > 30) jetspt30->push_back(it->p4());
 
-     if(passId){
-      jets->push_back(it->p4());
-      if( it->pt() > 30)
-        jetspt30->push_back(it->p4());
-      }
    }
     jetmultiplicity = (int) jetspt30->size();
 ////// for Muon multiplicity

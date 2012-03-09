@@ -22,7 +22,7 @@ process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
 #process.load("PFAnalyses.TTbarDIL.Sources.MU.MC.Spring10.patTuple_Zmumu_cff")
 #process.load("PFAnalyses.TTbarDIL.Sources.MU.MC.Spring10.patTuple_InclusiveMu15_cff")
 #process.load("KoPFA.DiMuonAnalyzer.MC.Fall10_Single_MUSKIM.patTuple_Zmm_cff")
-process.load("KoPFA.DiMuonAnalyzer.RD.patTuple_Run2010A_SingleMU_cff")
+#process.load("KoPFA.DiMuonAnalyzer.RD.patTuple_Run2010A_SingleMU_cff")
 
 # register TFileService
 process.TFileService = cms.Service("TFileService",
@@ -35,15 +35,6 @@ process.VertexFilter = cms.EDFilter('VertexFilter',
     max = cms.untracked.int32(999),
 )
 
-process.load("PFAnalyses.CommonTools.countingSequences_cfi")
-
-from PFAnalyses.CommonTools.Selectors.muonSelectorPSet_cff import muonSelectorPSet
-from PFAnalyses.CommonTools.Selectors.muonIsoSelectorPSet_cff import muonIsoSelectorPSet
-muonId = muonSelectorPSet.clone()
-muonId.dxy = 0.02
-muonId.eta = 2.4
-muonId.pt = 20 
-
 process.Muons = cms.EDFilter("PATMuonSelector",
     src = cms.InputTag("selectedPatMuons"),
     cut =cms.string("isGlobalMuon && pt > 20 && abs(eta) < 2.4 && globalTrack.normalizedChi2 < 10.0 && globalTrack.hitPattern.numberOfValidMuonHits > 0 && abs(dB) < 0.2 && innerTrack.hitPattern.numberOfValidPixelHits > 0 && innerTrack.hitPattern.numberOfValidTrackerHits > 10 && numberOfMatchedStations() >1")
@@ -55,17 +46,8 @@ process.patMuonFilter = cms.EDFilter("PATCandViewCountFilter",
   maxNumber = cms.uint32(1)
 )
 
-from PFAnalyses.CommonTools.Selectors.looseJetIdPSet_cff import looseJetIdPSet
-myJetId = looseJetIdPSet.clone()
-myJetId.verbose = False 
+from KoPFA.CommonTools.JetEnergyScale_cfi import *
 
-##################################################
-process.JetFilter = cms.EDFilter('JetFilter',
-    jetLabel =  cms.InputTag('selectedPatJetsPFlow'),
-    min = cms.untracked.uint32(1),
-    ptcut = cms.untracked.double(30.),
-    looseJetId = myJetId,
-)
 ##################################################
 
 process.load("HLTrigger.HLTfilters.hltHighLevel_cfi")
