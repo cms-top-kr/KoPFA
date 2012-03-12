@@ -17,6 +17,7 @@ using namespace std;
 ElectronOptimizer::ElectronOptimizer(const edm::ParameterSet& cfg)
 {
   electronLabel_ = cfg.getParameter<edm::InputTag>("electronLabel");
+  vertexLabel_ =  cfg.getUntrackedParameter<edm::InputTag>("vertexLabel");
   metLabel_ = cfg.getParameter<edm::InputTag>("metLabel");
   jetLabel_ = cfg.getParameter<edm::InputTag>("jetLabel");
   useEventCounter_ = cfg.getParameter<bool>("useEventCounter");
@@ -63,6 +64,7 @@ void ElectronOptimizer::analyze(const edm::Event& iEvent, const edm::EventSetup&
   LUMI   = iEvent.id().luminosityBlock();
 
   multiplicity = -9;
+  nVertex = -9;
   mt = -9;
   MET = -9;
   dphi = -9;
@@ -96,11 +98,18 @@ void ElectronOptimizer::analyze(const edm::Event& iEvent, const edm::EventSetup&
   ele1_reco_relIso = -9;
   ele2_reco_relIso = -9;
 
+  ele1_relIso_dbeta = -9;
+  ele2_relIso_dbeta = -9;
+
   for ( std::vector<std::string>::const_iterator idName = idNames_.begin();
           idName != idNames_.end(); ++idName ) {
     ele1_Id[*idName] = -9;
     ele2_Id[*idName] = -9;
   }
+
+  iEvent.getByLabel(vertexLabel_,recVtxs_);
+  int nv = (int) recVtxs_->size();
+  nVertex = nv;  
 
   iEvent.getByLabel(electronLabel_, electrons_);
   iEvent.getByLabel("offlineBeamSpot",beamSpot_); 
@@ -130,6 +139,7 @@ void ElectronOptimizer::analyze(const edm::Event& iEvent, const edm::EventSetup&
   ele1_nhIso = leading.neutralHadronIso();
   ele1_phIso = leading.photonIso();
   ele1_relIso = (leading.chargedHadronIso() + leading.neutralHadronIso() + leading.photonIso()) / leading.pt() ;
+  ele1_relIso_dbeta = (leading.chargedHadronIso() + max(0.0, leading.neutralHadronIso() + leading.photonIso() - leading.puChargedHadronIso()*0.5 )) / leading.pt() ;
 
   ele1_reco_chIso = leading.pfIsolationVariables().chargedHadronIso;
   ele1_reco_nhIso = leading.pfIsolationVariables().neutralHadronIso;
@@ -153,6 +163,7 @@ void ElectronOptimizer::analyze(const edm::Event& iEvent, const edm::EventSetup&
     ele2_nhIso = secondleading.neutralHadronIso();
     ele2_phIso = secondleading.photonIso();
     ele2_relIso = (secondleading.chargedHadronIso() + secondleading.neutralHadronIso() + secondleading.photonIso()) / secondleading.pt() ;
+    ele2_relIso_dbeta = (secondleading.chargedHadronIso() + max(0.0, secondleading.neutralHadronIso() + secondleading.photonIso() - secondleading.puChargedHadronIso()*0.5) ) / secondleading.pt() ;
 
     ele2_reco_chIso = secondleading.pfIsolationVariables().chargedHadronIso;
     ele2_reco_nhIso = secondleading.pfIsolationVariables().neutralHadronIso;
@@ -181,6 +192,7 @@ ElectronOptimizer::beginJob(){
   tree->Branch("MET",&MET,"MET/d");
   tree->Branch("dphi",&dphi,"dphi/d");
   tree->Branch("multiplicity",&multiplicity,"multiplicity/i");
+  tree->Branch("nVertex",&nVertex,"nVertex/i");
   tree->Branch("njets",&njets,"njets/i");
 
   tree->Branch("ele1_mva",&ele1_mva,"ele1_mva/D");
@@ -196,11 +208,13 @@ ElectronOptimizer::beginJob(){
   tree->Branch("ele1_nhIso",&ele1_nhIso,"ele1_nhIso/D");
   tree->Branch("ele1_phIso",&ele1_phIso,"ele1_phIso/D");
   tree->Branch("ele1_relIso",&ele1_relIso,"ele1_relIso/D");
+  tree->Branch("ele1_relIso_dbeta",&ele1_relIso_dbeta,"ele1_relIso_dbeta/D");
 
   tree->Branch("ele2_chIso",&ele2_chIso,"ele2_chIso/D");
   tree->Branch("ele2_nhIso",&ele2_nhIso,"ele2_nhIso/D");
   tree->Branch("ele2_phIso",&ele2_phIso,"ele2_phIso/D");
   tree->Branch("ele2_relIso",&ele2_relIso,"ele2_relIso/D");
+  tree->Branch("ele2_relIso_dbeta",&ele2_relIso_dbeta,"ele2_relIso_dbeta/D");
 
   tree->Branch("ele1_reco_chIso",&ele1_reco_chIso,"ele1_reco_chIso/D");
   tree->Branch("ele1_reco_nhIso",&ele1_reco_nhIso,"ele1_reco_nhIso/D");
@@ -235,7 +249,7 @@ double ElectronOptimizer::transverseMass( const reco::Candidate::LorentzVector& 
     return std::sqrt(sumT.M2());
 }
 
-void ElectronOptimizer::endLuminosityBlock(edm::LuminosityBlock & lumi, const edm::EventSetup & setup){
+void ElectronOptimizer::endLuminosityBlock(const edm::LuminosityBlock & lumi, const edm::EventSetup & setup){
 
   if(useEventCounter_){
     for(unsigned int i=0;i<filters_.size();++i) {

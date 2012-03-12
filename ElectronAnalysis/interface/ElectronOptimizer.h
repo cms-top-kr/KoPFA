@@ -39,14 +39,16 @@ class ElectronOptimizer : public edm::EDAnalyzer
  private:
   double transverseMass( const reco::Candidate::LorentzVector& lepton,
                                      const reco::Candidate::LorentzVector& met);
-  void endLuminosityBlock(edm::LuminosityBlock & lumi, const edm::EventSetup & setup);
+  void endLuminosityBlock(const edm::LuminosityBlock & lumi, const edm::EventSetup & setup);
   
   edm::InputTag electronLabel_;
+  edm::InputTag vertexLabel_;
   edm::InputTag metLabel_;
   edm::InputTag jetLabel_;
  
   typedef pat::ElectronCollection::const_iterator MI;
   edm::Handle<pat::ElectronCollection> electrons_;
+   edm::Handle<reco::VertexCollection> recVtxs_;
   edm::Handle<reco::BeamSpot> beamSpot_;
   edm::Handle<pat::METCollection> pfMET;
   edm::Handle<pat::JetCollection> pfJet;
@@ -61,6 +63,7 @@ class ElectronOptimizer : public edm::EDAnalyzer
   int EVENT;
 
   int multiplicity;
+  int nVertex;
   double mt;
   double MET;
   double dphi;
@@ -81,6 +84,9 @@ class ElectronOptimizer : public edm::EDAnalyzer
   double ele2_phIso;  
   double ele1_relIso;
   double ele2_relIso;  
+  double ele1_relIso_dbeta;
+  double ele2_relIso_dbeta;
+
   double ele1_charge;
   double ele2_charge;
 
