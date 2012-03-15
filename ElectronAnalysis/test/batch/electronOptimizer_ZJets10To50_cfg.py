@@ -1,0 +1,60 @@
+import FWCore.ParameterSet.Config as cms
+import os
+
+process = cms.Process("ELEOPT")
+
+process.load("FWCore.MessageLogger.MessageLogger_cfi")
+process.MessageLogger.cerr.FwkReport.reportEvery = 1000
+
+process.options   = cms.untracked.PSet( wantSummary = cms.untracked.bool(True) )
+process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
+
+process.TFileService = cms.Service("TFileService",
+    fileName = cms.string('vallot_ZJets10To50.root')
+)
+
+#from KoPFA.TopAnalyzer.Sources.ELE.MC.Fall11.patTuple_ZJets_cff import readFiles
+from KoPFA.CommonTools.Sources.MC.Fall11.SingleElectron.patTuple_ZJets10To50_cff import readFiles
+process.load("KoPFA.CommonTools.JetEnergyScale_cfi")
+process.load("KoPFA.ElectronAnalysis.electronIdMVA_cfi")
+process.JetEnergyScale.globalTag = cms.untracked.string('START42_V17')
+
+process.source = cms.Source("PoolSource",
+    fileNames = readFiles 
+)
+
+process.matchedElectrons = cms.EDFilter("GenMatchedElectronSelector",
+    genParticles = cms.InputTag("genParticles"),
+    electrons = cms.InputTag("mvaElectrons"),
+    minNumber = cms.untracked.uint32(2),
+    pdgId = cms.untracked.uint32(23),
+)
+
+process.eleOpt = cms.EDAnalyzer("ElectronOptimizer",
+    electronLabel = cms.InputTag("mvaElectrons"),
+    metLabel =  cms.InputTag('JetEnergyScale','patMETsPFlow'),
+    jetLabel =  cms.InputTag('JetEnergyScale','selectedPatJetsPFlow'),
+    useEventCounter = cms.bool( True ),
+    filters = cms.untracked.vstring(
+        'nEventsTotal',
+        'nEventsClean',
+        'nEventsHLT',
+        'nEventsFiltered',
+    ),
+)
+process.matchedEleOpt = process.eleOpt.clone(electronLabel = cms.InputTag("matchedElectrons"))
+
+process.patElectronFilter = cms.EDFilter("PATCandViewCountFilter",
+  src = cms.InputTag('mvaElectrons'),
+  minNumber = cms.uint32(2),
+  maxNumber = cms.uint32(999)
+)
+
+process.p = cms.Path(
+    process.JetEnergyScale+
+    process.mvaElectrons+
+    process.patElectronFilter+
+    process.eleOpt +
+    process.matchedElectrons * process.matchedEleOpt
+)
+
