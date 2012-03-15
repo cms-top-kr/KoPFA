@@ -22,6 +22,13 @@ process.source = cms.Source("PoolSource",
     fileNames = readFiles 
 )
 
+process.matchedElectrons = cms.EDFilter("GenMatchedElectronSelector",
+    genParticles = cms.InputTag("genParticles"),
+    electrons = cms.InputTag("mvaElectrons"),
+    minNumber = cms.untracked.uint32(2),
+    pdgId = cms.untracked.uint32(23),
+)
+
 process.eleOpt = cms.EDAnalyzer("ElectronOptimizer",
     electronLabel = cms.InputTag("mvaElectrons"),
     metLabel =  cms.InputTag('JetEnergyScale','patMETsPFlow'),
@@ -34,6 +41,7 @@ process.eleOpt = cms.EDAnalyzer("ElectronOptimizer",
         'nEventsFiltered',
     ),
 )
+process.matchedEleOpt = process.eleOpt.clone(electronLabel = cms.InputTag("matchedElectrons"))
 
 process.patElectronFilter = cms.EDFilter("PATCandViewCountFilter",
   src = cms.InputTag('mvaElectrons'),
@@ -45,6 +53,7 @@ process.p = cms.Path(
     process.JetEnergyScale+
     process.mvaElectrons+
     process.patElectronFilter+
-    process.eleOpt
+    process.eleOpt +
+    process.matchedElectrons * process.matchedEleOpt
 )
 
