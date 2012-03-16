@@ -40,7 +40,9 @@ class ElectronOptimizer : public edm::EDAnalyzer
   double transverseMass( const reco::Candidate::LorentzVector& lepton,
                                      const reco::Candidate::LorentzVector& met);
   void endLuminosityBlock(const edm::LuminosityBlock & lumi, const edm::EventSetup & setup);
-  
+  bool isFromW( const reco::Candidate::LorentzVector& lepton, const edm::Handle<reco::GenParticleCollection> & genParticles_ );
+  bool MatchObjects( const reco::Candidate::LorentzVector& pasObj, const reco::Candidate::LorentzVector& proObj, bool exact );
+   
   edm::InputTag electronLabel_;
   edm::InputTag vertexLabel_;
   edm::InputTag metLabel_;
@@ -52,6 +54,7 @@ class ElectronOptimizer : public edm::EDAnalyzer
   edm::Handle<reco::BeamSpot> beamSpot_;
   edm::Handle<pat::METCollection> pfMET;
   edm::Handle<pat::JetCollection> pfJet;
+  edm::Handle<reco::GenParticleCollection> genParticles_;
 
   std::vector<std::string> idNames_;
 
@@ -70,14 +73,23 @@ class ElectronOptimizer : public edm::EDAnalyzer
   int njets;
   double dimass;
 
+  double ele1_isFromW;
+  double ele2_isFromW;
+
   double ele1_mva;
   double ele2_mva;
   double ele1_pt;
   double ele2_pt;
   double ele1_eta;
   double ele2_eta;
+
+  double ele1_charge;
+  double ele2_charge;
+
   double ele1_chIso;
   double ele2_chIso;
+  double ele1_puChIso;
+  double ele2_puChIso;
   double ele1_nhIso;
   double ele2_nhIso;
   double ele1_phIso;
@@ -87,8 +99,18 @@ class ElectronOptimizer : public edm::EDAnalyzer
   double ele1_relIso_dbeta;
   double ele2_relIso_dbeta;
 
-  double ele1_charge;
-  double ele2_charge;
+  double ele1_chIsoNoVeto;
+  double ele2_chIsoNoVeto;
+  double ele1_puChIsoNoVeto;
+  double ele2_puChIsoNoVeto;
+  double ele1_nhIsoNoVeto;
+  double ele2_nhIsoNoVeto;
+  double ele1_phIsoNoVeto;
+  double ele2_phIsoNoVeto;
+  double ele1_relIsoNoVeto;
+  double ele2_relIsoNoVeto;
+  double ele1_relIsoNoVeto_dbeta;
+  double ele2_relIsoNoVeto_dbeta;
 
   double ele1_reco_chIso;
   double ele2_reco_chIso;
