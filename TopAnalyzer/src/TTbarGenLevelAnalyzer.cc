@@ -51,7 +51,13 @@ private:
   TH1F* hmLLBBMet_Ptcl_; // mLLBBMet in the visible PS with particles
   TH1F* hmLLJJMet_Ptcl_; // mLLJJMet in the visible PS with particles
 
+  TH1F* hmTop_; // Top quark mass
+  TH1F* hDmTop_; // Top quark mass difference
+  TH1F* hPtTop_; // Top quark pT
+
   TH2F* hPartonVsParticle_;
+
+  TH2F* hBR_;
 
   bool doTree_;
 };
@@ -84,12 +90,27 @@ void TTbarGenLevelAnalyzer::beginJob()
   hmLLBBMet_Ptcl_ = fs->make<TH1F>("hmLLBBMet_Ptcl", "m(llbbMet) in the visible phase space with particle level cuts;Mass [GeV/c^{2}];Events per 1GeV", 2000, 0, 2000);
   hmLLJJMet_Ptcl_ = fs->make<TH1F>("hmLLJJMet_Ptcl", "m(lljjMet) in the visible phase space with particle level cuts;Mass [GeV/c^{2}];Events per 1GeV", 2000, 0, 2000);
 
+  hmTop_ = fs->make<TH1F>("hmTop", "m(top); Mass [GeV/c^{2}];Entries per 1GeV", 40, 175-20, 175+20);
+  hDmTop_ = fs->make<TH1F>("hDmTop", "Top mass difference;Mass difference [GeV/c^{2}];Events per 1GeV", 50, 0, 50);
+  hPtTop_ = fs->make<TH1F>("hPtTop", "Top quark's transverse momentum;Transverse momentum [GeV/c^{2}];Entries per 1GeV", 2000, 0, 2000);
+
   hPartonVsParticle_ = fs->make<TH2F>("hPartonVsParticle", "Visible phase space correlation;Parton level;Particle level", 2, 0, 2, 2, 0, 2);
   hPartonVsParticle_->GetXaxis()->SetBinLabel(1, "T");
   hPartonVsParticle_->GetXaxis()->SetBinLabel(2, "F");
   hPartonVsParticle_->GetYaxis()->SetBinLabel(1, "T");
   hPartonVsParticle_->GetYaxis()->SetBinLabel(2, "F");
   hPartonVsParticle_->SetOption("COLZ");
+
+  hBR_ = fs->make<TH2F>("hBR", "Branching ratio;Top quark decay modes;Anti-top decay modes", 4, 1, 5, 4, 1, 5);
+  hBR_->GetXaxis()->SetBinLabel(1, "e");
+  hBR_->GetXaxis()->SetBinLabel(2, "#mu");
+  hBR_->GetXaxis()->SetBinLabel(3, "#tau");
+  hBR_->GetXaxis()->SetBinLabel(4, "Hadronic");
+  hBR_->GetYaxis()->SetBinLabel(1, "e");
+  hBR_->GetYaxis()->SetBinLabel(2, "#mu");
+  hBR_->GetYaxis()->SetBinLabel(3, "#tau");
+  hBR_->GetYaxis()->SetBinLabel(4, "Hadronic");
+  hBR_->SetOption("COLZ");
 }
 
 void TTbarGenLevelAnalyzer::analyze(const edm::Event& event, const edm::EventSetup& eventSetup)
@@ -129,6 +150,18 @@ void TTbarGenLevelAnalyzer::analyze(const edm::Event& event, const edm::EventSet
     }
   }
 
+  if ( ttbarGenEvent_->tQuarks_.size() >= 2 )
+  {
+    const double mTop1 = ttbarGenEvent_->tQuarks_[0].mass();
+    const double mTop2 = ttbarGenEvent_->tQuarks_[1].mass();
+    hmTop_->Fill(mTop1);
+    hmTop_->Fill(mTop2);
+    hDmTop_->Fill(abs(mTop1-mTop2));
+
+    hPtTop_->Fill(ttbarGenEvent_->tQuarks_[0].pt());
+    hPtTop_->Fill(ttbarGenEvent_->tQuarks_[1].pt());
+  }
+
   // At least two stable leptons and b jets are found
   // Stable leptons and b jets are defined in the visible phase space
   bool isParticleLevel = false;
@@ -144,6 +177,50 @@ void TTbarGenLevelAnalyzer::analyze(const edm::Event& event, const edm::EventSet
   else if ( isPartonLevel and !isParticleLevel ) hPartonVsParticle_->Fill(1.,0.);
   else if ( !isPartonLevel and isParticleLevel ) hPartonVsParticle_->Fill(0.,1.);
   else hPartonVsParticle_->Fill(0.,0.);
+
+  // Fill decay mode
+  int lepType1 = 0, lepType2 = 0;
+  for ( int i=0, n=genParticleHandle->size(); i<n; ++i )
+  {
+    const reco::GenParticle& pTop = genParticleHandle->at(i);
+    if ( pTop.status() != 3 ) continue;
+    if ( abs(pTop.pdgId()) != 6 ) continue;
+    if ( pTop.numberOfDaughters() < 2 ) continue;
+    if ( abs(pTop.daughter(0)->pdgId()) == 6 ) continue;
+
+    const reco::GenParticle* pW = 0;
+    for ( int j=0, m=pTop.numberOfDaughters(); j<m; ++j )
+    {
+      const reco::GenParticle* dau = dynamic_cast<const reco::GenParticle*>(pTop.daughter(j));
+      if ( abs(dau->pdgId()) == 24 )
+      {
+        pW = dau;
+        break;
+      }
+    }
+
+    // Determine decay mode of W
+    int lepType;
+    while ( true )
+    {
+      lepType = 4;
+      for ( int j=0, m=pW->numberOfDaughters(); j<m; ++j )
+      {
+        const reco::GenParticle* dau = dynamic_cast<const reco::GenParticle*>(pW->daughter(j));
+        if ( !dau ) { lepType = -2; break; }
+
+        const int pdgId = abs(dau->pdgId());
+        if ( pdgId == 24 ) { pW = dau; lepType = -1; break; }
+        else if ( pdgId == 11 ) { lepType = 1; break; }
+        else if ( pdgId == 13 ) { lepType = 2; break; }
+        else if ( pdgId == 15 ) { lepType = 3; break; }
+      }
+      if ( lepType != -1 ) break;
+    }
+    if ( pTop.pdgId() > 0 ) lepType1 = lepType;
+    else lepType2 = lepType;
+  }
+  hBR_->Fill(lepType1, lepType2);
 
   if ( doTree_ ) tree_->Fill();
 }
