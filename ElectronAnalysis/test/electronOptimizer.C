@@ -70,8 +70,8 @@ void Draw(TH1* h1, TH1* h2, TString leg1, TString leg2, TString ytitle, TString 
 }
 
 void electronOptimizer(){
-  TFile* f_data = new TFile("batch/Out/ElEl/Res/vallot.root");
-  TFile* f_ttbar = new TFile("batch/Out/ElEl/Res/vallot_TTbarTuneZ2.root");
+  TFile* f_data = new TFile("batch/Out/ElEl/Res/vallot_newIso.root");
+  TFile* f_ttbar = new TFile("batch/Out/ElEl/Res/vallot_TTbarTuneZ2_newIso_filter.root");
 
   TString signalName = "ttbar";
   TString electronType = "PF";
@@ -99,14 +99,15 @@ void electronOptimizer(){
   TH1 * h_sim_ttbar1 = (TH1F*) h_sim_ttbar->Clone("h_sim_ttbar1");
   TH1 * h_sim_ttbar2 = (TH1F*) h_sim_ttbar->Clone("h_sim_ttbar2");
 
-  //TCut acceptance = "abs(ele1_eta) < 1.49 && abs(ele2_eta) < 1.49";
+  //TCut acceptance = "abs(ele1_eta) > 1.49 || abs(ele2_eta) > 1.49";
+  //TCut acceptance = "nVertex >= 9";
   TCut acceptance;
   TCut qcd1;
   TCut qcd2;
 
   if( electronType == "PF" ){
-    qcd1 = "ele2_relIso > 1 && abs(dimass - 91.2) > 30 && mt < 20 && dphi < 1.0 ";
-    qcd2 = "ele1_relIso > 1 && abs(dimass - 91.2) > 30 && mt < 20 && dphi < 1.0 ";
+    qcd1 = "ele2_relIso > 0.5 &&  mt < 20 && MET < 50 && ele1_charge*ele1_charge > 0 ";
+    qcd2 = "ele1_relIso > 0.5 &&  mt < 20 && MET < 50 && ele1_charge*ele2_charge > 0 ";
   }else if ( electronType == "Gsf" ){
     qcd1 = "ele2_reco_relIso > 0.5 && abs(dimass - 91.2) > 30";
     qcd2 = "ele1_reco_relIso > 0.5 && abs(dimass - 91.2) > 30";
@@ -116,7 +117,8 @@ void electronOptimizer(){
   //qcd1 = "multiplicity == 1 && njets >=1 && mt < 20 && dphi < 1.5";
   //qcd2 = "multiplicity == 1 && njets >=1 && mt < 20 && dphi < 1.5";
 
-  TCut signal = "ele1_relIso < 0.2 && ele2_relIso < 0.2";
+  //TCut signal = "ele1_relIso < 0.15 && ele2_relIso < 0.15";
+  TCut signal = "ele1_isFromW == 1 && ele2_isFromW == 1";
 
   t_data->Project("h_mva_qcd1","ele1_mva",qcd1 + acceptance);  
   t_data->Project("h_mva_qcd2","ele2_mva",qcd2 + acceptance);  
@@ -175,15 +177,34 @@ void electronOptimizer(){
 
   TGraphAsymmErrors* roc_mva = new TGraphAsymmErrors; 
 
+  double dx = 0;
+  double dy = 0;
+
+  double dx2 = 0;
+  double dy2 = 0;
+
   int nbins =  h_mva_ttbar->GetNbinsX();
   for(int i=0 ; i < nbins ; i++){
     double num_ttbar = h_mva_ttbar->Integral(i+1,nbins);
     double eff_ttbar = num_ttbar/nDen_ttbar;
     double num_qcd = h_mva_qcd->Integral(i+1,nbins);
     double eff_qcd = num_qcd/nDen_qcd;
+    double purity = 0.9;
+    double real_eff_qcd = ( eff_qcd - eff_ttbar*(1-purity) ) / purity;
     h_mva_ttbar_eff->SetBinContent(i+1,eff_ttbar);
-    h_mva_qcd_eff->SetBinContent(i+1,eff_qcd);
-    roc_mva->SetPoint(nbins-i-1, eff_qcd, eff_ttbar);
+    h_mva_qcd_eff->SetBinContent(i+1,real_eff_qcd);
+    roc_mva->SetPoint(nbins-i-1, real_eff_qcd, eff_ttbar);
+    std::cout << "Mva : " << " ( " << i*0.01 - 1.0 << " ) " << " QCD = ( " << num_qcd << " ) " << real_eff_qcd << " Signal= ( " << num_ttbar << " ) " << eff_ttbar << endl;
+    if( (i*0.01 - 1.0) == 0.0 ) {
+      dx = real_eff_qcd;
+      dy = eff_ttbar; 
+      std::cout << dx << " , " << dy << endl;
+    }
+    if( (i*0.01 - 1.0) > -0.105 && (i*0.01 - 1.0) < -0.095 ) {
+      dx2 = real_eff_qcd;
+      dy2 = eff_ttbar;
+      std::cout << dx2 << " , " << dy2 << endl;
+    }
   }
 
   h_mva_ttbar->Scale(1.0/nDen_ttbar);
@@ -200,10 +221,12 @@ void electronOptimizer(){
     double eff_ttbar = num_ttbar/nDen_ttbar;
     double num_qcd = h_cic_qcd->Integral(i+1,i+1);
     double eff_qcd = num_qcd/nDen_qcd;
+    double purity = 0.9;
+    double real_eff_qcd = ( eff_qcd - eff_ttbar*(1-purity) ) / purity;
     h_cic_ttbar_eff->SetBinContent(i+1,eff_ttbar);
-    h_cic_qcd_eff->SetBinContent(i+1,eff_qcd);
-    std::cout << "CiC : " << " ( " << cicnbins-i << " ) " << " QCD = ( " << num_qcd << " ) " << eff_qcd << " Signal= ( " << num_ttbar << " ) " << eff_ttbar << endl;
-    roc_cic->SetPoint(cicnbins-i-1, eff_qcd, eff_ttbar);
+    h_cic_qcd_eff->SetBinContent(i+1,real_eff_qcd);
+    std::cout << "CiC : " << " ( " << cicnbins-i << " ) " << " QCD = ( " << num_qcd << " ) " << real_eff_qcd << " Signal= ( " << num_ttbar << " ) " << eff_ttbar << endl;
+    roc_cic->SetPoint(cicnbins-i-1, real_eff_qcd, eff_ttbar);
   }
 
   Draw(h_cic_ttbar_eff, h_cic_qcd_eff, signalName, "QCD", "Efficiency", "CiC Id", "cic_eff", true, 0, 1.2);
@@ -216,40 +239,57 @@ void electronOptimizer(){
     double eff_ttbar = num_ttbar/nDen_ttbar;
     double num_qcd = h_sim_qcd->Integral(i+1,i+1);
     double eff_qcd = num_qcd/nDen_qcd; 
+    double purity = 0.9;
+    double real_eff_qcd = ( eff_qcd - eff_ttbar*(1-purity) ) / purity;
     h_sim_ttbar_eff->SetBinContent(i+1,eff_ttbar);
-    h_sim_qcd_eff->SetBinContent(i+1,eff_qcd);
-    std::cout << "Sim : " << " ( " << simnbins-i << " ) " << " QCD = ( " << num_qcd << " ) " << eff_qcd << " Signal= ( " << num_ttbar << " ) " << eff_ttbar << endl;
-    roc_sim->SetPoint(simnbins-i-1, eff_qcd, eff_ttbar);
+    h_sim_qcd_eff->SetBinContent(i+1,real_eff_qcd);
+    std::cout << "Sim : " << " ( " << simnbins-i << " ) " << " QCD = ( " << num_qcd << " ) " << real_eff_qcd << " Signal= ( " << num_ttbar << " ) " << eff_ttbar << endl;
+    roc_sim->SetPoint(simnbins-i-1, real_eff_qcd, eff_ttbar);
   } 
 
   //Draw ROC canvas
   TCanvas *c_roc = new TCanvas("c_roc","c_roc",1);
   roc_mva->Draw("ALP");
+  roc_mva->SetMinimum(0.80);
+  roc_mva->SetMaximum(1.01);
+  roc_mva->GetXaxis()->SetLimits(0.1,1.0);
   roc_mva->SetMarkerSize(0.8);
   roc_mva->SetMarkerStyle(20);
   roc_mva->SetMarkerColor(2);
   roc_mva->SetLineWidth(2);
   roc_mva->SetLineColor(2);
+  roc_mva->SetMarkerColor(2);
   roc_mva->GetYaxis()->SetTitle("Signal Efficiency");
   roc_mva->GetXaxis()->SetTitle("Background Efficiency");
   roc_cic->SetLineWidth(2);
   roc_cic->SetMarkerSize(0.8);
+  roc_cic->SetMarkerColor(4);
+  roc_cic->SetLineColor(4);
   roc_cic->SetMarkerStyle(20);
   roc_cic->Draw("SameLP");
-  roc_sim->SetLineColor(4);
+  roc_sim->SetLineColor(3);
   roc_sim->SetLineWidth(2);
+  roc_sim->SetMarkerColor(3);
   roc_sim->SetMarkerSize(0.8);
   roc_sim->SetMarkerStyle(20);
   roc_sim->Draw("SameLP");
 
-  TLegend *l_roc= new TLegend(0.7,0.4,0.9,0.6);
-  l_roc->AddEntry(roc_mva,"Mva","L");
-  l_roc->AddEntry(roc_cic,"CiC","L");
-  l_roc->AddEntry(roc_sim,"Sim","L");
+  TLegend *l_roc= new TLegend(0.45,0.25,0.85,0.4);
+  l_roc->AddEntry(roc_mva,"Multivariate","LP");
+  l_roc->AddEntry(roc_cic,"Cut In Categories","LP");
+  l_roc->AddEntry(roc_sim,"Cut Based VBTF 2010","LP");
   l_roc->SetTextSize(0.04);
   l_roc->SetFillColor(0);
   l_roc->SetLineColor(0);
   l_roc->Draw();
+
+  TMarker *m = new TMarker(dx,dy,24);
+  m->SetMarkerSize(2);
+  m->Draw();
+
+  TMarker *m2 = new TMarker(dx2,dy2,24);
+  m2->SetMarkerSize(2);
+  m2->Draw();
 
   c_roc->Print("c_roc.eps");
 
