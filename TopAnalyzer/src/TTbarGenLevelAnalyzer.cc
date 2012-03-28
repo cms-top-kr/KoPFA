@@ -48,7 +48,7 @@ private:
   TH1F* hmTT_Full_; // mTT in the full PS
   TH1F* hmTT_Pton_; // mTT in the visible PS with partons
   TH1F* hmTT_Ptcl_; // mTT in the isible PS with particles
-  TH1F* hmLLBBMet_Ptcl_; // mLLBBMet in the visible PS with particles
+  TH1F* hmLLBjBjMet_Ptcl_; // mLLBjBjMet in the visible PS with particles
   TH1F* hmLLJJMet_Ptcl_; // mLLJJMet in the visible PS with particles
 
   TH1F* hmTop_; // Top quark mass
@@ -87,7 +87,7 @@ void TTbarGenLevelAnalyzer::beginJob()
   hmTT_Full_ = fs->make<TH1F>("hmTT_Full", "m(t#bar{t}) in the full phase space;Mass [GeV/c^{2}];Events per 1GeV", 2000, 0, 2000);
   hmTT_Pton_ = fs->make<TH1F>("hmTT_Pton", "m(t#bar{t}) in the visible phase space with parton level cuts;Mass [GeV/c^{2}];Events per 1GeV", 2000, 0, 2000);
   hmTT_Ptcl_ = fs->make<TH1F>("hmTT_Ptcl", "m(t#bar{t}) in the visible phase space with particle level cuts;Mass [GeV/c^{2}];Events per 1GeV", 2000, 0, 2000);
-  hmLLBBMet_Ptcl_ = fs->make<TH1F>("hmLLBBMet_Ptcl", "m(llbbMet) in the visible phase space with particle level cuts;Mass [GeV/c^{2}];Events per 1GeV", 2000, 0, 2000);
+  hmLLBjBjMet_Ptcl_ = fs->make<TH1F>("hmLLBjBjMet_Ptcl", "m(llBjBjMet) in the visible phase space with particle level cuts;Mass [GeV/c^{2}];Events per 1GeV", 2000, 0, 2000);
   hmLLJJMet_Ptcl_ = fs->make<TH1F>("hmLLJJMet_Ptcl", "m(lljjMet) in the visible phase space with particle level cuts;Mass [GeV/c^{2}];Events per 1GeV", 2000, 0, 2000);
 
   hmTop_ = fs->make<TH1F>("hmTop", "m(top); Mass [GeV/c^{2}];Entries per 1GeV", 40, 175-20, 175+20);
@@ -169,8 +169,8 @@ void TTbarGenLevelAnalyzer::analyze(const edm::Event& event, const edm::EventSet
   {
     isParticleLevel = true;
     hmTT_Ptcl_->Fill(mTT);
-    hmLLBBMet_Ptcl_->Fill(mLLBBMet);
     hmLLJJMet_Ptcl_->Fill(mLLJJMet);
+    hmLLBjBjMet_Ptcl_->Fill(mLLBjBjMet);
   }
 
   if ( isPartonLevel and isParticleLevel ) hPartonVsParticle_->Fill(1.,1.);
