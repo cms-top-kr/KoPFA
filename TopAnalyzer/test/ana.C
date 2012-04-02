@@ -26,12 +26,13 @@ void ana(string decayMode, string imageOutDir)
 {
   TopAnalyzerLite* analyzer = new TopAnalyzerLite(decayMode, imageOutDir);
 
-  const std::string mcPath = "/data/export/common/Top/ntuple/"+decayMode+"/MC/Fall11_v0/";
+  const std::string mcPath = "/data/export/common/Top/ntuple/"+decayMode+"/MC/Fall11_v1/";
   const std::string rdPath = "/data/export/common/Top/ntuple/"+decayMode+"/RD/2011Full_v0/";
 
   analyzer->addRealData(rdPath+"vallot.root", 5000);
 
-  analyzer->addMCSig("TTbar", "t#bar{t}", mcPath+"vallot_TTbarTuneZ2.root", 157.5, kRed+1);
+  analyzer->addMCSig("TTbar", "t#bar{t}", mcPath+"vallot_TTbarTuneZ2.root", 164.6, kRed+1);
+  analyzer->addMCBkg("TTbarOthers", "t#bar{t} other", mcPath+"vallot_TTbarOthers.root", 164.6, kRed-7);
   analyzer->addMCBkg("Wl", "W#rightarrowl#nu", mcPath+"vallot_WJetsToLNu.root", 31314, kGreen-3);
   analyzer->addMCBkg("VV", "VV", mcPath+"vallot_ZZ.root", 7.4 , kGray+4);
   analyzer->addMCBkg("WW", "VV", mcPath+"vallot_WW.root", 4.51, kGray+4);
@@ -53,6 +54,7 @@ void ana(string decayMode, string imageOutDir)
 */
 
   analyzer->addMCBkg("DYtt"       , "Z/#gamma*#rightarrow#tau^{+}#tau^{-}", mcPath+"vallot_ZtauDecay.root" , 3048, kAzure+8);
+  analyzer->addMCBkg("DYtt10To50"       , "Z/#gamma*#rightarrow#tau^{+}#tau^{-}", mcPath+"vallot_ZtauDecay10To50.root" , 11098.83, kAzure+8);
  // analyzer->addMCBkg("DYtt_10to20", "Z/#gamma*#rightarrow#tau^{+}#tau^{-}", mcPath+"vallot_DYtt10to20.root", 3457, kAzure+8);
  // analyzer->addMCBkg("DYtt_20to50", "Z/#gamma*#rightarrow#tau^{+}#tau^{-}", mcPath+"vallot_DYtt20to50.root", 1666, kAzure+8);
 
@@ -87,7 +89,7 @@ void ana(string decayMode, string imageOutDir)
   analyzer->setScanVariables("RUN:LUMI:EVENT:ZMass:@jetspt30.size():MET");
 
   //STEP1 : low invariant mass cut
-  analyzer->addCutStep("ZMass > 12", "", 1.5);
+  analyzer->addCutStep("ZMass > 12", "Iso03lep1,Iso03lep2", 1.5);
 
   //STEP2 : isolation
    if ( decayMode == "MuMu" )
@@ -103,7 +105,7 @@ void ana(string decayMode, string imageOutDir)
   }
 
   //STEP3 : opposite sign
-  analyzer->addCutStep("PairSign < 0", "ZMass,nJetlog,METlog");
+  analyzer->addCutStep("PairSign < 0", "pt1,pt2,eta1,eta2,jet1pt,jet2pt,jet1eta,jet2eta,nVertex,ZMass,nJetlog,METlog");
 
   //STEP4 : Z veto
   if ( decayMode == "MuEl") 
@@ -125,7 +127,7 @@ void ana(string decayMode, string imageOutDir)
   }
 
   //STEP7 : b-tagging
-  analyzer->addCutStep("nbjets_CSVM >= 1", "MET,nbJet_CSVM,vsumM,vsumMAlt,genttbarM", 0.5);  
+  analyzer->addCutStep("nbjets_CSVL >= 1", "MET,nbJet_CSVL,vsumM,vsumMAlt,genttbarM", 0.5);  
 
   analyzer->setEventWeightVar("weight");
   
