@@ -21,6 +21,7 @@ TLegend* buildLegend();
 TPaveText* getHeader(double lumi, TString channelName = "");
 
 void makePlots(TString noteNumber = "Merged_Run2011Full_Zprime")
+//void makePlots(TString noteNumber = "Merged_Run2011Full_TTbarBBbar")
 {
   setTDRStyle();
 
@@ -33,17 +34,29 @@ void makePlots(TString noteNumber = "Merged_Run2011Full_Zprime")
   outDirName += "/"+noteNumber;
   gSystem->Exec("mkdir "+outDirName);
 
-  //cutStepPlots("Step_1", "Iso03lep1", "Relative Isolation (GeV)", 1, 1e12, true);
+  cutStepPlots("Step_1", "Iso03lep1", "Relative Isolation (GeV)", 1, 1e12, true);
+  cutStepPlots("Step_1", "Iso03lep2", "Relative Isolation (GeV)", 1, 1e12, true);
+  cutStepPlots("Step_3", "pt1", "Leading lepton p_{T};p_{T} (GeV/c);Events/10 GeV/c", 0.1, 1e12, true);
+  cutStepPlots("Step_3", "pt2", "Second leading lepton p_{T};p_{T} (GeV/c);Events/10 GeV/c", 0.1, 1e12, true);
+  cutStepPlots("Step_3", "eta1", "Leading lepton #eta;#eta (GeV/c);Events/10 GeV/c", 0.1, 1e12, true);
+  cutStepPlots("Step_3", "eta2", "Second leading lepton #eta;#eta (GeV/c);Events/10 GeV/c", 0.1, 1e12, true);
+  cutStepPlots("Step_3", "jet1pt", "Leading jet p_{T};p_{T} (GeV/c);Events/10 GeV/c", 0.1, 1e12, true);
+  cutStepPlots("Step_3", "jet2pt", "Second leading jet p_{T};p_{T} (GeV/c);Events/10 GeV/c", 0.1, 1e12, true);
+  cutStepPlots("Step_3", "jet1eta", "Leading jet #eta;#eta (GeV/c);Events/10 GeV/c", 0.1, 1e12, true);
+  cutStepPlots("Step_3", "jet2eta", "Second leading jet #eta;#eta (GeV/c);Events/10 GeV/c", 0.1, 1e12, true);
   cutStepPlots("Step_3", "nVertex", "Vertex multiplicity", 0, 2e6, false);
   cutStepPlots("Step_3", "METlog", "Missing E_{T}", 1, 1e9, true);
   cutStepPlots("Step_3", "nJetlog", "Jet multiplicity", 1, 1e9, true);
   cutStepPlots("Step_3", "ZMass", "Z mass", 1, 1e9, true);
-  cutStepPlots("Step_4", "METlog", "Missing E_{T}", 1, 1e9, true);
-  cutStepPlots("Step_5", "MET", "Missing E_{T}", 1, 1e9, true);
-  cutStepPlots("Step_6", "nJet", "Jet multiplicity", 1, 1e9, true);
-  cutStepPlots("Step_6", "MET", "Missing E_{T}", 1, 1e9, true); 
+  cutStepPlots("Step_4", "METlog", "Missing E_{T}", 1, 1e10, true);
+  cutStepPlots("Step_4", "nJetlog", "Jet multiplicity", 1, 1e9, true);
+  cutStepPlots("Step_5", "MET", "Missing E_{T}", 1, 1e10, true);
+  cutStepPlots("Step_6", "nJet", "Jet multiplicity", 1, 1e10, true);
+  cutStepPlots("Step_6", "nbJet_CSVL", "b-Jet multiplicity(CSVL)", 1, 1e8, true);
+  cutStepPlots("Step_6", "nbJet_CSVM", "b-Jet multiplicity(CSVM)", 1, 1e8, true);
+  cutStepPlots("Step_6", "MET", "Missing E_{T}", 1, 1e10, true); 
   cutStepPlots("Step_6", "vsumM", "t#bar{t} invariant mass", 0, 4000, false);
-  cutStepPlots("Step_7", "nbJet", "b-Jet multiplicity", 1, 1e8, true);
+  cutStepPlots("Step_7", "nbJet_CSVL", "b-Jet multiplicity(CSVL)", 1, 1e8, true);
   cutStepPlots("Step_7", "vsumM", "t#bar{t} invariant mass", 0, 4000, false);
   cutStepPlots("Step_7", "vsumMAlt", "t#bar{t} invariant mass", 0, 6000, false);
   cutStepPlots("Step_7", "vsumMhigh", "t#bar{t} invariant mass", 1, 1e5, true);
@@ -278,10 +291,10 @@ void cutStepPlots(const char* cutStep, const char* histName, const char* histTit
     legLL->AddEntry(hLLs[i], bkgLabels[i], "f");
   }
 
-  legEE->AddEntry(hSigEE, sigLabels[0], "l");
-  legME->AddEntry(hSigME, sigLabels[0], "l");
-  legMM->AddEntry(hSigMM, sigLabels[0], "l");
-  legLL->AddEntry(hSigLL, sigLabels[0], "l");
+  legEE->AddEntry(hSigEE, sigLabels[0], "f");
+  legME->AddEntry(hSigME, sigLabels[0], "f");
+  legMM->AddEntry(hSigMM, sigLabels[0], "f");
+  legLL->AddEntry(hSigLL, sigLabels[0], "f");
 
 
   // Be ready for draw
@@ -299,45 +312,49 @@ void cutStepPlots(const char* cutStep, const char* histName, const char* histTit
   if ( doLogY ) cEE->SetLogy();
   hDataEE->Draw();
   legEE->Draw();
-  getHeader(4.7, "ee channel")->Draw();
+  getHeader(5.0, "ee channel")->Draw();
   hStackEE->Draw("same");
   hSigEE->Draw("same");
   hDataEE->Draw("same");
   hDataEE->Draw("sameaxis");
   cEE->Print(Form("%s/cEE_%s_%s.eps", outDirName.Data(), cutStep, histName));
+  cEE->Print(Form("%s/cEE_%s_%s.pdf", outDirName.Data(), cutStep, histName));
 
   TCanvas* cME = new TCanvas(TString("cME_")+cutStep+"_"+histName, TString("cME_")+cutStep+"_"+histName, 1);
   if ( doLogY ) cME->SetLogy();
   hDataME->Draw();
   legME->Draw();
-  getHeader(4.7, "#mue channel")->Draw();
+  getHeader(5.0, "#mue channel")->Draw();
   hStackME->Draw("same");
   hSigME->Draw("same");
   hDataME->Draw("same");
   hDataME->Draw("sameaxis");
   cME->Print(Form("%s/cME_%s_%s.eps", outDirName.Data(), cutStep, histName));
+  cME->Print(Form("%s/cME_%s_%s.pdf", outDirName.Data(), cutStep, histName));
 
   TCanvas* cMM = new TCanvas(TString("cMM_")+cutStep+"_"+histName, TString("cMM_")+cutStep+"_"+histName, 1);
   if ( doLogY ) cMM->SetLogy();
   hDataMM->Draw();
   legMM->Draw();
-  getHeader(4.7, "#mu#mu channel")->Draw();
+  getHeader(5.0, "#mu#mu channel")->Draw();
   hStackMM->Draw("same");
   hSigMM->Draw("same");
   hDataMM->Draw("same");
   hDataMM->Draw("sameaxis");
   cMM->Print(Form("%s/cMM_%s_%s.eps", outDirName.Data(), cutStep, histName));
+  cMM->Print(Form("%s/cMM_%s_%s.pdf", outDirName.Data(), cutStep, histName));
 
   TCanvas* cLL = new TCanvas(TString("cLL_")+cutStep+"_"+histName, TString("cLL_")+cutStep+"_"+histName, 1);
   if ( doLogY ) cLL->SetLogy();
   hDataLL->Draw();
   legLL->Draw();
-  getHeader(4.7, "All channel")->Draw();
+  getHeader(5.0, "All channel")->Draw();
   hStackLL->Draw("same");
   hSigLL->Draw("same");
   hDataLL->Draw("same");
   hDataLL->Draw("sameaxis");
   cLL->Print(Form("%s/cLL_%s_%s.eps", outDirName.Data(), cutStep, histName));
+  cLL->Print(Form("%s/cLL_%s_%s.pdf", outDirName.Data(), cutStep, histName));
 
 }
 
