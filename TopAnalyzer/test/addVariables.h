@@ -17,10 +17,10 @@ void addTopVariables(TopAnalyzerLite* analyzer){
 
   analyzer->addMonitorPlot("jet1pt", "jetspt30[0].pt()", "Leading jet p_{T};p_{T} (GeV/c);Events/10 GeV/c",27, 50, 500, 0.1, 100000);
   analyzer->addMonitorPlot("jet2pt", "jetspt30[1].pt()", "Second leading jet p_{T};p_{T} (GeV/c);Events/10 GeV/c",27, 50, 500, 0.1, 100000);
-  analyzer->addMonitorPlot("jet1eta", "jetpt30[0].eta()", "Leading #eta;#eta;Events/0.2", 35, -3.5, 3.5, 0.1, 100000);
-  analyzer->addMonitorPlot("jet2eta", "jetpt30[1].eta()", "Second leading jet #eta;#eta;Events/0.2", 35, -3.5, 3.5, 0.1, 100000);
-  analyzer->addMonitorPlot("jet1phi", "jetpt30[0].phi()", "Leading #phi;#phi (Radian);Events/0.2 rad.", 35, -3.5, 3.5, 0.1, 100000);
-  analyzer->addMonitorPlot("jet2phi", "jetpt30[1].phi()", "Second leading jet #phi;#phi (Radian);Events/0.2 rad.", 35, -3.5, 3.5, 0.1, 100000);
+  analyzer->addMonitorPlot("jet1eta", "jetspt30[0].eta()", "Leading #eta;#eta;Events/0.2", 35, -3.5, 3.5, 0.1, 100000);
+  analyzer->addMonitorPlot("jet2eta", "jetspt30[1].eta()", "Second leading jet #eta;#eta;Events/0.2", 35, -3.5, 3.5, 0.1, 100000);
+  analyzer->addMonitorPlot("jet1phi", "jetspt30[0].phi()", "Leading #phi;#phi (Radian);Events/0.2 rad.", 35, -3.5, 3.5, 0.1, 100000);
+  analyzer->addMonitorPlot("jet2phi", "jetspt30[1].phi()", "Second leading jet #phi;#phi (Radian);Events/0.2 rad.", 35, -3.5, 3.5, 0.1, 100000);
 
   analyzer->addMonitorPlot("Iso03lep1","relIso1","relIso03lep1;relIso;Events", 40, 0, 0.4, 0.1, 20000);
   analyzer->addMonitorPlot("Iso03lep2","relIso2","relIso03lep2;relIso;Events", 40, 0, 0.4, 0.1, 20000);
