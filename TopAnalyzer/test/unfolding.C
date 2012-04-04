@@ -72,7 +72,7 @@ void unfolding(int k=4){
   //RooUnfold::ErrorTreatment err = RooUnfold::kCovToy; //3
 
   int method = 2; // BinByBin:0 Invert:1 SVD:2 Bayes:3 
-  TH1F* h_unfold = unfoldingPlot(method, h2ResponseM,  hDataDist, hGenDistMADGRAPH, "vusm", lumi, k, err, print, pseudo, toytest);
+  TH1F* h_unfold = unfoldingPlot(method, h2ResponseM,  hDataDist, hGenDistMADGRAPH, "vsum", lumi, k, err, print, pseudo, toytest);
   //TH1F* h_unfoldup = unfoldingPlot(method, h2ResponseM,  hDataDistUp, hGenDist, "vusm_up", lumi, k, err, print, pseudo, toytest);
   //TH1F* h_unfolddw = unfoldingPlot(method, h2ResponseM,  hDataDistDw, hGenDist, "vusm_dw", lumi, k, err, print, pseudo, toytest);
 
