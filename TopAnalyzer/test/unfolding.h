@@ -425,7 +425,7 @@ void errorPlots(double lumi, TH1F* h_unfold, int k, TH1F* h_unfoldBinByBin, TStr
 }
 
 
-TGraphAsymmErrors* FinalPlot(TH1F* h_unfold, TH1F* hgen, TH1F* accept, TH1D* hTr1, double lumi, TString hName, TString cName, double min, double max, bool norm=true, bool log=true, bool curve=false, bool print){
+TGraphAsymmErrors* FinalPlot(TH1F* h_unfold, TH1F* hgen, TH1F* accept, TH1* hTr1, double lumi, TString hName, TString cName, double min, double max, bool norm=true, bool log=true, bool curve=false, bool print){
 
   int nbins = h_unfold->GetNbinsX();
 
@@ -436,7 +436,7 @@ TGraphAsymmErrors* FinalPlot(TH1F* h_unfold, TH1F* hgen, TH1F* accept, TH1D* hTr
 
   TH1F* hSigmaData = getMeasuredCrossSection(h_unfold,accept,lumi,norm, true, "unfolded");
   TH1F* hSigmaTruth = getMeasuredCrossSection(hgen,accept,lumi,norm, true, "truth");
-  //TH1F* hSigmaTruth = getTruthCrossSection(hgen, hTr1, lumi, norm, false, 1, true);
+  //TH1F* hSigmaTruth = getTruthCrossSection(hgen, hTr1, lumi, norm, true);
   SetHistoStyle(hSigmaTruth, 2,2,1,0,0,0,min,max,"Unfolded t#bar{t} invariant mass (GeV/c^{2})","");
 
   if(norm){
@@ -463,21 +463,24 @@ TGraphAsymmErrors* FinalPlot(TH1F* h_unfold, TH1F* hgen, TH1F* accept, TH1D* hTr
   return dsigmaData;
 }
 
-void FinalPlot(TH1F* h_unfold, TH1F* hgen, TH1F* accept, TH1D* hTr1, TH1D* hTr2, TH1D* hTr3, double lumi, TString hName, TString cName, double min, double max, bool norm=true, bool log=true, bool curve=false, bool print = false, bool printX = false, bool HBBstyle = false, bool band = false, TH1D* hTr2_up ="", TH1D* hTr2_dw= ""){
+void FinalPlot(TH1F* h_unfold, TH1F* hgen, TH1F* accept, TH1* hTr1, TH1* hTr2, TH1* hTr3, double lumi, TString hName, TString cName, double min, double max, bool norm=true, bool log=true, bool curve=false, bool print = false, bool printX = false, bool HBBstyle = false, bool band = false, TH1D* hTr2_up ="", TH1D* hTr2_dw= ""){
 
   int nbins = h_unfold->GetNbinsX();
  
   TH1F* dsigmaDataHisto = getMeasuredCrossSection(h_unfold,accept,lumi,norm, printX, "unfolded");
-  TH1F* dsigmaDataHistoOnlyWithStat = getMeasuredCrossSection(h_unfold,accept,lumi,norm, printX, "unfolded", false); //set false for systematic uncert.
+  //TH1F* dsigmaDataHistoOnlyWithStat = getMeasuredCrossSection(h_unfold,accept,lumi,norm, printX, "unfolded", false); //set false for systematic uncert.
 
   TGraphAsymmErrors* dsigmaTruth = new TGraphAsymmErrors();
   TGraphAsymmErrors* dsigmaData = getGraphAsymmErrors(dsigmaDataHisto);
-  TGraphAsymmErrors* dsigmaDataOnlyWithStat = getGraphAsymmErrors(dsigmaDataHistoOnlyWithStat);
+  //TGraphAsymmErrors* dsigmaDataOnlyWithStat = getGraphAsymmErrors(dsigmaDataHistoOnlyWithStat);
 
   //TGraphAsymmErrors* DESY = DESYPlot(accept); 
-  TH1F* hSigmaTruth = getTruthCrossSection(hgen, hTr1, lumi, norm, curve,50);
-  TH1F* hSigmaTruth2 = getTruthCrossSection(hgen, hTr2, lumi, norm, curve,50);
-  TH1F* hSigmaTruth3 = getTruthCrossSection(hgen, hTr3, lumi, norm, curve,50);
+  cout << hTr1->Integral() << endl;
+  cout << hTr2->Integral() << endl;
+  cout << hTr3->Integral() << endl;
+  TH1F* hSigmaTruth = getTruthCrossSection(hgen, hTr1, lumi, norm, printX);
+  TH1F* hSigmaTruth2 = getTruthCrossSection(hgen, hTr2, lumi, norm, false);
+  TH1F* hSigmaTruth3 = getTruthCrossSection(hgen, hTr3, lumi, norm, false);
   //getUncertainty(dsigmaData, hSigmaTruth2);
   SetHistoStyle(hSigmaTruth, 2,2,1,0,0,0,min,max,"M_{t#bar{t}} (GeV/c^{2})","");
   SetHistoStyle(hSigmaTruth2, 2,4,1,0,0,0,min,max,"M_{t#bar{t}} (GeV/c^{2})","");
@@ -506,7 +509,7 @@ void FinalPlot(TH1F* h_unfold, TH1F* hgen, TH1F* accept, TH1D* hTr1, TH1D* hTr2,
   Print(c_dsigma, "Unfold_plot", hName.Data(), cName.Data(), print);
 }
 
-void TOP11013Plot(TH1F* h_unfold, TH1F* hgen, TH1F* accept, TH1D* hTr1, TH1D* hTr2, TH1D* hTr3, double lumi, TString hName, TString cName, double min, double max, bool norm=true, bool log=true, bool curve=false, bool print = false, bool printX = false, bool HBBstyle = false, bool band = false, TH1D* hTr2_up ="", TH1D* hTr2_dw= ""){
+void TOP11013Plot(TH1F* h_unfold, TH1F* hgen, TH1F* accept, TH1* hTr1, TH1* hTr2, TH1* hTr3, double lumi, TString hName, TString cName, double min, double max, bool norm=true, bool log=true, bool curve=false, bool print = false, bool printX = false, bool HBBstyle = false, bool band = false, TH1* hTr2_up ="", TH1* hTr2_dw= ""){
 
   int nbins = h_unfold->GetNbinsX();
 
@@ -517,8 +520,8 @@ void TOP11013Plot(TH1F* h_unfold, TH1F* hgen, TH1F* accept, TH1D* hTr1, TH1D* hT
   TGraphAsymmErrors* dsigmaData = getGraphAsymmErrors(dsigmaDataHisto);
   TGraphAsymmErrors* dsigmaDataOnlyWithStat = getGraphAsymmErrors(dsigmaDataHistoOnlyWithStat);
 
-  TH1F* hSigmaTruth = getTruthCrossSection(hgen, hTr1, lumi, norm, curve,50);
-  TH1F* hSigmaTruthHisto = getTruthCrossSection(hgen, hTr1, lumi, norm, false, 1, printX);
+  TH1F* hSigmaTruth = getTruthCrossSection(hgen, hTr1, lumi, norm, printX);
+  TH1F* hSigmaTruthHisto = getTruthCrossSection(hgen, hTr1, lumi, norm, printX);
 
   TCanvas *c_dsigma = new TCanvas(Form("c_%s_dsigma_%s",hName.Data(), cName.Data()),Form("c_%s_dsigma_%s",hName.Data(), cName.Data()));
   TGaxis::SetMaxDigits(4);
@@ -556,7 +559,7 @@ void TOP11013Plot(TH1F* h_unfold, TH1F* hgen, TH1F* accept, TH1D* hTr1, TH1D* hT
   dsigmaDataCenteredOnlyWithStats->Draw("||");
 
   bool isPreliminary = true;
-  DrawCMSLabels(isPreliminary, 1143);
+  DrawCMSLabels(isPreliminary, 5000);
   DrawDecayChLabel("Dilepton Combined");
 
   TLegend *l= new TLegend();
@@ -640,7 +643,7 @@ TH1* getMeasuredCrossSection( TH1F* h_unfold, TH1F* accept, double lumi, bool no
 
 }
 
-TH1* getTruthCrossSection(TH1F* hgen, TH1D* htruth, double lumi, bool norm, bool curve=false, int w=1, bool print = false){
+TH1* getTruthCrossSection(TH1F* hgen, TH1* htruth, double lumi, bool norm, bool print = false){
 
   TH1* dsigma = (TH1F*)hgen->Clone("disgma");
   dsigma->Reset();
@@ -657,26 +660,6 @@ TH1* getTruthCrossSection(TH1F* hgen, TH1D* htruth, double lumi, bool norm, bool
 
     totalN += unfolded;
     totalS += sigma*width;
-  }
-
-  if(curve){
-    double bins = 1400/(double) w;
-    TH1* truthRe = (TH1F*)htruth->Clone("truthRe");
-    truthRe->Rebin(w);
-
-    TH1* hdSigma = (TH1F*)truthRe->Clone("hdSigma");
-    hdSigma->Reset();
-
-    for(int i=1; i <= bins ; i++){
-      double num = truthRe->GetBinContent(i);
-      if(norm){
-        hdSigma->SetBinContent(i, num/(lumi*w)/totalS);
-      }else{
-        hdSigma->SetBinContent(i, num/(lumi*w));
-      }
-    }
-
-    return hdSigma;
   }
 
   if(print) cout << "========= Truth Cross section: sigma (fb)====================== " << endl;
@@ -866,7 +849,7 @@ void getUncertainty(TGraphAsymmErrors* de, TH1* up){
 
 }
 
-TF1 * getFitFunction(TH1D* h, int color, int style, int width){
+TF1 * getFitFunction(TH1* h, int color, int style, int width){
   TH1F *tmp = (TH1F*)h->Clone("tmp");
   TF1* function=new TF1("function","TMath::LogNormal(x,[0],[1],[2])",0, 2000);
   double scale = tmp->Integral();
@@ -882,7 +865,7 @@ TF1 * getFitFunction(TH1D* h, int color, int style, int width){
   return function;
 }
 
-TH1F * getFitHistogram(TH1D* h, string model){
+TH1F * getFitHistogram(TH1* h, string model){
 
   TH1F* tmp=(TH1F*) h->Clone();
   double scale = tmp->Integral();

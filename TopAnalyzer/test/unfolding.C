@@ -42,25 +42,25 @@ void unfolding(int k=4){
   //measured distribution
   TH1F * hDataDist = (TH1F*) file->Get("hData_vsum");
   TH1F * hPseudoDataMADGRAPH = (TH1F*) file->Get("hPseudoData_vsum_MadGraph");
-  TH1F * hPseudoDataPOWHEG = (TH1F*) file->Get("hPseudoData_vsum_Powheg");
+  //TH1F * hPseudoDataPOWHEG = (TH1F*) file->Get("hPseudoData_vsum_Powheg");
   //TH1F * hDataDistUp = (TH1F*) file->Get("hData_vsum_up");
   //TH1F * hDataDistDw = (TH1F*) file->Get("hData_vsum_dw");
   //truth level after reconstruction level selection
   TH1F * hGenDistMADGRAPH = (TH1F*) file->Get("hTruth_MadGraph");
-  TH1F * hGenDistPOWHEG = (TH1F*) file->Get("hTruth_Powheg");
+  //TH1F * hGenDistPOWHEG = (TH1F*) file->Get("hTruth_Powheg");
   //acceptance 
   TH1F * hAcceptDist = (TH1F*) file_acceptance->Get("hAccept_vsum");
   TH1F * hAcceptDistFull = (TH1F*) file_acceptance->Get("hAccept_vsum_Full");
   //truth level for final
-  TH1D * hGenMADGRAPH = (TH1D*) file_truthFinal->Get("hTruthFinalMADGRAPH");
-  TH1D * hGenPOWHEG = (TH1D*) file_truthFinal->Get("hTruthFinalPOWHEG");
-  TH1D * hGenMADGRAPH_Full = (TH1D*) file_truthFinal->Get("hTruthFinalMADGRAPH_Full");
-  TH1D * hGenPOWHEG_Full = (TH1D*) file_truthFinal->Get("hTruthFinalPOWHEG_Full");
-  TH1D * hGenMCNLO = (TH1D*) file_truthFinal->Get("hVisTTbarM");
-  TH1D * hGenMCNLO_Up = (TH1D*) file_truthFinal->Get("hVisTTbarM_Up");
-  TH1D * hGenMCNLO_Down = (TH1D*) file_truthFinal->Get("hVisTTbarM_Down");
+  TH1 * hGenMADGRAPH = (TH1*) file_truthFinal->Get("MadGraph_Visible");
+  TH1 * hGenPOWHEG = (TH1*) file_truthFinal->Get("POWHEG_Visible");
+  TH1 * hGenMADGRAPH_Full = (TH1*) file_truthFinal->Get("MadGraph_Full");
+  TH1 * hGenPOWHEG_Full = (TH1*) file_truthFinal->Get("POWHEG_Full");
+  TH1 * hGenMCNLO = (TH1*) file_truthFinal->Get("hVisTTbarM");
+  TH1 * hGenMCNLO_Up = (TH1*) file_truthFinal->Get("hVisTTbarM_Up");
+  TH1 * hGenMCNLO_Down = (TH1*) file_truthFinal->Get("hVisTTbarM_Down");
 
-  double lumi = 1143.22;
+  double lumi = 5000;
   bool print = true; //save plots
   bool printX = true; //print cross section
   bool pseudo = false;
