@@ -13,8 +13,9 @@
 #include "TMatrixD.h"
 #include <iomanip>
 #include <iostream>
+#include <map>
 
-TH1F* getMeasuredHistoPseudo( vector<std::string> mcPath, vector<std::string> rdPath, string cutStep, TString var,  vector<TString> decayMode , double frac, TString name, string weight=""){
+TH1F* getMeasuredHistoPseudo( vector<std::string> mcPath, vector<std::string> rdPath, string cutStep, TString var,  vector<TString> decayMode , double lumi, double X, TString name, string weight=""){
 
   TH1F *hData = new TH1F(Form("hPseudoData_%s",name.Data()),Form("hPseudoData_%s",name.Data()),nDet,detBins);
 
@@ -31,6 +32,11 @@ TH1F* getMeasuredHistoPseudo( vector<std::string> mcPath, vector<std::string> rd
 
     TFile * file = new TFile(mcPath[i].c_str());
     TTree * tree = (TTree *) file->Get(decayMode[i]+"/tree");
+    TH1F * summary = (TH1F *) file->Get(decayMode[i]+"/EventSummary");
+
+    //only use the exact number of events corresponding to given luminosity
+    double total = summary->GetBinContent(1);
+    double frac = lumi / ( total / X );
 
     int entries = tree->GetEntries();
     TH1F* hDataTemp = new TH1F(Form("hDataTemp_%s_%s",name.Data(),decayMode[i].Data()),"hDataTemp",nDet,detBins);
@@ -128,9 +134,10 @@ TH1F* getGenDistHisto( vector<std::string> rdPath, string cutStep, TString var =
 }
 
 
-TH1F* getGenDistHisto( vector<std::string> mcPath, vector<std::string> rdPath, string cutStep, vector<TString> decayMode, double scale, bool split , TString name, string weight="" ){
+TH1F* getGenDistHisto( vector<std::string> mcPath, vector<std::string> rdPath, string cutStep, vector<TString> decayMode, double lumi, double X,  bool split , TString name, string weight="" ){
 
   TH1F *hGen = new TH1F(Form("hTruth_%s",name.Data()), "truth distribution after reconstructed level selection",nGen,genBins);
+  hGen->Sumw2();
 
   for(size_t i = 0; i< mcPath.size() ; i++){
     TFile * f_data = new TFile(rdPath[i].c_str());
@@ -145,10 +152,15 @@ TH1F* getGenDistHisto( vector<std::string> mcPath, vector<std::string> rdPath, s
 
     TFile * file = new TFile(mcPath[i].c_str());
     TTree * tree = (TTree *) file->Get(decayMode[i]+"/tree");
-
+    TH1F * summary = (TH1F *) file->Get(decayMode[i]+"/EventSummary");
     int entries = tree->GetEntries();
 
+    double total = summary->GetBinContent(1);
+    double scale = lumi / ( total / X );
+
     TH1F *hGenDistTemp = new TH1F(Form("hGenDisTemp_%s_%s",name.Data(),decayMode[i].Data()),"hGenDisTemp",nGen,genBins);
+    hGenDistTemp->Sumw2();
+
     if(split){
       tree->Project(Form("hGenDisTemp_%s_%s",name.Data(),decayMode[i].Data()),"genttbarM", cutStr,"",entries/2, entries/2);  
       hGenDistTemp->Scale(scale*2);
@@ -156,14 +168,8 @@ TH1F* getGenDistHisto( vector<std::string> mcPath, vector<std::string> rdPath, s
       tree->Project(Form("hGenDisTemp_%s_%s",name.Data(),decayMode[i].Data()),"genttbarM", cutStr);  
       hGenDistTemp->Scale(scale);
     }
+   
     hGen->Add(hGenDistTemp);
-
-  }
-
-  //put statistical error
-  for(int i=0; i < nGen ; i++){
-    double err = sqrt(hGen->GetBinContent(i+1))*sqrt(scale*2) ;
-    hGen->SetBinError(i+1,err);
   }
 
   return hGen;
@@ -180,15 +186,13 @@ TH1D* getTruthHisto(TFile * fDen, TString name, double scale, TCut visible ="" )
   return h_Gen;
 }
 
-TH1F* getAcceptanceHisto(vector<std::string> mcPath, vector<std::string> rdPath, string cutStep, vector<TString> decayMode, TString name, TCut visible =""){
+TH1F* getAcceptanceHisto(vector<std::string> mcPath, vector<std::string> rdPath, string cutStep, vector<TString> decayMode, TString name, TH1F* hDen, double total){
 
-  TFile * fDen = new TFile("/data/export/common/Top/ntuple/ttbarGen.root");
-  TTree* genTreeDen = (TTree*)fDen->Get("ttbarGenAna/tree");
-
-  TH1F* hDen = new TH1F("hDen", "Denominator", nGen, genBins);
   TH1F* hNum = new TH1F("hNum", "Numerator", nGen, genBins);
+  double totalDen = total;
 
-  genTreeDen->Project("hDen", "ttbarGen.m()",visible);
+  map<int, vector<double> > mapAcc;
+  map<int, vector<double> > mapErr;
 
   for(size_t i = 0; i < mcPath.size() ; i++){
 
@@ -198,12 +202,19 @@ TH1F* getAcceptanceHisto(vector<std::string> mcPath, vector<std::string> rdPath,
     TTree * tree = (TTree *) file->Get(decayMode[i]+"/tree");
     TH1F* hNumTemp = new TH1F(Form("hNumTemp_%s_%s",name.Data(), decayMode[i].Data()), "Numerator", nGen, genBins);
     tree->Project(Form("hNumTemp_%s_%s",name.Data(), decayMode[i].Data()), "genttbarM", cut);
+
+    TH1F * summary = (TH1F *) file->Get(decayMode[i]+"/EventSummary");
+    double totalNum = summary->GetBinContent(1);
+    double norm = totalDen/totalNum;
+    hNumTemp->Scale(norm);
+     
     hNum->Add(hNumTemp);
-    cout << hNumTemp->GetEntries() << endl;
+
+    cout << "Decay mode: ======" << decayMode[i].Data() << "======" << endl;
+    cout << "total from EventSummary = " << totalNum << endl;
+    cout << "normalization factor due to difference from generated number used for denominator = " << norm << endl;
 
     TGraphAsymmErrors* grpAcceptTmp = new TGraphAsymmErrors();
-
-    cout << "decay: " << decayMode[i].Data() << endl;
 
     for(int j=0; j < nGen; j++){
       int bin = j+1;
@@ -224,9 +235,16 @@ TH1F* getAcceptanceHisto(vector<std::string> mcPath, vector<std::string> rdPath,
       grpAcceptTmp->SetPointEYhigh(j, err);
       grpAcceptTmp->SetPointEYlow(j, err);
 
-      cout << "accept= " << setprecision(4) << acc*100 << " $\\pm$ " << err*100 << endl;
+      //cout << "accept= " << setprecision(4) << acc*100 << " $\\pm$ " << err*100 << endl;
+      mapAcc[(int) i].push_back(acc);
+      mapErr[(int) i].push_back(err); 
     }
-    cout << "all bins= " << setprecision(4) << 100*hNumTemp->GetEntries()/hDen->GetEntries() << " $\\pm$ " << 100*sqrt(hNumTemp->GetEntries())/hDen->GetEntries() << endl;
+
+    //cout << "all bins= " << setprecision(4) << 100*hNumTemp->GetEntries()/hDen->GetEntries() << " $\\pm$ " << 100*sqrt(hNumTemp->GetEntries())/hDen->GetEntries() << endl;
+    double allAcc = hNumTemp->GetEntries()/hDen->GetEntries();
+    double allErr = sqrt(hNumTemp->GetEntries())/hDen->GetEntries();
+    mapAcc[ (int) i ].push_back( allAcc );
+    mapErr[ (int) i ].push_back( allErr ); 
 
     TCanvas *c_accTmp = new TCanvas(Form("c_acc_%s_%s",decayMode[i].Data(), name.Data()),"acceptance",1);
     grpAcceptTmp->Draw("2AP");
@@ -243,13 +261,16 @@ TH1F* getAcceptanceHisto(vector<std::string> mcPath, vector<std::string> rdPath,
     if( decayMode[i].Contains("MuMu") ) labelTmp->DrawLatex(0.70,0.68,"#mu#mu");
     if( decayMode[i].Contains("ElEl") ) labelTmp->DrawLatex(0.70,0.68,"ee");
 
-    c_accTmp->Print(Form("c_accept_%s_%s.eps",decayMode[i].Data(),name.Data()));
+    c_accTmp->Print(Form("acceptPlot/c_accept_%s_%s.eps",decayMode[i].Data(),name.Data()));
 
   }
   cout << hDen->GetEntries() << endl;
   
   TGraphAsymmErrors* grpAccept = new TGraphAsymmErrors();
   TH1F *hAccept = new TH1F(Form("hAccept_%s",name.Data()),Form("hAccept_%s",name.Data()),nGen, genBins);
+
+
+  int last = (int) mapAcc.size();
 
   for(int i=0; i < nGen; i++){
     int bin = i+1;
@@ -273,9 +294,33 @@ TH1F* getAcceptanceHisto(vector<std::string> mcPath, vector<std::string> rdPath,
     grpAccept->SetPointEYhigh(i, err);
     grpAccept->SetPointEYlow(i, err);
 
-    cout << "accept= " << setprecision(4) << acc*100 << " $\\pm$ " << err*100 << endl;
+    //cout << "accept= " << setprecision(4) << acc*100 << " $\\pm$ " << err*100 << endl;
+    mapAcc[ last ].push_back(acc);
+    mapErr[ last ].push_back(err);
+
   }
-  cout << "all bins= " << setprecision(4) << 100*hNum->GetEntries()/hDen->GetEntries() << " $\\pm$ " << 100*sqrt(hNum->GetEntries())/hDen->GetEntries() << endl;
+  //cout << "all bins= " << setprecision(4) << 100*hNum->GetEntries()/hDen->GetEntries() << " $\\pm$ " << 100*sqrt(hNum->GetEntries())/hDen->GetEntries() << endl;
+  mapAcc[ last ].push_back( hNum->GetEntries()/hDen->GetEntries() );
+  mapErr[ last ].push_back( sqrt(hNum->GetEntries())/hDen->GetEntries() );
+
+  for(int j= 0; j < last+1 ; j++){
+    if(j == last ) cout << "all" << "\t";
+    else cout << decayMode[j] << "\t" ;
+  }
+  cout << endl;
+
+  for(int i = 0; i < nGen+1 ; i++){
+    for(int j= 0; j < last+1 ; j++){
+      if( j == 0 ){
+        if( i == nGen ) cout << " All bins\t" << " ~&~\t" ;
+        else cout << "  $" << hNum->GetBinLowEdge(i+1) << "-" <<  hNum->GetBinLowEdge(i+1) + hNum->GetBinWidth(i+1) << "$\t" << " ~&~ " ;
+      }
+      cout << setprecision(4) << 100*mapAcc[j][i] << "$\\pm$ " << 100*mapErr[j][i] << "\t" ;
+      if( j == last  ) cout << " \\\\ " ; 
+      else cout << " ~&~\t" ;
+    }
+    cout << endl;
+  }
 
   TCanvas *c_acc = new TCanvas(Form("c_acc_%s",name.Data()),"acceptance",1);
   grpAccept->Draw("2AP");
@@ -289,7 +334,7 @@ TH1F* getAcceptanceHisto(vector<std::string> mcPath, vector<std::string> rdPath,
   label->SetTextSize(0.05);
 
   label->DrawLatex(0.70,0.68,"ee/#mu#mu/e#mu");
-  c_acc->Print(Form("c_accept_all_%s.eps",name.Data()));
+  c_acc->Print(Form("acceptPlot/c_accept_all_%s.eps",name.Data()));
 
   return hAccept;
 

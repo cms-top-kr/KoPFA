@@ -15,8 +15,8 @@
 #include <iostream>
 
 //default
-float detBins[] = {0, 345, 400, 450, 500, 550, 600, 700, 800, 1400}; // 9 bins
-float genBins[] = {0, 345, 400, 450, 500, 550, 600, 700, 800, 1400}; // 9 bins
+float detBins[] = {0, 345, 400, 450, 500, 550, 600, 680, 800, 1800}; // 9 bins
+float genBins[] = {0, 345, 400, 450, 500, 550, 600, 680, 800, 1800}; // 9 bins
 
 int nDet = sizeof(detBins)/sizeof(float) - 1;
 int nGen = sizeof(genBins)/sizeof(float) - 1;
@@ -30,30 +30,42 @@ void truthFinal(){
   defaultStyle();
 
   //mc truth level for full phase space or visible
-  TFile * f_MadGraph = new TFile("/data/export/common/Top/ntuple/ttbarGen.root");
-  TFile * f_POWHEG = new TFile("/data/export/common/Top/ntuple/Gen/ttbarGen_TTTo2L2Nu2BTuneZ2_Powheg_Summer11_PUS4_v0.root");
-  TFile * f_MCNLO = new TFile("/data/export/common/Top/ntuple/ttbar_ntuple_cteq6m_dilepton_v20111028.root");
-
-  double lumi = 1143.22;
-  double scale = lumi/22222.22;
-  double scale_powheg = lumi/ ( 1000000.0 / (157.5 * 0.11) );
-  bool split = false;//use full statistics if it is false
-
-  TCut lepton = "ttbarGen.leptons_[0].pt() > 20 && ttbarGen.leptons_[1].pt() > 20 && abs(ttbarGen.leptons_[0].eta()) < 2.4 && abs(ttbarGen.leptons_[1].eta()) < 2.4";
-  TCut bquark = "ttbarGen.bQuarks_[0].pt() > 30 && ttbarGen.bQuarks_[1].pt() > 30 && abs(ttbarGen.bQuarks_[0].eta()) < 2.4 && abs(ttbarGen.bQuarks_[1].eta()) < 2.4";
-  TCut visible = lepton && bquark;
+  TFile * f_MadGraph = new TFile("$WORK/data/export/common/Top/ntuple/Gen/hist/Fall11/v0/hist_madgraph.root");
+  TFile * f_POWHEG = new TFile("$WORK/data/export/common/Top/ntuple/Gen/hist/Fall11/v0/hist_powheg.root");
+  //TFile * f_MCNLO = new TFile("$WORK/data/export/common/Top/ntuple/Gen/hist/Fall11/v0/hist_mcatnlo.root");
+  //TFile * f_POWHEG = new TFile("$WORK/data/export/common/Top/ntuple/Gen/ttbarGen_TTTo2L2Nu2BTuneZ2_Powheg_Summer11_PUS4_v0.root");
+  TFile * f_MCNLO = new TFile("$WORK/data/export/common/Top/ntuple/ttbar_ntuple_cteq6m_dilepton_v20111028.root");
 
   //truth level in visible phase space
   cout << "producing truth level plots..." << endl;
-  TH1D* hMadGraph = getTruthHisto(f_MadGraph, "MADGRAPH", scale, visible);
-  TH1D* hPOWHEG = getTruthHisto(f_POWHEG, "POWHEG", scale_powheg, visible);
-  TH1D* hMadGraphFull = getTruthHisto(f_MadGraph, "MADGRAPH_Full", scale);
-  TH1D* hPOWHEGFull = getTruthHisto(f_POWHEG, "POWHEG_Full", scale_powheg);
-  TH1D* hMCNLO = (TH1D*) f_MCNLO->Get("hVisTTbarM");
-  TH1D* hMCNLO_Up = (TH1D*) f_MCNLO->Get("hVisTTbarM_Up");
-  TH1D* hMCNLO_Down = (TH1D*) f_MCNLO->Get("hVisTTbarM_Down");
+  TH1* hMadGraphFull = (TH1*) f_MadGraph->Get("all/hmTT_Full");
+  TH1* hMadGraph = (TH1*) f_MadGraph->Get("all/hmTT_Pton");
+  TH1* hPOWHEGFull = (TH1*) f_POWHEG->Get("all/hmTT_Full");
+  TH1* hPOWHEG = (TH1*) f_POWHEG->Get("all/hmTT_Pton");
+  TH1* hMCNLO = (TH1*) f_MCNLO->Get("hVisTTbarM");
+  TH1* hMCNLO_Up = (TH1*) f_MCNLO->Get("hVisTTbarM_Up");
+  TH1* hMCNLO_Down = (TH1*) f_MCNLO->Get("hVisTTbarM_Down");
 
   TFile* f = TFile::Open("truthFinal.root", "recreate");
+
+  double lumi =  5000;
+
+  double lumi_madgraph = hMadGraphFull->GetEntries() / 164.6;
+  double lumi_powheg = hPOWHEGFull->GetEntries() / 164.6;
+  double lumi_mcatnlo = hMCNLO->GetEntries() / 164.6;
+  double scale_madgraph = lumi / lumi_madgraph;
+  double scale_powheg = lumi / lumi_powheg;
+  double scale_mcatnlo = lumi / lumi_mcatnlo;
+
+  hMadGraphFull->Scale(scale_madgraph);
+  hMadGraph->Scale(scale_madgraph);
+  hPOWHEGFull->Scale(scale_powheg);
+  hPOWHEG->Scale(scale_powheg);
+
+  hMadGraphFull->SetName("MadGraph_Full");
+  hMadGraph->SetName("MadGraph_Visible");
+  hPOWHEGFull->SetName("POWHEG_Full");
+  hPOWHEG->SetName("POWHEG_Visible");
 
   hMadGraph->Write();
   hPOWHEG->Write();
