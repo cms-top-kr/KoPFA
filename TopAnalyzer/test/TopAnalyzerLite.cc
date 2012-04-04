@@ -203,14 +203,15 @@ void TopAnalyzerLite::addMC(vector<MCSample>& mcSetup,
   }
   else
   {
-    TFileCollection fileColl;
-    fileColl.Add(fileName.c_str());
-    THashList* fileList = fileColl.GetList();
-  
-    for ( int i=0; i<fileList->GetSize(); ++i )
-    {
-      TFileInfo* fileInfo = (TFileInfo*)fileList->At(i);
-      TFile* f = TFile::Open(fileInfo->GetFirstUrl()->GetFile());
+    //Do we need this? With this, I can not use $PATH (TJ)
+    //TFileCollection fileColl;
+    //fileColl.Add(fileName.c_str());
+    //THashList* fileList = fileColl.GetList();
+    //for ( int i=0; i<fileList->GetSize(); ++i )
+    //{
+      //TFileInfo* fileInfo = (TFileInfo*)fileList->At(i);
+      //TFile* f = TFile::Open(fileInfo->GetFirstUrl()->GetFile());
+      TFile* f = TFile::Open(fileName.c_str());
       if ( !f || !f->IsOpen() ) cout << "Cannot open file\n";
       else 
       {
@@ -219,7 +220,7 @@ void TopAnalyzerLite::addMC(vector<MCSample>& mcSetup,
         else mc.nEvents += hEventSummary->GetBinContent(1);
         f->Close();
       }
-    }
+    //}
   }
   mc.chain->Add(fileName.c_str());
 }
