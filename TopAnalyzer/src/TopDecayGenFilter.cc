@@ -161,7 +161,7 @@ bool TopDecayGenFilter::filter(edm::Event& iEvent, const edm::EventSetup& eventS
   }
 
   // Di-Leptonic
-  if ( diLeptonic_ && !leptonic[0] && leptonic[1] ) { 
+  if ( diLeptonic_ && leptonic[0] && leptonic[1] ) { 
     // All di-leptonic decays
     accepted = true;
     // Reject specific di-leptonic decays
