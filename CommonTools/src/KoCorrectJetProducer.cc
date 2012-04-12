@@ -4,8 +4,6 @@
 #include "FWCore/PluginManager/interface/ModuleDef.h"
 #include "JetMETCorrections/Objects/interface/JetCorrector.h"
 #include "JetMETCorrections/Objects/interface/JetCorrectionsRecord.h"
-#include "JetMETCorrections/Modules/interface/JetCorrectionService.h"
-#include "JetMETCorrections/Modules/interface/JetCorrectionServiceChain.h"
 #include "JetMETCorrections/Modules/interface/JetCorrectionProducer.h"
 #include "JetMETCorrections/Algorithms/interface/LXXXCorrector.h"
 #include "JetMETCorrections/Algorithms/interface/L1OffsetCorrector.h"
