@@ -32,6 +32,7 @@ public:
   // Various definition of generator level mass algorithms
   // Return (X,Y,Z,T) = (0,0,0,0) if combination is impossible
   math::XYZTLorentzVector partonTTbar() const;
+
   math::XYZTLorentzVector partonLLBBMet() const;
   math::XYZTLorentzVector particleLLJJMet() const;
   math::XYZTLorentzVector particleLLBjBjMet() const;
@@ -53,7 +54,7 @@ public:
   int eeDecay;
   int emuDecay;
   int tauDecay;
- 
+
   double met_, metX_, metY_;
   double genMetX_, genMetY_;
 
@@ -65,8 +66,8 @@ public:
 
   void clear();
   bool isOverlap(const std::vector<const reco::GenParticle*>& pColl1,
-                                const std::vector<const reco::GenParticle*>& pColl2,
-                                int& nMatch);
+                 const std::vector<const reco::GenParticle*>& pColl2,
+                 int& nMatch);
   void findStableDaughters(const reco::GenParticle* p,
                            std::vector<const reco::GenParticle*>& stableDaughters);
   bool isBHadron(const int absPdgId);
