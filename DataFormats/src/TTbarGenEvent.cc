@@ -157,7 +157,7 @@ void TTbarGenEvent::set(const reco::GenParticleCollection* genParticles,
     const reco::GenParticle& p = genParticles->at(i);
 
     const int status = p.status();
-    const int absPdgId = p.pdgId();
+    const int absPdgId = abs(p.pdgId());
 
     if ( status == 1 )
     {
@@ -190,19 +190,19 @@ void TTbarGenEvent::set(const reco::GenParticleCollection* genParticles,
       }
       else if ( isBHadron(absPdgId) )
       {
-        bool hasBDaughter = false;
-        for ( int j=0,m=p.numberOfDaughters(); j<m; ++j )
+        bool hasBMother = false;
+        for ( int j=0,m=p.numberOfMothers(); j<m; ++j )
         {
-          const reco::GenParticle* dau = dynamic_cast<const reco::GenParticle*>(p.daughter(j));
-          if ( !dau ) continue;
+          const reco::GenParticle* mother = dynamic_cast<const reco::GenParticle*>(p.mother(j));
+          if ( !mother ) continue;
 
-          if ( isBHadron(dau->pdgId()) )
+          if ( isBHadron(mother->pdgId()) )
           {
-            hasBDaughter = true;
+            hasBMother = true;
             break;
           }
         }
-        if ( !hasBDaughter ) bHadrons.push_back(&p);
+        if ( !hasBMother ) bHadrons.push_back(&p);
       }
     }
   }
