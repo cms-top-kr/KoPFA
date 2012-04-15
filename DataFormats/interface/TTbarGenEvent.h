@@ -45,6 +45,7 @@ public:
   math::XYZTLorentzVector tt_;
   std::vector<math::XYZTLorentzVector> tQuarks_;
   std::vector<math::XYZTLorentzVector> bQuarks_;
+  std::vector<math::XYZTLorentzVector> topBquarks_;
   std::vector<math::XYZTLorentzVector> leptons_;
   std::vector<math::XYZTLorentzVector> electrons_;
   std::vector<math::XYZTLorentzVector> muons_;
@@ -71,6 +72,10 @@ public:
   void findStableDaughters(const reco::GenParticle* p,
                            std::vector<const reco::GenParticle*>& stableDaughters);
   bool isBHadron(const int absPdgId);
+  bool isDecayFrom(const reco::GenParticle* p, const int pdgId);
+
+  // Check visible phase space cut;
+  bool isAccepted_Parton_, isAccepted_Particle_;
 
 };
 

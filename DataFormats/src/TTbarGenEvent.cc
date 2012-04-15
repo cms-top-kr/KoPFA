@@ -210,6 +210,14 @@ void TTbarGenEvent::set(const reco::GenParticleCollection* genParticles,
   std::sort(stableElectrons_.begin(), stableElectrons_.end(), GreaterByPt<reco::Candidate::LorentzVector>());
   std::sort(stableMuons_.begin(), stableMuons_.end(), GreaterByPt<reco::Candidate::LorentzVector>());
 
+  // Collect b quarks from top
+  for ( int i=0, n=finalBQuarks.size(); i<n; ++i )
+  {
+    const reco::GenParticle* p = finalBQuarks[i];
+    if ( isDecayFrom(p, 6) ) topBquarks_.push_back(p->p4());
+  }
+  std::sort(topBquarks_.begin(), topBquarks_.end(), GreaterByPt<reco::Candidate::LorentzVector>());
+
   // Set genMET info
   genMetX_ = genMET->px();
   genMetY_ = genMET->py();
@@ -278,6 +286,20 @@ bool TTbarGenEvent::isOverlap(const std::vector<const reco::GenParticle*>& pColl
   }
 
   return nMatch > 0;
+}
+
+bool TTbarGenEvent::isDecayFrom(const reco::GenParticle* p, const int pdgId)
+{
+  if ( !p ) return false;
+  for ( int i=0, n=p->numberOfMothers(); i<n; ++i )
+  {
+    const reco::GenParticle* m = dynamic_cast<const reco::GenParticle*>(p->mother(i));
+    if ( !m ) return false;
+
+    if ( abs(m->pdgId()) == pdgId ) return true;
+    if ( isDecayFrom(m, pdgId) ) return true;
+  }
+  return false;
 }
 
 using namespace std;
