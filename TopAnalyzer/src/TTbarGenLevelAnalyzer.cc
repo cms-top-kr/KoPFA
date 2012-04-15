@@ -47,6 +47,7 @@ private:
 
   TH1F* hmTT_Full_; // mTT in the full PS
   TH1F* hmTT_Pton_; // mTT in the visible PS with partons
+  TH1F* hmTT_PtonPS_; // mTT in the visible PS with partons, after parton shower
   TH1F* hmTT_Ptcl_; // mTT in the isible PS with particles
   TH1F* hmLLBjBjMet_Ptcl_; // mLLBjBjMet in the visible PS with particles
   TH1F* hmLLJJMet_Ptcl_; // mLLJJMet in the visible PS with particles
@@ -86,7 +87,10 @@ void TTbarGenLevelAnalyzer::beginJob()
 
   hmTT_Full_ = fs->make<TH1F>("hmTT_Full", "m(t#bar{t}) in the full phase space;Mass [GeV/c^{2}];Events per 1GeV", 2000, 0, 2000);
   hmTT_Pton_ = fs->make<TH1F>("hmTT_Pton", "m(t#bar{t}) in the visible phase space with parton level cuts;Mass [GeV/c^{2}];Events per 1GeV", 2000, 0, 2000);
+  hmTT_PtonPS_ = fs->make<TH1F>("hmTT_PtonPS", "m(t#bar{t}) in the visible phase space with parton level cuts PS;Mass [GeV/c^{2}];Events per 1GeV", 2000, 0, 2000);
   hmTT_Ptcl_ = fs->make<TH1F>("hmTT_Ptcl", "m(t#bar{t}) in the visible phase space with particle level cuts;Mass [GeV/c^{2}];Events per 1GeV", 2000, 0, 2000);
+
+  // Dileptonic modes
   hmLLBjBjMet_Ptcl_ = fs->make<TH1F>("hmLLBjBjMet_Ptcl", "m(llBjBjMet) in the visible phase space with particle level cuts;Mass [GeV/c^{2}];Events per 1GeV", 2000, 0, 2000);
   hmLLJJMet_Ptcl_ = fs->make<TH1F>("hmLLJJMet_Ptcl", "m(lljjMet) in the visible phase space with particle level cuts;Mass [GeV/c^{2}];Events per 1GeV", 2000, 0, 2000);
 
@@ -136,47 +140,6 @@ void TTbarGenLevelAnalyzer::analyze(const edm::Event& event, const edm::EventSet
   const double mLLBjBjMet = ttbarGenEvent_->particleLLBjBjMet().M();
 
   hmTT_Full_->Fill(mTT);
-  bool isPartonLevel = false;
-  if ( mLLBBMet > 0 ) // At least two leptons and b quarks are found
-  {
-    // Parton level visible space cut
-    if ( ttbarGenEvent_->leptons_[0].pt() >= 20 and ttbarGenEvent_->leptons_[1].pt() >= 20 and 
-         ttbarGenEvent_->bQuarks_[0].pt() >= 30 and ttbarGenEvent_->bQuarks_[1].pt() >= 30 and
-         abs(ttbarGenEvent_->leptons_[0].eta()) <= 2.4 and abs(ttbarGenEvent_->leptons_[1].eta()) <= 2.4 and
-         abs(ttbarGenEvent_->bQuarks_[0].eta()) <= 2.4 and abs(ttbarGenEvent_->bQuarks_[1].eta()) <= 2.4 )
-    {
-      isPartonLevel = true;
-      hmTT_Pton_->Fill(mTT);
-    }
-  }
-
-  if ( ttbarGenEvent_->tQuarks_.size() >= 2 )
-  {
-    const double mTop1 = ttbarGenEvent_->tQuarks_[0].mass();
-    const double mTop2 = ttbarGenEvent_->tQuarks_[1].mass();
-    hmTop_->Fill(mTop1);
-    hmTop_->Fill(mTop2);
-    hDmTop_->Fill(abs(mTop1-mTop2));
-
-    hPtTop_->Fill(ttbarGenEvent_->tQuarks_[0].pt());
-    hPtTop_->Fill(ttbarGenEvent_->tQuarks_[1].pt());
-  }
-
-  // At least two stable leptons and b jets are found
-  // Stable leptons and b jets are defined in the visible phase space
-  bool isParticleLevel = false;
-  if ( mLLBjBjMet > 0 ) 
-  {
-    isParticleLevel = true;
-    hmTT_Ptcl_->Fill(mTT);
-    hmLLJJMet_Ptcl_->Fill(mLLJJMet);
-    hmLLBjBjMet_Ptcl_->Fill(mLLBjBjMet);
-  }
-
-  if ( isPartonLevel and isParticleLevel ) hPartonVsParticle_->Fill(1.,1.);
-  else if ( isPartonLevel and !isParticleLevel ) hPartonVsParticle_->Fill(1.,0.);
-  else if ( !isPartonLevel and isParticleLevel ) hPartonVsParticle_->Fill(0.,1.);
-  else hPartonVsParticle_->Fill(0.,0.);
 
   // Fill decay mode
   int lepType1 = 0, lepType2 = 0;
@@ -221,6 +184,58 @@ void TTbarGenLevelAnalyzer::analyze(const edm::Event& event, const edm::EventSet
     else lepType2 = lepType;
   }
   hBR_->Fill(lepType1, lepType2);
+
+  bool isPartonLevel = false;
+  if ( mLLBBMet > 0 ) // At least two leptons and b quarks are found
+  {
+    // Parton level visible space cut
+    if ( ttbarGenEvent_->leptons_[0].pt() >= 20 and ttbarGenEvent_->leptons_[1].pt() >= 20 and 
+         ttbarGenEvent_->bQuarks_[0].pt() >= 30 and ttbarGenEvent_->bQuarks_[1].pt() >= 30 and
+         abs(ttbarGenEvent_->leptons_[0].eta()) <= 2.4 and abs(ttbarGenEvent_->leptons_[1].eta()) <= 2.4 and
+         abs(ttbarGenEvent_->bQuarks_[0].eta()) <= 2.4 and abs(ttbarGenEvent_->bQuarks_[1].eta()) <= 2.4 )
+    {
+      isPartonLevel = true;
+      hmTT_Pton_->Fill(mTT);
+    }
+  }
+
+  if ( ttbarGenEvent_->leptons_.size() >= 2 and ttbarGenEvent_->topBquarks_.size() >= 2 and
+       ttbarGenEvent_->leptons_[0].pt() >= 20 and ttbarGenEvent_->leptons_[1].pt() >= 20 and
+       ttbarGenEvent_->topBquarks_[0].pt() >= 30 and ttbarGenEvent_->topBquarks_[1].pt() >= 30 and
+       abs(ttbarGenEvent_->leptons_[0].eta()) <= 2.4 and abs(ttbarGenEvent_->leptons_[1].eta()) <= 2.4 and
+       abs(ttbarGenEvent_->topBquarks_[0].eta()) <= 2.4 and abs(ttbarGenEvent_->topBquarks_[1].eta()) <= 2.4 )
+  {
+    isPartonLevel = true;
+    hmTT_PtonPS_->Fill(mTT);
+  }
+
+  if ( ttbarGenEvent_->tQuarks_.size() >= 2 )
+  {
+    const double mTop1 = ttbarGenEvent_->tQuarks_[0].mass();
+    const double mTop2 = ttbarGenEvent_->tQuarks_[1].mass();
+    hmTop_->Fill(mTop1);
+    hmTop_->Fill(mTop2);
+    hDmTop_->Fill(abs(mTop1-mTop2));
+
+    hPtTop_->Fill(ttbarGenEvent_->tQuarks_[0].pt());
+    hPtTop_->Fill(ttbarGenEvent_->tQuarks_[1].pt());
+  }
+
+  // At least two stable leptons and b jets are found
+  // Stable leptons and b jets are defined in the visible phase space
+  bool isParticleLevel = false;
+  if ( mLLBjBjMet > 0 ) 
+  {
+    isParticleLevel = true;
+    hmTT_Ptcl_->Fill(mTT);
+    hmLLJJMet_Ptcl_->Fill(mLLJJMet);
+    hmLLBjBjMet_Ptcl_->Fill(mLLBjBjMet);
+  }
+
+  if ( isPartonLevel and isParticleLevel ) hPartonVsParticle_->Fill(1.,1.);
+  else if ( isPartonLevel and !isParticleLevel ) hPartonVsParticle_->Fill(1.,0.);
+  else if ( !isPartonLevel and isParticleLevel ) hPartonVsParticle_->Fill(0.,1.);
+  else hPartonVsParticle_->Fill(0.,0.);
 
   if ( doTree_ ) tree_->Fill();
 }
