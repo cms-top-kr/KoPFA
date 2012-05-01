@@ -14,12 +14,14 @@ pf2patEventContent +=[
 #        'keep *_particleFlow_*_*',
         'keep *_acceptedMuons_*_*',
         'keep *_acceptedElectrons_*_*',
-        'keep *_selectedPatJetsPFlow_*_*',
+        'keep patJets_selectedPatJetsPFlow_*_*',
         'keep *_patMETsPFlow_*_*',
-        'keep double_*PFlow*_rho_PAT',
+        'keep double_kt6PFJets*_rho_*',
 #        'keep *_pfJets*_*_*',
         'keep *_addPileupInfo_*_*',
-        'keep *_ak5GenJets_*_*',
-        'keep *_genMet*_*_*'
+        'keep *_ak5GenJets*_*_*',
+        'keep *_genMet*_*_*',
+        'drop recoGenJets_selectedPatJets*_genJets_PAT',
+        'drop recoPFCandidates_selectedPatJetsPFlow_pfCandidates_PAT',
 ]
 
