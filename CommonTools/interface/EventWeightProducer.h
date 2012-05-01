@@ -33,6 +33,16 @@ class EventWeightProducer : public edm::EDProducer
 
   std::vector<double> PileUpRD_;
   std::vector<double> PileUpMC_;
+
+  unsigned int npileup;
+  double weightin;
+  double weight;
+  double weightplus;
+  double weightminus;
+
+  reweight::PoissonMeanShifter PShiftUp_;
+  reweight::PoissonMeanShifter PShiftDown_;
+
 };
 
 

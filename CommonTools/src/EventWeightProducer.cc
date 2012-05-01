@@ -18,7 +18,13 @@ EventWeightProducer::EventWeightProducer(const edm::ParameterSet& cfg)
 {
   PileUpRD_ = cfg.getParameter< std::vector<double> >("PileUpRD"),
   PileUpMC_ = cfg.getParameter< std::vector<double> >("PileUpMC"),
-  produces <double> ( "" );
+
+  produces<int>("npileup");
+  produces<double>("weightin");
+  produces<double>("weight");
+  produces<double>("weightplus");
+  produces<double>("weightminus");
+
 }
 
 EventWeightProducer::~EventWeightProducer()
@@ -29,29 +35,57 @@ EventWeightProducer::~EventWeightProducer()
 void EventWeightProducer::produce(edm::Event& iEvent, const edm::EventSetup& es)
 {
   using namespace reco;
-
+ 
   edm::Handle<std::vector< PileupSummaryInfo > >  PupInfo;
   iEvent.getByLabel(edm::InputTag("addPileupInfo"), PupInfo);
 
   std::vector<PileupSummaryInfo>::const_iterator PVI;
 
   int npv = -1;
-  for(PVI = PupInfo->begin(); PVI != PupInfo->end(); ++PVI) {
+  int npvin = -1;
+  double w = 1.0;
+  double win = 1.0;
+  double wplus = 1.0;
+  double wminus = 1.0;
+  float sum_nvtx = 0;
+  float ave_nvtx = 0;
 
-    int BX = PVI->getBunchCrossing();
+  if( PupInfo.isValid()){
+    for(PVI = PupInfo->begin(); PVI != PupInfo->end(); ++PVI) {
+      int tmpnpv = PVI->getPU_NumInteractions();
+      sum_nvtx += float(tmpnpv);
 
-    if(BX == 0) { 
-      npv = PVI->getPU_NumInteractions();
-      continue;
+      int BX = PVI->getBunchCrossing();
+
+      if(BX == 0) {
+	npvin = PVI->getPU_NumInteractions();
+	npv = PVI->getTrueNumInteractions();
+	continue;
+      }
+
     }
+
+    ave_nvtx = sum_nvtx/3.;
+
+    win = LumiWeights_.weight( npvin );
+    w = LumiWeights_.weight( npv );
+    //w = LumiWeights_.weight3BX( ave_nvtx );
+    wplus  = weight*PShiftUp_.ShiftWeight( npv );
+    wminus = weight*PShiftDown_.ShiftWeight( npv );
 
   }
 
-  double w = LumiWeights_.weight( npv );
-
+  std::auto_ptr<int> npileup( new int(npv) );
+  std::auto_ptr<double> weightin( new double(win) );
   std::auto_ptr<double> weight( new double(w) );
+  std::auto_ptr<double> weightplus( new double(wplus) );
+  std::auto_ptr<double> weightminus( new double(wminus) );
 
-  iEvent.put(weight);
+  iEvent.put(npileup, "npileup");
+  iEvent.put(weightin, "weightin");
+  iEvent.put(weight, "weight");
+  iEvent.put(weightplus, "weightplus");
+  iEvent.put(weightminus, "weightminus");
 
 }
 
@@ -60,12 +94,15 @@ EventWeightProducer::beginJob(){
   std::vector< float > Wlumi ;
   std::vector< float > TrueDist2011;
 
-  for( int i=0; i<25; ++i) {
+  for( int i=0; i<50; ++i) {
     TrueDist2011.push_back((float)PileUpRD_[i]);
     Wlumi.push_back((float)PileUpMC_[i]);
   }
 
   LumiWeights_ = edm::LumiReWeighting(Wlumi, TrueDist2011);
+
+  PShiftDown_ = reweight::PoissonMeanShifter(-0.5);
+  PShiftUp_ = reweight::PoissonMeanShifter(0.5);
 
 }
 
