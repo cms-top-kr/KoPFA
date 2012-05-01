@@ -19,5 +19,7 @@ pf2patEventContent +=[
         'keep double_*PFlow*_rho_PAT',
 #        'keep *_pfJets*_*_*',
         'keep *_addPileupInfo_*_*',
+        'keep *_ak5GenJets_*_*',
+        'keep *_genMet*_*_*'
 ]
 
