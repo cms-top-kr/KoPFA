@@ -13,7 +13,7 @@
 //
 // Original Author:  Tae Jeong Kim,40 R-A32,+41227678602,
 //         Created:  Fri Jun  4 17:19:29 CEST 2010
-// $Id: TopDILAnalyzer.h,v 1.64 2012/02/21 17:30:22 tjkim Exp $
+// $Id: TopDILAnalyzer.h,v 1.65 2012/02/26 10:47:08 jhgoh Exp $
 //
 //
 
@@ -60,6 +60,7 @@
 #include "PhysicsTools/Utilities/interface/LumiReWeighting.h"
 
 #include "KoPFA/DataFormats/interface/Maos.h"
+#include "KoPFA/DataFormats/interface/TTbarCandidate.h"
 #include "TFile.h"
 #include "TTree.h"
 #include "TH1.h"
@@ -83,6 +84,7 @@ class TopDILAnalyzer : public edm::EDFilter {
     metLabel_ = iConfig.getParameter<edm::InputTag>("metLabel");
     jetLabel_ = iConfig.getParameter<edm::InputTag>("jetLabel");
     genParticlesLabel_= iConfig.getParameter<edm::InputTag>("genParticlesLabel");
+    genJetsLabel_= iConfig.getParameter<edm::InputTag>("genJetsLabel");
     vertexLabel_ =  iConfig.getUntrackedParameter<edm::InputTag>("vertexLabel");
     metStudy_ = iConfig.getUntrackedParameter<bool>("metStudy",false);
     useEventCounter_ = iConfig.getParameter<bool>("useEventCounter");
@@ -118,9 +120,6 @@ class TopDILAnalyzer : public edm::EDFilter {
       }
     }
     
-    PileUpRD_ = iConfig.getParameter< std::vector<double> >("PileUpRD");
-    PileUpMC_ = iConfig.getParameter< std::vector<double> >("PileUpMC");
-
     edm::Service<TFileService> fs;
     tree = fs->make<TTree>("tree", "Tree for Top quark study");
     tmp = fs->make<TH1F>("EventSummary","EventSummary",filters_.size(),0,filters_.size());
@@ -130,15 +129,16 @@ class TopDILAnalyzer : public edm::EDFilter {
     h_mass      = fs->make<TH1F>( "h_mass", "Mass", 100, 0., 200. );
     h_MET       = fs->make<TH1F>( "h_MET", "MET", 40, 0, 80);
     h_jetpt30_multi = fs->make<TH1F>( "h_jetpt30_multi", "jet30pt_multi", 10, 0, 10);
-    h_npileupin = fs->make<TH1F>( "h_npileupin", "npileupin", 30, 0, 30);
     h_npileup = fs->make<TH1F>( "h_npileup", "npileup", 30, 0, 30);
     h_nvertex = fs->make<TH1F>( "h_nvertex", "nvertex", 30, 0, 30);
+    h_bjetspt30 = fs->make<TH1F>("h_bjetspt30","h_bjetspt30", 30, 0,30);
 
     Z = new std::vector<Ko::ZCandidate>();
     lepton1 = new std::vector<Ko::Lepton>();
     lepton2 = new std::vector<Ko::Lepton>();
     pfMet = new std::vector<Ko::METCandidate>();
     ttbar = new std::vector<Ko::TTbarMass>();
+    ttbarGen = new std::vector<Ko::TTbarCandidate>();
     met = new std::vector<math::XYZTLorentzVector>();
     jetspt30 = new std::vector<math::XYZTLorentzVector>();
   }
@@ -178,6 +178,7 @@ class TopDILAnalyzer : public edm::EDFilter {
     //tree->Branch("lepton2","std::vector<Ko::Lepton>", &lepton2);
     //tree->Branch("pfMet","std::vector<Ko::METCandidate>", &pfMet);
     tree->Branch("ttbar","std::vector<Ko::TTbarMass>", &ttbar);
+    tree->Branch("ttbarGen","std::vector<Ko::TTbarCandidate>", &ttbarGen);
 
     //tree->Branch("met","std::vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >", &met);
     tree->Branch("jetspt30","std::vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >", &jetspt30);
@@ -195,19 +196,6 @@ class TopDILAnalyzer : public edm::EDFilter {
 
     tree->Branch("genttbarM",&genttbarM,"genttbarM/d");
 
-    std::vector< float > Wlumi ;
-    std::vector< float > TrueDist2011;
-    
-    for( int i=0; i< 50; ++i) {
-      TrueDist2011.push_back((float)PileUpRD_[i]);
-      Wlumi.push_back((float)PileUpMC_[i]);
-    }
-
-    LumiWeights_ = edm::LumiReWeighting(Wlumi, TrueDist2011);
-
-    PShiftDown_ = reweight::PoissonMeanShifter(-0.5);
-    PShiftUp_ = reweight::PoissonMeanShifter(0.5);
-
   } 
 
   //virtual void produce(const edm::Event& iEvent, const edm::EventSetup& iSetup)
@@ -224,48 +212,33 @@ class TopDILAnalyzer : public edm::EDFilter {
     edm::Handle<double>  rho;
     iEvent.getByLabel(edm::InputTag("kt6PFJetsPFlow","rho"), rho);
 
-    edm::Handle<std::vector< PileupSummaryInfo > >  PupInfo;
-    iEvent.getByLabel(edm::InputTag("addPileupInfo"), PupInfo);
 
-    std::vector<PileupSummaryInfo>::const_iterator PVI;
+    //extracting Pileup information 
+    edm::Handle<double>  weightin_;
+    iEvent.getByLabel(edm::InputTag("PUweight","weightin"), weightin_);
 
-    int npv = -1;
-    int npvin = -1;
-    float sum_nvtx = 0;
-    float ave_nvtx = 0;
+    edm::Handle<double>  weight_;
+    iEvent.getByLabel(edm::InputTag("PUweight","weight"), weight_);
 
-    if( PupInfo.isValid()){
-      for(PVI = PupInfo->begin(); PVI != PupInfo->end(); ++PVI) {
-        int tmpnpv = PVI->getPU_NumInteractions();
-        sum_nvtx += float(tmpnpv);
+    edm::Handle<double>  weightplus_;
+    iEvent.getByLabel(edm::InputTag("PUweight","weightplus"), weightplus_);
 
-        int BX = PVI->getBunchCrossing();
+    edm::Handle<double>  weightminus_;
+    iEvent.getByLabel(edm::InputTag("PUweight","weightminus"), weightminus_);
 
-        if(BX == 0) {
-          npvin = PVI->getPU_NumInteractions();
-          npv = PVI->getTrueNumInteractions();
-          continue;
-        }
+    edm::Handle<int>  npileup_;
+    iEvent.getByLabel(edm::InputTag("PUweight","npileup"), npileup_);
 
-      } 
 
-      ave_nvtx = sum_nvtx/3.;
-
-      double win = LumiWeights_.weight( npvin );
-      double w = LumiWeights_.weight( npv );
-      //weight = LumiWeights_.weight3BX( ave_nvtx );
-      double wplus  = weight*PShiftUp_.ShiftWeight( npv );
-      double wminus = weight*PShiftDown_.ShiftWeight( npv );
-      weightin = win; 
-      weight = w;
-      weightplus = wplus;
-      weightminus = wminus;
+    if( weight_.isValid() ){
+      weightin = *weightin_; 
+      weight = *weight_;
+      weightplus = *weightplus_;
+      weightminus = *weightminus_;
+      npileup = *npileup_;
     }
 
-    h_npileupin->Fill(npv);
-    h_npileup->Fill(ave_nvtx);
-
-    npileup = npv;
+    h_npileup->Fill(npileup);
 
     edm::Handle<reco::VertexCollection> recVtxs_;
     iEvent.getByLabel(vertexLabel_,recVtxs_);
@@ -282,15 +255,6 @@ class TopDILAnalyzer : public edm::EDFilter {
 
     h_nvertex->Fill(nv);
 
-    //edm::Handle<double> weight_;
-    //iEvent.getByLabel("PUweight", weight_);
-
-    //if(weight_.isValid()){
-    //  weight = *weight_;
-    //}else{
-    //  weight = 1.0;
-    //}
-
     edm::Handle<std::vector<T1> > muons1_;
     edm::Handle<std::vector<T2> > muons2_;
     edm::Handle<pat::METCollection> MET_;
@@ -300,15 +264,14 @@ class TopDILAnalyzer : public edm::EDFilter {
 
     pat::METCollection::const_iterator mi = MET_->begin();
 
-    edm::Handle< reco::PFCandidateCollection > pfCandidates_;
-    typedef reco::PFCandidateCollection::const_iterator CI;
-    iEvent.getByLabel("particleFlow",pfCandidates_);
-
     edm::Handle<pat::JetCollection> Jets;
     iEvent.getByLabel(jetLabel_, Jets);
 
     edm::Handle<reco::GenParticleCollection> genParticles_;
     iEvent.getByLabel(genParticlesLabel_,genParticles_);
+
+    edm::Handle<reco::GenJetCollection> genJets_;
+    iEvent.getByLabel(genJetsLabel_,genJets_);
 
     bool selected = false;
 
@@ -452,17 +415,31 @@ class TopDILAnalyzer : public edm::EDFilter {
       const Ko::TTbarMass ttbarMass(lep1, lep2, jetspt30->at(0), jetspt30->at(1), met->at(0));
       ttbar->push_back(ttbarMass);
 
+      Ko::TTbarCandidate ttbarGenLevel;
+
       if(genParticles_.isValid()){
-        reco::Candidate::LorentzVector ttbarGen;
+        reco::Candidate::LorentzVector ttbarP4;
         for (reco::GenParticleCollection::const_iterator mcIter=genParticles_->begin(); mcIter != genParticles_->end(); mcIter++ ) {
           int genId = mcIter->pdgId();
           if( abs(genId) == 6){
-            ttbarGen += mcIter->p4();
+            ttbarP4 += mcIter->p4();
           }
         }
 
-        genttbarM = ttbarGen.M();
+        genttbarM = ttbarP4.M();
+        const reco::GenParticleCollection* myGenParticles = 0;
+        myGenParticles = &(*genParticles_);
+        ttbarGenLevel.building(myGenParticles);
       }
+
+      if(genJets_.isValid()){
+        const reco::GenJetCollection* myGenJets = 0;
+        myGenJets = &(*genJets_);
+        ttbarGenLevel.setMatchedBJets(myGenJets);
+      }
+
+      ttbarGen->push_back(ttbarGenLevel);
+      h_bjetspt30->Fill(ttbarGenLevel.bJets().size() );
     }
 
     //ESHandle<SetupData> pSetup;
@@ -480,6 +457,7 @@ class TopDILAnalyzer : public edm::EDFilter {
     lepton2->clear();
     pfMet->clear();
     ttbar->clear();
+    ttbarGen->clear();
     met->clear();
     jetspt30->clear();
 
@@ -573,6 +551,7 @@ class TopDILAnalyzer : public edm::EDFilter {
   edm::InputTag metLabel_;
   edm::InputTag jetLabel_;
   edm::InputTag genParticlesLabel_;
+  edm::InputTag genJetsLabel_;
   edm::InputTag vertexLabel_;
 
   std::vector<std::string> filters_;
@@ -599,15 +578,16 @@ class TopDILAnalyzer : public edm::EDFilter {
   TH1F * h_mass;
   TH1F * h_MET;
   TH1F * h_jetpt30_multi;
-  TH1F * h_npileupin;
   TH1F * h_npileup;
   TH1F * h_nvertex;
+  TH1F * h_bjetspt30;
 
   std::vector<Ko::ZCandidate>* Z;
   std::vector<Ko::Lepton>* lepton1;
   std::vector<Ko::Lepton>* lepton2;
   std::vector<Ko::METCandidate>* pfMet;
   std::vector<Ko::TTbarMass>* ttbar;
+  std::vector<Ko::TTbarCandidate>* ttbarGen;
   std::vector<math::XYZTLorentzVector>* met;
   std::vector<math::XYZTLorentzVector>* jetspt30;
 
@@ -645,14 +625,6 @@ class TopDILAnalyzer : public edm::EDFilter {
   double weight;
   double weightplus;
   double weightminus;
-
-  edm::LumiReWeighting LumiWeights_;
-
-  std::vector<double> PileUpRD_;
-  std::vector<double> PileUpMC_;
-
-  reweight::PoissonMeanShifter PShiftUp_;
-  reweight::PoissonMeanShifter PShiftDown_;
 
   bool applyIso_;
   bool oppPair_;

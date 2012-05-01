@@ -7,7 +7,7 @@ myJetId = pfJetIDSelector.clone()
 from KoPFA.TopAnalyzer.topLeptonSelector_cfi import *
 from KoPFA.TopAnalyzer.triggerFilterByRun_cfi import *
 from KoPFA.TopAnalyzer.topHLTfilter_cff import *
-from KoPFA.CommonTools.PileUpWeight_cff import *
+from KoPFA.CommonTools.EventWeightProducer_cfi import *
 from KoPFA.CommonTools.JetEnergyScale_cfi import *
 
 VertexFilter = cms.EDFilter('VertexFilter',
@@ -71,11 +71,6 @@ DYmmFilter = cms.EDFilter("ZmmFilter",
   max = cms.double(99999),
 )
 
-#correctedPatJetsPFlow = cms.EDProducer('KoCorrectJetProducer',
-#    src = cms.InputTag('selectedPatJetsPFlow'),
-#    correctors = cms.vstring('ak5PFL2L3')
-#)
-
 bTagSets = cms.untracked.VPSet(
     cms.untracked.PSet(
         algo = cms.untracked.string("trackCountingHighEffBJetTags"),
@@ -111,6 +106,7 @@ bTagSets = cms.untracked.VPSet(
 
 ElEl = cms.EDFilter('TopElElAnalyzer',
     genParticlesLabel = cms.InputTag('genParticles'),
+    genJetsLabel = cms.InputTag('ak5GenJets'),
     muonLabel1 =  cms.InputTag('Electrons'),
     muonLabel2 =  cms.InputTag('Electrons'),
     metLabel =  cms.InputTag('JetEnergyScale','patMETsPFlow'),
@@ -127,12 +123,11 @@ ElEl = cms.EDFilter('TopElElAnalyzer',
     relIso1 = cms.untracked.double(0.17),
     relIso2 = cms.untracked.double(0.17),
     bTagSets = bTagSets,
-    PileUpRD = PileUpRD2011,
-    PileUpMC = Fall11,
 )
 
 MuMu = cms.EDFilter('TopMuMuAnalyzer',
     genParticlesLabel = cms.InputTag('genParticles'),
+    genJetsLabel = cms.InputTag('ak5GenJets'),
     muonLabel1 =  cms.InputTag('Muons'),
     muonLabel2 =  cms.InputTag('Muons'),
     metLabel =  cms.InputTag('JetEnergyScale','patMETsPFlow'),
@@ -150,12 +145,11 @@ MuMu = cms.EDFilter('TopMuMuAnalyzer',
     relIso1 = cms.untracked.double(0.20),
     relIso2 = cms.untracked.double(0.20),
     bTagSets = bTagSets,
-    PileUpRD = PileUpRD2011,
-    PileUpMC = Fall11,
 )
 
 MuEl = cms.EDFilter('TopMuElAnalyzer',
     genParticlesLabel = cms.InputTag('genParticles'),
+    genJetsLabel = cms.InputTag('ak5GenJets'),
     muonLabel1 =  cms.InputTag('Muons'),
     muonLabel2 =  cms.InputTag('Electrons'),
     metLabel =  cms.InputTag('JetEnergyScale','patMETsPFlow'),
@@ -173,8 +167,6 @@ MuEl = cms.EDFilter('TopMuElAnalyzer',
     relIso1 = cms.untracked.double(0.20),
     relIso2 = cms.untracked.double(0.17),
     bTagSets = bTagSets,
-    PileUpRD = PileUpRD2011,
-    PileUpMC = Fall11,
 )
 
 MuJet = cms.EDFilter('TopMuJetAnalyzer',
@@ -244,7 +236,7 @@ topElElAnalysisMCSequence = cms.Sequence(
     topWLeptonGenFilter*
     GenZmassFilter*
 #    selectedPatJetsPFlow*
-#    PUweight*
+    PUweight*
 #    ElectronAna*
     Electrons*
     patElectronFilter*
@@ -273,7 +265,7 @@ topMuMuAnalysisMCSequence = cms.Sequence(
     topWLeptonGenFilter*
     GenZmassFilter*
 #    selectedPatJetsPFlow*
-#    PUweight*
+    PUweight*
 #    DYmmFilter*
     Muons*
     patMuonFilter*
@@ -302,7 +294,7 @@ topMuElAnalysisMCSequence = cms.Sequence(
     topWLeptonGenFilter*
     GenZmassFilter*
 #    selectedPatJetsPFlow*
-#    PUweight*
+    PUweight*
     Muons * Electrons *
     patMuonFilterForMuEl * patElectronFilterForMuEl *
     JetEnergyScale*
