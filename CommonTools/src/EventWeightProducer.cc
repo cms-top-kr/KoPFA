@@ -70,8 +70,8 @@ void EventWeightProducer::produce(edm::Event& iEvent, const edm::EventSetup& es)
     win = LumiWeights_.weight( npvin );
     w = LumiWeights_.weight( npv );
     //w = LumiWeights_.weight3BX( ave_nvtx );
-    wplus  = weight*PShiftUp_.ShiftWeight( npv );
-    wminus = weight*PShiftDown_.ShiftWeight( npv );
+    wplus  = w*PShiftUp_.ShiftWeight( npv );
+    wminus = w*PShiftDown_.ShiftWeight( npv );
 
   }
 
