@@ -13,7 +13,7 @@
 //
 // Original Author:  Tae Jeong Kim
 //         Created:  Mon Dec 14 01:29:35 CET 2009
-// $Id: JetFilter.cc,v 1.6 2012/02/26 11:42:06 jhgoh Exp $
+// $Id: JetFilter.cc,v 1.7 2012/05/02 16:01:22 jhgoh Exp $
 //
 //
 
@@ -211,10 +211,12 @@ JetFilter::filter(edm::Event& iEvent, const edm::EventSetup& iSetup)
     pat::Jet correctedJetUp = correctedJet;
     pat::Jet correctedJetDn = correctedJet;
 
-    jecUnc_->setJetEta(correctedJet.eta());
-    jecUnc_->setJetPt(correctedJet.pt());
-
+    jecUnc_->setJetEta(correctedJetUp.eta());
+    jecUnc_->setJetPt(correctedJetUp.pt());
     correctedJetUp.scaleEnergy(1+jecUnc_->getUncertainty(true));
+
+    jecUnc_->setJetEta(correctedJetDn.eta());
+    jecUnc_->setJetPt(correctedJetDn.pt());
     correctedJetDn.scaleEnergy(1-jecUnc_->getUncertainty(false));
 
     metUp_x += correctedJet.px() - correctedJetUp.px();
