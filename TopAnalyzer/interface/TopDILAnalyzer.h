@@ -13,7 +13,7 @@
 //
 // Original Author:  Tae Jeong Kim,40 R-A32,+41227678602,
 //         Created:  Fri Jun  4 17:19:29 CEST 2010
-// $Id: TopDILAnalyzer.h,v 1.65 2012/02/26 10:47:08 jhgoh Exp $
+// $Id: TopDILAnalyzer.h,v 1.66 2012/05/01 03:31:37 tjkim Exp $
 //
 //
 
@@ -65,6 +65,8 @@
 #include "TTree.h"
 #include "TH1.h"
 #include "TLorentzVector.h"
+
+#include "KoPFA/TopAnalyzer/interface/Histograms.h"
 
 //
 // class declaration
@@ -141,6 +143,18 @@ class TopDILAnalyzer : public edm::EDFilter {
     ttbarGen = new std::vector<Ko::TTbarCandidate>();
     met = new std::vector<math::XYZTLorentzVector>();
     jetspt30 = new std::vector<math::XYZTLorentzVector>();
+
+    nCutStep_ = 7;
+    for ( int i = 0; i<nCutStep_; ++i )
+    {
+      TFileDirectory dir = fs->mkdir(Form("Step%d", i));
+      h_.push_back(Histograms(&dir));
+      for ( unsigned int j = 0; j<bTagAlgos_.size(); ++j )
+      {
+        const char* algo = bTagAlgos_[j].c_str();
+        h_[i].hnBJets.push_back(dir.make<TH1F>(Form("hnBJets_%s", algo), Form("%s B jets;Number of B jets;Events", algo), 5, 0, 5));
+      }
+    }
   }
 
 
@@ -202,6 +216,7 @@ class TopDILAnalyzer : public edm::EDFilter {
   virtual bool filter(edm::Event& iEvent, const edm::EventSetup& iSetup)
   {
     bool accept = false;
+    std::vector<bool> cutStepBit(nCutStep_);
 
     clear();
 
@@ -275,12 +290,18 @@ class TopDILAnalyzer : public edm::EDFilter {
 
     bool selected = false;
 
+    int mode = 0;
+
     for(unsigned i = 0; i != muons1_->size(); i++){
       for(unsigned j = 0; j != muons2_->size(); j++){
         T1 it1 = muons1_->at(i);
         T2 it2 = muons2_->at(j);
         it1.setP4(it1.pfCandidateRef()->p4());
         it2.setP4(it2.pfCandidateRef()->p4());
+
+        mode = 0;
+        if ( it1.isMuon() ) mode |= 1;
+        if ( it2.isMuon() ) mode |= 2;
 
         const bool match = MatchObjects( it1.p4(), it2.p4(), true);
         if(match) continue;
@@ -445,6 +466,116 @@ class TopDILAnalyzer : public edm::EDFilter {
     //ESHandle<SetupData> pSetup;
     //iSetup.get<SetupRecord>().get(pSetup);
     tree->Fill();
+
+    if ( accept )
+    {
+      cutStepBit[0] = (ZMass > 12);
+      cutStepBit[2] = (PairSign < 0);
+      cutStepBit[4] = (jetspt30->size() >= 2);
+      if ( mode == 1 or mode == 2 )
+      {
+        cutStepBit[1] = (relIso1 < 0.20 && relIso2 < 0.17 );
+        cutStepBit[3] = true;
+        cutStepBit[5] = true;
+      }
+      else
+      {
+        if ( mode == 0 ) cutStepBit[1] = (relIso1 < 0.17 && relIso2 < 0.17);
+        else if ( mode == 3 ) cutStepBit[1] = (relIso1 < 0.20 && relIso2 < 0.17 );
+        cutStepBit[3] = abs(ZMass - 91.2) > 15;
+        cutStepBit[5] = MET > 30;
+      }
+      cutStepBit[6] = (nbjetsCache_[1] >= 1);
+      
+      for ( int cutStep = 0; cutStep < nCutStep_; ++cutStep )
+      {
+        h_[cutStep].hNEvents->Fill(0);
+
+        bool isPassingCutStep = true;
+        for ( int i=0; i<=cutStep; ++i )
+        {
+          if ( !cutStepBit[i] )
+          {
+            isPassingCutStep = false;
+            break;
+          }
+        }
+        if ( !isPassingCutStep ) continue;
+        
+        h_[cutStep].hNEvents->Fill(1);
+
+        h_[cutStep].hgenttbarM->Fill(genttbarM);
+
+        h_[cutStep].hnpileup->Fill(npileup);
+        h_[cutStep].hnvertex->Fill(nvertex);
+        h_[cutStep].hNLepton1->Fill(muons1_->size());
+        h_[cutStep].hNLepton2->Fill(muons2_->size());
+        const int nJets = jetspt30->size();
+        h_[cutStep].hNJet->Fill(nJets);
+
+        h_[cutStep].hpt1->Fill(pt1);
+        h_[cutStep].hpt2->Fill(pt2);
+        h_[cutStep].heta1->Fill(eta1);
+        h_[cutStep].heta2->Fill(eta2);
+        h_[cutStep].hrelIso1->Fill(relIso1);
+        h_[cutStep].hrelIso2->Fill(relIso2);
+
+        if ( nJets > 0 )
+        {
+          h_[cutStep].hjet1pt ->Fill(jetspt30->at(0).pt() );
+          h_[cutStep].hjet1eta->Fill(jetspt30->at(0).eta());
+          h_[cutStep].hjet1phi->Fill(jetspt30->at(0).phi());
+        }
+        if ( nJets > 1 )
+        {
+          h_[cutStep].hjet2pt ->Fill(jetspt30->at(1).pt() );
+          h_[cutStep].hjet2eta->Fill(jetspt30->at(1).eta());
+          h_[cutStep].hjet2phi->Fill(jetspt30->at(1).phi());
+
+          h_[cutStep].hHT->Fill(pt1+pt2+jetspt30->at(0).pt()+jetspt30->at(1).pt());
+        }
+        if ( nJets > 2 )
+        {
+          h_[cutStep].hjet3pt ->Fill(jetspt30->at(2).pt() );
+          h_[cutStep].hjet3eta->Fill(jetspt30->at(2).eta());
+          h_[cutStep].hjet3phi->Fill(jetspt30->at(2).phi());
+        }
+        if ( nJets > 3 )
+        {
+          h_[cutStep].hjet4pt ->Fill(jetspt30->at(3).pt() );
+          h_[cutStep].hjet4eta->Fill(jetspt30->at(3).eta());
+          h_[cutStep].hjet4phi->Fill(jetspt30->at(3).phi());
+        }
+        for ( int i=0, n=nbjetsCache_.size(); i<n; ++i )
+        {
+          h_[cutStep].hnBJets.at(i)->Fill(nbjetsCache_[i]);
+        }
+
+        h_[cutStep].hMET->Fill(MET);
+        h_[cutStep].hMETPhi->Fill(met->at(0).phi());
+        if ( !pfMet->empty() )
+        {
+          h_[cutStep].hSumET->Fill(pfMet->at(0).sumEt());
+          h_[cutStep].hChET->Fill(pfMet->at(0).chargedHadEt());
+          h_[cutStep].hNhET->Fill(pfMet->at(0).neutralHadEt());
+          h_[cutStep].hPhET->Fill(pfMet->at(0).photonEt());
+        }
+
+        h_[cutStep].hZMass->Fill(ZMass);
+        h_[cutStep].hDphiMETLepton1->Fill(dphimetlepton1);
+        h_[cutStep].hDphiMETLepton2->Fill(dphimetlepton2);
+        h_[cutStep].hDphiMETJet1->Fill(dphimetjet1);
+        h_[cutStep].hDphiMETJet2->Fill(dphimetjet2);
+
+        if ( !ttbar->empty() )
+        {
+          h_[cutStep].hvsumM->Fill(ttbar->at(0).M());
+          h_[cutStep].hmaosM->Fill(ttbar->at(0).maosM());
+          h_[cutStep].htopMass1->Fill(ttbar->at(0).leg1().M());
+          h_[cutStep].htopMass2->Fill(ttbar->at(0).leg2().M());
+        }
+      }
+    }
 
     return accept;
 
@@ -628,6 +759,9 @@ class TopDILAnalyzer : public edm::EDFilter {
 
   bool applyIso_;
   bool oppPair_;
+
+  int nCutStep_;
+  std::vector<Histograms> h_;
 
 };
 
