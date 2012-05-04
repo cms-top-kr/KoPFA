@@ -88,7 +88,6 @@ void TTbarCandidate::setMatchedBJets(const reco::GenJetCollection* genJets){
   std::sort(bJets.begin(), bJets.end(), GreaterByPt<reco::Candidate::LorentzVector>());
  
   for( unsigned int i = 0 ; i < bJets.size() ; i++){
-    std::cout << "debug =  " <<bJets[i].pt() << std::endl;
     bJets_[i] = bJets[i];
     if(i == 1) break;
   }

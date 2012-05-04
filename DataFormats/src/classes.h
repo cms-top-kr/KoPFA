@@ -6,6 +6,7 @@
 #include "KoPFA/DataFormats/interface/TTbarEvent.h"
 #include "KoPFA/DataFormats/interface/TTbarGenEvent.h"
 #include "KoPFA/DataFormats/interface/TTbarMass.h"
+#include "KoPFA/DataFormats/interface/TTbarCandidate.h"
 #include "KoPFA/DataFormats/interface/H2WWMass.h"
 
 #include <vector>
@@ -48,6 +49,12 @@ namespace {
     std::vector<Ko::TTbarMass> dummyTTbarMassCollection;
     edm::Wrapper<std::vector<Ko::TTbarMass> > dummyTTbarMassCollectionWrapper;
     edm::Ptr<Ko::TTbarMass> dummyTTbarMassPtr;
+
+    Ko::TTbarCandidate dummyTTbarCandidate;
+    edm::Wrapper<Ko::TTbarCandidate> dummyTTbarCandidateWrapper;
+    std::vector<Ko::TTbarCandidate> dummyTTbarCandidateCollection;
+    edm::Wrapper<std::vector<Ko::TTbarCandidate> > dummyTTbarCandidateCollectionWrapper;
+    edm::Ptr<Ko::TTbarCandidate> dummyTTbarCandidatePtr;
 
     Ko::H2WWMass dummyH2WWMass;
     edm::Wrapper<Ko::H2WWMass> dummyH2WWMassWrapper;
