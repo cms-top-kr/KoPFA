@@ -13,7 +13,7 @@
 //
 // Original Author:  Tae Jeong Kim,40 R-A32,+41227678602,
 //         Created:  Fri Jun  4 17:19:29 CEST 2010
-// $Id: TopDILAnalyzer.h,v 1.66 2012/05/01 03:31:37 tjkim Exp $
+// $Id: TopDILAnalyzer.h,v 1.67 2012/05/02 21:02:52 jhgoh Exp $
 //
 //
 
@@ -460,7 +460,7 @@ class TopDILAnalyzer : public edm::EDFilter {
       }
 
       ttbarGen->push_back(ttbarGenLevel);
-      h_bjetspt30->Fill(ttbarGenLevel.bJets().size() );
+      h_bjetspt30->Fill(ttbarGenLevel.NbJets() );
     }
 
     //ESHandle<SetupData> pSetup;
