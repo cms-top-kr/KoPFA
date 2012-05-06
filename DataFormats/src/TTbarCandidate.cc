@@ -14,6 +14,8 @@ void TTbarCandidate::setMatchedBJets(const reco::GenJetCollection* genJets){
 
   bJets_.push_back(null);
   bJets_.push_back(null);
+  bJets_.push_back(null);
+  bJets_.push_back(null);
 
 
   std::map<int, vector<const reco::Candidate*> > mapJetToBHadrons;
@@ -86,10 +88,12 @@ void TTbarCandidate::setMatchedBJets(const reco::GenJetCollection* genJets){
   }
 
   std::sort(bJets.begin(), bJets.end(), GreaterByPt<reco::Candidate::LorentzVector>());
+
+  NbJets_ = (int) bJets.size();
  
   for( unsigned int i = 0 ; i < bJets.size() ; i++){
     bJets_[i] = bJets[i];
-    if(i == 1) break;
+    if( i == 3) break;
   }
 }
 

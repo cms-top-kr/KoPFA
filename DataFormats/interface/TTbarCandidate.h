@@ -20,17 +20,28 @@ namespace Ko{
     TTbarCandidate(){}
     virtual ~TTbarCandidate(){}
 
-    // status 3
-    const std::vector<math::XYZTLorentzVector>& bquarks() const { return bquarks_; } 
-    const std::vector<math::XYZTLorentzVector>& leptons() const { return leptons_; } 
-    const std::vector<math::XYZTLorentzVector>& bJets() const { return bJets_; } 
+    typedef std::vector<math::XYZTLorentzVector> LorentzVectors;
 
+    // status 3
+    const math::XYZTLorentzVector bquarks1() const { return bJets_[0]; }
+    const math::XYZTLorentzVector bquarks2() const { return bJets_[1]; }
+
+    const math::XYZTLorentzVector lepton1() const { return leptons_[0]; }
+    const math::XYZTLorentzVector lepton2() const { return leptons_[1]; }
+
+    const math::XYZTLorentzVector bJets1() const { return bJets_[0]; }
+    const math::XYZTLorentzVector bJets2() const { return bJets_[1]; }
+    const math::XYZTLorentzVector bJets3() const { return bJets_[2]; }
+    const math::XYZTLorentzVector bJets4() const { return bJets_[3]; }
+   
     void building( const reco::GenParticleCollection* genParticles );
     void setMatchedBJets(const reco::GenJetCollection* genJets); 
 
     double mass() const { return mass_; }
 
     bool taunic() const { return taunic_; }
+
+    int NbJets() const { return NbJets_ ; }
 
   private:
 
@@ -43,14 +54,15 @@ namespace Ko{
     double deltaR( const reco::Candidate &pasObj, const reco::GenJet &proObj );
 
 
-    std::vector<math::XYZTLorentzVector> bquarks_;
-    std::vector<math::XYZTLorentzVector> leptons_;
-    std::vector<math::XYZTLorentzVector> bJets_;
+    LorentzVectors bquarks_;
+    LorentzVectors leptons_;
+    LorentzVectors bJets_;
 
     double mass_;
 
     bool taunic_;
 
+    int NbJets_;
 
   };
 
