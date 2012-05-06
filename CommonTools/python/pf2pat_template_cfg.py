@@ -136,6 +136,11 @@ process.nEventsFiltered = cms.EDProducer("EventCountProducer")
 process.outpath = cms.EndPath(process.out)
 #process.load("KoPFA.CommonTools.recoPFCandCountFilter_cfi")
 
+process.patCandidates.remove( process.makePatTaus )
+process.selectedPatCandidates.remove( process.selectedPatTaus )
+process.cleanPatCandidates.remove( process.cleanPatTaus )
+process.countPatCandidates.remove( process.countPatTaus ) 
+
 process.p = cms.Path(
     process.nEventsTotal*
     process.noscraping*
