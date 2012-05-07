@@ -13,7 +13,7 @@
 //
 // Original Author:  Tae Jeong Kim,40 R-A32,+41227678602,
 //         Created:  Fri Jun  4 17:19:29 CEST 2010
-// $Id: TopDILAnalyzer.h,v 1.67 2012/05/02 21:02:52 jhgoh Exp $
+// $Id: TopDILAnalyzer.h,v 1.68 2012/05/06 12:44:43 tjkim Exp $
 //
 //
 
@@ -296,8 +296,10 @@ class TopDILAnalyzer : public edm::EDFilter {
       for(unsigned j = 0; j != muons2_->size(); j++){
         T1 it1 = muons1_->at(i);
         T2 it2 = muons2_->at(j);
-        it1.setP4(it1.pfCandidateRef()->p4());
-        it2.setP4(it2.pfCandidateRef()->p4());
+
+        //This is not needed anymore. We might not use the pf leptons as input in 2012.
+        //it1.setP4(it1.pfCandidateRef()->p4());
+        //it2.setP4(it2.pfCandidateRef()->p4());
 
         mode = 0;
         if ( it1.isMuon() ) mode |= 1;
