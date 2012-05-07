@@ -105,9 +105,9 @@ ElEl = cms.EDFilter('TopElElAnalyzer',
     vertexLabel = cms.untracked.InputTag('goodOfflinePrimaryVertices'),
     useEventCounter = cms.bool( True ),
     filters = cms.untracked.vstring(
-        'prePathCounter'
-        'postPathCounter'
-        'nEventsPatHLT',
+        'prePathCounter',
+        'postPathCounter',
+        'nEventsPatHLT'
     ),
     #for jet cleaning overlapping with isolated epton within 0.4
     relIso1 = cms.untracked.double(0.17),
@@ -125,9 +125,9 @@ MuMu = cms.EDFilter('TopMuMuAnalyzer',
     vertexLabel = cms.untracked.InputTag('goodOfflinePrimaryVertices'),
     useEventCounter = cms.bool( True ),
     filters = cms.untracked.vstring(
-        'prePathCounter'
-        'postPathCounter'
-        'nEventsPatHLT',
+        'prePathCounter',
+        'postPathCounter',
+        'nEventsPatHLT'
     ),
     #for jet cleaning overlapping with isolated epton within 0.4
     relIso1 = cms.untracked.double(0.20),
@@ -145,9 +145,9 @@ MuEl = cms.EDFilter('TopMuElAnalyzer',
     vertexLabel = cms.untracked.InputTag('goodOfflinePrimaryVertices'),
     useEventCounter = cms.bool( True ),
     filters = cms.untracked.vstring(
-        'prePathCounter'
-        'postPathCounter'
-        'nEventsPatHLT',
+        'prePathCounter',
+        'postPathCounter',
+        'nEventsPatHLT'
     ),
     #for jet cleaning overlapping with isolated epton within 0.4
     relIso1 = cms.untracked.double(0.20),
