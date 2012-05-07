@@ -5,6 +5,7 @@ myJetId = pfJetIDSelector.clone()
 
 JetEnergyScale = cms.EDFilter('JetFilter',
     applyFilter = cms.untracked.bool(False),
+    rhoLabel =  cms.InputTag('kt6PFJetsPFlow','rho'),
     jetLabel =  cms.InputTag('selectedPatJetsPFlow'),
     metLabel =  cms.InputTag('patMETsPFlow'),
     vertexLabel = cms.untracked.InputTag('goodOfflinePrimaryVertices'),

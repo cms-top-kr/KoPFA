@@ -19,6 +19,8 @@ KoElectronSelector::KoElectronSelector(const edm::ParameterSet& cfg)
   usepflow_ = cfg.getUntrackedParameter<bool>("usepflow",true);
   ptcut_ = cfg.getUntrackedParameter<double>("ptcut",20);
   etacut_ = cfg.getUntrackedParameter<double>("etacut",2.5);
+  mvacut_ = cfg.getUntrackedParameter<double>("mvacut",-0.1);
+  usemva_ = cfg.getUntrackedParameter<bool>("usemva",false);
 
   eidName_ = cfg.getUntrackedParameter<string>("eidName");
   eidBitMask_ = cfg.getUntrackedParameter<int>("eidBitMask", -1);
@@ -103,12 +105,14 @@ void KoElectronSelector::produce(edm::Event& iEvent, const edm::EventSetup& es)
     const double eleMva = electron.mva();
     const int eidBit = (int)electron.electronID(eidName_);
 
-    const bool passMVA = eleMva > 0.4;
+    //new mva id for 2012
+    const bool passMVA = eidBit > mvacut_;
+    //id for 2011
     const bool passEId = eidBitMask_ < 0 or ((eidBit & eidBitMask_) == eidBitMask_);
 
-    if(version_ == 10){
+    if(usemva_){
       passed = passPre && passMVA;
-    } else if (version_ == 5){
+    } else {
       passed = passPre && passEId;
     }
 
