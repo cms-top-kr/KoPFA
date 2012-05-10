@@ -254,7 +254,7 @@ bool MuonIDSelector::muIDSelection( const pat::Muon& muon,
                            isGlobal == cut("isGlobalMuon", int() )  &&
                            isTracker == cut("isTrackerMuon", int() ) &&
                            trackerHits >= cut("trackerHits", int() ) &&
-                           globalNormChi2 <= cut("globalNormChi2", double() ) &&
+                           globalNormChi2 < cut("globalNormChi2", double() ) &&
                            muonHits > cut("muonHits", int() )
                            )
      )
