@@ -11,7 +11,8 @@ decay = sys.argv[2]
 
 mclist = ["ZJets", "WJetsToLNu", "TTbarTuneZ2"]
 
-datalist = ["Run2011B"]
+#datalist = ["Run2011A","Run2011B"]
+datalist = ["Run2011_DecoupledIso"]
 
 def processSample(sample, dir):
     os.system("rm -rf "+dir+"/Log/"+sample)
