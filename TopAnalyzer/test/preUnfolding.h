@@ -198,6 +198,7 @@ TH1F* getAcceptanceHisto(vector<std::string> mcPath, vector<std::string> rdPath,
 
     TFile * f_data = new TFile(rdPath[i].c_str());
     TCut cut((f_data->Get(Form("%s/cut", cutStep.c_str())))->GetTitle());
+
     TFile * file = new TFile(mcPath[i].c_str());
     TTree * tree = (TTree *) file->Get(decayMode[i]+"/tree");
     TH1F* hNumTemp = new TH1F(Form("hNumTemp_%s_%s",name.Data(), decayMode[i].Data()), "Numerator", nGen, genBins);
@@ -206,12 +207,13 @@ TH1F* getAcceptanceHisto(vector<std::string> mcPath, vector<std::string> rdPath,
     TH1F * summary = (TH1F *) file->Get(decayMode[i]+"/EventSummary");
     double totalNum = summary->GetBinContent(1);
     double norm = totalDen/totalNum;
+  
     hNumTemp->Scale(norm);
-     
+
     hNum->Add(hNumTemp);
 
     cout << "Decay mode: ======" << decayMode[i].Data() << "======" << endl;
-    cout << "total from EventSummary = " << totalNum << endl;
+    cout << "total from EventSummary = " << totalNum << " total from Denominator = " << totalDen << endl;
     cout << "normalization factor due to difference from generated number used for denominator = " << norm << endl;
 
     TGraphAsymmErrors* grpAcceptTmp = new TGraphAsymmErrors();
@@ -241,8 +243,8 @@ TH1F* getAcceptanceHisto(vector<std::string> mcPath, vector<std::string> rdPath,
     }
 
     //cout << "all bins= " << setprecision(4) << 100*hNumTemp->GetEntries()/hDen->GetEntries() << " $\\pm$ " << 100*sqrt(hNumTemp->GetEntries())/hDen->GetEntries() << endl;
-    double allAcc = hNumTemp->GetEntries()/hDen->GetEntries();
-    double allErr = sqrt(hNumTemp->GetEntries())/hDen->GetEntries();
+    double allAcc = hNumTemp->Integral()/hDen->Integral();
+    double allErr = sqrt(hNumTemp->Integral())/hDen->Integral();
     mapAcc[ (int) i ].push_back( allAcc );
     mapErr[ (int) i ].push_back( allErr ); 
 
@@ -300,8 +302,8 @@ TH1F* getAcceptanceHisto(vector<std::string> mcPath, vector<std::string> rdPath,
 
   }
   //cout << "all bins= " << setprecision(4) << 100*hNum->GetEntries()/hDen->GetEntries() << " $\\pm$ " << 100*sqrt(hNum->GetEntries())/hDen->GetEntries() << endl;
-  mapAcc[ last ].push_back( hNum->GetEntries()/hDen->GetEntries() );
-  mapErr[ last ].push_back( sqrt(hNum->GetEntries())/hDen->GetEntries() );
+  mapAcc[ last ].push_back( hNum->Integral()/hDen->Integral() );
+  mapErr[ last ].push_back( sqrt(hNum->Integral())/hDen->Integral() );
 
   for(int j= 0; j < last+1 ; j++){
     if(j == last ) cout << "all" << "\t";
