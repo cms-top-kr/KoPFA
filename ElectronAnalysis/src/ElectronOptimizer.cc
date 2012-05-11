@@ -110,6 +110,13 @@ void ElectronOptimizer::analyze(const edm::Event& iEvent, const edm::EventSetup&
   ele1_relIsoNoVeto_dbeta = -9;
   ele2_relIsoNoVeto_dbeta = -9;
 
+  ele1_chIsoConeVeto = -9;
+  ele2_chIsoConeVeto = -9;
+  ele1_puChIsoConeVeto = -9;
+  ele2_puChIsoConeVeto = -9;
+  ele1_phIsoConeVeto = -9;
+  ele2_phIsoConeVeto = -9;
+
   ele1_reco_chIso = -9;
   ele2_reco_chIso = -9;
   ele1_reco_nhIso = -9;
@@ -177,6 +184,15 @@ void ElectronOptimizer::analyze(const edm::Event& iEvent, const edm::EventSetup&
   ele1_relIsoNoVeto = ( ele1_chIsoNoVeto + ele1_nhIsoNoVeto + ele1_phIsoNoVeto) / ele1_pt ;
   ele1_relIsoNoVeto_dbeta = ( ele1_chIsoNoVeto + max(0.0, ele1_nhIsoNoVeto + ele1_phIsoNoVeto - ele1_puChIsoNoVeto*0.5 )) / ele1_pt ;
 
+  IsoDeposit::AbsVetos vetos_ch;
+  vetos_ch.push_back(new EcalEndcaps:ConeVeto( 0.015 ));    
+  IsoDeposit::AbsVetos vetos_ph;
+  vetos_ph.push_back(new EcalEndcaps:ConeVeto( 0.008 )); 
+
+  ele1_chIsoConeVeto = leading.isoDeposit(pat::PfChargedHadronIso)->depositAndCountWithin(0.3, vetos_ch ).first;
+  ele1_puChIsoConeVeto = leading.isoDeposit(pat::PfPUChargedHadronIso)->depositAndCountWithin(0.3, vetos_ch ).first;
+  ele1_phIsoConeVeto = leading.isoDeposit(pat::PfGammaIso)->depositAndCountWithin(0.3, vetos_ph ).first;
+
   ele1_reco_chIso = leading.pfIsolationVariables().chargedHadronIso;
   ele1_reco_nhIso = leading.pfIsolationVariables().neutralHadronIso;
   ele1_reco_phIso = leading.pfIsolationVariables().photonIso;
@@ -215,6 +231,10 @@ void ElectronOptimizer::analyze(const edm::Event& iEvent, const edm::EventSetup&
     ele2_phIsoNoVeto = secondleading.isoDeposit(pat::PfGammaIso)->depositAndCountWithin(0.3).first;
     ele2_relIsoNoVeto = ( ele2_chIsoNoVeto + ele2_nhIsoNoVeto + ele2_phIsoNoVeto) / ele2_pt;
     ele2_relIsoNoVeto_dbeta = ( ele2_chIsoNoVeto + max(0.0, ele2_nhIsoNoVeto + ele2_phIsoNoVeto - ele2_puChIsoNoVeto*0.5 )) / ele2_pt ;
+
+    ele2_chIsoConeVeto = secondleading.isoDeposit(pat::PfChargedHadronIso)->depositAndCountWithin(0.3, vetos_ch ).first;
+    ele2_puChIsoConeVeto = secondleading.isoDeposit(pat::PfPUChargedHadronIso)->depositAndCountWithin(0.3, vetos_ch ).first;
+    ele2_phIsoConeVeto = secondleading.isoDeposit(pat::PfGammaIso)->depositAndCountWithin(0.3, vetos_ph ).first;
 
     ele2_reco_chIso = secondleading.pfIsolationVariables().chargedHadronIso;
     ele2_reco_nhIso = secondleading.pfIsolationVariables().neutralHadronIso;
@@ -279,12 +299,20 @@ ElectronOptimizer::beginJob(){
   tree->Branch("ele1_relIsoNoVeto",&ele1_relIsoNoVeto,"ele1_relIsoNoVeto/D");
   tree->Branch("ele1_relIsoNoVeto_dbeta",&ele1_relIsoNoVeto_dbeta,"ele1_relIsoNoVeto_dbeta/D");
 
+  tree->Branch("ele1_chIsoConeVeto",&ele1_chIsoConeVeto,"ele1_chIsoConeVeto/D");
+  tree->Branch("ele1_puChIsoConeVeto",&ele1_puChIsoConeVeto,"ele1_puChIsoConeVeto/D");
+  tree->Branch("ele1_phIsoConeVeto",&ele1_phIsoConeVeto,"ele1_phIsoConeVeto/D");
+
   tree->Branch("ele2_chIsoNoVeto",&ele2_chIsoNoVeto,"ele2_chIsoNoVeto/D");
   tree->Branch("ele2_puChIsoNoVeto",&ele2_puChIsoNoVeto,"ele2_puChIsoNoVeto/D");
   tree->Branch("ele2_nhIsoNoVeto",&ele2_nhIsoNoVeto,"ele2_nhIsoNoVeto/D");
   tree->Branch("ele2_phIsoNoVeto",&ele2_phIsoNoVeto,"ele2_phIsoNoVeto/D");
   tree->Branch("ele2_relIsoNoVeto",&ele2_relIsoNoVeto,"ele2_relIsoNoVeto/D");
   tree->Branch("ele2_relIsoNoVeto_dbeta",&ele2_relIsoNoVeto_dbeta,"ele2_relIsoNoVeto_dbeta/D");
+
+  tree->Branch("ele2_chIsoConeVeto",&ele2_chIsoConeVeto,"ele2_chIsoConeVeto/D");
+  tree->Branch("ele2_puChIsoConeVeto",&ele2_puChIsoConeVeto,"ele2_puChIsoConeVeto/D");
+  tree->Branch("ele2_phIsoConeVeto",&ele2_phIsoConeVeto,"ele2_phIsoConeVeto/D");
 
   tree->Branch("ele1_reco_chIso",&ele1_reco_chIso,"ele1_reco_chIso/D");
   tree->Branch("ele1_reco_nhIso",&ele1_reco_nhIso,"ele1_reco_nhIso/D");

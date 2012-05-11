@@ -112,6 +112,13 @@ class ElectronOptimizer : public edm::EDAnalyzer
   double ele1_relIsoNoVeto_dbeta;
   double ele2_relIsoNoVeto_dbeta;
 
+  double ele1_chIsoConeVeto;
+  double ele2_chIsoConeVeto;
+  double ele1_puChIsoConeVeto;
+  double ele2_puChIsoConeVeto;
+  double ele1_phIsoConeVeto;
+  double ele2_phIsoConeVeto;
+
   double ele1_reco_chIso;
   double ele2_reco_chIso;
   double ele1_reco_nhIso;
