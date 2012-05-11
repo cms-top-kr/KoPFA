@@ -185,9 +185,10 @@ void ElectronOptimizer::analyze(const edm::Event& iEvent, const edm::EventSetup&
   ele1_relIsoNoVeto_dbeta = ( ele1_chIsoNoVeto + max(0.0, ele1_nhIsoNoVeto + ele1_phIsoNoVeto - ele1_puChIsoNoVeto*0.5 )) / ele1_pt ;
 
   IsoDeposit::AbsVetos vetos_ch;
-  vetos_ch.push_back(new EcalEndcaps:ConeVeto( 0.015 ));    
+  //FIX ME : it would not work. we need to use supercluster eta to distinguish endcap and barrel.
+  //vetos_ch.push_back(new EcalEndcaps:ConeVeto( 0.015 ));    
   IsoDeposit::AbsVetos vetos_ph;
-  vetos_ph.push_back(new EcalEndcaps:ConeVeto( 0.008 )); 
+  //vetos_ph.push_back(new EcalEndcaps:ConeVeto( 0.008 )); 
 
   ele1_chIsoConeVeto = leading.isoDeposit(pat::PfChargedHadronIso)->depositAndCountWithin(0.3, vetos_ch ).first;
   ele1_puChIsoConeVeto = leading.isoDeposit(pat::PfPUChargedHadronIso)->depositAndCountWithin(0.3, vetos_ch ).first;
