@@ -22,7 +22,7 @@ def tnpEffPSet(categories):
     for category in categories:
         setattr(effSet, category+"_pt", cms.PSet(
             EfficiencyCategoryAndState = cms.vstring(category, "pass"),
-            UnbinnedVariables = cms.vstring("mass"),
+            UnbinnedVariables = cms.vstring("mass","weight"),
             BinnedVariables = cms.PSet(
                 #pt = cms.vdouble(20, 25, 30, 35, 40, 50, 150),
                 pt = cms.vdouble(20, 30, 40, 50, 150),
@@ -32,7 +32,7 @@ def tnpEffPSet(categories):
 
         setattr(effSet, category+"_abseta", cms.PSet(
             EfficiencyCategoryAndState = cms.vstring(category, "pass"),
-            UnbinnedVariables = cms.vstring("mass"),
+            UnbinnedVariables = cms.vstring("mass","weight"),
             BinnedVariables = cms.PSet(
                 abseta = cms.vdouble(0.0, 0.5, 1.0, 1.4, 1.6, 2.0, 2.4)
                 #abseta = cms.vdouble(0.0, 1.5, 2.4)
@@ -42,7 +42,7 @@ def tnpEffPSet(categories):
 
         #setattr(effSet, category+"_pt_abseta", cms.PSet(
         #    EfficiencyCategoryAndState = cms.vstring(category, "pass"),
-        #    UnbinnedVariables = cms.vstring("mass"),
+        #    UnbinnedVariables = cms.vstring("mass","weight"),
         #    BinnedVariables = cms.PSet(
         #        #pt = cms.vdouble(20, 25, 30, 35, 40, 50, 150),
         #        pt = cms.vdouble(20, 30, 40, 50, 150),
@@ -62,10 +62,12 @@ process.tnpFit = cms.EDAnalyzer("TagProbeFitTreeAnalyzer",
     NumCPU = cms.uint32(1),
     SaveWorkspace = cms.bool(True),
     floatShapeParameters = cms.bool(True),
+    WeightVariable = cms.string("weight"),
     Variables = cms.PSet(
         mass = cms.vstring("Tag-Probe mass", "50.0", "130.0", "GeV/c^{2}"),
         pt = cms.vstring("Probe p_{T}", "0", "1000", "GeV/c"),
         abseta = cms.vstring("Probe |#eta|", "0", "2.4", ""),
+        weight = cms.vstring("Weight", "0.0","2.0", ""),
     ),
 
     Categories = cms.PSet(
