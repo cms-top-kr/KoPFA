@@ -12,32 +12,37 @@ void plotTnP(){
   using namespace std;
   TFile * f_PFId = new TFile("result/result_PFId_Data.root");
   TFile * f_PFId_MC = new TFile("result/result_PFId_MC.root");
-  //TFile * f_Id = new TFile("result/result_Id_Data.root"); //Example for multipl flags of ID for Data
-  //TFile * f_Id_MC = new TFile("result/result_Id_MC.root"); //Example for multiple flags of ID for MC
-  //TFile * f_Iso = new TFile("result/result_TightIdIso_Data.root"); 
-  //TFile * f_Iso_MC = new TFile("result/result_TightIdIso_MC.root"); 
+  TFile * f_Id = new TFile("result/result_Id_Data.root"); //Example for multipl flags of ID for Data
+  TFile * f_Id_MC = new TFile("result/result_Id_MC.root"); //Example for multiple flags of ID for MC
+  TFile * f_TightId = new TFile("result/result_TightId_Data.root");
+  TFile * f_TightId_MC = new TFile("result/result_TightId_MC.root");
+  TFile * f_Iso = new TFile("result/result_TightIdIso_Data.root"); 
+  TFile * f_Iso_MC = new TFile("result/result_TightIdIso_MC.root"); 
 
   // Data vs MC
   TString l1 = "Data";
   TString l2 = "MC";
 
   // Data vs MC
-  plot2Eff(f_PFId,f_PFId_MC,l1,l2, "tnpPFId/PFId_pt/fit_eff_plots", "tnpPFId/PFId_pt/fit_eff_plots", "pt_PLOT", "pt_PLOT", "pt_PLOT","PFId");
-  plot2Eff(f_PFId,f_PFId_MC,l1,l2, "tnpPFId/PFId_abseta/fit_eff_plots", "tnpPFId/PFId_abseta/fit_eff_plots", "abseta_PLOT", "abseta_PLOT", "abseta_PLOT","PFId");
+  //plot2Eff(f_PFId,f_PFId_MC,l1,l2, "tnpPFId/PFId_pt/fit_eff_plots", "tnpPFId/PFId_pt/fit_eff_plots", "pt_PLOT", "pt_PLOT", "pt_PLOT","PFId");
+  //plot2Eff(f_PFId,f_PFId_MC,l1,l2, "tnpPFId/PFId_abseta/fit_eff_plots", "tnpPFId/PFId_abseta/fit_eff_plots", "abseta_PLOT", "abseta_PLOT", "abseta_PLOT","PFId");
 
-  //plot2Eff(f_Id,f_Id_MC,l1,l2, "tnpId/IdTight_pt/fit_eff_plots", "tnpId/IdTight_pt/fit_eff_plots", "pt_PLOT", "pt_PLOT", "pt_PLOT","IdTight");
-  //plot2Eff(f_Id,f_Id_MC,l1,l2, "tnpId/IdTight_abseta/fit_eff_plots", "tnpId/IdTight_abseta/fit_eff_plots", "abseta_PLOT", "abseta_PLOT", "abseta_PLOT","IdTight");
+  plot2Eff(f_TightId,f_TightId_MC,l1,l2, "tnpId/IdTight_pt/fit_eff_plots", "tnpId/IdTight_pt/fit_eff_plots", "pt_PLOT", "pt_PLOT", "pt_PLOT","IdTight");
+  plot2Eff(f_TightId,f_TightId_MC,l1,l2, "tnpId/IdTight_abseta/fit_eff_plots", "tnpId/IdTight_abseta/fit_eff_plots", "abseta_PLOT", "abseta_PLOT", "abseta_PLOT","IdTight");
 
   //Isolation
-  //plot2Eff(f_Iso,f_Iso_MC,l1,l2, "tnpTightIdIso/Iso17_pt/cnt_eff_plots", "tnpTightIdIso/Iso17_pt/cnt_eff_plots", "pt_PLOT", "pt_PLOT", "pt_PLOT","Iso17");
-  //plot2Eff(f_Iso,f_Iso_MC,l1,l2, "tnpTightIdIso/Iso17_abseta/cnt_eff_plots", "tnpTightIdIso/Iso17_abseta/cnt_eff_plots", "abseta_PLOT", "abseta_PLOT", "abseta_PLOT","Iso17");
+  plot2Eff(f_Iso,f_Iso_MC,l1,l2, "tnpTightIdIso/Iso17_pt/cnt_eff_plots", "tnpTightIdIso/Iso17_pt/cnt_eff_plots", "pt_PLOT", "pt_PLOT", "pt_PLOT","Iso17");
+  plot2Eff(f_Iso,f_Iso_MC,l1,l2, "tnpTightIdIso/Iso17_abseta/cnt_eff_plots", "tnpTightIdIso/Iso17_abseta/cnt_eff_plots", "abseta_PLOT", "abseta_PLOT", "abseta_PLOT","Iso17");
+
   //dbeta correction
   //plot2Eff(f_Iso,f_Iso_MC,l1,l2, "tnpTightIdIso/Iso17dbeta_pt/cnt_eff_plots", "tnpTightIdIso/Iso17dbeta_pt/cnt_eff_plots", "pt_PLOT", "pt_PLOT", "pt_PLOT","Iso17dbeta");
   //plot2Eff(f_Iso,f_Iso_MC,l1,l2, "tnpTightIdIso/Iso17dbeta_abseta/cnt_eff_plots", "tnpTightIdIso/Iso17dbeta_abseta/cnt_eff_plots", "abseta_PLOT", "abseta_PLOT", "abseta_PLOT","Iso17dbeta");
   //plot2Eff(f_Iso,f_Iso,"No dbeta Corr.","dbeta Corr.", "tnpTightIdIso/Iso17_event_nPV/cnt_eff_plots", "tnpTightIdIso/Iso17dbeta_event_nPV/cnt_eff_plots", "event_nPV_PLOT", "event_nPV_PLOT", "event_nPV_PLOT","Iso17vsIso17dbeta", 0.8);
 
   // 2D
-  //plot2DEff(f, f_MC, "tnpTree/isIDMuon_pt_abseta/fit_eff_plots","pt_abseta_PLOT","isIDMuon");
+  plot2DEff(f_TightId, f_TightId_MC, "tnpId/IdTight_pt_abseta/fit_eff_plots","pt_abseta_PLOT","IdTight");
+  //plot2DEff(f_PFId, f_PFId_MC, "tnpPFId/PFId_pt_abseta/fit_eff_plots","pt_abseta_PLOT","PFId");
+  plot2DEff(f_Iso, f_Iso_MC, "tnpTightIdIso/Iso17_pt_abseta/cnt_eff_plots","pt_abseta_PLOT","Iso17");
  
   // multiple comparisons:
   //plotMulti(f_Id, f_Id_MC, "pt");
