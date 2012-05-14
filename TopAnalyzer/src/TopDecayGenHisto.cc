@@ -59,6 +59,10 @@ private:
   TH1F* hMtt_DIL_Ptcl;
   TH1F* hMtt_DIL_Ptcl_Status1Lepton;
 
+  // No Tau
+  TH1F* hMtt_DIL_Pton_NoTau;
+  TH1F* hMtt_DIL_Ptcl_NoTau;
+
   //additional histograms
   TH2F* hMtt_bquarkPt;
   TH2F* hMtt_bquarkStatus2Pt;
@@ -98,6 +102,10 @@ TopDecayGenHisto::TopDecayGenHisto(const edm::ParameterSet& pset)
   hMtt_DIL_Ptcl = fs->make<TH1F>( "hMtt_DIL_Ptcl"  , "M_{tt}", 2500,  0., 2500. );  
   hMtt_DIL_Ptcl_Status1Lepton = fs->make<TH1F>( "hMtt_DIL_Ptcl_Status1Lepton"  , "M_{tt}", 2500,  0., 2500. );  
 
+  //No tau
+  hMtt_DIL_Ptcl_NoTau = fs->make<TH1F>( "hMtt_DIL_Ptcl_NoTau"  , "M_{tt}", 2500,  0., 2500. );
+  hMtt_DIL_Pton_NoTau = fs->make<TH1F>( "hMtt_DIL_Pton_NoTau"  , "M_{tt}", 2500,  0., 2500. );
+
   /// additional histograms for debugging
   hMtt_bquarkPt = fs->make<TH2F>( "hMtt_bquarkPt", "M_{tt} vs bquarkPt", 500, 0, 500, 2500, 0, 2500);
   hMtt_bquarkStatus2Pt = fs->make<TH2F>( "hMtt_bquarkStatus2Pt", "M_{tt} vs bquarkPt", 500, 0, 500, 2500, 0, 2500);
@@ -130,9 +138,6 @@ bool TopDecayGenHisto::filter(edm::Event& iEvent, const edm::EventSetup& eventSe
   using namespace edm;
   using namespace reco;
 
-  edm::Handle<reco::GenJetCollection> genJets;
-  iEvent.getByLabel("ak5GenJets", genJets);
-
   std::map<int, vector<const reco::Candidate*> > mapJetToBHadrons;
   std::map<int, int> mapJetToBMatched;
   std::map<const reco::Candidate*, vector<int> > mapBHadronToJets;
@@ -141,8 +146,11 @@ bool TopDecayGenHisto::filter(edm::Event& iEvent, const edm::EventSetup& eventSe
   std::vector<math::XYZTLorentzVector> stableLeptons;  
 
   bool debug = false;
- 
+
   if (debug ) cout << "EVENT" << endl;
+
+  edm::Handle<reco::GenJetCollection> genJets;
+  iEvent.getByLabel("ak5GenJets", genJets);
 
   int idx = 0;
   for (reco::GenJetCollection::const_iterator genJet=genJets->begin();genJet!=genJets->end();++genJet){
@@ -179,7 +187,7 @@ bool TopDecayGenHisto::filter(edm::Event& iEvent, const edm::EventSetup& eventSe
         int idx = *bjet;
         mapJetToBMatched[idx] = 0; // set it to 0 again 
         const reco::GenJet& bjet = genJets->at(idx);
-        double dR = Ko::dR( *BHadron, bjet ) ; 
+        double dR = Ko::dR( *BHadron, bjet ) ;
         if( dR < minDR ) { 
           selectedJet = idx;
           minDR = dR;
@@ -372,12 +380,13 @@ bool TopDecayGenHisto::filter(edm::Event& iEvent, const edm::EventSetup& eventSe
   bool visibleLPJ = ( ( leptonPt[0] > 30 && leptonEta[0] < 2.1 && leptonPt[1] < 0 ) || ( leptonPt[0] < 0 && leptonPt[1] > 30 && leptonEta[1] < 2.1 ) ) && bquarkPt[0] > 30 && bquarkPt[1] > 30 && bquarkEta[0] < 2.4 && bquarkEta[1] < 2.4;
   bool visibleDILStatus2 = leptonPt[0] > 20 && leptonPt[1] > 20 && leptonEta[0] < 2.4 && leptonEta[1] < 2.4 && bquarkStatus2Pt[0] > 30 && bquarkStatus2Pt[1] > 30 && bquarkStatus2Eta[1] < 2.4 && bquarkStatus2Eta[2] < 2.4;
   bool visibleLPJStatus2 = ( ( leptonPt[0] > 30 && leptonEta[0] < 2.1 && leptonPt[1] < 0 ) || ( leptonPt[0] < 0 && leptonPt[1] > 30 && leptonEta[1] < 2.1 ) ) && bquarkStatus2Pt[0] > 30 && bquarkStatus2Pt[1] > 30 && bquarkStatus2Eta[0] < 2.4 && bquarkStatus2Eta[1] < 2.4;
-  
+  bool notaunic = taunic[0] == false && taunic[1] == false;
 
   if( ( hadronic[0] == true &&  hadronic[1] == false ) || ( hadronic[0] == false &&  hadronic[1] == true) ) hMtt_LPJ->Fill(Mtt);
   if( leptonPt[0] > 0  && leptonPt[1] > 0) hMtt_DIL->Fill(Mtt);
   if( visibleLPJ ) hMtt_LPJ_Pton->Fill(Mtt);
   if( visibleDIL ) hMtt_DIL_Pton->Fill(Mtt);
+  if( visibleDIL && notaunic ) hMtt_DIL_Pton_NoTau->Fill(Mtt);
   if( visibleLPJStatus2 ) hMtt_LPJ_Pton_Status2->Fill(Mtt);
   if( visibleDILStatus2 ) hMtt_DIL_Pton_Status2->Fill(Mtt);
 
@@ -391,7 +400,7 @@ bool TopDecayGenHisto::filter(edm::Event& iEvent, const edm::EventSetup& eventSe
   if(leptonEta[1] > 0) hMtt_leptonEta->Fill( leptonEta[1], Mtt);
   if(bquarkEta[0] > 0) hMtt_bquarkEta->Fill( bquarkEta[0], Mtt);
   if(bquarkEta[1] > 0) hMtt_bquarkEta->Fill( bquarkEta[1], Mtt);
- 
+
   /// Particle level histograms
   std::sort(stableLeptons.begin(), stableLeptons.end(), GreaterByPt<reco::Candidate::LorentzVector>());
   std::sort(bJets.begin(), bJets.end(), GreaterByPt<reco::Candidate::LorentzVector>());
@@ -400,7 +409,9 @@ bool TopDecayGenHisto::filter(edm::Event& iEvent, const edm::EventSetup& eventSe
   bool visibleStatus1Lepton = false;
   if( bJets.size() >= 2){
     visibleBJets = bJets[0].pt() > 30 && bJets[1].pt() > 30 && fabs( bJets[0].eta() )  <  2.4 && fabs(bJets[1].eta())  <  2.4 ;
+    
   }
+
 
   if( stableLeptons.size() >= 2 ){
     visibleStatus1Lepton = stableLeptons[0].pt() > 20 && stableLeptons[1].pt() > 20 && fabs( stableLeptons[0].eta() )  <  2.4 && fabs(stableLeptons[1].eta())  <  2.4 ; 
@@ -411,6 +422,7 @@ bool TopDecayGenHisto::filter(edm::Event& iEvent, const edm::EventSetup& eventSe
 
   if(visibleDILParticleLevelStatus1Lepton) hMtt_DIL_Ptcl_Status1Lepton->Fill(Mtt);
   if(visibleDILParticleLevel) hMtt_DIL_Ptcl->Fill(Mtt);
+  if(visibleDILParticleLevel && notaunic) hMtt_DIL_Ptcl_NoTau->Fill(Mtt);
 
   return accepted;
 }
