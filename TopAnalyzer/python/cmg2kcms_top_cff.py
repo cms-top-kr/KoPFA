@@ -4,6 +4,7 @@ from PhysicsTools.SelectorUtils.pfJetIDSelector_cfi import pfJetIDSelector
 myJetId = pfJetIDSelector.clone()
 
 from KoPFA.TopAnalyzer.topHLTfilter_cff import *
+from KoPFA.CommonTools.eventFilter_cfi import *
 from KoPFA.CommonTools.EventWeightProducer_cfi import *
 from KoPFA.CommonTools.JetEnergyScale_cfi import *
 
@@ -162,6 +163,7 @@ removeDuplicate = cms.EDFilter("RemoveDuplicate",
 nEventsPatHLT = cms.EDProducer("EventCountProducer")
 
 topElElAnalysisMCSequence = cms.Sequence(
+    EventFilter*
     hltHighLevelElElMC*
     nEventsPatHLT*
     topWLeptonGenFilter*
@@ -174,6 +176,7 @@ topElElAnalysisMCSequence = cms.Sequence(
 )
 
 topElElAnalysisRealDataSequence = cms.Sequence(
+    EventFilter*
     hltHighLevelElElRD*
     nEventsPatHLT*
     removeDuplicate*
@@ -184,6 +187,7 @@ topElElAnalysisRealDataSequence = cms.Sequence(
 )
 
 topMuMuAnalysisMCSequence = cms.Sequence(
+    EventFilter*
     hltHighLevelMuMuMC*
     nEventsPatHLT*
     topWLeptonGenFilter*
@@ -196,6 +200,7 @@ topMuMuAnalysisMCSequence = cms.Sequence(
 )
 
 topMuMuAnalysisRealDataSequence = cms.Sequence(
+    EventFilter*
     hltHighLevelMuMuRD*
     nEventsPatHLT*
     removeDuplicate*
@@ -206,6 +211,7 @@ topMuMuAnalysisRealDataSequence = cms.Sequence(
 )
 
 topMuElAnalysisMCSequence = cms.Sequence(
+    EventFilter*
     hltHighLevelMuElMC*
     nEventsPatHLT*
     topWLeptonGenFilter*
@@ -218,6 +224,7 @@ topMuElAnalysisMCSequence = cms.Sequence(
 )
 
 topMuElAnalysisRealDataSequence = cms.Sequence(
+    EventFilter*
     hltHighLevelMuElRD*
     nEventsPatHLT*
     removeDuplicate*
