@@ -44,7 +44,10 @@ GenParticleDecayFilter::GenParticleDecayFilter(const edm::ParameterSet& pset)
 
 bool GenParticleDecayFilter::filter(edm::Event& event, const edm::EventSetup& eventSetup)
 {
-  if (!applyFilter_)
+
+  const bool isRealData = event.isRealData();
+
+  if (!applyFilter_ || isRealData)
     return true;
 
   using namespace std;
