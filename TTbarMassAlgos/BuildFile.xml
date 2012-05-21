@@ -1,0 +1,10 @@
+<use name="DataFormats/Common"/>
+<use name="DataFormats/PatCandidates"/>
+<use name="KoPFA/DataFormats" /> 
+<use name="TopQuarkAnalysis/TopKinFitter" />
+<use name="rootrflx"/>
+<use name="rootminuit"/>
+<use name="rootminuit2"/>
+<export>
+  <lib   name="1"/>
+</export>
