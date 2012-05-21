@@ -156,9 +156,6 @@ bool TopDecayGenHisto::filter(edm::Event& iEvent, const edm::EventSetup& eventSe
   iEvent.getByType(evt_info);
   double weightMC = evt_info->weight();
 
-  //multiply the MC event weight by the PU weight:
-  //weightPU = getPUEventWeight( iEvent, weightPU_ )*weightMC; //#######
-
   edm::Handle<reco::GenJetCollection> genJets;
   iEvent.getByLabel("ak5GenJets", genJets);
 
