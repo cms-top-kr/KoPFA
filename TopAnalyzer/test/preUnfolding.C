@@ -41,9 +41,9 @@ void preUnfolding(){
   decayMode.push_back("MuMu");
 
   //response matrix
-  mcPath.push_back("$WORK/data/export/common/Top/ntuple/MuEl/MC/Fall11_v1/vallot_TTbarTuneZ2.root");
-  mcPath.push_back("$WORK/data/export/common/Top/ntuple/ElEl/MC/Fall11_v1/vallot_TTbarTuneZ2.root");
-  mcPath.push_back("$WORK/data/export/common/Top/ntuple/MuMu/MC/Fall11_v1/vallot_TTbarTuneZ2.root");
+  mcPath.push_back("$WORK/data/export/common/Top/ntuple/MuEl/MC/Fall11_v2/JES_Default/vallot_TTbarTuneZ2.root");
+  mcPath.push_back("$WORK/data/export/common/Top/ntuple/ElEl/MC/Fall11_v2/JES_Default/vallot_TTbarTuneZ2.root");
+  mcPath.push_back("$WORK/data/export/common/Top/ntuple/MuMu/MC/Fall11_v2/JES_Default/vallot_TTbarTuneZ2.root");
 
   //measured mc distribution after final cut
   //mePath.push_back("$WORK/data/export/common/Top/ntuple/MuEl/MC/Summer11_new/vallot_TTbarPowheg.root");
@@ -62,13 +62,13 @@ void preUnfolding(){
   //rdPath.push_back("/data/export/common/Top/finalHisto/v6/MuEl.root");
   //rdPath.push_back("/data/export/common/Top/finalHisto/v6/ElEl.root");
   //rdPath.push_back("/data/export/common/Top/finalHisto/v6/MuMu.root");
-  rdPath.push_back("result_Apr2/MuEl_Apr2/MuEl.root");
-  rdPath.push_back("result_Apr2/ElEl_Apr2/ElEl.root");
-  rdPath.push_back("result_Apr2/MuMu_Apr2/MuMu.root");
+  rdPath.push_back("$WORK/data/export/common/Top/finalHisto/2011full/v2/MuEl.root");
+  rdPath.push_back("$WORK/data/export/common/Top/finalHisto/2011full/v2/ElEl.root");
+  rdPath.push_back("$WORK/data/export/common/Top/finalHisto/2011full/v2/MuMu.root");
 
   const std::string cutStep = "Step_7";
-  double lumi = 5000.00;
-  double ttbarX = 164.6;
+  double lumi = 4982;
+  double ttbarX = 161.9;
   double powhegX = ttbarX * 0.11; //branching ratio as this is dilepton decay mode only
   bool split = false;//use full statistics if it is false
   string recon = "vsum";
