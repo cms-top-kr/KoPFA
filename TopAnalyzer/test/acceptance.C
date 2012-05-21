@@ -13,6 +13,9 @@
 #include "TGraph.h"
 #include "TROOT.h"
 #include <iostream>
+#include <iomanip>
+#include <map>
+
 //default
 double detBins[] = {0, 345, 400, 450, 500, 550, 600, 680, 800, 1800}; // 9 bins
 double genBins[] = {0, 345, 400, 450, 500, 550, 600, 680, 800, 1800}; // 9 bins
@@ -37,45 +40,49 @@ void acceptance(){
   decayMode.push_back("MuEl");
 
   //MC
-  mcPath.push_back("$WORK/data/export/common/Top/ntuple/ElEl/MC/Fall11_v1/vallot_TTbarTuneZ2.root");
-  mcPath.push_back("$WORK/data/export/common/Top/ntuple/MuMu/MC/Fall11_v1/vallot_TTbarTuneZ2.root");
-  mcPath.push_back("$WORK/data/export/common/Top/ntuple/MuEl/MC/Fall11_v1/vallot_TTbarTuneZ2.root");
+  mcPath.push_back("$WORK/data/export/common/Top/ntuple/ElEl/MC/Fall11_v2/JES_Default/vallot_TTbarTuneZ2.root");
+  mcPath.push_back("$WORK/data/export/common/Top/ntuple/MuMu/MC/Fall11_v2/JES_Default/vallot_TTbarTuneZ2.root");
+  mcPath.push_back("$WORK/data/export/common/Top/ntuple/MuEl/MC/Fall11_v2/JES_Default/vallot_TTbarTuneZ2.root");
 
   //measured data distribution after final cut:version 6->take into account QCD
   //rdPath.push_back("/data/export/common/Top/finalHisto/v6/ElEl.root");
   //rdPath.push_back("/data/export/common/Top/finalHisto/v6/MuMu.root");
   //rdPath.push_back("/data/export/common/Top/finalHisto/v6/MuEl.root");
 
-  rdPath.push_back("result_Apr2/ElEl_Apr2/ElEl.root");
-  rdPath.push_back("result_Apr2/MuMu_Apr2/MuMu.root");
-  rdPath.push_back("result_Apr2/MuEl_Apr2/MuEl.root");
-
+  //note for v3
+  rdPath.push_back("$WORK/data/export/common/Top/finalHisto/2011full/v2/ElEl.root");
+  rdPath.push_back("$WORK/data/export/common/Top/finalHisto/2011full/v2/MuMu.root");
+  rdPath.push_back("$WORK/data/export/common/Top/finalHisto/2011full/v2/MuEl.root");
 
   const std::string cutStep = "Step_7";
   string recon = "vsum";
 
-  TFile * fDen = new TFile("$WORK/data/export/common/Top/ntuple/Gen/hist/Fall11/v0/hist_madgraph.root");
-  TH1F* full = (TH1F*) fDen->Get("all/hmTT_Full");
-  TH1F* visi = (TH1F*) fDen->Get("all/hmTT_Pton");
+  TFile * fDen = new TFile("/afs/cern.ch/work/t/tjkim/store/GenHisto/topGenHisto_madgraph.root");
+  TH1F* full = (TH1F*) fDen->Get("topDecayGenHisto/hMtt_Full");
+  TH1F* visiPtcl = (TH1F*) fDen->Get("topDecayGenHisto/hMtt_DIL_Ptcl_NoTau");
+  TH1F* visiPton = (TH1F*) fDen->Get("topDecayGenHisto/hMtt_DIL_Pton_NoTau");
 
   double total = full->GetEntries() ;
   cout << "total for den = " << total << endl; 
   cout << "Rebinning..." << " n bins = " << nGen << endl;
+  TH1F *visiPtclnew = (TH1F*) visiPtcl->Rebin(nGen, "visiPtclnew", genBins);
+  TH1F *visiPtonnew = (TH1F*) visiPton->Rebin(nGen, "visiPtonnew", genBins);
   TH1F *fullnew = (TH1F*) full->Rebin(nGen, "fullnew", genBins);
-  TH1F *visinew = (TH1F*) visi->Rebin(nGen, "visinew", genBins);
 
   fullnew->Draw();
 
   //acceptance to visible phase space
   cout << "producing acceptance plots..." << endl;
-  TH1F * hAccept =  getAcceptanceHisto(mcPath, rdPath, cutStep,  decayMode, recon, visinew, total);
+  TH1F * hAcceptPtcl =  getAcceptanceHisto(mcPath, rdPath, cutStep,  decayMode, recon+"_Ptcl", visiPtclnew, total);
+  TH1F * hAcceptPton =  getAcceptanceHisto(mcPath, rdPath, cutStep,  decayMode, recon+"_Pton", visiPtonnew, total);
   TH1F * hAcceptFull =  getAcceptanceHisto(mcPath, rdPath, cutStep,  decayMode, recon+"_Full", fullnew, total);
 
   TFile* f = TFile::Open("acceptance.root", "recreate");
 
   //--------------Write into preUnfolding root file------------------------
 
-  hAccept->Write();
+  hAcceptPtcl->Write();
+  hAcceptPton->Write();
   hAcceptFull->Write();
 
   f->Write();  
