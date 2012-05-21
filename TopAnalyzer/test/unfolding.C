@@ -34,9 +34,9 @@ void unfolding(int k=4){
   //gStyle->SetOptStat(0000);
   gStyle->SetOptFit(0011);
 
-  TFile * file = new TFile("preUnfolding.root");
-  TFile * file_acceptance = new TFile("acceptance.root");
-  TFile * file_truthFinal = new TFile("truthFinal.root");
+  TFile * file = new TFile("note_v2/preUnfolding.root");
+  TFile * file_acceptance = new TFile("$WORK/data/export/common/Top/ntuple/unfolding/v1/acceptance.root");
+  TFile * file_truthFinal = new TFile("$WORK/data/export/common/Top/ntuple/unfolding/v1/truthFinal.root");
   //response matrix
   TH2F * h2ResponseM = (TH2F*) file->Get("h2_response_m");
   //measured distribution
@@ -49,18 +49,25 @@ void unfolding(int k=4){
   TH1F * hGenDistMADGRAPH = (TH1F*) file->Get("hTruth_MadGraph");
   //TH1F * hGenDistPOWHEG = (TH1F*) file->Get("hTruth_Powheg");
   //acceptance 
-  TH1F * hAcceptDist = (TH1F*) file_acceptance->Get("hAccept_vsum");
+  TH1F * hAcceptDistPton = (TH1F*) file_acceptance->Get("hAccept_vsum_Pton");
+  TH1F * hAcceptDistPtcl = (TH1F*) file_acceptance->Get("hAccept_vsum_Ptcl");
   TH1F * hAcceptDistFull = (TH1F*) file_acceptance->Get("hAccept_vsum_Full");
   //truth level for final
-  TH1 * hGenMADGRAPH = (TH1*) file_truthFinal->Get("MadGraph_Visible");
-  TH1 * hGenPOWHEG = (TH1*) file_truthFinal->Get("POWHEG_Visible");
   TH1 * hGenMADGRAPH_Full = (TH1*) file_truthFinal->Get("MadGraph_Full");
+  TH1 * hGenMADGRAPH_Ptcl = (TH1*) file_truthFinal->Get("MadGraph_Ptcl");
+  TH1 * hGenMADGRAPH_Pton = (TH1*) file_truthFinal->Get("MadGraph_Pton");
   TH1 * hGenPOWHEG_Full = (TH1*) file_truthFinal->Get("POWHEG_Full");
+  TH1 * hGenPOWHEG_Ptcl = (TH1*) file_truthFinal->Get("POWHEG_Ptcl");
+  TH1 * hGenPOWHEG_Pton = (TH1*) file_truthFinal->Get("POWHEG_Pton");
+  TH1 * hGenMCNLO_Full = (TH1*) file_truthFinal->Get("MCNLO_Full");
+  TH1 * hGenMCNLO_Ptcl = (TH1*) file_truthFinal->Get("MCNLO_Ptcl");
+  TH1 * hGenMCNLO_Pton = (TH1*) file_truthFinal->Get("MCNLO_Pton");
+
   TH1 * hGenMCNLO = (TH1*) file_truthFinal->Get("hVisTTbarM");
   TH1 * hGenMCNLO_Up = (TH1*) file_truthFinal->Get("hVisTTbarM_Up");
   TH1 * hGenMCNLO_Down = (TH1*) file_truthFinal->Get("hVisTTbarM_Down");
 
-  double lumi = 5000;
+  double lumi = 4982;
   bool print = true; //save plots
   bool printX = true; //print cross section
   bool pseudo = false;
@@ -82,10 +89,16 @@ void unfolding(int k=4){
   bool bincorr = false;
   bool HBBstyle = false;
 
-  //Full correction: set norm = false
+  //Full correction: set norm = false for absolute X
   FinalPlot(h_unfold, hGenDistMADGRAPH, hAcceptDistFull, hGenMADGRAPH_Full, lumi, "unfold_simple_full", "dSigmadM",  0.0001, 200, false, log, bincorr, print); 
+  //Full correction normalized
+  FinalPlot(h_unfold, hGenDistMADGRAPH, hAcceptDistFull, hGenMADGRAPH_Full, hGenMCNLO_Full, hGenPOWHEG_Full, lumi, "unfold_Normalized_full", "dSigmadM",  0.00001, 0.06, norm, log, bincorr, print, printX, HBBstyle);
+
+  //visible correction: set norm = false for absolute X
+  //FinalPlot(h_unfold, hGenDistMADGRAPH, hAcceptDistPtcl, hGenMADGRAPH_Ptcl, hGenMCNLO, hGenPOWHEG_Ptcl, lumi, "unfold", "dSigmadM",  0.00001, 0.06, false, log, bincorr, print, printX, HBBstyle); 
+  //FinalPlot(h_unfold, hGenDistMADGRAPH, hAcceptDistFull, hGenMADGRAPH_Full, lumi, "unfold_simple", "dSigmadM",  0.0001, 200, false, log, bincorr, print);
   //visible correction normalized
-  FinalPlot(h_unfold, hGenDistMADGRAPH, hAcceptDist, hGenMADGRAPH, hGenMCNLO, hGenPOWHEG, lumi, "unfold_Normalized", "dSigmadM",  0.00001, 0.06, norm, log, bincorr, print, printX, HBBstyle); 
+  //FinalPlot(h_unfold, hGenDistMADGRAPH, hAcceptDistPtcl, hGenMADGRAPH_Ptcl, hGenMCNLO, hGenPOWHEG_Ptcl, lumi, "unfold_Normalized", "dSigmadM",  0.00001, 0.06, norm, log, bincorr, print, printX, HBBstyle); 
 
   //TGraphAsymmErrors* de = FinalPlot(h_unfold, hGenDistMADGRAPH, hAcceptDist, lumi, "unfold_Normalized_simple", "dSigmadM",  0.00001, 0.06, norm, log, bincorr, print);
   //TGraphAsymmErrors* up = FinalPlot(h_unfoldup, hGenDistMADGRAPH, hAcceptDist, lumi, "unfold_Normalized_simple_up", "dSigmadM",  0.00001, 0.06, norm, log, bincorr, print);
@@ -98,8 +111,11 @@ void unfolding(int k=4){
     gROOT->SetStyle("Plain");
     setHHStyle(*gStyle);
   }
-
-  TOP11013Plot(h_unfold, hGenDistMADGRAPH, hAcceptDist, hGenMADGRAPH, hGenMCNLO, hGenPOWHEG, lumi, "unfold_Normalized_pas013", "dSigmadM",  0.00001, 0.06, norm, log, bincorr, print, false, HBBstyle, true, hGenMCNLO_Up, hGenMCNLO_Down);
+  
+   //visible phase space
+  //TOP11013Plot(h_unfold, hGenDistMADGRAPH, hAcceptDistPtcl, hGenMADGRAPH_Ptcl, hGenMCNLO, hGenPOWHEG_Ptcl, lumi, "unfold_Normalized_pas013", "dSigmadM",  0.00001, 0.06, norm, log, bincorr, print, false, HBBstyle, true, hGenMCNLO_Up, hGenMCNLO_Down);
+  //full phase space
+  //TOP11013Plot(h_unfold, hGenDistMADGRAPH, hAcceptDistFull, hGenMADGRAPH_Full, hGenMCNLO_Full, hGenPOWHEG_Full, lumi, "unfold_Normalized_full_pas013", "dSigmadM",  0.00001, 0.06, norm, log, bincorr, print, false, HBBstyle, true, hGenMCNLO_Up, hGenMCNLO_Down);
  
   //chi2 test
   //int n = 5;
