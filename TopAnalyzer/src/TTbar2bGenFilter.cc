@@ -29,7 +29,7 @@ public:
   void beginJob() {};
   bool filter(edm::Event& event, const edm::EventSetup& eventSetup);
   void endJob() {};
-  bool isLastbottom(const reco::GenParticle&);
+  bool isLastQuark(const reco::GenParticle&, const int&);
   bool isFromtop(const reco::GenParticle&);
 
   string debug;
@@ -96,7 +96,7 @@ bool TTbar2bGenFilter::filter(edm::Event& iEvent, const edm::EventSetup& eventSe
     const reco::GenParticle& p = (*myGenParticles)[ip];
    
     if ( abs(p.pdgId()) != 5 ) continue;
-    bool isLast = isLastbottom(p);
+    bool isLast = isLastQuark(p, 5);
     if (isLast != true) continue;
  
     int status = p.status();
@@ -107,13 +107,11 @@ bool TTbar2bGenFilter::filter(edm::Event& iEvent, const edm::EventSetup& eventSe
     bool isfromtop = isFromtop(p);
 
     if( !isfromtop ) {  
-      accepted = true;
       b_from_nontop_status->Fill(status);
       b_from_nontop_motherid->Fill(motherAbsPdgId);
       b_from_nontop_pt->Fill(p.pt());
       nb_from_nontop++ ;
     }else{
-      accepted = false;
       b_from_top_status->Fill(status);
       b_from_top_motherid->Fill(motherAbsPdgId);
       b_from_top_pt->Fill(p.pt());
@@ -121,9 +119,14 @@ bool TTbar2bGenFilter::filter(edm::Event& iEvent, const edm::EventSetup& eventSe
     }
   }
 
-  if( nb_from_top  > 2 ) {
-    //cout << debug << endl;
+  if( nb_from_top <=2 && nb_from_nontop <=0){
+    accepted = false;
   }
+  else {
+    //more than 2 b-quarks are from top. But it will be considered as tt+bb.
+    accepted = true;
+  }
+
   b_from_top_multi->Fill(nb_from_top);
   b_from_nontop_multi->Fill(nb_from_nontop);
 
@@ -133,13 +136,13 @@ bool TTbar2bGenFilter::filter(edm::Event& iEvent, const edm::EventSetup& eventSe
   return accepted;
 }
 
-bool TTbar2bGenFilter::isLastbottom( const reco::GenParticle& p ){
+bool TTbar2bGenFilter::isLastQuark( const reco::GenParticle& p, const int & pdgId ){
    bool out = true;
 
    unsigned int nDaughters = p.numberOfDaughters();
    for ( unsigned iDaughter=0; iDaughter<nDaughters; ++iDaughter ) {
      const reco::Candidate* daugh = p.daughter(iDaughter);
-     if( abs(daugh->pdgId()) == 5) {
+     if( abs(daugh->pdgId()) == pdgId) {
        out = false;
        break;
      }

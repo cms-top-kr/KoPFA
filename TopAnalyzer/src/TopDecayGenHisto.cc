@@ -16,6 +16,7 @@
 #include "DataFormats/JetReco/interface/GenJetCollection.h"
 #include "DataFormats/JetReco/interface/GenJet.h"
 #include "KoPFA/TopAnalyzer/interface/TopBasicFunctions.h"
+#include "SimDataFormats/GeneratorProducts/interface/GenEventInfoProduct.h"
 
 #include <vector>
 #include "TH1.h"
@@ -35,6 +36,7 @@ public:
 
 private:
   bool applyFilter_;
+  bool applyWeight_;
   bool semiLeptonic_;
   bool semiLeptonicMuon_;
   bool semiLeptonicElectron_;
@@ -75,6 +77,7 @@ private:
 TopDecayGenHisto::TopDecayGenHisto(const edm::ParameterSet& pset)
 {
   applyFilter_= pset.getUntrackedParameter<bool>("applyFilter",false);
+  applyWeight_= pset.getUntrackedParameter<bool>("applyWeight",false);
 
   semiLeptonic_ = pset.getParameter<bool>("semiLeptonic"),
   semiLeptonicMuon_ = pset.getParameter<bool>("semiLeptonicMuon"),
@@ -148,6 +151,13 @@ bool TopDecayGenHisto::filter(edm::Event& iEvent, const edm::EventSetup& eventSe
   bool debug = false;
 
   if (debug ) cout << "EVENT" << endl;
+
+  edm::Handle<GenEventInfoProduct> evt_info;
+  iEvent.getByType(evt_info);
+  double weightMC = evt_info->weight();
+
+  //multiply the MC event weight by the PU weight:
+  //weightPU = getPUEventWeight( iEvent, weightPU_ )*weightMC; //#######
 
   edm::Handle<reco::GenJetCollection> genJets;
   iEvent.getByLabel("ak5GenJets", genJets);
@@ -375,31 +385,31 @@ bool TopDecayGenHisto::filter(edm::Event& iEvent, const edm::EventSetup& eventSe
 
 
   /// Parton level histograms 
-  hMtt_Full->Fill(Mtt);
+  hMtt_Full->Fill(Mtt,weightMC);
   bool visibleDIL = leptonPt[0] > 20 && leptonPt[1] > 20 && leptonEta[0] < 2.4 && leptonEta[1] < 2.4 && bquarkPt[0] > 30 && bquarkPt[1] > 30 && bquarkEta[1] < 2.4 && bquarkEta[2] < 2.4;
   bool visibleLPJ = ( ( leptonPt[0] > 30 && leptonEta[0] < 2.1 && leptonPt[1] < 0 ) || ( leptonPt[0] < 0 && leptonPt[1] > 30 && leptonEta[1] < 2.1 ) ) && bquarkPt[0] > 30 && bquarkPt[1] > 30 && bquarkEta[0] < 2.4 && bquarkEta[1] < 2.4;
   bool visibleDILStatus2 = leptonPt[0] > 20 && leptonPt[1] > 20 && leptonEta[0] < 2.4 && leptonEta[1] < 2.4 && bquarkStatus2Pt[0] > 30 && bquarkStatus2Pt[1] > 30 && bquarkStatus2Eta[1] < 2.4 && bquarkStatus2Eta[2] < 2.4;
   bool visibleLPJStatus2 = ( ( leptonPt[0] > 30 && leptonEta[0] < 2.1 && leptonPt[1] < 0 ) || ( leptonPt[0] < 0 && leptonPt[1] > 30 && leptonEta[1] < 2.1 ) ) && bquarkStatus2Pt[0] > 30 && bquarkStatus2Pt[1] > 30 && bquarkStatus2Eta[0] < 2.4 && bquarkStatus2Eta[1] < 2.4;
   bool notaunic = taunic[0] == false && taunic[1] == false;
 
-  if( ( hadronic[0] == true &&  hadronic[1] == false ) || ( hadronic[0] == false &&  hadronic[1] == true) ) hMtt_LPJ->Fill(Mtt);
-  if( leptonPt[0] > 0  && leptonPt[1] > 0) hMtt_DIL->Fill(Mtt);
-  if( visibleLPJ ) hMtt_LPJ_Pton->Fill(Mtt);
-  if( visibleDIL ) hMtt_DIL_Pton->Fill(Mtt);
-  if( visibleDIL && notaunic ) hMtt_DIL_Pton_NoTau->Fill(Mtt);
-  if( visibleLPJStatus2 ) hMtt_LPJ_Pton_Status2->Fill(Mtt);
-  if( visibleDILStatus2 ) hMtt_DIL_Pton_Status2->Fill(Mtt);
+  if( ( hadronic[0] == true &&  hadronic[1] == false ) || ( hadronic[0] == false &&  hadronic[1] == true) ) hMtt_LPJ->Fill(Mtt,weightMC);
+  if( leptonPt[0] > 0  && leptonPt[1] > 0) hMtt_DIL->Fill(Mtt,weightMC);
+  if( visibleLPJ ) hMtt_LPJ_Pton->Fill(Mtt,weightMC);
+  if( visibleDIL ) hMtt_DIL_Pton->Fill(Mtt,weightMC);
+  if( visibleDIL && notaunic ) hMtt_DIL_Pton_NoTau->Fill(Mtt,weightMC);
+  if( visibleLPJStatus2 ) hMtt_LPJ_Pton_Status2->Fill(Mtt,weightMC);
+  if( visibleDILStatus2 ) hMtt_DIL_Pton_Status2->Fill(Mtt,weightMC);
 
-  if(leptonPt[0] > 0) hMtt_leptonPt->Fill( leptonPt[0], Mtt);
-  if(leptonPt[1] > 0) hMtt_leptonPt->Fill( leptonPt[1], Mtt);
-  if(bquarkPt[0] > 0) hMtt_bquarkPt->Fill( bquarkPt[0], Mtt);
-  if(bquarkPt[1] > 0) hMtt_bquarkPt->Fill( bquarkPt[1], Mtt);
-  if(bquarkStatus2Pt[0] > 0) hMtt_bquarkStatus2Pt->Fill( bquarkStatus2Pt[0], Mtt);
-  if(bquarkStatus2Pt[1] > 0) hMtt_bquarkStatus2Pt->Fill( bquarkStatus2Pt[1], Mtt);
-  if(leptonEta[0] > 0) hMtt_leptonEta->Fill( leptonEta[0], Mtt);
-  if(leptonEta[1] > 0) hMtt_leptonEta->Fill( leptonEta[1], Mtt);
-  if(bquarkEta[0] > 0) hMtt_bquarkEta->Fill( bquarkEta[0], Mtt);
-  if(bquarkEta[1] > 0) hMtt_bquarkEta->Fill( bquarkEta[1], Mtt);
+  if(leptonPt[0] > 0) hMtt_leptonPt->Fill( leptonPt[0], Mtt,weightMC);
+  if(leptonPt[1] > 0) hMtt_leptonPt->Fill( leptonPt[1], Mtt,weightMC);
+  if(bquarkPt[0] > 0) hMtt_bquarkPt->Fill( bquarkPt[0], Mtt,weightMC);
+  if(bquarkPt[1] > 0) hMtt_bquarkPt->Fill( bquarkPt[1], Mtt,weightMC);
+  if(bquarkStatus2Pt[0] > 0) hMtt_bquarkStatus2Pt->Fill( bquarkStatus2Pt[0], Mtt,weightMC);
+  if(bquarkStatus2Pt[1] > 0) hMtt_bquarkStatus2Pt->Fill( bquarkStatus2Pt[1], Mtt,weightMC);
+  if(leptonEta[0] > 0) hMtt_leptonEta->Fill( leptonEta[0], Mtt,weightMC);
+  if(leptonEta[1] > 0) hMtt_leptonEta->Fill( leptonEta[1], Mtt,weightMC);
+  if(bquarkEta[0] > 0) hMtt_bquarkEta->Fill( bquarkEta[0], Mtt,weightMC);
+  if(bquarkEta[1] > 0) hMtt_bquarkEta->Fill( bquarkEta[1], Mtt,weightMC);
 
   /// Particle level histograms
   std::sort(stableLeptons.begin(), stableLeptons.end(), GreaterByPt<reco::Candidate::LorentzVector>());
@@ -420,9 +430,9 @@ bool TopDecayGenHisto::filter(edm::Event& iEvent, const edm::EventSetup& eventSe
   bool visibleDILParticleLevelStatus1Lepton = visibleStatus1Lepton && visibleBJets; 
   bool visibleDILParticleLevel = leptonPt[0] > 20 && leptonPt[1] > 20 && leptonEta[0] < 2.4 && leptonEta[1] < 2.4 && visibleBJets; 
 
-  if(visibleDILParticleLevelStatus1Lepton) hMtt_DIL_Ptcl_Status1Lepton->Fill(Mtt);
-  if(visibleDILParticleLevel) hMtt_DIL_Ptcl->Fill(Mtt);
-  if(visibleDILParticleLevel && notaunic) hMtt_DIL_Ptcl_NoTau->Fill(Mtt);
+  if(visibleDILParticleLevelStatus1Lepton) hMtt_DIL_Ptcl_Status1Lepton->Fill(Mtt,weightMC);
+  if(visibleDILParticleLevel) hMtt_DIL_Ptcl->Fill(Mtt,weightMC);
+  if(visibleDILParticleLevel && notaunic) hMtt_DIL_Ptcl_NoTau->Fill(Mtt,weightMC);
 
   return accepted;
 }
