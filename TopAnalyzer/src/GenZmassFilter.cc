@@ -13,7 +13,7 @@
 //
 // Original Author:  Tae Jeong Kim
 //         Created:  Mon Dec 14 01:29:35 CET 2009
-// $Id: GenZmassFilter.cc,v 1.3 2010/10/26 11:45:05 tjkim Exp $
+// $Id: GenZmassFilter.cc,v 1.4 2010/11/01 20:59:19 tjkim Exp $
 //
 //
 
@@ -111,8 +111,10 @@ GenZmassFilter::~GenZmassFilter()
 bool
 GenZmassFilter::filter(edm::Event& iEvent, const edm::EventSetup& iSetup)
 {
+ 
+  const bool isRealData = iEvent.isRealData();
 
-  if (!applyFilter_)
+  if (!applyFilter_ || isRealData )
     return true;
 
 
