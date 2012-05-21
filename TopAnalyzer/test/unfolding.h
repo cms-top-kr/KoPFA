@@ -650,6 +650,7 @@ TH1* getTruthCrossSection(TH1F* hgen, TH1* htruth, double lumi, bool norm, bool 
   int nbins = hgen->GetNbinsX();
   double totalN = 0;
   double totalS = 0;
+  double totalE = 0;
   for(int i=1; i <=  nbins; i++){
     double width = hgen->GetBinWidth(i);
     double start = hgen->GetBinCenter(i)-width/2 + 1;
@@ -662,7 +663,11 @@ TH1* getTruthCrossSection(TH1F* hgen, TH1* htruth, double lumi, bool norm, bool 
     totalS += sigma*width;
   }
 
+  totalE = sqrt(totalN)/totalN;
+
   if(print) cout << "========= Truth Cross section: sigma (fb)====================== " << endl;
+  if(print) cout << "$M_{\\ttbar} ~&~  $N_{\\ttbar}^{true}$ ~&~  absolute sigma ~(fb/GeV/c^2)$ ~&~ normalized sigma ~(10^{-3}/GeV/c^2)$ \\\\ \\hline" << endl;
+
   for(int i=1; i <=  nbins; i++){
     double width = hgen->GetBinWidth(i);
     double bincenter = hgen->GetBinCenter(i);
@@ -671,25 +676,34 @@ TH1* getTruthCrossSection(TH1F* hgen, TH1* htruth, double lumi, bool norm, bool 
     double unfolded = hgen->GetBinContent(i);
     double abserr = hgen->GetBinError(i);
     double truth = htruth->Integral(start, end);
-    double sigma = 0;
+
+    double normsigmaErr = 0;
     double sigmaErr = 0;
-    if(norm) {
-      sigma = truth/( lumi * width )/totalS;
-    }else{
-      sigma = truth/( lumi * width );
+
+    double  normsigma = truth/( lumi * width )/totalS;
+    double  sigma = truth/( lumi * width );
+
+    if(unfolded) {
+      normsigmaErr = normsigma*(abserr/unfolded);   
+      sigmaErr = sigma*(abserr/unfolded);
     }
-    if(unfolded) sigmaErr = sigma*(abserr/unfolded);
-    dsigma->SetBinContent(i, sigma); 
+
+    if(norm){
+      dsigma->SetBinContent(i, normsigma); 
+    }else{
+      dsigma->SetBinContent(i, sigma);
+    }
 
     if(print){
       cout << "$" << bincenter-width/2 << "-" << bincenter+width/2 << "$   ~&~ "
          << setprecision (4) << unfolded << " $\\pm$ " << abserr << " ~&~ "
-         << sigma*1000 << " $\\pm$ " << sigmaErr*1000 << " "
+         << sigma*1000 << " $\\pm$ " << sigmaErr*1000 << " ~&~ "
+         << normsigma*1000 << " $\\pm$ " << normsigmaErr*1000 << " "
          << " \\\\" <<  endl;
     }
   } 
  
-  if(print) cout << "========  SUMMARY : total truth events= " << totalN << " /  total cross section= " << totalS << " (pb) =========" << endl;
+  if(print) cout << "========  SUMMARY : total truth events= " << totalN << " /  total cross section= " << totalS << " $\\pm$ " << totalS*totalE << " (pb) =========" << endl;
   return dsigma;
 }
 
@@ -772,7 +786,7 @@ TGraphAsymmErrors* BinCenterCorrection( TGraphAsymmErrors* data, TH1* gen_histo,
   TGraphAsymmErrors* dsigma = new TGraphAsymmErrors;
   int nbins = gen_histo->GetNbinsX();
 
-  double centerpoints[] = { 172.5, 363, 427, 472, 522, 575, 646, 741, 975};
+  double centerpoints[] = { 172.5, 363, 427, 472, 522, 575, 646, 741, 1050};
 
   for(int i=1; i <=  nbins; i++){
     double x;
