@@ -447,6 +447,20 @@ process.MessageLogger.cerr.FwkReport.reportEvery = 100
 process.load("KoPFA.TopAnalyzer.topAnalysis_cff")
 
 process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_cff")
+
+from TopQuarkAnalysis.TopEventProducers.sequences.ttFullLepEvtBuilder_cff import *
+removeTtFullLepHypGenMatch(process)
+
+setForAllTtFullLepHypotheses(process,"muons","acceptedMuons")
+setForAllTtFullLepHypotheses(process,"electrons","acceptedElectrons")
+setForAllTtFullLepHypotheses(process,"mets","patMETsPFlow")
+setForAllTtFullLepHypotheses(process,"jets", cms.InputTag("JetEnergyScale","selectedPatJetsPFlow"))
+setForAllTtFullLepHypotheses(process,"maxNJets",2)
+setForAllTtFullLepHypotheses(process,"mumuChannel",True)
+setForAllTtFullLepHypotheses(process,"emuChannel",True)
+setForAllTtFullLepHypotheses(process,"eeChannel",True)
+setForAllTtFullLepHypotheses(process,"maxNJets",2)
+setForAllTtFullLepHypotheses(process,"jetCorrectionLevel","L3Absolute")
 """
   return script
 
@@ -470,9 +484,11 @@ process.load("KoPFA.TopAnalyzer.Sources.%s.MC.Fall11.patTuple_%s_cff")
 def mcpath():
   script = """
 process.p = cms.Path(
-    process.top%sAnalysisMCSequence
+    process.hltHighLevel%sMC*
+    process.topAnalysisSequence*
+    process.%s
 ) 
-""" % decay
+""" % (decay, decay)
   return script
 
 def rdsample(src):
@@ -498,9 +514,11 @@ def rdpath():
 process.JetEnergyScale.doResJec = cms.untracked.bool(True)
 
 process.p = cms.Path(
-    process.top%sAnalysisRealDataSequence
+    process.hltHighLevel%sRD*
+    process.topAnalysisSequence*
+    process.%s
 ) 
-""" % decay
+""" % (decay,decay)
   return script
 
 def outfile(src):
@@ -558,6 +576,26 @@ process.GenZmassFilter.max = 50
 """
   return script
 
+def leptonfilter():
+  nMuon = ""
+  nElectron = ""
+  if (decay == "MuMu"):
+      nMuon = "2"
+      nElectron = "0"
+  if (decay == "MuEl"):
+      nMuon = "1"
+      nElectron = "1"
+  if (decay == "ElEl"):
+      nMuon = "0"
+      nElectron = "2" 
+  script = """
+
+process.patMuonFilter.minNumber = %s
+process.patElectronFilter.minNumber = %s
+""" % (nMuon, nElectron)
+  return script
+
+
 #os.system("mkdir "+decay)
 if not os.path.exists(decay):
     os.mkdir(decay)
@@ -567,6 +605,7 @@ for src in mclist:
     out.write(common())
     out.write("process.GlobalTag.globaltag = cms.string('%s::All')\n" % mcGlobalTag)
     out.write("process.JetEnergyScale.globalTag = cms.untracked.string('%s')" % mcGlobalTag)
+    out.write(leptonfilter())
     out.write(mcpath())
     out.write(outfile(src))
     if src.find("ZtauDecay") != -1:
@@ -598,6 +637,7 @@ for src in datalist:
     out.write(common())
     out.write("process.GlobalTag.globaltag = cms.string('%s::All')\n" % rdGlobalTag)
     out.write("process.JetEnergyScale.globalTag = cms.untracked.string('%s')" % rdGlobalTag)
+    out.write(leptonfilter())
     out.write(rdpath())
     out.write(outfile(src))
     out.write(rdsample(src))

@@ -13,7 +13,7 @@
 //
 // Original Author:  Tae Jeong Kim,40 R-A32,+41227678602,
 //         Created:  Fri Jun  4 17:19:29 CEST 2010
-// $Id: TopDILAnalyzer.h,v 1.68 2012/05/06 12:44:43 tjkim Exp $
+// $Id: TopDILAnalyzer.h,v 1.69 2012/05/07 02:20:05 tjkim Exp $
 //
 //
 
@@ -66,6 +66,7 @@
 #include "TH1.h"
 #include "TLorentzVector.h"
 
+#include "AnalysisDataFormats/TopObjects/interface/TtFullLeptonicEvent.h"
 #include "KoPFA/TopAnalyzer/interface/Histograms.h"
 
 //
@@ -193,6 +194,7 @@ class TopDILAnalyzer : public edm::EDFilter {
     //tree->Branch("pfMet","std::vector<Ko::METCandidate>", &pfMet);
     tree->Branch("ttbar","std::vector<Ko::TTbarMass>", &ttbar);
     tree->Branch("ttbarGen","std::vector<Ko::TTbarCandidate>", &ttbarGen);
+    tree->Branch("kinttbarM",&kinttbarM,"kinttbarM/d");
 
     //tree->Branch("met","std::vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >", &met);
     tree->Branch("jetspt30","std::vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >", &jetspt30);
@@ -223,6 +225,10 @@ class TopDILAnalyzer : public edm::EDFilter {
     EVENT  = iEvent.id().event();
     RUN    = iEvent.id().run();
     LUMI   = iEvent.id().luminosityBlock();
+
+
+    edm::Handle<TtFullLeptonicEvent> fullLepEvt;
+    iEvent.getByLabel("ttFullLepEvent", fullLepEvt);
 
     edm::Handle<double>  rho;
     iEvent.getByLabel(edm::InputTag("kt6PFJetsPFlow","rho"), rho);
@@ -400,7 +406,6 @@ class TopDILAnalyzer : public edm::EDFilter {
     for (JI jit = Jets->begin(); jit != Jets->end(); ++jit) {
       ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > corrjet;
       corrjet.SetPxPyPzE(jit->px(),jit->py(),jit->pz(),jit->energy());
-
       jetspt30->push_back(corrjet);        
 
       for ( int bTagIndex=0, nBTagAlgo=bTagAlgos_.size(); bTagIndex<nBTagAlgo; ++bTagIndex )
@@ -437,6 +442,14 @@ class TopDILAnalyzer : public edm::EDFilter {
 
       const Ko::TTbarMass ttbarMass(lep1, lep2, jetspt30->at(0), jetspt30->at(1), met->at(0));
       ttbar->push_back(ttbarMass);
+
+      const string hypo = "kKinSolution"; 
+      if( fullLepEvt->isHypoValid(hypo) ){
+        const reco::Candidate* topCand = fullLepEvt->top(hypo);
+        const reco::Candidate* topBarCand = fullLepEvt->topBar(hypo);
+        reco::Candidate::LorentzVector kinttbar =  topCand->p4() + topBarCand->p4() ; 
+        kinttbarM = kinttbar.mass();
+      }
 
       Ko::TTbarCandidate ttbarGenLevel;
 
@@ -621,6 +634,7 @@ class TopDILAnalyzer : public edm::EDFilter {
     phi1 = -999;
     phi2 = -999;
 
+    kinttbarM = -999;
     genttbarM = -999;
 
   }
@@ -743,6 +757,7 @@ class TopDILAnalyzer : public edm::EDFilter {
 
   double discr;
 
+  double kinttbarM;
   double genttbarM;
 
 

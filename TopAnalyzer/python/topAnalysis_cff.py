@@ -42,12 +42,12 @@ topWLeptonGenFilter = cms.EDFilter("GenParticleDecayFilter",
 
 patMuonFilter = cms.EDFilter("CandViewCountFilter",
     src = cms.InputTag('Muons'),
-    minNumber = cms.uint32(2)
+    minNumber = cms.uint32(0)
 )
 
 patElectronFilter = cms.EDFilter("CandViewCountFilter",
     src = cms.InputTag('Electrons'),
-    minNumber = cms.uint32(2)
+    minNumber = cms.uint32(0)
 )
 
 patMuonFilterForMuEl = patMuonFilter.clone()
@@ -221,141 +221,18 @@ removeDuplicate = cms.EDFilter("RemoveDuplicate",
     applyFilter = cms.untracked.bool( True )
 )
 
-ElectronAna = cms.EDAnalyzer(
-    "pfElectronAnalyzer",
-    ptcut = cms.untracked.double(20),
-    electronLabel  = cms.InputTag("acceptedElectrons"),
-    beamSpotLabel = cms.InputTag("offlineBeamSpot"),
-)
-
 nEventsPatHLT = cms.EDProducer("EventCountProducer")
 
-topElElAnalysisMCSequence = cms.Sequence(
-    hltHighLevelElElMC*
+## std sequence to produce the ttFullLepEvent
+from TopQuarkAnalysis.TopEventProducers.sequences.ttFullLepEvtBuilder_cff import *
+
+topAnalysisSequence = cms.Sequence(
     nEventsPatHLT*
     topWLeptonGenFilter*
     GenZmassFilter*
-#    selectedPatJetsPFlow*
     PUweight*
-#    ElectronAna*
-    Electrons*
-    patElectronFilter*
+    Electrons*Muons*
+    patElectronFilter*patMuonFilter*
     JetEnergyScale*
-    ElEl
-#    ee
-)
-
-topElElAnalysisRealDataSequence = cms.Sequence(
-    hltHighLevelElElRD*
-#    electronTriggerFilterByRun*
-    nEventsPatHLT*
-    removeDuplicate*
-#    selectedPatJetsPFlow*
-#    ElectronAna*
-    Electrons*
-    patElectronFilter*
-    JetEnergyScale*
-    ElEl
-#    ee
-)
-
-topMuMuAnalysisMCSequence = cms.Sequence(
-    hltHighLevelMuMuMC*
-    nEventsPatHLT*
-    topWLeptonGenFilter*
-    GenZmassFilter*
-#    selectedPatJetsPFlow*
-    PUweight*
-#    DYmmFilter*
-    Muons*
-    patMuonFilter*
-    JetEnergyScale*
-    MuMu
-#    mm
-)
-
-topMuMuAnalysisRealDataSequence = cms.Sequence(
-    hltHighLevelMuMuRD*
-#    muonTriggerFilterByRun*
-    nEventsPatHLT*
-    removeDuplicate*
-#    DYmmFilter*
-#    selectedPatJetsPFlow*
-    Muons*
-    patMuonFilter*
-    JetEnergyScale*
-    MuMu
-#    mm
-)
-
-topMuElAnalysisMCSequence = cms.Sequence(
-    hltHighLevelMuElMC*
-    nEventsPatHLT*
-    topWLeptonGenFilter*
-    GenZmassFilter*
-#    selectedPatJetsPFlow*
-    PUweight*
-    Muons * Electrons *
-    patMuonFilterForMuEl * patElectronFilterForMuEl *
-    JetEnergyScale*
-    MuEl
-#    em
-)
-
-topMuElAnalysisRealDataSequence = cms.Sequence(
-    hltHighLevelMuElRD*
-#    muonTriggerFilterByRun*
-    nEventsPatHLT*
-    removeDuplicate*
-    Muons * Electrons *
-    patMuonFilterForMuEl * patElectronFilterForMuEl *
-    JetEnergyScale*
-    MuEl
-#    em
-)
-
-topMuJetAnalysisMCSequence = cms.Sequence(
-#    hltHighLevelMuJetMC*
-    nEventsPatHLT*
-    topWLeptonGenFilterForLJ*
-#    GenZmassFilter*
-#    PUweight*
-    Muons *
-    patMuonFilterForMuJet *
-    MuJet
-#    mj
-)
-
-topMuJetAnalysisRealDataSequence = cms.Sequence(
-#    hltHighLevelMuJetRD*
-#    muonTriggerFilterByRun*
-    nEventsPatHLT*
-    removeDuplicate*
-    Muons *
-    patMuonFilterForMuJet *
-    MuJet
-#    mj
-)
-
-topElJetAnalysisMCSequence = cms.Sequence(
-#    hltHighLevelElJetMC*
-    nEventsPatHLT*
-    topWLeptonGenFilterForLJ*
-#    GenZmassFilter*
-#    PUweight*
-    Electrons *
-    patElectronFilterForElJet *
-    ElJet
-#    ej
-)
-
-topElJetAnalysisRealDataSequence = cms.Sequence(
-#    hltHighLevelElJetRD*
-#    elctronTriggerFilterByRun*
-    nEventsPatHLT*
-    removeDuplicate*
-    Electrons *
-    patElectronFilterForElJet *
-    ElJet
-#    ej
+    makeTtFullLepEvent
 )
