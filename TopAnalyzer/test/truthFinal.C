@@ -30,47 +30,73 @@ void truthFinal(){
   defaultStyle();
 
   //mc truth level for full phase space or visible
-  TFile * f_MadGraph = new TFile("$WORK/data/export/common/Top/ntuple/Gen/hist/Fall11/v0/hist_madgraph.root");
-  TFile * f_POWHEG = new TFile("$WORK/data/export/common/Top/ntuple/Gen/hist/Fall11/v0/hist_powheg.root");
-  //TFile * f_MCNLO = new TFile("$WORK/data/export/common/Top/ntuple/Gen/hist/Fall11/v0/hist_mcatnlo.root");
-  //TFile * f_POWHEG = new TFile("$WORK/data/export/common/Top/ntuple/Gen/ttbarGen_TTTo2L2Nu2BTuneZ2_Powheg_Summer11_PUS4_v0.root");
-  TFile * f_MCNLO = new TFile("$WORK/data/export/common/Top/ntuple/ttbar_ntuple_cteq6m_dilepton_v20111028.root");
+  TFile * f_MadGraph = new TFile("$WORK/store/GenHisto/topGenHisto_madgraph.root");
+  TFile * f_POWHEG = new TFile("$WORK/store/GenHisto/topGenHisto_powheg.root");
+  TFile * f_MCNLO = new TFile("$WORK/store/GenHisto/topGenHisto_mcatnlo_v2.root");
+  TFile * f_MCNLO_old = new TFile("$WORK/data/export/common/Top/ntuple/ttbar_ntuple_cteq6m_dilepton_v20111028.root");
 
   //truth level in visible phase space
   cout << "producing truth level plots..." << endl;
-  TH1* hMadGraphFull = (TH1*) f_MadGraph->Get("all/hmTT_Full");
-  TH1* hMadGraph = (TH1*) f_MadGraph->Get("all/hmTT_Pton");
-  TH1* hPOWHEGFull = (TH1*) f_POWHEG->Get("all/hmTT_Full");
-  TH1* hPOWHEG = (TH1*) f_POWHEG->Get("all/hmTT_Pton");
-  TH1* hMCNLO = (TH1*) f_MCNLO->Get("hVisTTbarM");
-  TH1* hMCNLO_Up = (TH1*) f_MCNLO->Get("hVisTTbarM_Up");
-  TH1* hMCNLO_Down = (TH1*) f_MCNLO->Get("hVisTTbarM_Down");
+
+  //madgraoh
+  TH1* hMadGraphFull = (TH1*) f_MadGraph->Get("topDecayGenHisto/hMtt_Full");
+  TH1* hMadGraphPtcl = (TH1*) f_MadGraph->Get("topDecayGenHisto/hMtt_DIL_Ptcl_NoTau");
+  TH1* hMadGraphPton = (TH1*) f_MadGraph->Get("topDecayGenHisto/hMtt_DIL_Pton_NoTau");
+
+  //powheg
+  TH1* hPOWHEGFull = (TH1*) f_POWHEG->Get("topDecayGenHisto/hMtt_Full");
+  TH1* hPOWHEGPtcl = (TH1*) f_POWHEG->Get("topDecayGenHisto/hMtt_DIL_Ptcl_NoTau");
+  TH1* hPOWHEGPton = (TH1*) f_POWHEG->Get("topDecayGenHisto/hMtt_DIL_Pton_NoTau");
+
+  //mcatnlo
+  TH1* hMCNLOFull = (TH1*) f_MCNLO->Get("topDecayGenHisto/hMtt_Full");
+  TH1* hMCNLOPtcl = (TH1*) f_MCNLO->Get("topDecayGenHisto/hMtt_DIL_Ptcl_NoTau");
+  TH1* hMCNLOPton = (TH1*) f_MCNLO->Get("topDecayGenHisto/hMtt_DIL_Pton_NoTau");
+  TH1* hMCNLO = (TH1*) f_MCNLO_old->Get("hVisTTbarM");
+  TH1* hMCNLO_Up = (TH1*) f_MCNLO_old->Get("hVisTTbarM_Up");
+  TH1* hMCNLO_Down = (TH1*) f_MCNLO_old->Get("hVisTTbarM_Down");
 
   TFile* f = TFile::Open("truthFinal.root", "recreate");
 
-  double lumi =  5000;
+  double lumi =  4982;
+  double Xsection = 161.9;
 
-  double lumi_madgraph = hMadGraphFull->GetEntries() / 164.6;
-  double lumi_powheg = hPOWHEGFull->GetEntries() / 164.6;
-  double lumi_mcatnlo = hMCNLO->GetEntries() / 164.6;
+  double lumi_madgraph = hMadGraphFull->GetEntries() / Xsection;
+  double lumi_powheg = hPOWHEGFull->GetEntries() / Xsection;
+  double lumi_mcatnlo = hMCNLO->GetEntries() / Xsection;
   double scale_madgraph = lumi / lumi_madgraph;
   double scale_powheg = lumi / lumi_powheg;
   double scale_mcatnlo = lumi / lumi_mcatnlo;
 
   hMadGraphFull->Scale(scale_madgraph);
-  hMadGraph->Scale(scale_madgraph);
+  hMadGraphPtcl->Scale(scale_madgraph);
+  hMadGraphPton->Scale(scale_madgraph);
   hPOWHEGFull->Scale(scale_powheg);
-  hPOWHEG->Scale(scale_powheg);
-
+  hPOWHEGPtcl->Scale(scale_powheg);
+  hPOWHEGPton->Scale(scale_powheg);
+  hMCNLOFull->Scale(scale_mcatnlo);
+  hMCNLOPtcl->Scale(scale_mcatnlo);
+  hMCNLOPton->Scale(scale_mcatnlo);
   hMadGraphFull->SetName("MadGraph_Full");
-  hMadGraph->SetName("MadGraph_Visible");
+  hMadGraphPtcl->SetName("MadGraph_Ptcl");
+  hMadGraphPton->SetName("MadGraph_Pton");
   hPOWHEGFull->SetName("POWHEG_Full");
-  hPOWHEG->SetName("POWHEG_Visible");
+  hPOWHEGPtcl->SetName("POWHEG_Ptcl");
+  hPOWHEGPton->SetName("POWHEG_Pton");
+  hMCNLOFull->SetName("MCNLO_Full");
+  hMCNLOPtcl->SetName("MCNLO_Ptcl");
+  hMCNLOPton->SetName("MCNLO_Pton");
 
-  hMadGraph->Write();
-  hPOWHEG->Write();
   hMadGraphFull->Write();
+  hMadGraphPtcl->Write();
+  hMadGraphPton->Write();
   hPOWHEGFull->Write();
+  hPOWHEGPtcl->Write();
+  hPOWHEGPton->Write();
+  hMCNLOFull->Write();
+  hMCNLOPtcl->Write();
+  hMCNLOPton->Write();
+
   hMCNLO->Write();
   hMCNLO_Up->Write();
   hMCNLO_Down->Write();
