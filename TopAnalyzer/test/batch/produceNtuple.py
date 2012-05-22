@@ -5,11 +5,12 @@ import os
 import re
 import sys
 import time
+import os,commands
 
 sample = sys.argv[1]
 decay = sys.argv[2]
 
-mclist = ["ZJets", "ZtauDecay", "ZJets10To50", "ZtauDecay10To50", "WJetsToLNu", "WW", "WZ", "ZZ", "TTbarTuneZ2","TTbarOthers","SingleToptW"]
+mclist = ["ZJets","ZtauDecay", "ZJets10To50", "ZtauDecay10To50", "WJetsToLNu", "WW", "WZ", "ZZ", "TTbarTuneZ2","TTbarOthers","SingleToptW"]
 #mclist += ["DYmm20to50", "DYmm10to20"]
 #mclist += ["DYee20to50", "DYee10to20"]
 
@@ -18,13 +19,12 @@ qcdlist = ["QCD"]
 
 datalist = ["Run2011A", "Run2011B"]
 
-def processSample(sample, dir):
-    os.system("rm -rf "+dir+"/Log/"+sample)
-    os.system("rm -rf "+dir+"/Res/"+sample)
-    os.system("rfmkdir "+dir+"/Res/"+sample)
-    os.system("cmsBatch.py 1 "+decay+"/top"+decay+"Analyzer_"+sample+"_cfg.py -o "+"Out/"+decay+"/Log/"+sample+" -r "+dir+"/Res/"+sample+" -b 'bsub -q 1nh < batchScript.sh'")
+def processSample(ch, sample, dir):
+    os.system("rm -rf "+dir+"/"+sample)
+    os.system("rfmkdir "+dir+"/"+sample)
+    os.system("rfmkdir "+dir+"/"+sample+"/Res")
+    os.system("cmsBatch.py 1 "+ch+"/top"+ch+"Analyzer_"+sample+"_cfg.py -o "+dir+"/"+sample+"/Log -r "+dir+"/"+sample+"/Res -b 'bsub -q 1nh < batchScript.sh'")
 
-import os,commands
 currdir = commands.getoutput('pwd') 
 print currdir
 
@@ -36,24 +36,24 @@ outdir = currdir+"/Out/"+decay
 #to save log information in local
 os.system("rfmkdir Out")
 os.system("rfmkdir "+outdir)
-os.system("rfmkdir "+outdir+"/Log")
-os.system("rfmkdir "+outdir+"/Res")
 
 if sample == "all":
   for s in mclist:
-    processSample(s,outdir)
-  time.sleep(60)
+    processSample(decay, s, outdir)
+    time.sleep(60)
   for s in datalist:
-    processSample(s,outdir)
+    processSample(decay, s, outdir)
 elif sample == "mc":
   for s in mclist:
-    processSample(s,outdir)
+    processSample(decay, s, outdir)
+    time.sleep(15)
 elif sample == "qcd":
   for s in qcdlist:
-    processSample(s,outdir)
+    processSample(decay, s, outdir)
 elif sample == "data":
   for s in datalist:
-    processSample(s,outdir)
+    processSample(decay, s, outdir)
 else:
   print "ERROR!"
   print "OPTION: 'all MuMu', 'mc MuMu', 'data MuMu', 'qcd MuMu'"
+
