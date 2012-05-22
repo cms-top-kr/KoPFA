@@ -544,8 +544,8 @@ process.topWLeptonGenFilterForLJ.applyFilter = True
 def ttbardileptonothersfilter():
   script = """
 process.topWLeptonGenFilter.applyFilter = True
-process.top%sAnalysisMCSequence.replace(process.topWLeptonGenFilter,~process.topWLeptonGenFilter)
-""" % decay
+process.topAnalysisSequence.replace(process.topWLeptonGenFilter,~process.topWLeptonGenFilter)
+""" 
   return script
 
 def ttbarleptonjetothersfilter():
