@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # Author: Tae.Jeong.Kim@cern.ch
-# Filename: analysis.py
-# How to run: analysis.py ../tagged-person-status.txt 
+# Filename: castor2local.py
+# How to run: castor2local.py from to 
 
 import sys
 
