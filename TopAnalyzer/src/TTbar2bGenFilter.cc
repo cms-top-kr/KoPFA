@@ -72,6 +72,11 @@ TTbar2bGenFilter::TTbar2bGenFilter(const edm::ParameterSet& pset)
 bool TTbar2bGenFilter::filter(edm::Event& iEvent, const edm::EventSetup& eventSetup)
 {
 
+  const bool isRealData = iEvent.isRealData();
+
+  if (!applyFilter_ || isRealData )
+    return true;
+
   bool accepted = false;
 
   using namespace std;
@@ -129,9 +134,6 @@ bool TTbar2bGenFilter::filter(edm::Event& iEvent, const edm::EventSetup& eventSe
 
   b_from_top_multi->Fill(nb_from_top);
   b_from_nontop_multi->Fill(nb_from_nontop);
-
-  if (!applyFilter_)
-    return true;
 
   return accepted;
 }
