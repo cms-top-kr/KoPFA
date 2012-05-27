@@ -55,7 +55,11 @@ def jobReport( path , action):
        finalpath = path + "/" + sample
        if os.path.isdir(finalpath):
          print "Checking " + finalpath
-         doWork(finalpath, action)
+         logdir = os.path.exists(finalpath+"/Log")
+         if logdir == True:
+           doWork(finalpath, action)
+         else:
+           print "No Log directory!"
   else:
     print "Checking " + path
     doWork(path, action)
