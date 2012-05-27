@@ -13,7 +13,7 @@
 //
 // Original Author:  Tae Jeong Kim,40 R-A32,+41227678602,
 //         Created:  Fri Jun  4 17:19:29 CEST 2010
-// $Id: TopDILAnalyzer.h,v 1.69 2012/05/07 02:20:05 tjkim Exp $
+// $Id: TopDILAnalyzer.h,v 1.70 2012/05/21 14:04:01 tjkim Exp $
 //
 //
 
@@ -113,6 +113,7 @@ class TopDILAnalyzer : public edm::EDFilter {
         bTagCutValues_.push_back(cutValue);
         bTagIsCutMin_.push_back(isCutMin);
         nbjetsCache_.push_back(-999);
+        nbjets20Cache_.push_back(-999);
       }
       else
       {
@@ -144,6 +145,7 @@ class TopDILAnalyzer : public edm::EDFilter {
     ttbarGen = new std::vector<Ko::TTbarCandidate>();
     met = new std::vector<math::XYZTLorentzVector>();
     jetspt30 = new std::vector<math::XYZTLorentzVector>();
+    jetspt20 = new std::vector<math::XYZTLorentzVector>();
 
     nCutStep_ = 7;
     for ( int i = 0; i<nCutStep_; ++i )
@@ -177,6 +179,8 @@ class TopDILAnalyzer : public edm::EDFilter {
     tree->Branch("weightminus",&weightminus, "weightminus/d");
 
     tree->Branch("ZMass",&ZMass,"ZMass/d");
+    tree->Branch("genZMass",&genZMass,"ZMass/d");
+    tree->Branch("ZtauDecay",&ZtauDecay,"ZtauDecay/i");
     tree->Branch("PairSign",&PairSign,"PairSign/d");
     tree->Branch("relIso1",&relIso1,"relIso1/d");
     tree->Branch("relIso2",&relIso2,"relIso2/d");
@@ -198,10 +202,12 @@ class TopDILAnalyzer : public edm::EDFilter {
 
     //tree->Branch("met","std::vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >", &met);
     tree->Branch("jetspt30","std::vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >", &jetspt30);
+    tree->Branch("jetspt20","std::vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >", &jetspt20);
     for ( int i=0, n=bTagAlgos_.size(); i<n; ++i )
     {
       const std::string& name = bTagNames_[i];
       tree->Branch(("nbjets_"+name).c_str(), &(nbjetsCache_[i]), ("nbjets_"+name+"/i").c_str());
+      tree->Branch(("nbjets20_"+name).c_str(), &(nbjets20Cache_[i]), ("nbjets20_"+name+"/i").c_str());
     }
 
     tree->Branch("MET",&MET,"MET/d");
@@ -401,18 +407,34 @@ class TopDILAnalyzer : public edm::EDFilter {
     for ( int bTagIndex=0, nBTag=nbjetsCache_.size(); bTagIndex<nBTag; ++bTagIndex )
     {
       nbjetsCache_[bTagIndex] = 0;
+      nbjets20Cache_[bTagIndex] = 0;
     }
 
     for (JI jit = Jets->begin(); jit != Jets->end(); ++jit) {
       ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > corrjet;
       corrjet.SetPxPyPzE(jit->px(),jit->py(),jit->pz(),jit->energy());
-      jetspt30->push_back(corrjet);        
 
-      for ( int bTagIndex=0, nBTagAlgo=bTagAlgos_.size(); bTagIndex<nBTagAlgo; ++bTagIndex )
-      {
-        const double bTagValue = jit->bDiscriminator(bTagAlgos_[bTagIndex]);
-        if ( (bTagIsCutMin_[bTagIndex]) xor (bTagValue < bTagCutValues_[bTagIndex]) ) ++nbjetsCache_[bTagIndex];
+      if(jit->pt() > 30){
+        jetspt30->push_back(corrjet);        
+       
+        for ( int bTagIndex=0, nBTagAlgo=bTagAlgos_.size(); bTagIndex<nBTagAlgo; ++bTagIndex )
+        {
+          const double bTagValue = jit->bDiscriminator(bTagAlgos_[bTagIndex]);
+          if ( (bTagIsCutMin_[bTagIndex]) xor (bTagValue < bTagCutValues_[bTagIndex]) ) ++nbjetsCache_[bTagIndex];
+        }
       }
+
+     
+      if(jit->pt() > 20){
+        jetspt20->push_back(corrjet);
+        
+        for ( int bTagIndex=0, nBTagAlgo=bTagAlgos_.size(); bTagIndex<nBTagAlgo; ++bTagIndex )
+        {
+          const double bTagValue = jit->bDiscriminator(bTagAlgos_[bTagIndex]);
+          if ( (bTagIsCutMin_[bTagIndex]) xor (bTagValue < bTagCutValues_[bTagIndex]) ) ++nbjets20Cache_[bTagIndex];
+        }
+      }
+
     }
 
     if( jetspt30->size() >= 2 ){
@@ -451,32 +473,61 @@ class TopDILAnalyzer : public edm::EDFilter {
         kinttbarM = kinttbar.mass();
       }
 
-      Ko::TTbarCandidate ttbarGenLevel;
-
-      if(genParticles_.isValid()){
-        reco::Candidate::LorentzVector ttbarP4;
-        for (reco::GenParticleCollection::const_iterator mcIter=genParticles_->begin(); mcIter != genParticles_->end(); mcIter++ ) {
-          int genId = mcIter->pdgId();
-          if( abs(genId) == 6){
-            ttbarP4 += mcIter->p4();
-          }
-        }
-
-        genttbarM = ttbarP4.M();
-        const reco::GenParticleCollection* myGenParticles = 0;
-        myGenParticles = &(*genParticles_);
-        ttbarGenLevel.building(myGenParticles);
-      }
-
-      if(genJets_.isValid()){
-        const reco::GenJetCollection* myGenJets = 0;
-        myGenJets = &(*genJets_);
-        ttbarGenLevel.setMatchedBJets(myGenJets);
-      }
-
-      ttbarGen->push_back(ttbarGenLevel);
-      h_bjetspt30->Fill(ttbarGenLevel.NbJets() );
     }
+
+    //gen information
+    Ko::TTbarCandidate ttbarGenLevel;
+
+    double genZmass = -999;
+ 
+    if(genParticles_.isValid()){
+      //now this loop is for Z mass only
+      for (reco::GenParticleCollection::const_iterator mcIter=genParticles_->begin(); mcIter != genParticles_->end(); mcIter++ ) {
+	int genId = mcIter->pdgId();
+        ZtauDecay = 0;
+        if(abs(genId) == 11 || abs(genId) == 13 || abs(genId) == 15){
+	  int moid = -99;
+	  int gmoid = -99;
+	  const reco::Candidate *mcand = mcIter->mother();
+	  if( mcand != 0) {
+	    moid = mcand->pdgId();
+	    if( mcand->pdgId() == mcIter->pdgId() ) {
+	      if( mcand->mother() != 0 ){
+		const reco::Candidate *gcand = mcand->mother();
+		gmoid = gcand->pdgId();
+		if( gmoid == 23 ) {
+		  genZmass = gcand->p4().M();
+                  if( abs(genId) == 15 ) ZtauDecay = 1;
+		  break;
+		}
+	      }
+	    }
+
+	    if( moid == 23 ) {
+	      genZmass = mcand->p4().M();
+              if( abs(genId) == 15 ) ZtauDecay = 1;
+	      break;
+	    }
+	  }
+	}
+      }
+
+      genZMass = genZmass;
+
+      const reco::GenParticleCollection* myGenParticles = 0;
+      myGenParticles = &(*genParticles_);
+      ttbarGenLevel.building(myGenParticles);
+      genttbarM = ttbarGenLevel.mass();
+    }
+
+    if(genJets_.isValid()){
+      const reco::GenJetCollection* myGenJets = 0;
+      myGenJets = &(*genJets_);
+      ttbarGenLevel.setMatchedBJets(myGenJets);
+    }
+
+    ttbarGen->push_back(ttbarGenLevel);
+    h_bjetspt30->Fill(ttbarGenLevel.NbJets() );
 
     //ESHandle<SetupData> pSetup;
     //iSetup.get<SetupRecord>().get(pSetup);
@@ -606,10 +657,12 @@ class TopDILAnalyzer : public edm::EDFilter {
     ttbarGen->clear();
     met->clear();
     jetspt30->clear();
+    jetspt20->clear();
 
     for ( int bTagIndex=0, nBTag=nbjetsCache_.size(); bTagIndex<nBTag; ++bTagIndex )
     {
       nbjetsCache_[bTagIndex] = -999;
+      nbjets20Cache_[bTagIndex] = -999;
     }
 
     weight = 1.0;
@@ -623,6 +676,8 @@ class TopDILAnalyzer : public edm::EDFilter {
     dphimetjet2 = -999;
 
     ZMass = -999; 
+    genZMass = -999; 
+    ZtauDecay = 0; 
     PairSign = -999;
     relIso1 = -999;
     relIso2 = -999;
@@ -714,6 +769,7 @@ class TopDILAnalyzer : public edm::EDFilter {
   std::vector<double> bTagCutValues_;
   std::vector<bool> bTagIsCutMin_;
   std::vector<int> nbjetsCache_;
+  std::vector<int> nbjets20Cache_;
   //std::string bTagAlgo_;
   //double minBTagValue_;
 
@@ -737,6 +793,7 @@ class TopDILAnalyzer : public edm::EDFilter {
   std::vector<Ko::TTbarCandidate>* ttbarGen;
   std::vector<math::XYZTLorentzVector>* met;
   std::vector<math::XYZTLorentzVector>* jetspt30;
+  std::vector<math::XYZTLorentzVector>* jetspt20;
 
   double MET;
   double dphimetlepton1;
@@ -744,6 +801,8 @@ class TopDILAnalyzer : public edm::EDFilter {
   double dphimetjet1;
   double dphimetjet2;
   double ZMass;
+  double genZMass;
+  int ZtauDecay;
   double PairSign;
   double relIso1;
   double relIso2;
