@@ -7,7 +7,6 @@
 #include "PhysicsTools/SelectorUtils/interface/SimpleCutBasedElectronIDSelectionFunctor.h"
 #include "MagneticField/Records/interface/IdealMagneticFieldRecord.h"
 #include "MagneticField/Engine/interface/MagneticField.h"
-
 #include "DataFormats/BeamSpot/interface/BeamSpot.h"
 
 // #include "TauAnalysis/CandidateTools/interface/FetchCollection.h"
@@ -21,6 +20,7 @@ KoElectronSelector::KoElectronSelector(const edm::ParameterSet& cfg)
   etacut_ = cfg.getUntrackedParameter<double>("etacut",2.5);
   mvacut_ = cfg.getUntrackedParameter<double>("mvacut",-0.1);
   usemva_ = cfg.getUntrackedParameter<bool>("usemva",false);
+  relIso_ = cfg.getUntrackedParameter<double>("relIso",9999);
 
   eidName_ = cfg.getUntrackedParameter<string>("eidName");
   eidBitMask_ = cfg.getUntrackedParameter<int>("eidBitMask", -1);
@@ -53,6 +53,7 @@ KoElectronSelector::KoElectronSelector(const edm::ParameterSet& cfg)
     ecalIso = new std::vector<double>();
     hcalIso = new std::vector<double>();
   }
+  lepton = new std::vector<Ko::Lepton>();
 }
 
 KoElectronSelector::~KoElectronSelector()
@@ -100,6 +101,20 @@ void KoElectronSelector::produce(edm::Event& iEvent, const edm::EventSetup& es)
       electron.setP4(electron.pfCandidateRef()->p4());
     }
 
+    const Ko::Lepton ele(electron.p4(), (int) electron.charge());
+    lepton->push_back(ele);
+    reco::isodeposit::Direction Dir = Direction(electron.eta(),electron.phi());
+    reco::isodeposit::AbsVetos vetos_ch;
+    reco::isodeposit::AbsVetos vetos_nh;
+    vetos_nh.push_back(new ThresholdVeto( 0.5 ));
+    reco::isodeposit::AbsVetos vetos_ph1;
+    vetos_ph.push_back(new ThresholdVeto( 0.5 ));
+    //pf isolation setup
+    lepton->back().setIsoDeposit( pat::PfChargedHadronIso, electron.isoDeposit(pat::PfChargedHadronIso), vetos_ch );
+    lepton->back().setIsoDeposit( pat::PfNeutralHadronIso, electron.isoDeposit(pat::PfNeutralHadronIso), vetos_nh );
+    lepton->back().setIsoDeposit( pat::PfGammaIso, electron.isoDeposit(pat::PfGammaIso), vetos_ph );
+    bool passIso =  lepton->back().relpfIso03() < relIso_; 
+
     bool passed = false;
     bool passPre = electron.pt() > ptcut_ && fabs(electron.eta()) < etacut_ && fabs(electron.gsfTrack()->dxy(beamSpot_->position())) < 0.04;
     const double eleMva = electron.mva();
@@ -111,9 +126,9 @@ void KoElectronSelector::produce(edm::Event& iEvent, const edm::EventSetup& es)
     const bool passEId = eidBitMask_ < 0 or ((eidBit & eidBitMask_) == eidBitMask_);
 
     if(usemva_){
-      passed = passPre && passMVA;
+      passed = passPre && passMVA && passIso;
     } else {
-      passed = passPre && passEId;
+      passed = passPre && passEId && passIso;
     }
 
     if ( passed ) pos->push_back((*electrons_)[i]);

@@ -9,9 +9,8 @@
 #include "FWCore/Framework/interface/EventSetup.h"
 #include "DataFormats/PatCandidates/interface/Electron.h"
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
-//#include "PFAnalyses/CommonTools/interface/PatElectronSelector.h"
-//#include "PFAnalyses/CommonTools/interface/PatLeptonSelector.h"
 
+#include "KoPFA/DataFormats/interface/Lepton.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "FWCore/Utilities/interface/InputTag.h"
 #include "DataFormats/RecoCandidate/interface/IsoDepositDirection.h"
@@ -47,7 +46,7 @@ class KoElectronSelector : public edm::EDProducer
   double mvacut_;
 
   bool usemva_;
-  
+  double relIso_; 
   std::string eidName_;
   int eidBitMask_;
   
@@ -84,6 +83,7 @@ class KoElectronSelector : public edm::EDProducer
   std::vector<double>* ecalIso;
   std::vector<double>* hcalIso;
 
+  std::vector<Ko::Lepton>* lepton;
 };
 
 

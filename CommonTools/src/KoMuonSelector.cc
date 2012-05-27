@@ -4,7 +4,6 @@
 #include "DataFormats/Common/interface/Ptr.h"
 #include "FWCore/ServiceRegistry/interface/Service.h"
 #include "CommonTools/UtilAlgos/interface/TFileService.h"
-
 #include "DataFormats/BeamSpot/interface/BeamSpot.h"
 
 // #include "TauAnalysis/CandidateTools/interface/FetchCollection.h"
@@ -15,6 +14,7 @@ KoMuonSelector::KoMuonSelector(const edm::ParameterSet& cfg)
   version_ = cfg.getUntrackedParameter<int>("version", -1);
   cut_ = cfg.getParameter< std::vector<string> >("cut");
   isocut_ = cfg.getParameter< std::vector<string> >("isocut");
+  relIso_ = cfg.getUntrackedParameter<double>("relIso",99990);
   muonLabel_ = cfg.getParameter<edm::InputTag>("muonLabel");
   muonIdSelector_.initialize( cfg.getParameter<edm::ParameterSet>("muonIdSelector") );
   muonIsoSelector_.initialize( cfg.getParameter<edm::ParameterSet>("muonIsoSelector") );
@@ -49,6 +49,7 @@ KoMuonSelector::KoMuonSelector(const edm::ParameterSet& cfg)
   ecalIso = new std::vector<double>();
   hcalIso = new std::vector<double>();
 
+  lepton = new std::vector<Ko::Lepton>();
 }
 
 KoMuonSelector::~KoMuonSelector()
@@ -135,6 +136,20 @@ void KoMuonSelector::produce(edm::Event& iEvent, const edm::EventSetup& es)
     else if(version_==2) passed = muonIdSel.test("VBTF") && C2;
     else if(version_==3) passed = muonIdSel.test("TOPDIL") && C2;
     else if(version_==4) passed = C2 && muonIsoSel.test("pfOptimizedRel");
+
+    const Ko::Lepton mu(muon.p4(), (int) muon.charge());
+    lepton->push_back(mu);
+    reco::isodeposit::Direction Dir = Direction(muon.eta(),muon.phi());
+    vetos_nh.push_back(new ThresholdVeto( 0.5 ));
+    vetos_ph.push_back(new ThresholdVeto( 0.5 ));
+    //pf isolation setup
+    lepton->back().setIsoDeposit( pat::PfChargedHadronIso, muon.isoDeposit(pat::PfChargedHadronIso), vetos_ch );
+    lepton->back().setIsoDeposit( pat::PfNeutralHadronIso, muon.isoDeposit(pat::PfNeutralHadronIso), vetos_nh );
+    lepton->back().setIsoDeposit( pat::PfGammaIso, muon.isoDeposit(pat::PfGammaIso), vetos_ph );
+    bool passIso =  lepton->back().relpfIso03() < relIso_;
+
+    passed = passed && passIso;
+
     if(passed){
       pos->push_back((*muons_)[i]);
       pt->push_back(muon.pt());

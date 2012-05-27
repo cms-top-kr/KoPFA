@@ -13,7 +13,7 @@
 //#include "PFAnalyses/CommonTools/interface/PatMuonSelector.h"
 //#include "PFAnalyses/CommonTools/interface/PatLeptonSelector.h"
 #include "KoPFA/CommonTools/interface/LeptonIsoSelector.h"
-
+#include "KoPFA/DataFormats/interface/Lepton.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "FWCore/Utilities/interface/InputTag.h"
 #include "DataFormats/RecoCandidate/interface/IsoDepositDirection.h"
@@ -43,6 +43,7 @@ class KoMuonSelector : public edm::EDProducer
   int version_; // 1 for PFMUON, 2 for VBTF, 3 for TOP , 4 for PFMUON && ISO
   vector<std::string> cut_;
   vector<std::string> isocut_;
+  double relIso_;
   edm::InputTag muonLabel_;
   //PatMuonSelector   muonIdSelector_;
   MuonIDSelector   muonIdSelector_;
@@ -61,6 +62,8 @@ class KoMuonSelector : public edm::EDProducer
   unsigned int EVENT;
   unsigned int RUN;
   unsigned int LUMI;
+
+  std::vector<Ko::Lepton>* lepton;
 
   std::vector<double>* eta;
   std::vector<double>* phi;
