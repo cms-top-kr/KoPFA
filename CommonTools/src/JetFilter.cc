@@ -13,7 +13,7 @@
 //
 // Original Author:  Tae Jeong Kim
 //         Created:  Mon Dec 14 01:29:35 CET 2009
-// $Id: JetFilter.cc,v 1.8 2012/05/02 20:22:39 jhgoh Exp $
+// $Id: JetFilter.cc,v 1.9 2012/05/07 03:00:31 tjkim Exp $
 //
 //
 
@@ -60,6 +60,9 @@ class JetFilter : public edm::EDFilter {
       typedef pat::JetCollection::const_iterator JI;
 
       bool applyFilter_;
+      bool bJetFirst_; 
+      string bTagAlgo_;
+      double bTagValue_;
       edm::InputTag rhoLabel_;
       edm::InputTag jetLabel_;
       edm::InputTag metLabel_;
@@ -73,6 +76,7 @@ class JetFilter : public edm::EDFilter {
       double absetacut_;
       bool doJecFly_;
       bool doResJec_;
+      bool isRealData_;
       bool up_;
       bool doJERUnc_;
       double resolutionFactor_;
@@ -100,6 +104,9 @@ JetFilter::JetFilter(const edm::ParameterSet& ps)
 {
    //now do what ever initialization is needed
   applyFilter_=ps.getUntrackedParameter<bool>("applyFilter",false);
+  bJetFirst_ = ps.getUntrackedParameter<bool>("bJetFirst",false);
+  bTagAlgo_ = ps.getUntrackedParameter<string>("bTagAlgo","combinedSecondaryVertexBJetTags");
+  bTagValue_ = ps.getUntrackedParameter<double>("bTagValue",0.244);
   rhoLabel_ =  ps.getParameter<edm::InputTag>("rhoLabel");
   jetLabel_ =  ps.getParameter<edm::InputTag>("jetLabel");
   metLabel_ = ps.getParameter<edm::InputTag>("metLabel");
@@ -147,6 +154,9 @@ JetFilter::~JetFilter()
 bool
 JetFilter::filter(edm::Event& iEvent, const edm::EventSetup& iSetup)
 {
+
+  isRealData_ = iEvent.isRealData();
+
   bool accepted = false;
   using namespace edm;
   using namespace std;
@@ -158,6 +168,7 @@ JetFilter::filter(edm::Event& iEvent, const edm::EventSetup& iSetup)
   std::auto_ptr<std::vector<pat::MET> > corrMETs(new std::vector<pat::MET>());
   std::auto_ptr<std::vector<pat::MET> > corrMETsUp(new std::vector<pat::MET>());
   std::auto_ptr<std::vector<pat::MET> > corrMETsDn(new std::vector<pat::MET>());
+  std::auto_ptr<std::vector<pat::Jet> > corrbJets(new std::vector<pat::Jet>());
 
   edm::Handle<pat::JetCollection> Jets;
   iEvent.getByLabel(jetLabel_,Jets);
@@ -247,9 +258,22 @@ JetFilter::filter(edm::Event& iEvent, const edm::EventSetup& iSetup)
     //debug
     //cout << "corrected= " << correctedJet.pt() << " default= " << it->pt() << endl;
 
-    if ( correctedJet.pt() > ptcut_ ) corrJets->push_back(correctedJet);
+    if ( correctedJet.pt() > ptcut_ ) {
+      if( bJetFirst_ ){
+        double bTagValue = correctedJet.bDiscriminator(bTagAlgo_);
+        if( bTagValue > bTagValue_ ) {
+          corrbJets->push_back(correctedJet);
+        }else{
+          corrJets->push_back(correctedJet);
+        }
+      }else{
+        corrJets->push_back(correctedJet);
+      }
+    }
+
     if ( correctedJetUp.pt() > ptcut_ ) corrJetsUp->push_back(correctedJetUp);
     if ( correctedJetDn.pt() > ptcut_ ) corrJetsDn->push_back(correctedJetDn);
+
   }
 
   if( corrJets->size() >= min_ ) accepted = true;
@@ -260,8 +284,13 @@ JetFilter::filter(edm::Event& iEvent, const edm::EventSetup& iSetup)
 
   // Jets passing identification criteria are sorted by decreasing pT
   std::sort(corrJets->begin(), corrJets->end(), GreaterByPt<pat::Jet>());
+  std::sort(corrbJets->begin(), corrbJets->end(), GreaterByPt<pat::Jet>());
   std::sort(corrJetsUp->begin(), corrJetsUp->end(), GreaterByPt<pat::Jet>());
   std::sort(corrJetsDn->begin(), corrJetsDn->end(), GreaterByPt<pat::Jet>());
+
+  if( bJetFirst_ ){
+    corrJets->insert( corrJets->begin(), corrbJets->begin(), corrbJets->end());
+  }
 
   iEvent.put(corrJets, outputJetLabel_);
   iEvent.put(corrJetsUp, outputJetLabel_+"Up");
@@ -299,7 +328,7 @@ JetFilter::beginJob()
     jecParams.push_back(JetCorrectorParameters(jecL1File.fullPath()));
     jecParams.push_back(JetCorrectorParameters(jecL2File.fullPath()));
     jecParams.push_back(JetCorrectorParameters(jecL3File.fullPath()));
-    if( doResJec_ ) {
+    if( isRealData_ ) {
       jecParams.push_back(JetCorrectorParameters(jecL2L3File.fullPath()));
     }
     resJetCorrector_ = new FactorizedJetCorrector(jecParams);
