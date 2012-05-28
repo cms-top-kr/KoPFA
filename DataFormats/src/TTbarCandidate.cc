@@ -102,6 +102,11 @@ void TTbarCandidate::building( const reco::GenParticleCollection* genParticles  
 
   math::XYZTLorentzVector null(0,0,0,0); 
 
+  bquarks_.push_back(null);
+  bquarks_.push_back(null);
+  bquarks_.push_back(null);
+  bquarks_.push_back(null);
+
   leptons_.push_back(null);
   leptons_.push_back(null);
 
@@ -110,16 +115,31 @@ void TTbarCandidate::building( const reco::GenParticleCollection* genParticles  
   std::vector<bool> taunic(2,static_cast<bool>(false));
   std::vector<bool> hadronic(2,static_cast<bool>(false));
 
-
   unsigned int nParticles = genParticles->size();
   int ntop = 0;
   reco::Candidate::LorentzVector ttbarGen;
 
+  std::vector<math::XYZTLorentzVector> bquarks;
+  std::vector<math::XYZTLorentzVector> bquarksfromtop;
+
   for ( unsigned int ip=0; ip<nParticles; ++ip ) { 
 
-    if ( ntop == 2 ) break;
 
     const reco::GenParticle& p = (*genParticles)[ip];
+
+    if ( abs(p.pdgId()) == 5 ) {
+      bool isLast = isLastbottom(p);
+      if (isLast == true) {
+        bool isfromtop = isFromtop(p);
+        if(isfromtop) {
+          bquarksfromtop.push_back( p.p4() );
+        }else{
+          bquarks.push_back( p.p4() );
+        }
+      } 
+    }
+
+    if ( ntop == 2 ) continue;
 
     if ( abs(p.pdgId()) != 6 ) continue;
 
@@ -131,10 +151,6 @@ void TTbarCandidate::building( const reco::GenParticleCollection* genParticles  
     for ( unsigned iDaughter=0; iDaughter<nDaughters; ++iDaughter ) {
       const reco::Candidate* daugh = p.daughter(iDaughter);
       if ( nW == 1 ) break;
-      if ( abs(daugh->pdgId()) == 5 ) {
-         bquarks_.push_back( daugh->p4() );
-      }
-
       if ( abs(daugh->pdgId()) != 24 ) continue; 
       unsigned int nWDaughters = daugh->numberOfDaughters();
       for ( unsigned iWDaughter=0; iWDaughter<nWDaughters; ++iWDaughter ) {
@@ -194,10 +210,72 @@ void TTbarCandidate::building( const reco::GenParticleCollection* genParticles  
     ++ntop;
   }
 
+  allHadronic_ = false;
+  semiLeptonic_ = false;
+  semiLeptonicEle_ = false;
+  semiLeptonicMuo_ = false;
+  semiLeptonicTau_ = false;
+  diLeptonic_ = false;
+  diLeptonicMuoMuo_ = false;
+  diLeptonicMuoEle_ = false;
+  diLeptonicEleEle_ = false;
+  diLeptonicTauMuo_ = false;
+  diLeptonicTauEle_ = false;
+  diLeptonicTauTau_ = false;
 
-  taunic_ = false; 
-  if( taunic[1] == true || taunic[0] == true){ 
-    taunic_ = true;
+  if ( hadronic[0] == true && hadronic[1] == true) allHadronic_ = true;
+
+  if ( ( hadronic[0] == true &&  hadronic[1] == false ) ||
+          ( hadronic[0] == false &&  hadronic[1] == true) )  {
+    // All semi leptonic decays
+    semiLeptonic_ = true;
+    // Electron
+    if ( ( hadronic[0] == true && electronic[1] == true) ||
+            ( hadronic[1] == true && electronic[0] == true ) )  semiLeptonicEle_ = true;
+    // Muon
+    if ( ( hadronic[0] == true && muonic[1] == true ) ||
+            ( hadronic[1] == true && muonic[0] == true ) )  semiLeptonicMuo_ = true;
+    // Tau
+    if ( ( hadronic[0] == true && taunic[1] == true ) ||
+            ( hadronic[1] == true && taunic[0] == true ) )  semiLeptonicTau_ = true;
+  }
+
+  // Di-Leptonic
+  if ( hadronic[0] == false && hadronic[1] == false ) {
+    diLeptonic_ = true;
+    // All di-leptonic decays
+    // Electron-Electron
+    if ( electronic[0] == true && electronic[1] == true ) diLeptonicEleEle_ = true;
+    // Muon-Muon
+    if ( muonic[0] == true && muonic[1] == true ) diLeptonicMuoMuo_ = true;
+    // Electron-Muon
+    if ( ( muonic[0] == true && electronic[1] == true ) ||
+      ( muonic[1] == true && electronic[0] == true ) )  diLeptonicMuoEle_ = true;
+    // Tau-Muon
+    if ( ( taunic[0] == true && muonic[1] == true ) ||
+      ( taunic[1] == true && muonic[0] == true ) )  diLeptonicTauMuo_ = true;
+    // Tau-Electron
+    if ( ( taunic[0] == true && electronic[1] == true ) ||
+      ( taunic[1] == true && electronic[0] == true ) ) diLeptonicTauEle_ = true;
+    // Tau-Tau
+    if ( taunic[0] == true && taunic[1] == true ) diLeptonicTauTau_ = true;
+  }
+
+  taunic1_ = taunic[0];
+  taunic2_ = taunic[1];
+
+  //sort b-quarks from top since the leading two quarks must be from top.
+  std::sort(bquarksfromtop.begin(), bquarksfromtop.end(), GreaterByPt<reco::Candidate::LorentzVector>());
+  std::sort(bquarks.begin(), bquarks.end(), GreaterByPt<reco::Candidate::LorentzVector>());
+
+  //inseart b-quarks from top to the b-quarks from non-top.
+  bquarks.insert( bquarks.begin(), bquarksfromtop.begin(), bquarksfromtop.end());
+
+  NbQuarks_ = (int) bquarks.size();
+
+  for( unsigned int i = 0 ; i < bquarks.size() ; i++){
+    bquarks_[i] = bquarks[i];
+    if( i == 3) break;
   }
 
 }
