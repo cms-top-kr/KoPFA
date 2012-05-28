@@ -231,7 +231,7 @@ topAnalysisSequence = cms.Sequence(
     topWLeptonGenFilter*
     GenZmassFilter*
     PUweight*
-    Electrons*Muons*
+    Electrons*Muons*IsolatedElectrons*IsolatedMuons*
     patElectronFilter*patMuonFilter*
     JetEnergyScale*
     makeTtFullLepEvent

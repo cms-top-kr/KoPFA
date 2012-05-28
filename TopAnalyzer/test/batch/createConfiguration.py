@@ -451,15 +451,14 @@ process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_cff")
 from TopQuarkAnalysis.TopEventProducers.sequences.ttFullLepEvtBuilder_cff import *
 removeTtFullLepHypGenMatch(process)
 
-setForAllTtFullLepHypotheses(process,"muons","acceptedMuons")
-setForAllTtFullLepHypotheses(process,"electrons","acceptedElectrons")
+setForAllTtFullLepHypotheses(process,"muons","IsolatedMuons")
+setForAllTtFullLepHypotheses(process,"electrons","IsolatedElectrons")
 setForAllTtFullLepHypotheses(process,"mets","patMETsPFlow")
 setForAllTtFullLepHypotheses(process,"jets", cms.InputTag("JetEnergyScale","selectedPatJetsPFlow"))
 setForAllTtFullLepHypotheses(process,"maxNJets",2)
 setForAllTtFullLepHypotheses(process,"mumuChannel",True)
 setForAllTtFullLepHypotheses(process,"emuChannel",True)
 setForAllTtFullLepHypotheses(process,"eeChannel",True)
-setForAllTtFullLepHypotheses(process,"maxNJets",2)
 setForAllTtFullLepHypotheses(process,"jetCorrectionLevel","L3Absolute")
 """
   return script
