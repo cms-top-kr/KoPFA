@@ -44,25 +44,19 @@ def doWork(finalpath, action):
 
     x = raw_input("Remove directory %s (y/n)?" % (finalpath))
     if x == "y":
-      os.system("rm -rf "+finalpath+"/Res")
-      os.system("rm -rf "+finalpath+"/Log")
+      os.system("rm -rf "+finalpath+"/"+sample)
 
 def jobReport( path , action):
-  ok = os.path.exists(path+"/Log")
-  if ok == False:
-     list = os.listdir(path)
-     for sample in list:
-       finalpath = path + "/" + sample
-       if os.path.isdir(finalpath):
-         print "Checking " + finalpath
-         logdir = os.path.exists(finalpath+"/Log")
-         if logdir == True:
-           doWork(finalpath, action)
-         else:
-           print "No Log directory!"
-  else:
-    print "Checking " + path
-    doWork(path, action)
+   list = os.listdir(path)
+   for sample in list:
+     finalpath = path + "/" + sample
+     if os.path.isdir(finalpath):
+       print "Checking " + finalpath
+       logdir = os.path.exists(finalpath+"/Log")
+       if logdir == True:
+         doWork(finalpath, action)
+       else:
+         print "No sample Log directory!"
   
 
 if __name__ == '__main__':
