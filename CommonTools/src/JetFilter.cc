@@ -13,7 +13,7 @@
 //
 // Original Author:  Tae Jeong Kim
 //         Created:  Mon Dec 14 01:29:35 CET 2009
-// $Id: JetFilter.cc,v 1.9 2012/05/07 03:00:31 tjkim Exp $
+// $Id: JetFilter.cc,v 1.10 2012/05/27 23:53:28 tjkim Exp $
 //
 //
 
@@ -328,7 +328,7 @@ JetFilter::beginJob()
     jecParams.push_back(JetCorrectorParameters(jecL1File.fullPath()));
     jecParams.push_back(JetCorrectorParameters(jecL2File.fullPath()));
     jecParams.push_back(JetCorrectorParameters(jecL3File.fullPath()));
-    if( isRealData_ ) {
+    if( doResJec_ ) {
       jecParams.push_back(JetCorrectorParameters(jecL2L3File.fullPath()));
     }
     resJetCorrector_ = new FactorizedJetCorrector(jecParams);
