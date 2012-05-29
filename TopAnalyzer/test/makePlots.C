@@ -11,17 +11,15 @@ const char* bkgLabels[] = {
 
 const int nSig = 1;
 const char* sigNames[] = {"hMCSig_TTbar"};
-const char* sigLabels[] = {
-  "t#bar{t}",
-};
+const char* sigLabels[] = {"t#bar{t}"};
+bool stackSig = true;
 
 void cutStepPlots(const char* cutStep, const char* histName, const char* histTitle,
                   double minY, double maxY, bool doLogY);
 TLegend* buildLegend();
 TPaveText* getHeader(double lumi, TString channelName = "");
 
-void makePlots(TString noteNumber = "Merged_Run2011Full_Zprime")
-//void makePlots(TString noteNumber = "Merged_Run2011Full_TTbarBBbar")
+void makePlots(TString noteNumber = "Merged")
 {
   setTDRStyle();
 
@@ -53,14 +51,17 @@ void makePlots(TString noteNumber = "Merged_Run2011Full_Zprime")
   cutStepPlots("Step_5", "MET", "Missing E_{T}", 1, 1e10, true);
   cutStepPlots("Step_6", "nJet", "Jet multiplicity", 1, 1e10, true);
   cutStepPlots("Step_6", "nbJet_CSVL", "b-Jet multiplicity(CSVL)", 1, 1e8, true);
-  cutStepPlots("Step_6", "nbJet_CSVM", "b-Jet multiplicity(CSVM)", 1, 1e8, true);
+  //cutStepPlots("Step_6", "nbJet_CSVM", "b-Jet multiplicity(CSVM)", 1, 1e8, true);
   cutStepPlots("Step_6", "MET", "Missing E_{T}", 1, 1e10, true); 
-  cutStepPlots("Step_6", "vsumM", "t#bar{t} invariant mass", 0, 4000, false);
+  cutStepPlots("Step_6", "vsumM", "t#bar{t} invariant mass", 0, 7000, false);
   cutStepPlots("Step_7", "nbJet_CSVL", "b-Jet multiplicity(CSVL)", 1, 1e8, true);
-  cutStepPlots("Step_7", "vsumM", "t#bar{t} invariant mass", 0, 4000, false);
-  cutStepPlots("Step_7", "vsumMAlt", "t#bar{t} invariant mass", 0, 6000, false);
-  cutStepPlots("Step_7", "vsumMhigh", "t#bar{t} invariant mass", 1, 1e5, true);
-  cutStepPlots("Step_7", "MET", "Missing E_{T}", 0, 4000, false);
+  cutStepPlots("Step_7", "vsumM", "t#bar{t} invariant mass", 0, 6000, false);
+  cutStepPlots("Step_7", "vsumMAlt", "t#bar{t} invariant mass", 0, 7000, false);
+  //cutStepPlots("Step_7", "vsumMhigh", "t#bar{t} invariant mass", 1, 1e5, true);
+  cutStepPlots("Step_7", "MET", "Missing E_{T}", 0, 4500, false);
+  cutStepPlots("Step_8", "kinM", "t#bar{t} invariant mass", 0, 6000, false);
+  cutStepPlots("Step_8", "kinMAlt", "t#bar{t} invariant mass", 0, 7000, false);
+
 
   //printCutFlow("MuMu", "-,-,METlog,METlog,MET,nJet,vsumMAlt");
   //printCutFlow("ElEl", "-,-,METlog,METlog,MET,nJet,vsumMAlt");
@@ -237,10 +238,12 @@ void cutStepPlots(const char* cutStep, const char* histName, const char* histTit
   hSigLL->Add(hSigME);
   hSigLL->Add(hSigMM);
 
-  //hStackEE->Add(hSigEE);
-  //hStackME->Add(hSigME);
-  //hStackMM->Add(hSigMM);
-  //hStackLL->Add(hSigLL);
+  if( stackSig ){
+    hStackEE->Add(hSigEE);
+    hStackME->Add(hSigME);
+    hStackMM->Add(hSigMM);
+    hStackLL->Add(hSigLL);
+  }
 
   // Build legends
   TLegend* legEE = buildLegend();
@@ -326,7 +329,7 @@ void cutStepPlots(const char* cutStep, const char* histName, const char* histTit
   legME->Draw();
   getHeader(5.0, "#mue channel")->Draw();
   hStackME->Draw("same");
-  hSigME->Draw("same");
+  if( nSig > 0 ) hSigME->Draw("same");
   hDataME->Draw("same");
   hDataME->Draw("sameaxis");
   cME->Print(Form("%s/cME_%s_%s.eps", outDirName.Data(), cutStep, histName));
@@ -350,7 +353,7 @@ void cutStepPlots(const char* cutStep, const char* histName, const char* histTit
   legLL->Draw();
   getHeader(5.0, "All channel")->Draw();
   hStackLL->Draw("same");
-  hSigLL->Draw("same");
+  if( !stackSig ) hSigLL->Draw("same");
   hDataLL->Draw("same");
   hDataLL->Draw("sameaxis");
   cLL->Print(Form("%s/cLL_%s_%s.eps", outDirName.Data(), cutStep, histName));
