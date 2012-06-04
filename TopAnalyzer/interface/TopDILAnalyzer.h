@@ -13,7 +13,7 @@
 //
 // Original Author:  Tae Jeong Kim,40 R-A32,+41227678602,
 //         Created:  Fri Jun  4 17:19:29 CEST 2010
-// $Id: TopDILAnalyzer.h,v 1.71 2012/05/27 23:55:18 tjkim Exp $
+// $Id: TopDILAnalyzer.h,v 1.72 2012/06/01 16:51:47 bhlee Exp $
 //
 //
 
@@ -477,11 +477,13 @@ class TopDILAnalyzer : public edm::EDFilter {
       ttbar->push_back(ttbarMass);
 
       const string hypo = "kKinSolution"; 
-      if( fullLepEvt->isHypoValid(hypo) ){
-        const reco::Candidate* topCand = fullLepEvt->top(hypo);
-        const reco::Candidate* topBarCand = fullLepEvt->topBar(hypo);
-        reco::Candidate::LorentzVector kinttbar =  topCand->p4() + topBarCand->p4() ; 
-        kinttbarM = kinttbar.mass();
+      if( fullLepEvt.isValid()){
+        if( fullLepEvt->isHypoValid(hypo) ){
+          const reco::Candidate* topCand = fullLepEvt->top(hypo);
+          const reco::Candidate* topBarCand = fullLepEvt->topBar(hypo);
+          reco::Candidate::LorentzVector kinttbar =  topCand->p4() + topBarCand->p4() ; 
+          kinttbarM = kinttbar.mass();
+        }
       }
 
     }
