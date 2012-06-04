@@ -38,10 +38,10 @@ public:
 
   void addMCSig(const string mcSampleName, const string mcSampleLabel,
                 const string fileName, const double xsec,
-                const Color_t color, const bool doStackSignal = true);
+                const Color_t color, const bool doStackSignal = true, const TCut cut = "");
   void addMCBkg(const string mcSampleName, const string mcSampleLabel,
                 const string fileName, const double xsec,
-                const Color_t color);
+                const Color_t color, const TCut cut = "");
   void addDataBkg(const string name, const string label,
                   const string fileName, const double norm,
                   const Color_t color);
@@ -82,6 +82,7 @@ private:
     string label;
     Color_t color;
     bool doStack;
+    TCut cut;
   };
 
   struct DataSample
@@ -133,7 +134,7 @@ private:
   void addMC(vector<MCSample>& mcSetup,
              const string name, const string label,
              const string fileName, const double xsec, const double nEvents,
-             const Color_t color, bool doStack=true);
+             const Color_t color, bool doStack=true, TCut cut ="");
 
   TObjArray histograms_;
   ofstream fout_;
@@ -175,7 +176,7 @@ TopAnalyzerLite::~TopAnalyzerLite()
 void TopAnalyzerLite::addMC(vector<MCSample>& mcSetup,
                             const string name, const string label,
                             const string fileName, const double xsec, const double nEvents,
-                            const Color_t color, bool doStack)
+                            const Color_t color, bool doStack, TCut cut)
 {
   int index = -1;
   for ( unsigned int i=0; i<mcSetup.size(); ++i )
@@ -189,7 +190,7 @@ void TopAnalyzerLite::addMC(vector<MCSample>& mcSetup,
 
   if ( index == -1 )
   {
-    MCSample mc = {name, 0, xsec, 0, label, color, doStack};
+    MCSample mc = {name, 0, xsec, 0, label, color, doStack, cut};
     baseRootDir_->cd();
     mc.chain = new TChain((subDirName_+"/tree").c_str(), (subDirName_+"/tree").c_str());
     mcSetup.push_back(mc);
@@ -227,16 +228,16 @@ void TopAnalyzerLite::addMC(vector<MCSample>& mcSetup,
 
 void TopAnalyzerLite::addMCSig(const string name, const string label,
                                const string fileName, const double xsec,
-                               const Color_t color, const bool doStackSignal)
+                               const Color_t color, const bool doStackSignal, const TCut cut)
 {
-  addMC(mcSigs_, name, label, fileName, xsec, -1, color, doStackSignal);
+  addMC(mcSigs_, name, label, fileName, xsec, -1, color, doStackSignal, cut);
 }
 
 void TopAnalyzerLite::addMCBkg(const string name, const string label,
                                const string fileName, const double xsec,
-                               const Color_t color)
+                               const Color_t color, const TCut cut)
 {
-  addMC(mcBkgs_, name, label, fileName, xsec, -1, color);
+  addMC(mcBkgs_, name, label, fileName, xsec, -1, color, true, cut); //stack true for background
 }
 
 void TopAnalyzerLite::addDataBkg(const string name, const string label,
@@ -460,7 +461,7 @@ void TopAnalyzerLite::plot(const string name, const TCut cut, MonitorPlot& monit
     TString mcSigHistName = Form("hMCSig_%s_%s", mcSample.name.c_str(), name.c_str());
     TH1F* hMCSig = new TH1F(mcSigHistName, title.c_str(), nBins, xBins);
 
-    mcSample.chain->Project(mcSigHistName, varexp.c_str(), mcCutStr);
+    mcSample.chain->Project(mcSigHistName, varexp.c_str(), mcCutStr + mcSample.cut);
     hMCSig->AddBinContent(nBins, hMCSig->GetBinContent(nBins+1));
     hMCSig->Scale(lumi_*mcSample.xsec/mcSample.nEvents);
 
@@ -514,7 +515,7 @@ void TopAnalyzerLite::plot(const string name, const TCut cut, MonitorPlot& monit
     TString mcHistName = Form("hMC_%s_%s", mcSample.name.c_str(), name.c_str());
     TH1F* hMC = new TH1F(mcHistName, title.c_str(), nBins, xBins);
 
-    mcSample.chain->Project(mcHistName, varexp.c_str(), mcCutStr);
+    mcSample.chain->Project(mcHistName, varexp.c_str(), mcCutStr + mcSample.cut);
     hMC->AddBinContent(nBins, hMC->GetBinContent(nBins+1));
     hMC->Scale(lumi_*mcSample.xsec/mcSample.nEvents);
 
@@ -717,7 +718,7 @@ void TopAnalyzerLite::printStat(const string& name, TCut cut, double cutStep)
     MCSample& mcSample = mcSigs_[i];
 
     const double norm = lumi_*mcSample.xsec/mcSample.nEvents;
-    const double nEvents = mcSample.chain->GetEntries(cut)*norm;
+    const double nEvents = mcSample.chain->GetEntries(cut + mcSample.cut)*norm;
     const double nEventsErr2 = nEvents*norm;
 
     // Merge statistics with same labels
@@ -751,7 +752,7 @@ void TopAnalyzerLite::printStat(const string& name, TCut cut, double cutStep)
     }
 
     const double norm = lumi_*mcSample.xsec/mcSample.nEvents;
-    const double nEvents = mcSample.chain->GetEntries(cut)*norm*scale;
+    const double nEvents = mcSample.chain->GetEntries(cut + mcSample.cut)*norm*scale;
     const double nEventsErr2 = nEvents*norm;
 
     // Merge statistics with same labels
