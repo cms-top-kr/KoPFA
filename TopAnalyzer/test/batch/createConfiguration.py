@@ -476,7 +476,7 @@ def mcsample(src):
   elif( decay == "ElJet"):
     dir = "ELEJET"
   script = """
-process.load("KoPFA.TopAnalyzer.Sources.%s.MC.Fall11.patTuple_%s_cff")
+process.load("KoPFA.CommonTools.Sources.MC.Fall11.patTuple_%s_cff")
 """ % (dir,src)
   return script
 
