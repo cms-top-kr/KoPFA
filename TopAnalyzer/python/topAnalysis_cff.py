@@ -109,6 +109,7 @@ ElEl = cms.EDFilter('TopElElAnalyzer',
     genJetsLabel = cms.InputTag('ak5GenJets'),
     muonLabel1 =  cms.InputTag('Electrons'),
     muonLabel2 =  cms.InputTag('Electrons'),
+    dileptonLabel = cms.untracked.InputTag("ZElEl","DiLepton"),
     metLabel =  cms.InputTag('JetEnergyScale','patMETsPFlow'),
     jetLabel =  cms.InputTag('JetEnergyScale','selectedPatJetsPFlow'),
     vertexLabel = cms.untracked.InputTag('goodOfflinePrimaryVertices'),
@@ -130,6 +131,7 @@ MuMu = cms.EDFilter('TopMuMuAnalyzer',
     genJetsLabel = cms.InputTag('ak5GenJets'),
     muonLabel1 =  cms.InputTag('Muons'),
     muonLabel2 =  cms.InputTag('Muons'),
+    dileptonLabel = cms.untracked.InputTag("ZMuMu","DiLepton"),
     metLabel =  cms.InputTag('JetEnergyScale','patMETsPFlow'),
     jetLabel =  cms.InputTag('JetEnergyScale','selectedPatJetsPFlow'),
     vertexLabel = cms.untracked.InputTag('goodOfflinePrimaryVertices'),
@@ -152,6 +154,7 @@ MuEl = cms.EDFilter('TopMuElAnalyzer',
     genJetsLabel = cms.InputTag('ak5GenJets'),
     muonLabel1 =  cms.InputTag('Muons'),
     muonLabel2 =  cms.InputTag('Electrons'),
+    dileptonLabel = cms.untracked.InputTag("ZMuEl","DiLepton"),
     metLabel =  cms.InputTag('JetEnergyScale','patMETsPFlow'),
     jetLabel =  cms.InputTag('JetEnergyScale','selectedPatJetsPFlow'),
     vertexLabel = cms.untracked.InputTag('goodOfflinePrimaryVertices'),
@@ -231,8 +234,6 @@ topAnalysisSequence = cms.Sequence(
     topWLeptonGenFilter*
     GenZmassFilter*
     PUweight*
-    Electrons*Muons*IsolatedElectrons*IsolatedMuons*
-    patElectronFilter*patMuonFilter*
     JetEnergyScale*
-    makeTtFullLepEvent
+    Electrons*Muons
 )
