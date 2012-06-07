@@ -20,7 +20,7 @@ def doWork(finalpath, action):
       filesize = 0
       if os.path.isfile( file ):
         filesize = os.path.getsize( file )
-      if filesize < 500:
+      if filesize < 10000:
         if action == "report":
           if filesize == 0:
             print "Bad job number : " + num[1] + " : file was not created"
@@ -44,7 +44,9 @@ def doWork(finalpath, action):
 
     x = raw_input("Remove directory %s (y/n)?" % (finalpath))
     if x == "y":
-      os.system("rm -rf "+finalpath+"/"+sample)
+      os.system("rm -rf "+finalpath+"/Log")
+      os.system("rm -rf "+finalpath+"/Res")
+      os.system("rm -rf "+finalpath)
 
 def jobReport( path , action):
    list = os.listdir(path)
