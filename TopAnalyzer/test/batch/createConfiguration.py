@@ -398,18 +398,18 @@ mcSet['ElJet'] = [
 ]
 
 rdSet['ElEl'] = [
-    'Run2011A', 
-    'Run2011B', 
+    'Run2011', 
+   # 'Run2011B', 
 ]
 
 rdSet['MuMu'] = [
-    'Run2011A', 
-    'Run2011B', 
+    'Run2011', 
+   # 'Run2011B', 
 ]
 
 rdSet['MuEl'] = [
-    'Run2011A', 
-    'Run2011B', 
+    'Run2011', 
+    #'Run2011B', 
 ]
 
 rdSet['MuJet'] = [
@@ -429,6 +429,21 @@ mcGlobalTag = "START42_V17"
 rdGlobalTag = "GR_R_42_V23"
 
 def common():
+
+  ch1 = ""
+  ch2 = ""
+
+  if (decay == "MuMu"):
+    ch1 = "2"
+    ch2 = "2"
+  elif (decay == "MuEl"):
+    ch1 = "1"
+    ch2 = "2"
+  elif (decay == "ElEl"):
+    ch1 = "1"
+    ch2 = "1"
+
+
   script = """import FWCore.ParameterSet.Config as cms
 
 process = cms.Process("Ntuple")
@@ -442,7 +457,7 @@ process.source = cms.Source("PoolSource",
 )
 
 process.load("FWCore.MessageService.MessageLogger_cfi")
-process.MessageLogger.cerr.FwkReport.reportEvery = 100
+process.MessageLogger.cerr.FwkReport.reportEvery = 10000
 
 process.load("KoPFA.TopAnalyzer.topAnalysis_cff")
 
@@ -451,16 +466,24 @@ process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_cff")
 from TopQuarkAnalysis.TopEventProducers.sequences.ttFullLepEvtBuilder_cff import *
 removeTtFullLepHypGenMatch(process)
 
-setForAllTtFullLepHypotheses(process,"muons","IsolatedMuons")
-setForAllTtFullLepHypotheses(process,"electrons","IsolatedElectrons")
+setForAllTtFullLepHypotheses(process,"muons",cms.InputTag("FinalLeptons","Muons"))
+setForAllTtFullLepHypotheses(process,"electrons",cms.InputTag("FinalLeptons","Electrons"))
 setForAllTtFullLepHypotheses(process,"mets","patMETsPFlow")
 setForAllTtFullLepHypotheses(process,"jets", cms.InputTag("JetEnergyScale","selectedPatJetsPFlow"))
-setForAllTtFullLepHypotheses(process,"maxNJets",-1)
+setForAllTtFullLepHypotheses(process,"maxNJets",2)
 setForAllTtFullLepHypotheses(process,"mumuChannel",True)
 setForAllTtFullLepHypotheses(process,"emuChannel",True)
 setForAllTtFullLepHypotheses(process,"eeChannel",True)
 setForAllTtFullLepHypotheses(process,"jetCorrectionLevel","L3Absolute")
-"""
+
+process.ttFullLepEvent.decayChannel1 = cms.int32(%s)
+process.ttFullLepEvent.decayChannel2 = cms.int32(%s)
+
+process.load("KoPFA.CommonTools.ZFilter_cfi")
+process.load("KoPFA.CommonTools.finalLeptonProducer_cfi")
+
+""" % (ch1, ch2)
+
   return script
 
 def mcsample(src):
@@ -477,7 +500,7 @@ def mcsample(src):
     dir = "ELEJET"
   script = """
 process.load("KoPFA.CommonTools.Sources.MC.Fall11.patTuple_%s_cff")
-""" % (dir,src)
+""" % src
   return script
 
 def mcpath():
@@ -485,9 +508,12 @@ def mcpath():
 process.p = cms.Path(
     process.hltHighLevel%sMC*
     process.topAnalysisSequence*
+    process.Z%s*
+    process.FinalLeptons*
+    makeTtFullLepEvent*
     process.%s
 ) 
-""" % (decay, decay)
+""" % (decay,decay,decay)
   return script
 
 def rdsample(src):
@@ -503,8 +529,8 @@ def rdsample(src):
   elif( decay == "ElJet"):
     dir = "ELEJET"
   script = """
-process.load("KoPFA.TopAnalyzer.Sources.%s.RD.patTuple_%s_cff")
-""" % (dir,src)
+process.load("KoPFA.CommonTools.Sources.RD.Run2011.patTuple_%s%s_cff")
+""" % (src,decay)
   return script
 
 
@@ -515,9 +541,12 @@ process.JetEnergyScale.doResJec = cms.untracked.bool(True)
 process.p = cms.Path(
     process.hltHighLevel%sRD*
     process.topAnalysisSequence*
+    process.Z%s*
+    process.FinalLeptons*
+    makeTtFullLepEvent*
     process.%s
 ) 
-""" % (decay,decay)
+""" % (decay,decay,decay)
   return script
 
 def outfile(src):
@@ -604,7 +633,7 @@ for src in mclist:
     out.write(common())
     out.write("process.GlobalTag.globaltag = cms.string('%s::All')\n" % mcGlobalTag)
     out.write("process.JetEnergyScale.globalTag = cms.untracked.string('%s')" % mcGlobalTag)
-    out.write(leptonfilter())
+    #out.write(leptonfilter())
     out.write(mcpath())
     out.write(outfile(src))
     if src.find("ZtauDecay") != -1:
@@ -636,7 +665,7 @@ for src in datalist:
     out.write(common())
     out.write("process.GlobalTag.globaltag = cms.string('%s::All')\n" % rdGlobalTag)
     out.write("process.JetEnergyScale.globalTag = cms.untracked.string('%s')" % rdGlobalTag)
-    out.write(leptonfilter())
+    #out.write(leptonfilter())
     out.write(rdpath())
     out.write(outfile(src))
     out.write(rdsample(src))
