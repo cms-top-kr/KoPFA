@@ -13,7 +13,7 @@
 //
 // Original Author:  Tae Jeong Kim,40 R-A32,+41227678602,
 //         Created:  Fri Jun  4 17:19:29 CEST 2010
-// $Id: TopDILAnalyzer.h,v 1.72 2012/06/01 16:51:47 bhlee Exp $
+// $Id: TopDILAnalyzer.h,v 1.71 2012/05/27 23:55:18 tjkim Exp $
 //
 //
 
@@ -84,6 +84,7 @@ class TopDILAnalyzer : public edm::EDFilter {
     //now do what ever initialization is needed
     muonLabel1_ = iConfig.getParameter<edm::InputTag>("muonLabel1");
     muonLabel2_ = iConfig.getParameter<edm::InputTag>("muonLabel2");
+    dileptonLabel_ = iConfig.getUntrackedParameter<edm::InputTag>("dileptonLabel");
     metLabel_ = iConfig.getParameter<edm::InputTag>("metLabel");
     jetLabel_ = iConfig.getParameter<edm::InputTag>("jetLabel");
     genParticlesLabel_= iConfig.getParameter<edm::InputTag>("genParticlesLabel");
@@ -128,15 +129,6 @@ class TopDILAnalyzer : public edm::EDFilter {
     tree = fs->make<TTree>("tree", "Tree for Top quark study");
     tmp = fs->make<TH1F>("EventSummary","EventSummary",filters_.size(),0,filters_.size());
 
-    h_leadingpt   = fs->make<TH1F>( "h_leadingpt"  , "p_{t}", 50,  0., 100. );
-    h_secondpt    = fs->make<TH1F>( "h_secondpt"  , "p_{t}", 50,  0., 100. );
-    h_mass      = fs->make<TH1F>( "h_mass", "Mass", 100, 0., 200. );
-    h_MET       = fs->make<TH1F>( "h_MET", "MET", 40, 0, 80);
-    h_jetpt30_multi = fs->make<TH1F>( "h_jetpt30_multi", "jet30pt_multi", 10, 0, 10);
-    h_npileup = fs->make<TH1F>( "h_npileup", "npileup", 30, 0, 30);
-    h_nvertex = fs->make<TH1F>( "h_nvertex", "nvertex", 30, 0, 30);
-    h_bjetspt30 = fs->make<TH1F>("h_bjetspt30","h_bjetspt30", 30, 0,30);
-
     Z = new std::vector<Ko::ZCandidate>();
     lepton1 = new std::vector<Ko::Lepton>();
     lepton2 = new std::vector<Ko::Lepton>();
@@ -146,10 +138,6 @@ class TopDILAnalyzer : public edm::EDFilter {
     met = new std::vector<math::XYZTLorentzVector>();
     jetspt30 = new std::vector<math::XYZTLorentzVector>();
     jetspt20 = new std::vector<math::XYZTLorentzVector>();
-	jetspt30flavour = new std::vector<int>();
-	jetspt30bDiscriminator = new std::vector<double>();
-	jetspt20flavour = new std::vector<int>();
-	jetspt20bDiscriminator = new std::vector<double>();
 
     nCutStep_ = 7;
     for ( int i = 0; i<nCutStep_; ++i )
@@ -207,11 +195,6 @@ class TopDILAnalyzer : public edm::EDFilter {
     //tree->Branch("met","std::vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >", &met);
     tree->Branch("jetspt30","std::vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >", &jetspt30);
     tree->Branch("jetspt20","std::vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >", &jetspt20);
-	tree->Branch("jetspt30flavour","std::vector<int>", &jetspt30flavour);
-	tree->Branch("jetspt30bDiscriminator","std::vector<double>", &jetspt30bDiscriminator);
-	tree->Branch("jetspt20flavour","std::vector<int>", &jetspt20flavour);
-	tree->Branch("jetspt20bDiscriminator","std::vector<double>", &jetspt20bDiscriminator);
-	
     for ( int i=0, n=bTagAlgos_.size(); i<n; ++i )
     {
       const std::string& name = bTagNames_[i];
@@ -232,7 +215,7 @@ class TopDILAnalyzer : public edm::EDFilter {
   //virtual void produce(const edm::Event& iEvent, const edm::EventSetup& iSetup)
   virtual bool filter(edm::Event& iEvent, const edm::EventSetup& iSetup)
   {
-    bool accept = false;
+    bool accept = true;
     std::vector<bool> cutStepBit(nCutStep_);
 
     clear();
@@ -274,8 +257,6 @@ class TopDILAnalyzer : public edm::EDFilter {
       npileup = *npileup_;
     }
 
-    h_npileup->Fill(npileup);
-
     edm::Handle<reco::VertexCollection> recVtxs_;
     iEvent.getByLabel(vertexLabel_,recVtxs_);
 
@@ -288,8 +269,6 @@ class TopDILAnalyzer : public edm::EDFilter {
     }
 
     nvertex = nv;
-
-    h_nvertex->Fill(nv);
 
     edm::Handle<std::vector<T1> > muons1_;
     edm::Handle<std::vector<T2> > muons2_;
@@ -309,7 +288,8 @@ class TopDILAnalyzer : public edm::EDFilter {
     edm::Handle<reco::GenJetCollection> genJets_;
     iEvent.getByLabel(genJetsLabel_,genJets_);
 
-    bool selected = false;
+    edm::Handle<vector<Ko::ZCandidate> > ZCand;
+    iEvent.getByLabel(dileptonLabel_, ZCand);
 
     int mode = 0;
 
@@ -318,100 +298,28 @@ class TopDILAnalyzer : public edm::EDFilter {
         T1 it1 = muons1_->at(i);
         T2 it2 = muons2_->at(j);
 
-        //This is not needed anymore. We might not use the pf leptons as input in 2012.
-        //it1.setP4(it1.pfCandidateRef()->p4());
-        //it2.setP4(it2.pfCandidateRef()->p4());
-
         mode = 0;
         if ( it1.isMuon() ) mode |= 1;
         if ( it2.isMuon() ) mode |= 2;
-
-        const bool match = MatchObjects( it1.p4(), it2.p4(), true);
-        if(match) continue;
-
-        const Ko::Lepton lep1(it1.p4(), (int) it1.charge());
-        const Ko::Lepton lep2(it2.p4(), (int) it2.charge());
-
-        lepton1->push_back(lep1);
-        lepton2->push_back(lep2);
-
-        reco::isodeposit::Direction Dir1 = Direction(it1.eta(),it1.phi());
-        reco::isodeposit::Direction Dir2 = Direction(it2.eta(),it2.phi());
-        reco::isodeposit::AbsVetos vetos_ch;
-        reco::isodeposit::AbsVetos vetos_nh;
-        vetos_nh.push_back(new ThresholdVeto( 0.5 ));
-        reco::isodeposit::AbsVetos vetos_ph1;
-        vetos_ph1.push_back(new ThresholdVeto( 0.5 ));
-        //vetos_ph1.push_back(new RectangularEtaPhiVeto( Dir1, -0.1, 0.1, -0.2, 0.2));
-        reco::isodeposit::AbsVetos vetos_ph2;
-        vetos_ph2.push_back(new ThresholdVeto( 0.5 ));
-        //vetos_ph2.push_back(new RectangularEtaPhiVeto( Dir2, -0.1, 0.1, -0.2, 0.2));
-
-        //pf isolation setup
-        lepton1->back().setIsoDeposit( pat::PfChargedHadronIso, it1.isoDeposit(pat::PfChargedHadronIso), vetos_ch );
-        lepton1->back().setIsoDeposit( pat::PfNeutralHadronIso, it1.isoDeposit(pat::PfNeutralHadronIso), vetos_nh );
-        lepton1->back().setIsoDeposit( pat::PfGammaIso, it1.isoDeposit(pat::PfGammaIso), vetos_ph1 );
-    
-        lepton2->back().setIsoDeposit( pat::PfChargedHadronIso, it2.isoDeposit(pat::PfChargedHadronIso), vetos_ch );
-        lepton2->back().setIsoDeposit( pat::PfNeutralHadronIso, it2.isoDeposit(pat::PfNeutralHadronIso), vetos_nh );
-        lepton2->back().setIsoDeposit( pat::PfGammaIso, it2.isoDeposit(pat::PfGammaIso), vetos_ph2 );
- 
-        //detector based isolation
-        lepton1->back().setIsoDeposit( it1.trackIso(), it1.ecalIso(), it1.hcalIso());
-        lepton2->back().setIsoDeposit( it2.trackIso(), it2.ecalIso(), it2.hcalIso());
-
-        //explicitly requuire opposite sign of isolated leptons
-        const Ko::ZCandidate dimuon(lepton1->back(), lepton2->back());
-        if( dimuon.mass() <= 12 ) continue;
-
-        bool iso = lepton1->back().relpfIso03() < relIso1_ && lepton2->back().relpfIso03() < relIso2_;
-        //bool noiso = lepton1->back().relpfIso03() > relIso1_ && lepton2->back().relpfIso03() > relIso2_;
-        bool opp = it1.charge() * it2.charge() < 0;
-
-        if(!selected) {
-          selected = true;
-          Z->push_back(dimuon);
-          ZMass = dimuon.mass();
-          PairSign = (int) it1.charge() * it2.charge();
-          relIso1 = lepton1->back().relpfIso03();
-          relIso2 = lepton2->back().relpfIso03();
-          pt1 = it1.pt();
-          pt2 = it2.pt();
-          eta1 = it1.eta();
-          eta2 = it2.eta();
-          phi1 = it1.phi();
-          phi2 = it2.phi();
-          if( iso ) isIso = 1;  
-        }
-
-        if( !iso && applyIso_) continue;
-        if( !opp && oppPair_) continue;
-
-        accept = true;
-        dphimetlepton1 = fabs(deltaPhi(mi->phi(),it1.phi()));
-        dphimetlepton2 = fabs(deltaPhi(mi->phi(),it2.phi()));
- 
-        Z->push_back(dimuon);
-        ZMass = dimuon.mass();
-        PairSign = (int) it1.charge() * it2.charge();
-        relIso1 = lepton1->back().relpfIso03();
-        relIso2 = lepton2->back().relpfIso03();
-        pt1 = it1.pt();
-        pt2 = it2.pt();
-        eta1 = it1.eta();
-        eta2 = it2.eta();
-        phi1 = it1.phi();
-        phi2 = it2.phi();
-        if( iso ) isIso = 1;       
-        
-        h_leadingpt->Fill(it1.pt());
-        h_secondpt->Fill(it2.pt());
-        h_mass->Fill(dimuon.mass());
 
         break;
       }
       break;
     }
+
+    ZMass = ZCand->at(0).mass();
+    PairSign =  ZCand->at(0).sign();
+    relIso1 =  ZCand->at(0).leg1().relpfIso03();
+    relIso2 = ZCand->at(0).leg2().relpfIso03();
+    pt1 = ZCand->at(0).leg1().pt();
+    pt2 = ZCand->at(0).leg2().pt();
+    eta1 = ZCand->at(0).leg1().eta();
+    eta2 = ZCand->at(0).leg2().eta();
+    phi1 = ZCand->at(0).leg1().phi();
+    phi2 = ZCand->at(0).leg2().phi();
+
+    bool iso = relIso1 < relIso1_ && relIso2 < relIso2_;
+    if( iso ) isIso = 1;
 
     for ( int bTagIndex=0, nBTag=nbjetsCache_.size(); bTagIndex<nBTag; ++bTagIndex )
     {
@@ -422,38 +330,34 @@ class TopDILAnalyzer : public edm::EDFilter {
     for (JI jit = Jets->begin(); jit != Jets->end(); ++jit) {
       ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > corrjet;
       corrjet.SetPxPyPzE(jit->px(),jit->py(),jit->pz(),jit->energy());
-	  flavour = jit->partonFlavour();
-	  bDiscriminator = jit->bDiscriminator("combinedSecondaryVertexBJetTags");
-      if(jit->pt() > 20){
-        jetspt20->push_back(corrjet);
-		jetspt20flavour->push_back(flavour);
-		jetspt20bDiscriminator->push_back(bDiscriminator);
-        
-        for ( int bTagIndex=0, nBTagAlgo=bTagAlgos_.size(); bTagIndex<nBTagAlgo; ++bTagIndex )
-        {
-          const double bTagValue = jit->bDiscriminator(bTagAlgos_[bTagIndex]);
-          if ( (bTagIsCutMin_[bTagIndex]) xor (bTagValue < bTagCutValues_[bTagIndex]) ) ++nbjets20Cache_[bTagIndex];
-        }
-      }//pt > 20 loop
+
       if(jit->pt() > 30){
-        jetspt30->push_back(corrjet);
-		jetspt30flavour->push_back(flavour);
-		jetspt30bDiscriminator->push_back(bDiscriminator);
+        jetspt30->push_back(corrjet);        
        
         for ( int bTagIndex=0, nBTagAlgo=bTagAlgos_.size(); bTagIndex<nBTagAlgo; ++bTagIndex )
         {
           const double bTagValue = jit->bDiscriminator(bTagAlgos_[bTagIndex]);
           if ( (bTagIsCutMin_[bTagIndex]) xor (bTagValue < bTagCutValues_[bTagIndex]) ) ++nbjetsCache_[bTagIndex];
         }
-      }//pt > 30 loop
+      }
+
+     
+      if(jit->pt() > 20){
+        jetspt20->push_back(corrjet);
+        
+        for ( int bTagIndex=0, nBTagAlgo=bTagAlgos_.size(); bTagIndex<nBTagAlgo; ++bTagIndex )
+        {
+          const double bTagValue = jit->bDiscriminator(bTagAlgos_[bTagIndex]);
+          if ( (bTagIsCutMin_[bTagIndex]) xor (bTagValue < bTagCutValues_[bTagIndex]) ) ++nbjets20Cache_[bTagIndex];
+        }
+      }
+
     }
 
     if( jetspt30->size() >= 2 ){
       dphimetjet1 = fabs(deltaPhi(mi->phi(),jetspt30->at(0).phi()));
       dphimetjet2 = fabs(deltaPhi(mi->phi(),jetspt30->at(1).phi()));
     }
-
-    h_jetpt30_multi->Fill(jetspt30->size());
 
     ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > corrmet;
     corrmet.SetPxPyPzE(mi->px(),mi->py(),0,mi->pt());
@@ -465,25 +369,21 @@ class TopDILAnalyzer : public edm::EDFilter {
       pfMet->push_back(pfmet);
     }
 
-    h_MET->Fill(MET);
-
     if(jetspt30->size() >= 2 && ZMass > 12){
       ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > lep1;
       ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > lep2;
-      lep1.SetPxPyPzE(Z->back().leg1().px(),Z->back().leg1().py(),Z->back().leg1().pz(),Z->back().leg1().energy());
-      lep2.SetPxPyPzE(Z->back().leg2().px(),Z->back().leg2().py(),Z->back().leg2().pz(),Z->back().leg2().energy());
+      lep1.SetPxPyPzE(ZCand->at(0).leg1().px(),ZCand->at(0).leg1().py(),ZCand->at(0).leg1().pz(),ZCand->at(0).leg1().energy());
+      lep2.SetPxPyPzE(ZCand->at(0).leg2().px(),ZCand->at(0).leg2().py(),ZCand->at(0).leg2().pz(),ZCand->at(0).leg2().energy());
 
       const Ko::TTbarMass ttbarMass(lep1, lep2, jetspt30->at(0), jetspt30->at(1), met->at(0));
       ttbar->push_back(ttbarMass);
 
       const string hypo = "kKinSolution"; 
-      if( fullLepEvt.isValid()){
-        if( fullLepEvt->isHypoValid(hypo) ){
-          const reco::Candidate* topCand = fullLepEvt->top(hypo);
-          const reco::Candidate* topBarCand = fullLepEvt->topBar(hypo);
-          reco::Candidate::LorentzVector kinttbar =  topCand->p4() + topBarCand->p4() ; 
-          kinttbarM = kinttbar.mass();
-        }
+      if( fullLepEvt->isHypoValid(hypo) ){
+        const reco::Candidate* topCand = fullLepEvt->top(hypo);
+        const reco::Candidate* topBarCand = fullLepEvt->topBar(hypo);
+        reco::Candidate::LorentzVector kinttbar =  topCand->p4() + topBarCand->p4() ; 
+        kinttbarM = kinttbar.mass();
       }
 
     }
@@ -540,7 +440,6 @@ class TopDILAnalyzer : public edm::EDFilter {
     }
 
     ttbarGen->push_back(ttbarGenLevel);
-    h_bjetspt30->Fill(ttbarGenLevel.NbJets() );
 
     //ESHandle<SetupData> pSetup;
     //iSetup.get<SetupRecord>().get(pSetup);
@@ -670,12 +569,7 @@ class TopDILAnalyzer : public edm::EDFilter {
     ttbarGen->clear();
     met->clear();
     jetspt30->clear();
-	jetspt30flavour->clear();
-	jetspt30bDiscriminator->clear();
     jetspt20->clear();
-	jetspt20bDiscriminator->clear();
-	flavour = -999.;
-	bDiscriminator = -999.;
 
     for ( int bTagIndex=0, nBTag=nbjetsCache_.size(); bTagIndex<nBTag; ++bTagIndex )
     {
@@ -699,7 +593,7 @@ class TopDILAnalyzer : public edm::EDFilter {
     PairSign = -999;
     relIso1 = -999;
     relIso2 = -999;
-    isIso = -999;
+    isIso = -1;
     pt1 = -999; 
     pt2 = -999;
     eta1 = -999;
@@ -768,6 +662,7 @@ class TopDILAnalyzer : public edm::EDFilter {
 
   edm::InputTag muonLabel1_;
   edm::InputTag muonLabel2_;
+  edm::InputTag dileptonLabel_;
   edm::InputTag metLabel_;
   edm::InputTag jetLabel_;
   edm::InputTag genParticlesLabel_;
@@ -794,14 +689,6 @@ class TopDILAnalyzer : public edm::EDFilter {
   TTree* tree;
 
   TH1F * tmp;
-  TH1F * h_leadingpt;
-  TH1F * h_secondpt;
-  TH1F * h_mass;
-  TH1F * h_MET;
-  TH1F * h_jetpt30_multi;
-  TH1F * h_npileup;
-  TH1F * h_nvertex;
-  TH1F * h_bjetspt30;
 
   std::vector<Ko::ZCandidate>* Z;
   std::vector<Ko::Lepton>* lepton1;
@@ -811,11 +698,7 @@ class TopDILAnalyzer : public edm::EDFilter {
   std::vector<Ko::TTbarCandidate>* ttbarGen;
   std::vector<math::XYZTLorentzVector>* met;
   std::vector<math::XYZTLorentzVector>* jetspt30;
-  std::vector<int>* jetspt30flavour;
-  std::vector<double>* jetspt30bDiscriminator;  
   std::vector<math::XYZTLorentzVector>* jetspt20;
-  std::vector<int>* jetspt20flavour;
-  std::vector<double>* jetspt20bDiscriminator;  
 
   double MET;
   double dphimetlepton1;
@@ -837,8 +720,6 @@ class TopDILAnalyzer : public edm::EDFilter {
   double phi2;
 
   double discr;
-  int flavour;
-  double bDiscriminator;
 
   double kinttbarM;
   double genttbarM;
