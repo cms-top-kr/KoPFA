@@ -13,7 +13,7 @@
 //
 // Original Author:  Tae Jeong Kim,40 R-A32,+41227678602,
 //         Created:  Fri Jun  4 17:19:29 CEST 2010
-// $Id: TopDILAnalyzer.h,v 1.74 2012/06/07 16:21:39 tjkim Exp $
+// $Id: TopDILAnalyzer.h,v 1.75 2012/06/07 16:35:42 tjkim Exp $
 //
 //
 
@@ -138,10 +138,10 @@ class TopDILAnalyzer : public edm::EDFilter {
     met = new std::vector<math::XYZTLorentzVector>();
     jetspt30 = new std::vector<math::XYZTLorentzVector>();
     jetspt20 = new std::vector<math::XYZTLorentzVector>();
-    jetspt30flavour = new std::vector<int>();
-    jetspt30bDiscriminator = new std::vector<double>();
-    jetspt20flavour = new std::vector<int>();
-    jetspt20bDiscriminator = new std::vector<double>();
+    //jetspt30flavour = new std::vector<int>();
+    //jetspt30bDiscriminator = new std::vector<double>();
+    //jetspt20flavour = new std::vector<int>();
+    //jetspt20bDiscriminator = new std::vector<double>();
 
     nCutStep_ = 7;
     for ( int i = 0; i<nCutStep_; ++i )
@@ -199,10 +199,10 @@ class TopDILAnalyzer : public edm::EDFilter {
     //tree->Branch("met","std::vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >", &met);
     tree->Branch("jetspt30","std::vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >", &jetspt30);
     tree->Branch("jetspt20","std::vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >", &jetspt20);
-    tree->Branch("jetspt30flavour","std::vector<int>", &jetspt30flavour);
-    tree->Branch("jetspt30bDiscriminator","std::vector<double>", &jetspt30bDiscriminator);
-    tree->Branch("jetspt20flavour","std::vector<int>", &jetspt20flavour);
-    tree->Branch("jetspt20bDiscriminator","std::vector<double>", &jetspt20bDiscriminator);
+    //tree->Branch("jetspt30flavour","std::vector<int>", &jetspt30flavour);
+    //tree->Branch("jetspt30bDiscriminator","std::vector<double>", &jetspt30bDiscriminator);
+    //tree->Branch("jetspt20flavour","std::vector<int>", &jetspt20flavour);
+    //tree->Branch("jetspt20bDiscriminator","std::vector<double>", &jetspt20bDiscriminator);
 	
     for ( int i=0, n=bTagAlgos_.size(); i<n; ++i )
     {
@@ -339,12 +339,12 @@ class TopDILAnalyzer : public edm::EDFilter {
     for (JI jit = Jets->begin(); jit != Jets->end(); ++jit) {
       ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > corrjet;
       corrjet.SetPxPyPzE(jit->px(),jit->py(),jit->pz(),jit->energy());
-      int flavour = jit->partonFlavour();
-      double bDiscriminator = jit->bDiscriminator("combinedSecondaryVertexBJetTags");
+      //int flavour = jit->partonFlavour();
+      //double bDiscriminator = jit->bDiscriminator("combinedSecondaryVertexBJetTags");
       if(jit->pt() > 20){
         jetspt20->push_back(corrjet);
-        jetspt20flavour->push_back(flavour);
-        jetspt20bDiscriminator->push_back(bDiscriminator);
+        //jetspt20flavour->push_back(flavour);
+        //jetspt20bDiscriminator->push_back(bDiscriminator);
         
         for ( int bTagIndex=0, nBTagAlgo=bTagAlgos_.size(); bTagIndex<nBTagAlgo; ++bTagIndex )
         {
@@ -354,8 +354,8 @@ class TopDILAnalyzer : public edm::EDFilter {
       }//pt > 20 loop
       if(jit->pt() > 30){
         jetspt30->push_back(corrjet);
-        jetspt30flavour->push_back(flavour);
-        jetspt30bDiscriminator->push_back(bDiscriminator);
+        //jetspt30flavour->push_back(flavour);
+        //jetspt30bDiscriminator->push_back(bDiscriminator);
        
         for ( int bTagIndex=0, nBTagAlgo=bTagAlgos_.size(); bTagIndex<nBTagAlgo; ++bTagIndex )
         {
@@ -580,10 +580,11 @@ class TopDILAnalyzer : public edm::EDFilter {
     ttbarGen->clear();
     met->clear();
     jetspt30->clear();
-    jetspt30flavour->clear();
-    jetspt30bDiscriminator->clear();
+    //jetspt30flavour->clear();
+    //jetspt30bDiscriminator->clear();
     jetspt20->clear();
-    jetspt20bDiscriminator->clear();
+    //jetspt20flavour->clear();
+    //jetspt20bDiscriminator->clear();
 
     for ( int bTagIndex=0, nBTag=nbjetsCache_.size(); bTagIndex<nBTag; ++bTagIndex )
     {
@@ -712,11 +713,11 @@ class TopDILAnalyzer : public edm::EDFilter {
   std::vector<Ko::TTbarCandidate>* ttbarGen;
   std::vector<math::XYZTLorentzVector>* met;
   std::vector<math::XYZTLorentzVector>* jetspt30;
-  std::vector<int>* jetspt30flavour;
-  std::vector<double>* jetspt30bDiscriminator;  
+  //std::vector<int>* jetspt30flavour;
+  //std::vector<double>* jetspt30bDiscriminator;  
   std::vector<math::XYZTLorentzVector>* jetspt20;
-  std::vector<int>* jetspt20flavour;
-  std::vector<double>* jetspt20bDiscriminator;  
+  //std::vector<int>* jetspt20flavour;
+  //std::vector<double>* jetspt20bDiscriminator;  
 
   double MET;
   double dphimetlepton1;
