@@ -13,14 +13,8 @@
 #include "TGraph.h"
 #include "TROOT.h"
 #include <iostream>
-
-//default
-float detBins[] = {0, 345, 400, 450, 500, 550, 600, 680, 800, 1800}; // 9 bins
-float genBins[] = {0, 345, 400, 450, 500, 550, 600, 680, 800, 1800}; // 9 bins
-
-int nDet = sizeof(detBins)/sizeof(float) - 1;
-int nGen = sizeof(genBins)/sizeof(float) - 1;
-
+#include "norm.h"
+#include "DXSectionParameters.h"
 #include "preUnfolding.h"
 
 void defaultStyle();
@@ -58,8 +52,8 @@ void truthFinal(){
 
   TFile* f = TFile::Open("truthFinal.root", "recreate");
 
-  double lumi =  4982;
-  double Xsection = 161.9;
+  double lumi =  Lumi2011;
+  double Xsection = X_TTbar_7TeV;
 
   double lumi_madgraph = hMadGraphFull->GetEntries() / Xsection;
   double lumi_powheg = hPOWHEGFull->GetEntries() / Xsection;
