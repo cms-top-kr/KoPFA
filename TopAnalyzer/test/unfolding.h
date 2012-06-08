@@ -14,6 +14,7 @@
 #include "TMatrixD.h"
 #include <iomanip>
 #include <iostream>
+#include "DXSectionParameters.h"
 
 TH1F* unfoldingPlot(int algo, TH2* m, TH1* h_mea, TH1* h_genTTbar, TString name, double lumi, int k, RooUnfold::ErrorTreatment & err, bool print, bool pseudo, bool toy){
 
@@ -261,23 +262,23 @@ o     if ( i == 9999) cout << total_unfolded << " " << total_gen << endl;
 
   //Saving canvas 
   if(print){
-    c_response->Print(Form("Unfold_plot/cUF_response_%s.eps",name.Data()));
-    c_responseH->Print(Form("Unfold_plot/cUF_responseH_%s.eps",name.Data()));
-    c->Print(Form("Unfold_plot/cUF_unfold_%s.eps",name.Data()));
-    c_errmat->Print(Form("Unfold_plot/cUF_errmat_%s.eps",name.Data()));
+    c_response->Print(Form("unfoldPlot/cUF_response_%s.eps",name.Data()));
+    c_responseH->Print(Form("unfoldPlot/cUF_responseH_%s.eps",name.Data()));
+    c->Print(Form("unfoldPlot/cUF_unfold_%s.eps",name.Data()));
+    c_errmat->Print(Form("unfoldPlot/cUF_errmat_%s.eps",name.Data()));
 
-    //c_response->Print(Form("Unfold_plot/cUF_response_%s.png",name.Data()));
-    //c_responseH->Print(Form("Unfold_plot/cUF_responseH_%s.png",name.Data()));
-    //c->Print(Form("Unfold_plot/cUF_unfold_%s.png",name.Data()));
-    //c_errmat->Print(Form("Unfold_plot/cUF_errmat_%s.png",name.Data()));
+    //c_response->Print(Form("unfoldPlot/cUF_response_%s.png",name.Data()));
+    //c_responseH->Print(Form("unfoldPlot/cUF_responseH_%s.png",name.Data()));
+    //c->Print(Form("unfoldPlot/cUF_unfold_%s.png",name.Data()));
+    //c_errmat->Print(Form("unfoldPlot/cUF_errmat_%s.png",name.Data()));
   }
 
   if(toy){
-      c_toy_sigma->Print(Form("Unfold_plot/cUF_toy_sigma_%s.eps",name.Data()));
-      c_toy_Ntrue->Print(Form("Unfold_plot/cUF_toy_Ntrue_%s.eps",name.Data()));
+      c_toy_sigma->Print(Form("unfoldPlot/cUF_toy_sigma_%s.eps",name.Data()));
+      c_toy_Ntrue->Print(Form("unfoldPlot/cUF_toy_Ntrue_%s.eps",name.Data()));
 
-      //c_toy_sigma->Print(Form("Unfold_plot/cUF_toy_sigma_%s.png",name.Data()));
-      //c_toy_Ntrue->Print(Form("Unfold_plot/cUF_toy_Ntrue_%s.png",name.Data()));
+      //c_toy_sigma->Print(Form("unfoldPlot/cUF_toy_sigma_%s.png",name.Data()));
+      //c_toy_Ntrue->Print(Form("unfoldPlot/cUF_toy_Ntrue_%s.png",name.Data()));
   }
 
   h_unfold->SetName("unfolded");
@@ -296,8 +297,8 @@ void dPlot(TH1F* h_unfold, bool print){
   h_d->GetYaxis()->SetTitle("log|d_{i}|");
   h_d->GetXaxis()->SetTitle("i");
   if(print){
-    c_d->Print(Form("Unfold_plot/cUF_d_%s.eps",name.Data()));
-    //c_d->Print(Form("Unfold_plot/cUF_d_%s.png",name.Data()));
+    c_d->Print(Form("unfoldPlot/cUF_d_%s.eps",name.Data()));
+    //c_d->Print(Form("unfoldPlot/cUF_d_%s.png",name.Data()));
   }
 }
 //err after unfolding =============================================================================
@@ -339,10 +340,10 @@ void errorPlotsToCompareWithDESY(double lumi, TH1F* h_unfold, int k, TString nam
   SetLegend(gerr, gerr_DESY, Form("RooUnfold SVD, k=%1.0f",(double) k),"Bin By Bin","LP","LP", 0.2,0.72,0.4,0.94);
 
   if(true){
-    c_err->Print(Form("Unfold_plot/cUF_err_%s.eps",name.Data()));
-    //c_err->Print(Form("Unfold_plot/cUF_err_%s.png",name.Data()));
-    c_err_all->Print(Form("Unfold_plot/cUF_err_all_%s.eps",name.Data()));
-    //c_err_all->Print(Form("Unfold_plot/cUF_err_all_%s.png",name.Data()));
+    c_err->Print(Form("unfoldPlot/cUF_err_%s.eps",name.Data()));
+    //c_err->Print(Form("unfoldPlot/cUF_err_%s.png",name.Data()));
+    c_err_all->Print(Form("unfoldPlot/cUF_err_all_%s.eps",name.Data()));
+    //c_err_all->Print(Form("unfoldPlot/cUF_err_all_%s.png",name.Data()));
   }
 
 }
@@ -371,8 +372,8 @@ void errorPlots(double lumi, TH1F* h_unfold, TString name=""){
   label->SetTextSize(0.05);
   label->DrawLatex(0.30,0.88,Form("%1.1f fb^{-1} at #sqrt{s} = 7 TeV",lumi/1000));
 
-  c_err->Print(Form("Unfold_plot/cUF_err_%s.eps",name.Data()));
-  //c_err->Print(Form("Unfold_plot/cUF_err_%s.png",name.Data()));
+  c_err->Print(Form("unfoldPlot/cUF_err_%s.eps",name.Data()));
+  //c_err->Print(Form("unfoldPlot/cUF_err_%s.png",name.Data()));
 
 }
 
@@ -418,8 +419,8 @@ void errorPlots(double lumi, TH1F* h_unfold, int k, TH1F* h_unfoldBinByBin, TStr
   SetLegend(gerr, gerr_binbybin, Form("RooUnfold SVD, k=%1.0f",(double) k),"Bin By Bin","LP","LP", 0.2,0.72,0.4,0.94);
 
   if(true){
-    c_err_all->Print(Form("Unfold_plot/cUF_err_all_%s.eps",name.Data()));
-    //c_err_all->Print(Form("Unfold_plot/cUF_err_all_%s.png",name.Data()));
+    c_err_all->Print(Form("unfoldPlot/cUF_err_all_%s.eps",name.Data()));
+    //c_err_all->Print(Form("unfoldPlot/cUF_err_all_%s.png",name.Data()));
   }
 
 }
@@ -457,7 +458,7 @@ TGraphAsymmErrors* FinalPlot(TH1F* h_unfold, TH1F* hgen, TH1F* accept, TH1* hTr1
 
   SetLabel(0.47,0.88, lumi);
   SetLegend(hSigmaTruth, hSigmaData, "MadGraph", "Unfolded data", "L", "P", 0.58,0.64,0.80,0.8);
-  Print(c_dsigma, "Unfold_plot", hName.Data(), cName.Data(), print);
+  Print(c_dsigma, "unfoldPlot", hName.Data(), cName.Data(), print);
 
   TGraphAsymmErrors* dsigmaData = getGraphAsymmErrors(hSigmaData);
   return dsigmaData;
@@ -466,7 +467,7 @@ TGraphAsymmErrors* FinalPlot(TH1F* h_unfold, TH1F* hgen, TH1F* accept, TH1* hTr1
 void FinalPlot(TH1F* h_unfold, TH1F* hgen, TH1F* accept, TH1* hTr1, TH1* hTr2, TH1* hTr3, double lumi, TString hName, TString cName, double min, double max, bool norm=true, bool log=true, bool curve=false, bool print = false, bool printX = false, bool HBBstyle = false, bool band = false, TH1D* hTr2_up ="", TH1D* hTr2_dw= ""){
 
   int nbins = h_unfold->GetNbinsX();
- 
+
   TH1F* dsigmaDataHisto = getMeasuredCrossSection(h_unfold,accept,lumi,norm, printX, "unfolded");
   //TH1F* dsigmaDataHistoOnlyWithStat = getMeasuredCrossSection(h_unfold,accept,lumi,norm, printX, "unfolded", false); //set false for systematic uncert.
 
@@ -506,7 +507,7 @@ void FinalPlot(TH1F* h_unfold, TH1F* hgen, TH1F* accept, TH1* hTr1, TH1* hTr2, T
   SetLegend(dsigmaData, hSigmaTruth, hSigmaTruth2, hSigmaTruth3, "Unfolded data", "MadGraph", "MC@NLO", "POWHEG", "P","L","L", "L", 0.58,0.64,0.80,0.8);
 
   //print
-  Print(c_dsigma, "Unfold_plot", hName.Data(), cName.Data(), print);
+  Print(c_dsigma, "unfoldPlot", hName.Data(), cName.Data(), print);
 }
 
 void TOP11013Plot(TH1F* h_unfold, TH1F* hgen, TH1F* accept, TH1* hTr1, TH1* hTr2, TH1* hTr3, double lumi, TString hName, TString cName, double min, double max, bool norm=true, bool log=true, bool curve=false, bool print = false, bool printX = false, bool HBBstyle = false, bool band = false, TH1* hTr2_up ="", TH1* hTr2_dw= ""){
@@ -520,43 +521,53 @@ void TOP11013Plot(TH1F* h_unfold, TH1F* hgen, TH1F* accept, TH1* hTr1, TH1* hTr2
   TGraphAsymmErrors* dsigmaData = getGraphAsymmErrors(dsigmaDataHisto);
   TGraphAsymmErrors* dsigmaDataOnlyWithStat = getGraphAsymmErrors(dsigmaDataHistoOnlyWithStat);
 
+  TH1F* htmp = getTruthCrossSection(hgen, hTr1, lumi, norm, printX);
   TH1F* hSigmaTruth = getTruthCrossSection(hgen, hTr1, lumi, norm, printX);
-  TH1F* hSigmaTruthHisto = getTruthCrossSection(hgen, hTr1, lumi, norm, printX);
+  TH1F* hSigmaTruth2 = getTruthCrossSection(hgen, hTr2, lumi, norm, false);
+  TH1F* hSigmaTruth3 = getTruthCrossSection(hgen, hTr3, lumi, norm, false);
 
   TCanvas *c_dsigma = new TCanvas(Form("c_%s_dsigma_%s",hName.Data(), cName.Data()),Form("c_%s_dsigma_%s",hName.Data(), cName.Data()));
   TGaxis::SetMaxDigits(4);
   if(log) c_dsigma->SetLogy();
 
   TH1F* fSigmaTruth = getFitHistogram(hTr1, "madgraph");
-  TH1F* fSigmaTruth2 = getFitHistogram(hTr2, "mcatnlo");
-  TH1F* fSigmaTruth3 = getFitHistogram(hTr3, "powheg");
+  //TH1F* fSigmaTruth2 = getFitHistogram(hTr2, "mcatnlo");
+  //TH1F* fSigmaTruth3 = getFitHistogram(hTr3, "powheg");
 
   SetHistoStyle(fSigmaTruth, 2,kRed+1,1,0,0,0,min,max,"","");
-  SetHistoStyle(fSigmaTruth2, 2,kAzure,1,0,0,0,min,max,"","");
-  SetHistoStyle(fSigmaTruth3, 2,kGreen+1,1,0,0,0,min,max,"","");
+  //SetHistoStyle(fSigmaTruth2, 2,kAzure,1,0,0,0,min,max,"","");
+  //SetHistoStyle(fSigmaTruth3, 2,kGreen+1,1,0,0,0,min,max,"","");
 
-  TH1F* fSigmaTruth2_up = getFitHistogram(hTr2_up, "mcatnlo");
-  TH1F* fSigmaTruth2_dw = getFitHistogram(hTr2_dw, "mcatnlo");
-  dsigmaTruth = getGraphAsymmErrors( fSigmaTruth2, true, fSigmaTruth2_up, fSigmaTruth2_dw);
+  SetHistoStyle_TOP11013(htmp, 0, 0 ,1,1.2,0,20,min,max,"m_{t#bar{t}} #left[#frac{GeV}{c^{2}}#right]","#frac{1}{#sigma} #frac{d#sigma}{dm_{t#bar{t}}} #left[#left(#frac{GeV}{c^{2}}#right)^{-1}#right]");
+  SetHistoStyle_TOP11013(hSigmaTruth, 2,kRed+1,1,1.2,0,20,min,max,"m_{t#bar{t}} #left[#frac{GeV}{c^{2}}#right]","#frac{1}{#sigma} #frac{d#sigma}{dm_{t#bar{t}}} #left[#left(#frac{GeV}{c^{2}}#right)^{-1}#right]");
+  SetHistoStyle_TOP11013(hSigmaTruth2, 2,kAzure,1,1.2,0,20,min,max,"m_{t#bar{t}} #left[#frac{GeV}{c^{2}}#right]","#frac{1}{#sigma} #frac{d#sigma}{dm_{t#bar{t}}} #left[#left(#frac{GeV}{c^{2}}#right)^{-1}#right]");
+  SetHistoStyle_TOP11013(hSigmaTruth3, 2,kGreen+1,1,1.2,0,20,min,max,"m_{t#bar{t}} #left[#frac{GeV}{c^{2}}#right]","#frac{1}{#sigma} #frac{d#sigma}{dm_{t#bar{t}}} #left[#left(#frac{GeV}{c^{2}}#right)^{-1}#right]");
 
-  SetHistoStyle_TOP11013(hSigmaTruthHisto, 2,kRed+1,1,1.2,0,20,min,max,"m_{t#bar{t}} #left[#frac{GeV}{c^{2}}#right]","#frac{1}{#sigma} #frac{d#sigma}{dm_{t#bar{t}}} #left[#left(#frac{GeV}{c^{2}}#right)^{-1}#right]");
+  htmp->Draw();
 
-  hSigmaTruthHisto->Draw();
-  dsigmaTruth->SetLineWidth(2);
-  dsigmaTruth->SetLineStyle(1);
-  dsigmaTruth->SetLineColor(kAzure);
-  dsigmaTruth->SetFillColor(kGray);
-  dsigmaTruth->Draw("e3");
+  // for the band
+  //TH1F* fSigmaTruth2_up = getFitHistogram(hTr2_up, "mcatnlo");
+  //TH1F* fSigmaTruth2_dw = getFitHistogram(hTr2_dw, "mcatnlo");
+  //dsigmaTruth = getGraphAsymmErrors( fSigmaTruth2, true, fSigmaTruth2_up, fSigmaTruth2_dw);
+  //dsigmaTruth->SetLineWidth(2);
+  //dsigmaTruth->SetLineStyle(1);
+  //dsigmaTruth->SetLineColor(kAzure);
+  //dsigmaTruth->SetFillColor(kGray);
+  //dsigmaTruth->Draw("e3");
 
-  hSigmaTruthHisto->Draw("same");
+  hSigmaTruth->Draw("same");
+  //fSigmaTruth->Draw("hist c same");
   fSigmaTruth->Draw("hist c same");
-  fSigmaTruth2->Draw("hist c same");
-  fSigmaTruth3->Draw("hist c same");
-
-  TGraphAsymmErrors* dsigmaDataCentered = BinCenterCorrection(dsigmaData, hSigmaTruthHisto, hSigmaTruth);
-  TGraphAsymmErrors* dsigmaDataCenteredOnlyWithStats = BinCenterCorrection(dsigmaDataOnlyWithStat, hSigmaTruthHisto, hSigmaTruth);
+  //fSigmaTruth2->Draw("hist c same");
+  //fSigmaTruth3->Draw("hist c same");
+  hSigmaTruth2->Draw("same");
+  hSigmaTruth3->Draw("same");
+ 
+  TGraphAsymmErrors* dsigmaDataCentered = BinCenterCorrection(dsigmaData, hSigmaTruth, fSigmaTruth);
+  TGraphAsymmErrors* dsigmaDataCenteredOnlyWithStats = BinCenterCorrection(dsigmaDataOnlyWithStat, hSigmaTruth, fSigmaTruth);
   dsigmaDataCentered->Draw("ZPsame");
   dsigmaDataCenteredOnlyWithStats->Draw("||");
+  //dsigmaData->Draw("ZPsame");
 
   bool isPreliminary = true;
   DrawCMSLabels(isPreliminary, 5000);
@@ -565,13 +576,15 @@ void TOP11013Plot(TH1F* h_unfold, TH1F* hgen, TH1F* accept, TH1* hTr1, TH1* hTr2
   TLegend *l= new TLegend();
   l->AddEntry(dsigmaData, "Data" ,"P");
   l->AddEntry(fSigmaTruth, "MadGraph" ,"L");
-  l->AddEntry(dsigmaTruth, "MC@NLO" ,"FL");
-  l->AddEntry(fSigmaTruth3, "POWHEG" ,"L");
+  //l->AddEntry(dsigmaTruth, "MC@NLO" ,"FL");
+  //l->AddEntry(fSigmaTruth3, "POWHEG" ,"L");
+  l->AddEntry(hSigmaTruth2, "MC@NLO" ,"L");
+  l->AddEntry(hSigmaTruth3, "POWHEG" ,"L");
   SetLegendStyle(l,true);
   l->Draw("same");
 
   //print
-  Print(c_dsigma, "Unfold_plot", hName.Data(), cName.Data(), print);
+  Print(c_dsigma, "unfoldPlot", hName.Data(), cName.Data(), print);
 }
 
 
@@ -580,9 +593,11 @@ TH1* getMeasuredCrossSection( TH1F* h_unfold, TH1F* accept, double lumi, bool no
   double syst[] = { 0, 9.35, 15.08, 17.96, 23.04, 19.02, 17.14, 17.23, 31.38};
 
   int nbins = h_unfold->GetNbinsX();
-  TH1* dsigma = (TH1F*)h_unfold->Clone("disgma");
-  dsigma->Reset();
- 
+  //TH1* dsigma = (TH1F*)h_unfold->Clone("disgma");
+  //dsigma->Reset();
+
+  TH1* dsigmaData = new TH1F("dsigmaData","dsigmaData",nX,XBins);
+   
   double totalN = 0;
   double totalS = 0;
   for(int i=1; i <=  nbins; i++){
@@ -621,8 +636,10 @@ TH1* getMeasuredCrossSection( TH1F* h_unfold, TH1F* accept, double lumi, bool no
     }
 
     double totalE = sqrt(sigmaErr*sigmaErr + sigmaSystErr*sigmaSystErr);
-    dsigma->SetBinContent(i,sigma);
-    dsigma->SetBinError(i,totalE);
+    if( i != 1){
+      dsigmaData->SetBinContent(i-1,sigma);
+      dsigmaData->SetBinError(i-1,totalE);
+    }
     if(print){
       if(name == "truth"){
         cout << "$" << bincenter-width/2 << "-" << bincenter+width/2 << "$   ~&~ "
@@ -639,14 +656,17 @@ TH1* getMeasuredCrossSection( TH1F* h_unfold, TH1F* accept, double lumi, bool no
   }
  
   if(print) cout << "========  SUMMARY : total " << name.Data() << " events= " << totalN << " /  total cross section= " << totalS << " (pb) =========" << endl; 
-  return dsigma;
+  return dsigmaData;
 
 }
 
 TH1* getTruthCrossSection(TH1F* hgen, TH1* htruth, double lumi, bool norm, bool print = false){
 
-  TH1* dsigma = (TH1F*)hgen->Clone("disgma");
-  dsigma->Reset();
+  //TH1* dsigma = (TH1F*)hgen->Clone("disgma");
+  //dsigma->Reset();
+
+  TH1* dsigmaMC = new TH1F("dsigmaMC","dsigmaMC",nX,XBins);
+
   int nbins = hgen->GetNbinsX();
   double totalN = 0;
   double totalS = 0;
@@ -668,6 +688,7 @@ TH1* getTruthCrossSection(TH1F* hgen, TH1* htruth, double lumi, bool norm, bool 
   if(print) cout << "========= Truth Cross section: sigma (fb)====================== " << endl;
   if(print) cout << "$M_{\\ttbar} ~&~  $N_{\\ttbar}^{true}$ ~&~  absolute sigma ~(fb/GeV/c^2)$ ~&~ normalized sigma ~(10^{-3}/GeV/c^2)$ \\\\ \\hline" << endl;
 
+  //starting from second bin
   for(int i=1; i <=  nbins; i++){
     double width = hgen->GetBinWidth(i);
     double bincenter = hgen->GetBinCenter(i);
@@ -688,10 +709,12 @@ TH1* getTruthCrossSection(TH1F* hgen, TH1* htruth, double lumi, bool norm, bool 
       sigmaErr = sigma*(abserr/unfolded);
     }
 
-    if(norm){
-      dsigma->SetBinContent(i, normsigma); 
-    }else{
-      dsigma->SetBinContent(i, sigma);
+    if( i != 1){
+      if(norm){
+        dsigmaMC->SetBinContent(i-1, normsigma); 
+      }else{
+        dsigmaMC->SetBinContent(i-1, sigma);
+      }  
     }
 
     if(print){
@@ -704,7 +727,7 @@ TH1* getTruthCrossSection(TH1F* hgen, TH1* htruth, double lumi, bool norm, bool 
   } 
  
   if(print) cout << "========  SUMMARY : total truth events= " << totalN << " /  total cross section= " << totalS << " $\\pm$ " << totalS*totalE << " (pb) =========" << endl;
-  return dsigma;
+  return dsigmaMC;
 }
 
 
@@ -805,15 +828,15 @@ TGraphAsymmErrors* BinCenterCorrection( TGraphAsymmErrors* data, TH1* gen_histo,
       int end = (int) highedge/gen_curve->GetBinWidth(i);
       
       bincenter = centerpoints[i-1];
-      //for(int k=start ; k<= end; k++){
-      //  double center = gen_curve->GetBinCenter(k);
-      //  double ypoint = gen_curve->GetBinContent(k);
+      for(int k=start ; k<= end; k++){
+        double center = gen_curve->GetBinCenter(k);
+        double ypoint = gen_curve->GetBinContent(k);
 
-      //  if( fabs( ypoint - ave) < proximity){
-      //    bincenter = center;
-      //    proximity = fabs(ypoint - ave);
-      //  }
-      //}
+        if( fabs( ypoint - ave) < proximity){
+          bincenter = center;
+          proximity = fabs(ypoint - ave);
+        }
+      }
     }
 
     double ErrYhigh = data->GetErrorYhigh(i-1);
@@ -936,7 +959,7 @@ TH1F * getFitHistogram(TH1* h, string model){
   else if(model=="madgraph"){
     //tail:
     fitLowEdge=440.;
-    fitHighEdge=1400.;
+    fitHighEdge=1600.;
     def="[0]*exp([1]*x)+[2]";
     a=28165.;
     b=-0.00756;
