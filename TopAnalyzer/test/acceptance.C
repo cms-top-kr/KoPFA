@@ -17,8 +17,12 @@
 #include <map>
 
 //default
-double detBins[] = {0, 345, 400, 450, 500, 550, 600, 680, 800, 1800}; // 9 bins
-double genBins[] = {0, 345, 400, 450, 500, 550, 600, 680, 800, 1800}; // 9 bins
+//double detBins[] = {0, 345, 400, 450, 500, 550, 600, 680, 800, 1800}; // 9 bins
+//double genBins[] = {0, 345, 400, 450, 500, 550, 600, 680, 800, 1800}; // 9 bins
+//new
+double detBins[] = {0, 345, 400, 470, 550, 650, 800, 1100, 1600};//8 bins
+double genBins[] = {0, 345, 400, 470, 550, 650, 800, 1100, 1600};//8 bins
+
 
 int nDet = sizeof(detBins)/sizeof(double) - 1;
 int nGen = sizeof(genBins)/sizeof(double) - 1;
@@ -40,9 +44,9 @@ void acceptance(){
   decayMode.push_back("MuEl");
 
   //MC
-  mcPath.push_back("$WORK/data/export/common/Top/ntuple/ElEl/MC/Fall11_v2/JES_Default/vallot_TTbarTuneZ2.root");
-  mcPath.push_back("$WORK/data/export/common/Top/ntuple/MuMu/MC/Fall11_v2/JES_Default/vallot_TTbarTuneZ2.root");
-  mcPath.push_back("$WORK/data/export/common/Top/ntuple/MuEl/MC/Fall11_v2/JES_Default/vallot_TTbarTuneZ2.root");
+  mcPath.push_back("$WORK/data/export/common/Top/ntuple/ElEl/MC/Fall11_v4/vallot_TTbarTuneZ2.root");
+  mcPath.push_back("$WORK/data/export/common/Top/ntuple/MuMu/MC/Fall11_v4/vallot_TTbarTuneZ2.root");
+  mcPath.push_back("$WORK/data/export/common/Top/ntuple/MuEl/MC/Fall11_v4/vallot_TTbarTuneZ2.root");
 
   //measured data distribution after final cut:version 6->take into account QCD
   //rdPath.push_back("/data/export/common/Top/finalHisto/v6/ElEl.root");
@@ -50,12 +54,12 @@ void acceptance(){
   //rdPath.push_back("/data/export/common/Top/finalHisto/v6/MuEl.root");
 
   //note for v3
-  rdPath.push_back("$WORK/data/export/common/Top/finalHisto/2011full/v2/ElEl.root");
-  rdPath.push_back("$WORK/data/export/common/Top/finalHisto/2011full/v2/MuMu.root");
-  rdPath.push_back("$WORK/data/export/common/Top/finalHisto/2011full/v2/MuEl.root");
+  rdPath.push_back("$WORK/data/export/common/Top/finalHisto/2011full/v3/ElEl.root");
+  rdPath.push_back("$WORK/data/export/common/Top/finalHisto/2011full/v3/MuMu.root");
+  rdPath.push_back("$WORK/data/export/common/Top/finalHisto/2011full/v3/MuEl.root");
 
-  const std::string cutStep = "Step_7";
-  string recon = "vsum";
+  const std::string cutStep = "Step_8";
+  string recon = "kin";
 
   TFile * fDen = new TFile("/afs/cern.ch/work/t/tjkim/store/GenHisto/topGenHisto_madgraph.root");
   TH1F* full = (TH1F*) fDen->Get("topDecayGenHisto/hMtt_Full");
