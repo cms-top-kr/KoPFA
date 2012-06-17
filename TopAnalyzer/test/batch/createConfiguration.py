@@ -346,7 +346,7 @@ mcSet = {}
 rdSet = {}
 
 mcSet['ElEl'] = [
-    'TTbarTuneZ2', 'TTbarOthers',
+    'TTbarTuneZ2', 'TTbarOthers', 'TTbarMCATNLO', 'TTbarPOWHEG',
     'SingleToptW', 'SingleTopt', 'SingleTops',
     'ZJets', 'ZJets10To50', #'DYee20to50', 'DYee10to20', 'DYmm20to50', 'DYmm10to20',
     'ZtauDecay', 'ZtauDecay10To50', #'DYtt20to50', 'DYtt10to20',
@@ -356,7 +356,7 @@ mcSet['ElEl'] = [
 ]
 
 mcSet['MuMu'] = [
-    'TTbarTuneZ2', 'TTbarOthers',
+    'TTbarTuneZ2', 'TTbarOthers', 'TTbarMCATNLO', 'TTbarPOWHEG',
     'SingleToptW', 'SingleTopt', 'SingleTops',
     'ZJets', 'ZJets10To50', #'DYee20to50', 'DYee10to20', 'DYmm20to50', 'DYmm10to20',
     'ZtauDecay', 'ZtauDecay10To50', #'DYtt20to50', 'DYtt10to20',
@@ -365,7 +365,7 @@ mcSet['MuMu'] = [
 ]
 
 mcSet['MuEl'] = [
-    'TTbarTuneZ2', 'TTbarOthers',
+    'TTbarTuneZ2', 'TTbarOthers', 'TTbarMCATNLO', 'TTbarPOWHEG',
     'SingleToptW', 'SingleTopt', 'SingleTops',
     'ZJets', 'ZJets10To50', #'DYee20to50', 'DYee10to20', 'DYmm20to50', 'DYmm10to20',
     'ZtauDecay', 'ZtauDecay10To50', #'DYtt20to50', 'DYtt10to20',
@@ -642,7 +642,7 @@ for src in mclist:
       out.write(mcsample("TTbarTuneZ2"))
     else:
       out.write(mcsample(src))
-    if src.find("TTbarTuneZ2") != -1:
+    if src.find("TTbarTuneZ2") != -1 or src.find("TTbarMCATNLO") != -1 or src.find("TTbarPOWHEG") != -1:
 		if decay in ('MuMu','ElEl','MuEl'):
 			out.write(ttbardileptonfilter())
 		if decay in ('MuJet','ElJet'):
