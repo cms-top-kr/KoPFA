@@ -46,6 +46,8 @@ def applyFilter(sample):
   if sample.find("Run") != -1:
     process.JetEnergyScale.globalTag = cms.untracked.string('GR_R_42_V23')
     process.JetEnergyScale.doResJec = cms.untracked.bool(True)
+    applyJSON(process, json )
+
   else:
     process.JetEnergyScale.globalTag = cms.untracked.string('START42_V17')
     process.JetEnergyScale.doResJec = cms.untracked.bool(False)
@@ -80,7 +82,7 @@ def processSample( sample, dir):
 
     out.write(process.dumpPython())
     out.close()
-    os.system("cmsBatch0.py 1 "+dir+'/cmg2kcms_'+sample+'_cfg.py'+" -o "+dir+"/"+sample+"/Log -r "+dir+"/"+sample+"/Res -b 'bsub -G u_CMS -q 1nh < batchScript.sh'")
+    #os.system("cmsBatch0.py 1 "+dir+'/cmg2kcms_'+sample+'_cfg.py'+" -o "+dir+"/"+sample+"/Log -r "+dir+"/"+sample+"/Res -b 'bsub -G u_CMS -q 1nh < batchScript.sh'")
 
 currdir = commands.getoutput('pwd') 
 print currdir

@@ -41,15 +41,20 @@ process.TFileService = cms.Service("TFileService",
 )
 
 #Data
-#process.load("KoPFA.CommonTools.Sources.CMG.V5_4_0.RD.Run2012.patTuple_Run2012ADoubleMu_cff")
+process.load("KoPFA.CommonTools.Sources.CMG.V5_4_0.RD.Run2012.patTuple_Run2012ADoubleMu_cff")
 #MC
-process.load("KoPFA.CommonTools.Sources.CMG.V5_4_0.MC.Summer12.patTuple_TTbarTuneZ2_cff")
+#process.load("KoPFA.CommonTools.Sources.CMG.V5_4_0.MC.Summer12.patTuple_TTbarTuneZ2_cff")
 
-runOnMC = True
+runOnMC = True 
 TTbar = True
 TTbarOthers = False
 ZJets = False
 ZtauDecay = False
+
+from CMGTools.Common.Tools.applyJSON_cff import applyJSON
+json = '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions12/8TeV/Prompt/Cert_190456-194479_8TeV_PromptReco_Collisions12_JSON.txt'
+if not runOnMC:
+    applyJSON(process, json )
 
 ##### This is only for MC ##################
 if runOnMC == True:
