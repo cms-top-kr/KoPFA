@@ -10,6 +10,14 @@ from KoPFA.TopAnalyzer.topHLTfilter_cff import *
 from KoPFA.CommonTools.EventWeightProducer_cfi import *
 from KoPFA.CommonTools.JetEnergyScale_cfi import *
 
+
+#scale up
+#JetEnergyScale.doJecUnc = True
+#JetEnergyScale.up = True
+#scale down
+#JetEnergyScale.doJecUnc = True
+#JetEnergyScale.up = False 
+
 VertexFilter = cms.EDFilter('VertexFilter',
     vertexLabel =  cms.InputTag('offlinePrimaryVertices'),
     min = cms.untracked.int32(1),
