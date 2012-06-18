@@ -23,7 +23,7 @@ def processSample(ch, sample, dir):
     os.system("rm -rf "+dir+"/"+sample)
     os.system("rfmkdir "+dir+"/"+sample)
     os.system("rfmkdir "+dir+"/"+sample+"/Res")
-    os.system("cmsBatch.py 1 "+ch+"/top"+ch+"Analyzer_"+sample+"_cfg.py -o "+dir+"/"+sample+"/Log -r "+dir+"/"+sample+"/Res -b 'bsub -q 1nh < batchScript.sh'")
+    os.system("cmsBatch0.py 1 "+ch+"/top"+ch+"Analyzer_"+sample+"_cfg.py -o "+dir+"/"+sample+"/Log -r "+dir+"/"+sample+"/Res -b 'bsub -q 1nh < batchScript.sh'")
 
 currdir = commands.getoutput('pwd') 
 print currdir
