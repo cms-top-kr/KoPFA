@@ -52,8 +52,6 @@ process.BaseSequenceMuMu = cloneProcessingSnippet(process, process.BaseSequence,
 process.BaseSequenceMuEl = cloneProcessingSnippet(process, process.BaseSequence, 'MuEl')
 process.BaseSequenceElEl = cloneProcessingSnippet(process, process.BaseSequence, 'ElEl')
 
-useGMGPAT(process)
-
 process.p = cms.Path(
     process.BaseSequenceMuMu*
     process.ZMuMu*
