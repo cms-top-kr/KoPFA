@@ -59,6 +59,10 @@ class KoElectronSelector : public edm::EDProducer
   TH2F * id2pfmva; 
   TH2F * pfMVA2patMVA_;
 
+  TH1F * h_mvaTrigV0[2];
+  TH1F * h_pfRelIso03[2];
+  TH1F * h_pfRelIso04[2];
+
   TTree *tree;
 
   //add run event data
