@@ -10,13 +10,12 @@ import os,commands
 from cmg2kcms_cfg import *
 
 input = sys.argv[1]
-decay = sys.argv[2]
 
 mclist = ["ZJets","ZtauDecay","WJetsToLNu", "WW", "WZ", "ZZ","TTbarTuneZ2","TTbarOthers"]
 mclist += ["SingleToptW","SingleTopBartW"]
 #mclist += ["ZJets10To50","ZtauDecay10To50"]
-rdlist = ["Run2012AMuMu","Run2012BMuMu"]
-#rdlist += ["Run2012AElEl","Run2012BElEl"]
+#rdlist = ["Run2012AMuMu","Run2012BMuMu"]
+rdlist = ["Run2012AElEl","Run2012BElEl"]
 #rdlist += ["Run2012AMuEl","Run2012BMuEl"]
 
 samplePath = {}
@@ -82,15 +81,15 @@ def processSample( sample, dir):
 
     out.write(process.dumpPython())
     out.close()
-    #os.system("cmsBatch0.py 1 "+dir+'/cmg2kcms_'+sample+'_cfg.py'+" -o "+dir+"/"+sample+"/Log -r "+dir+"/"+sample+"/Res -b 'bsub -G u_CMS -q 1nh < batchScript.sh'")
+    os.system("cmsBatch0.py 1 "+dir+'/cmg2kcms_'+sample+'_cfg.py'+" -o "+dir+"/"+sample+"/Log -r "+dir+"/"+sample+"/Res -b 'bsub -G u_zh -q 1nh < batchScript.sh'")
 
 currdir = commands.getoutput('pwd') 
 print currdir
 
-outdir = currdir+"/Out/"+decay
+outdir = currdir+"/Out/"
 
 #if you want to save ntuple in castor
-#outdir = "/castor/cern.ch/user/t/tjkim/ntuple/top/Out/"+decay
+#outdir = "/castor/cern.ch/user/t/tjkim/ntuple/top/Out/"
 
 #to save log information in local
 os.system("rfmkdir Out")

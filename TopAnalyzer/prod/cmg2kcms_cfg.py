@@ -22,28 +22,64 @@ process.nEventsFilter = cms.EDProducer("EventCountProducer")
 process.JetEnergyScale.globalTag = cms.untracked.string('GR_R_42_V23')
 process.JetEnergyScale.doResJec = cms.untracked.bool(True)
 
-process.p = cms.Path(
+process.BaseSequence = cms.Sequence(
+    process.nEventsPatHLT*
     process.EventFilter*
     process.nEventsFilter*
-    process.nEventsPatHLT*
     process.topWLeptonGenFilter*
     process.GenZmassFilter*
     process.PUweight*
     process.JetEnergyScale*
     process.Electrons*
-    process.Muons*
+    process.Muons
+)
+
+
+#############This is only for CMG patTuple########################
+process.Muons.muonLabel  = cms.InputTag("patMuonsWithTrigger")
+process.Electrons.usepflow = cms.untracked.bool( False )
+process.Electrons.mvacut = cms.untracked.double( 0.0 )
+process.Electrons.usemva = cms.untracked.bool( True )
+process.Electrons.electronLabel  = cms.InputTag("patElectronsWithTrigger")
+process.Electrons.eidName = cms.untracked.string("mvaTrigV0")
+process.JetEnergyScale.rhoLabel = cms.InputTag('kt6PFJets','rho')
+process.JetEnergyScale.jetLabel = cms.InputTag('selectedPatJetsCHS')
+process.JetEnergyScale.metLabel = cms.InputTag('patMETs')
+###################################################################
+
+from PhysicsTools.PatAlgos.tools.helpers import cloneProcessingSnippet
+process.BaseSequenceMuMu = cloneProcessingSnippet(process, process.BaseSequence, 'MuMu')
+process.BaseSequenceMuEl = cloneProcessingSnippet(process, process.BaseSequence, 'MuEl')
+process.BaseSequenceElEl = cloneProcessingSnippet(process, process.BaseSequence, 'ElEl')
+
+useGMGPAT(process)
+
+process.p = cms.Path(
+    process.BaseSequenceMuMu*
     process.ZMuMu*
     process.MuMu
 )
 
+process.p2 = cms.Path(
+    process.BaseSequenceMuEl*
+    process.ZMuEl*
+    process.MuEl
+)
+
+process.p3 = cms.Path(
+    process.BaseSequenceElEl*
+    process.ZElEl*
+    process.ElEl
+)
+
 process.TFileService = cms.Service("TFileService",
-    fileName = cms.string('vallot_Run2011.root')
+    fileName = cms.string('vallot.root')
 )
 
 #Data
-process.load("KoPFA.CommonTools.Sources.CMG.V5_4_0.RD.Run2012.patTuple_Run2012ADoubleMu_cff")
+#process.load("KoPFA.CommonTools.Sources.CMG.V5_4_0.RD.Run2012.patTuple_Run2012ADoubleMu_cff")
 #MC
-#process.load("KoPFA.CommonTools.Sources.CMG.V5_4_0.MC.Summer12.patTuple_TTbarTuneZ2_cff")
+process.load("KoPFA.CommonTools.Sources.CMG.V5_4_0.MC.Summer12.patTuple_TTbarTuneZ2_cff")
 
 runOnMC = True 
 TTbar = True
@@ -76,41 +112,45 @@ if runOnMC == True:
 #############################################
 
 #############This is only for CMG patTuple#######################
-process.Muons.muonLabel  = cms.InputTag("patMuonsWithTrigger")
-process.Electrons.usepflow = cms.untracked.bool( False )
-process.Electrons.mvacut = cms.untracked.double( 0.0 )
-process.Electrons.usemva = cms.untracked.bool( True )
-process.Electrons.electronLabel  = cms.InputTag("patElectronsWithTrigger")
-process.Electrons.eidName = cms.untracked.string("eidTight")
-process.JetEnergyScale.rhoLabel = cms.InputTag('kt6PFJets','rho')
-process.JetEnergyScale.jetLabel = cms.InputTag('selectedPatJetsCHS')
-process.JetEnergyScale.metLabel = cms.InputTag('patMETs')
 
-process.MuMu.metLabel =  cms.InputTag('JetEnergyScale','patMETs')
-process.MuMu.jetLabel =  cms.InputTag('JetEnergyScale','selectedPatJetsCHS')
+process.ZMuMu.muonLabel1 =  cms.InputTag('MuonsMuMu')
+process.ZMuMu.muonLabel2 =  cms.InputTag('MuonsMuMu')
+process.ZMuEl.muonLabel1 =  cms.InputTag('MuonsMuEl')
+process.ZMuEl.muonLabel2 =  cms.InputTag('ElectronsMuEl')
+process.ZElEl.muonLabel1 =  cms.InputTag('ElectronsElEl')
+process.ZElEl.muonLabel2 =  cms.InputTag('ElectronsElEl')
+
+process.MuMu.muonLabel1 =  cms.InputTag('MuonsMuMu')
+process.MuMu.muonLabel2 =  cms.InputTag('MuonsMuMu')
+process.MuMu.metLabel =  cms.InputTag('JetEnergyScaleMuMu','patMETs')
+process.MuMu.jetLabel =  cms.InputTag('JetEnergyScaleMuMu','selectedPatJetsCHS')
 process.MuMu.filters  =  cms.untracked.vstring( 
                                              'prePathCounter',
                                              'postPathCounter',
-                                             'nEventsFilter',
-                                             'nEventsPatHLT'
+                                             'nEventsFilterMuMu',
+                                             'nEventsPatHLTMuMu'
                                               )
 
-process.MuEl.metLabel =  cms.InputTag('JetEnergyScale','patMETs')
-process.MuEl.jetLabel =  cms.InputTag('JetEnergyScale','selectedPatJetsCHS')
+process.MuEl.muonLabel1 =  cms.InputTag('MuonsMuEl')
+process.MuEl.muonLabel2 =  cms.InputTag('ElectronsMuEl')
+process.MuEl.metLabel =  cms.InputTag('JetEnergyScaleMuEl','patMETs')
+process.MuEl.jetLabel =  cms.InputTag('JetEnergyScaleMuEl','selectedPatJetsCHS')
 process.MuEl.filters  =  cms.untracked.vstring(  
                                              'prePathCounter',
                                              'postPathCounter',
-                                             'nEventsFilter',
-                                             'nEventsPatHLT'
+                                             'nEventsFilterMuEl',
+                                             'nEventsPatHLTMuEl'
                                               )
 
-process.ElEl.metLabel =  cms.InputTag('JetEnergyScale','patMETs')
-process.ElEl.jetLabel =  cms.InputTag('JetEnergyScale','selectedPatJetsCHS')
+process.ElEl.muonLabel1 =  cms.InputTag('ElectronsElEl')
+process.ElEl.muonLabel2 =  cms.InputTag('ElectronsElEl')
+process.ElEl.metLabel =  cms.InputTag('JetEnergyScaleElEl','patMETs')
+process.ElEl.jetLabel =  cms.InputTag('JetEnergyScaleElEl','selectedPatJetsCHS')
 process.ElEl.filters  =  cms.untracked.vstring(  
                                              'prePathCounter',
                                              'postPathCounter',
-                                             'nEventsFilter',
-                                             'nEventsPatHLT'
+                                             'nEventsFilterElEl',
+                                             'nEventsPatHLTElEl'
                                               )
 ##################################################################
 
