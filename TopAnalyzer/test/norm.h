@@ -7,7 +7,7 @@ double X_SingletW_7TeV  = 15.74;
 
 //cross section at 8TeV
 double X_DYM50_8TeV     = 3503.71;
-double X_DYM10To50_8TeV = 11098.83; //need to be updated
+double X_DYM10To50_8TeV = 860.5; //need to be updated
 double X_TTbar_8TeV     = 225.197;
 double X_WJets_8TeV     = 36257.2;
 double X_SingletW_8TeV  = 22.2;
