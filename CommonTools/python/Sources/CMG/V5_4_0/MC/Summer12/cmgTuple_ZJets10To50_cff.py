@@ -901,3 +901,4 @@ source.fileNames.extend([
     '/store/cmst3/user/cmgtools/CMG/DYJetsToLL_M-10To50filter_8TeV-madgraph/Summer12-PU_S7_START52_V9-v1/AODSIM/V5/PAT_CMG_V5_4_0/cmgTuple_97.root',
     '/store/cmst3/user/cmgtools/CMG/DYJetsToLL_M-10To50filter_8TeV-madgraph/Summer12-PU_S7_START52_V9-v1/AODSIM/V5/PAT_CMG_V5_4_0/cmgTuple_98.root',
     '/store/cmst3/user/cmgtools/CMG/DYJetsToLL_M-10To50filter_8TeV-madgraph/Summer12-PU_S7_START52_V9-v1/AODSIM/V5/PAT_CMG_V5_4_0/cmgTuple_99.root',
+])
