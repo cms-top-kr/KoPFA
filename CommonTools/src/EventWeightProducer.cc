@@ -17,6 +17,8 @@ using namespace std;
 EventWeightProducer::EventWeightProducer(const edm::ParameterSet& cfg)
 {
   PileUpRD_ = cfg.getParameter< std::vector<double> >("PileUpRD"),
+  PileUpRDup_ = cfg.getParameter< std::vector<double> >("PileUpRDup"),
+  PileUpRDdn_ = cfg.getParameter< std::vector<double> >("PileUpRDdn"),
   PileUpMC_ = cfg.getParameter< std::vector<double> >("PileUpMC"),
 
   produces<int>("npileup");
@@ -70,8 +72,10 @@ void EventWeightProducer::produce(edm::Event& iEvent, const edm::EventSetup& es)
     win = LumiWeights_.weight( npvin );
     w = LumiWeights_.weight( npv );
     //w = LumiWeights_.weight3BX( ave_nvtx );
-    wplus  = w*PShiftUp_.ShiftWeight( npv );
-    wminus = w*PShiftDown_.ShiftWeight( npv );
+    wplus  = LumiWeightsUP_.weight( npv );
+    wminus = LumiWeightsDN_.weight( npv );
+    //wplus  = w*PShiftUp_.ShiftWeight( npv );
+    //wminus = w*PShiftDown_.ShiftWeight( npv );
 
   }
 
@@ -93,16 +97,22 @@ void
 EventWeightProducer::beginJob(){
   std::vector< float > Wlumi ;
   std::vector< float > TrueDist2011;
+  std::vector< float > TrueDist2011UP;
+  std::vector< float > TrueDist2011DN;
 
-  for( int i=0; i<50; ++i) {
+  for( int i=0; i<60; ++i) {//Summer12 60bin Fall11 50bin
     TrueDist2011.push_back((float)PileUpRD_[i]);
+    TrueDist2011UP.push_back((float)PileUpRDup_[i]);
+    TrueDist2011DN.push_back((float)PileUpRDdn_[i]);
     Wlumi.push_back((float)PileUpMC_[i]);
   }
 
   LumiWeights_ = edm::LumiReWeighting(Wlumi, TrueDist2011);
+  LumiWeightsUP_ = edm::LumiReWeighting(Wlumi, TrueDist2011UP);
+  LumiWeightsDN_ = edm::LumiReWeighting(Wlumi, TrueDist2011DN);
 
-  PShiftDown_ = reweight::PoissonMeanShifter(-0.5);
-  PShiftUp_ = reweight::PoissonMeanShifter(0.5);
+  //PShiftDown_ = reweight::PoissonMeanShifter(-0.5);
+  //PShiftUp_ = reweight::PoissonMeanShifter(0.5);
 
 }
 
