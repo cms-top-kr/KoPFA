@@ -16,10 +16,11 @@ process.MessageLogger.cerr.FwkReport.reportEvery = 10000
 process.load("KoPFA.TopAnalyzer.topAnalysis_cff")
 process.load("KoPFA.CommonTools.eventFilter_cfi")
 process.load("KoPFA.CommonTools.ZFilter_cfi")
+from KoPFA.CommonTools.PileUpWeight_cff import *
 
 process.nEventsFilter = cms.EDProducer("EventCountProducer")
 
-process.JetEnergyScale.globalTag = cms.untracked.string('GR_R_42_V23')
+process.JetEnergyScale.globalTag = cms.untracked.string('GR_R_52_V9')
 process.JetEnergyScale.doResJec = cms.untracked.bool(True)
 
 process.BaseSequence = cms.Sequence(
@@ -84,6 +85,7 @@ TTbar = True
 TTbarOthers = False
 ZJets = False
 ZtauDecay = False
+runOn2012 = True
 
 from CMGTools.Common.Tools.applyJSON_cff import applyJSON
 json = '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions12/8TeV/Prompt/Cert_190456-194479_8TeV_PromptReco_Collisions12_JSON.txt'
@@ -92,7 +94,7 @@ if not runOnMC:
 
 ##### This is only for MC ##################
 if runOnMC == True:
-  process.JetEnergyScale.globalTag = cms.untracked.string('START42_V17')
+  process.JetEnergyScale.globalTag = cms.untracked.string('START52_V11')
   process.JetEnergyScale.doResJec = cms.untracked.bool(False)
 
   if ZJets == True: 
@@ -108,6 +110,13 @@ if runOnMC == True:
     process.p.replace(process.topWLeptonGenFilter,~process.topWLeptonGenFilter)
 
 #############################################
+
+if runOn2012 == True:
+  #############2012 analysis######################################
+  process.PUweight.PileUpRD   = PileUpRD2012
+  process.PUweight.PileUpRDup = PileUpRD2012UP
+  process.PUweight.PileUpRDdn = PileUpRD2012DN
+  process.PUweight.PileUpMC   = Summer12
 
 #############This is only for CMG patTuple#######################
 
