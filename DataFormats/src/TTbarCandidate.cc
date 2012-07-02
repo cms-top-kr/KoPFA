@@ -8,97 +8,7 @@ using namespace std;
 using namespace reco;
 using namespace Ko;
 
-void TTbarCandidate::setMatchedBJets(const reco::GenJetCollection* genJets){
-
-  math::XYZTLorentzVector null(0,0,0,0);
-
-  bJets_.push_back(null);
-  bJets_.push_back(null);
-  bJets_.push_back(null);
-  bJets_.push_back(null);
-
-
-  std::map<int, vector<const reco::Candidate*> > mapJetToBHadrons;
-  std::map<int, int> mapJetToBMatched;
-  std::map<const reco::Candidate*, vector<int> > mapBHadronToJets;
-
-  std::vector<math::XYZTLorentzVector> bJets;
-
-  bool debug = false;
- 
-  if (debug ) cout << "EVENT" << endl;
-
-  int idx = 0;
-  for (reco::GenJetCollection::const_iterator genJet=genJets->begin();genJet!=genJets->end();++genJet){
-    std::vector <const GenParticle*> mcparts = genJet->getGenConstituents();
-    for (unsigned i = 0; i < mcparts.size (); i++) {
-      const GenParticle* mcpart = mcparts[i];
-      int PDG = std::abs( mcpart->pdgId());
-      bool isB = decayFromBHadron(*mcpart);
-      if(isB){
-         const reco::Candidate* lastB = lastBHadron(*mcpart);
-         vector<const reco::Candidate*>::iterator it = find ( mapJetToBHadrons[idx].begin(), mapJetToBHadrons[idx].begin(), lastB );
-         if( it == mapJetToBHadrons[idx].end() ){
-           mapJetToBHadrons[idx].push_back(lastB);
-           mapJetToBMatched[idx] = 1;
-           mapBHadronToJets[lastB].push_back( idx );
-         }
-      }
-    }
-    idx++;
-  }
-
-  for( std::map<const reco::Candidate*, vector<int> >::iterator it = mapBHadronToJets.begin() ; it != mapBHadronToJets.end(); it++){
-
-    if( (*it).second.size() > 1) {
-      if(debug){
-        cout << "---> This B hadron : " << (*it).first->pdgId() << " has " << (*it).second.size() <<  " jets matched" << endl;
-        cout << "---> Will try to identify only one jet matched with this B hadron by looking at dR" << endl;
-      }
-      const reco::Candidate* BHadron = (*it).first;
-   
-      double minDR = 999;
-      int selectedJet = -1;
-      for( std::vector<int>::iterator bjet = (*it).second.begin(); bjet != (*it).second.end(); bjet++){
-        int idx = *bjet;
-        mapJetToBMatched[idx] = 0; // set it to 0 again 
-        const reco::GenJet& bjet = genJets->at(idx);
-        double dR = deltaR( *BHadron, bjet ) ; 
-        if( dR < minDR ) { 
-          selectedJet = idx;
-          minDR = dR;
-        }
-      }
-
-      //only set it to true for only selected jet 
-      mapJetToBMatched[selectedJet] = 1;
-
-      if(debug) cout << "---> Now one jet is selected with dR " << minDR << endl;
-    }
-
-  }
-
-  for( std::map<int, vector<const reco::Candidate*> >::iterator it = mapJetToBHadrons.begin() ; it != mapJetToBHadrons.end(); it++){
-    if( (*it).second.size() > 1) cout << "!!! This jet matches with more than 1 hadron !!!" << endl;
-    int idx = (*it).first;
-    const reco::GenJet& genJet = genJets->at(idx);
-    // is It unique b-jet?  
-    if( mapJetToBMatched[idx]  == 0 ) continue;
-    bJets.push_back( genJet.p4() );
-  }
-
-  std::sort(bJets.begin(), bJets.end(), GreaterByPt<reco::Candidate::LorentzVector>());
-
-  NbJets_ = (int) bJets.size();
- 
-  for( unsigned int i = 0 ; i < bJets.size() ; i++){
-    bJets_[i] = bJets[i];
-    if( i == 3) break;
-  }
-}
-
-void TTbarCandidate::building( const reco::GenParticleCollection* genParticles  ){
-
+void TTbarCandidate::building( const reco::GenJetCollection* genJets, const reco::GenParticleCollection* genParticles  ){
 
   math::XYZTLorentzVector null(0,0,0,0); 
 
@@ -119,8 +29,10 @@ void TTbarCandidate::building( const reco::GenParticleCollection* genParticles  
   int ntop = 0;
   reco::Candidate::LorentzVector ttbarGen;
 
-  std::vector<math::XYZTLorentzVector> bquarks;
+  std::vector<math::XYZTLorentzVector> bquarksfromnotop;
   std::vector<math::XYZTLorentzVector> bquarksfromtop;
+  std::vector<math::XYZTLorentzVector> bquarks;
+  std::vector<math::XYZTLorentzVector> cquarks;
 
   for ( unsigned int ip=0; ip<nParticles; ++ip ) { 
 
@@ -134,9 +46,18 @@ void TTbarCandidate::building( const reco::GenParticleCollection* genParticles  
         if(isfromtop) {
           bquarksfromtop.push_back( p.p4() );
         }else{
-          bquarks.push_back( p.p4() );
+          bquarksfromnotop.push_back( p.p4() );
         }
+        bquarks.push_back( p.p4() );
       } 
+    }
+
+    if ( abs(p.pdgId()) == 4 ) {
+      bool isLast = isLastcharm(p);
+      if(isLast == true){
+        bool isfromtop = isFromtop(p);
+        if( isfromtop == false ) cquarks.push_back( p.p4() );
+      }
     }
 
     if ( ntop == 2 ) continue;
@@ -266,17 +187,201 @@ void TTbarCandidate::building( const reco::GenParticleCollection* genParticles  
 
   //sort b-quarks from top since the leading two quarks must be from top.
   std::sort(bquarksfromtop.begin(), bquarksfromtop.end(), GreaterByPt<reco::Candidate::LorentzVector>());
-  std::sort(bquarks.begin(), bquarks.end(), GreaterByPt<reco::Candidate::LorentzVector>());
+  std::sort(bquarksfromnotop.begin(), bquarksfromnotop.end(), GreaterByPt<reco::Candidate::LorentzVector>());
+
+  NbQuarksNoTop_ = (int) bquarksfromnotop.size();
+  NbQuarksTop_ = (int) bquarksfromtop.size();
+  NcQuarks_ = (int) cquarks.size();
 
   //inseart b-quarks from top to the b-quarks from non-top.
-  bquarks.insert( bquarks.begin(), bquarksfromtop.begin(), bquarksfromtop.end());
+  //bquarks.insert( bquarks.begin(), bquarksfromtop.begin(), bquarksfromtop.end());
 
-  NbQuarks_ = (int) bquarks.size();
+  NbQuarks_ = (int) bquarks.size(); 
 
-  for( unsigned int i = 0 ; i < bquarks.size() ; i++){
-    bquarks_[i] = bquarks[i];
-    if( i == 3) break;
+  int nbQuark20 = 0;
+  for( unsigned int i = 0 ; i < bquarksfromtop.size() ; i++){
+    if( i < 2){
+      bquarks_[i] = bquarksfromtop[i];
+    }
+    if( bquarksfromtop[i].pt() > 20 && abs(bquarksfromtop[i].eta()) < 2.5) nbQuark20++;
   }
+  for( unsigned int i = 0 ; i < bquarksfromnotop.size() ; i++){
+    if( i < 2){
+      bquarks_[i] = bquarksfromnotop[i];
+    }
+    if( bquarksfromnotop[i].pt() > 20 && abs(bquarksfromnotop[i].eta()) < 2.5) nbQuark20++;
+  }
+  NbQuarks20_ = nbQuark20;
+
+//////
+  bJets_.push_back(null);
+  bJets_.push_back(null);
+  bJets_.push_back(null);
+  bJets_.push_back(null);
+
+  std::map<int, vector<const reco::Candidate*> > mapJetToBHadrons;
+  std::map<int, int> mapJetToBMatched;
+  std::map<const reco::Candidate*, vector<int> > mapBHadronToJets;
+
+  std::vector<math::XYZTLorentzVector> bJets;
+  std::vector<math::XYZTLorentzVector> bJetsBHad;
+  std::vector<math::XYZTLorentzVector> bJetsfromnotop;
+  std::vector<math::XYZTLorentzVector> cJets;
+
+  int nJet30 = 0;
+  int nJet25 = 0;
+  int nJet20 = 0;
+  int nJet15 = 0;
+  int nJet10 = 0;
+  int idx = 0;
+
+  int nbJets15NoTop = 0;
+  int nbJets20NoTop = 0;
+  int ncJets = 0;
+  int ncJets10 = 0;
+  int ncJets15 = 0;
+  int ncJets20 = 0;
+
+  for (reco::GenJetCollection::const_iterator genJet=genJets->begin();genJet!=genJets->end();++genJet){
+    const reco::GenJet& gJet = *genJet;
+
+    double minDR = 999;
+    for(unsigned int i=0 ; i < bquarks.size() ; i++){
+      double deta = gJet.eta()-bquarks[i].eta();
+      double dphi = gJet.phi()-bquarks[i].phi();
+      double dR = sqrt( deta*deta + dphi*dphi );
+      if( dR < minDR ) minDR = dR;
+    }
+    if( minDR < 0.5 ) bJets.push_back(gJet.p4());
+
+    double minDR2b = 999;
+    for(unsigned int i=0 ; i < bquarksfromnotop.size() ; i++){
+      double deta = gJet.eta()-bquarksfromnotop[i].eta();
+      double dphi = gJet.phi()-bquarksfromnotop[i].phi();
+      double dR = sqrt( deta*deta + dphi*dphi ); 
+      if( dR < minDR2b ) minDR2b = dR;
+    }
+    if( minDR2b < 0.5 ) bJetsfromnotop.push_back(gJet.p4());
+
+    double minDR2c = 999;
+    for(unsigned int i=0 ; i < cquarks.size() ; i++){
+      double deta = gJet.eta()-cquarks[i].eta();
+      double dphi = gJet.phi()-cquarks[i].phi();
+      double dR = sqrt( deta*deta + dphi*dphi );
+      if( dR < minDR2c ) minDR2c = dR;
+    }
+    if( minDR2c < 0.5 ) cJets.push_back(gJet.p4());
+
+    if( gJet.pt() > 30 && abs(gJet.eta()) < 2.5 ) nJet30++;
+    if( gJet.pt() > 25 && abs(gJet.eta()) < 2.5 ) nJet25++;
+    if( gJet.pt() > 20 && abs(gJet.eta()) < 2.5 ) nJet20++;
+    if( gJet.pt() > 15 && abs(gJet.eta()) < 2.5 ) nJet15++;
+    if( gJet.pt() > 10 && abs(gJet.eta()) < 2.5 ) nJet10++;
+
+    std::vector <const GenParticle*> mcparts = genJet->getGenConstituents();
+    for (unsigned i = 0; i < mcparts.size (); i++) {
+      const GenParticle* mcpart = mcparts[i];
+      int PDG = std::abs( mcpart->pdgId());
+      bool isB = decayFromBHadron(*mcpart);
+      if(isB){
+         const reco::Candidate* lastB = lastBHadron(*mcpart);
+         vector<const reco::Candidate*>::iterator it = find ( mapJetToBHadrons[idx].begin(), mapJetToBHadrons[idx].begin(), lastB );
+         if( it == mapJetToBHadrons[idx].end() ){
+           mapJetToBHadrons[idx].push_back(lastB);
+           mapJetToBMatched[idx] = 1;
+           mapBHadronToJets[lastB].push_back( idx );
+         }
+      }
+    }
+    idx++;
+  }
+
+  NJets_ = (int) genJets->size();
+  NJets30_ = nJet30;
+  NJets25_ = nJet25;
+  NJets20_ = nJet20;
+  NJets15_ = nJet15;
+  NJets10_ = nJet10;
+
+  for( std::map<const reco::Candidate*, vector<int> >::iterator it = mapBHadronToJets.begin() ; it != mapBHadronToJets.end(); it++){
+
+    const reco::Candidate* BHadron = (*it).first;
+
+    if( (*it).second.size() > 1) {
+      double minDR = 999;
+      int selectedJet = -1;
+      for( std::vector<int>::iterator bjet = (*it).second.begin(); bjet != (*it).second.end(); bjet++){
+        int idx = *bjet;
+        mapJetToBMatched[idx] = 0; // set it to 0 again 
+        const reco::GenJet& bjet = genJets->at(idx);
+        double dR = deltaR( *BHadron, bjet ) ;
+        if( dR < minDR ) {
+          selectedJet = idx;
+          minDR = dR;
+        }
+      }
+      //only set it to true for only selected jet 
+      mapJetToBMatched[selectedJet] = 1;
+    }
+
+  }
+
+  for( std::map<int, vector<const reco::Candidate*> >::iterator it = mapJetToBHadrons.begin() ; it != mapJetToBHadrons.end(); it++){
+    if( (*it).second.size() > 1) cout << "!!! This jet matches with more than 1 hadron !!!" << endl;
+    int idx = (*it).first;
+    const reco::GenJet& genJet = genJets->at(idx);
+    // is It unique b-jet?  
+    if( mapJetToBMatched[idx]  == 0 ) continue;
+    bJetsBHad.push_back( genJet.p4() );
+  }
+
+  std::sort(bJetsBHad.begin(), bJetsBHad.end(), GreaterByPt<reco::Candidate::LorentzVector>());
+
+  int nbJet15BHad = 0;
+  int nbJet20BHad = 0;
+  for( unsigned int i = 0 ; i < bJets.size() ; i++){
+    if( i < 4 ){
+      bJets_[i] = bJetsBHad[i];
+    }
+    if( bJetsBHad[i].pt() > 20 && abs(bJetsBHad[i].eta()) < 2.5) nbJet20BHad++;
+    if( bJetsBHad[i].pt() > 15 && abs(bJetsBHad[i].eta()) < 2.5) nbJet15BHad++;
+  }
+
+  NbJetsBHad_ = (int) bJetsBHad.size();
+  NbJets15BHad_ = nbJet15BHad;
+  NbJets20BHad_ = nbJet20BHad;
+
+  int nbJets15 = 0;
+  int nbJets20 = 0;
+
+  for( unsigned int i = 0 ; i < bJets.size() ; i++){
+    if( bJets[i].pt() > 15 && abs(bJets[i].eta()) < 2.5) nbJets15++;
+    if( bJets[i].pt() > 20 && abs(bJets[i].eta()) < 2.5) nbJets20++;
+  }
+
+  NbJets_ = (int) bJets.size();
+  NbJets15_ = nbJets15;
+  NbJets20_ = nbJets20;
+
+  for( unsigned int i = 0 ; i < bJetsfromnotop.size() ; i++){
+    if( bJetsfromnotop[i].pt() > 15 && abs(bJetsfromnotop[i].eta()) < 2.5) nbJets15NoTop++;
+    if( bJetsfromnotop[i].pt() > 20 && abs(bJetsfromnotop[i].eta()) < 2.5) nbJets20NoTop++;
+  }
+
+  NbJetsNoTop_ = (int) bJetsfromnotop.size();
+  NbJets15NoTop_ = nbJets15NoTop;
+  NbJets20NoTop_ = nbJets20NoTop;
+
+  for( unsigned int i = 0 ; i < cJets.size() ; i++){
+    if( cJets[i].pt() > 10 && abs(cJets[i].eta()) < 2.5) ncJets10++;
+    if( cJets[i].pt() > 15 && abs(cJets[i].eta()) < 2.5) ncJets15++;
+    if( cJets[i].pt() > 20 && abs(cJets[i].eta()) < 2.5) ncJets20++;
+  }
+
+  NcJets_ = (int) cJets.size();
+  NcJets10_ = ncJets10;
+  NcJets15_ = ncJets15;
+  NcJets20_ = ncJets20;
 
 }
 
@@ -347,6 +452,21 @@ bool TTbarCandidate::isLastbottom( const reco::GenParticle& p ){
    for ( unsigned iDaughter=0; iDaughter<nDaughters; ++iDaughter ) {
      const reco::Candidate* daugh = p.daughter(iDaughter);
      if( abs(daugh->pdgId()) == 5) {
+       out = false;
+       break;
+     }
+   }
+
+   return out;
+}
+
+bool TTbarCandidate::isLastcharm( const reco::GenParticle& p ){
+   bool out = true;
+
+   unsigned int nDaughters = p.numberOfDaughters();
+   for ( unsigned iDaughter=0; iDaughter<nDaughters; ++iDaughter ) {
+     const reco::Candidate* daugh = p.daughter(iDaughter);
+     if( abs(daugh->pdgId()) == 4) {
        out = false;
        break;
      }

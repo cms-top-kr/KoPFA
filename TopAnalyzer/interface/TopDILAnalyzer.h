@@ -13,7 +13,7 @@
 //
 // Original Author:  Tae Jeong Kim,40 R-A32,+41227678602,
 //         Created:  Fri Jun  4 17:19:29 CEST 2010
-// $Id: TopDILAnalyzer.h,v 1.76 2012/06/08 13:49:24 tjkim Exp $
+// $Id: TopDILAnalyzer.h,v 1.77 2012/06/17 14:33:53 tjkim Exp $
 //
 //
 
@@ -441,15 +441,19 @@ class TopDILAnalyzer : public edm::EDFilter {
 
       const reco::GenParticleCollection* myGenParticles = 0;
       myGenParticles = &(*genParticles_);
-      ttbarGenLevel.building(myGenParticles);
+      if(genJets_.isValid()){
+        const reco::GenJetCollection* myGenJets = 0;
+        myGenJets = &(*genJets_);
+        ttbarGenLevel.building(myGenJets, myGenParticles);
+      }
       genttbarM = ttbarGenLevel.mass();
     }
 
-    if(genJets_.isValid()){
-      const reco::GenJetCollection* myGenJets = 0;
-      myGenJets = &(*genJets_);
-      ttbarGenLevel.setMatchedBJets(myGenJets);
-    }
+    //if(genJets_.isValid()){
+    //  const reco::GenJetCollection* myGenJets = 0;
+    //  myGenJets = &(*genJets_);
+    //  ttbarGenLevel.setMatchedBJets(myGenJets);
+    //}
 
     ttbarGen->push_back(ttbarGenLevel);
 
@@ -460,18 +464,16 @@ class TopDILAnalyzer : public edm::EDFilter {
     if ( accept )
     {
       cutStepBit[0] = (ZMass > 12);
+      cutStepBit[1] = (relIso1 < relIso1_ && relIso2 < relIso2_); 
       cutStepBit[2] = (PairSign < 0);
       cutStepBit[4] = (jetspt30->size() >= 2);
       if ( mode == 1 or mode == 2 )
       {
-        cutStepBit[1] = (relIso1 < 0.20 && relIso2 < 0.17 );
         cutStepBit[3] = true;
         cutStepBit[5] = true;
       }
       else
       {
-        if ( mode == 0 ) cutStepBit[1] = (relIso1 < 0.17 && relIso2 < 0.17);
-        else if ( mode == 3 ) cutStepBit[1] = (relIso1 < 0.20 && relIso2 < 0.17 );
         cutStepBit[3] = abs(ZMass - 91.2) > 15;
         cutStepBit[5] = MET > 30;
       }

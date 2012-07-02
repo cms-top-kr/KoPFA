@@ -12,6 +12,7 @@
 #include "FWCore/Utilities/interface/InputTag.h"
 #include "DataFormats/HepMCCandidate/interface/GenParticleFwd.h"
 #include "DataFormats/HepMCCandidate/interface/GenParticle.h"
+#include "KoPFA/DataFormats/interface/TTbarCandidate.h"
 
 #include "TTree.h"
 #include "TFile.h"
@@ -49,6 +50,55 @@ private:
   TH1F* b_from_nontop_motherid;
   TH1F* b_from_nontop_status;
 
+  TH1F* b_multiplicity;
+
+  TH1F* h_multiplicity_bQuarks;
+  TH1F* h_multiplicity_bGenJets;
+
+  TH1F* h_multiplicity_bQuarks20;
+  TH1F* h_multiplicity_bQuarks20DILVIS;
+  TH1F* h_multiplicity_bQuarks20DILVISTTBB;
+
+  TH1F* h_multiplicity_bGenJets20;
+  TH1F* h_multiplicity_bGenJets20DILVIS;
+  TH1F* h_multiplicity_bGenJets20DILVISTTBB;
+
+  TH1F* h_multiplicity_GenJets;
+  TH1F* h_multiplicity_GenJets10;
+  TH1F* h_multiplicity_GenJets15;
+  TH1F* h_multiplicity_GenJets20;
+  TH1F* h_multiplicity_GenJets25;
+  TH1F* h_multiplicity_GenJets30;
+
+  TH1F* h_multiplicity_GenJetsDIL;
+  TH1F* h_multiplicity_GenJets10DIL;
+  TH1F* h_multiplicity_GenJets15DIL;
+  TH1F* h_multiplicity_GenJets20DIL;
+  TH1F* h_multiplicity_GenJets25DIL;
+  TH1F* h_multiplicity_GenJets30DIL;
+
+  TH1F* h_multiplicity_GenJetsDILVIS;
+  TH1F* h_multiplicity_GenJets10DILVIS;
+  TH1F* h_multiplicity_GenJets15DILVIS;
+  TH1F* h_multiplicity_GenJets20DILVIS;
+  TH1F* h_multiplicity_GenJets25DILVIS;
+  TH1F* h_multiplicity_GenJets30DILVIS;
+
+  TH1F* h_multiplicity_GenJetsDILVISTTBB;
+  TH1F* h_multiplicity_GenJets10DILVISTTBB;
+  TH1F* h_multiplicity_GenJets15DILVISTTBB;
+  TH1F* h_multiplicity_GenJets20DILVISTTBB;
+  TH1F* h_multiplicity_GenJets25DILVISTTBB;
+  TH1F* h_multiplicity_GenJets30DILVISTTBB;
+
+  TH1F* h_multiplicity_GenJetsDILVISTTCC;
+  TH1F* h_multiplicity_GenJets10DILVISTTCC;
+  TH1F* h_multiplicity_GenJets15DILVISTTCC;
+  TH1F* h_multiplicity_GenJets20DILVISTTCC;
+  TH1F* h_multiplicity_GenJets25DILVISTTCC;
+  TH1F* h_multiplicity_GenJets30DILVISTTCC;
+
+
 };
 
 TTbar2bGenFilter::TTbar2bGenFilter(const edm::ParameterSet& pset)
@@ -67,6 +117,54 @@ TTbar2bGenFilter::TTbar2bGenFilter(const edm::ParameterSet& pset)
   b_from_nontop_motherid  = fs->make<TH1F>( "b_from_nontop_motherid"  , "Mother PdgId", 3000,  0, 3000 );
   b_from_nontop_status  = fs->make<TH1F>( "b_from_nontop_status"  , "status", 10,  0, 10 );
 
+  b_multiplicity  = fs->make<TH1F>( "b_multiplicity"  , "Multiplicity", 10,  0, 10 );
+  
+  h_multiplicity_bQuarks  = fs->make<TH1F>( "h_multiplicity_bQuarks"  , "Multiplicity", 10,  0, 10 );
+  h_multiplicity_bGenJets  = fs->make<TH1F>( "h_multiplicity_bGenJets"  , "Multiplicity", 10,  0, 10 );
+
+  h_multiplicity_bQuarks20  = fs->make<TH1F>( "h_multiplicity_bQuarks20"  , "Multiplicity", 10,  0, 10 );
+  h_multiplicity_bQuarks20DILVIS  = fs->make<TH1F>( "h_multiplicity_bQuarks20DILVIS"  , "Multiplicity", 10,  0, 10 );
+  h_multiplicity_bQuarks20DILVISTTBB  = fs->make<TH1F>( "h_multiplicity_bQuarks20DILVISTTBB"  , "Multiplicity", 10,  0, 10 );
+
+  h_multiplicity_bGenJets20  = fs->make<TH1F>( "h_multiplicity_bGenJets20"  , "Multiplicity", 10,  0, 10 );
+  h_multiplicity_bGenJets20DILVIS  = fs->make<TH1F>( "h_multiplicity_bGenJets20DILVIS"  , "Multiplicity", 10,  0, 10 );
+  h_multiplicity_bGenJets20DILVISTTBB  = fs->make<TH1F>( "h_multiplicity_bGenJets20DILVISTTBB"  , "Multiplicity", 10,  0, 10 );
+
+  h_multiplicity_GenJets  = fs->make<TH1F>( "h_multiplicity_GenJets"  , "Multiplicity", 30,  0, 30 );
+  h_multiplicity_GenJets10  = fs->make<TH1F>( "h_multiplicity_GenJets10"  , "Multiplicity", 12,  0, 12 );
+  h_multiplicity_GenJets15  = fs->make<TH1F>( "h_multiplicity_GenJets15"  , "Multiplicity", 12,  0, 12 );
+  h_multiplicity_GenJets20  = fs->make<TH1F>( "h_multiplicity_GenJets20"  , "Multiplicity", 12,  0, 12 );
+  h_multiplicity_GenJets25  = fs->make<TH1F>( "h_multiplicity_GenJets25"  , "Multiplicity", 12,  0, 12 );
+  h_multiplicity_GenJets30  = fs->make<TH1F>( "h_multiplicity_GenJets30"  , "Multiplicity", 12,  0, 12 );
+  
+  h_multiplicity_GenJetsDIL  = fs->make<TH1F>( "h_multiplicity_GenJetsDIL"  , "Multiplicity", 30,  0, 30 );
+  h_multiplicity_GenJets10DIL  = fs->make<TH1F>( "h_multiplicity_GenJets10DIL"  , "Multiplicity", 12,  0, 12 );
+  h_multiplicity_GenJets15DIL  = fs->make<TH1F>( "h_multiplicity_GenJets15DIL"  , "Multiplicity", 12,  0, 12 );
+  h_multiplicity_GenJets20DIL  = fs->make<TH1F>( "h_multiplicity_GenJets20DIL"  , "Multiplicity", 12,  0, 12 );
+  h_multiplicity_GenJets25DIL  = fs->make<TH1F>( "h_multiplicity_GenJets25DIL"  , "Multiplicity", 12,  0, 12 );
+  h_multiplicity_GenJets30DIL  = fs->make<TH1F>( "h_multiplicity_GenJets30DIL"  , "Multiplicity", 12,  0, 12 );
+
+  h_multiplicity_GenJetsDILVIS  = fs->make<TH1F>( "h_multiplicity_GenJetsDILVIS"  , "Multiplicity", 30,  0, 30 );
+  h_multiplicity_GenJets10DILVIS  = fs->make<TH1F>( "h_multiplicity_GenJets10DILVIS"  , "Multiplicity", 12,  0, 12 );
+  h_multiplicity_GenJets15DILVIS  = fs->make<TH1F>( "h_multiplicity_GenJets15DILVIS"  , "Multiplicity", 12,  0, 12 );
+  h_multiplicity_GenJets20DILVIS  = fs->make<TH1F>( "h_multiplicity_GenJets20DILVIS"  , "Multiplicity", 12,  0, 12 );
+  h_multiplicity_GenJets25DILVIS  = fs->make<TH1F>( "h_multiplicity_GenJets25DILVIS"  , "Multiplicity", 12,  0, 12 );
+  h_multiplicity_GenJets30DILVIS  = fs->make<TH1F>( "h_multiplicity_GenJets30DILVIS"  , "Multiplicity", 12,  0, 12 );
+
+  h_multiplicity_GenJetsDILVISTTBB  = fs->make<TH1F>( "h_multiplicity_GenJetsDILVISTTBB"  , "Multiplicity", 30,  0, 30 );
+  h_multiplicity_GenJets10DILVISTTBB  = fs->make<TH1F>( "h_multiplicity_GenJets10DILVISTTBB"  , "Multiplicity", 12,  0, 12 );
+  h_multiplicity_GenJets15DILVISTTBB  = fs->make<TH1F>( "h_multiplicity_GenJets15DILVISTTBB"  , "Multiplicity", 12,  0, 12 );
+  h_multiplicity_GenJets20DILVISTTBB  = fs->make<TH1F>( "h_multiplicity_GenJets20DILVISTTBB"  , "Multiplicity", 12,  0, 12 );
+  h_multiplicity_GenJets25DILVISTTBB  = fs->make<TH1F>( "h_multiplicity_GenJets25DILVISTTBB"  , "Multiplicity", 12,  0, 12 );
+  h_multiplicity_GenJets30DILVISTTBB  = fs->make<TH1F>( "h_multiplicity_GenJets30DILVISTTBB"  , "Multiplicity", 12,  0, 12 );
+
+  h_multiplicity_GenJetsDILVISTTCC  = fs->make<TH1F>( "h_multiplicity_GenJetsDILVISTTCC"  , "Multiplicity", 30,  0, 30 );
+  h_multiplicity_GenJets10DILVISTTCC  = fs->make<TH1F>( "h_multiplicity_GenJets10DILVISTTCC"  , "Multiplicity", 12,  0, 12 );
+  h_multiplicity_GenJets15DILVISTTCC  = fs->make<TH1F>( "h_multiplicity_GenJets15DILVISTTCC"  , "Multiplicity", 12,  0, 12 );
+  h_multiplicity_GenJets20DILVISTTCC  = fs->make<TH1F>( "h_multiplicity_GenJets20DILVISTTCC"  , "Multiplicity", 12,  0, 12 );
+  h_multiplicity_GenJets25DILVISTTCC  = fs->make<TH1F>( "h_multiplicity_GenJets25DILVISTTCC"  , "Multiplicity", 12,  0, 12 );
+  h_multiplicity_GenJets30DILVISTTCC  = fs->make<TH1F>( "h_multiplicity_GenJets30DILVISTTCC"  , "Multiplicity", 12,  0, 12 );
+
 }
 
 bool TTbar2bGenFilter::filter(edm::Event& iEvent, const edm::EventSetup& eventSetup)
@@ -84,6 +182,10 @@ bool TTbar2bGenFilter::filter(edm::Event& iEvent, const edm::EventSetup& eventSe
   using namespace reco;
   debug = "";
   debug += "---------EVENT start---------\n" ;
+
+  edm::Handle<reco::GenJetCollection> genJets_;
+  iEvent.getByLabel("ak5GenJets",genJets_);
+
   const reco::GenParticleCollection* myGenParticles = 0;
 
   Handle<reco::GenParticleCollection> genEvt;
@@ -95,6 +197,7 @@ bool TTbar2bGenFilter::filter(edm::Event& iEvent, const edm::EventSetup& eventSe
 
   int nb_from_top = 0;
   int nb_from_nontop = 0;
+  int nb = 0;
 
   for ( unsigned int ip=0; ip<nParticles; ++ip ) { 
 
@@ -122,6 +225,144 @@ bool TTbar2bGenFilter::filter(edm::Event& iEvent, const edm::EventSetup& eventSe
       b_from_top_pt->Fill(p.pt());
       nb_from_top++  ;
     }
+
+    nb++;
+  }
+
+  b_multiplicity->Fill(nb);
+
+
+  //gen information
+  Ko::TTbarCandidate ttbarGenLevel;
+
+  if(genJets_.isValid()){
+    const reco::GenJetCollection* myGenJets = 0;
+    myGenJets = &(*genJets_);
+
+    ttbarGenLevel.building(myGenJets, myGenParticles);
+
+    int nGenJet = 0;
+    int nGenJet10 = 0;
+    int nGenJet15 = 0;
+    int nGenJet20 = 0;
+    int nGenJet25 = 0;
+    int nGenJet30 = 0;
+
+    int nGenJetDIL = 0;
+    int nGenJet10DIL = 0;
+    int nGenJet15DIL = 0;
+    int nGenJet20DIL = 0;
+    int nGenJet25DIL = 0;
+    int nGenJet30DIL = 0;
+
+    int nGenJetDILVIS = 0;
+    int nGenJet10DILVIS = 0;
+    int nGenJet15DILVIS = 0;
+    int nGenJet20DILVIS = 0;
+    int nGenJet25DILVIS = 0;
+    int nGenJet30DILVIS = 0;
+
+    int nGenJetDILVISTTBB = 0;
+    int nGenJet10DILVISTTBB = 0;
+    int nGenJet15DILVISTTBB = 0;
+    int nGenJet20DILVISTTBB = 0;
+    int nGenJet25DILVISTTBB = 0;
+    int nGenJet30DILVISTTBB = 0;
+
+    bool dil = ttbarGenLevel.diLeptonic(1) == 1 ;
+    bool vis = ttbarGenLevel.lepton1().pt() > 20 && abs(ttbarGenLevel.lepton1().eta()) < 2.4 && ttbarGenLevel.lepton2().pt() > 20 && abs(ttbarGenLevel.lepton2().eta()) < 2.4 ;
+    bool ttbb = ttbarGenLevel.NbJets15NoTop() >= 2;
+    bool ttcc = ttbarGenLevel.NcJets15() >= 2;
+
+    h_multiplicity_bQuarks->Fill( ttbarGenLevel.NbQuarks() ) ;
+    h_multiplicity_bQuarks20->Fill( ttbarGenLevel.NbQuarks20() ) ;
+    if( dil + vis ) h_multiplicity_bQuarks20DILVIS->Fill( ttbarGenLevel.NbQuarks20() );
+    if( dil + vis && ttbb) h_multiplicity_bQuarks20DILVISTTBB->Fill( ttbarGenLevel.NbQuarks20() );
+    h_multiplicity_bGenJets->Fill( ttbarGenLevel.NbJets() );
+    h_multiplicity_bGenJets20->Fill( ttbarGenLevel.NbJets20() );
+    if( dil + vis ) h_multiplicity_bGenJets20DILVIS->Fill( ttbarGenLevel.NbJets20() );
+    if( dil + vis && ttbb ) h_multiplicity_bGenJets20DILVISTTBB->Fill( ttbarGenLevel.NbJets20() );
+
+
+/*
+    for ( size_t i = 0;  i < genJets_->size() ; i++ ){
+      const reco::GenJet& genJet = genJets_->at(i);
+  
+      nGenJet++;
+      if(dil) nGenJetDIL++;
+      if(dil && vis) nGenJetDILVIS++;
+      if(dil && vis && ttbb) nGenJetDILVISTTBB++;
+       
+      if( genJet.pt() > 10 && abs(genJet.eta()) < 2.5 ) nGenJet10++ ;
+      if( genJet.pt() > 15 && abs(genJet.eta()) < 2.5 ) nGenJet15++ ;
+      if( genJet.pt() > 20 && abs(genJet.eta()) < 2.5 ) nGenJet20++ ;
+      if( genJet.pt() > 25 && abs(genJet.eta()) < 2.5 ) nGenJet25++ ;
+      if( genJet.pt() > 30 && abs(genJet.eta()) < 2.5 ) nGenJet30++ ;
+
+      if( genJet.pt() > 10 && abs(genJet.eta()) < 2.5 && dil ) nGenJet10DIL++ ;
+      if( genJet.pt() > 15 && abs(genJet.eta()) < 2.5 && dil ) nGenJet15DIL++ ;
+      if( genJet.pt() > 20 && abs(genJet.eta()) < 2.5 && dil ) nGenJet20DIL++ ;
+      if( genJet.pt() > 25 && abs(genJet.eta()) < 2.5 && dil ) nGenJet25DIL++ ;
+      if( genJet.pt() > 30 && abs(genJet.eta()) < 2.5 && dil ) nGenJet30DIL++ ;
+   
+      if( genJet.pt() > 10 && abs(genJet.eta()) < 2.5 && dil && vis ) nGenJet10DILVIS++ ;
+      if( genJet.pt() > 15 && abs(genJet.eta()) < 2.5 && dil && vis ) nGenJet15DILVIS++ ;
+      if( genJet.pt() > 20 && abs(genJet.eta()) < 2.5 && dil && vis ) nGenJet20DILVIS++ ;
+      if( genJet.pt() > 25 && abs(genJet.eta()) < 2.5 && dil && vis ) nGenJet25DILVIS++ ;
+      if( genJet.pt() > 30 && abs(genJet.eta()) < 2.5 && dil && vis ) nGenJet30DILVIS++ ;
+
+      if( genJet.pt() > 10 && abs(genJet.eta()) < 2.5 && dil && vis && ttbb) nGenJet10DILVISTTBB++ ;
+      if( genJet.pt() > 15 && abs(genJet.eta()) < 2.5 && dil && vis && ttbb) nGenJet15DILVISTTBB++ ;
+      if( genJet.pt() > 20 && abs(genJet.eta()) < 2.5 && dil && vis && ttbb) nGenJet20DILVISTTBB++ ;
+      if( genJet.pt() > 25 && abs(genJet.eta()) < 2.5 && dil && vis && ttbb) nGenJet25DILVISTTBB++ ;
+      if( genJet.pt() > 30 && abs(genJet.eta()) < 2.5 && dil && vis && ttbb) nGenJet30DILVISTTBB++ ;
+
+    }
+*/
+
+    h_multiplicity_GenJets->Fill( ttbarGenLevel.NJets() );
+    h_multiplicity_GenJets10->Fill( ttbarGenLevel.NJets10() );
+    h_multiplicity_GenJets15->Fill( ttbarGenLevel.NJets15() );
+    h_multiplicity_GenJets20->Fill( ttbarGenLevel.NJets20() );
+    h_multiplicity_GenJets25->Fill( ttbarGenLevel.NJets25() );
+    h_multiplicity_GenJets30->Fill( ttbarGenLevel.NJets30() );
+
+    if( dil ){
+      h_multiplicity_GenJetsDIL->Fill( ttbarGenLevel.NJets() );
+      h_multiplicity_GenJets10DIL->Fill( ttbarGenLevel.NJets10() );
+      h_multiplicity_GenJets15DIL->Fill( ttbarGenLevel.NJets15() );
+      h_multiplicity_GenJets20DIL->Fill( ttbarGenLevel.NJets20() );
+      h_multiplicity_GenJets25DIL->Fill( ttbarGenLevel.NJets25() );
+      h_multiplicity_GenJets30DIL->Fill( ttbarGenLevel.NJets30() );
+    }
+
+   if( dil && vis ){
+      h_multiplicity_GenJetsDILVIS->Fill( ttbarGenLevel.NJets() );
+      h_multiplicity_GenJets10DILVIS->Fill( ttbarGenLevel.NJets10() );
+      h_multiplicity_GenJets15DILVIS->Fill( ttbarGenLevel.NJets15() );
+      h_multiplicity_GenJets20DILVIS->Fill( ttbarGenLevel.NJets20() );
+      h_multiplicity_GenJets25DILVIS->Fill( ttbarGenLevel.NJets25() );
+      h_multiplicity_GenJets30DILVIS->Fill( ttbarGenLevel.NJets30() );
+    }
+
+    if( dil && vis && ttbb ){
+      h_multiplicity_GenJetsDILVISTTBB->Fill( ttbarGenLevel.NJets() );
+      h_multiplicity_GenJets10DILVISTTBB->Fill( ttbarGenLevel.NJets10() );
+      h_multiplicity_GenJets15DILVISTTBB->Fill( ttbarGenLevel.NJets15() );
+      h_multiplicity_GenJets20DILVISTTBB->Fill( ttbarGenLevel.NJets20() );
+      h_multiplicity_GenJets25DILVISTTBB->Fill( ttbarGenLevel.NJets25() );
+      h_multiplicity_GenJets30DILVISTTBB->Fill( ttbarGenLevel.NJets30() );
+    }
+
+    if( dil && vis && ttcc ){
+      h_multiplicity_GenJetsDILVISTTCC->Fill( ttbarGenLevel.NJets() );
+      h_multiplicity_GenJets10DILVISTTCC->Fill( ttbarGenLevel.NJets10() );
+      h_multiplicity_GenJets15DILVISTTCC->Fill( ttbarGenLevel.NJets15() );
+      h_multiplicity_GenJets20DILVISTTCC->Fill( ttbarGenLevel.NJets20() );
+      h_multiplicity_GenJets25DILVISTTCC->Fill( ttbarGenLevel.NJets25() );
+      h_multiplicity_GenJets30DILVISTTCC->Fill( ttbarGenLevel.NJets30() );
+    }
+
   }
 
   if( nb_from_top <=2 && nb_from_nontop <=0){
