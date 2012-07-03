@@ -13,7 +13,7 @@
 //
 // Original Author:  Tae Jeong Kim,40 R-A32,+41227678602,
 //         Created:  Fri Jun  4 17:19:29 CEST 2010
-// $Id: TopDILAnalyzer.h,v 1.78 2012/07/02 15:43:25 tjkim Exp $
+// $Id: TopDILAnalyzer.h,v 1.79 2012/07/03 14:55:47 tjkim Exp $
 //
 //
 
@@ -92,10 +92,10 @@ class TopDILAnalyzer : public edm::EDFilter {
     genJetsLabel_= iConfig.getParameter<edm::InputTag>("genJetsLabel");
     vertexLabel_ =  iConfig.getUntrackedParameter<edm::InputTag>("vertexLabel");
     metStudy_ = iConfig.getUntrackedParameter<bool>("metStudy",false);
-    puWeightLabel_ = iConfig.getUntrackedParameter<edm::InputTag>("puWeightLabel");
-    puUpWeightLabel_ = iConfig.getUntrackedParameter<edm::InputTag>("puUpWeightLabel");
-    puDwWeightLabel_ = iConfig.getUntrackedParameter<edm::InputTag>("puDwWeightLabel");
-    puNVertexLabel_ = iConfig.getUntrackedParameter<edm::InputTag>("puNVertexLabel");
+    puWeightLabel_ = iConfig.getParameter<edm::InputTag>("puWeightLabel");
+    puUpWeightLabel_ = iConfig.getParameter<edm::InputTag>("puUpWeightLabel");
+    puDwWeightLabel_ = iConfig.getParameter<edm::InputTag>("puDwWeightLabel");
+    puNVertexLabel_ = iConfig.getParameter<edm::InputTag>("puNVertexLabel");
     useEventCounter_ = iConfig.getParameter<bool>("useEventCounter");
     filters_ = iConfig.getUntrackedParameter<std::vector<std::string> >("filters");
     relIso1_ = iConfig.getUntrackedParameter<double>("relIso1");
@@ -131,8 +131,6 @@ class TopDILAnalyzer : public edm::EDFilter {
       }
     }
    
-    cout << " i= 2 " << " algo= " << bTagAlgos_[2] << " name= " << bTagNames_[2] << " cut= " << bTagCutValues_[2] << endl;
- 
     edm::Service<TFileService> fs;
     tree = fs->make<TTree>("tree", "Tree for Top quark study");
     tmp = fs->make<TH1F>("EventSummary","EventSummary",filters_.size(),0,filters_.size());
@@ -552,7 +550,6 @@ class TopDILAnalyzer : public edm::EDFilter {
         h_[cutStep].hNEvents->Fill(1);
 
         h_[cutStep].hgenttbarM->Fill(genttbarM);
-
         h_[cutStep].hnpileup->Fill(npileup);
         h_[cutStep].hnvertex->Fill(nvertex);
         h_[cutStep].hNLepton1->Fill(muons1_->size());
