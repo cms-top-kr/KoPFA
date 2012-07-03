@@ -13,7 +13,7 @@
 //
 // Original Author:  Tae Jeong Kim,40 R-A32,+41227678602,
 //         Created:  Fri Jun  4 17:19:29 CEST 2010
-// $Id: TopDILAnalyzer.h,v 1.77 2012/06/17 14:33:53 tjkim Exp $
+// $Id: TopDILAnalyzer.h,v 1.78 2012/07/02 15:43:25 tjkim Exp $
 //
 //
 
@@ -66,6 +66,7 @@
 #include "TH1.h"
 #include "TLorentzVector.h"
 
+#include "KoPFA/TopAnalyzer/interface/BTagWeight.h"
 #include "AnalysisDataFormats/TopObjects/interface/TtFullLeptonicEvent.h"
 #include "KoPFA/TopAnalyzer/interface/Histograms.h"
 
@@ -91,6 +92,10 @@ class TopDILAnalyzer : public edm::EDFilter {
     genJetsLabel_= iConfig.getParameter<edm::InputTag>("genJetsLabel");
     vertexLabel_ =  iConfig.getUntrackedParameter<edm::InputTag>("vertexLabel");
     metStudy_ = iConfig.getUntrackedParameter<bool>("metStudy",false);
+    puWeightLabel_ = iConfig.getUntrackedParameter<edm::InputTag>("puWeightLabel");
+    puUpWeightLabel_ = iConfig.getUntrackedParameter<edm::InputTag>("puUpWeightLabel");
+    puDwWeightLabel_ = iConfig.getUntrackedParameter<edm::InputTag>("puDwWeightLabel");
+    puNVertexLabel_ = iConfig.getUntrackedParameter<edm::InputTag>("puNVertexLabel");
     useEventCounter_ = iConfig.getParameter<bool>("useEventCounter");
     filters_ = iConfig.getUntrackedParameter<std::vector<std::string> >("filters");
     relIso1_ = iConfig.getUntrackedParameter<double>("relIso1");
@@ -113,18 +118,21 @@ class TopDILAnalyzer : public edm::EDFilter {
         bTagNames_.push_back(name);
         bTagCutValues_.push_back(cutValue);
         bTagIsCutMin_.push_back(isCutMin);
-        nbjetsCache_.push_back(-999);
-        nbjets20Cache_.push_back(-999);
+        nbjets30_.push_back(-999);
+        nbjets20_.push_back(-999);
       }
       else
       {
+        cout << "what is this?" << endl;
         const int index = foundBtagName - bTagNames_.begin();
         bTagAlgos_[index] = algo;
         bTagCutValues_[index] = cutValue;
         bTagIsCutMin_[index] = isCutMin;
       }
     }
-    
+   
+    cout << " i= 2 " << " algo= " << bTagAlgos_[2] << " name= " << bTagNames_[2] << " cut= " << bTagCutValues_[2] << endl;
+ 
     edm::Service<TFileService> fs;
     tree = fs->make<TTree>("tree", "Tree for Top quark study");
     tmp = fs->make<TH1F>("EventSummary","EventSummary",filters_.size(),0,filters_.size());
@@ -138,10 +146,10 @@ class TopDILAnalyzer : public edm::EDFilter {
     met = new std::vector<math::XYZTLorentzVector>();
     jetspt30 = new std::vector<math::XYZTLorentzVector>();
     jetspt20 = new std::vector<math::XYZTLorentzVector>();
-    //jetspt30flavour = new std::vector<int>();
-    //jetspt30bDiscriminator = new std::vector<double>();
-    //jetspt20flavour = new std::vector<int>();
-    //jetspt20bDiscriminator = new std::vector<double>();
+    jetspt30flavor = new std::vector<int>();
+    jetspt30bDiscriminator = new std::vector<double>();
+    jetspt20flavor = new std::vector<int>();
+    jetspt20bDiscriminator = new std::vector<double>();
 
     nCutStep_ = 7;
     for ( int i = 0; i<nCutStep_; ++i )
@@ -169,10 +177,13 @@ class TopDILAnalyzer : public edm::EDFilter {
     tree->Branch("LUMI",&LUMI,"LUMI/i");
     tree->Branch("npileup",&npileup,"npileup/i");
     tree->Branch("nvertex",&nvertex,"nvertex/i");
-    tree->Branch("weightin",&weightin, "weightin/d");
-    tree->Branch("weight",&weight, "weight/d");
-    tree->Branch("weightplus",&weightplus, "weightplus/d");
-    tree->Branch("weightminus",&weightminus, "weightminus/d");
+
+    tree->Branch("puweight",&puweight, "puweight/d");
+    tree->Branch("puweightplus",&puweightplus, "puweightplus/d");
+    tree->Branch("puweightminus",&puweightminus, "puweightminus/d");
+
+    tree->Branch("bweight20CSVM",&bweight20CSVM, "bweight20CSVM/d");
+    tree->Branch("bweight30CSVM",&bweight30CSVM, "bweight30CSVM/d");
 
     tree->Branch("ZMass",&ZMass,"ZMass/d");
     tree->Branch("genZMass",&genZMass,"ZMass/d");
@@ -188,27 +199,25 @@ class TopDILAnalyzer : public edm::EDFilter {
     tree->Branch("phi1",&phi1,"phi1/d");
     tree->Branch("phi2",&phi2,"phi2/d");
 
-    //tree->Branch("Z","std::vector<Ko::ZCandidate>", &Z);
-    //tree->Branch("lepton1","std::vector<Ko::Lepton>", &lepton1);
-    //tree->Branch("lepton2","std::vector<Ko::Lepton>", &lepton2);
-    //tree->Branch("pfMet","std::vector<Ko::METCandidate>", &pfMet);
+    tree->Branch("pfMet","std::vector<Ko::METCandidate>", &pfMet);
+    //tree->Branch("met","std::vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >", &met);
+
     tree->Branch("ttbar","std::vector<Ko::TTbarMass>", &ttbar);
     tree->Branch("ttbarGen","std::vector<Ko::TTbarCandidate>", &ttbarGen);
     tree->Branch("kinttbarM",&kinttbarM,"kinttbarM/d");
 
-    //tree->Branch("met","std::vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >", &met);
     tree->Branch("jetspt30","std::vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >", &jetspt30);
     tree->Branch("jetspt20","std::vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >", &jetspt20);
-    //tree->Branch("jetspt30flavour","std::vector<int>", &jetspt30flavour);
-    //tree->Branch("jetspt30bDiscriminator","std::vector<double>", &jetspt30bDiscriminator);
-    //tree->Branch("jetspt20flavour","std::vector<int>", &jetspt20flavour);
-    //tree->Branch("jetspt20bDiscriminator","std::vector<double>", &jetspt20bDiscriminator);
+    tree->Branch("jetspt30flavor","std::vector<int>", &jetspt30flavor);
+    tree->Branch("jetspt30bDiscriminator","std::vector<double>", &jetspt30bDiscriminator);
+    tree->Branch("jetspt20flavor","std::vector<int>", &jetspt20flavor);
+    tree->Branch("jetspt20bDiscriminator","std::vector<double>", &jetspt20bDiscriminator);
 	
     for ( int i=0, n=bTagAlgos_.size(); i<n; ++i )
     {
       const std::string& name = bTagNames_[i];
-      tree->Branch(("nbjets_"+name).c_str(), &(nbjetsCache_[i]), ("nbjets_"+name+"/i").c_str());
-      tree->Branch(("nbjets20_"+name).c_str(), &(nbjets20Cache_[i]), ("nbjets20_"+name+"/i").c_str());
+      tree->Branch(("nbjets30_"+name).c_str(), &(nbjets30_[i]), ("nbjets30_"+name+"/i").c_str());
+      tree->Branch(("nbjets20_"+name).c_str(), &(nbjets20_[i]), ("nbjets20_"+name+"/i").c_str());
     }
 
     tree->Branch("MET",&MET,"MET/d");
@@ -221,7 +230,6 @@ class TopDILAnalyzer : public edm::EDFilter {
 
   } 
 
-  //virtual void produce(const edm::Event& iEvent, const edm::EventSetup& iSetup)
   virtual bool filter(edm::Event& iEvent, const edm::EventSetup& iSetup)
   {
     bool accept = true;
@@ -242,27 +250,23 @@ class TopDILAnalyzer : public edm::EDFilter {
 
 
     //extracting Pileup information 
-    edm::Handle<double>  weightin_;
-    iEvent.getByLabel(edm::InputTag("PUweight","weightin"), weightin_);
+    edm::Handle<double>  puweight_;
+    iEvent.getByLabel(puWeightLabel_, puweight_);
 
-    edm::Handle<double>  weight_;
-    iEvent.getByLabel(edm::InputTag("PUweight","weight"), weight_);
+    edm::Handle<double>  puweightplus_;
+    iEvent.getByLabel(puUpWeightLabel_, puweightplus_);
 
-    edm::Handle<double>  weightplus_;
-    iEvent.getByLabel(edm::InputTag("PUweight","weightplus"), weightplus_);
-
-    edm::Handle<double>  weightminus_;
-    iEvent.getByLabel(edm::InputTag("PUweight","weightminus"), weightminus_);
+    edm::Handle<double>  puweightminus_;
+    iEvent.getByLabel(puDwWeightLabel_, puweightminus_);
 
     edm::Handle<int>  npileup_;
-    iEvent.getByLabel(edm::InputTag("PUweight","npileup"), npileup_);
+    iEvent.getByLabel(puNVertexLabel_, npileup_);
 
 
-    if( weight_.isValid() ){
-      weightin = *weightin_; 
-      weight = *weight_;
-      weightplus = *weightplus_;
-      weightminus = *weightminus_;
+    if( puweight_.isValid() ){
+      puweight = *puweight_;
+      puweightplus = *puweightplus_;
+      puweightminus = *puweightminus_;
       npileup = *npileup_;
     }
 
@@ -330,40 +334,79 @@ class TopDILAnalyzer : public edm::EDFilter {
     bool iso = relIso1 < relIso1_ && relIso2 < relIso2_;
     if( iso ) isIso = 1;
 
-    for ( int bTagIndex=0, nBTag=nbjetsCache_.size(); bTagIndex<nBTag; ++bTagIndex )
+    for ( int bTagIndex=0, nBTag=nbjets30_.size(); bTagIndex<nBTag; ++bTagIndex )
     {
-      nbjetsCache_[bTagIndex] = 0;
-      nbjets20Cache_[bTagIndex] = 0;
+      nbjets30_[bTagIndex] = 0;
     }
+
+    for ( int bTagIndex=0, nBTag=nbjets20_.size(); bTagIndex<nBTag; ++bTagIndex )
+    {
+      nbjets20_[bTagIndex] = 0;
+    }
+
+    std::vector<int> bidcs;
+    int idx=0;
 
     for (JI jit = Jets->begin(); jit != Jets->end(); ++jit) {
       ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > corrjet;
       corrjet.SetPxPyPzE(jit->px(),jit->py(),jit->pz(),jit->energy());
-      //int flavour = jit->partonFlavour();
-      //double bDiscriminator = jit->bDiscriminator("combinedSecondaryVertexBJetTags");
+      int flavor = jit->partonFlavour();
+      double bDiscriminator = jit->bDiscriminator("combinedSecondaryVertexBJetTags");
       if(jit->pt() > 20){
         jetspt20->push_back(corrjet);
-        //jetspt20flavour->push_back(flavour);
-        //jetspt20bDiscriminator->push_back(bDiscriminator);
+        jetspt20flavor->push_back(flavor);
+        jetspt20bDiscriminator->push_back(bDiscriminator);
         
         for ( int bTagIndex=0, nBTagAlgo=bTagAlgos_.size(); bTagIndex<nBTagAlgo; ++bTagIndex )
         {
           const double bTagValue = jit->bDiscriminator(bTagAlgos_[bTagIndex]);
-          if ( (bTagIsCutMin_[bTagIndex]) xor (bTagValue < bTagCutValues_[bTagIndex]) ) ++nbjets20Cache_[bTagIndex];
+          if ( (bTagIsCutMin_[bTagIndex]) xor (bTagValue < bTagCutValues_[bTagIndex]) ) ++nbjets20_[bTagIndex];
         }
       }//pt > 20 loop
       if(jit->pt() > 30){
         jetspt30->push_back(corrjet);
-        //jetspt30flavour->push_back(flavour);
-        //jetspt30bDiscriminator->push_back(bDiscriminator);
+        jetspt30flavor->push_back(flavor);
+        jetspt30bDiscriminator->push_back(bDiscriminator);
        
         for ( int bTagIndex=0, nBTagAlgo=bTagAlgos_.size(); bTagIndex<nBTagAlgo; ++bTagIndex )
         {
           const double bTagValue = jit->bDiscriminator(bTagAlgos_[bTagIndex]);
-          if ( (bTagIsCutMin_[bTagIndex]) xor (bTagValue < bTagCutValues_[bTagIndex]) ) ++nbjetsCache_[bTagIndex];
+          if ( (bTagIsCutMin_[bTagIndex]) xor (bTagValue < bTagCutValues_[bTagIndex]) ) ++nbjets30_[bTagIndex];
         }
+
+        if ( bDiscriminator > bTagCutValues_[2]) bidcs.push_back(idx); //for kinematic solution
+        
       }//pt > 30 loop
+      idx++;
     }
+
+    BTagWeight bTag;
+
+    unsigned int nJet20 = jetspt20->size();
+    std::vector<TLorentzVector *> jet20(nJet20);
+    std::vector<int> jet20flavor(nJet20);
+    for (unsigned int i=0; i < nJet20; i++)
+    {
+      jet20[i] = new TLorentzVector( jetspt20->at(i).px(), jetspt20->at(i).py(), jetspt20->at(i).pz(), jetspt20->at(i).energy() );
+      jet20flavor[i] = jetspt20flavor->at(i);
+    }
+
+    double bTagWeightJet20 = bTag.reweight( jet20, jet20flavor, nbjets20_[2], BTagWeight::CSVM);
+    bweight20CSVM = bTagWeightJet20;
+
+    unsigned int nJet30 = jetspt30->size();
+    std::vector<TLorentzVector *> jet30(nJet30);
+    std::vector<int> jet30flavor(nJet30);
+
+    for (unsigned int i=0; i < nJet30; i++)
+    {
+      jet30[i] = new TLorentzVector( jetspt30->at(i).px(), jetspt30->at(i).py(), jetspt30->at(i).pz(), jetspt30->at(i).energy() );
+      jet30flavor[i] = jetspt30flavor->at(i);
+    }
+    double bTagWeightJet30 = bTag.reweight( jet30, jet30flavor, nbjets20_[2], BTagWeight::CSVM);
+    bweight30CSVM = bTagWeightJet30;
+
+    cout << "weight(20)= " << bTagWeightJet20 << " , (30)= " << bTagWeightJet30 << endl; 
 
     if( jetspt30->size() >= 2 ){
       dphimetjet1 = fabs(deltaPhi(mi->phi(),jetspt30->at(0).phi()));
@@ -389,11 +432,29 @@ class TopDILAnalyzer : public edm::EDFilter {
       const Ko::TTbarMass ttbarMass(lep1, lep2, jetspt30->at(0), jetspt30->at(1), met->at(0));
       ttbar->push_back(ttbarMass);
 
+      int cmb = 0 ;
       const string hypo = "kKinSolution"; 
       if( fullLepEvt.isValid()){
         if( fullLepEvt->isHypoValid(hypo) ){
-          const reco::Candidate* topCand = fullLepEvt->top(hypo);
-          const reco::Candidate* topBarCand = fullLepEvt->topBar(hypo);
+          int btagsinhypo;
+          bool foundOneTagSolution = false;
+          for(size_t i=0;i<fullLepEvt->numberOfAvailableHypos(hypo);++i){
+            btagsinhypo = 0;
+            for(size_t j=0; j<bidcs.size(); ++j){
+              if(fullLepEvt->jetLeptonCombination(hypo,i)[0]==bidcs[j]) btagsinhypo++;
+              if(fullLepEvt->jetLeptonCombination(hypo,i)[1]==bidcs[j]) btagsinhypo++;		
+            }
+            if(btagsinhypo==2){ // stop if hypothesis has two b-jets
+              cmb = i;
+	      break;
+            }else if(btagsinhypo==1 && !foundOneTagSolution){ // if one b-tag in hypothesis store index but go on and look for solution with 2 tags
+              cmb = i;
+              foundOneTagSolution = true;
+            }   
+          }
+
+          const reco::Candidate* topCand = fullLepEvt->top(hypo, cmb);
+          const reco::Candidate* topBarCand = fullLepEvt->topBar(hypo, cmb);
           reco::Candidate::LorentzVector kinttbar =  topCand->p4() + topBarCand->p4() ; 
           kinttbarM = kinttbar.mass();
         }
@@ -449,12 +510,6 @@ class TopDILAnalyzer : public edm::EDFilter {
       genttbarM = ttbarGenLevel.mass();
     }
 
-    //if(genJets_.isValid()){
-    //  const reco::GenJetCollection* myGenJets = 0;
-    //  myGenJets = &(*genJets_);
-    //  ttbarGenLevel.setMatchedBJets(myGenJets);
-    //}
-
     ttbarGen->push_back(ttbarGenLevel);
 
     //ESHandle<SetupData> pSetup;
@@ -477,7 +532,7 @@ class TopDILAnalyzer : public edm::EDFilter {
         cutStepBit[3] = abs(ZMass - 91.2) > 15;
         cutStepBit[5] = MET > 30;
       }
-      cutStepBit[6] = (nbjetsCache_[1] >= 1);
+      cutStepBit[6] = (nbjets30_[1] >= 1);
       
       for ( int cutStep = 0; cutStep < nCutStep_; ++cutStep )
       {
@@ -538,9 +593,9 @@ class TopDILAnalyzer : public edm::EDFilter {
           h_[cutStep].hjet4eta->Fill(jetspt30->at(3).eta());
           h_[cutStep].hjet4phi->Fill(jetspt30->at(3).phi());
         }
-        for ( int i=0, n=nbjetsCache_.size(); i<n; ++i )
+        for ( int i=0, n=nbjets30_.size(); i<n; ++i )
         {
-          h_[cutStep].hnBJets.at(i)->Fill(nbjetsCache_[i]);
+          h_[cutStep].hnBJets.at(i)->Fill(nbjets30_[i]);
         }
 
         h_[cutStep].hMET->Fill(MET);
@@ -583,22 +638,28 @@ class TopDILAnalyzer : public edm::EDFilter {
     ttbarGen->clear();
     met->clear();
     jetspt30->clear();
-    //jetspt30flavour->clear();
-    //jetspt30bDiscriminator->clear();
+    jetspt30flavor->clear();
+    jetspt30bDiscriminator->clear();
     jetspt20->clear();
-    //jetspt20flavour->clear();
-    //jetspt20bDiscriminator->clear();
+    jetspt20flavor->clear();
+    jetspt20bDiscriminator->clear();
 
-    for ( int bTagIndex=0, nBTag=nbjetsCache_.size(); bTagIndex<nBTag; ++bTagIndex )
+    for ( int bTagIndex=0, nBTag=nbjets30_.size(); bTagIndex<nBTag; ++bTagIndex )
     {
-      nbjetsCache_[bTagIndex] = -999;
-      nbjets20Cache_[bTagIndex] = -999;
+      nbjets30_[bTagIndex] = -999;
     }
 
-    weight = 1.0;
-    weightin = 1.0;
-    weightplus = 1.0;
-    weightminus = 1.0;
+    for ( int bTagIndex=0, nBTag=nbjets20_.size(); bTagIndex<nBTag; ++bTagIndex )
+    {
+      nbjets20_[bTagIndex] = -999;
+    }
+
+    puweight = 1.0;
+    puweightplus = 1.0;
+    puweightminus = 1.0;
+
+    bweight20CSVM = 1.0;
+    bweight30CSVM = 1.0;
 
     dphimetlepton1 = -999;  
     dphimetlepton2 = -999;  
@@ -687,6 +748,11 @@ class TopDILAnalyzer : public edm::EDFilter {
   edm::InputTag genJetsLabel_;
   edm::InputTag vertexLabel_;
 
+  edm::InputTag puWeightLabel_;
+  edm::InputTag puUpWeightLabel_;
+  edm::InputTag puDwWeightLabel_;
+  edm::InputTag puNVertexLabel_;
+
   std::vector<std::string> filters_;
   bool metStudy_;
   bool useEventCounter_;
@@ -694,15 +760,12 @@ class TopDILAnalyzer : public edm::EDFilter {
   // relIso
   double relIso1_;
   double relIso2_;
-  // btag Discriminator
   std::vector<std::string> bTagAlgos_;
   std::vector<std::string> bTagNames_;
   std::vector<double> bTagCutValues_;
   std::vector<bool> bTagIsCutMin_;
-  std::vector<int> nbjetsCache_;
-  std::vector<int> nbjets20Cache_;
-  //std::string bTagAlgo_;
-  //double minBTagValue_;
+  std::vector<int> nbjets30_;
+  std::vector<int> nbjets20_;
 
   TTree* tree;
 
@@ -716,11 +779,11 @@ class TopDILAnalyzer : public edm::EDFilter {
   std::vector<Ko::TTbarCandidate>* ttbarGen;
   std::vector<math::XYZTLorentzVector>* met;
   std::vector<math::XYZTLorentzVector>* jetspt30;
-  //std::vector<int>* jetspt30flavour;
-  //std::vector<double>* jetspt30bDiscriminator;  
+  std::vector<int>* jetspt30flavor;
+  std::vector<double>* jetspt30bDiscriminator;  
   std::vector<math::XYZTLorentzVector>* jetspt20;
-  //std::vector<int>* jetspt20flavour;
-  //std::vector<double>* jetspt20bDiscriminator;  
+  std::vector<int>* jetspt20flavor;
+  std::vector<double>* jetspt20bDiscriminator;  
 
   double MET;
   double dphimetlepton1;
@@ -753,10 +816,13 @@ class TopDILAnalyzer : public edm::EDFilter {
   unsigned int LUMI;
   unsigned int npileup;
   unsigned int nvertex;
-  double weightin;
-  double weight;
-  double weightplus;
-  double weightminus;
+
+  double puweight;
+  double puweightplus;
+  double puweightminus;
+
+  double bweight20CSVM;
+  double bweight30CSVM;
 
   bool applyIso_;
   bool oppPair_;
