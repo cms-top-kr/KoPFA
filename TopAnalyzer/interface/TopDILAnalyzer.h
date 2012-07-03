@@ -13,7 +13,7 @@
 //
 // Original Author:  Tae Jeong Kim,40 R-A32,+41227678602,
 //         Created:  Fri Jun  4 17:19:29 CEST 2010
-// $Id: TopDILAnalyzer.h,v 1.79 2012/07/03 14:55:47 tjkim Exp $
+// $Id: TopDILAnalyzer.h,v 1.80 2012/07/03 15:22:44 tjkim Exp $
 //
 //
 
@@ -403,8 +403,6 @@ class TopDILAnalyzer : public edm::EDFilter {
     }
     double bTagWeightJet30 = bTag.reweight( jet30, jet30flavor, nbjets20_[2], BTagWeight::CSVM);
     bweight30CSVM = bTagWeightJet30;
-
-    cout << "weight(20)= " << bTagWeightJet20 << " , (30)= " << bTagWeightJet30 << endl; 
 
     if( jetspt30->size() >= 2 ){
       dphimetjet1 = fabs(deltaPhi(mi->phi(),jetspt30->at(0).phi()));
