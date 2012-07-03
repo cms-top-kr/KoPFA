@@ -13,7 +13,7 @@
 //
 // Original Author:  Tae Jeong Kim
 //         Created:  Mon Dec 14 01:29:35 CET 2009
-// $Id: JetFilter.cc,v 1.11 2012/05/28 21:07:33 tjkim Exp $
+// $Id: JetFilter.cc,v 1.12 2012/06/18 14:33:43 tjkim Exp $
 //
 //
 
@@ -130,8 +130,8 @@ JetFilter::JetFilter(const edm::ParameterSet& ps)
   outputJetLabel_ = jetLabel_.label();
   outputMETLabel_ = metLabel_.label();
 
-  produces<std::vector<pat::Jet> >(outputJetLabel_);
-  produces<std::vector<pat::MET> >(outputMETLabel_);
+  produces<std::vector<pat::Jet> >("Jets");
+  produces<std::vector<pat::MET> >("MET");
 
 }
 
@@ -268,8 +268,8 @@ JetFilter::filter(edm::Event& iEvent, const edm::EventSetup& iSetup)
 
   if( corrJets->size() >= min_ ) accepted = true;
 
-  iEvent.put(corrJets, outputJetLabel_);
-  iEvent.put(corrMETs, outputMETLabel_);
+  iEvent.put(corrJets, "Jets");
+  iEvent.put(corrMETs, "MET");
 
   if( applyFilter_ ) return accepted;
   else return true;
