@@ -18,6 +18,20 @@ process.load("KoPFA.CommonTools.eventFilter_cfi")
 process.load("KoPFA.CommonTools.ZFilter_cfi")
 from KoPFA.CommonTools.PileUpWeight_cff import *
 
+runOnMC = True
+TTbar = True
+TTbarOthers = False
+ZJets = False
+ZtauDecay = False
+runOn2012 = True
+
+if runOn2012 == True:
+  #############2012 analysis######################################
+  process.PUweight.PileUpRD   = PileUpRD2012
+  process.PUweight.PileUpRDup = PileUpRD2012UP
+  process.PUweight.PileUpRDdn = PileUpRD2012DN
+  process.PUweight.PileUpMC   = Summer12
+
 process.nEventsFilter = cms.EDProducer("EventCountProducer")
 
 process.JetEnergyScale.globalTag = cms.untracked.string('GR_R_52_V9')
@@ -80,13 +94,6 @@ process.TFileService = cms.Service("TFileService",
 #MC
 process.load("KoPFA.CommonTools.Sources.CMG.V5_4_0.MC.Summer12.patTuple_TTbarTuneZ2_cff")
 
-runOnMC = True 
-TTbar = True
-TTbarOthers = False
-ZJets = False
-ZtauDecay = False
-runOn2012 = True
-
 from CMGTools.Common.Tools.applyJSON_cff import applyJSON
 json = '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions12/8TeV/Prompt/Cert_190456-194479_8TeV_PromptReco_Collisions12_JSON.txt'
 if not runOnMC:
@@ -111,14 +118,7 @@ if runOnMC == True:
 
 #############################################
 
-if runOn2012 == True:
-  #############2012 analysis######################################
-  process.PUweight.PileUpRD   = PileUpRD2012
-  process.PUweight.PileUpRDup = PileUpRD2012UP
-  process.PUweight.PileUpRDdn = PileUpRD2012DN
-  process.PUweight.PileUpMC   = Summer12
-
-#############This is only for CMG patTuple#######################
+#############This is only for combining three channels#######################
 
 process.ZMuMu.muonLabel1 =  cms.InputTag('MuonsMuMu')
 process.ZMuMu.muonLabel2 =  cms.InputTag('MuonsMuMu')
@@ -129,8 +129,12 @@ process.ZElEl.muonLabel2 =  cms.InputTag('ElectronsElEl')
 
 process.MuMu.muonLabel1 =  cms.InputTag('MuonsMuMu')
 process.MuMu.muonLabel2 =  cms.InputTag('MuonsMuMu')
-process.MuMu.metLabel =  cms.InputTag('JetEnergyScaleMuMu','patMETs')
-process.MuMu.jetLabel =  cms.InputTag('JetEnergyScaleMuMu','selectedPatJetsCHS')
+process.MuMu.metLabel =  cms.InputTag('JetEnergyScaleMuMu','MET')
+process.MuMu.jetLabel =  cms.InputTag('JetEnergyScaleMuMu','Jets')
+process.MuMu.puWeightLabel = cms.InputTag('PUweightMuMu','weight')
+process.MuMu.puUpWeightLabel = cms.InputTag('PUweightMuMu','weightplus')
+process.MuMu.puDwWeightLabel = cms.InputTag('PUweightMuMu','weightminus')
+process.MuMu.puNVertexLabel = cms.InputTag('PUweightMuMu','npileup')
 process.MuMu.filters  =  cms.untracked.vstring( 
                                              'prePathCounter',
                                              'postPathCounter',
@@ -140,8 +144,12 @@ process.MuMu.filters  =  cms.untracked.vstring(
 
 process.MuEl.muonLabel1 =  cms.InputTag('MuonsMuEl')
 process.MuEl.muonLabel2 =  cms.InputTag('ElectronsMuEl')
-process.MuEl.metLabel =  cms.InputTag('JetEnergyScaleMuEl','patMETs')
-process.MuEl.jetLabel =  cms.InputTag('JetEnergyScaleMuEl','selectedPatJetsCHS')
+process.MuEl.metLabel =  cms.InputTag('JetEnergyScaleMuEl','MET')
+process.MuEl.jetLabel =  cms.InputTag('JetEnergyScaleMuEl','Jets')
+process.MuEl.puWeightLabel = cms.InputTag('PUweightMuEl','weight')
+process.MuEl.puUpWeightLabel = cms.InputTag('PUweightMuEl','weightplus')
+process.MuEl.puDwWeightLabel = cms.InputTag('PUweightMuEl','weightminus')
+process.MuEl.puNVertexLabel = cms.InputTag('PUweightMuEl','npileup')
 process.MuEl.filters  =  cms.untracked.vstring(  
                                              'prePathCounter',
                                              'postPathCounter',
@@ -151,8 +159,12 @@ process.MuEl.filters  =  cms.untracked.vstring(
 
 process.ElEl.muonLabel1 =  cms.InputTag('ElectronsElEl')
 process.ElEl.muonLabel2 =  cms.InputTag('ElectronsElEl')
-process.ElEl.metLabel =  cms.InputTag('JetEnergyScaleElEl','patMETs')
-process.ElEl.jetLabel =  cms.InputTag('JetEnergyScaleElEl','selectedPatJetsCHS')
+process.ElEl.metLabel =  cms.InputTag('JetEnergyScaleElEl','MET')
+process.ElEl.jetLabel =  cms.InputTag('JetEnergyScaleElEl','Jets')
+process.ElEl.puWeightLabel = cms.InputTag('PUweightElEl','weight')
+process.ElEl.puUpWeightLabel = cms.InputTag('PUweightElEl','weightplus')
+process.ElEl.puDwWeightLabel = cms.InputTag('PUweightElEl','weightminus')
+process.ElEl.puNVertexLabel = cms.InputTag('PUweightElEl','npileup')
 process.ElEl.filters  =  cms.untracked.vstring(  
                                              'prePathCounter',
                                              'postPathCounter',

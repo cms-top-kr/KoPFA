@@ -13,10 +13,10 @@ input = sys.argv[1]
 
 mclist = ["ZJets","ZtauDecay","WJetsToLNu", "WW", "WZ", "ZZ","TTbarTuneZ2","TTbarOthers"]
 mclist += ["SingleToptW","SingleTopBartW"]
-#mclist += ["ZJets10To50","ZtauDecay10To50"]
-#rdlist = ["Run2012AMuMu","Run2012BMuMu"]
-rdlist = ["Run2012AElEl","Run2012BElEl"]
-#rdlist += ["Run2012AMuEl","Run2012BMuEl"]
+mclist += ["ZJets10To50","ZtauDecay10To50"]
+rdlist = ["Run2012MuMu"]
+rdlist += ["Run2012ElEl"]
+rdlist += ["Run2012MuEl"]
 
 samplePath = {}
 samplePath["ZJets"]           ="KoPFA.CommonTools.Sources.CMG.V5_4_0.MC.Summer12.patTuple_ZJets_cff"
@@ -31,11 +31,9 @@ samplePath["TTbarTuneZ2"]     ="KoPFA.CommonTools.Sources.CMG.V5_4_0.MC.Summer12
 samplePath["TTbarOthers"]     ="KoPFA.CommonTools.Sources.CMG.V5_4_0.MC.Summer12.patTuple_TTbarTuneZ2_cff"
 samplePath["SingleToptW"]     ="KoPFA.CommonTools.Sources.CMG.V5_4_0.MC.Summer12.patTuple_Ttw_cff"
 samplePath["SingleTopBartW"]  ="KoPFA.CommonTools.Sources.CMG.V5_4_0.MC.Summer12.patTuple_Tbartw_cff"
-samplePath["Run2012AMuMu"]    ="KoPFA.CommonTools.Sources.CMG.V5_4_0.RD.Run2012.patTuple_Run2012ADoubleMu_cff"
-samplePath["Run2012AElEl"]    ="KoPFA.CommonTools.Sources.CMG.V5_4_0.RD.Run2012.patTuple_Run2012ADoubleElectron_cff"
-samplePath["Run2012BMuMu"]    ="KoPFA.CommonTools.Sources.CMG.V5_4_0.RD.Run2012.patTuple_Run2012BDoubleMu_cff"
-samplePath["Run2012BElEl"]    ="KoPFA.CommonTools.Sources.CMG.V5_4_0.RD.Run2012.patTuple_Run2012BDoubleElectron_cff"
-#samplePath["Run2011MuEl"]    ="KoPFA.CommonTools.Sources.CMG.V5_4_0.RD.Run2012.patTuple_Run2011_cff"
+samplePath["Run2012MuMu"]    ="KoPFA.CommonTools.Sources.CMG.V5_4_0.RD.Run2012.patTuple_Run2012DoubleMu_cff"
+samplePath["Run2012ElEl"]    ="KoPFA.CommonTools.Sources.CMG.V5_4_0.RD.Run2012.patTuple_Run2012DoubleElectron_cff"
+samplePath["Run2011MuEl"]    ="KoPFA.CommonTools.Sources.CMG.V5_4_0.RD.Run2012.patTuple_Run2011_cff"
 
 def applyFilter(sample):
 
@@ -81,7 +79,7 @@ def processSample( sample, dir):
 
     out.write(process.dumpPython())
     out.close()
-    os.system("cmsBatch0.py 1 "+dir+'/cmg2kcms_'+sample+'_cfg.py'+" -o "+dir+"/"+sample+"/Log -r "+dir+"/"+sample+"/Res -b 'bsub -G u_zh -q 1nh < batchScript.sh'")
+    os.system("cmsBatch0.py 3 "+dir+'/cmg2kcms_'+sample+'_cfg.py'+" -o "+dir+"/"+sample+"/Log -r "+dir+"/"+sample+"/Res -b 'bsub -G u_zh -q 1nh < batchScript.sh'")
 
 currdir = commands.getoutput('pwd') 
 print currdir
