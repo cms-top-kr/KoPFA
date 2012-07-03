@@ -96,16 +96,28 @@ class BTagWeight
       }
     }
 
-    // MC b-tag efficiency
+    // MC b-tag efficiency // need to be updated with our numbers from our signal samples
     double eb(double pt, double eta)
     {
-      return 0.6;
+      double x;
+      if( algo_ == CSVL) x = 0.244;
+      else if( algo_ == CSVM ) x = 0.679;
+      else if( algo_ == CSVT ) x = 0.898;
+      else x = 0; //it should not reach this point
+      
+      return -1.73338329789*x*x*x*x +  1.26161794785*x*x*x +  0.784721653518*x*x +  -1.03328577451*x +  1.04305075822;
     }
 
     //MC c-tag efficiency
     double ec(double pt, double eta)
     {
-       return 0.2;
+      double x;
+      if( algo_ == CSVL) x = 0.244;
+      else if( algo_ == CSVM ) x = 0.679;
+      else if( algo_ == CSVT ) x = 0.898; 
+      else x = 0; // it should not reach this point
+      
+      return -1.5734604211*x*x*x*x +  1.52798999269*x*x*x +  0.866697059943*x*x +  -1.66657942274*x +  0.780639301724;
     }
 
     //MC l-tag efficiency
@@ -137,7 +149,7 @@ class BTagWeight
           return 0.00315116*(((1+(-0.00769281*670.0))+(2.58066e-05*(670.0*670.0)))+(-2.02149e-08*(670.0*(670.0*670.0))));
         }
       }else {
-        return 0.1;
+        return 0;
       }
     }
 
