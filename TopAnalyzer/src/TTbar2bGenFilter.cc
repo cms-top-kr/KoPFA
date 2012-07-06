@@ -98,6 +98,7 @@ private:
   TH1F* h_multiplicity_GenJets25DILVISTTCC;
   TH1F* h_multiplicity_GenJets30DILVISTTCC;
 
+  TH1F* h_nEvents;
 
 };
 
@@ -165,6 +166,7 @@ TTbar2bGenFilter::TTbar2bGenFilter(const edm::ParameterSet& pset)
   h_multiplicity_GenJets25DILVISTTCC  = fs->make<TH1F>( "h_multiplicity_GenJets25DILVISTTCC"  , "Multiplicity", 12,  0, 12 );
   h_multiplicity_GenJets30DILVISTTCC  = fs->make<TH1F>( "h_multiplicity_GenJets30DILVISTTCC"  , "Multiplicity", 12,  0, 12 );
 
+  h_nEvents = fs->make<TH1F>( "h_nEvents"  , "h_nEvents", 5,  0, 5 );
 }
 
 bool TTbar2bGenFilter::filter(edm::Event& iEvent, const edm::EventSetup& eventSetup)
@@ -270,19 +272,25 @@ bool TTbar2bGenFilter::filter(edm::Event& iEvent, const edm::EventSetup& eventSe
     int nGenJet30DILVISTTBB = 0;
 
     bool dil = ttbarGenLevel.diLeptonic(1) == 1 ;
-    bool vis = ttbarGenLevel.lepton1().pt() > 20 && abs(ttbarGenLevel.lepton1().eta()) < 2.4 && ttbarGenLevel.lepton2().pt() > 20 && abs(ttbarGenLevel.lepton2().eta()) < 2.4 ;
-    bool ttbb = ttbarGenLevel.NbJets15NoTop() >= 2;
+    bool vis = ttbarGenLevel.lepton1().pt() > 20 && abs(ttbarGenLevel.lepton1().eta()) < 2.4 && ttbarGenLevel.lepton2().pt() > 20 && abs(ttbarGenLevel.lepton2().eta()) < 2.4 && ttbarGenLevel.NbJets15() >= 2;
+    bool njets4 = ttbarGenLevel.NJets15() >= 4;
+    bool ttbb = ttbarGenLevel.NbJets15() >= 4;
     bool ttcc = ttbarGenLevel.NcJets15() >= 2;
 
     h_multiplicity_bQuarks->Fill( ttbarGenLevel.NbQuarks() ) ;
     h_multiplicity_bQuarks20->Fill( ttbarGenLevel.NbQuarks20() ) ;
-    if( dil + vis ) h_multiplicity_bQuarks20DILVIS->Fill( ttbarGenLevel.NbQuarks20() );
-    if( dil + vis && ttbb) h_multiplicity_bQuarks20DILVISTTBB->Fill( ttbarGenLevel.NbQuarks20() );
+    if( dil && vis ) h_multiplicity_bQuarks20DILVIS->Fill( ttbarGenLevel.NbQuarks20() );
+    if( dil && vis && ttbb) h_multiplicity_bQuarks20DILVISTTBB->Fill( ttbarGenLevel.NbQuarks20() );
     h_multiplicity_bGenJets->Fill( ttbarGenLevel.NbJets() );
     h_multiplicity_bGenJets20->Fill( ttbarGenLevel.NbJets20() );
-    if( dil + vis ) h_multiplicity_bGenJets20DILVIS->Fill( ttbarGenLevel.NbJets20() );
-    if( dil + vis && ttbb ) h_multiplicity_bGenJets20DILVISTTBB->Fill( ttbarGenLevel.NbJets20() );
+    if( dil && vis ) h_multiplicity_bGenJets20DILVIS->Fill( ttbarGenLevel.NbJets20() );
+    if( dil && vis && ttbb ) h_multiplicity_bGenJets20DILVISTTBB->Fill( ttbarGenLevel.NbJets20() );
 
+    h_nEvents->Fill(0);
+    if( dil ) h_nEvents->Fill(1);
+    if( dil && vis ) h_nEvents->Fill(2);
+    if( dil && vis && njets4  ) h_nEvents->Fill(3);
+    if( dil && vis && njets4 && ttbb  ) h_nEvents->Fill(4);
 
 /*
     for ( size_t i = 0;  i < genJets_->size() ; i++ ){
