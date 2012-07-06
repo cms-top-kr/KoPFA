@@ -9,7 +9,7 @@ from KoPFA.TopAnalyzer.triggerFilterByRun_cfi import *
 from KoPFA.TopAnalyzer.topHLTfilter_cff import *
 from KoPFA.CommonTools.EventWeightProducer_cfi import *
 from KoPFA.CommonTools.JetEnergyScale_cfi import *
-
+from KoPFA.TopAnalyzer.topDecayGenFilter_cfi import *
 
 #scale up
 #JetEnergyScale.doJecUnc = True
@@ -251,7 +251,7 @@ from TopQuarkAnalysis.TopEventProducers.sequences.ttFullLepEvtBuilder_cff import
 
 topAnalysisSequence = cms.Sequence(
     nEventsPatHLT*
-    topWLeptonGenFilter*
+    topDecayGenFilter*
     GenZmassFilter*
     PUweight*
     JetEnergyScale*

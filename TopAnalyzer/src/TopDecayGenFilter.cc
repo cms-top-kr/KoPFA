@@ -22,29 +22,42 @@ public:
   void beginJob() {};
   bool filter(edm::Event& event, const edm::EventSetup& eventSetup);
   void endJob() {};
+  bool isLast( const reco::Candidate& p);
+  const reco::Candidate* getLast( const reco::Candidate& p );
 
 private:
   bool applyFilter_;
+  bool allHadronic_;
   bool semiLeptonic_;
   bool semiLeptonicMuon_;
   bool semiLeptonicElectron_;
+  bool semiLeptonicTau_;
   bool diLeptonic_;
   bool diLeptonicMuoMuo_;
   bool diLeptonicEleEle_;
   bool diLeptonicMuoEle_;
+  bool diLeptonicTauMuo_;
+  bool diLeptonicTauEle_;
+  bool diLeptonicTauTau_;
+
 };
 
 TopDecayGenFilter::TopDecayGenFilter(const edm::ParameterSet& pset)
 {
   applyFilter_= pset.getUntrackedParameter<bool>("applyFilter",false);
-
+  
+  allHadronic_ = pset.getParameter<bool>("allHadronic"),
   semiLeptonic_ = pset.getParameter<bool>("semiLeptonic"),
   semiLeptonicMuon_ = pset.getParameter<bool>("semiLeptonicMuon"),
   semiLeptonicElectron_ = pset.getParameter<bool>("semiLeptonicElectron"),
+  semiLeptonicTau_ = pset.getParameter<bool>("semiLeptonicTau"),
   diLeptonic_ = pset.getParameter<bool>("diLeptonic");
   diLeptonicMuoMuo_ = pset.getParameter<bool>("diLeptonicMuoMuo");
   diLeptonicEleEle_ = pset.getParameter<bool>("diLeptonicEleEle");       
   diLeptonicMuoEle_ = pset.getParameter<bool>("diLeptonicMuoEle");
+  diLeptonicTauMuo_ = pset.getParameter<bool>("diLeptonicTauMuo");
+  diLeptonicTauEle_ = pset.getParameter<bool>("diLeptonicTauEle");
+  diLeptonicTauTau_ = pset.getParameter<bool>("diLeptonicTauTau");
  
 }
 
@@ -73,20 +86,25 @@ bool TopDecayGenFilter::filter(edm::Event& iEvent, const edm::EventSetup& eventS
 
   unsigned int nParticles = myGenParticles->size();
   int ntop = 0;
+
   for ( unsigned int ip=0; ip<nParticles; ++ip ) { 
 
     if ( ntop == 2 ) break;
 
-    const reco::GenParticle& p = (*myGenParticles)[ip];
+    const reco::Candidate& p = (*myGenParticles)[ip];
     if ( abs(p.pdgId()) != 6 ) continue;
+    bool lastTop = isLast( p );
+    if( !lastTop ) continue;
 
     unsigned int nDaughters = p.numberOfDaughters();
     int nW = 0;
     for ( unsigned iDaughter=0; iDaughter<nDaughters; ++iDaughter ) {
-      const reco::Candidate* daugh = p.daughter(iDaughter);
+      const reco::Candidate* daughTemp = p.daughter(iDaughter);
       if ( nW == 1 ) break;
-      if ( abs(daugh->pdgId()) != 24 ) continue; 
+      if ( abs(daughTemp->pdgId()) != 24 ) continue; 
+      const reco::Candidate* daugh = getLast( *daughTemp );
       unsigned int nWDaughters = daugh->numberOfDaughters();
+
       for ( unsigned iWDaughter=0; iWDaughter<nWDaughters; ++iWDaughter ) {
 	const reco::Candidate* decay = daugh->daughter(iWDaughter);
 	int decayId = abs(decay->pdgId());
@@ -144,6 +162,9 @@ bool TopDecayGenFilter::filter(edm::Event& iEvent, const edm::EventSetup& eventS
     ++ntop;
   }
 
+  // All hadronic
+  if ( allHadronic_ && hadronic[0] && hadronic[1] ) accepted = true;
+
   if ( semiLeptonic_ && 
 	( ( hadronic[0] && !hadronic[1] ) ||  
 	  (!hadronic[0] &&  hadronic[1] ) ) ) {
@@ -158,6 +179,10 @@ bool TopDecayGenFilter::filter(edm::Event& iEvent, const edm::EventSetup& eventS
     if ( !semiLeptonicMuon_ && 
 	  ( ( hadronic[0] && muonic[1] ) ||  
 	    ( hadronic[1] && muonic[0] ) ) ) accepted = false; 
+    // Tau
+    if ( !semiLeptonicTau_ && 
+	  ( ( hadronic[0] && taunic[1] ) ||  
+	    ( hadronic[1] && taunic[0] ) ) ) accepted = false;
   }
 
   // Di-Leptonic
@@ -175,11 +200,60 @@ bool TopDecayGenFilter::filter(edm::Event& iEvent, const edm::EventSetup& eventS
     if ( !diLeptonicMuoEle_ && 
       ( ( muonic[0] && electronic[1] ) || 
       ( muonic[1] && electronic[0] ) ) ) accepted = false; 
+    // Tau-Muon
+    if ( !diLeptonicTauMuo_ &&
+      ( ( taunic[0] && muonic[1] ) ||
+      ( taunic[1] && muonic[0] ) ) ) accepted = false;
+    // Tau-Electron
+    if ( !diLeptonicTauEle_ &&
+      ( ( taunic[0] && electronic[1] ) ||
+      ( taunic[1] && electronic[0] ) ) ) accepted = false;
+    // Tau-Tau
+    if ( !diLeptonicTauTau_ &&
+      taunic[0] && taunic[1] ) accepted = false;
    }
-
 
   return accepted;
 }
+
+bool TopDecayGenFilter::isLast( const reco::Candidate& p){
+
+   bool out = true;
+   int id = abs( p.pdgId() );
+
+   unsigned int nDaughters = p.numberOfDaughters();
+   for ( unsigned iDaughter=0; iDaughter<nDaughters; ++iDaughter ) {
+     const reco::Candidate* daugh = p.daughter(iDaughter);
+     if( abs(daugh->pdgId()) == id) {
+       out = false;
+       break;
+     }
+   }
+
+   return out;
+}
+
+const reco::Candidate* TopDecayGenFilter::getLast( const reco::Candidate& p ){
+
+   const reco::Candidate* last = 0;
+   int id = abs( p.pdgId() );
+
+   unsigned int nDaughters = p.numberOfDaughters();
+   if( nDaughters == 1) {
+     const reco::Candidate* daugh = p.daughter(0);
+     if( abs( daugh->pdgId() ) == id ){
+       last = getLast( *daugh );
+     }else{
+       last = &p;
+     }
+   }else{
+     last = &p;
+   }
+
+   return last;
+
+}
+
 
 DEFINE_FWK_MODULE(TopDecayGenFilter);
 
