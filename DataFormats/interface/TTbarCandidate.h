@@ -83,22 +83,61 @@ namespace Ko{
     int NbQuarks20() const { return NbQuarks20_ ; }
     int NcQuarks() const { return NcQuarks_; }
 
-    int NbJets() const { return NbJets_ ; }
-    int NbJets15() const { return NbJets15_ ; }
-    int NbJets20() const { return NbJets20_ ; }
+    int NbJets(int i=0) const {
+      if( i == 0 ) return NbJetsBHad_;
+      else return NbJets_ ; 
+    }
+    int NbJets10(int i=0) const {
+      if( i == 0 ) return NbJets10BHad_;
+      else return NbJets10_ ; 
+    }
+    int NbJets15(int i=0) const {
+      if( i == 0 ) return NbJets15BHad_;
+      else return NbJets15_ ;
+    } 
+    int NbJets20(int i=0) const {
+      if( i == 0 ) return NbJets20BHad_;
+      else return NbJets20_ ;
+    }
+    int NbJets25(int i=0) const {
+      if( i == 0 ) return NbJets25BHad_;
+      else return NbJets25_ ;
+    }
+    int NbJets30(int i=0) const {
+      if( i == 0 ) return NbJets30BHad_;
+      else return NbJets30_ ;
+    }
 
-    int NbJetsBHad() const { return NbJetsBHad_ ; }
-    int NbJets15BHad() const { return NbJets15BHad_ ; }
-    int NbJets20BHad() const { return NbJets20BHad_ ; }
+    int NcJets(int i=0) const {
+      if( i == 0 ) return NcJetsCHad_;
+      else return NcJets_ ; 
+    }
+    int NcJets10(int i=0) const {
+      if( i == 0 ) return NcJets10CHad_;
+      else return NcJets10_ ;
+    }
+    int NcJets15(int i=0) const {
+      if( i == 0 ) return NcJets15CHad_;
+      else return NcJets15_ ;
+    }
+    int NcJets20(int i=0) const {
+      if( i == 0 ) return NcJets20CHad_;
+      else return NcJets20_ ;
+    }
+    int NcJets25(int i=0) const {
+      if( i == 0 ) return NcJets25CHad_;
+      else return NcJets25_ ;
+    }
+    int NcJets30(int i=0) const {
+      if( i == 0 ) return NcJets30CHad_;
+      else return NcJets30_ ;
+    }
 
     int NbJetsNoTop() const { return NbJetsNoTop_ ; }
     int NbJets15NoTop() const { return NbJets15NoTop_ ; }
     int NbJets20NoTop() const { return NbJets20NoTop_ ; }
-
-    int NcJets() const { return NcJets_; }
-    int NcJets10() const { return NcJets10_; }
-    int NcJets15() const { return NcJets15_; }
-    int NcJets20() const { return NcJets20_; }
+    int NbJets25NoTop() const { return NbJets25NoTop_ ; }
+    int NbJets30NoTop() const { return NbJets30NoTop_ ; }
 
     int NJets() const { return NJets_ ;}
     int NJets10() const { return NJets10_ ;}
@@ -111,11 +150,16 @@ namespace Ko{
 
     std::vector<const reco::Candidate *> getAncestors(const reco::Candidate &c);
     bool hasBottom(const reco::Candidate &c);
+    bool hasCharm(const reco::Candidate &c);
     bool decayFromBHadron(const reco::Candidate &c);
+    bool decayFromCHadron(const reco::Candidate &c);
     const reco::Candidate* lastBHadron(const reco::Candidate &c);
+    const reco::Candidate* lastCHadron(const reco::Candidate &c);
     bool isLastbottom(const reco::GenParticle&);
     bool isLastcharm(const reco::GenParticle&);
+    bool isLastParton(const reco::GenParticle&);
     bool isFromtop(const reco::GenParticle&);
+    const reco::Candidate* getLast( const reco::Candidate& p );
     double deltaR( const reco::Candidate &pasObj, const reco::GenJet &proObj );
 
 
@@ -144,21 +188,39 @@ namespace Ko{
     bool taunic2_;
 
     int NbJets_;
+    int NbJets10_;
     int NbJets15_;
     int NbJets20_;
+    int NbJets25_;
+    int NbJets30_;
 
     int NbJetsBHad_;
+    int NbJets10BHad_;
     int NbJets15BHad_;
     int NbJets20BHad_;
+    int NbJets25BHad_;
+    int NbJets30BHad_;
 
     int NbJetsNoTop_;
+    int NbJets10NoTop_;
     int NbJets15NoTop_;
     int NbJets20NoTop_;
+    int NbJets25NoTop_;
+    int NbJets30NoTop_;
 
     int NcJets_;
     int NcJets10_;
     int NcJets15_;
     int NcJets20_;
+    int NcJets25_;
+    int NcJets30_;
+
+    int NcJetsCHad_;
+    int NcJets10CHad_;
+    int NcJets15CHad_;
+    int NcJets20CHad_;
+    int NcJets25CHad_;
+    int NcJets30CHad_;
 
     int NbQuarks_;
     int NbQuarksNoTop_;

@@ -62,17 +62,21 @@ void TTbarCandidate::building( const reco::GenJetCollection* genJets, const reco
 
     if ( ntop == 2 ) continue;
 
-    if ( abs(p.pdgId()) != 6 ) continue;
-
+    if ( abs(p.pdgId()) != 6 ) {
+      bool isLast = isLastParton(p);
+      if(isLast != true) continue;
+    } 
+   
     ttbarGen += p.p4();
     mass_ = ttbarGen.M();
 
     unsigned int nDaughters = p.numberOfDaughters();
     int nW = 0;
     for ( unsigned iDaughter=0; iDaughter<nDaughters; ++iDaughter ) {
-      const reco::Candidate* daugh = p.daughter(iDaughter);
+      const reco::Candidate* daughTemp = p.daughter(iDaughter);
       if ( nW == 1 ) break;
-      if ( abs(daugh->pdgId()) != 24 ) continue; 
+      if ( abs(daughTemp->pdgId()) != 24 ) continue;
+      const reco::Candidate* daugh = getLast( *daughTemp );
       unsigned int nWDaughters = daugh->numberOfDaughters();
       for ( unsigned iWDaughter=0; iWDaughter<nWDaughters; ++iWDaughter ) {
 	const reco::Candidate* decay = daugh->daughter(iWDaughter);
@@ -203,13 +207,13 @@ void TTbarCandidate::building( const reco::GenJetCollection* genJets, const reco
     if( i < 2){
       bquarks_[i] = bquarksfromtop[i];
     }
-    if( bquarksfromtop[i].pt() > 20 && abs(bquarksfromtop[i].eta()) < 2.5) nbQuark20++;
+    if( bquarksfromtop[i].pt() > 20 && fabs(bquarksfromtop[i].eta()) < 2.5) nbQuark20++;
   }
   for( unsigned int i = 0 ; i < bquarksfromnotop.size() ; i++){
     if( i < 2){
       bquarks_[i] = bquarksfromnotop[i];
     }
-    if( bquarksfromnotop[i].pt() > 20 && abs(bquarksfromnotop[i].eta()) < 2.5) nbQuark20++;
+    if( bquarksfromnotop[i].pt() > 20 && fabs(bquarksfromnotop[i].eta()) < 2.5) nbQuark20++;
   }
   NbQuarks20_ = nbQuark20;
 
@@ -223,24 +227,25 @@ void TTbarCandidate::building( const reco::GenJetCollection* genJets, const reco
   std::map<int, int> mapJetToBMatched;
   std::map<const reco::Candidate*, vector<int> > mapBHadronToJets;
 
+  std::map<int, vector<const reco::Candidate*> > mapJetToCHadrons;
+  std::map<int, int> mapJetToCMatched;
+  std::map<const reco::Candidate*, vector<int> > mapCHadronToJets;
+
   std::vector<math::XYZTLorentzVector> bJets;
   std::vector<math::XYZTLorentzVector> bJetsBHad;
+  std::vector<math::XYZTLorentzVector> nobJetsBHad;
   std::vector<math::XYZTLorentzVector> bJetsfromnotop;
   std::vector<math::XYZTLorentzVector> cJets;
+  std::vector<math::XYZTLorentzVector> cJetsCHad;
 
-  int nJet30 = 0;
-  int nJet25 = 0;
-  int nJet20 = 0;
-  int nJet15 = 0;
-  int nJet10 = 0;
   int idx = 0;
 
-  int nbJets15NoTop = 0;
-  int nbJets20NoTop = 0;
-  int ncJets = 0;
-  int ncJets10 = 0;
-  int ncJets15 = 0;
-  int ncJets20 = 0;
+  NJets_ = 0;
+  NJets30_ = 0;
+  NJets25_ = 0;
+  NJets20_ = 0;
+  NJets15_ = 0;
+  NJets10_ = 0;
 
   for (reco::GenJetCollection::const_iterator genJet=genJets->begin();genJet!=genJets->end();++genJet){
     const reco::GenJet& gJet = *genJet;
@@ -272,11 +277,12 @@ void TTbarCandidate::building( const reco::GenJetCollection* genJets, const reco
     }
     if( minDR2c < 0.5 ) cJets.push_back(gJet.p4());
 
-    if( gJet.pt() > 30 && abs(gJet.eta()) < 2.5 ) nJet30++;
-    if( gJet.pt() > 25 && abs(gJet.eta()) < 2.5 ) nJet25++;
-    if( gJet.pt() > 20 && abs(gJet.eta()) < 2.5 ) nJet20++;
-    if( gJet.pt() > 15 && abs(gJet.eta()) < 2.5 ) nJet15++;
-    if( gJet.pt() > 10 && abs(gJet.eta()) < 2.5 ) nJet10++;
+    NJets_++;
+    if( gJet.pt() > 30 && fabs(gJet.eta()) < 2.5 ) NJets30_++;
+    if( gJet.pt() > 25 && fabs(gJet.eta()) < 2.5 ) NJets25_++;
+    if( gJet.pt() > 20 && fabs(gJet.eta()) < 2.5 ) NJets20_++;
+    if( gJet.pt() > 15 && fabs(gJet.eta()) < 2.5 ) NJets15_++;
+    if( gJet.pt() > 10 && fabs(gJet.eta()) < 2.5 ) NJets10_++;
 
     std::vector <const GenParticle*> mcparts = genJet->getGenConstituents();
     for (unsigned i = 0; i < mcparts.size (); i++) {
@@ -292,16 +298,20 @@ void TTbarCandidate::building( const reco::GenJetCollection* genJets, const reco
            mapBHadronToJets[lastB].push_back( idx );
          }
       }
+      bool isC = decayFromCHadron(*mcpart);
+      if(isC){
+         const reco::Candidate* lastC = lastCHadron(*mcpart);
+         vector<const reco::Candidate*>::iterator it = find ( mapJetToCHadrons[idx].begin(), mapJetToCHadrons[idx].begin(), lastC );
+         if( it == mapJetToCHadrons[idx].end() ){
+           mapJetToCHadrons[idx].push_back(lastC);
+           mapJetToCMatched[idx] = 1;
+           mapCHadronToJets[lastC].push_back( idx );
+         }
+      }
     }
     idx++;
   }
 
-  NJets_ = (int) genJets->size();
-  NJets30_ = nJet30;
-  NJets25_ = nJet25;
-  NJets20_ = nJet20;
-  NJets15_ = nJet15;
-  NJets10_ = nJet10;
 
   for( std::map<const reco::Candidate*, vector<int> >::iterator it = mapBHadronToJets.begin() ; it != mapBHadronToJets.end(); it++){
 
@@ -326,6 +336,29 @@ void TTbarCandidate::building( const reco::GenJetCollection* genJets, const reco
 
   }
 
+  for( std::map<const reco::Candidate*, vector<int> >::iterator it = mapCHadronToJets.begin() ; it != mapCHadronToJets.end(); it++){
+
+    const reco::Candidate* CHadron = (*it).first;
+
+    if( (*it).second.size() > 1) {
+      double minDR = 999;
+      int selectedJet = -1;
+      for( std::vector<int>::iterator bjet = (*it).second.begin(); bjet != (*it).second.end(); bjet++){
+        int idx = *bjet;
+        mapJetToCMatched[idx] = 0; // set it to 0 again 
+        const reco::GenJet& bjet = genJets->at(idx);
+        double dR = deltaR( *CHadron, bjet ) ;
+        if( dR < minDR ) {
+          selectedJet = idx;
+          minDR = dR;
+        }
+      }
+      //only set it to true for only selected jet 
+      mapJetToCMatched[selectedJet] = 1;
+    }
+
+  }
+
   for( std::map<int, vector<const reco::Candidate*> >::iterator it = mapJetToBHadrons.begin() ; it != mapJetToBHadrons.end(); it++){
     if( (*it).second.size() > 1) cout << "!!! This jet matches with more than 1 hadron !!!" << endl;
     int idx = (*it).first;
@@ -337,51 +370,93 @@ void TTbarCandidate::building( const reco::GenJetCollection* genJets, const reco
 
   std::sort(bJetsBHad.begin(), bJetsBHad.end(), GreaterByPt<reco::Candidate::LorentzVector>());
 
-  int nbJet15BHad = 0;
-  int nbJet20BHad = 0;
-  for( unsigned int i = 0 ; i < bJets.size() ; i++){
+  NbJetsBHad_ = 0;
+  NbJets10BHad_ = 0;
+  NbJets15BHad_ = 0;
+  NbJets20BHad_ = 0;
+  NbJets25BHad_ = 0;
+  NbJets30BHad_ = 0;
+
+  for( unsigned int i = 0 ; i < bJetsBHad.size() ; i++){
     if( i < 4 ){
       bJets_[i] = bJetsBHad[i];
     }
-    if( bJetsBHad[i].pt() > 20 && abs(bJetsBHad[i].eta()) < 2.5) nbJet20BHad++;
-    if( bJetsBHad[i].pt() > 15 && abs(bJetsBHad[i].eta()) < 2.5) nbJet15BHad++;
+    NbJetsBHad_++;
+    if( bJetsBHad[i].pt() > 10 && fabs(bJetsBHad[i].eta()) < 2.5) NbJets10BHad_++;
+    if( bJetsBHad[i].pt() > 15 && fabs(bJetsBHad[i].eta()) < 2.5) NbJets15BHad_++;
+    if( bJetsBHad[i].pt() > 20 && fabs(bJetsBHad[i].eta()) < 2.5) NbJets20BHad_++;
+    if( bJetsBHad[i].pt() > 25 && fabs(bJetsBHad[i].eta()) < 2.5) NbJets25BHad_++;
+    if( bJetsBHad[i].pt() > 30 && fabs(bJetsBHad[i].eta()) < 2.5) NbJets30BHad_++;
   }
 
-  NbJetsBHad_ = (int) bJetsBHad.size();
-  NbJets15BHad_ = nbJet15BHad;
-  NbJets20BHad_ = nbJet20BHad;
+  for( std::map<int, vector<const reco::Candidate*> >::iterator it = mapJetToCHadrons.begin() ; it != mapJetToCHadrons.end(); it++){
+    if( (*it).second.size() > 1) cout << "!!! This jet matches with more than 1 hadron !!!" << endl;
+    int idx = (*it).first;
+    const reco::GenJet& genJet = genJets->at(idx);
+    // is It unique c-jet?  
+    if( mapJetToBMatched[idx]  == 0 ) continue;
+    cJetsCHad.push_back( genJet.p4() );
+  }
 
-  int nbJets15 = 0;
-  int nbJets20 = 0;
+  std::sort(cJetsCHad.begin(), cJetsCHad.end(), GreaterByPt<reco::Candidate::LorentzVector>());
+
+  NcJetsCHad_ = 0;
+  NcJets10CHad_ = 0;
+  NcJets15CHad_ = 0;
+  NcJets20CHad_ = 0;
+  NcJets25CHad_ = 0;
+  NcJets30CHad_ = 0;
+
+  for( unsigned int i = 0 ; i < cJetsCHad.size() ; i++){
+    NcJetsCHad_++;
+    if( cJetsCHad[i].pt() > 10 && fabs(cJetsCHad[i].eta()) < 2.5) NcJets10CHad_++;
+    if( cJetsCHad[i].pt() > 15 && fabs(cJetsCHad[i].eta()) < 2.5) NcJets15CHad_++;
+    if( cJetsCHad[i].pt() > 20 && fabs(cJetsCHad[i].eta()) < 2.5) NcJets20CHad_++;
+    if( cJetsCHad[i].pt() > 25 && fabs(cJetsCHad[i].eta()) < 2.5) NcJets25CHad_++;
+    if( cJetsCHad[i].pt() > 30 && fabs(cJetsCHad[i].eta()) < 2.5) NcJets30CHad_++;
+  }
+
+  NbJets_ = 0;
+  NbJets10_ = 0;
+  NbJets15_ = 0;
+  NbJets20_ = 0;
+  NbJets25_ = 0;
+  NbJets30_ = 0;
 
   for( unsigned int i = 0 ; i < bJets.size() ; i++){
-    if( bJets[i].pt() > 15 && abs(bJets[i].eta()) < 2.5) nbJets15++;
-    if( bJets[i].pt() > 20 && abs(bJets[i].eta()) < 2.5) nbJets20++;
+    NbJets_++;
+    if( bJets[i].pt() > 10 && fabs(bJets[i].eta()) < 2.5) NbJets10_++;
+    if( bJets[i].pt() > 15 && fabs(bJets[i].eta()) < 2.5) NbJets15_++;
+    if( bJets[i].pt() > 20 && fabs(bJets[i].eta()) < 2.5) NbJets20_++;
+    if( bJets[i].pt() > 25 && fabs(bJets[i].eta()) < 2.5) NbJets25_++;
+    if( bJets[i].pt() > 30 && fabs(bJets[i].eta()) < 2.5) NbJets30_++;
   }
 
-  NbJets_ = (int) bJets.size();
-  NbJets15_ = nbJets15;
-  NbJets20_ = nbJets20;
+  NbJetsNoTop_ = 0;
+  NbJets15NoTop_ = 0;
+  NbJets20NoTop_ = 0;
 
   for( unsigned int i = 0 ; i < bJetsfromnotop.size() ; i++){
-    if( bJetsfromnotop[i].pt() > 15 && abs(bJetsfromnotop[i].eta()) < 2.5) nbJets15NoTop++;
-    if( bJetsfromnotop[i].pt() > 20 && abs(bJetsfromnotop[i].eta()) < 2.5) nbJets20NoTop++;
+    NbJetsNoTop_++;
+    if( bJetsfromnotop[i].pt() > 15 && fabs(bJetsfromnotop[i].eta()) < 2.5) NbJets15NoTop_++;
+    if( bJetsfromnotop[i].pt() > 20 && fabs(bJetsfromnotop[i].eta()) < 2.5) NbJets20NoTop_++;
   }
 
-  NbJetsNoTop_ = (int) bJetsfromnotop.size();
-  NbJets15NoTop_ = nbJets15NoTop;
-  NbJets20NoTop_ = nbJets20NoTop;
+  NcJets_ = 0;
+  NcJets10_ = 0;
+  NcJets15_ = 0;
+  NcJets20_ = 0;
+  NcJets25_ = 0;
+  NcJets30_ = 0;
 
   for( unsigned int i = 0 ; i < cJets.size() ; i++){
-    if( cJets[i].pt() > 10 && abs(cJets[i].eta()) < 2.5) ncJets10++;
-    if( cJets[i].pt() > 15 && abs(cJets[i].eta()) < 2.5) ncJets15++;
-    if( cJets[i].pt() > 20 && abs(cJets[i].eta()) < 2.5) ncJets20++;
+    NcJets_++;
+    if( cJets[i].pt() > 10 && fabs(cJets[i].eta()) < 2.5) NcJets10_++;
+    if( cJets[i].pt() > 15 && fabs(cJets[i].eta()) < 2.5) NcJets15_++;
+    if( cJets[i].pt() > 20 && fabs(cJets[i].eta()) < 2.5) NcJets20_++;
+    if( cJets[i].pt() > 25 && fabs(cJets[i].eta()) < 2.5) NcJets20_++;
+    if( cJets[i].pt() > 30 && fabs(cJets[i].eta()) < 2.5) NcJets20_++;
   }
-
-  NcJets_ = (int) cJets.size();
-  NcJets10_ = ncJets10;
-  NcJets15_ = ncJets15;
-  NcJets20_ = ncJets20;
 
 }
 
@@ -400,8 +475,7 @@ std::vector<const reco::Candidate *> TTbarCandidate::getAncestors(const reco::Ca
   return moms;
 }
 
-
-bool TTbarCandidate::hasBottom(const reco::Candidate &c) 
+bool TTbarCandidate::hasBottom(const reco::Candidate &c)
 {
   int code1;
   int code2;
@@ -410,6 +484,17 @@ bool TTbarCandidate::hasBottom(const reco::Candidate &c)
   code2 = (int)( ( abs(c.pdgId() ) /1000)%10 );
   if ( code1 == 5 || code2 == 5) tmpHasBottom = true;
   return tmpHasBottom;
+}
+
+bool TTbarCandidate::hasCharm(const reco::Candidate &c) 
+{
+  int code1;
+  int code2;
+  bool tmpHasCharm = false;
+  code1 = (int)( ( abs(c.pdgId() ) / 100)%10 );
+  code2 = (int)( ( abs(c.pdgId() ) /1000)%10 );
+  if ( code1 == 4 || code2 == 4) tmpHasCharm = true;
+  return tmpHasCharm;
 }
 
 bool TTbarCandidate::decayFromBHadron(const Candidate & c)
@@ -430,6 +515,26 @@ bool TTbarCandidate::decayFromBHadron(const Candidate & c)
    return isFromB;
 }
 
+bool TTbarCandidate::decayFromCHadron(const Candidate & c)
+{
+  bool isFromC = false;
+  vector<const Candidate *> allParents = getAncestors( c );
+  for( vector<const Candidate *>::const_iterator aParent  = allParents.begin();
+                                                 aParent != allParents.end();
+                                                 aParent ++ )
+  {
+    if( hasCharm(**aParent) ) isFromC = true;
+/*
+         cout << "     particle Parent is " << (*aParent)->status()
+              << " type " << (*aParent)->pdgId()
+              << " pt=" << (*aParent)->pt()
+              << " isC = " << isFromC
+              << endl;
+*/
+   }
+   return isFromC;
+}
+
 const Candidate* TTbarCandidate::lastBHadron(const Candidate & c)
 {
    const Candidate * out;
@@ -441,6 +546,21 @@ const Candidate* TTbarCandidate::lastBHadron(const Candidate & c)
      {
          if( hasBottom(**aParent) ) out = *aParent;
          
+     }
+   return out;
+}
+
+const Candidate* TTbarCandidate::lastCHadron(const Candidate & c)
+{
+   const Candidate * out;
+
+   vector<const Candidate *> allParents = getAncestors( c );
+   for( vector<const Candidate *>::const_iterator aParent  = allParents.begin();
+                                                  aParent != allParents.end();
+                                                  aParent ++ )
+     {
+         if( hasCharm(**aParent) ) out = *aParent;
+
      }
    return out;
 }
@@ -475,6 +595,45 @@ bool TTbarCandidate::isLastcharm( const reco::GenParticle& p ){
    return out;
 }
 
+bool TTbarCandidate::isLastParton( const reco::GenParticle& p){
+
+   bool out = true;
+
+   int id = abs( p.pdgId() );
+
+   unsigned int nDaughters = p.numberOfDaughters();
+   for ( unsigned iDaughter=0; iDaughter<nDaughters; ++iDaughter ) {
+     const reco::Candidate* daugh = p.daughter(iDaughter);
+     if( abs(daugh->pdgId()) == id) {
+       out = false;
+       break;
+     }
+   }
+
+   return out;
+}
+
+const reco::Candidate* TTbarCandidate::getLast( const reco::Candidate& p ){
+
+   const reco::Candidate* last = 0;
+   int id = abs( p.pdgId() );
+
+   unsigned int nDaughters = p.numberOfDaughters();
+   if( nDaughters == 1) {
+     const reco::Candidate* daugh = p.daughter(0);
+     if( abs( daugh->pdgId() ) == id ){ 
+       last = getLast( *daugh );
+     }else{
+       last = &p;
+     }
+   }else{
+     last = &p;
+   }
+
+   return last;
+
+}
+
 bool TTbarCandidate::isFromtop( const reco::GenParticle& p){
   bool out = false;
 
@@ -506,6 +665,7 @@ double TTbarCandidate::deltaR( const Candidate& pasObj, const GenJet& proObj ) {
   return dRval;
 
 }
+
 
 
 
