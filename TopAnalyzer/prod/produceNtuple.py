@@ -35,32 +35,34 @@ samplePath["Run2012MuMu"]    ="KoPFA.CommonTools.Sources.CMG.V5_4_0.RD.Run2012.p
 samplePath["Run2012ElEl"]    ="KoPFA.CommonTools.Sources.CMG.V5_4_0.RD.Run2012.patTuple_Run2012DoubleElectron_cff"
 samplePath["Run2011MuEl"]    ="KoPFA.CommonTools.Sources.CMG.V5_4_0.RD.Run2012.patTuple_Run2011_cff"
 
-def applyFilter(sample):
+def applyFilter(sample, process, postfix):
 
-  process.GenZmassFilter.applyFilter = False
-  process.topWLeptonGenFilter.applyFilter = False
+  applyPostfix(process,"GenZmassFilter",postfix).applyFilter = False
+  applyPostfix(process,"topDecayGenFilter",postfix).applyFilter = False
 
   if sample.find("Run") != -1:
-    process.JetEnergyScale.globalTag = cms.untracked.string('GR_R_42_V23')
-    process.JetEnergyScale.doResJec = cms.untracked.bool(True)
+    applyPostfix(process,"JetEnergyScale",postfix).globalTag = cms.untracked.string('GR_R_52_V9')
+    applyPostfix(process,"JetEnergyScale",postfix).doResJec = cms.untracked.bool(True)
     applyJSON(process, json )
 
   else:
-    process.JetEnergyScale.globalTag = cms.untracked.string('START42_V17')
-    process.JetEnergyScale.doResJec = cms.untracked.bool(False)
-    
+    applyPostfix(process,"JetEnergyScale",postfix).globalTag = cms.untracked.string('START52_V11')
+    applyPostfix(process,"JetEnergyScale",postfix).doResJec = cms.untracked.bool(False)
 
   if sample.find("ZJets") != -1 or sample.find("ZtauDecay") != -1:
-    process.GenZmassFilter.applyFilter = True
+    applyPostfix(process,"GenZmassFilter",postfix).applyFilter = True
     if sample.find("tau") != -1:
-      process.GenZmassFilter.decayMode = [15]
+      applyPostfix(process,"GenZmassFilter",postfix).decayMode = [15]
     else:
-      process.GenZmassFilter.decayMode = [11, 13]
+      applyPostfix(process,"GenZmassFilter",postfix).decayMode = [11,13]
 
   if sample.find("TTbar") != -1:
     process.topWLeptonGenFilter.applyFilter = True
+    applyPostfix(process,"topDecayGenFilter",postfix).applyFilter = True
     if sample.find("Others") != -1:
-      process.p.replace(process.topWLeptonGenFilter,~process.topWLeptonGenFilter)
+      process.p.replace( applyPostfix(process,"topDecayGenFilter",postfix),~applyPostfix(process,"topDecayGenFilter",postfix))
+      process.p2.replace( applyPostfix(process,"topDecayGenFilter",postfix),~applyPostfix(process,"topDecayGenFilter",postfix))
+      process.p3.replace( applyPostfix(process,"topDecayGenFilter",postfix),~applyPostfix(process,"topDecayGenFilter",postfix))
     #else:
     # need to check if there is already ~topWLeptonGenFilter : just to make sure TTbarOthers is called at the end for the time being.
     #  process.p.replace(process.~topWLeptonGenFilter,process.topWLeptonGenFilter)
@@ -75,7 +77,9 @@ def processSample( sample, dir):
     process.load(samplePath[sample]) 
 
     #for z tau decay and ttbar dilepton filter
-    applyFilter(sample)
+    applyFilter(sample,process,"MuMu")
+    applyFilter(sample,process,"MuEl")
+    applyFilter(sample,process,"ElEl")
 
     out.write(process.dumpPython())
     out.close()
