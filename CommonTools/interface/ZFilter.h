@@ -13,7 +13,7 @@
 //
 // Original Author:  Tae Jeong Kim,40 R-A32,+41227678602,
 //         Created:  Fri Jun  4 17:19:29 CEST 2010
-// $Id: ZFilter.h,v 1.1 2011/05/23 09:34:27 tjkim Exp $
+// $Id: ZFilter.h,v 1.2 2012/06/07 15:10:16 tjkim Exp $
 //
 //
 
@@ -84,6 +84,7 @@ class ZFilter : public edm::EDFilter {
  public:
   explicit ZFilter(const edm::ParameterSet& iConfig){
     //now do what ever initialization is needed
+    applyFilter_ = iConfig.getUntrackedParameter<bool>("applyFilter",true);
     muonLabel1_ = iConfig.getParameter<edm::InputTag>("muonLabel1");
     muonLabel2_ = iConfig.getParameter<edm::InputTag>("muonLabel2");
     min_ = iConfig.getParameter<double>("min");  
@@ -202,7 +203,8 @@ class ZFilter : public edm::EDFilter {
     iEvent.put(lep1,"Lepton1");
     iEvent.put(lep2,"Lepton2");
 
-    return accept;
+    if(applyFilter_) return accept;
+    else return true;
 
   }
 
@@ -225,12 +227,13 @@ class ZFilter : public edm::EDFilter {
     else        return ( dRval < 0.025 && dPtRel < 0.025 );
   }
 
-
+  bool applyFilter_;
   edm::InputTag muonLabel1_;
   edm::InputTag muonLabel2_;
   double min_;
   double max_;
   double relIso1_;
   double relIso2_;
+
 };
 
