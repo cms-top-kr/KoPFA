@@ -13,7 +13,7 @@
 //
 // Original Author:  Tae Jeong Kim,40 R-A32,+41227678602,
 //         Created:  Fri Jun  4 17:19:29 CEST 2010
-// $Id: TopDILAnalyzer.h,v 1.80 2012/07/03 15:22:44 tjkim Exp $
+// $Id: TopDILAnalyzer.h,v 1.81 2012/07/03 21:48:57 tjkim Exp $
 //
 //
 
@@ -180,8 +180,32 @@ class TopDILAnalyzer : public edm::EDFilter {
     tree->Branch("puweightplus",&puweightplus, "puweightplus/d");
     tree->Branch("puweightminus",&puweightminus, "puweightminus/d");
 
+    tree->Branch("bweight20CSVL",&bweight20CSVL, "bweight20CSVL/d");
+    tree->Branch("bweight30CSVL",&bweight30CSVL, "bweight30CSVL/d");
+
     tree->Branch("bweight20CSVM",&bweight20CSVM, "bweight20CSVM/d");
     tree->Branch("bweight30CSVM",&bweight30CSVM, "bweight30CSVM/d");
+
+    tree->Branch("bweight20CSVT",&bweight20CSVT, "bweight20CSVT/d");
+    tree->Branch("bweight30CSVT",&bweight30CSVT, "bweight30CSVT/d");
+
+    tree->Branch("bweight20CSVLup",&bweight20CSVLup, "bweight20CSVLup/d");
+    tree->Branch("bweight30CSVLup",&bweight30CSVLup, "bweight30CSVLup/d");
+
+    tree->Branch("bweight20CSVMup",&bweight20CSVMup, "bweight20CSVMup/d");
+    tree->Branch("bweight30CSVMup",&bweight30CSVMup, "bweight30CSVMup/d");
+
+    tree->Branch("bweight20CSVTup",&bweight20CSVTup, "bweight20CSVTup/d");
+    tree->Branch("bweight30CSVTup",&bweight30CSVTup, "bweight30CSVTup/d");
+
+    tree->Branch("bweight20CSVLdw",&bweight20CSVLdw, "bweight20CSVLdw/d");
+    tree->Branch("bweight30CSVLdw",&bweight30CSVLdw, "bweight30CSVLdw/d");
+
+    tree->Branch("bweight20CSVMdw",&bweight20CSVMdw, "bweight20CSVMdw/d");
+    tree->Branch("bweight30CSVMdw",&bweight30CSVMdw, "bweight30CSVMdw/d");
+
+    tree->Branch("bweight20CSVTdw",&bweight20CSVTdw, "bweight20CSVTdw/d");
+    tree->Branch("bweight30CSVTdw",&bweight30CSVTdw, "bweight30CSVTdw/d");
 
     tree->Branch("ZMass",&ZMass,"ZMass/d");
     tree->Branch("genZMass",&genZMass,"ZMass/d");
@@ -318,16 +342,18 @@ class TopDILAnalyzer : public edm::EDFilter {
       break;
     }
 
-    ZMass = ZCand->at(0).mass();
-    PairSign =  ZCand->at(0).sign();
-    relIso1 =  ZCand->at(0).leg1().relpfIso03();
-    relIso2 = ZCand->at(0).leg2().relpfIso03();
-    pt1 = ZCand->at(0).leg1().pt();
-    pt2 = ZCand->at(0).leg2().pt();
-    eta1 = ZCand->at(0).leg1().eta();
-    eta2 = ZCand->at(0).leg2().eta();
-    phi1 = ZCand->at(0).leg1().phi();
-    phi2 = ZCand->at(0).leg2().phi();
+    if( ZCand->size() > 0){
+      ZMass = ZCand->at(0).mass();
+      PairSign =  ZCand->at(0).sign();
+      relIso1 =  ZCand->at(0).leg1().relpfIso03();
+      relIso2 = ZCand->at(0).leg2().relpfIso03();
+      pt1 = ZCand->at(0).leg1().pt();
+      pt2 = ZCand->at(0).leg2().pt();
+      eta1 = ZCand->at(0).leg1().eta();
+      eta2 = ZCand->at(0).leg2().eta();
+      phi1 = ZCand->at(0).leg1().phi();
+      phi2 = ZCand->at(0).leg2().phi();
+    }
 
     bool iso = relIso1 < relIso1_ && relIso2 < relIso2_;
     if( iso ) isIso = 1;
@@ -389,8 +415,17 @@ class TopDILAnalyzer : public edm::EDFilter {
       jet20flavor[i] = jetspt20flavor->at(i);
     }
 
-    double bTagWeightJet20 = bTag.reweight( jet20, jet20flavor, nbjets20_[2], BTagWeight::CSVM);
-    bweight20CSVM = bTagWeightJet20;
+    bweight20CSVL = bTag.reweight( jet20, jet20flavor, nbjets20_[1], BTagWeight::CSVL, BTagWeight::NORM);
+    bweight20CSVM = bTag.reweight( jet20, jet20flavor, nbjets20_[2], BTagWeight::CSVM, BTagWeight::NORM);
+    bweight20CSVT = bTag.reweight( jet20, jet20flavor, nbjets20_[3], BTagWeight::CSVT, BTagWeight::NORM);
+
+    bweight20CSVLup = bTag.reweight( jet20, jet20flavor, nbjets20_[1], BTagWeight::CSVL, BTagWeight::UP);
+    bweight20CSVMup = bTag.reweight( jet20, jet20flavor, nbjets20_[2], BTagWeight::CSVM, BTagWeight::UP);
+    bweight20CSVTup = bTag.reweight( jet20, jet20flavor, nbjets20_[3], BTagWeight::CSVT, BTagWeight::UP);
+
+    bweight20CSVLdw = bTag.reweight( jet20, jet20flavor, nbjets20_[1], BTagWeight::CSVL, BTagWeight::DW);
+    bweight20CSVMdw = bTag.reweight( jet20, jet20flavor, nbjets20_[2], BTagWeight::CSVM, BTagWeight::DW);
+    bweight20CSVTdw = bTag.reweight( jet20, jet20flavor, nbjets20_[3], BTagWeight::CSVT, BTagWeight::DW);
 
     unsigned int nJet30 = jetspt30->size();
     std::vector<TLorentzVector *> jet30(nJet30);
@@ -401,8 +436,17 @@ class TopDILAnalyzer : public edm::EDFilter {
       jet30[i] = new TLorentzVector( jetspt30->at(i).px(), jetspt30->at(i).py(), jetspt30->at(i).pz(), jetspt30->at(i).energy() );
       jet30flavor[i] = jetspt30flavor->at(i);
     }
-    double bTagWeightJet30 = bTag.reweight( jet30, jet30flavor, nbjets20_[2], BTagWeight::CSVM);
-    bweight30CSVM = bTagWeightJet30;
+    bweight30CSVL = bTag.reweight( jet30, jet30flavor, nbjets30_[1], BTagWeight::CSVL, BTagWeight::NORM);
+    bweight30CSVM = bTag.reweight( jet30, jet30flavor, nbjets30_[2], BTagWeight::CSVM, BTagWeight::NORM);
+    bweight30CSVT = bTag.reweight( jet30, jet30flavor, nbjets30_[3], BTagWeight::CSVT, BTagWeight::NORM);
+
+    bweight30CSVLup = bTag.reweight( jet30, jet30flavor, nbjets30_[1], BTagWeight::CSVL, BTagWeight::UP);
+    bweight30CSVMup = bTag.reweight( jet30, jet30flavor, nbjets30_[2], BTagWeight::CSVM, BTagWeight::UP);
+    bweight30CSVTup = bTag.reweight( jet30, jet30flavor, nbjets30_[3], BTagWeight::CSVT, BTagWeight::UP);
+
+    bweight30CSVLdw = bTag.reweight( jet30, jet30flavor, nbjets30_[1], BTagWeight::CSVL, BTagWeight::DW);
+    bweight30CSVMdw = bTag.reweight( jet30, jet30flavor, nbjets30_[2], BTagWeight::CSVM, BTagWeight::DW);
+    bweight30CSVTdw = bTag.reweight( jet30, jet30flavor, nbjets30_[3], BTagWeight::CSVT, BTagWeight::DW);
 
     if( jetspt30->size() >= 2 ){
       dphimetjet1 = fabs(deltaPhi(mi->phi(),jetspt30->at(0).phi()));
@@ -653,8 +697,26 @@ class TopDILAnalyzer : public edm::EDFilter {
     puweightplus = 1.0;
     puweightminus = 1.0;
 
+    bweight20CSVL = 1.0;
+    bweight30CSVL = 1.0;
     bweight20CSVM = 1.0;
     bweight30CSVM = 1.0;
+    bweight20CSVT = 1.0;
+    bweight30CSVT = 1.0;
+
+    bweight20CSVLup = 1.0;
+    bweight30CSVLup = 1.0;
+    bweight20CSVMup = 1.0;
+    bweight30CSVMup = 1.0;
+    bweight20CSVTup = 1.0;
+    bweight30CSVTup = 1.0;
+
+    bweight20CSVLdw = 1.0;
+    bweight30CSVLdw = 1.0;
+    bweight20CSVMdw = 1.0;
+    bweight30CSVMdw = 1.0;
+    bweight20CSVTdw = 1.0;
+    bweight30CSVTdw = 1.0;
 
     dphimetlepton1 = -999;  
     dphimetlepton2 = -999;  
@@ -816,8 +878,26 @@ class TopDILAnalyzer : public edm::EDFilter {
   double puweightplus;
   double puweightminus;
 
+  double bweight20CSVL;
+  double bweight30CSVL;
   double bweight20CSVM;
   double bweight30CSVM;
+  double bweight20CSVT;
+  double bweight30CSVT;
+
+  double bweight20CSVLup;
+  double bweight30CSVLup;
+  double bweight20CSVMup;
+  double bweight30CSVMup;
+  double bweight20CSVTup;
+  double bweight30CSVTup;
+
+  double bweight20CSVLdw;
+  double bweight30CSVLdw;
+  double bweight20CSVMdw;
+  double bweight30CSVMdw;
+  double bweight20CSVTdw;
+  double bweight30CSVTdw;
 
   bool applyIso_;
   bool oppPair_;

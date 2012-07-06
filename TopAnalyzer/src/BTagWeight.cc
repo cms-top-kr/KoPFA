@@ -3,9 +3,10 @@
 // Created: June 5 2012
 #include "KoPFA/TopAnalyzer/interface/BTagWeight.h"
 
-double BTagWeight::reweight(const std::vector<TLorentzVector *> &jets, const std::vector<int> &jetflavor, int ntag, AlgoType algo)
+double BTagWeight::reweight(const std::vector<TLorentzVector *> &jets, const std::vector<int> &jetflavor, int ntag, AlgoType algo, SYS sys)
 {
     algo_ = algo;
+    sys_ = sys;
 
     double pmc = probmc(jets, jetflavor, ntag);
     double pdata = probdata(jets, jetflavor, ntag);
