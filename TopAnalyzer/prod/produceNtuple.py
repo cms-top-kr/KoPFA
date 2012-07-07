@@ -33,7 +33,9 @@ samplePath["SingleToptW"]     ="KoPFA.CommonTools.Sources.CMG.V5_4_0.MC.Summer12
 samplePath["SingleTopBartW"]  ="KoPFA.CommonTools.Sources.CMG.V5_4_0.MC.Summer12.patTuple_Tbartw_cff"
 samplePath["Run2012MuMu"]    ="KoPFA.CommonTools.Sources.CMG.V5_4_0.RD.Run2012.patTuple_Run2012DoubleMu_cff"
 samplePath["Run2012ElEl"]    ="KoPFA.CommonTools.Sources.CMG.V5_4_0.RD.Run2012.patTuple_Run2012DoubleElectron_cff"
-samplePath["Run2011MuEl"]    ="KoPFA.CommonTools.Sources.CMG.V5_4_0.RD.Run2012.patTuple_Run2011_cff"
+samplePath["Run2012MuEl"]    ="KoPFA.CommonTools.Sources.CMG.V5_4_0.RD.Run2012.patTuple_Run2012MuEl_cff"
+
+from PhysicsTools.PatAlgos.tools.helpers import listModules, applyPostfix
 
 def applyFilter(sample, process, postfix):
 
