@@ -99,8 +99,10 @@ EventWeightProducer::beginJob(){
   std::vector< float > TrueDist2011;
   std::vector< float > TrueDist2011UP;
   std::vector< float > TrueDist2011DN;
-
-  for( int i=0; i<60; ++i) {//Summer12 60bin Fall11 50bin
+ 
+  unsigned int nbins = PileUpRD_.size();
+ 
+  for( unsigned int i=0; i<nbins; ++i) {//Summer12 60bin Fall11 50bin
     TrueDist2011.push_back((float)PileUpRD_[i]);
     TrueDist2011UP.push_back((float)PileUpRDup_[i]);
     TrueDist2011DN.push_back((float)PileUpRDdn_[i]);
