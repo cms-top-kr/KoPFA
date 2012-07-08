@@ -13,7 +13,7 @@
 //
 // Original Author:  Tae Jeong Kim,40 R-A32,+41227678602,
 //         Created:  Fri Jun  4 17:19:29 CEST 2010
-// $Id: TopDILAnalyzer.h,v 1.81 2012/07/03 21:48:57 tjkim Exp $
+// $Id: TopDILAnalyzer.h,v 1.82 2012/07/06 14:50:39 tjkim Exp $
 //
 //
 
@@ -254,6 +254,7 @@ class TopDILAnalyzer : public edm::EDFilter {
 
   virtual bool filter(edm::Event& iEvent, const edm::EventSetup& iSetup)
   {
+    const bool isRealData = iEvent.isRealData();
     bool accept = true;
     std::vector<bool> cutStepBit(nCutStep_);
 
@@ -415,17 +416,19 @@ class TopDILAnalyzer : public edm::EDFilter {
       jet20flavor[i] = jetspt20flavor->at(i);
     }
 
-    bweight20CSVL = bTag.reweight( jet20, jet20flavor, nbjets20_[1], BTagWeight::CSVL, BTagWeight::NORM);
-    bweight20CSVM = bTag.reweight( jet20, jet20flavor, nbjets20_[2], BTagWeight::CSVM, BTagWeight::NORM);
-    bweight20CSVT = bTag.reweight( jet20, jet20flavor, nbjets20_[3], BTagWeight::CSVT, BTagWeight::NORM);
+    if( !isRealData ){
+      bweight20CSVL = bTag.reweight( jet20, jet20flavor, nbjets20_[1], BTagWeight::CSVL, BTagWeight::NORM);
+      bweight20CSVM = bTag.reweight( jet20, jet20flavor, nbjets20_[2], BTagWeight::CSVM, BTagWeight::NORM);
+      bweight20CSVT = bTag.reweight( jet20, jet20flavor, nbjets20_[3], BTagWeight::CSVT, BTagWeight::NORM);
 
-    bweight20CSVLup = bTag.reweight( jet20, jet20flavor, nbjets20_[1], BTagWeight::CSVL, BTagWeight::UP);
-    bweight20CSVMup = bTag.reweight( jet20, jet20flavor, nbjets20_[2], BTagWeight::CSVM, BTagWeight::UP);
-    bweight20CSVTup = bTag.reweight( jet20, jet20flavor, nbjets20_[3], BTagWeight::CSVT, BTagWeight::UP);
+      bweight20CSVLup = bTag.reweight( jet20, jet20flavor, nbjets20_[1], BTagWeight::CSVL, BTagWeight::UP);
+      bweight20CSVMup = bTag.reweight( jet20, jet20flavor, nbjets20_[2], BTagWeight::CSVM, BTagWeight::UP);
+      bweight20CSVTup = bTag.reweight( jet20, jet20flavor, nbjets20_[3], BTagWeight::CSVT, BTagWeight::UP);
 
-    bweight20CSVLdw = bTag.reweight( jet20, jet20flavor, nbjets20_[1], BTagWeight::CSVL, BTagWeight::DW);
-    bweight20CSVMdw = bTag.reweight( jet20, jet20flavor, nbjets20_[2], BTagWeight::CSVM, BTagWeight::DW);
-    bweight20CSVTdw = bTag.reweight( jet20, jet20flavor, nbjets20_[3], BTagWeight::CSVT, BTagWeight::DW);
+      bweight20CSVLdw = bTag.reweight( jet20, jet20flavor, nbjets20_[1], BTagWeight::CSVL, BTagWeight::DW);
+      bweight20CSVMdw = bTag.reweight( jet20, jet20flavor, nbjets20_[2], BTagWeight::CSVM, BTagWeight::DW);
+      bweight20CSVTdw = bTag.reweight( jet20, jet20flavor, nbjets20_[3], BTagWeight::CSVT, BTagWeight::DW);
+    }
 
     unsigned int nJet30 = jetspt30->size();
     std::vector<TLorentzVector *> jet30(nJet30);
@@ -436,17 +439,20 @@ class TopDILAnalyzer : public edm::EDFilter {
       jet30[i] = new TLorentzVector( jetspt30->at(i).px(), jetspt30->at(i).py(), jetspt30->at(i).pz(), jetspt30->at(i).energy() );
       jet30flavor[i] = jetspt30flavor->at(i);
     }
-    bweight30CSVL = bTag.reweight( jet30, jet30flavor, nbjets30_[1], BTagWeight::CSVL, BTagWeight::NORM);
-    bweight30CSVM = bTag.reweight( jet30, jet30flavor, nbjets30_[2], BTagWeight::CSVM, BTagWeight::NORM);
-    bweight30CSVT = bTag.reweight( jet30, jet30flavor, nbjets30_[3], BTagWeight::CSVT, BTagWeight::NORM);
+   
+    if( !isRealData ){
+      bweight30CSVL = bTag.reweight( jet30, jet30flavor, nbjets30_[1], BTagWeight::CSVL, BTagWeight::NORM);
+      bweight30CSVM = bTag.reweight( jet30, jet30flavor, nbjets30_[2], BTagWeight::CSVM, BTagWeight::NORM);
+      bweight30CSVT = bTag.reweight( jet30, jet30flavor, nbjets30_[3], BTagWeight::CSVT, BTagWeight::NORM);
 
-    bweight30CSVLup = bTag.reweight( jet30, jet30flavor, nbjets30_[1], BTagWeight::CSVL, BTagWeight::UP);
-    bweight30CSVMup = bTag.reweight( jet30, jet30flavor, nbjets30_[2], BTagWeight::CSVM, BTagWeight::UP);
-    bweight30CSVTup = bTag.reweight( jet30, jet30flavor, nbjets30_[3], BTagWeight::CSVT, BTagWeight::UP);
+      bweight30CSVLup = bTag.reweight( jet30, jet30flavor, nbjets30_[1], BTagWeight::CSVL, BTagWeight::UP);
+      bweight30CSVMup = bTag.reweight( jet30, jet30flavor, nbjets30_[2], BTagWeight::CSVM, BTagWeight::UP);
+      bweight30CSVTup = bTag.reweight( jet30, jet30flavor, nbjets30_[3], BTagWeight::CSVT, BTagWeight::UP);
 
-    bweight30CSVLdw = bTag.reweight( jet30, jet30flavor, nbjets30_[1], BTagWeight::CSVL, BTagWeight::DW);
-    bweight30CSVMdw = bTag.reweight( jet30, jet30flavor, nbjets30_[2], BTagWeight::CSVM, BTagWeight::DW);
-    bweight30CSVTdw = bTag.reweight( jet30, jet30flavor, nbjets30_[3], BTagWeight::CSVT, BTagWeight::DW);
+      bweight30CSVLdw = bTag.reweight( jet30, jet30flavor, nbjets30_[1], BTagWeight::CSVL, BTagWeight::DW);
+      bweight30CSVMdw = bTag.reweight( jet30, jet30flavor, nbjets30_[2], BTagWeight::CSVM, BTagWeight::DW);
+      bweight30CSVTdw = bTag.reweight( jet30, jet30flavor, nbjets30_[3], BTagWeight::CSVT, BTagWeight::DW);
+    }
 
     if( jetspt30->size() >= 2 ){
       dphimetjet1 = fabs(deltaPhi(mi->phi(),jetspt30->at(0).phi()));
