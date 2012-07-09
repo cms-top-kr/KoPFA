@@ -34,6 +34,8 @@ void TTbarCandidate::building( const reco::GenJetCollection* genJets, const reco
   std::vector<math::XYZTLorentzVector> bquarks;
   std::vector<math::XYZTLorentzVector> cquarks;
 
+  mass_ = 0;
+
   for ( unsigned int ip=0; ip<nParticles; ++ip ) { 
 
 
@@ -62,13 +64,15 @@ void TTbarCandidate::building( const reco::GenJetCollection* genJets, const reco
 
     if ( ntop == 2 ) continue;
 
-    if ( abs(p.pdgId()) != 6 ) {
-      bool isLast = isLastParton(p);
-      if(isLast != true) continue;
-    } 
-   
+    if ( abs(p.pdgId()) != 6 ) continue;
+
+    bool isLast = isLastParton(p);
+    if(isLast != true) continue;
+     
     ttbarGen += p.p4();
-    mass_ = ttbarGen.M();
+    if( ntop == 1 ) {
+      mass_ = ttbarGen.M();
+    }
 
     unsigned int nDaughters = p.numberOfDaughters();
     int nW = 0;
@@ -394,7 +398,7 @@ void TTbarCandidate::building( const reco::GenJetCollection* genJets, const reco
     int idx = (*it).first;
     const reco::GenJet& genJet = genJets->at(idx);
     // is It unique c-jet?  
-    if( mapJetToBMatched[idx]  == 0 ) continue;
+    if( mapJetToCMatched[idx]  == 0 ) continue;
     cJetsCHad.push_back( genJet.p4() );
   }
 
