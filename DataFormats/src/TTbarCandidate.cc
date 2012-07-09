@@ -458,8 +458,8 @@ void TTbarCandidate::building( const reco::GenJetCollection* genJets, const reco
     if( cJets[i].pt() > 10 && fabs(cJets[i].eta()) < 2.5) NcJets10_++;
     if( cJets[i].pt() > 15 && fabs(cJets[i].eta()) < 2.5) NcJets15_++;
     if( cJets[i].pt() > 20 && fabs(cJets[i].eta()) < 2.5) NcJets20_++;
-    if( cJets[i].pt() > 25 && fabs(cJets[i].eta()) < 2.5) NcJets20_++;
-    if( cJets[i].pt() > 30 && fabs(cJets[i].eta()) < 2.5) NcJets20_++;
+    if( cJets[i].pt() > 25 && fabs(cJets[i].eta()) < 2.5) NcJets25_++;
+    if( cJets[i].pt() > 30 && fabs(cJets[i].eta()) < 2.5) NcJets30_++;
   }
 
 }
