@@ -399,6 +399,7 @@ void TTbarCandidate::building( const reco::GenJetCollection* genJets, const reco
     const reco::GenJet& genJet = genJets->at(idx);
     // is It unique c-jet?  
     if( mapJetToCMatched[idx]  == 0 ) continue;
+    if( mapJetToBMatched[idx]  == 1 ) continue; //if it is assigned as b-jet, do not count it as c-jet
     cJetsCHad.push_back( genJet.p4() );
   }
 
