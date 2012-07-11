@@ -8,9 +8,9 @@ void anaTOP11013()
   gROOT->ProcessLine(".L tdrstyle.C");
   defaultStyle();
 
-  ana("MuMu", "TOP11013_08072012/MuMu");
-  ana("ElEl", "TOP11013_08072012/ElEl");
-  ana("MuEl", "TOP11013_08072012/MuEl");
+  ana("MuMu", "TOP11013_11072012/MuMu");
+  ana("ElEl", "TOP11013_11072012/ElEl");
+  ana("MuEl", "TOP11013_11072012/MuEl");
 }
 
 void ana(string decayMode, string imageOutDir = "test")
@@ -25,13 +25,13 @@ void ana(string decayMode, string imageOutDir = "test")
 
   TopAnalyzerLite* analyzer = new TopAnalyzerLite(decayMode, imageOutDir);
 
-  const std::string mcPath = "$WORK/data/export/common/Top/ntuple/"+decayMode+"/MC/Fall11_v9/";
-  const std::string rdPath = "$WORK/data/export/common/Top/ntuple/"+decayMode+"/RD/2011Full_v7/";
+  const std::string mcPath = "/afs/cern.ch/work/t/tjkim/public/store/top/"+decayMode+"/v0/";
+  const std::string rdPath = "/afs/cern.ch/work/t/tjkim/public/store/top/"+decayMode+"/v0/";
 
   analyzer->addRealData(rdPath+"vallot_Run2011.root", 4982);
 
-  analyzer->addMCSig("TTbar", "t#bar{t}", mcPath+"vallot_TTbarTuneZ2.root", 165.0, kRed+1);
-  analyzer->addMCBkg("TTbarOthers", "t#bar{t} other", mcPath+"vallot_TTbarOthers.root", 165.0, kRed-7);
+  analyzer->addMCSig("TTbar", "t#bar{t}", mcPath+"vallot_TTbarTuneZ2.root", 165.6, kRed+1);
+  analyzer->addMCBkg("TTbarOthers", "t#bar{t} other", mcPath+"vallot_TTbarOthers.root", 165.6, kRed-7);
 
   analyzer->addMCBkg("Wl", "W#rightarrowl#nu", mcPath+"vallot_WJetsToLNu.root", 31314, kGreen-3);
 
@@ -113,7 +113,7 @@ void ana(string decayMode, string imageOutDir = "test")
     analyzer->replaceDataBkgCut("QCD", "ZMass > 12", "ZMass > 12 && relIso1 > 0.20 && relIso2 > 0.17");
   }
 
-  analyzer->setEventWeightVar("bweight30CSVL");
+  analyzer->setEventWeightVar("puweight*bweight30CSVL");
 
   //Full 2011 using Fall11
   const double wDYmm[] = {1.0,1.0,1.0,0.94,0.91,1.18,1.32,1.32};
