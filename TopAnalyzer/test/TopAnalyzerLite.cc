@@ -63,7 +63,7 @@ public:
   void setScanVariables(const string scanVariables);
 
   void applyCutSteps();
-  void applySingleCut(const TCut cut, const TString monitirPlotNamesStr);
+  void applySingleCut(const TCut cut, const TString monitirPlotNamesStr, int istep = 0);
 
   void drawEffCurve(const TCut cut, const string varexp, const string scanPoints, const string imgPrefix = "");
   void drawEffCurve(const TCut cut, const string varexp, std::vector<double>& scanPoints, const string imgPrefix = "");
@@ -132,7 +132,7 @@ private:
 
   void prepareEventList(const TCut &cut, int istep);
   void plot(const string name, TCut cut, MonitorPlot& monitorPlot, const double plotScale = 1.0, const double wDY = 1.0);
-  void printStat(const string& name, TCut cut, double cutStep=0);
+  void printStat(const string& name, TCut cut, int cutStep=0);
   void addMC(vector<MCSample>& mcSetup,
              const string name, const string label,
              const string fileName, const double xsec, const double nEvents,
@@ -145,6 +145,7 @@ private:
   string eventWeightVar_;
   map<string, vector<double> > wMap_; 
   map<TString, vector<Stat> > statsMap_; 
+  map<TString, vector<TEntryList *> > entryList_;
   TDirectory* baseRootDir_;
 };
 
@@ -281,9 +282,10 @@ void TopAnalyzerLite::prepareEventList(const TCut &cut, int istep)
     realDataChain_->Draw(puttoentrylistname, cut, "entrylist");
     TEntryList *list = (TEntryList *)gDirectory->Get(entrylistname);
     if (list==0) cout << "error!" << endl;
-  //    cout << "data entries " << list->GetN() << endl;
-      realDataChain_->SetEntryList(list);
-    }
+    realDataChain_->SetEntryList(list);
+    entryList_["realdata"].push_back(list);
+    if( entryList_["realdata"].back() == 0 ) cout << "Error!" << endl;
+  }
 
   for ( unsigned int i=0; i<mcSigs_.size(); ++i )
   {
@@ -294,6 +296,7 @@ void TopAnalyzerLite::prepareEventList(const TCut &cut, int istep)
     mcSample.chain->Draw(puttoentrylistname, finalCut, "entrylist");
     TEntryList *list = (TEntryList *)gDirectory->Get(entrylistname);
     mcSample.chain->SetEntryList(list);
+    entryList_[Form("mcsig%d",i)].push_back(list);
   }
   for ( unsigned int i=0; i<mcBkgs_.size(); ++i )
   {
@@ -304,6 +307,7 @@ void TopAnalyzerLite::prepareEventList(const TCut &cut, int istep)
     mcSample.chain->Draw(puttoentrylistname, finalCut, "entrylist");
     TEntryList *list = (TEntryList *)gDirectory->Get(entrylistname);
     mcSample.chain->SetEntryList(list);
+    entryList_[Form("mcbkg%d",i)].push_back(list);
   }
   for ( unsigned int i=0; i<dataBkgs_.size(); ++i )
   {
@@ -319,6 +323,7 @@ void TopAnalyzerLite::prepareEventList(const TCut &cut, int istep)
     sample.chain->Draw(puttoentrylistname, cutStr, "entrylist");
     TEntryList *list = (TEntryList *)gDirectory->Get(entrylistname);
     sample.chain->SetEntryList(list);
+    entryList_[Form("databkg%d",i)].push_back(list);
   }
 }
 
@@ -424,8 +429,8 @@ void TopAnalyzerLite::applyCutSteps()
     cut = cut && cuts_[i].cut;
     const vector<string>& monitorPlotNames = cuts_[i].monitorPlotNames;
     const double plotScale = cuts_[i].plotScale;
+    prepareEventList(cut, i);
     printStat(Form("Step_%d", i+1), cut, i);
-    prepareEventList(cut, i+1);
     for ( unsigned int j = 0; j < monitorPlotNames.size(); ++ j)
     {
       const string& plotName = monitorPlotNames[j];
@@ -739,7 +744,7 @@ void TopAnalyzerLite::plot(const string name, const TCut cut, MonitorPlot& monit
   }
 }
 
-void TopAnalyzerLite::printStat(const string& name, TCut cut, double cutStep)
+void TopAnalyzerLite::printStat(const string& name, TCut cut, int cutStep)
 {
   cout << "-------------------------\n";
   cout << "   " << name << endl;
@@ -750,7 +755,7 @@ void TopAnalyzerLite::printStat(const string& name, TCut cut, double cutStep)
     fout_ << "   " << name << endl;
   }
 
-  const double nData = realDataChain_ ? realDataChain_->GetEntries(cut) : 0;
+  const double nData = realDataChain_ ? entryList_["realdata"].at(cutStep)->GetN() : 0;
 
   double nTotal = 0, nSignal = 0;
   double nTotalErr2 = 0;
@@ -764,7 +769,7 @@ void TopAnalyzerLite::printStat(const string& name, TCut cut, double cutStep)
     MCSample& mcSample = mcSigs_[i];
 
     const double norm = lumi_*mcSample.xsec/mcSample.nEvents;
-    const double nEvents = mcSample.chain->GetEntries(cut + mcSample.cut)*norm;
+    const double nEvents = entryList_[Form("mcsig%d",i)].at(cutStep)->GetN()*norm;
     const double nEventsErr2 = nEvents*norm;
 
     // Merge statistics with same labels
@@ -798,7 +803,7 @@ void TopAnalyzerLite::printStat(const string& name, TCut cut, double cutStep)
     }
 
     const double norm = lumi_*mcSample.xsec/mcSample.nEvents;
-    const double nEvents = mcSample.chain->GetEntries(cut + mcSample.cut)*norm*scale;
+    const double nEvents = entryList_[Form("mcbkg%d",i)].at(cutStep)->GetN()*norm*scale;
     const double nEventsErr2 = nEvents*norm;
 
     // Merge statistics with same labels
@@ -842,7 +847,7 @@ void TopAnalyzerLite::printStat(const string& name, TCut cut, double cutStep)
     }
 
     const double norm = sample.norm;
-    const double nEvents = sample.chain->GetEntries(cutStr)*norm*scale;
+    const double nEvents = entryList_[Form("databkg%d",i)].at(cutStep)->GetN()*norm*scale;
     const double nEventsErr2 = nEvents*norm;
 
     vector<Stat>::iterator matchedStatObj = stats.end();
@@ -922,7 +927,7 @@ void TopAnalyzerLite::printStat(const string& name, TCut cut, double cutStep)
   statsMap_[name] = stats;
 }
 
-void TopAnalyzerLite::applySingleCut(const TCut cut, const TString monitorPlotNamesStr)
+void TopAnalyzerLite::applySingleCut(const TCut cut, const TString monitorPlotNamesStr, int istep)
 {
   static int singleCutUniqueId = 0;
 
@@ -932,7 +937,8 @@ void TopAnalyzerLite::applySingleCut(const TCut cut, const TString monitorPlotNa
   cout << "----------------------------\n";
   cout << "Result of single cut" << endl;
   cout << "Cut = " << cut << endl;
-  printStat(Form("SingleCut_%d", singleCutUniqueId), cut);
+  prepareEventList(cut, istep);
+  printStat(Form("SingleCut_%d", singleCutUniqueId), cut, istep);
   for ( int i=0; i<nPlots; ++i )
   {
     TObject* obj = monitorPlotNames->At(i);
