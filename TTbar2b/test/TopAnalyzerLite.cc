@@ -22,6 +22,8 @@
 
 #include "TPRegexp.h"
 
+#include "TEntryList.h"
+
 #include <iostream>
 #include <fstream>
 #include <set>
@@ -128,6 +130,7 @@ private:
 
   string imageOutDir_;
 
+  void prepareEventList(const TCut &cut, int istep);
   void plot(const string name, TCut cut, MonitorPlot& monitorPlot, const double plotScale = 1.0, const double wDY = 1.0);
   void printStat(const string& name, TCut cut, double cutStep=0);
   void addMC(vector<MCSample>& mcSetup,
@@ -267,6 +270,58 @@ void TopAnalyzerLite::addDataBkg(const string name, const string label,
   data.chain->Add(fileName.c_str());
 }
 
+void TopAnalyzerLite::prepareEventList(const TCut &cut, int istep)
+{
+  char entrylistname[100];
+  char puttoentrylistname[100];
+	
+  if (realDataChain_) {
+    sprintf(entrylistname, "realdata%d", istep);
+    sprintf(puttoentrylistname, ">> %s", entrylistname);
+    realDataChain_->Draw(puttoentrylistname, cut, "entrylist");
+    TEntryList *list = (TEntryList *)gDirectory->Get(entrylistname);
+    if (list==0) cout << "error!" << endl;
+  //    cout << "data entries " << list->GetN() << endl;
+      realDataChain_->SetEntryList(list);
+    }
+
+  for ( unsigned int i=0; i<mcSigs_.size(); ++i )
+  {
+    MCSample& mcSample = mcSigs_[i];
+    TCut finalCut = cut + mcSample.cut;
+    sprintf(entrylistname, "mcsig%d_%d", i, istep);
+    sprintf(puttoentrylistname, ">> %s", entrylistname);
+    mcSample.chain->Draw(puttoentrylistname, finalCut, "entrylist");
+    TEntryList *list = (TEntryList *)gDirectory->Get(entrylistname);
+    mcSample.chain->SetEntryList(list);
+  }
+  for ( unsigned int i=0; i<mcBkgs_.size(); ++i )
+  {
+    MCSample& mcSample = mcBkgs_[i];
+    TCut finalCut = cut + mcSample.cut;
+    sprintf(entrylistname, "mcbkg%d_%d", i, istep);
+    sprintf(puttoentrylistname, ">> %s", entrylistname);
+    mcSample.chain->Draw(puttoentrylistname, finalCut, "entrylist");
+    TEntryList *list = (TEntryList *)gDirectory->Get(entrylistname);
+    mcSample.chain->SetEntryList(list);
+  }
+  for ( unsigned int i=0; i<dataBkgs_.size(); ++i )
+  {
+    DataSample& sample = dataBkgs_[i];
+    TString cutStr;
+    cutStr = cut;
+    map<string, string>::const_iterator cit;
+    for(cit=sample.replaceCuts.begin(); cit != sample.replaceCuts.end() ; cit++){
+      cutStr.ReplaceAll((*cit).first, (*cit).second);
+    }
+    sprintf(entrylistname, "databkg%d_%d", i, istep);
+    sprintf(puttoentrylistname, ">> %s", entrylistname);
+    sample.chain->Draw(puttoentrylistname, cutStr, "entrylist");
+    TEntryList *list = (TEntryList *)gDirectory->Get(entrylistname);
+    sample.chain->SetEntryList(list);
+  }
+}
+
 void TopAnalyzerLite::replaceDataBkgCut(const string name, const string from, const string to)
 {
   for ( unsigned int i=0; i<dataBkgs_.size(); ++i )
@@ -281,8 +336,7 @@ void TopAnalyzerLite::addRealData(const string fileName, const double lumi)
 {
   lumi_ += lumi;
   if ( fileName == "" ) return;
-
-  if ( !realDataChain_ )
+if ( !realDataChain_ )
   {
     const string chainName = subDirName_+"/tree";
     baseRootDir_->cd();
@@ -371,6 +425,7 @@ void TopAnalyzerLite::applyCutSteps()
     const vector<string>& monitorPlotNames = cuts_[i].monitorPlotNames;
     const double plotScale = cuts_[i].plotScale;
     printStat(Form("Step_%d", i+1), cut, i);
+    prepareEventList(cut, i+1);
     for ( unsigned int j = 0; j < monitorPlotNames.size(); ++ j)
     {
       const string& plotName = monitorPlotNames[j];
@@ -430,7 +485,7 @@ void TopAnalyzerLite::plot(const string name, const TCut cut, MonitorPlot& monit
   TH1F* hData = new TH1F(dataHistName, title.c_str(), nBins, xBins);
   histograms_.Add(hData);
 
-  if ( realDataChain_ ) realDataChain_->Project(dataHistName, varexp.c_str(), cut);
+  if ( realDataChain_ ) realDataChain_->Project(dataHistName, varexp.c_str());
   hData->AddBinContent(nBins, hData->GetBinContent(nBins+1));
   hData->Sumw2();
   hData->SetMarkerStyle(20);
@@ -450,17 +505,15 @@ void TopAnalyzerLite::plot(const string name, const TCut cut, MonitorPlot& monit
   LabeledPlots stackedPlots;
   LabeledPlots sigPlots; // Keep list of signal plots if doStackSignal == false
 
-  TCut mcCutStr = "";
-  if ( eventWeightVar_.empty() ) mcCutStr = cut;
-  else mcCutStr = Form("%s*(%s)", eventWeightVar_.c_str(), (const char*)(cut));
-
   for ( unsigned int i=0; i<mcSigs_.size(); ++i )
   {
     MCSample& mcSample = mcSigs_[i];
     TString mcSigHistName = Form("hMCSig_%s_%s", mcSample.name.c_str(), name.c_str());
     TH1F* hMCSig = new TH1F(mcSigHistName, title.c_str(), nBins, xBins);
 
-    mcSample.chain->Project(mcSigHistName, varexp.c_str(), mcCutStr + mcSample.cut);
+    TCut mcWeightStr = Form("%s", eventWeightVar_.c_str());
+
+    mcSample.chain->Project(mcSigHistName, varexp.c_str(),mcWeightStr);
     hMCSig->AddBinContent(nBins, hMCSig->GetBinContent(nBins+1));
     hMCSig->Scale(lumi_*mcSample.xsec/mcSample.nEvents);
 
@@ -514,7 +567,8 @@ void TopAnalyzerLite::plot(const string name, const TCut cut, MonitorPlot& monit
     TString mcHistName = Form("hMC_%s_%s", mcSample.name.c_str(), name.c_str());
     TH1F* hMC = new TH1F(mcHistName, title.c_str(), nBins, xBins);
 
-    mcSample.chain->Project(mcHistName, varexp.c_str(), mcCutStr + mcSample.cut);
+    TCut mcWeightStr = Form("%s", eventWeightVar_.c_str());
+    mcSample.chain->Project(mcHistName, varexp.c_str(),mcWeightStr);
     hMC->AddBinContent(nBins, hMC->GetBinContent(nBins+1));
     hMC->Scale(lumi_*mcSample.xsec/mcSample.nEvents);
 
@@ -567,14 +621,7 @@ void TopAnalyzerLite::plot(const string name, const TCut cut, MonitorPlot& monit
     TString histName = Form("hDataBkg_%s_%s", sample.name.c_str(), name.c_str());
     TH1F* hBkg = new TH1F(histName, title.c_str(), nBins, xBins);
 
-    TString cutStr;
-    cutStr = cut;
-    map<string, string>::const_iterator cit;
-    for(cit=sample.replaceCuts.begin(); cit != sample.replaceCuts.end() ; cit++){
-      cutStr.ReplaceAll((*cit).first, (*cit).second);
-    }
-
-    sample.chain->Project(histName, varexp.c_str(), cutStr);
+    sample.chain->Project(histName, varexp.c_str());
     hBkg->AddBinContent(nBins, hBkg->GetBinContent(nBins+1));
     hBkg->Scale(sample.norm);
 
@@ -657,7 +704,7 @@ void TopAnalyzerLite::plot(const string name, const TCut cut, MonitorPlot& monit
     legend->AddEntry(h, label, "l");
   }
 
-  TCanvas* c = new TCanvas(Form("c_%s", name.c_str()), name.c_str(), 1);
+  TCanvas* c = new TCanvas(Form("c_%s_%s", name.c_str(), subDirName_.c_str()), name.c_str(), 1);
   if ( ymax == 0 )
   {
     const int dataMaxBin = hData->GetMaximumBin();
