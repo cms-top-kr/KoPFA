@@ -1188,7 +1188,7 @@ void TopAnalyzerLite::printCutFlow(){
   TCut cut;
   for( int k = 0; k != (int) statsMap_.size() ; k++){
     cut = cut && cuts_[k].cut;
-    const double nData = realDataChain_ ? realDataChain_->GetEntries( cut ) : 0;
+    const double nData = realDataChain_ ? entryList_["realdata"].at(k)->GetN() : 0;
     cout << nData <<  "\t" ;
   }
   cout << "\n" ;
