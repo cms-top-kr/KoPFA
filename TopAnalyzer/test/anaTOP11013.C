@@ -8,9 +8,9 @@ void anaTOP11013()
   gROOT->ProcessLine(".L tdrstyle.C");
   defaultStyle();
 
-  ana("MuMu", "TOP11013_11072012/MuMu");
-  ana("ElEl", "TOP11013_11072012/ElEl");
-  ana("MuEl", "TOP11013_11072012/MuEl");
+  ana("MuMu", "TOP11013_12072012/MuMu");
+  ana("ElEl", "TOP11013_12072012/ElEl");
+  ana("MuEl", "TOP11013_12072012/MuEl");
 }
 
 void ana(string decayMode, string imageOutDir = "test")
@@ -103,13 +103,13 @@ void ana(string decayMode, string imageOutDir = "test")
 
 
   if ( decayMode == "MuMu"){
-    analyzer->replaceDataBkgCut("QCD", "relIso1 < 0.20 && relIso2 < 0.20", "relIso1 > 0.20 && relIso2 > 0.20");
+    analyzer->replaceDataBkgCut("QCD", "relIso1 < 0.20 && relIso2 < 0.20", "relIso1 > 0.25 && relIso2 > 0.25");
     analyzer->replaceDataBkgCut("QCD", "ZMass > 12", "ZMass > 12 && relIso1 > 0.20 && relIso2 > 0.20");
   }else if( decayMode == "ElEl"){
-    analyzer->replaceDataBkgCut("QCD", "relIso1 < 0.17 && relIso2 < 0.17", "relIso1 > 0.17 && relIso2 > 0.17");
+    analyzer->replaceDataBkgCut("QCD", "relIso1 < 0.17 && relIso2 < 0.17", "relIso1 > 0.25 && relIso2 > 0.25");
     analyzer->replaceDataBkgCut("QCD", "ZMass > 12", "ZMass > 12 && relIso1 > 0.17 && relIso2 > 0.17");
   }else if( decayMode == "MuEl"){
-    analyzer->replaceDataBkgCut("QCD", "relIso1 < 0.20 && relIso2 < 0.17", "relIso1 > 0.20 && relIso2 > 0.17");
+    analyzer->replaceDataBkgCut("QCD", "relIso1 < 0.20 && relIso2 < 0.17", "relIso1 > 0.25 && relIso2 > 0.25");
     analyzer->replaceDataBkgCut("QCD", "ZMass > 12", "ZMass > 12 && relIso1 > 0.20 && relIso2 > 0.17");
   }
 
