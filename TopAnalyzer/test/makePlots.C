@@ -23,9 +23,11 @@ void makePlots(TString noteNumber = "Merged")
 {
   setTDRStyle();
 
-  fEE = TFile::Open("ElEl.root");
-  fME = TFile::Open("MuEl.root");
-  fMM = TFile::Open("MuMu.root");
+  TString path = "TOP11013_12072012"; 
+
+  fEE = TFile::Open(path+"/ElEl/ElEl.root");
+  fME = TFile::Open(path+"/MuEl/MuEl.root");
+  fMM = TFile::Open(path+"/MuMu/MuMu.root");
 
   if ( !fEE || !fME || !fMM ) return;
 
@@ -38,34 +40,30 @@ void makePlots(TString noteNumber = "Merged")
   cutStepPlots("Step_3", "pt2", "Second leading lepton p_{T};p_{T} (GeV/c);Events/10 GeV/c", 0.1, 1e12, true);
   cutStepPlots("Step_3", "eta1", "Leading lepton #eta;#eta (GeV/c);Events/10 GeV/c", 0.1, 1e12, true);
   cutStepPlots("Step_3", "eta2", "Second leading lepton #eta;#eta (GeV/c);Events/10 GeV/c", 0.1, 1e12, true);
-  cutStepPlots("Step_3", "jet1pt", "Leading jet p_{T};p_{T} (GeV/c);Events/10 GeV/c", 0.1, 1e12, true);
-  cutStepPlots("Step_3", "jet2pt", "Second leading jet p_{T};p_{T} (GeV/c);Events/10 GeV/c", 0.1, 1e12, true);
-  cutStepPlots("Step_3", "jet1eta", "Leading jet #eta;#eta (GeV/c);Events/10 GeV/c", 0.1, 1e12, true);
-  cutStepPlots("Step_3", "jet2eta", "Second leading jet #eta;#eta (GeV/c);Events/10 GeV/c", 0.1, 1e12, true);
+  cutStepPlots("Step_3", "jet1pt30", "Leading jet p_{T};p_{T} (GeV/c);Events/10 GeV/c", 0.1, 1e12, true);
+  cutStepPlots("Step_3", "jet2pt30", "Second leading jet p_{T};p_{T} (GeV/c);Events/10 GeV/c", 0.1, 1e12, true);
+  cutStepPlots("Step_3", "jet1eta30", "Leading jet #eta;#eta (GeV/c);Events/10 GeV/c", 0.1, 1e12, true);
+  cutStepPlots("Step_3", "jet2eta30", "Second leading jet #eta;#eta (GeV/c);Events/10 GeV/c", 0.1, 1e12, true);
   cutStepPlots("Step_3", "nVertex", "Vertex multiplicity", 0, 2e6, false);
   cutStepPlots("Step_3", "METlog", "Missing E_{T}", 1, 1e9, true);
-  cutStepPlots("Step_3", "nJetlog", "Jet multiplicity", 1, 1e9, true);
+  cutStepPlots("Step_3", "nJet30log", "Jet multiplicity", 1, 1e9, true);
   cutStepPlots("Step_3", "ZMass", "Z mass", 1, 1e9, true);
   cutStepPlots("Step_4", "METlog", "Missing E_{T}", 1, 1e10, true);
-  cutStepPlots("Step_4", "nJetlog", "Jet multiplicity", 1, 1e9, true);
+  cutStepPlots("Step_4", "nJet30log", "Jet multiplicity", 1, 1e9, true);
   cutStepPlots("Step_5", "MET", "Missing E_{T}", 1, 1e10, true);
-  cutStepPlots("Step_6", "nJet", "Jet multiplicity", 1, 1e10, true);
-  cutStepPlots("Step_6", "nbJet_CSVL", "b-Jet multiplicity(CSVL)", 1, 1e8, true);
-  //cutStepPlots("Step_6", "nbJet_CSVM", "b-Jet multiplicity(CSVM)", 1, 1e8, true);
-  cutStepPlots("Step_6", "MET", "Missing E_{T}", 1, 1e10, true); 
-  cutStepPlots("Step_6", "vsumM", "t#bar{t} invariant mass", 0, 7000, false);
-  cutStepPlots("Step_7", "nbJet_CSVL", "b-Jet multiplicity(CSVL)", 1, 1e8, true);
+  cutStepPlots("Step_6", "nJet30", "Jet multiplicity", 1, 1e10, true);
+  cutStepPlots("Step_6", "nbJet30_CSVL", "b-Jet multiplicity(CSVL)", 1, 1e8, true);
+  cutStepPlots("Step_7", "nbJet30_CSVL", "b-Jet multiplicity(CSVL)", 1, 1e8, true);
   cutStepPlots("Step_7", "vsumM", "t#bar{t} invariant mass", 0, 6000, false);
-  cutStepPlots("Step_7", "vsumMAlt", "t#bar{t} invariant mass", 0, 7000, false);
-  //cutStepPlots("Step_7", "vsumMhigh", "t#bar{t} invariant mass", 1, 1e5, true);
   cutStepPlots("Step_7", "MET", "Missing E_{T}", 0, 4500, false);
+  cutStepPlots("Step_7", "nVertex", "Vertex multiplicity", 0, 6000, false);
   cutStepPlots("Step_8", "kinM", "t#bar{t} invariant mass", 0, 6000, false);
   cutStepPlots("Step_8", "kinMAlt", "t#bar{t} invariant mass", 0, 7000, false);
 
 
-  //printCutFlow("MuMu", "-,-,METlog,METlog,MET,nJet,vsumMAlt");
-  //printCutFlow("ElEl", "-,-,METlog,METlog,MET,nJet,vsumMAlt");
-  //printCutFlow("MuEl", "-,-,METlog,METlog,MET,nJet,vsumMAlt");
+  printCutFlow(path,"MuMu", "-,-,METlog,METlog,MET,nJet30,nVertex");
+  printCutFlow(path,"ElEl", "-,-,METlog,METlog,MET,nJet30,nVertex");
+  printCutFlow(path,"MuEl", "-,-,METlog,METlog,MET,nJet30,nVertex");
 
   // Restore back DY scaling and apply +50% scaling
   //rescalePlots("Step_3", "DYll", "METlog,nJetlog,ZMass", 1/1.04*(1+.04*.5), 1/1.04*(1+.04*.5), 1);
@@ -90,10 +88,10 @@ void makePlots(TString noteNumber = "Merged")
   //printCutFlow("MuEl", "-,-,METlog,METlog,MET,vsumMAlt,vsumMAlt");
 }
 
-void printCutFlow(TString decayMode, TString histNamesStr)
+void printCutFlow(TString path, TString decayMode, TString histNamesStr)
 {
-  TFile* f = gROOT->GetFile(decayMode+".root");
-  if ( !f ) f = TFile::Open(decayMode+".root");
+  TFile* f = gROOT->GetFile(path + "/"+decayMode+"/"+decayMode+".root");
+  if ( !f ) f = TFile::Open(path + "/"+decayMode+"/"+decayMode+".root");
 
   TObjArray* histNames = histNamesStr.Tokenize(",");
   std::vector<double> nBkgTotal(histNames->GetEntries());
@@ -126,7 +124,6 @@ void printCutFlow(TString decayMode, TString histNamesStr)
       if ( !hMC ) 
       {
         cout << "\t-";
-        cout << "<-ici";
         continue;
       }
 
