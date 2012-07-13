@@ -15,21 +15,37 @@ void addTopVariables(TopAnalyzerLite* analyzer){
   analyzer->addMonitorPlot("eta1", "eta1", "Leading #eta;#eta;Events/0.2", 35, -3.5, 3.5, 0.1, 100000);
   analyzer->addMonitorPlot("eta2", "eta1", "Second leading lepton #eta;#eta;Events/0.2", 35, -3.5, 3.5, 0.1, 100000);
 
-  analyzer->addMonitorPlot("jet1pt", "jetspt20[0].pt()", "Leading jet p_{T};p_{T} (GeV/c);Events/10 GeV/c",48, 20, 500, 0.1, 100000);
-  analyzer->addMonitorPlot("jet1eta", "jetspt20[0].eta()", "Leading #eta;#eta;Events/0.2", 35, -3.5, 3.5, 0.1, 100000);
-  analyzer->addMonitorPlot("jet1phi", "jetspt20[0].phi()", "Leading #phi;#phi (Radian);Events/0.2 rad.", 35, -3.5, 3.5, 0.1, 100000);
+  analyzer->addMonitorPlot("jet1pt20", "jetspt20[0].pt()", "Leading jet p_{T};p_{T} (GeV/c);Events/10 GeV/c",48, 20, 500, 0.1, 100000);
+  analyzer->addMonitorPlot("jet1eta20", "jetspt20[0].eta()", "Leading #eta;#eta;Events/0.2", 35, -3.5, 3.5, 0.1, 100000);
+  analyzer->addMonitorPlot("jet1phi20", "jetspt20[0].phi()", "Leading #phi;#phi (Radian);Events/0.2 rad.", 35, -3.5, 3.5, 0.1, 100000);
 
-  analyzer->addMonitorPlot("jet2pt", "jetspt20[1].pt()", "Second leading jet p_{T};p_{T} (GeV/c);Events/10 GeV/c",48, 20, 500, 0.1, 100000);
-  analyzer->addMonitorPlot("jet2eta", "jetspt20[1].eta()", "Second leading jet #eta;#eta;Events/0.2", 35, -3.5, 3.5, 0.1, 100000);
-  analyzer->addMonitorPlot("jet2phi", "jetspt20[1].phi()", "Second leading jet #phi;#phi (Radian);Events/0.2 rad.", 35, -3.5, 3.5, 0.1, 100000);
+  analyzer->addMonitorPlot("jet2pt20", "jetspt20[1].pt()", "Second leading jet p_{T};p_{T} (GeV/c);Events/10 GeV/c",48, 20, 500, 0.1, 100000);
+  analyzer->addMonitorPlot("jet2eta20", "jetspt20[1].eta()", "Second leading jet #eta;#eta;Events/0.2", 35, -3.5, 3.5, 0.1, 100000);
+  analyzer->addMonitorPlot("jet2phi20", "jetspt20[1].phi()", "Second leading jet #phi;#phi (Radian);Events/0.2 rad.", 35, -3.5, 3.5, 0.1, 100000);
 
-  analyzer->addMonitorPlot("jet3pt", "jetspt20[2].pt()", "Third jet p_{T};p_{T} (GeV/c);Events/10 GeV/c",48, 20, 500, 0.1, 100000);
-  analyzer->addMonitorPlot("jet3eta", "jetspt20[2].eta()", "Third jet #eta;#eta;Events/0.2", 35, -3.5, 3.5, 0.1, 100000);
-  analyzer->addMonitorPlot("jet3phi", "jetspt20[2].phi()", "Third jet #phi;#phi (Radian);Events/0.2 rad.", 35, -3.5, 3.5, 0.1, 100000);
+  analyzer->addMonitorPlot("jet3pt20", "jetspt20[2].pt()", "Third jet p_{T};p_{T} (GeV/c);Events/10 GeV/c",48, 20, 500, 0.1, 100000);
+  analyzer->addMonitorPlot("jet3eta20", "jetspt20[2].eta()", "Third jet #eta;#eta;Events/0.2", 35, -3.5, 3.5, 0.1, 100000);
+  analyzer->addMonitorPlot("jet3phi20", "jetspt20[2].phi()", "Third jet #phi;#phi (Radian);Events/0.2 rad.", 35, -3.5, 3.5, 0.1, 100000);
 
-  analyzer->addMonitorPlot("jet4pt", "jetspt20[3].pt()", "Fourth jet p_{T};p_{T} (GeV/c);Events/10 GeV/c",48, 20, 500, 0.1, 100000);
-  analyzer->addMonitorPlot("jet4eta", "jetspt20[3].eta()", "Fourth jet #eta;#eta;Events/0.2", 35, -3.5, 3.5, 0.1, 100000);
-  analyzer->addMonitorPlot("jet4phi", "jetspt20[3].phi()", "Fourth jet #phi;#phi (Radian);Events/0.2 rad.", 35, -3.5, 3.5, 0.1, 100000);
+  analyzer->addMonitorPlot("jet4pt20", "jetspt20[3].pt()", "Fourth jet p_{T};p_{T} (GeV/c);Events/10 GeV/c",48, 20, 500, 0.1, 100000);
+  analyzer->addMonitorPlot("jet4eta20", "jetspt20[3].eta()", "Fourth jet #eta;#eta;Events/0.2", 35, -3.5, 3.5, 0.1, 100000);
+  analyzer->addMonitorPlot("jet4phi20", "jetspt20[3].phi()", "Fourth jet #phi;#phi (Radian);Events/0.2 rad.", 35, -3.5, 3.5, 0.1, 100000);
+
+  analyzer->addMonitorPlot("jet1pt30", "jetspt30[0].pt()", "Leading jet p_{T};p_{T} (GeV/c);Events/10 GeV/c",48, 20, 500, 0.1, 100000);
+  analyzer->addMonitorPlot("jet1eta30", "jetspt30[0].eta()", "Leading #eta;#eta;Events/0.2", 35, -3.5, 3.5, 0.1, 100000);
+  analyzer->addMonitorPlot("jet1phi30", "jetspt30[0].phi()", "Leading #phi;#phi (Radian);Events/0.2 rad.", 35, -3.5, 3.5, 0.1, 100000);
+
+  analyzer->addMonitorPlot("jet2pt30", "jetspt30[1].pt()", "Second leading jet p_{T};p_{T} (GeV/c);Events/10 GeV/c",48, 20, 500, 0.1, 100000);
+  analyzer->addMonitorPlot("jet2eta30", "jetspt30[1].eta()", "Second leading jet #eta;#eta;Events/0.2", 35, -3.5, 3.5, 0.1, 100000);
+  analyzer->addMonitorPlot("jet2phi30", "jetspt30[1].phi()", "Second leading jet #phi;#phi (Radian);Events/0.2 rad.", 35, -3.5, 3.5, 0.1, 100000);
+
+  analyzer->addMonitorPlot("jet3pt30", "jetspt30[2].pt()", "Third jet p_{T};p_{T} (GeV/c);Events/10 GeV/c",48, 20, 500, 0.1, 100000);
+  analyzer->addMonitorPlot("jet3eta30", "jetspt30[2].eta()", "Third jet #eta;#eta;Events/0.2", 35, -3.5, 3.5, 0.1, 100000);
+  analyzer->addMonitorPlot("jet3phi30", "jetspt30[2].phi()", "Third jet #phi;#phi (Radian);Events/0.2 rad.", 35, -3.5, 3.5, 0.1, 100000);
+
+  analyzer->addMonitorPlot("jet4pt30", "jetspt30[3].pt()", "Fourth jet p_{T};p_{T} (GeV/c);Events/10 GeV/c",48, 20, 500, 0.1, 100000);
+  analyzer->addMonitorPlot("jet4eta30", "jetspt30[3].eta()", "Fourth jet #eta;#eta;Events/0.2", 35, -3.5, 3.5, 0.1, 100000);
+  analyzer->addMonitorPlot("jet4phi30", "jetspt30[3].phi()", "Fourth jet #phi;#phi (Radian);Events/0.2 rad.", 35, -3.5, 3.5, 0.1, 100000);
 
   analyzer->addMonitorPlot("Iso03lep1","relIso1","relIso03lep1;relIso;Events", 40, 0, 0.4, 0.1, 20000);
   analyzer->addMonitorPlot("Iso03lep2","relIso2","relIso03lep2;relIso;Events", 40, 0, 0.4, 0.1, 20000);
@@ -54,7 +70,9 @@ void addTopVariables(TopAnalyzerLite* analyzer){
   analyzer->addMonitorPlot("topMass1", "ttbar.leg1().M()", "blv mass;blv mass;Events/10 GeV", 30, 0, 300, 0.1, 0.9, false);
   analyzer->addMonitorPlot("topMass2", "ttbar.leg2().M()", "blv mass;blv mass;Events/10 GeV", 30, 0, 300, 0.1, 0.9, false);
   analyzer->addMonitorPlot("nbJet_TCHEL", "nbjets_TCHEL", "b-Jet Multiplicity;b-Jet Multiplicity (TCHEL);Events", 6, 0, 6, 0.1, 3,false);
-  analyzer->addMonitorPlot("nbJet_CSVL", "nbjets_CSVL", "b-Jet Multiplicity;b-Jet Multiplicity (CSVL);Events", 6, 0, 6, 0.1, 3,false);
-  analyzer->addMonitorPlot("nbJet_CSVM", "nbjets_CSVM", "b-Jet Multiplicity;b-Jet Multiplicity (CSVM);Events", 6, 0, 6, 0.1, 3,false);
-  analyzer->addMonitorPlot("nbJet_CSVT", "nbjets_CSVT", "b-Jet Multiplicity;b-Jet Multiplicity (CSVT);Events", 6, 0, 6, 0.1, 3,false);
+
+  analyzer->addMonitorPlot("nbJet20_CSVL", "nbjets20_CSVL", "b-Jet Multiplicity;b-Jet Multiplicity (CSVL);Events", 5, 0, 5, 0.1, 0.6,false);
+  analyzer->addMonitorPlot("nbJet20_CSVM", "nbjets20_CSVM", "b-Jet Multiplicity;b-Jet Multiplicity (CSVM);Events", 5, 0, 5, 0.1, 0.6,false);
+  analyzer->addMonitorPlot("nbJet20_CSVT", "nbjets20_CSVT", "b-Jet Multiplicity;b-Jet Multiplicity (CSVT);Events", 5, 0, 5, 0.1, 0.6,false);
+
 }
