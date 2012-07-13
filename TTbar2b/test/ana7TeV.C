@@ -2,9 +2,9 @@
 using namespace std;
 
 void ana7TeV(){
-  ana("ElEl","TTBB/ElEl");
-  ana("MuMu","TTBB/MuMu");
-  ana("MuEl","TTBB/MuEl");
+  ana("ElEl","TTBB_12072012/ElEl");
+  ana("MuMu","TTBB_12072012/MuMu");
+  ana("MuEl","TTBB_12072012/MuEl");
 }
 
 
@@ -21,8 +21,8 @@ void ana(string decayMode = "ElEl", string imageOutDir = "")
   gSystem->CompileMacro("TopAnalyzerLite.cc", "k");
   TopAnalyzerLite* analyzer = new TopAnalyzerLite(decayMode, imageOutDir);
 
-  const std::string mcPath = "$WORK/data/export/common/Top/ntuple/"+decayMode+"/MC/Fall11_v9/";
-  const std::string rdPath = "$WORK/data/export/common/Top/ntuple/"+decayMode+"/RD/2011Full_v7/";
+  const std::string mcPath = "/afs/cern.ch/work/t/tjkim/public/store/top/"+decayMode+"/v0/";
+  const std::string rdPath = "/afs/cern.ch/work/t/tjkim/public/store/top/"+decayMode+"/v0/";
 
   gROOT->ProcessLine(".L tdrstyle.C");
   defaultStyle();
