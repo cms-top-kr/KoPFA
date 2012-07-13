@@ -32,7 +32,7 @@ void ana(string decayMode = "ElEl", string imageOutDir = "")
   TCut visible = "ttbarGen.NJets15() >= 4 && ttbarGen.NbJets15() >=2 && ttbarGen.lepton1().pt() > 20 && ttbarGen.lepton2().pt() > 20 && abs(ttbarGen.lepton1().eta()) < 2.5 && abs(ttbarGen.lepton2().eta()) < 2.5" ;
 
   TCut sigcut = "ttbarGen.NbJets15() >= 4";
-  TCut ttcc = "ttbarGen.NcJets15(1) >= 2";
+  TCut ttcc = "ttbarGen.NcJets15() >= 2";
 
   //analyzer->addMCSig("TTbarbb", "t#bar{t} + bb", mcPath+"/vallot_TTbarTuneZ2.root", 161.9, kRed+1, true, sigcut);
   //analyzer->addMCBkg("TTbarll", "t#bar{t} + ll", mcPath+"/vallot_TTbarTuneZ2.root", 161.9, kRed, !sigcut);
