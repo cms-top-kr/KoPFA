@@ -225,25 +225,67 @@ class BTagWeight
     // MC b-tag efficiency // need to be updated with our numbers from our signal samples
     double eb(double pt, double eta)
     {
-      double x;
-      if( algo_ == CSVL) x = 0.244;
-      else if( algo_ == CSVM ) x = 0.679;
-      else if( algo_ == CSVT ) x = 0.898;
-      else x = 0; //it should not reach this point
-      
-      return -1.73338329789*x*x*x*x +  1.26161794785*x*x*x +  0.784721653518*x*x +  -1.03328577451*x +  1.04305075822;
+      if( algo_ == CSVL ){
+	    if( pt <= 450 ){
+	    	return 0.801548 + 0.00147981*pt - 1.24055e-05*(pt*pt) + 3.84141e-08*(pt*pt*pt) - 4.31462e-11*(pt*pt*pt*pt);
+	  	}
+		else{
+	    	return 0.801548 + 0.00147981*450.0 - 1.24055e-05*(450.0*450.0) + 3.84141e-08*(450.0*450.0*450.0) - 4.31462e-11*(450.0*450.0*450.0*450.0);
+		}
+	  }
+      else if( algo_ == CSVM ){
+	    if( pt <= 450 ){
+	    	return 0.331138 + 0.0101574*pt - 7.99679e-05*(pt*pt) + 2.44717e-07*(pt*pt*pt) - 2.5903e-10*(pt*pt*pt*pt);
+	  	}
+		else{
+	    	return 0.331138 + 0.0101574*450.0 - 7.99679e-05*(450.0*450.0) + 2.44717e-07*(450.0*450.0*450.0) - 2.5903e-10*(450.0*450.0*450.0*450.0);
+		}
+	  }
+      else if( algo_ == CSVT ){
+	    if( pt <= 450 ){
+	    	return 0.109639 + 0.0130669*pt - 0.000112374*(pt*pt) + 3.50834e-07*(pt*pt*pt) - 3.66859e-10*(pt*pt*pt*pt);
+	  	}
+		else{
+	    	return 0.109639 + 0.0130669*450.0 - 0.000112374*(450.0*450.0) + 3.50834e-07*(450.0*450.0*450.0) - 3.66859e-10*(450.0*450.0*450.0*450.0);
+		}
+	  }
+	  else
+	  {
+         return 0;
+	  }
     }
 
     //MC c-tag efficiency
     double ec(double pt, double eta)
     {
-      double x;
-      if( algo_ == CSVL) x = 0.244;
-      else if( algo_ == CSVM ) x = 0.679;
-      else if( algo_ == CSVT ) x = 0.898; 
-      else x = 0; // it should not reach this point
-      
-      return -1.5734604211*x*x*x*x +  1.52798999269*x*x*x +  0.866697059943*x*x +  -1.66657942274*x +  0.780639301724;
+      if( algo_ == CSVL ){
+	  	if( pt <= 450 ){
+	    	return 0.610269 + -0.00549809*pt + 4.15105e-05*(pt*pt) + -1.28433e-07*(pt*pt*pt) + 1.32483e-10*(pt*pt*pt*pt);
+	  	}
+	  	else{
+	    	return 0.610269 + -0.00549809*450.0 + 4.15105e-05*(450.0*450.0) + -1.28433e-07*(450.0*450.0*450.0) + 1.32483e-10*(450.0*450.0*450.0*450.0);
+	  	}
+	  }
+      else if( algo_ == CSVM ){
+	  	if( pt <= 450 ){
+	    	return 0.0815163 + 0.0021852*pt + -1.41307e-05*(pt*pt) + 3.24437e-08*(pt*pt*pt) + -2.55116e-11*(pt*pt*pt*pt);
+	  	}
+	  	else{
+	    	return 0.0815163 + 0.0021852*450.0 + -1.41307e-05*(450.0*450.0) + 3.24437e-08*(450.0*450.0*450.0) + -2.55116e-11*(450.0*450.0*450.0*450.0);
+	  	}
+	  }
+      else if( algo_ == CSVT ){
+	  	if( pt <= 450 ){
+	    	return 0.0213977 + 0.00118318*pt + -1.18986e-05*(pt*pt) + 3.83806e-08*(pt*pt*pt) + -3.97903e-11*(pt*pt*pt*pt);
+	  	}
+	  	else{
+	    	return 0.0213977 + 0.00118318*450.0 + -1.18986e-05*(450.0*450.0) + 3.83806e-08*(450.0*450.0*450.0) + -3.97903e-11*(450.0*450.0*450.0*450.0);
+	  	}
+	  }
+	  else
+	  {
+        return 0;
+	  }
     }
 
     //MC l-tag efficiency
