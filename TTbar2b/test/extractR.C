@@ -97,6 +97,7 @@ void Fit(TH1* data, TH1* ttbb, TH1* ttcc, TH1* ttll, const TString & decayMode)
     s->GetXaxis()->SetTitle("b-Jet Multiplicity (CSVM)");
     s->SetTitle("Fit Result");
     s->SetMaximum(4000);
+    s->SetMinimum(1);
 
     hdata->SetMarkerSize(1);
     hdata->SetMarkerStyle(20);
@@ -118,28 +119,34 @@ void Fit(TH1* data, TH1* ttbb, TH1* ttcc, TH1* ttll, const TString & decayMode)
 
 void extractR(){
 
-  TFile * f_MuMu = new TFile("result30JunNoTop2/MuMu/MuMu.root");
-  TFile * f_MuEl = new TFile("result30JunNoTop2/MuEl/MuEl.root");
-  TFile * f_ElEl = new TFile("result30JunNoTop2/ElEl/ElEl.root");
+  gROOT->ProcessLine(".L tdrstyle.C");
+  defaultStyle();
 
-  TH1F * h_ttbb_CSVM_MuMu = (TH1F*) f_MuMu->Get("Step_6/hMCSig_TTbarbb_Step_6_nbJet_CSVM");
-  TH1F * h_ttcc_CSVM_MuMu = (TH1F*) f_MuMu->Get("Step_6/hMC_TTbarcc_Step_6_nbJet_CSVM");
-  TH1F * h_ttll_CSVM_MuMu = (TH1F*) f_MuMu->Get("Step_6/hMC_TTbarll_Step_6_nbJet_CSVM");
-  TH1F * h_data_CSVM_MuMu = (TH1F*) f_MuMu->Get("Step_6/hDataSub_Step_6_nbJet_CSVM");
+
+  TString path = "TTBB_12072012";
+
+  TFile * f_MuMu = new TFile(path+"/MuMu/MuMu.root");
+  TFile * f_MuEl = new TFile(path+"/MuEl/MuEl.root");
+  TFile * f_ElEl = new TFile(path+"/ElEl/ElEl.root");
+
+  TH1F * h_ttbb_CSVM_MuMu = (TH1F*) f_MuMu->Get("Step_5/hMCSig_TTbarbb_Step_5_nbJet20_CSVM");
+  TH1F * h_ttcc_CSVM_MuMu = (TH1F*) f_MuMu->Get("Step_5/hMC_TTbarcc_Step_5_nbJet20_CSVM");
+  TH1F * h_ttll_CSVM_MuMu = (TH1F*) f_MuMu->Get("Step_5/hMC_TTbarll_Step_5_nbJet20_CSVM");
+  TH1F * h_data_CSVM_MuMu = (TH1F*) f_MuMu->Get("Step_5/hDataSub_Step_5_nbJet20_CSVM");
   h_data_CSVM_MuMu->Add(h_ttll_CSVM_MuMu);
   h_data_CSVM_MuMu->Add(h_ttcc_CSVM_MuMu);
 
-  TH1F * h_ttbb_CSVM_MuEl = (TH1F*) f_MuEl->Get("Step_6/hMCSig_TTbarbb_Step_6_nbJet_CSVM");
-  TH1F * h_ttcc_CSVM_MuEl = (TH1F*) f_MuEl->Get("Step_6/hMC_TTbarcc_Step_6_nbJet_CSVM");
-  TH1F * h_ttll_CSVM_MuEl = (TH1F*) f_MuEl->Get("Step_6/hMC_TTbarll_Step_6_nbJet_CSVM");
-  TH1F * h_data_CSVM_MuEl = (TH1F*) f_MuEl->Get("Step_6/hDataSub_Step_6_nbJet_CSVM");
+  TH1F * h_ttbb_CSVM_MuEl = (TH1F*) f_MuEl->Get("Step_5/hMCSig_TTbarbb_Step_5_nbJet20_CSVM");
+  TH1F * h_ttcc_CSVM_MuEl = (TH1F*) f_MuEl->Get("Step_5/hMC_TTbarcc_Step_5_nbJet20_CSVM");
+  TH1F * h_ttll_CSVM_MuEl = (TH1F*) f_MuEl->Get("Step_5/hMC_TTbarll_Step_5_nbJet20_CSVM");
+  TH1F * h_data_CSVM_MuEl = (TH1F*) f_MuEl->Get("Step_5/hDataSub_Step_5_nbJet20_CSVM");
   h_data_CSVM_MuEl->Add(h_ttll_CSVM_MuEl);
   h_data_CSVM_MuEl->Add(h_ttcc_CSVM_MuEl);
  
-  TH1F * h_ttbb_CSVM_ElEl = (TH1F*) f_ElEl->Get("Step_6/hMCSig_TTbarbb_Step_6_nbJet_CSVM");
-  TH1F * h_ttcc_CSVM_ElEl = (TH1F*) f_ElEl->Get("Step_6/hMC_TTbarcc_Step_6_nbJet_CSVM");
-  TH1F * h_ttll_CSVM_ElEl = (TH1F*) f_ElEl->Get("Step_6/hMC_TTbarll_Step_6_nbJet_CSVM");
-  TH1F * h_data_CSVM_ElEl = (TH1F*) f_ElEl->Get("Step_6/hDataSub_Step_6_nbJet_CSVM");
+  TH1F * h_ttbb_CSVM_ElEl = (TH1F*) f_ElEl->Get("Step_5/hMCSig_TTbarbb_Step_5_nbJet20_CSVM");
+  TH1F * h_ttcc_CSVM_ElEl = (TH1F*) f_ElEl->Get("Step_5/hMC_TTbarcc_Step_5_nbJet20_CSVM");
+  TH1F * h_ttll_CSVM_ElEl = (TH1F*) f_ElEl->Get("Step_5/hMC_TTbarll_Step_5_nbJet20_CSVM");
+  TH1F * h_data_CSVM_ElEl = (TH1F*) f_ElEl->Get("Step_5/hDataSub_Step_5_nbJet20_CSVM");
   h_data_CSVM_ElEl->Add(h_ttll_CSVM_ElEl);
   h_data_CSVM_ElEl->Add(h_ttcc_CSVM_ElEl);
 
