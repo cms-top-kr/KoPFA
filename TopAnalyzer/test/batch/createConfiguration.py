@@ -250,20 +250,20 @@ mv vallot_*.root $OUTDIR/
             if 'TTbar' in dataset:
 				if decay in ('MuMu','ElEl','MuEl'):
 					specificCfg += """
-process.topWLeptonGenFilter.applyFilter = True
+process.topDecayGenFilter.applyFilter = True
 """
 				elif decay in ('MuJet','ElJet'):
 					specificCfg += """
-process.topWLeptonGenFilterForLJ.applyFilter = True
+process.topDecayGenFilterForLJ.applyFilter = True
 """
             if 'TTbarOthers' in dataset:
 				if decay in ('MuMu','ElEl','MuEl'):
 					specificCfg += """
-process.top%sAnalysisMCSequence.replace(process.topWLeptonGenFilter,~process.topWLeptonGenFilter)
+process.top%sAnalysisMCSequence.replace(process.topDecayGenFilter,~process.topDecayGenFilter)
 """ % self.decay
 				elif decay in ('MuJet','ElJet'):
 					specificCfg += """
-process.top%sAnalysisMCSequence.replace(process.topWLeptonGenFilterForLJ,~process.topWLeptonGenFilterForLJ)
+process.top%sAnalysisMCSequence.replace(process.topDecayGenFilterForLJ,~process.topDecayGenFilterForLJ)
 """ % self.decay
             if dataset in ('ZJets'):
                 specificCfg += """
@@ -559,27 +559,27 @@ process.TFileService = cms.Service("TFileService",
 
 def ttbardileptonfilter():
   script = """
-process.topWLeptonGenFilter.applyFilter = True
+process.topDecayGenFilter.applyFilter = True
 """
   return script
 
 def ttbarleptonjetfilter():
   script = """
-process.topWLeptonGenFilterForLJ.applyFilter = True
+process.topDecayGenFilterForLJ.applyFilter = True
 """
   return script
 
 def ttbardileptonothersfilter():
   script = """
-process.topWLeptonGenFilter.applyFilter = True
-process.topAnalysisSequence.replace(process.topWLeptonGenFilter,~process.topWLeptonGenFilter)
+process.topDecayGenFilter.applyFilter = True
+process.topAnalysisSequence.replace(process.topDecayGenFilter,~process.topDecayGenFilter)
 """ 
   return script
 
 def ttbarleptonjetothersfilter():
   script = """
-process.topWLeptonGenFilterForLJ.applyFilter = True
-process.top%sAnalysisMCSequence.replace(process.topWLeptonGenFilterForLJ,~process.topWLeptonGenFilterForLJ)
+process.topDecayGenFilterForLJ.applyFilter = True
+process.top%sAnalysisMCSequence.replace(process.topDecayGenFilterForLJ,~process.topDecayGenFilterForLJ)
 """ % decay
   return script
 
