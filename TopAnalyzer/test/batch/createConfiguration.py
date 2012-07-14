@@ -468,8 +468,8 @@ removeTtFullLepHypGenMatch(process)
 
 setForAllTtFullLepHypotheses(process,"muons",cms.InputTag("FinalLeptons","Muons"))
 setForAllTtFullLepHypotheses(process,"electrons",cms.InputTag("FinalLeptons","Electrons"))
-setForAllTtFullLepHypotheses(process,"mets", cms.InputTag("JetEnergyScale","MET"))
-setForAllTtFullLepHypotheses(process,"jets", cms.InputTag("JetEnergyScale","Jets"))
+setForAllTtFullLepHypotheses(process,"mets", cms.InputTag("Jet30EnergyScale","MET"))
+setForAllTtFullLepHypotheses(process,"jets", cms.InputTag("Jet30EnergyScale","Jets"))
 setForAllTtFullLepHypotheses(process,"maxNJets",-1)
 setForAllTtFullLepHypotheses(process,"mumuChannel",True)
 setForAllTtFullLepHypotheses(process,"emuChannel",True)
@@ -510,6 +510,7 @@ process.p = cms.Path(
     process.topAnalysisSequence*
     process.Z%s*
     process.FinalLeptons*
+    process.Jet30EnergyScale*
     makeTtFullLepEvent*
     process.%s
 ) 
@@ -543,6 +544,7 @@ process.p = cms.Path(
     process.topAnalysisSequence*
     process.Z%s*
     process.FinalLeptons*
+    process.Jet30EnergyScale*
     makeTtFullLepEvent*
     process.%s
 ) 
@@ -632,7 +634,8 @@ for src in mclist:
     out = open(decay+'/top'+decay+'Analyzer_'+src+'_cfg.py','w')
     out.write(common())
     out.write("process.GlobalTag.globaltag = cms.string('%s::All')\n" % mcGlobalTag)
-    out.write("process.JetEnergyScale.globalTag = cms.untracked.string('%s')" % mcGlobalTag)
+    out.write("process.JetEnergyScale.globalTag = cms.untracked.string('%s')\n" % mcGlobalTag)
+    out.write("process.Jet30EnergyScale.globalTag = cms.untracked.string('%s')\n" % mcGlobalTag)
     #out.write(leptonfilter())
     out.write(mcpath())
     out.write(outfile(src))
@@ -664,7 +667,8 @@ for src in datalist:
     out = open(decay+'/top'+decay+'Analyzer_'+src+'_cfg.py','w')
     out.write(common())
     out.write("process.GlobalTag.globaltag = cms.string('%s::All')\n" % rdGlobalTag)
-    out.write("process.JetEnergyScale.globalTag = cms.untracked.string('%s')" % rdGlobalTag)
+    out.write("process.JetEnergyScale.globalTag = cms.untracked.string('%s')\n" % rdGlobalTag)
+    out.write("process.Jet30EnergyScale.globalTag = cms.untracked.string('%s')\n" % rdGlobalTag)
     #out.write(leptonfilter())
     out.write(rdpath())
     out.write(outfile(src))
