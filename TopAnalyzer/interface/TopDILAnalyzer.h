@@ -13,7 +13,7 @@
 //
 // Original Author:  Tae Jeong Kim,40 R-A32,+41227678602,
 //         Created:  Fri Jun  4 17:19:29 CEST 2010
-// $Id: TopDILAnalyzer.h,v 1.82 2012/07/06 14:50:39 tjkim Exp $
+// $Id: TopDILAnalyzer.h,v 1.83 2012/07/08 10:06:12 tjkim Exp $
 //
 //
 
@@ -399,10 +399,9 @@ class TopDILAnalyzer : public edm::EDFilter {
           if ( (bTagIsCutMin_[bTagIndex]) xor (bTagValue < bTagCutValues_[bTagIndex]) ) ++nbjets30_[bTagIndex];
         }
 
-        if ( bDiscriminator > bTagCutValues_[2]) bidcs.push_back(idx); //for kinematic solution
-        
+        if ( bDiscriminator > bTagCutValues_[1]) bidcs.push_back(idx); //for kinematic solution
+        idx++;  
       }//pt > 30 loop
-      idx++;
     }
 
     BTagWeight bTag;
