@@ -4,6 +4,7 @@
 #include <vector>
 #include "TLorentzVector.h"
 #include <iostream>
+using namespace std;
 
 class BTagWeight
 {
@@ -53,11 +54,16 @@ class BTagWeight
           0.030734,
           0.0438259 
         };
-        for(int i=0; i < 14; i++){
-          if( pt <= ptmin[i] ) err = 0.12;
-          if( pt > ptmin[i] && pt <= ptmax[i] ) err = SFb_error[i]; 
-          if( pt > ptmax[i] ) err = SFb_error[13]*2;
+        if( pt < 30 ) err = 0.12;
+        if( pt >= 30 && pt <= 670){
+          for(int i=0; i < 14; i++){
+            if( pt > ptmin[i] && pt <= ptmax[i] ) {
+              err = SFb_error[i];
+              break;
+            }
+          }
         }
+        if( pt > 670 ) err = SFb_error[13]*2;
       }else if( algo_ == CSVM){
         double SFb_error[] = {
           0.0295675,
@@ -75,11 +81,16 @@ class BTagWeight
           0.0578761,
           0.0655432 
         };
-        for(int i=0; i < 14; i++){
-          if( pt <= ptmin[i] ) err = 0.12;
-          if( pt > ptmin[i] && pt <= ptmax[i] ) err = SFb_error[i]; 
-          if( pt > ptmax[i] ) err = SFb_error[13]*2;
+        if( pt < 30 ) err = 0.12;
+        if( pt >= 30 && pt <= 670){
+          for(int i=0; i < 14; i++){
+            if( pt > ptmin[i] && pt <= ptmax[i] ) {
+              err = SFb_error[i];
+              break;
+            }
+          }
         }
+        if( pt > 670 ) err = SFb_error[13]*2;
       }else if( algo_ == CSVT){
         double SFb_error[] = {
 	  0.0364717,
@@ -97,12 +108,17 @@ class BTagWeight
           0.0777011,
           0.0866563 
         };
-        for(int i=0; i < 14; i++){
-          if( pt <= ptmin[i] ) err = 0.12;
-          if( pt > ptmin[i] && pt <= ptmax[i] ) err = SFb_error[i];
-          if( pt > ptmax[i] ) err = SFb_error[13]*2;
+        if( pt < 30 ) err = 0.12;
+        if( pt >= 30 && pt <= 670){
+          for(int i=0; i < 14; i++){
+            if( pt > ptmin[i] && pt <= ptmax[i] ) {
+              err = SFb_error[i];
+              break;
+            }
+          }
         }
-      }else err= 0.0;
+        if( pt > 670 ) err = SFb_error[13]*2;
+      }
 
       if( sys_ == NORM) return 0;
       else if( sys_ == UP ) return err; 
