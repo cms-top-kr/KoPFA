@@ -251,8 +251,19 @@ void TTbarCandidate::building( const reco::GenJetCollection* genJets, const reco
   NJets15_ = 0;
   NJets10_ = 0;
 
-  for (reco::GenJetCollection::const_iterator genJet=genJets->begin();genJet!=genJets->end();++genJet){
+  for (reco::GenJetCollection::const_iterator genJet=genJets->begin();genJet!=genJets->end();++genJet, ++idx){
     const reco::GenJet& gJet = *genJet;
+
+    double minDRlepton = 999;
+    for(unsigned int i=0 ; i < leptons_.size() ; i++){
+      if( leptons_[i] == null ) continue;
+      double deta = gJet.eta()-leptons_[i].eta();
+      double dphi = gJet.phi()-leptons_[i].phi();
+      double dR = sqrt( deta*deta + dphi*dphi );
+      if( dR < minDRlepton ) minDRlepton = dR;
+    }
+
+    if( minDRlepton < 0.5) continue;
 
     double minDR = 999;
     for(unsigned int i=0 ; i < bquarks.size() ; i++){
@@ -313,7 +324,7 @@ void TTbarCandidate::building( const reco::GenJetCollection* genJets, const reco
          }
       }
     }
-    idx++;
+
   }
 
 
