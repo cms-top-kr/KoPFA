@@ -185,6 +185,8 @@ MuEl = cms.EDFilter('TopMuElAnalyzer',
         'nEventsHLT',
         'nEventsFiltered',
         'nEventsPatHLT',
+        'nEventsDuplicate',
+        'nEventsTopFilter',
     ),
     #for jet cleaning overlapping with isolated epton within 0.4
     relIso1 = cms.untracked.double(0.20),
@@ -205,6 +207,8 @@ MuJet = cms.EDFilter('TopMuJetAnalyzer',
         'nEventsHLT',
         'nEventsFiltered',
         'nEventsPatHLT',
+        'nEventsDuplicate',
+        'nEventsTopFilter',
     ),
     looseJetId = myJetId, 
     #for jet cleaning overlapping with isolated epton within 0.4
@@ -229,6 +233,8 @@ ElJet = cms.EDFilter('TopElJetAnalyzer',
         'nEventsHLT',
         'nEventsFiltered',
         'nEventsPatHLT',
+        'nEventsDuplicate',
+        'nEventsTopFilter',
     ),
     looseJetId = myJetId, 
     #for jet cleaning overlapping with isolated epton within 0.4
@@ -245,13 +251,18 @@ removeDuplicate = cms.EDFilter("RemoveDuplicate",
 )
 
 nEventsPatHLT = cms.EDProducer("EventCountProducer")
+nEventsDuplicate = cms.EDProducer("EventCountProducer")
+nEventsTopFilter = cms.EDProducer("EventCountProducer")
 
 ## std sequence to produce the ttFullLepEvent
 from TopQuarkAnalysis.TopEventProducers.sequences.ttFullLepEvtBuilder_cff import *
 
 topAnalysisSequence = cms.Sequence(
     nEventsPatHLT*
+    removeDuplicate*
+    nEventsDuplicate*
     topDecayGenFilter*
+    nEventsTopFilter*
     GenZmassFilter*
     PUweight*
     JetEnergyScale*
