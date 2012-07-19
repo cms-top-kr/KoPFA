@@ -166,7 +166,7 @@ TTbar2bGenFilter::TTbar2bGenFilter(const edm::ParameterSet& pset)
   h_multiplicity_GenJets25DILVISTTCC  = fs->make<TH1F>( "h_multiplicity_GenJets25DILVISTTCC"  , "Multiplicity", 12,  0, 12 );
   h_multiplicity_GenJets30DILVISTTCC  = fs->make<TH1F>( "h_multiplicity_GenJets30DILVISTTCC"  , "Multiplicity", 12,  0, 12 );
 
-  h_nEvents = fs->make<TH1F>( "h_nEvents"  , "h_nEvents", 5,  0, 5 );
+  h_nEvents = fs->make<TH1F>( "h_nEvents"  , "h_nEvents", 6,  0, 6 );
 }
 
 bool TTbar2bGenFilter::filter(edm::Event& iEvent, const edm::EventSetup& eventSetup)
@@ -233,7 +233,6 @@ bool TTbar2bGenFilter::filter(edm::Event& iEvent, const edm::EventSetup& eventSe
 
   b_multiplicity->Fill(nb);
 
-
   //gen information
   Ko::TTbarCandidate ttbarGenLevel;
 
@@ -242,34 +241,6 @@ bool TTbar2bGenFilter::filter(edm::Event& iEvent, const edm::EventSetup& eventSe
     myGenJets = &(*genJets_);
 
     ttbarGenLevel.building(myGenJets, myGenParticles);
-
-    int nGenJet = 0;
-    int nGenJet10 = 0;
-    int nGenJet15 = 0;
-    int nGenJet20 = 0;
-    int nGenJet25 = 0;
-    int nGenJet30 = 0;
-
-    int nGenJetDIL = 0;
-    int nGenJet10DIL = 0;
-    int nGenJet15DIL = 0;
-    int nGenJet20DIL = 0;
-    int nGenJet25DIL = 0;
-    int nGenJet30DIL = 0;
-
-    int nGenJetDILVIS = 0;
-    int nGenJet10DILVIS = 0;
-    int nGenJet15DILVIS = 0;
-    int nGenJet20DILVIS = 0;
-    int nGenJet25DILVIS = 0;
-    int nGenJet30DILVIS = 0;
-
-    int nGenJetDILVISTTBB = 0;
-    int nGenJet10DILVISTTBB = 0;
-    int nGenJet15DILVISTTBB = 0;
-    int nGenJet20DILVISTTBB = 0;
-    int nGenJet25DILVISTTBB = 0;
-    int nGenJet30DILVISTTBB = 0;
 
     bool dil = ttbarGenLevel.diLeptonic(1) == 1 ;
     bool vis = ttbarGenLevel.lepton1().pt() > 20 && abs(ttbarGenLevel.lepton1().eta()) < 2.4 && ttbarGenLevel.lepton2().pt() > 20 && abs(ttbarGenLevel.lepton2().eta()) < 2.4 && ttbarGenLevel.NbJets15() >= 2;
@@ -291,42 +262,7 @@ bool TTbar2bGenFilter::filter(edm::Event& iEvent, const edm::EventSetup& eventSe
     if( dil && vis ) h_nEvents->Fill(2);
     if( dil && vis && njets4  ) h_nEvents->Fill(3);
     if( dil && vis && njets4 && ttbb  ) h_nEvents->Fill(4);
-
-/*
-    for ( size_t i = 0;  i < genJets_->size() ; i++ ){
-      const reco::GenJet& genJet = genJets_->at(i);
-  
-      nGenJet++;
-      if(dil) nGenJetDIL++;
-      if(dil && vis) nGenJetDILVIS++;
-      if(dil && vis && ttbb) nGenJetDILVISTTBB++;
-       
-      if( genJet.pt() > 10 && abs(genJet.eta()) < 2.5 ) nGenJet10++ ;
-      if( genJet.pt() > 15 && abs(genJet.eta()) < 2.5 ) nGenJet15++ ;
-      if( genJet.pt() > 20 && abs(genJet.eta()) < 2.5 ) nGenJet20++ ;
-      if( genJet.pt() > 25 && abs(genJet.eta()) < 2.5 ) nGenJet25++ ;
-      if( genJet.pt() > 30 && abs(genJet.eta()) < 2.5 ) nGenJet30++ ;
-
-      if( genJet.pt() > 10 && abs(genJet.eta()) < 2.5 && dil ) nGenJet10DIL++ ;
-      if( genJet.pt() > 15 && abs(genJet.eta()) < 2.5 && dil ) nGenJet15DIL++ ;
-      if( genJet.pt() > 20 && abs(genJet.eta()) < 2.5 && dil ) nGenJet20DIL++ ;
-      if( genJet.pt() > 25 && abs(genJet.eta()) < 2.5 && dil ) nGenJet25DIL++ ;
-      if( genJet.pt() > 30 && abs(genJet.eta()) < 2.5 && dil ) nGenJet30DIL++ ;
-   
-      if( genJet.pt() > 10 && abs(genJet.eta()) < 2.5 && dil && vis ) nGenJet10DILVIS++ ;
-      if( genJet.pt() > 15 && abs(genJet.eta()) < 2.5 && dil && vis ) nGenJet15DILVIS++ ;
-      if( genJet.pt() > 20 && abs(genJet.eta()) < 2.5 && dil && vis ) nGenJet20DILVIS++ ;
-      if( genJet.pt() > 25 && abs(genJet.eta()) < 2.5 && dil && vis ) nGenJet25DILVIS++ ;
-      if( genJet.pt() > 30 && abs(genJet.eta()) < 2.5 && dil && vis ) nGenJet30DILVIS++ ;
-
-      if( genJet.pt() > 10 && abs(genJet.eta()) < 2.5 && dil && vis && ttbb) nGenJet10DILVISTTBB++ ;
-      if( genJet.pt() > 15 && abs(genJet.eta()) < 2.5 && dil && vis && ttbb) nGenJet15DILVISTTBB++ ;
-      if( genJet.pt() > 20 && abs(genJet.eta()) < 2.5 && dil && vis && ttbb) nGenJet20DILVISTTBB++ ;
-      if( genJet.pt() > 25 && abs(genJet.eta()) < 2.5 && dil && vis && ttbb) nGenJet25DILVISTTBB++ ;
-      if( genJet.pt() > 30 && abs(genJet.eta()) < 2.5 && dil && vis && ttbb) nGenJet30DILVISTTBB++ ;
-
-    }
-*/
+    if( dil && vis && njets4 && !ttbb && ttcc  ) h_nEvents->Fill(5);
 
     h_multiplicity_GenJets->Fill( ttbarGenLevel.NJets() );
     h_multiplicity_GenJets10->Fill( ttbarGenLevel.NJets10() );
