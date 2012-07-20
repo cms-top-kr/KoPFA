@@ -11,6 +11,8 @@ const int nbins = 5;
 double nttbb[nbins*3];
 double nttcc[nbins*3];
 double nttll[nbins*3];
+double nbakg[nbins*3];
+double ndbkg[nbins*3];
 
 double N_ttjj = 0;
 
@@ -18,22 +20,31 @@ double nbtag(double *x, double *par)
 {
     int ntag = x[0];
 
-    return  par[1]*N_ttjj*(par[0]*nttbb[ntag] + (1-par[0])*nttll[ntag]);
+    return  par[1]*N_ttjj*(par[0]*nttbb[ntag] + (1-par[0])*nttll[ntag]) + par[1]*nbakg[ntag] + ndbkg[ntag];
+    //return  par[1]*N_ttjj*(par[0]*nttbb[ntag] + (1-par[0])*nttll[ntag]);
     //return  par[2]*N_ttjj*(par[0]*nttbb[ntag] + par[1]*nttcc[ntag] + (1-par[0]-par[1])*nttll[ntag]);
 
 }
 
-void Fit(TH1* data, TH1* ttbb, TH1* ttcc, TH1* ttll, const TString & decayMode)
+void Fit(TH1* data, TH1* ttbb, TH1* ttcc, TH1* ttll, TH1* bakg, TH1* dbkg, const TString & decayMode, const TString & path, const TString & balgo)
 {
+
+    cout << " ============ " << path << " ============ (" << decayMode << ") =================="  << endl;
+
     double kfract_initial = fraction;
     double kttjj_initial = 1.0;
 
     ttll->Add(ttcc);
+    //data->Add(bakg,-1);
+    //data->Add(dbkg,-1);
+
 
     TH1* hdata = (TH1*) data->Clone();
     TH1* httbb = (TH1*) ttbb->Clone();
     TH1* httcc = (TH1*) ttcc->Clone();
     TH1* httll = (TH1*) ttll->Clone();
+    TH1* hbakg = (TH1*) bakg->Clone();
+    TH1* hdbkg = (TH1*) dbkg->Clone();
 
     double N_data = hdata->Integral();
     double N_ttbb = httbb->Integral();
@@ -44,7 +55,7 @@ void Fit(TH1* data, TH1* ttbb, TH1* ttcc, TH1* ttll, const TString & decayMode)
     //N_ttjj = N_ttbb + N_ttcc + N_ttll;
     double r = N_ttbb / N_ttjj;
 
-    cout << "Total number of background subtracted data= " << N_data << " Total number of tt signal= " << N_ttjj << endl;
+    //cout << "Total number of background subtracted data= " << N_data << " Total number of tt signal= " << N_ttjj << endl;
 
     httbb->Sumw2();
     httcc->Sumw2();
@@ -59,9 +70,11 @@ void Fit(TH1* data, TH1* ttbb, TH1* ttcc, TH1* ttll, const TString & decayMode)
       nttbb[i] = httbb->GetBinContent(i+1);
       nttcc[i] = httcc->GetBinContent(i+1);
       nttll[i] = httll->GetBinContent(i+1);
+      nbakg[i] = hbakg->GetBinContent(i+1);
+      ndbkg[i] = hdbkg->GetBinContent(i+1);
     }
 
-    TCanvas * c= new TCanvas(Form("c%s",decayMode.Data()),"c",1);
+    TCanvas * c= new TCanvas(Form("c%s_%s",decayMode.Data(),path.Data()),Form("c%s_%s",decayMode.Data(),path.Data()),1);
     c->SetLogy();
     TF1 *ftot = new TF1("ftot", nbtag , 0, n, 2);
     ftot->SetParameter(0, r);
@@ -70,7 +83,12 @@ void Fit(TH1* data, TH1* ttbb, TH1* ttcc, TH1* ttll, const TString & decayMode)
     ftot->SetParLimits(0, 0.0, 1.0 );
     //ftot->SetParLimits(1, 0.0, 1.0 );
     ftot->SetParLimits(1, kttjj_initial*0.5, kttjj_initial*1.5 );
-    hdata->Fit("ftot","RN","",0,n);
+    hdata->Fit("ftot","LN","",0,n);
+
+    double chi2 = ftot->GetChisquare();
+    double ndf = ftot->GetNDF();
+    double chi2ndf = chi2/ndf;
+    cout << " ============ chi2= " << chi2 << " ndf= " << ndf << " chi2ndf= " << chi2ndf << " =================" << endl;
 
     double R = ftot->GetParameter(0);
     //double Rcc = ftot->GetParameter(1);
@@ -79,6 +97,10 @@ void Fit(TH1* data, TH1* ttbb, TH1* ttcc, TH1* ttll, const TString & decayMode)
     //httcc->Scale( k*N_ttjj*Rcc );
     //httll->Scale( k*N_ttjj*(1 - R - Rcc) );
     httll->Scale( k*N_ttjj*(1 - R) );
+
+    hbakg->Scale( k );
+    hdata->Add(hbakg,-1.0);
+    hdata->Add(hdbkg,-1.0);
 
     httbb->SetFillColor(kRed+2);
     //httcc->SetFillColor(kRed+1);
@@ -94,7 +116,7 @@ void Fit(TH1* data, TH1* ttbb, TH1* ttcc, TH1* ttll, const TString & decayMode)
     s->Add(httll);
     s->Draw("FHIST");
     s->GetYaxis()->SetTitle("Events");
-    s->GetXaxis()->SetTitle("b-Jet Multiplicity (CSVM)");
+    s->GetXaxis()->SetTitle("b-Jet Multiplicity ("+balgo+")");
     s->SetTitle("Fit Result");
     s->SetMaximum(4000);
     s->SetMinimum(1);
@@ -106,7 +128,7 @@ void Fit(TH1* data, TH1* ttbb, TH1* ttcc, TH1* ttll, const TString & decayMode)
 
     TLegend *l = new TLegend(0.75,0.68,0.92,0.88);
     l->AddEntry(hdata,"Data","L");
-    l->AddEntry(httll,"t#bar{t} + ll","F");
+    l->AddEntry(httll,"t#bar{t} + ll/cc","F");
     //l->AddEntry(httcc,"t#bar{t} + cc","F");
     l->AddEntry(httbb,"t#bar{t} + bb","F");
     l->SetTextSize(0.04);
@@ -114,154 +136,190 @@ void Fit(TH1* data, TH1* ttbb, TH1* ttcc, TH1* ttll, const TString & decayMode)
     l->SetLineColor(0);
     l->Draw();
 
-    c->Print(Form("c_ttbb_fraction_%s.eps",decayMode.Data()));
+    c->Print(Form("%s/c_ttbb_fraction_%s_%s.eps",path.Data(),decayMode.Data(),balgo.Data()));
 }
 
-void extractR(){
+TH1F* getHist(TFile * f, const TString & path, const TString & name){
+
+  TH1F * hout = new TH1F(Form("%s",name.Data()),Form("%s",name.Data()),nbins,-0.5,nbins - 0.5);
+
+  TH1F * h = (TH1F*) f->Get(Form("%s",path.Data()));
+
+  for(int i=1 ; i <= nbins; i++){
+    double value = h->GetBinContent(i);
+    hout->SetBinContent(i, value);
+  }
+
+
+  return hout;
+
+}
+
+
+TH1F* getHistBakg(TFile * f, const TString & name, const TString& balgo){
+
+  TH1F * hout = new TH1F(Form("%s",name.Data()),Form("%s",name.Data()),nbins,-0.5,nbins - 0.5);
+
+  TH1F * h1 = (TH1F*) f->Get("Step_5/hMC_TTbarOthers_Step_5_nbJet20_"+balgo);
+  TH1F * h2 = (TH1F*) f->Get("Step_5/hMC_TTbarNonvis_Step_5_nbJet20_"+balgo);
+  TH1F * h3 = (TH1F*) f->Get("Step_5/hMC_Wl_Step_5_nbJet20_"+balgo);
+  TH1F * h4 = (TH1F*) f->Get("Step_5/hMC_VV_Step_5_nbJet20_"+balgo);
+  TH1F * h5 = (TH1F*) f->Get("Step_5/hMC_SingleTop_Step_5_nbJet20_"+balgo);
+  TH1F * h6 = (TH1F*) f->Get("Step_5/hMC_DYtt_Step_5_nbJet20_"+balgo);
+
+  h1->Add(h2);
+  //h1->Add(h3);
+  //h1->Add(h4);
+  //h1->Add(h5);
+  //h1->Add(h6);
+
+  for(int i=1 ; i <= nbins; i++){
+    double value = h1->GetBinContent(i);
+    hout->SetBinContent(i, value);
+  }
+
+  return hout;
+
+}
+
+TH1F* getHistDbkg(TFile * f, const TString & name, const TString& balgo){
+
+  TH1F * hout = new TH1F(Form("%s",name.Data()),Form("%s",name.Data()),nbins,-0.5,nbins - 0.5);
+
+  TH1F * h7 = (TH1F*) f->Get("Step_5/hMC_DYll_Step_5_nbJet20_"+balgo);
+  TH1F * h8 = (TH1F*) f->Get("Step_5/hDataBkg_QCD_Step_5_nbJet20_"+balgo);
+  TH1F * h3 = (TH1F*) f->Get("Step_5/hMC_Wl_Step_5_nbJet20_"+balgo);
+  TH1F * h4 = (TH1F*) f->Get("Step_5/hMC_VV_Step_5_nbJet20_"+balgo);
+  TH1F * h5 = (TH1F*) f->Get("Step_5/hMC_SingleTop_Step_5_nbJet20_"+balgo);
+  TH1F * h6 = (TH1F*) f->Get("Step_5/hMC_DYtt_Step_5_nbJet20_"+balgo);
+
+
+  h7->Add(h8);
+  h7->Add(h3);
+  h7->Add(h4);
+  h7->Add(h5);
+  h7->Add(h6);
+
+  for(int i=1 ; i <= nbins; i++){
+    double value = h7->GetBinContent(i);
+    hout->SetBinContent(i, value);
+  }
+
+  return hout;
+
+}
+
+
+void extractR(const TString & path, const TString & balgo){
 
   gROOT->ProcessLine(".L tdrstyle.C");
   defaultStyle();
-
-
-  TString path = "TTBB_12072012";
 
   TFile * f_MuMu = new TFile(path+"/MuMu/MuMu.root");
   TFile * f_MuEl = new TFile(path+"/MuEl/MuEl.root");
   TFile * f_ElEl = new TFile(path+"/ElEl/ElEl.root");
 
-  TH1F * h_ttbb_CSVM_MuMu = (TH1F*) f_MuMu->Get("Step_5/hMCSig_TTbarbb_Step_5_nbJet20_CSVM");
-  TH1F * h_ttcc_CSVM_MuMu = (TH1F*) f_MuMu->Get("Step_5/hMC_TTbarcc_Step_5_nbJet20_CSVM");
-  TH1F * h_ttll_CSVM_MuMu = (TH1F*) f_MuMu->Get("Step_5/hMC_TTbarll_Step_5_nbJet20_CSVM");
-  TH1F * h_data_CSVM_MuMu = (TH1F*) f_MuMu->Get("Step_5/hDataSub_Step_5_nbJet20_CSVM");
-  h_data_CSVM_MuMu->Add(h_ttll_CSVM_MuMu);
-  h_data_CSVM_MuMu->Add(h_ttcc_CSVM_MuMu);
+  TH1F * h_ttbb_MuMu = getHist(f_MuMu, "Step_5/hMCSig_TTbarbb_Step_5_nbJet20_"+balgo+"","hFit_ttbb_"+balgo+"_MuMu");
+  TH1F * h_ttcc_MuMu = getHist(f_MuMu, "Step_5/hMC_TTbarcc_Step_5_nbJet20_"+balgo+"","hFit_ttcc_"+balgo+"_MuMu");
+  TH1F * h_ttll_MuMu = getHist(f_MuMu, "Step_5/hMC_TTbarll_Step_5_nbJet20_"+balgo+"","hFit_ttll"+balgo+"MuMu");
+  TH1F * h_data_MuMu = getHist(f_MuMu, "Step_5/hData_Step_5_nbJet20_"+balgo+"","hFit_data"+balgo+"MuMu");
+  TH1F * h_bakg_MuMu = getHistBakg(f_MuMu,"hFit_bakg"+balgo+"MuMu",balgo);
+  TH1F * h_dbkg_MuMu = getHistDbkg(f_MuMu,"hFit_dbkg"+balgo+"MuMu",balgo);
 
-  TH1F * h_ttbb_CSVM_MuEl = (TH1F*) f_MuEl->Get("Step_5/hMCSig_TTbarbb_Step_5_nbJet20_CSVM");
-  TH1F * h_ttcc_CSVM_MuEl = (TH1F*) f_MuEl->Get("Step_5/hMC_TTbarcc_Step_5_nbJet20_CSVM");
-  TH1F * h_ttll_CSVM_MuEl = (TH1F*) f_MuEl->Get("Step_5/hMC_TTbarll_Step_5_nbJet20_CSVM");
-  TH1F * h_data_CSVM_MuEl = (TH1F*) f_MuEl->Get("Step_5/hDataSub_Step_5_nbJet20_CSVM");
-  h_data_CSVM_MuEl->Add(h_ttll_CSVM_MuEl);
-  h_data_CSVM_MuEl->Add(h_ttcc_CSVM_MuEl);
- 
-  TH1F * h_ttbb_CSVM_ElEl = (TH1F*) f_ElEl->Get("Step_5/hMCSig_TTbarbb_Step_5_nbJet20_CSVM");
-  TH1F * h_ttcc_CSVM_ElEl = (TH1F*) f_ElEl->Get("Step_5/hMC_TTbarcc_Step_5_nbJet20_CSVM");
-  TH1F * h_ttll_CSVM_ElEl = (TH1F*) f_ElEl->Get("Step_5/hMC_TTbarll_Step_5_nbJet20_CSVM");
-  TH1F * h_data_CSVM_ElEl = (TH1F*) f_ElEl->Get("Step_5/hDataSub_Step_5_nbJet20_CSVM");
-  h_data_CSVM_ElEl->Add(h_ttll_CSVM_ElEl);
-  h_data_CSVM_ElEl->Add(h_ttcc_CSVM_ElEl);
+  TH1F * h_ttbb_MuEl = getHist(f_MuEl, "Step_5/hMCSig_TTbarbb_Step_5_nbJet20_"+balgo+"","hFit_ttbb"+balgo+"MuEl");
+  TH1F * h_ttcc_MuEl = getHist(f_MuEl, "Step_5/hMC_TTbarcc_Step_5_nbJet20_"+balgo+"","hFit_ttcc"+balgo+"MuEl");
+  TH1F * h_ttll_MuEl = getHist(f_MuEl, "Step_5/hMC_TTbarll_Step_5_nbJet20_"+balgo+"","hFit_ttll"+balgo+"MuEl");
+  TH1F * h_data_MuEl = getHist(f_MuEl, "Step_5/hData_Step_5_nbJet20_"+balgo+"","hFit_data"+balgo+"MuEl");
+  TH1F * h_bakg_MuEl = getHistBakg(f_MuEl,"hFit_bakg"+balgo+"MuEl",balgo);
+  TH1F * h_dbkg_MuEl = getHistDbkg(f_MuEl,"hFit_dbkg"+balgo+"MuEl",balgo);
 
+  TH1F * h_ttbb_ElEl = getHist(f_ElEl, "Step_5/hMCSig_TTbarbb_Step_5_nbJet20_"+balgo+"","hFit_ttbb"+balgo+"ElEl");
+  TH1F * h_ttcc_ElEl = getHist(f_ElEl, "Step_5/hMC_TTbarcc_Step_5_nbJet20_"+balgo+"","hFit_ttcc"+balgo+"ElEl");
+  TH1F * h_ttll_ElEl = getHist(f_ElEl, "Step_5/hMC_TTbarll_Step_5_nbJet20_"+balgo+"","hFit_ttll"+balgo+"ElEl");
+  TH1F * h_data_ElEl = getHist(f_ElEl, "Step_5/hData_Step_5_nbJet20_"+balgo+"","hFit_data"+balgo+"ElEl");
+  TH1F * h_bakg_ElEl = getHistBakg(f_ElEl,"hFit_bakg"+balgo+"ElEl",balgo);
+  TH1F * h_dbkg_ElEl = getHistDbkg(f_ElEl,"hFit_dbkg"+balgo+"ElEl",balgo);
 
-  TH1F * hFit_data_CSVM_MuMu = new TH1F("hFit_data_CSVM_MuMu","hFit_data_CSVM_MuMu",nbins,-0.5,nbins - 0.5);
-  TH1F * hFit_ttll_CSVM_MuMu = new TH1F("hFit_ttll_CSVM_MuMu","hFit_ttll_CSVM_MuMu",nbins,-0.5,nbins - 0.5);
-  TH1F * hFit_ttbb_CSVM_MuMu = new TH1F("hFit_ttbb_CSVM_MuMu","hFit_ttbb_CSVM_MuMu",nbins,-0.5,nbins - 0.5);
-  TH1F * hFit_ttcc_CSVM_MuMu = new TH1F("hFit_ttcc_CSVM_MuMu","hFit_ttcc_CSVM_MuMu",nbins,-0.5,nbins - 0.5);
-
-  TH1F * hFit_data_CSVM_MuEl = new TH1F("hFit_data_CSVM_MuEl","hFit_data_CSVM_MuEl",nbins,-0.5,nbins - 0.5);
-  TH1F * hFit_ttll_CSVM_MuEl = new TH1F("hFit_ttll_CSVM_MuEl","hFit_ttll_CSVM_MuEl",nbins,-0.5,nbins - 0.5);
-  TH1F * hFit_ttbb_CSVM_MuEl = new TH1F("hFit_ttbb_CSVM_MuEl","hFit_ttbb_CSVM_MuEl",nbins,-0.5,nbins - 0.5);
-  TH1F * hFit_ttcc_CSVM_MuEl = new TH1F("hFit_ttcc_CSVM_MuEl","hFit_ttcc_CSVM_MuEl",nbins,-0.5,nbins - 0.5);
-
-  TH1F * hFit_data_CSVM_ElEl = new TH1F("hFit_data_CSVM_ElEl","hFit_data_CSVM_ElEl",nbins,-0.5,nbins - 0.5);
-  TH1F * hFit_ttll_CSVM_ElEl = new TH1F("hFit_ttll_CSVM_ElEl","hFit_ttll_CSVM_ElEl",nbins,-0.5,nbins - 0.5);
-  TH1F * hFit_ttbb_CSVM_ElEl = new TH1F("hFit_ttbb_CSVM_ElEl","hFit_ttbb_CSVM_ElEl",nbins,-0.5,nbins - 0.5);
-  TH1F * hFit_ttcc_CSVM_ElEl = new TH1F("hFit_ttcc_CSVM_ElEl","hFit_ttcc_CSVM_ElEl",nbins,-0.5,nbins - 0.5);
-
-  TH1F * hFit_data_CSVM_all = new TH1F("hFit_data_CSVM_all","hFit_data_CSVM_all",nbins*3,-0.5,nbins*3 - 0.5);
-  TH1F * hFit_ttll_CSVM_all = new TH1F("hFit_ttll_CSVM_all","hFit_ttll_CSVM_all",nbins*3,-0.5,nbins*3 - 0.5);
-  TH1F * hFit_ttbb_CSVM_all = new TH1F("hFit_ttbb_CSVM_all","hFit_ttbb_CSVM_all",nbins*3,-0.5,nbins*3 - 0.5);
-  TH1F * hFit_ttcc_CSVM_all = new TH1F("hFit_ttcc_CSVM_all","hFit_ttcc_CSVM_all",nbins*3,-0.5,nbins*3 - 0.5);
-
-  for(int i=1 ; i <= nbins; i++){
-    double data_CSVM_MuMu = 0;
-    double ttll_CSVM_MuMu = 0;
-    double ttbb_CSVM_MuMu = 0;
-    double ttcc_CSVM_MuMu = 0;
-
-    double data_CSVM_MuEl = 0;
-    double ttll_CSVM_MuEl = 0;
-    double ttbb_CSVM_MuEl = 0;
-    double ttcc_CSVM_MuEl = 0;
-
-    double data_CSVM_ElEl = 0;
-    double ttll_CSVM_ElEl = 0;
-    double ttbb_CSVM_ElEl = 0;
-    double ttcc_CSVM_ElEl = 0;
-
-
-    if( i > initbtag ) {
-      data_CSVM_MuMu = h_data_CSVM_MuMu->GetBinContent(i);
-      ttll_CSVM_MuMu = h_ttll_CSVM_MuMu->GetBinContent(i);
-      ttbb_CSVM_MuMu = h_ttbb_CSVM_MuMu->GetBinContent(i);
-      ttcc_CSVM_MuMu = h_ttcc_CSVM_MuMu->GetBinContent(i);
-
-      data_CSVM_MuEl = h_data_CSVM_MuEl->GetBinContent(i);
-      ttll_CSVM_MuEl = h_ttll_CSVM_MuEl->GetBinContent(i);
-      ttbb_CSVM_MuEl = h_ttbb_CSVM_MuEl->GetBinContent(i);
-      ttcc_CSVM_MuEl = h_ttcc_CSVM_MuEl->GetBinContent(i);
-
-      data_CSVM_ElEl = h_data_CSVM_ElEl->GetBinContent(i);
-      ttll_CSVM_ElEl = h_ttll_CSVM_ElEl->GetBinContent(i);
-      ttbb_CSVM_ElEl = h_ttbb_CSVM_ElEl->GetBinContent(i);
-      ttcc_CSVM_ElEl = h_ttcc_CSVM_ElEl->GetBinContent(i);
-    }
-
-    hFit_data_CSVM_MuMu->SetBinContent(i, data_CSVM_MuMu );
-    hFit_ttll_CSVM_MuMu->SetBinContent(i, ttll_CSVM_MuMu );
-    hFit_ttbb_CSVM_MuMu->SetBinContent(i, ttbb_CSVM_MuMu );
-    hFit_ttcc_CSVM_MuMu->SetBinContent(i, ttcc_CSVM_MuMu );
-
-    hFit_data_CSVM_MuEl->SetBinContent(i, data_CSVM_MuEl );
-    hFit_ttll_CSVM_MuEl->SetBinContent(i, ttll_CSVM_MuEl );
-    hFit_ttbb_CSVM_MuEl->SetBinContent(i, ttbb_CSVM_MuEl );
-    hFit_ttcc_CSVM_MuEl->SetBinContent(i, ttcc_CSVM_MuEl );
-
-    hFit_data_CSVM_ElEl->SetBinContent(i, data_CSVM_ElEl );
-    hFit_ttll_CSVM_ElEl->SetBinContent(i, ttll_CSVM_ElEl );
-    hFit_ttbb_CSVM_ElEl->SetBinContent(i, ttbb_CSVM_ElEl );
-    hFit_ttcc_CSVM_ElEl->SetBinContent(i, ttcc_CSVM_ElEl );
-
-  }
-
+  TH1F * h_data_all = new TH1F("hFit_data_"+balgo+"_all","hFit_data_"+balgo+"_all",nbins*3,-0.5,nbins*3 - 0.5);
+  TH1F * h_ttll_all = new TH1F("hFit_ttll_"+balgo+"_all","hFit_ttll_"+balgo+"_all",nbins*3,-0.5,nbins*3 - 0.5);
+  TH1F * h_ttbb_all = new TH1F("hFit_ttbb_"+balgo+"_all","hFit_ttbb_"+balgo+"_all",nbins*3,-0.5,nbins*3 - 0.5);
+  TH1F * h_ttcc_all = new TH1F("hFit_ttcc_"+balgo+"_all","hFit_ttcc_"+balgo+"_all",nbins*3,-0.5,nbins*3 - 0.5);
+  TH1F * h_bakg_all = new TH1F("hFit_bakg_"+balgo+"_all","hFit_bakg_"+balgo+"_all",nbins*3,-0.5,nbins*3 - 0.5);
+  TH1F * h_dbkg_all = new TH1F("hFit_dbkg_"+balgo+"_all","hFit_dbkg_"+balgo+"_all",nbins*3,-0.5,nbins*3 - 0.5);
 
   for(int i=1 ; i <= nbins*3; i++){
-    double nd = 0;
-    double nl = 0;
-    double nb = 0;
-    double nc = 0;
+
+    double nda = 0;
+    double nll = 0;
+    double nbb = 0;
+    double ncc = 0;
+    double nbk = 0;
+    double ndb = 0;
     int tag = 0;
     if( i >= 1 && i <= nbins ){
-      nd = hFit_data_CSVM_MuMu->GetBinContent(i);
-      nl = hFit_ttll_CSVM_MuMu->GetBinContent(i);
-      nb = hFit_ttbb_CSVM_MuMu->GetBinContent(i);
-      nc = hFit_ttcc_CSVM_MuMu->GetBinContent(i);
+      nda = h_data_MuMu->GetBinContent(i);
+      nll = h_ttll_MuMu->GetBinContent(i);
+      nbb = h_ttbb_MuMu->GetBinContent(i);
+      ncc = h_ttcc_MuMu->GetBinContent(i);
+      nbk = h_bakg_MuMu->GetBinContent(i);
+      ndb = h_dbkg_MuMu->GetBinContent(i);
       tag = i - 1  ;
     }else if( i > nbins && i<= nbins*2){
-      nd = hFit_data_CSVM_MuEl->GetBinContent(i-nbins);
-      nl = hFit_ttll_CSVM_MuEl->GetBinContent(i-nbins);
-      nb = hFit_ttbb_CSVM_MuEl->GetBinContent(i-nbins);
-      nc = hFit_ttcc_CSVM_MuEl->GetBinContent(i-nbins);
+      nda = h_data_MuEl->GetBinContent(i-nbins);
+      nll = h_ttll_MuEl->GetBinContent(i-nbins);
+      nbb = h_ttbb_MuEl->GetBinContent(i-nbins);
+      ncc = h_ttcc_MuEl->GetBinContent(i-nbins);
+      nbk = h_bakg_MuEl->GetBinContent(i-nbins);
+      ndb = h_dbkg_MuEl->GetBinContent(i-nbins);
       tag = i - (1 + nbins) ;
     }else if( i > nbins*2){
-      nd = hFit_data_CSVM_ElEl->GetBinContent(i-nbins*2);
-      nl = hFit_ttll_CSVM_ElEl->GetBinContent(i-nbins*2);
-      nb = hFit_ttbb_CSVM_ElEl->GetBinContent(i-nbins*2);
-      nc = hFit_ttcc_CSVM_ElEl->GetBinContent(i-nbins*2);
+      nda = h_data_ElEl->GetBinContent(i-nbins*2);
+      nll = h_ttll_ElEl->GetBinContent(i-nbins*2);
+      nbb = h_ttbb_ElEl->GetBinContent(i-nbins*2);
+      ncc = h_ttcc_ElEl->GetBinContent(i-nbins*2);
+      nbk = h_bakg_ElEl->GetBinContent(i-nbins*2);
+      ndb = h_dbkg_ElEl->GetBinContent(i-nbins*2);
       tag = i - (1 + nbins*2) ;
-    } 
-    cout << "i= " << i << " nd= " << nd << " nl= " << nl << " nb= " << nb << endl;
-    hFit_data_CSVM_all->GetXaxis()->SetBinLabel(i, Form("%i",tag) );
-    hFit_ttll_CSVM_all->GetXaxis()->SetBinLabel(i, Form("%i",tag) );
-    hFit_ttbb_CSVM_all->GetXaxis()->SetBinLabel(i, Form("%i",tag) );
-    hFit_ttcc_CSVM_all->GetXaxis()->SetBinLabel(i, Form("%i",tag) );
-    hFit_data_CSVM_all->SetBinContent(i,nd);
-    hFit_ttll_CSVM_all->SetBinContent(i,nl);
-    hFit_ttbb_CSVM_all->SetBinContent(i,nb);
-    hFit_ttcc_CSVM_all->SetBinContent(i,nc);
+    }
+    //cout << "bin = " << i << " nda= " << nda << " nll= " << nll << " nbb= " << nbb << " ncc= " << ncc << " nbk= " << nbk << " ndb= " << ndb << endl;
+    h_data_all->GetXaxis()->SetBinLabel(i, Form("%i",tag) );
+    h_ttll_all->GetXaxis()->SetBinLabel(i, Form("%i",tag) );
+    h_ttbb_all->GetXaxis()->SetBinLabel(i, Form("%i",tag) );
+    h_ttcc_all->GetXaxis()->SetBinLabel(i, Form("%i",tag) );
+    h_bakg_all->GetXaxis()->SetBinLabel(i, Form("%i",tag) );
+    h_dbkg_all->GetXaxis()->SetBinLabel(i, Form("%i",tag) );
+    h_data_all->SetBinContent(i,nda);
+    h_ttll_all->SetBinContent(i,nll);
+    h_ttbb_all->SetBinContent(i,nbb);
+    h_ttcc_all->SetBinContent(i,ncc);
+    h_bakg_all->SetBinContent(i,nbk);
+    h_dbkg_all->SetBinContent(i,ndb);
+
   }
 
-  Fit( hFit_data_CSVM_all, hFit_ttbb_CSVM_all, hFit_ttcc_CSVM_all,  hFit_ttll_CSVM_all, "Combined");
-  Fit( hFit_data_CSVM_MuMu, hFit_ttbb_CSVM_MuMu, hFit_ttcc_CSVM_MuMu, hFit_ttll_CSVM_MuMu, "MuMu");
-  Fit( hFit_data_CSVM_MuEl, hFit_ttbb_CSVM_MuEl, hFit_ttcc_CSVM_MuEl, hFit_ttll_CSVM_MuEl, "MuEl");
-  Fit( hFit_data_CSVM_ElEl, hFit_ttbb_CSVM_ElEl, hFit_ttcc_CSVM_ElEl, hFit_ttll_CSVM_ElEl, "ElEl");
- 
+  Fit( h_data_all, h_ttbb_all, h_ttcc_all,  h_ttll_all, h_bakg_all, h_dbkg_all, "Combined", path, balgo);
+  //Fit( h_data_MuMu, h_ttbb_MuMu, h_ttcc_MuMu, h_ttll_MuMu, h_bakg_MuMu, h_dbkg_MuMu, "MuMu", path, balgo);
+  //Fit( h_data_MuEl, h_ttbb_MuEl, h_ttcc_MuEl, h_ttll_MuEl, h_bakg_MuEl, h_dbkg_MuEl, "MuEl", path, balgo);
+  //Fit( h_data_ElEl, h_ttbb_ElEl, h_ttcc_ElEl, h_ttll_ElEl, h_bakg_ElEl, h_dbkg_ElEl, "ElEl", path, balgo);
+
+}
+
+
+void extractR(){
+  extractR("TTBB_12072018_CSVTdwlight","CSVT");
+  extractR("TTBB_12072018_CSVT","CSVT");
+  extractR("TTBB_12072018_CSVTuplight","CSVT");
+
+  extractR("TTBB_12072018_CSVTdw","CSVT");
+  extractR("TTBB_12072018_CSVTup","CSVT");
+
+  //extractR("TTBB_12072018_CSVT_10GeV","CSVT");
+
+  extractR("TTBB_12072018_bdwlight","CSVM");
+  extractR("TTBB_12072018","CSVM");
+  extractR("TTBB_12072018_buplight","CSVM");
+
+  extractR("TTBB_12072018_bdw","CSVM");
+  extractR("TTBB_12072018_bup","CSVM");
+
 }
