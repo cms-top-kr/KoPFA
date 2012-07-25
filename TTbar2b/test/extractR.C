@@ -6,7 +6,7 @@
 int initbtag  = 0;
 double fraction = 0.01;
 
-const int nbins = 5;
+const int nbins = 4;
 
 double nttbb[nbins*3];
 double nttcc[nbins*3];
@@ -22,7 +22,6 @@ double nbtag(double *x, double *par)
 
     return  par[1]*N_ttjj*(par[0]*nttbb[ntag] + (1-par[0])*nttll[ntag]) + par[1]*nbakg[ntag] + ndbkg[ntag];
     //return  par[1]*N_ttjj*(par[0]*nttbb[ntag] + (1-par[0])*nttll[ntag]);
-    //return  par[2]*N_ttjj*(par[0]*nttbb[ntag] + par[1]*nttcc[ntag] + (1-par[0]-par[1])*nttll[ntag]);
 
 }
 
@@ -150,6 +149,9 @@ TH1F* getHist(TFile * f, const TString & path, const TString & name){
     hout->SetBinContent(i, value);
   }
 
+  double overflow = h->GetBinContent(nbins+1);
+  hout->AddBinContent(nbins, overflow);
+  cout << "overflow = " << overflow << endl;
 
   return hout;
 
@@ -160,24 +162,27 @@ TH1F* getHistBakg(TFile * f, const TString & name, const TString& balgo){
 
   TH1F * hout = new TH1F(Form("%s",name.Data()),Form("%s",name.Data()),nbins,-0.5,nbins - 0.5);
 
-  TH1F * h1 = (TH1F*) f->Get("Step_5/hMC_TTbarOthers_Step_5_nbJet20_"+balgo);
-  TH1F * h2 = (TH1F*) f->Get("Step_5/hMC_TTbarNonvis_Step_5_nbJet20_"+balgo);
-  TH1F * h3 = (TH1F*) f->Get("Step_5/hMC_Wl_Step_5_nbJet20_"+balgo);
-  TH1F * h4 = (TH1F*) f->Get("Step_5/hMC_VV_Step_5_nbJet20_"+balgo);
-  TH1F * h5 = (TH1F*) f->Get("Step_5/hMC_SingleTop_Step_5_nbJet20_"+balgo);
-  TH1F * h6 = (TH1F*) f->Get("Step_5/hMC_DYtt_Step_5_nbJet20_"+balgo);
+  TH1F * h1 = (TH1F*) f->Get("Step_5/hMC_TTbarOthers_Step_5_nbJet30_"+balgo);
+  TH1F * h2 = (TH1F*) f->Get("Step_5/hMC_TTbarNonvis_Step_5_nbJet30_"+balgo);
+  TH1F * h3 = (TH1F*) f->Get("Step_5/hMC_Wl_Step_5_nbJet30_"+balgo);
+  TH1F * h4 = (TH1F*) f->Get("Step_5/hMC_VV_Step_5_nbJet30_"+balgo);
+  TH1F * h5 = (TH1F*) f->Get("Step_5/hMC_SingleTop_Step_5_nbJet30_"+balgo);
+  TH1F * h6 = (TH1F*) f->Get("Step_5/hMC_DYtt_Step_5_nbJet30_"+balgo);
 
   h1->Add(h2);
-  //h1->Add(h3);
-  //h1->Add(h4);
-  //h1->Add(h5);
-  //h1->Add(h6);
+  h1->Add(h3);
+  h1->Add(h4);
+  h1->Add(h5);
+  h1->Add(h6);
 
   for(int i=1 ; i <= nbins; i++){
     double value = h1->GetBinContent(i);
     hout->SetBinContent(i, value);
   }
 
+  double overflow = h1->GetBinContent(nbins+1);
+  hout->AddBinContent(nbins, overflow);
+  cout << "bkg overflow = " << overflow << endl;
   return hout;
 
 }
@@ -186,25 +191,28 @@ TH1F* getHistDbkg(TFile * f, const TString & name, const TString& balgo){
 
   TH1F * hout = new TH1F(Form("%s",name.Data()),Form("%s",name.Data()),nbins,-0.5,nbins - 0.5);
 
-  TH1F * h7 = (TH1F*) f->Get("Step_5/hMC_DYll_Step_5_nbJet20_"+balgo);
-  TH1F * h8 = (TH1F*) f->Get("Step_5/hDataBkg_QCD_Step_5_nbJet20_"+balgo);
-  TH1F * h3 = (TH1F*) f->Get("Step_5/hMC_Wl_Step_5_nbJet20_"+balgo);
-  TH1F * h4 = (TH1F*) f->Get("Step_5/hMC_VV_Step_5_nbJet20_"+balgo);
-  TH1F * h5 = (TH1F*) f->Get("Step_5/hMC_SingleTop_Step_5_nbJet20_"+balgo);
-  TH1F * h6 = (TH1F*) f->Get("Step_5/hMC_DYtt_Step_5_nbJet20_"+balgo);
+  TH1F * h7 = (TH1F*) f->Get("Step_5/hMC_DYll_Step_5_nbJet30_"+balgo);
+  TH1F * h8 = (TH1F*) f->Get("Step_5/hDataBkg_QCD_Step_5_nbJet30_"+balgo);
+  TH1F * h3 = (TH1F*) f->Get("Step_5/hMC_Wl_Step_5_nbJet30_"+balgo);
+  TH1F * h4 = (TH1F*) f->Get("Step_5/hMC_VV_Step_5_nbJet30_"+balgo);
+  TH1F * h5 = (TH1F*) f->Get("Step_5/hMC_SingleTop_Step_5_nbJet30_"+balgo);
+  TH1F * h6 = (TH1F*) f->Get("Step_5/hMC_DYtt_Step_5_nbJet30_"+balgo);
 
 
   h7->Add(h8);
-  h7->Add(h3);
-  h7->Add(h4);
-  h7->Add(h5);
-  h7->Add(h6);
+  //h7->Add(h3);
+  //h7->Add(h4);
+  //h7->Add(h5);
+  //h7->Add(h6);
 
   for(int i=1 ; i <= nbins; i++){
     double value = h7->GetBinContent(i);
     hout->SetBinContent(i, value);
   }
 
+  double overflow = h7->GetBinContent(nbins+1);
+  hout->AddBinContent(nbins, overflow);
+  cout << "data bkg overflow = " << overflow << endl;
   return hout;
 
 }
@@ -219,24 +227,24 @@ void extractR(const TString & path, const TString & balgo){
   TFile * f_MuEl = new TFile(path+"/MuEl/MuEl.root");
   TFile * f_ElEl = new TFile(path+"/ElEl/ElEl.root");
 
-  TH1F * h_ttbb_MuMu = getHist(f_MuMu, "Step_5/hMCSig_TTbarbb_Step_5_nbJet20_"+balgo+"","hFit_ttbb_"+balgo+"_MuMu");
-  TH1F * h_ttcc_MuMu = getHist(f_MuMu, "Step_5/hMC_TTbarcc_Step_5_nbJet20_"+balgo+"","hFit_ttcc_"+balgo+"_MuMu");
-  TH1F * h_ttll_MuMu = getHist(f_MuMu, "Step_5/hMC_TTbarll_Step_5_nbJet20_"+balgo+"","hFit_ttll"+balgo+"MuMu");
-  TH1F * h_data_MuMu = getHist(f_MuMu, "Step_5/hData_Step_5_nbJet20_"+balgo+"","hFit_data"+balgo+"MuMu");
+  TH1F * h_ttbb_MuMu = getHist(f_MuMu, "Step_5/hMCSig_TTbarbb_Step_5_nbJet30_"+balgo+"","hFit_ttbb_"+balgo+"_MuMu");
+  TH1F * h_ttcc_MuMu = getHist(f_MuMu, "Step_5/hMC_TTbarcc_Step_5_nbJet30_"+balgo+"","hFit_ttcc_"+balgo+"_MuMu");
+  TH1F * h_ttll_MuMu = getHist(f_MuMu, "Step_5/hMC_TTbarll_Step_5_nbJet30_"+balgo+"","hFit_ttll"+balgo+"MuMu");
+  TH1F * h_data_MuMu = getHist(f_MuMu, "Step_5/hData_Step_5_nbJet30_"+balgo+"","hFit_data"+balgo+"MuMu");
   TH1F * h_bakg_MuMu = getHistBakg(f_MuMu,"hFit_bakg"+balgo+"MuMu",balgo);
   TH1F * h_dbkg_MuMu = getHistDbkg(f_MuMu,"hFit_dbkg"+balgo+"MuMu",balgo);
 
-  TH1F * h_ttbb_MuEl = getHist(f_MuEl, "Step_5/hMCSig_TTbarbb_Step_5_nbJet20_"+balgo+"","hFit_ttbb"+balgo+"MuEl");
-  TH1F * h_ttcc_MuEl = getHist(f_MuEl, "Step_5/hMC_TTbarcc_Step_5_nbJet20_"+balgo+"","hFit_ttcc"+balgo+"MuEl");
-  TH1F * h_ttll_MuEl = getHist(f_MuEl, "Step_5/hMC_TTbarll_Step_5_nbJet20_"+balgo+"","hFit_ttll"+balgo+"MuEl");
-  TH1F * h_data_MuEl = getHist(f_MuEl, "Step_5/hData_Step_5_nbJet20_"+balgo+"","hFit_data"+balgo+"MuEl");
+  TH1F * h_ttbb_MuEl = getHist(f_MuEl, "Step_5/hMCSig_TTbarbb_Step_5_nbJet30_"+balgo+"","hFit_ttbb"+balgo+"MuEl");
+  TH1F * h_ttcc_MuEl = getHist(f_MuEl, "Step_5/hMC_TTbarcc_Step_5_nbJet30_"+balgo+"","hFit_ttcc"+balgo+"MuEl");
+  TH1F * h_ttll_MuEl = getHist(f_MuEl, "Step_5/hMC_TTbarll_Step_5_nbJet30_"+balgo+"","hFit_ttll"+balgo+"MuEl");
+  TH1F * h_data_MuEl = getHist(f_MuEl, "Step_5/hData_Step_5_nbJet30_"+balgo+"","hFit_data"+balgo+"MuEl");
   TH1F * h_bakg_MuEl = getHistBakg(f_MuEl,"hFit_bakg"+balgo+"MuEl",balgo);
   TH1F * h_dbkg_MuEl = getHistDbkg(f_MuEl,"hFit_dbkg"+balgo+"MuEl",balgo);
 
-  TH1F * h_ttbb_ElEl = getHist(f_ElEl, "Step_5/hMCSig_TTbarbb_Step_5_nbJet20_"+balgo+"","hFit_ttbb"+balgo+"ElEl");
-  TH1F * h_ttcc_ElEl = getHist(f_ElEl, "Step_5/hMC_TTbarcc_Step_5_nbJet20_"+balgo+"","hFit_ttcc"+balgo+"ElEl");
-  TH1F * h_ttll_ElEl = getHist(f_ElEl, "Step_5/hMC_TTbarll_Step_5_nbJet20_"+balgo+"","hFit_ttll"+balgo+"ElEl");
-  TH1F * h_data_ElEl = getHist(f_ElEl, "Step_5/hData_Step_5_nbJet20_"+balgo+"","hFit_data"+balgo+"ElEl");
+  TH1F * h_ttbb_ElEl = getHist(f_ElEl, "Step_5/hMCSig_TTbarbb_Step_5_nbJet30_"+balgo+"","hFit_ttbb"+balgo+"ElEl");
+  TH1F * h_ttcc_ElEl = getHist(f_ElEl, "Step_5/hMC_TTbarcc_Step_5_nbJet30_"+balgo+"","hFit_ttcc"+balgo+"ElEl");
+  TH1F * h_ttll_ElEl = getHist(f_ElEl, "Step_5/hMC_TTbarll_Step_5_nbJet30_"+balgo+"","hFit_ttll"+balgo+"ElEl");
+  TH1F * h_data_ElEl = getHist(f_ElEl, "Step_5/hData_Step_5_nbJet30_"+balgo+"","hFit_data"+balgo+"ElEl");
   TH1F * h_bakg_ElEl = getHistBakg(f_ElEl,"hFit_bakg"+balgo+"ElEl",balgo);
   TH1F * h_dbkg_ElEl = getHistDbkg(f_ElEl,"hFit_dbkg"+balgo+"ElEl",balgo);
 
@@ -281,7 +289,7 @@ void extractR(const TString & path, const TString & balgo){
       ndb = h_dbkg_ElEl->GetBinContent(i-nbins*2);
       tag = i - (1 + nbins*2) ;
     }
-    //cout << "bin = " << i << " nda= " << nda << " nll= " << nll << " nbb= " << nbb << " ncc= " << ncc << " nbk= " << nbk << " ndb= " << ndb << endl;
+    cout << "bin = " << i << " nda= " << nda << " nll= " << nll << " nbb= " << nbb << " ncc= " << ncc << " nbk= " << nbk << " ndb= " << ndb << endl;
     h_data_all->GetXaxis()->SetBinLabel(i, Form("%i",tag) );
     h_ttll_all->GetXaxis()->SetBinLabel(i, Form("%i",tag) );
     h_ttbb_all->GetXaxis()->SetBinLabel(i, Form("%i",tag) );
@@ -321,5 +329,4 @@ void extractR(){
 
   extractR("TTBB_12072018_bdw","CSVM");
   extractR("TTBB_12072018_bup","CSVM");
-
 }
