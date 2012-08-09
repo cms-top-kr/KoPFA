@@ -242,7 +242,7 @@ bool TTbar2bGenFilter::filter(edm::Event& iEvent, const edm::EventSetup& eventSe
 
     ttbarGenLevel.building(myGenJets, myGenParticles);
 
-    bool dil = ttbarGenLevel.diLeptonic(1) == 1 ;
+    bool dil = ttbarGenLevel.diLeptonic() == 1 ;
     bool vis = ttbarGenLevel.lepton1().pt() > 20 && abs(ttbarGenLevel.lepton1().eta()) < 2.4 && ttbarGenLevel.lepton2().pt() > 20 && abs(ttbarGenLevel.lepton2().eta()) < 2.4 && ttbarGenLevel.NbJets15() >= 2;
     bool njets4 = ttbarGenLevel.NJets15() >= 4;
     bool ttbb = ttbarGenLevel.NbJets15() >= 4;
