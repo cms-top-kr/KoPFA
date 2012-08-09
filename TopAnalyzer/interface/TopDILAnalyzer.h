@@ -13,7 +13,7 @@
 //
 // Original Author:  Tae Jeong Kim,40 R-A32,+41227678602,
 //         Created:  Fri Jun  4 17:19:29 CEST 2010
-// $Id: TopDILAnalyzer.h,v 1.84 2012/07/17 17:09:57 tjkim Exp $
+// $Id: TopDILAnalyzer.h,v 1.85 2012/07/19 12:22:36 tjkim Exp $
 //
 //
 
@@ -247,6 +247,9 @@ class TopDILAnalyzer : public edm::EDFilter {
     tree->Branch("ttbarGen","std::vector<Ko::TTbarCandidate>", &ttbarGen);
     tree->Branch("kinttbarM",&kinttbarM,"kinttbarM/d");
 
+    tree->Branch("nJet30",&nJet30,"nJet30/i");
+    tree->Branch("nJet20",&nJet20,"nJet20/i");
+
     tree->Branch("jetspt30","std::vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >", &jetspt30);
     tree->Branch("jetspt20","std::vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >", &jetspt20);
     tree->Branch("jetspt30flavor","std::vector<int>", &jetspt30flavor);
@@ -389,7 +392,8 @@ class TopDILAnalyzer : public edm::EDFilter {
     }
 
     std::vector<int> bidcs;
-    int idx=0;
+    int nj30=0;
+    int nj20=0;
 
     for (JI jit = Jets->begin(); jit != Jets->end(); ++jit) {
       ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > corrjet;
@@ -406,6 +410,7 @@ class TopDILAnalyzer : public edm::EDFilter {
           const double bTagValue = jit->bDiscriminator(bTagAlgos_[bTagIndex]);
           if ( (bTagIsCutMin_[bTagIndex]) xor (bTagValue < bTagCutValues_[bTagIndex]) ) ++nbjets20_[bTagIndex];
         }
+        nj20++;
       }//pt > 20 loop
       if(jit->pt() > 30){
         jetspt30->push_back(corrjet);
@@ -418,14 +423,16 @@ class TopDILAnalyzer : public edm::EDFilter {
           if ( (bTagIsCutMin_[bTagIndex]) xor (bTagValue < bTagCutValues_[bTagIndex]) ) ++nbjets30_[bTagIndex];
         }
 
-        if ( bDiscriminator > bTagCutValues_[1]) bidcs.push_back(idx); //for kinematic solution
-        idx++;  
+        if ( bDiscriminator > bTagCutValues_[1]) bidcs.push_back(nj30); //for kinematic solution
+        nj30++;  
       }//pt > 30 loop
     }
 
+    nJet20 = nj20;
+    nJet30 = nj30;
+  
     BTagWeight bTag;
 
-    unsigned int nJet20 = jetspt20->size();
     std::vector<TLorentzVector *> jet20(nJet20);
     std::vector<int> jet20flavor(nJet20);
     for (unsigned int i=0; i < nJet20; i++)
@@ -457,7 +464,6 @@ class TopDILAnalyzer : public edm::EDFilter {
 
     }
 
-    unsigned int nJet30 = jetspt30->size();
     std::vector<TLorentzVector *> jet30(nJet30);
     std::vector<int> jet30flavor(nJet30);
 
@@ -796,6 +802,9 @@ class TopDILAnalyzer : public edm::EDFilter {
     kinttbarM = -999;
     genttbarM = -999;
 
+    nJet30 = 0;
+    nJet20 = 0;
+
   }
 
   virtual bool endLuminosityBlock(edm::LuminosityBlock & lumi, const edm::EventSetup & setup){
@@ -929,6 +938,8 @@ class TopDILAnalyzer : public edm::EDFilter {
   unsigned int LUMI;
   unsigned int npileup;
   unsigned int nvertex;
+  unsigned int nJet20;
+  unsigned int nJet30;
 
   double puweight;
   double puweightplus;
