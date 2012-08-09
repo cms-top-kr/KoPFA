@@ -13,7 +13,7 @@
 //
 // Original Author:  Tae Jeong Kim,40 R-A32,+41227678602,
 //         Created:  Fri Jun  4 17:19:29 CEST 2010
-// $Id: TopDILAnalyzer.h,v 1.85 2012/07/19 12:22:36 tjkim Exp $
+// $Id: TopDILAnalyzer.h,v 1.86 2012/08/09 16:13:47 tjkim Exp $
 //
 //
 
@@ -265,11 +265,6 @@ class TopDILAnalyzer : public edm::EDFilter {
     }
 
     tree->Branch("MET",&MET,"MET/d");
-    tree->Branch("dphimetlepton1",&dphimetlepton1,"dphimetlepton1/d");
-    tree->Branch("dphimetlepton2",&dphimetlepton2,"dphimetlepton2/d");
-    tree->Branch("dphimetjet1",&dphimetjet1,"dphimetjet1/d");
-    tree->Branch("dphimetjet2",&dphimetjet2,"dphimetjet2/d");
-
     tree->Branch("genttbarM",&genttbarM,"genttbarM/d");
 
   } 
@@ -496,11 +491,6 @@ class TopDILAnalyzer : public edm::EDFilter {
 
     }
 
-    if( jetspt30->size() >= 2 ){
-      dphimetjet1 = fabs(deltaPhi(mi->phi(),jetspt30->at(0).phi()));
-      dphimetjet2 = fabs(deltaPhi(mi->phi(),jetspt30->at(1).phi()));
-    }
-
     ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > corrmet;
     corrmet.SetPxPyPzE(mi->px(),mi->py(),0,mi->pt());
     MET = mi->pt();
@@ -696,10 +686,6 @@ class TopDILAnalyzer : public edm::EDFilter {
         }
 
         h_[cutStep].hZMass->Fill(ZMass);
-        h_[cutStep].hDphiMETLepton1->Fill(dphimetlepton1);
-        h_[cutStep].hDphiMETLepton2->Fill(dphimetlepton2);
-        h_[cutStep].hDphiMETJet1->Fill(dphimetjet1);
-        h_[cutStep].hDphiMETJet2->Fill(dphimetjet2);
 
         if ( !ttbar->empty() )
         {
@@ -779,11 +765,6 @@ class TopDILAnalyzer : public edm::EDFilter {
     bweight30CSVMdwlight = 1.0;
     bweight20CSVTdwlight = 1.0;
     bweight30CSVTdwlight = 1.0;
-
-    dphimetlepton1 = -999;  
-    dphimetlepton2 = -999;  
-    dphimetjet1 = -999;
-    dphimetjet2 = -999;
 
     ZMass = -999; 
     genZMass = -999; 
@@ -908,10 +889,6 @@ class TopDILAnalyzer : public edm::EDFilter {
   std::vector<double>* jetspt20bDiscriminator;  
 
   double MET;
-  double dphimetlepton1;
-  double dphimetlepton2;
-  double dphimetjet1;
-  double dphimetjet2;
   double ZMass;
   double genZMass;
   int ZtauDecay;
