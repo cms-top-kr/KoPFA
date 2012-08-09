@@ -13,7 +13,7 @@
 //
 // Original Author:  Tae Jeong Kim,40 R-A32,+41227678602,
 //         Created:  Fri Jun  4 17:19:29 CEST 2010
-// $Id: ZFilter.h,v 1.2 2012/06/07 15:10:16 tjkim Exp $
+// $Id: ZFilter.h,v 1.3 2012/07/06 14:54:17 tjkim Exp $
 //
 //
 
@@ -85,6 +85,7 @@ class ZFilter : public edm::EDFilter {
   explicit ZFilter(const edm::ParameterSet& iConfig){
     //now do what ever initialization is needed
     applyFilter_ = iConfig.getUntrackedParameter<bool>("applyFilter",true);
+    filterIso_ = iConfig.getUntrackedParameter<bool>("filterIso",false);
     muonLabel1_ = iConfig.getParameter<edm::InputTag>("muonLabel1");
     muonLabel2_ = iConfig.getParameter<edm::InputTag>("muonLabel2");
     min_ = iConfig.getParameter<double>("min");  
@@ -123,6 +124,8 @@ class ZFilter : public edm::EDFilter {
     edm::Handle<std::vector<T2> > muons2_;
     iEvent.getByLabel(muonLabel1_,muons1_);
     iEvent.getByLabel(muonLabel2_,muons2_);
+
+    bool isIso =  false;
 
     for(unsigned i = 0; i != muons1_->size(); i++){
       for(unsigned j = 0; j != muons2_->size(); j++){
@@ -175,6 +178,7 @@ class ZFilter : public edm::EDFilter {
 
 
         if( iso && opp){
+          isIso = true;
           seldilp->push_back( dimuon );
           sellep1->push_back( (*muons1_)[i] );
           sellep2->push_back( (*muons2_)[j] );      
@@ -197,6 +201,11 @@ class ZFilter : public edm::EDFilter {
 
     if( dilp->size() > 0 && dilp->at(0).mass() >  min_ ) { 
       accept = true;
+    }
+
+    //only keep isolated pair when filterIso is ON:
+    if( filterIso_ && !isIso){
+      accept = false;
     }
 
     iEvent.put(dilp,"DiLepton");
@@ -228,6 +237,7 @@ class ZFilter : public edm::EDFilter {
   }
 
   bool applyFilter_;
+  bool filterIso_;
   edm::InputTag muonLabel1_;
   edm::InputTag muonLabel2_;
   double min_;
