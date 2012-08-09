@@ -12,8 +12,8 @@ topDecayGenFilter = cms.EDFilter('TopDecayGenFilter',
   diLeptonicMuoMuo = cms.bool(True),
   diLeptonicEleEle = cms.bool(True),
   diLeptonicMuoEle = cms.bool(True),
-  diLeptonicTauMuo = cms.bool(False),
-  diLeptonicTauEle = cms.bool(False),
-  diLeptonicTauTau = cms.bool(False),
+  diLeptonicTauMuo = cms.bool(True),
+  diLeptonicTauEle = cms.bool(True),
+  diLeptonicTauTau = cms.bool(True),
 )   
 
