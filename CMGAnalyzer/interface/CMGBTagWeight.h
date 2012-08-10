@@ -1,5 +1,5 @@
-#ifndef BTAGWEIGHT_H
-#define BTAGWEIGHT_H
+#ifndef CMGBTAGWEIGHT_H
+#define CMGBTAGWEIGHT_H
 
 #include <vector>
 #include "TLorentzVector.h"
