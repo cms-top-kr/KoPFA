@@ -482,7 +482,9 @@ process.ttFullLepEvent.decayChannel2 = cms.int32(%s)
 process.load("KoPFA.CommonTools.ZFilter_cfi")
 process.load("KoPFA.CommonTools.finalLeptonProducer_cfi")
 
-""" % (jetCorrection, ch1, ch2)
+process.Z%s.filterIso = cms.untracked.bool(True) 
+
+""" % (jetCorrection, ch1, ch2, decay)
 
   return script
 
