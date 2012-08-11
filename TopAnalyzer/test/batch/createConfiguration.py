@@ -482,9 +482,7 @@ process.ttFullLepEvent.decayChannel2 = cms.int32(%s)
 process.load("KoPFA.CommonTools.ZFilter_cfi")
 process.load("KoPFA.CommonTools.finalLeptonProducer_cfi")
 
-process.Z%s.filterIso = cms.untracked.bool(True) 
-
-""" % (jetCorrection, ch1, ch2, decay)
+""" % (jetCorrection, ch1, ch2)
 
   return script
 
@@ -507,6 +505,9 @@ process.load("KoPFA.CommonTools.Sources.MC.Fall11.patTuple_%s_cff")
 
 def mcpath():
   script = """
+
+process.Z%s.filterIso = cms.untracked.bool(True) 
+
 process.p = cms.Path(
     process.hltHighLevel%sMC*
     process.topAnalysisSequence*
@@ -515,7 +516,7 @@ process.p = cms.Path(
     makeTtFullLepEvent*
     process.%s
 ) 
-""" % (decay,decay,decay)
+""" % (decay,decay,decay,decay)
   return script
 
 def rdsample(src):
