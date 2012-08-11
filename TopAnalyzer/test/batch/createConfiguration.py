@@ -664,7 +664,7 @@ for src in mclist:
 
 for src in datalist:
     out = open(decay+'/top'+decay+'Analyzer_'+src+'_cfg.py','w')
-    out.write(common("L2L3Residual"))
+    out.write(common())
     out.write("process.GlobalTag.globaltag = cms.string('%s::All')\n" % rdGlobalTag)
     out.write("process.JetEnergyScale.globalTag = cms.untracked.string('%s')\n" % rdGlobalTag)
     #out.write(leptonfilter())
