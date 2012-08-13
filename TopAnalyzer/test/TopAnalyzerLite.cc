@@ -29,6 +29,7 @@
 #include <set>
 #include <algorithm>
 #include <sstream>
+#include <iomanip>
 
 using namespace std;
 
@@ -441,31 +442,35 @@ void TopAnalyzerLite::applyCutSteps()
     }
   }
 
-  cout << "Final" << endl;
-  if ( writeSummary_ ) fout_ << "Final" << endl;
-  TCut finalCut = "";
-  for ( unsigned int i=0; i<cuts_.size(); ++i )
-  {
-    finalCut = finalCut && cuts_[i].cut;
-  }
-  if ( realDataChain_ )
-  {
-    realDataChain_->Scan(scanVariables_.c_str(), finalCut);
-    cout << "Number of entries after final selection = " << realDataChain_->GetEntries(finalCut) << endl;
-  }
+  //cout << "Final" << endl;
+  //if ( writeSummary_ ) fout_ << "Final" << endl;
+  //TCut finalCut = "";
+  //for ( unsigned int i=0; i<cuts_.size(); ++i )
+  //{
+  //  finalCut = finalCut && cuts_[i].cut;
+  //}
+  //if ( realDataChain_ )
+  //{
+    //realDataChain_->Scan(scanVariables_.c_str());
+    //cout << "Number of entries after final selection = " << entryList_["realdata"].back()->GetN() << endl;
+  //}
 
   if ( writeSummary_ && realDataChain_ )
   {
+
+    printCutFlow();
     const string tmpFileName = imageOutDir_+"/tmp.txt";
 
     ((TTreePlayer*)(realDataChain_->GetPlayer()))->SetScanRedirect(true);
     ((TTreePlayer*)(realDataChain_->GetPlayer()))->SetScanFileName(tmpFileName.c_str());
-    realDataChain_->Scan(scanVariables_.c_str(), finalCut);
+    //realDataChain_->Scan(scanVariables_.c_str(), finalCut);
+    realDataChain_->Scan(scanVariables_.c_str());
     ((TTreePlayer*)(realDataChain_->GetPlayer()))->SetScanRedirect(false);
 
     ifstream tmpFile(tmpFileName.c_str());
     copy(istreambuf_iterator<char>(tmpFile), istreambuf_iterator<char>(), ostreambuf_iterator<char>(fout_));
-    fout_ << "Number of entries after final selection = " << realDataChain_->GetEntries(finalCut) << endl;
+    //fout_ << "Number of entries after final selection = " << realDataChain_->GetEntries(finalCut) << endl;
+    fout_ << "Number of entries after final selection = " << entryList_["realdata"].back()->GetN() << endl;
     gSystem->Exec(("rm -f "+tmpFileName).c_str());
   }
 }
@@ -801,9 +806,12 @@ void TopAnalyzerLite::printStat(const string& name, TCut cut, int cutStep)
     if( it != wMap_.end() ) {
       scale = it->second[cutStep];
     }
-
     const double norm = lumi_*mcSample.xsec/mcSample.nEvents;
-    const double nEvents = entryList_[Form("mcbkg%d",i)].at(cutStep)->GetN()*norm*scale;
+    double rawN = 0;
+    if(  entryList_[Form("mcbkg%d",i)].at(cutStep) != NULL ){
+      rawN = entryList_[Form("mcbkg%d",i)].at(cutStep)->GetN();
+    } 
+    const double nEvents = rawN*norm*scale;
     const double nEventsErr2 = nEvents*norm;
 
     // Merge statistics with same labels
@@ -1142,6 +1150,10 @@ void TopAnalyzerLite::drawEffCurve(const TCut cut, const string varexp, std::vec
 }
 
 void TopAnalyzerLite::printCutFlow(){
+ 
+  fout_ << "Cut Flow Table as a latex format" << endl;
+  fout_ << "--------------------------------------\n";
+
   map<TString, vector<Stat> >::iterator it;  
   it = statsMap_.begin();
   int nSample = it->second.size();
@@ -1161,15 +1173,16 @@ void TopAnalyzerLite::printCutFlow(){
     it = statsMap_.begin();
     const string label = Form(form.Data(), (*it).second[i].label.c_str());
 
-    cout << label << " = " ;
+    fout_ << label << " " ;
     for( int k = 0; k != (int) statsMap_.size() ; k++){
       Stat& stat = (*it).second[i];
-      cout << stat.nEvents << " +- " << sqrt(stat.nEventsErr2) << "\t";
+      fout_ << " \t&" << setprecision(4) << stat.nEvents ;
+      if( k >= (int) statsMap_.size()-1 ) fout_ << " $\\pm$ " << setprecision(4) << sqrt(stat.nEventsErr2) ;
       nTotal[Form("Step_%d", k+1) ] += stat.nEvents;
       nTotalErr2[Form("Step_%d", k+1)] += stat.nEventsErr2;
       it++;
     }
-    cout << "\n" ;
+    fout_ << "\\\\ \n" ;
   } 
 
   map<TString, double >::iterator itTotal;
@@ -1177,19 +1190,18 @@ void TopAnalyzerLite::printCutFlow(){
   itTotal= nTotal.begin();
   itTotalErr2= nTotalErr2.begin();
 
-  cout << Form(form.Data(), "Total") << " = " ;
+  fout_ << Form(form.Data(), "Total MC") << " " ;
   for( int k = 0; k != (int) statsMap_.size() ; k++){
-    cout << (*itTotal).second << " +- " << sqrt( (*itTotalErr2).second ) << "\t" ;
+    fout_ << " \t&" << setprecision(4) << (*itTotal).second ;
+    if( k >= (int) statsMap_.size()-1 ) fout_ << " $\\pm$ " << setprecision(4) << sqrt( (*itTotalErr2).second ) ;
     itTotal++;
     itTotalErr2++;
   }
-  cout << "\n" ;
-  cout << Form(form.Data(), "Data") << " = " ;  
-  TCut cut;
+  fout_ << "\\\\\\hline \n" ;
+  fout_ << Form(form.Data(), "Data") << " " ;  
   for( int k = 0; k != (int) statsMap_.size() ; k++){
-    cut = cut && cuts_[k].cut;
     const double nData = realDataChain_ ? entryList_["realdata"].at(k)->GetN() : 0;
-    cout << nData <<  "\t" ;
+    fout_ << " \t&" << nData  ;
   }
-  cout << "\n" ;
+  fout_ << "\\\\\\hline\\hline \n" ;
 }
