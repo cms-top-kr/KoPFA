@@ -2,10 +2,11 @@
 #include "TMath.h"
 #include "TRandom3.h"
 #include "THStack.h"
+#include "style.h"
 
-int initbtag  = 3;
+int initbtag  = 0;
 double fraction = 0.01;
-
+bool draw = true;
 const int nbins = 5;
 bool combine = false;
 
@@ -27,7 +28,7 @@ double nbtag(double *x, double *par)
 
 }
 
-void Fit(TH1* data, TH1* ttbb, TH1* ttcc, TH1* ttll, TH1* bakg, TH1* dbkg, const TString & decayMode, const TString & path, const TString & balgo)
+double Fit(TH1* data, TH1* ttbb, TH1* ttcc, TH1* ttll, TH1* bakg, TH1* dbkg, const TString & decayMode, const TString & path, const TString & balgo)
 {
 
     cout << " ============ " << path << " ============ (" << decayMode << ") =================="  << endl;
@@ -55,7 +56,7 @@ void Fit(TH1* data, TH1* ttbb, TH1* ttcc, TH1* ttll, TH1* bakg, TH1* dbkg, const
     N_ttjj = N_ttbb + N_ttll;
     //N_ttjj = N_ttbb + N_ttcc + N_ttll;
     double r = N_ttbb / N_ttjj;
-
+    cout << "MC r= " << r << endl;
     //cout << "Total number of background subtracted data= " << N_data << " Total number of tt signal= " << N_ttjj << endl;
 
     httbb->Sumw2();
@@ -118,7 +119,7 @@ void Fit(TH1* data, TH1* ttbb, TH1* ttcc, TH1* ttll, TH1* bakg, TH1* dbkg, const
     s->Draw("FHIST");
     s->GetYaxis()->SetTitle("Events");
     s->GetXaxis()->SetTitle("b-Jet Multiplicity ("+balgo+")");
-    s->SetTitle("Fit Result");
+    s->SetTitle("");
     s->SetMaximum(4000);
     s->SetMinimum(1);
 
@@ -127,8 +128,26 @@ void Fit(TH1* data, TH1* ttbb, TH1* ttcc, TH1* ttll, TH1* bakg, TH1* dbkg, const
     hdata->Draw("samee");
     hdata->SetTitle(Form("%s",decayMode.Data()));
 
-    TLegend *l = new TLegend(0.75,0.68,0.92,0.88);
-    l->AddEntry(hdata,"Data","L");
+    SetLabel(0.2, 0.82, 4982);
+    TLatex *label= new TLatex;
+    //label->SetNDC();
+    label->SetTextSize(0.05);
+    label->DrawLatex(0.1,200,"#mu#mu");
+    label->DrawLatex(nbins+0.1,200,"e#mu");
+    label->DrawLatex(nbins*2+0.1,200,"ee");
+
+
+    TLine* line = new TLine(nbins-0.5,400, nbins-0.5, 0);
+    line->SetLineStyle(2);
+    line->SetLineWidth(2);
+    line->Draw();
+    TLine* line2 = new TLine(nbins*2-0.5,400, nbins*2-0.5, 0);
+    line2->SetLineStyle(2);
+    line2->SetLineWidth(2);
+    line2->Draw();
+
+    TLegend *l = new TLegend(0.75,0.74,0.92,0.88);
+    l->AddEntry(hdata,"Data","PL");
     l->AddEntry(httll,"t#bar{t} + ll/cc","F");
     //l->AddEntry(httcc,"t#bar{t} + cc","F");
     l->AddEntry(httbb,"t#bar{t} + bb","F");
@@ -137,7 +156,11 @@ void Fit(TH1* data, TH1* ttbb, TH1* ttcc, TH1* ttll, TH1* bakg, TH1* dbkg, const
     l->SetLineColor(0);
     l->Draw();
 
-    c->Print(Form("%s/c_ttbb_fraction_%s_%s.eps",path.Data(),decayMode.Data(),balgo.Data()));
+    if(draw){
+      c->Print(Form("%s/c_ttbb_fraction_%s_%s.eps",path.Data(),decayMode.Data(),balgo.Data()));
+    }  
+
+    return R;
 }
 
 TH1F* getHist(TFile * f, const TString & path, const TString & name){
@@ -168,12 +191,12 @@ TH1F* getHistBakg(TFile * f, const TString & name, const TString& balgo){
 
   TH1F * hout = new TH1F(Form("%s",name.Data()),Form("%s",name.Data()),nbins,-0.5,nbins - 0.5);
 
-  TH1F * h1 = (TH1F*) f->Get("Step_4/hMC_TTbarOthers_Step_4_nbJet30_"+balgo);
-  TH1F * h2 = (TH1F*) f->Get("Step_4/hMC_TTbarNonvis_Step_4_nbJet30_"+balgo);
-  TH1F * h3 = (TH1F*) f->Get("Step_4/hMC_Wl_Step_4_nbJet30_"+balgo);
-  TH1F * h4 = (TH1F*) f->Get("Step_4/hMC_VV_Step_4_nbJet30_"+balgo);
-  TH1F * h5 = (TH1F*) f->Get("Step_4/hMC_SingleTop_Step_4_nbJet30_"+balgo);
-  TH1F * h6 = (TH1F*) f->Get("Step_4/hMC_DYtt_Step_4_nbJet30_"+balgo);
+  TH1F * h1 = (TH1F*) f->Get("Step_5/hMC_TTbarOthers_Step_5_nbJet30_"+balgo);
+  TH1F * h2 = (TH1F*) f->Get("Step_5/hMC_TTbarNonvis_Step_5_nbJet30_"+balgo);
+  TH1F * h3 = (TH1F*) f->Get("Step_5/hMC_Wl_Step_5_nbJet30_"+balgo);
+  TH1F * h4 = (TH1F*) f->Get("Step_5/hMC_VV_Step_5_nbJet30_"+balgo);
+  TH1F * h5 = (TH1F*) f->Get("Step_5/hMC_SingleTop_Step_5_nbJet30_"+balgo);
+  TH1F * h6 = (TH1F*) f->Get("Step_5/hMC_DYtt_Step_5_nbJet30_"+balgo);
 
   h1->Add(h2);
   h1->Add(h3);
@@ -201,12 +224,12 @@ TH1F* getHistDbkg(TFile * f, const TString & name, const TString& balgo){
 
   TH1F * hout = new TH1F(Form("%s",name.Data()),Form("%s",name.Data()),nbins,-0.5,nbins - 0.5);
 
-  TH1F * h7 = (TH1F*) f->Get("Step_4/hMC_DYll_Step_4_nbJet30_"+balgo);
-  TH1F * h8 = (TH1F*) f->Get("Step_4/hDataBkg_QCD_Step_4_nbJet30_"+balgo);
-  TH1F * h3 = (TH1F*) f->Get("Step_4/hMC_Wl_Step_4_nbJet30_"+balgo);
-  TH1F * h4 = (TH1F*) f->Get("Step_4/hMC_VV_Step_4_nbJet30_"+balgo);
-  TH1F * h5 = (TH1F*) f->Get("Step_4/hMC_SingleTop_Step_4_nbJet30_"+balgo);
-  TH1F * h6 = (TH1F*) f->Get("Step_4/hMC_DYtt_Step_4_nbJet30_"+balgo);
+  TH1F * h7 = (TH1F*) f->Get("Step_5/hMC_DYll_Step_5_nbJet30_"+balgo);
+  TH1F * h8 = (TH1F*) f->Get("Step_5/hDataBkg_QCD_Step_5_nbJet30_"+balgo);
+  TH1F * h3 = (TH1F*) f->Get("Step_5/hMC_Wl_Step_5_nbJet30_"+balgo);
+  TH1F * h4 = (TH1F*) f->Get("Step_5/hMC_VV_Step_5_nbJet30_"+balgo);
+  TH1F * h5 = (TH1F*) f->Get("Step_5/hMC_SingleTop_Step_5_nbJet30_"+balgo);
+  TH1F * h6 = (TH1F*) f->Get("Step_5/hMC_DYtt_Step_5_nbJet30_"+balgo);
 
 
   h7->Add(h8);
@@ -232,7 +255,7 @@ TH1F* getHistDbkg(TFile * f, const TString & name, const TString& balgo){
 }
 
 
-void extractR(const TString & path, const TString & balgo){
+double extractR(const TString & path, const TString & balgo){
 
   gROOT->ProcessLine(".L tdrstyle.C");
   defaultStyle();
@@ -241,24 +264,24 @@ void extractR(const TString & path, const TString & balgo){
   TFile * f_MuEl = new TFile(path+"/MuEl/MuEl.root");
   TFile * f_ElEl = new TFile(path+"/ElEl/ElEl.root");
 
-  TH1F * h_ttbb_MuMu = getHist(f_MuMu, "Step_4/hMCSig_TTbarbb_Step_4_nbJet30_"+balgo+"","hFit_ttbb_"+balgo+"_MuMu");
-  TH1F * h_ttcc_MuMu = getHist(f_MuMu, "Step_4/hMC_TTbarcc_Step_4_nbJet30_"+balgo+"","hFit_ttcc_"+balgo+"_MuMu");
-  TH1F * h_ttll_MuMu = getHist(f_MuMu, "Step_4/hMC_TTbarll_Step_4_nbJet30_"+balgo+"","hFit_ttll"+balgo+"MuMu");
-  TH1F * h_data_MuMu = getHist(f_MuMu, "Step_4/hData_Step_4_nbJet30_"+balgo+"","hFit_data"+balgo+"MuMu");
+  TH1F * h_ttbb_MuMu = getHist(f_MuMu, "Step_5/hMCSig_TTbarbb_Step_5_nbJet30_"+balgo+"","hFit_ttbb_"+balgo+"_MuMu");
+  TH1F * h_ttcc_MuMu = getHist(f_MuMu, "Step_5/hMC_TTbarcc_Step_5_nbJet30_"+balgo+"","hFit_ttcc_"+balgo+"_MuMu");
+  TH1F * h_ttll_MuMu = getHist(f_MuMu, "Step_5/hMC_TTbarll_Step_5_nbJet30_"+balgo+"","hFit_ttll"+balgo+"MuMu");
+  TH1F * h_data_MuMu = getHist(f_MuMu, "Step_5/hData_Step_5_nbJet30_"+balgo+"","hFit_data"+balgo+"MuMu");
   TH1F * h_bakg_MuMu = getHistBakg(f_MuMu,"hFit_bakg"+balgo+"MuMu",balgo);
   TH1F * h_dbkg_MuMu = getHistDbkg(f_MuMu,"hFit_dbkg"+balgo+"MuMu",balgo);
 
-  TH1F * h_ttbb_MuEl = getHist(f_MuEl, "Step_4/hMCSig_TTbarbb_Step_4_nbJet30_"+balgo+"","hFit_ttbb"+balgo+"MuEl");
-  TH1F * h_ttcc_MuEl = getHist(f_MuEl, "Step_4/hMC_TTbarcc_Step_4_nbJet30_"+balgo+"","hFit_ttcc"+balgo+"MuEl");
-  TH1F * h_ttll_MuEl = getHist(f_MuEl, "Step_4/hMC_TTbarll_Step_4_nbJet30_"+balgo+"","hFit_ttll"+balgo+"MuEl");
-  TH1F * h_data_MuEl = getHist(f_MuEl, "Step_4/hData_Step_4_nbJet30_"+balgo+"","hFit_data"+balgo+"MuEl");
+  TH1F * h_ttbb_MuEl = getHist(f_MuEl, "Step_5/hMCSig_TTbarbb_Step_5_nbJet30_"+balgo+"","hFit_ttbb"+balgo+"MuEl");
+  TH1F * h_ttcc_MuEl = getHist(f_MuEl, "Step_5/hMC_TTbarcc_Step_5_nbJet30_"+balgo+"","hFit_ttcc"+balgo+"MuEl");
+  TH1F * h_ttll_MuEl = getHist(f_MuEl, "Step_5/hMC_TTbarll_Step_5_nbJet30_"+balgo+"","hFit_ttll"+balgo+"MuEl");
+  TH1F * h_data_MuEl = getHist(f_MuEl, "Step_5/hData_Step_5_nbJet30_"+balgo+"","hFit_data"+balgo+"MuEl");
   TH1F * h_bakg_MuEl = getHistBakg(f_MuEl,"hFit_bakg"+balgo+"MuEl",balgo);
   TH1F * h_dbkg_MuEl = getHistDbkg(f_MuEl,"hFit_dbkg"+balgo+"MuEl",balgo);
 
-  TH1F * h_ttbb_ElEl = getHist(f_ElEl, "Step_4/hMCSig_TTbarbb_Step_4_nbJet30_"+balgo+"","hFit_ttbb"+balgo+"ElEl");
-  TH1F * h_ttcc_ElEl = getHist(f_ElEl, "Step_4/hMC_TTbarcc_Step_4_nbJet30_"+balgo+"","hFit_ttcc"+balgo+"ElEl");
-  TH1F * h_ttll_ElEl = getHist(f_ElEl, "Step_4/hMC_TTbarll_Step_4_nbJet30_"+balgo+"","hFit_ttll"+balgo+"ElEl");
-  TH1F * h_data_ElEl = getHist(f_ElEl, "Step_4/hData_Step_4_nbJet30_"+balgo+"","hFit_data"+balgo+"ElEl");
+  TH1F * h_ttbb_ElEl = getHist(f_ElEl, "Step_5/hMCSig_TTbarbb_Step_5_nbJet30_"+balgo+"","hFit_ttbb"+balgo+"ElEl");
+  TH1F * h_ttcc_ElEl = getHist(f_ElEl, "Step_5/hMC_TTbarcc_Step_5_nbJet30_"+balgo+"","hFit_ttcc"+balgo+"ElEl");
+  TH1F * h_ttll_ElEl = getHist(f_ElEl, "Step_5/hMC_TTbarll_Step_5_nbJet30_"+balgo+"","hFit_ttll"+balgo+"ElEl");
+  TH1F * h_data_ElEl = getHist(f_ElEl, "Step_5/hData_Step_5_nbJet30_"+balgo+"","hFit_data"+balgo+"ElEl");
   TH1F * h_bakg_ElEl = getHistBakg(f_ElEl,"hFit_bakg"+balgo+"ElEl",balgo);
   TH1F * h_dbkg_ElEl = getHistDbkg(f_ElEl,"hFit_dbkg"+balgo+"ElEl",balgo);
 
@@ -319,18 +342,23 @@ void extractR(const TString & path, const TString & balgo){
 
   }
 
-  Fit( h_data_all, h_ttbb_all, h_ttcc_all,  h_ttll_all, h_bakg_all, h_dbkg_all, "Combined", path, balgo);
+  double R = Fit( h_data_all, h_ttbb_all, h_ttcc_all,  h_ttll_all, h_bakg_all, h_dbkg_all, "Combined", path, balgo);
   //Fit( h_data_MuMu, h_ttbb_MuMu, h_ttcc_MuMu, h_ttll_MuMu, h_bakg_MuMu, h_dbkg_MuMu, "MuMu", path, balgo);
   //Fit( h_data_MuEl, h_ttbb_MuEl, h_ttcc_MuEl, h_ttll_MuEl, h_bakg_MuEl, h_dbkg_MuEl, "MuEl", path, balgo);
   //Fit( h_data_ElEl, h_ttbb_ElEl, h_ttcc_ElEl, h_ttll_ElEl, h_bakg_ElEl, h_dbkg_ElEl, "ElEl", path, balgo);
 
+  return R;
 }
 
 
 void extractR(){
-  extractR("TTBB_12072018_CSVM_jet30GeV_Tau","CSVM");
-  extractR("TTBB_12072018_CSVMdwlight_jet30GeV_Tau","CSVM");
-  extractR("TTBB_12072018_CSVMuplight_jet30GeV_Tau","CSVM");
-  extractR("TTBB_12072018_CSVMdw_jet30GeV_Tau_2tag","CSVM");
-  extractR("TTBB_12072018_CSVMup_jet30GeV_Tau_2tag","CSVM"); 
+  double R = extractR("TTBB_12072018_CSVM_jet30GeV_Tau_2tag_SF","CSVM");
+  //double Rdwlight = extractR("TTBB_12072018_CSVMdwlight_jet30GeV_Tau_2tag_SF","CSVM");
+  //double Ruplight = extractR("TTBB_12072018_CSVMuplight_jet30GeV_Tau_2tag_SF","CSVM");
+  //extractR("TTBB_12072018_CSVTdw_jet30GeV_Tau_2tag_SF","CSVT");
+  //extractR("TTBB_12072018_CSVTup_jet30GeV_Tau_2tag_SF","CSVT"); 
+  //double dwlight = (Rdwlight-R)/R;
+  //double uplight = (Ruplight-R)/R;
+  //cout << "dwlight = " << dwlight << endl;
+  //cout << "uplight = " << uplight << endl;
 }
