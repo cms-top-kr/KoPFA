@@ -1,8 +1,0 @@
-<lcgdict>
-  <class name="Ko::CMGTTbarCandidate" />
-  <class name="std::vector<Ko::CMGTTbarCandidate>" />
-  <class name="edm::Wrapper<Ko::CMGTTbarCandidate>"/>
-  <class name="edm::Wrapper<std::vector<Ko::CMGTTbarCandidate> >"/>
-  <class name="edm::Ptr<Ko::CMGTTbarCandidate>"/>
-</lcgdict>
-
