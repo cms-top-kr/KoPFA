@@ -1,14 +1,16 @@
-void acceptance(){
 
-  //TFile* f_ttbar2b = new TFile("vallot_ttbar2b.root");
-  TString path = "TTbarTuneZ2";
+double FrTTDIL = 0;
+double FrTTDILVIS = 0;
+double FrTTJJ = 0;
+double FrTTBB = 0;
+double FrTTCC = 0;
 
-  TFile* f_mm = new TFile(Form("/afs/cern.ch/work/t/tjkim/public/store/top/MuMu/v1/vallot_%s.root",path.Data()));
-  TFile* f_ee = new TFile(Form("/afs/cern.ch/work/t/tjkim/public/store/top/ElEl/v1/vallot_%s.root",path.Data()));
-  TFile* f_em = new TFile(Form("/afs/cern.ch/work/t/tjkim/public/store/top/MuEl/v1/vallot_%s.root",path.Data()));
+void getFraction(){
 
-  //TFile* f_ttbar2b = new TFile("../../TopAnalyzer/test/crabforttbb/result/vallot_ttbar2b.root");
   TFile* f_ttbar2b = new TFile("../../TopAnalyzer/test/crabforttbb/vallot_ttbar2b.root");
+  //TFile* f_ttbar2b = new TFile("../../TopAnalyzer/test/crabforttbb/vallot_ttbar2b.root");
+  //TFile* f_ttbar2b = new TFile("/afs/cern.ch/work/t/tjkim/public/store/top/ttbar2bhisto/vallot_ttbar2b_mcatnlo.root");
+  //TFile* f_ttbar2b = new TFile(Form("/afs/cern.ch/work/t/tjkim/public/store/top/ttbar2bhisto/vallot_ttbar2b_%s.root",path.Data()));
 
   TH1* h_nGenJet = (TH1F*) f_ttbar2b->Get("ttbar2bFilter/h_multiplicity_GenJets");
   TH1* h_nGenJetDIL = (TH1F*) f_ttbar2b->Get("ttbar2bFilter/h_multiplicity_GenJetsDIL");
@@ -27,34 +29,80 @@ void acceptance(){
   double nTTBB = nTTBBDILVIS - h_nGenJet15DILVISTTBB->Integral(1,4);
   double nTTCC = nTTCCDILVIS - h_nGenJet15DILVISTTCC->Integral(1,4);
 
-  cout << nTT << " " << nTTDIL << " " << nTTJJ << " " << nTTBB << " " << endl; 
-  TTree* t_mm = (TTree*) f_mm->Get("MuMu/tree");
-  TH1* h_event_mm = (TH1F*) f_mm->Get("MuMu/EventSummary");
-  TTree* t_ee = (TTree*) f_ee->Get("ElEl/tree");
-  TH1* h_event_ee = (TH1F*) f_ee->Get("ElEl/EventSummary");
-  TTree* t_em = (TTree*) f_em->Get("MuEl/tree");
-  TH1* h_event_em = (TH1F*) f_em->Get("MuEl/EventSummary");
+  cout << nTT << " " << nTTDIL << " " << nTTJJ << " " << nTTBB << " " << endl;
 
   //double nTT = t->GetEntries(); 
   //double nTTJJ = t->GetEntries("ttbarGen.NJets20() >= 4");
   //double nTTBB = t->GetEntries("ttbarGen.NJets20() >= 4 && ttbarGen.NbQuarks() >= 4");
-  
-  double total = h_event_mm->GetBinContent(1);
 
   double Br = 0.049382761;
 
-  double FrTTDIL = nTTDIL/nTT;
-  double FrTTDILVIS = nTTDILVIS/nTTDIL;
-  double FrTTJJ = nTTJJ/nTTDILVIS; 
-  double FrTTBB = nTTBB/nTTJJ; 
-  double FrTTCC = nTTCC/nTTJJ; 
+  FrTTDIL = nTTDIL/nTT;
+  FrTTDILVIS = nTTDILVIS/nTTDIL;
+  FrTTJJ = nTTJJ/nTTDILVIS;
+  FrTTBB = nTTBB/nTTJJ;
+  FrTTCC = nTTCC/nTTJJ;
+}
 
-  TCut vis = "ttbarGen.NJets15() >= 4 && ttbarGen.NbJets15() >=2 && ttbarGen.lepton1().pt() > 20 && ttbarGen.lepton2().pt() > 20 && abs(ttbarGen.lepton1().eta()) < 2.5 && abs(ttbarGen.lepton2().eta()) < 2.5" ;
-  TCut cut = "ZMass > 12 && isIso > 0 && PairSign < 0 && abs(ZMass-91.2) > 15 && MET > 30 && @jetspt30.size() >=4 && nbjets30_CSVM >= 2";
-  TCut cut_em = "ZMass > 12 && isIso > 0 && PairSign < 0 && @jetspt30.size() >=4 && nbjets30_CSVM >= 2";
+void acceptance(){
 
-  TCut ttbb = "ttbarGen.NbJets15() >= 4";
-  TCut ttcc = "ttbarGen.NcJets15() >= 2";
+  getFraction();
+
+  acceptance("TTbarTuneZ2");
+  acceptance("TTbarPOWHEG");
+  acceptance("TTbarScaleUp");
+  acceptance("TTbarScaleDw");
+
+}
+
+void acceptance(const TString & path){
+  cout << path.Data() << endl;
+
+  TFile* f_mm = new TFile(Form("/afs/cern.ch/work/t/tjkim/public/store/top/MuMu/v2/vallot_%s.root",path.Data()));
+  TFile* f_ee = new TFile(Form("/afs/cern.ch/work/t/tjkim/public/store/top/ElEl/v2/vallot_%s.root",path.Data()));
+  TFile* f_em = new TFile(Form("/afs/cern.ch/work/t/tjkim/public/store/top/MuEl/v2/vallot_%s.root",path.Data()));
+
+  TTree* t_mm = (TTree*) f_mm->Get("MuMu/tree");
+  TTree* t_ee = (TTree*) f_ee->Get("ElEl/tree");
+  TTree* t_em = (TTree*) f_em->Get("MuEl/tree");
+
+  TH1* h_event_mm = (TH1F*) f_mm->Get("MuMu/EventSummary");
+  double total = h_event_mm->GetBinContent(1);
+
+  TCut cut_em_S1 = "ZMass > 12 && isIso > 0 && PairSign < 0";
+  TCut cut_S1 = cut_em_S1;
+  
+  TCut cut_em_S2 = "ZMass > 12 && isIso > 0 && PairSign < 0";
+  TCut cut_S2 = cut_em_S2 + "abs(ZMass-91.2) > 15";
+  
+  TCut cut_em_S3 = "ZMass > 12 && isIso > 0 && PairSign < 0";
+  TCut cut_S3 = cut_em_S3 + "abs(ZMass-91.2) > 15 && MET > 30";
+  
+  TCut cut_em_S4 = "ZMass > 12 && isIso > 0 && PairSign < 0 && @jetspt30.size() >=4";
+  TCut cut_S4 = cut_em_S4 + "abs(ZMass-91.2) > 15 && MET > 30";
+
+  TCut cut_em_S5 = "ZMass > 12 && isIso > 0 && PairSign < 0 && @jetspt30.size() >=4 && nbjets30_CSVM >= 2";
+  TCut cut_S5 = cut_em_S5 + "abs(ZMass-91.2) > 15 && MET > 30";
+
+  TCut cut_em_S6 = "ZMass > 12 && isIso > 0 && PairSign < 0 && @jetspt30.size() >=4 && nbjets30_CSVM >= 2 && kinttbarM > 0";
+  TCut cut_S6 = cut_em_S5 + "abs(ZMass-91.2) > 15 && MET > 30";
+
+  print(t_mm, t_ee, t_em, total, cut_S1, cut_em_S1,"S1");
+  print(t_mm, t_ee, t_em, total, cut_S2, cut_em_S2,"S2");
+  print(t_mm, t_ee, t_em, total, cut_S3, cut_em_S3,"S3");
+  print(t_mm, t_ee, t_em, total, cut_S4, cut_em_S4,"S4");
+  print(t_mm, t_ee, t_em, total, cut_S5, cut_em_S5,"S5");
+  //print(t_mm, t_ee, t_em, total, cut_S6, cut_em_S6,"S6");
+
+}
+
+void print(TTree* t_mm, TTree* t_ee, TTree* t_em, double total, TCut cut, TCut cut_em, const TString & step){
+
+  cout << "CUT: " << step << endl;
+
+  TCut vis = "ttbarGen.NJets25() >= 4 && ttbarGen.NbJets25() >=2 && ttbarGen.lepton1().pt() > 20 && ttbarGen.lepton2().pt() > 20 && abs(ttbarGen.lepton1().eta()) < 2.5 && abs(ttbarGen.lepton2().eta()) < 2.5" ;
+  TCut ttbb = "ttbarGen.NbJets25() >= 4";
+  TCut ttcc = "ttbarGen.NcJets25() >= 2";
 
   double numTTJJ = t_mm->GetEntries(cut + vis) + t_ee->GetEntries(cut + vis) + t_em->GetEntries(cut_em + vis);
   double preTTJJ = t_mm->GetEntries(vis) + t_ee->GetEntries(vis) + t_em->GetEntries(vis);
@@ -91,6 +139,5 @@ void acceptance(){
   cout << "acceptance (ttbb)   = " << acceptanceTTBB << endl;
   cout << "acceptance (ttcc)   = " << acceptanceTTCC << "(" << numTTCC << "/" << denTTCC << ")" << endl;
   cout << "Ratio (Attjj/Attbb) = " << AccRatio << endl;
-
 
 }

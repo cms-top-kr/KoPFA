@@ -1,12 +1,14 @@
+#include <iostream>
+#include <iomanip>
 #include "tdrstyle.C"
+
 TFile* fEE, * fME, * fMM;
 TString outDirName = ".";
 
 const int nBkg = 8;
-const char* bkgNames[] = {"hMC_TTbarll","hMC_TTbarOthers","hMC_Wl", "hMC_VV", "hMC_SingleTop", "hMC_DYtt", "hMC_DYll","hDataBkg_QCD"};
+const char* bkgNames[] = {"hMC_TTbarcc","hMC_TTbarll","hMC_TTbarOthers","hMC_Wl", "hMC_VV", "hMC_SingleTop", "hMC_DYll","hDataBkg_QCD"};
 const char* bkgLabels[] = {
-  "t#bar{t}+ll","t#bar{t} others","W #rightarrow l#nu", "Dibosons", "Single top",
-  "Z/#gamma* #rightarrow #tau#tau", "Z/#gamma* #rightarrow ll","QCD"
+  "t#bar{t}+cc", "t#bar{t}+ll","t#bar{t} others","W #rightarrow l#nu", "Dibosons", "Single top", "Z/#gamma* #rightarrow ll","QCD"
 };
 
 const int nSig = 1;
@@ -19,13 +21,15 @@ void cutStepPlots(const char* cutStep, const char* histName, const char* histTit
 TLegend* buildLegend();
 TPaveText* getHeader(double lumi, TString channelName = "");
 
-void makePlots(TString noteNumber = "Merged_30May")
+void makePlots(TString noteNumber = "TTBB_01Sep2012/v1")
 {
   setTDRStyle();
 
-  fEE = TFile::Open("ElEl_ttbb_v7/ElEl.root");
-  fME = TFile::Open("MuEl_ttbb_v7/MuEl.root");
-  fMM = TFile::Open("MuMu_ttbb_v7/MuMu.root");
+  TString path = "TTBB_01Sep2012";
+
+  fEE = TFile::Open(path+"/ElEl/ElEl.root");
+  fME = TFile::Open(path+"/MuEl/MuEl.root");
+  fMM = TFile::Open(path+"/MuMu/MuMu.root");
 
   if ( !fEE || !fME || !fMM ) return;
 
@@ -53,19 +57,27 @@ void makePlots(TString noteNumber = "Merged_30May")
 */
 //  cutStepPlots("Step_5", "nJet", "Jet multiplicity", 1, 1e6, true);
 //  cutStepPlots("Step_6", "nbJet_CSVL", "b-Jet multiplicity(CSVL)", 1, 1e6, true);
-//  cutStepPlots("Step_6", "nbJet_CSVM", "b-Jet multiplicity(CSVM)", 1, 1e6, true);
+//  cutStepPlots("Step_5", "nbJet30_CSVM", "b-Jet multiplicity(CSVM)", 1, 1e6, true);
 //  cutStepPlots("Step_6", "nbJet_CSVT", "b-Jet multiplicity(CSVT)", 1, 1e6, true);
 
-  //cutStepPlots("Step_5", "nJet", "Jet multiplicity", 0, 50000, false);
+  cutStepPlots("Step_1", "nJet", "Jet multiplicity", 0, 5000000, false);
+  cutStepPlots("Step_2", "nJet", "Jet multiplicity", 0, 500000, false);
+  cutStepPlots("Step_3", "nJet", "Jet multiplicity", 0, 5000, false);
+  cutStepPlots("Step_4", "nJet", "Jet multiplicity", 0, 5000, false);
+  cutStepPlots("Step_5", "nJet", "Jet multiplicity", 0, 5000, false);
 
-  cutStepPlots("Step_6", "jet1pt", "Leading jet p_{T};p_{T} (GeV/c);Events/10 GeV/c", 0.1, 1e6, true);
-  cutStepPlots("Step_6", "jet2pt", "Second jet p_{T};p_{T} (GeV/c);Events/10 GeV/c", 0.1, 1e6, true);
-  cutStepPlots("Step_6", "jet3pt", "Third jet p_{T};p_{T} (GeV/c);Events/10 GeV/c", 0.1, 1e6, true);
-  cutStepPlots("Step_6", "jet4pt", "Fourth jet p_{T};p_{T} (GeV/c);Events/10 GeV/c", 0.1, 1e6, true);
+//  cutStepPlots("Step_6", "jet1pt", "Leading jet p_{T};p_{T} (GeV/c);Events/10 GeV/c", 0.1, 1e6, true);
+//  cutStepPlots("Step_6", "jet2pt", "Second jet p_{T};p_{T} (GeV/c);Events/10 GeV/c", 0.1, 1e6, true);
+//  cutStepPlots("Step_6", "jet3pt", "Third jet p_{T};p_{T} (GeV/c);Events/10 GeV/c", 0.1, 1e6, true);
+//  cutStepPlots("Step_6", "jet4pt", "Fourth jet p_{T};p_{T} (GeV/c);Events/10 GeV/c", 0.1, 1e6, true);
 
-  cutStepPlots("Step_6", "nbJet_CSVL", "b-Jet multiplicity(CSVL)", 0.1, 1e6, true);
-  cutStepPlots("Step_6", "nbJet_CSVM", "b-Jet multiplicity(CSVM)", 0.1, 1e6, true);
-  cutStepPlots("Step_6", "nbJet_CSVT", "b-Jet multiplicity(CSVT)", 0.1, 1e6, true);
+//  cutStepPlots("Step_6", "nbJet_CSVL", "b-Jet multiplicity(CSVL)", 0.1, 1e6, true);
+//   cutStepPlots("Step_6", "nbJet20_CSVM", "b-Jet multiplicity(CSVM)", 0.01, 1e6, true);
+//  cutStepPlots("Step_6", "nbJet_CSVT", "b-Jet multiplicity(CSVT)", 0.1, 1e6, true);
+ 
+//  cutStepPlots("Step_6", "nbJet_CSVL", "b-Jet multiplicity(CSVL)", 0, 500, false);
+//  cutStepPlots("Step_6", "nbJet_CSVM", "b-Jet multiplicity(CSVM)", 0, 3000, false);
+//  cutStepPlots("Step_6", "nbJet_CSVT", "b-Jet multiplicity(CSVT)", 0, 3000, false);
 
   //cutStepPlots("Step_6", "MET", "Missing E_{T}", 1, 1e10, true); 
   //cutStepPlots("Step_6", "vsumM", "t#bar{t} invariant mass", 0, 7000, false);
@@ -74,6 +86,10 @@ void makePlots(TString noteNumber = "Merged_30May")
   //cutStepPlots("Step_7", "vsumMAlt", "t#bar{t} invariant mass", 0, 7000, false);
   //cutStepPlots("Step_7", "vsumMhigh", "t#bar{t} invariant mass", 1, 1e5, true);
   //cutStepPlots("Step_7", "MET", "Missing E_{T}", 0, 900, false);
+
+  printCutFlow(path,"MuMu", "nbJet30_CSVM,nbJet30_CSVM,nbJet30_CSVM,nbJet30_CSVM,nbJet30_CSVM");
+  printCutFlow(path,"ElEl", "nbJet30_CSVM,nbJet30_CSVM,nbJet30_CSVM,nbJet30_CSVM,nbJet30_CSVM" );
+  printCutFlow(path,"MuEl", "nbJet30_CSVM,nbJet30_CSVM,nbJet30_CSVM,nbJet30_CSVM,nbJet30_CSVM");
 
   //printCutFlow("MuMu", "-,-,METlog,METlog,MET,nJet,vsumMAlt");
   //printCutFlow("ElEl", "-,-,METlog,METlog,MET,nJet,vsumMAlt");
@@ -86,9 +102,9 @@ void makePlots(TString noteNumber = "Merged_30May")
   //rescalePlots("Step_6", "DYll", "nJet,vsumMAlt"       , 1/1.51*(1+.51*.5), 1/1.91*(1+.91*.5), 1);
   //rescalePlots("Step_7", "DYll", "nbJet,vsumMAlt,MET"  , 1/1.51*(1+.51*.5), 1/1.91*(1+.91*.5), 1);
 
-  //printCutFlow("MuMu", "-,-,METlog,METlog,MET,vsumMAlt,vsumMAlt");
-  //printCutFlow("ElEl", "-,-,METlog,METlog,MET,vsumMAlt,vsumMAlt");
-  //printCutFlow("MuEl", "-,-,METlog,METlog,MET,vsumMAlt,vsumMAlt");
+  //printCutFlow(path,"MuMu", "nbJet30_CSVM,nbJet30_CSVM,nbJet30_CSVM,nbJet30_CSVM,nbJet30_CSVM");
+  //printCutFlow(path,"ElEl", "nbJet30_CSVM,nbJet30_CSVM,nbJet30_CSVM,nbJet30_CSVM,nbJet30_CSVM" );
+  //printCutFlow(path,"MuEl", "nbJet30_CSVM,nbJet30_CSVM,nbJet30_CSVM,nbJet30_CSVM,nbJet30_CSVM");
 
   // Restore back DY scaling again, and apply -50%
   //rescalePlots("Step_3", "DYll", "METlog,nJetlog,ZMass", 1/(1+.04*.5)*(1-.04*.5), 1/(1+.04*.5)*(1-.04*.5), 1);
@@ -102,10 +118,10 @@ void makePlots(TString noteNumber = "Merged_30May")
   //printCutFlow("MuEl", "-,-,METlog,METlog,MET,vsumMAlt,vsumMAlt");
 }
 
-void printCutFlow(TString decayMode, TString histNamesStr)
+void printCutFlow(TString path, TString decayMode, TString histNamesStr)
 {
-  TFile* f = gROOT->GetFile(decayMode+".root");
-  if ( !f ) f = TFile::Open(decayMode+".root");
+  TFile* f = gROOT->GetFile(path + "/"+decayMode+"/"+decayMode+".root");
+  if ( !f ) f = TFile::Open(path + "/"+decayMode+"/"+decayMode+".root");
 
   TObjArray* histNames = histNamesStr.Tokenize(",");
   std::vector<double> nBkgTotal(histNames->GetEntries());
@@ -126,6 +142,7 @@ void printCutFlow(TString decayMode, TString histNamesStr)
   {
     cout << Form("\tStep_%d", i+1);
   }
+
   cout << "\n----------------------------------------------------------------------------------------\n";
 
   for ( int i=0; i<nBkg; ++i )
@@ -134,27 +151,28 @@ void printCutFlow(TString decayMode, TString histNamesStr)
     for ( int j=0; j<histNames->GetEntries(); ++j )
     {
       TString histName = histNames->At(j)->GetName();
-      TH1F* hMC = (TH1F*)f->Get(Form("Step_%d/%s_Step_%d_%s", j+1, bkgNames[i], j+1, histName));
+      TH1F* hMC = (TH1F*)f->Get(Form("Step_%d/%s_Step_%d_%s", j+1, bkgNames[i], j+1, histName.Data()));
       if ( !hMC ) 
       {
         cout << "\t-";
-        cout << "<-ici";
         continue;
       }
 
       nBkgTotal[j] += hMC->Integral();
-      cout << '\t' << hMC->Integral();
+      if( hMC->Integral() > 1000 ) cout << fixed << setprecision (0) << '\t' << hMC->Integral(); 
+      else cout << fixed << setprecision (2) << '\t' << hMC->Integral();
     }
     cout << "\n";
   }
 
   cout << "----------------------------------------------------------------------------------------\n";
-  cout << Form(labelForm.Data(), "TTbar");
+  const char* sigName = sigNames[0];
+  cout << Form(labelForm.Data(), sigLabels[0]);
   for ( int i=0; i<histNames->GetEntries(); ++i )
   {
     TString histName = histNames->At(i)->GetName();
 
-    TH1F* hSig = (TH1F*)f->Get(Form("Step_%d/hMCSig_TTbar_Step_%d_%s", i+1, i+1, histName.Data()));
+    TH1F* hSig = (TH1F*)f->Get(Form("Step_%d/%s_Step_%d_%s", i+1, sigName, i+1, histName.Data()));
     if ( !hSig )
     {
       cout << "\t-";
@@ -162,19 +180,23 @@ void printCutFlow(TString decayMode, TString histNamesStr)
     }
 
     nMCTotal[i] = nBkgTotal[i]+hSig->Integral();
-    cout << '\t' << hSig->Integral();
+    if( hSig->Integral() > 1000) cout << fixed << setprecision(0) << '\t' << hSig->Integral();
+    else cout << fixed << setprecision(2) << '\t' << hSig->Integral();
   }
+
   cout << "\n----------------------------------------------------------------------------------------\n";
   cout << Form(labelForm.Data(), "Bkg total");
   for ( int i=0; i<histNames->GetEntries(); ++i )
   {
-    cout << '\t' << nBkgTotal[i];
+    if( nBkgTotal[i] > 1000) cout << fixed << setprecision(0) << '\t' << nBkgTotal[i];
+    else cout << fixed << setprecision(2) << '\t' << nBkgTotal[i];
   }
   cout << '\n';
   cout << Form(labelForm.Data(), "MC total");
   for ( int i=0; i<histNames->GetEntries(); ++i )
   {
-    cout << '\t' << nMCTotal[i];
+    if( nMCTotal[i] > 1000) cout << fixed << setprecision(0) << '\t' << nMCTotal[i];
+    else cout << fixed << setprecision(2) << '\t' << nMCTotal[i];
   }
   cout << "\n----------------------------------------------------------------------------------------\n";
 
@@ -190,7 +212,7 @@ void printCutFlow(TString decayMode, TString histNamesStr)
       continue;
     }
 
-    cout << '\t' << hData->Integral();
+    cout << fixed << setprecision(0) << '\t' << hData->Integral();
   }
   cout << "\n========================================================================================\n\n";
 }
