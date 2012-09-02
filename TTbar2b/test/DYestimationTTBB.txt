@@ -1,0 +1,64 @@
+Loading FW Lite setup.
+Loading FW Lite setup.
+
+Processing DYestimation.C...
+Step_2
+mm decay--------------------------------
+R= 0.0963508 k= 1.22679
+Data in= 1.7078e+06
+Bkg in= 4472
+Prediction = 163282
+Estimation = 164283
+scale= 1.00613
+ee decay--------------------------------
+R= 0.0945396 k= 0.815134
+Data in= 1.39318e+06
+Bkg in= 4472
+Prediction = 130208
+Estimation = 131538
+scale= 1.01022
+Step_3
+mm decay--------------------------------
+R= 0.110373 k= 1.22679
+Data in= 111340
+Bkg in= 2951
+Prediction = 8874.04
+Estimation = 12089.1
+scale= 1.3623
+ee decay--------------------------------
+R= 0.10645 k= 0.815134
+Data in= 90757
+Bkg in= 2951
+Prediction = 6761.08
+Estimation = 9533.07
+scale= 1.40999
+Step_4
+mm decay--------------------------------
+R= 0.14984 k= 1.22679
+Data in= 9704
+Bkg in= 1715
+Prediction = 1053.52
+Estimation = 1296.42
+scale= 1.23056
+ee decay--------------------------------
+R= 0.135759 k= 0.815134
+Data in= 7797
+Bkg in= 1715
+Prediction = 726.689
+Estimation = 963.619
+scale= 1.32604
+Step_5
+mm decay--------------------------------
+R= 0.117275 k= 1.22679
+Data in= 1804
+Bkg in= 1393
+Prediction = 98.6946
+Estimation = 111.357
+scale= 1.1283
+ee decay--------------------------------
+R= 0.148446 k= 0.815134
+Data in= 1570
+Bkg in= 1393
+Prediction = 101.961
+Estimation = 148.781
+scale= 1.4592
