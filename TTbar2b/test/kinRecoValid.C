@@ -24,28 +24,6 @@ void kinRecoValid(){
   t_MuMu->Project("h_tag2","abs(jetspt30flavor[bCSVM_ext])","kinttbarMCSVM > 0 && @bCSVM_ext.size() > 0 && nbjets30_CSVM == 2");
   t_MuMu->Project("h_tag3","abs(jetspt30flavor[bCSVM_ext])","kinttbarMCSVM > 0 && @bCSVM_ext.size() > 0 && nbjets30_CSVM >= 3");
 
-  TCanvas * c = new TCanvas("c","c",1);
-  h->SetTitle("3 b-tag bin");
-  h->GetXaxis()->SetTitle("Parton Flavor");
-  h->GetYaxis()->SetTitle("Extra Jets");
-  h->Draw();
-
-  TCanvas * c_tag2 = new TCanvas("c_tag2","c_tag2",1);
-  h_tag2->SetTitle("");
-  h_tag2->GetXaxis()->SetTitle("Parton Flavor");
-  h_tag2->GetYaxis()->SetTitle("Extra Jets");
-  h_tag2->Draw();
-
-  TCanvas * c_tag3 = new TCanvas("c_tag3","c_tag3",1);
-  h_tag3->SetTitle("");
-  h_tag3->GetXaxis()->SetTitle("Parton Flavor");
-  h_tag3->GetYaxis()->SetTitle("Extra Jets");
-  h_tag3->Draw();
-
-  c->Print("c_extrajet_flavor.eps");
-  c_tag2->Print("c_extrajet_flavor_tag2.eps");
-  c_tag3->Print("c_extrajet_flavor_tag3.eps");
-
   double nb = h->GetBinContent(6);
   double nb_tag2 = h_tag2->GetBinContent(6);
   double nb_tag3 = h_tag3->GetBinContent(6);
@@ -61,6 +39,32 @@ void kinRecoValid(){
   cout << "nb= " << nb << " nt= " << nt << " f= " << f << endl;
   cout << "tag2: nb= " << nb_tag2 << " nt= " << nt_tag2 << " f= " << f_tag2 << endl;
   cout << "tag3: nb= " << nb_tag3 << " nt= " << nt_tag3 << " f= " << f_tag3 << endl;
-  
+ 
+  TCanvas * c = new TCanvas("c","c",1);
+  h->Scale(1.0/nt);
+  h->SetTitle("3 b-tag bin");
+  h->GetXaxis()->SetTitle("Parton Flavor");
+  h->GetYaxis()->SetTitle("Norm. Extra Jets");
+  h->Draw();
+
+  TCanvas * c_tag2 = new TCanvas("c_tag2","c_tag2",1);
+  h_tag2->Scale(1.0/nt_tag2);
+  h_tag2->SetTitle("");
+  h_tag2->GetXaxis()->SetTitle("Parton Flavor");
+  h_tag2->GetYaxis()->SetTitle("Norm. Extra Jets");
+  h_tag2->Draw();
+
+  TCanvas * c_tag3 = new TCanvas("c_tag3","c_tag3",1);
+  h_tag3->Scale(1.0/nt_tag3);
+  h_tag3->SetTitle("");
+  h_tag3->GetXaxis()->SetTitle("Parton Flavor");
+  h_tag3->GetYaxis()->SetTitle("Norm. Extra Jets");
+  h_tag3->Draw();
+
+  c->Print("c_extrajet_flavor.eps");
+  c_tag2->Print("c_extrajet_flavor_tag2.eps");
+  c_tag3->Print("c_extrajet_flavor_tag3.eps");
+
+ 
 }
 
