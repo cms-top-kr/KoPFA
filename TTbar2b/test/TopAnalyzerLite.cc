@@ -52,7 +52,7 @@ public:
 
   void addRealData(const string fileName, const double lumi);
 
-  void addCutStep(const TCut cut, const TString monitorPlotNamesStr, const double plotScale = 1.0);
+  void addCutStep(const TCut cut, const TString monitorPlotNamesStr, const double plotScale = 1.0, const string weight = "1");
   void addMonitorPlot(const string name, const string varexp, const string title,
                       const int nBins, const double xmin, const double xmax,
                       const double ymin = 0, const double ymax = 0, const bool doLogy = true);
@@ -111,6 +111,7 @@ private:
     TCut cut;
     vector<string> monitorPlotNames;
     double plotScale;
+    string weight;
   };
 
   struct Stat
@@ -132,7 +133,7 @@ private:
   string imageOutDir_;
 
   void prepareEventList(const TCut &cut, int istep);
-  void plot(const string name, TCut cut, MonitorPlot& monitorPlot, const double plotScale = 1.0, const double wDY = 1.0);
+  void plot(const string name, TCut cut, MonitorPlot& monitorPlot, const double plotScale = 1.0, const double wDY = 1.0, const string weight = "1");
   void printStat(const string& name, TCut cut, int cutStep=0);
   void addMC(vector<MCSample>& mcSetup,
              const string name, const string label,
@@ -352,7 +353,7 @@ if ( !realDataChain_ )
   realDataChain_->Add(fileName.c_str());
 }
 
-void TopAnalyzerLite::addCutStep(const TCut cut, TString monitorPlotNamesStr, const double plotScale)
+void TopAnalyzerLite::addCutStep(const TCut cut, TString monitorPlotNamesStr, const double plotScale, const string weight)
 {
   TObjArray* monitorPlotNames = monitorPlotNamesStr.Tokenize(",");
   const int nPlots = monitorPlotNames->GetSize();
@@ -368,7 +369,7 @@ void TopAnalyzerLite::addCutStep(const TCut cut, TString monitorPlotNamesStr, co
     plotNames.push_back(plotName);
   }
 
-  CutStep cutStep = {cut, plotNames, plotScale};
+  CutStep cutStep = {cut, plotNames, plotScale, weight};
   cuts_.push_back(cutStep);
 }
 
@@ -430,6 +431,7 @@ void TopAnalyzerLite::applyCutSteps()
     cut = cut && cuts_[i].cut;
     const vector<string>& monitorPlotNames = cuts_[i].monitorPlotNames;
     const double plotScale = cuts_[i].plotScale;
+    const string w = cuts_[i].weight;
     prepareEventList(cut, i);
     printStat(Form("Step_%d", i+1), cut, i);
     for ( unsigned int j = 0; j < monitorPlotNames.size(); ++ j)
@@ -438,7 +440,7 @@ void TopAnalyzerLite::applyCutSteps()
 
       if ( monitorPlots_.find(plotName) == monitorPlots_.end() ) continue;
       MonitorPlot& monitorPlot = monitorPlots_[plotName];
-      plot(Form("Step_%d_%s", i+1, plotName.c_str()), cut, monitorPlot, lumi_*plotScale, i);
+      plot(Form("Step_%d_%s", i+1, plotName.c_str()), cut, monitorPlot, lumi_*plotScale, i, w);
     }
   }
 
@@ -475,7 +477,7 @@ void TopAnalyzerLite::applyCutSteps()
   }
 }
 
-void TopAnalyzerLite::plot(const string name, const TCut cut, MonitorPlot& monitorPlot, const double plotScale, const double cutStep)
+void TopAnalyzerLite::plot(const string name, const TCut cut, MonitorPlot& monitorPlot, const double plotScale, const double cutStep, const string weight)
 {
   const string& varexp = monitorPlot.varexp;
   const string& title = monitorPlot.title;
@@ -521,7 +523,7 @@ void TopAnalyzerLite::plot(const string name, const TCut cut, MonitorPlot& monit
     TString mcSigHistName = Form("hMCSig_%s_%s", mcSample.name.c_str(), name.c_str());
     TH1F* hMCSig = new TH1F(mcSigHistName, title.c_str(), nBins, xBins);
 
-    TCut mcWeightStr = Form("%s", eventWeightVar_.c_str());
+    TCut mcWeightStr = Form("(%s)*(%s)", eventWeightVar_.c_str(),weight.c_str());
 
     mcSample.chain->Project(mcSigHistName, varexp.c_str(),mcWeightStr);
     hMCSig->AddBinContent(nBins, hMCSig->GetBinContent(nBins+1));
@@ -577,14 +579,14 @@ void TopAnalyzerLite::plot(const string name, const TCut cut, MonitorPlot& monit
     TString mcHistName = Form("hMC_%s_%s", mcSample.name.c_str(), name.c_str());
     TH1F* hMC = new TH1F(mcHistName, title.c_str(), nBins, xBins);
 
-    TCut mcWeightStr = Form("%s", eventWeightVar_.c_str());
+    TCut mcWeightStr = Form("(%s)*(%s)", eventWeightVar_.c_str(), weight.c_str());
     mcSample.chain->Project(mcHistName, varexp.c_str(),mcWeightStr);
     hMC->AddBinContent(nBins, hMC->GetBinContent(nBins+1));
     hMC->Scale(lumi_*mcSample.xsec/mcSample.nEvents);
 
     //scale MC
     map<string, vector<double> >::iterator it;
-    it = wMap_.find(mcSample.label);
+    it = wMap_.find(mcSample.name);
     if( it != wMap_.end() ) {
       hMC->Scale(it->second[cutStep]);
     }
@@ -637,7 +639,7 @@ void TopAnalyzerLite::plot(const string name, const TCut cut, MonitorPlot& monit
 
     //scale MC
     map<string, vector<double> >::iterator it;
-    it = wMap_.find(sample.label);
+    it = wMap_.find(sample.name);
     if( it != wMap_.end() ) {
       hBkg->Scale(it->second[cutStep]);
     }
@@ -802,7 +804,7 @@ void TopAnalyzerLite::printStat(const string& name, TCut cut, int cutStep)
     //scale MC
     double scale = 1;
     map<string, vector<double> >::iterator it;
-    it = wMap_.find(mcSample.label);
+    it = wMap_.find(mcSample.name);
     if( it != wMap_.end() ) {
       scale = it->second[cutStep];
     }
@@ -849,7 +851,7 @@ void TopAnalyzerLite::printStat(const string& name, TCut cut, int cutStep)
     //scale MC
     double scale = 1;
     map<string, vector<double> >::iterator it;
-    it = wMap_.find(sample.label);
+    it = wMap_.find(sample.name);
     if( it != wMap_.end() ) {
       scale = it->second[cutStep];
     }
