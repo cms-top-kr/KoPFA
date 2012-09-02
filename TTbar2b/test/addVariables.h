@@ -2,11 +2,11 @@ void addTopVariables(TopAnalyzerLite* analyzer){
   analyzer->addMonitorPlot("ZMass", "ZMass", "Dilepton mass;Dilepton Mass (GeV/c^{2});Events/5 GeV/c^{2}", 40, 0, 250, 0.1, 1500);
   analyzer->addMonitorPlot("ZMassFinal", "ZMass", "Dilepton mass;Dilepton Mass (GeV/c^{2});Events/40 GeV/c^{2}", 5, 0, 250, 0.1, 1500);
 
-  analyzer->addMonitorPlot("nJetlog", "@jetspt20.size()", "Jet Multiplicity;Jet Multiplicity;Events", 10, 0, 10, 0.05, 20000);
+  analyzer->addMonitorPlot("nJetlog", "@jetspt30.size()", "Jet Multiplicity;Jet Multiplicity;Events", 10, 0, 10, 0.05, 20000);
   analyzer->addMonitorPlot("nVertexlog", "nvertex", "Vertex Multiplicity;Vertex Multiplicity;Events", 25, 0, 25, 0.05, 5000);
   analyzer->addMonitorPlot("nVertex", "nvertex", "Vertex Multiplicity;Vertex Multiplicity;Events", 30, 0, 30, 0, 1,false);
   analyzer->addMonitorPlot("METlog", "MET", "Missing E_{T};Missing E_{T} (GeV);Events", 18, 0, 180, 0.1, 5000);
-  analyzer->addMonitorPlot("nJet", "@jetspt20.size()", "Jet Multiplicity;Jet Multiplicity;Events", 10, 0, 10, 0.1, 3,false);
+  analyzer->addMonitorPlot("nJet", "@jetspt30.size()", "Jet Multiplicity;Jet Multiplicity;Events", 10, 0, 10, 0.1, 9,false);
   analyzer->addMonitorPlot("MET", "MET", "Missing E_{T};Missing E_{T} (GeV);Events", 18, 0, 180, 0.1, 1.5, false);
   analyzer->addMonitorPlot("METQCD", "MET", "Missing E_{T};Missing E_{T} (GeV);Events", 18, 0, 180, 0.1, 150.0, false);
 
@@ -75,4 +75,20 @@ void addTopVariables(TopAnalyzerLite* analyzer){
   analyzer->addMonitorPlot("nbJet20_CSVM", "nbjets20_CSVM", "b-Jet Multiplicity;b-Jet Multiplicity (CSVM);Events", 5, 0, 5, 0.1, 0.6,false);
   analyzer->addMonitorPlot("nbJet20_CSVT", "nbjets20_CSVT", "b-Jet Multiplicity;b-Jet Multiplicity (CSVT);Events", 5, 0, 5, 0.1, 0.6,false);
 
+  analyzer->addMonitorPlot("nbJet30_CSVL", "nbjets30_CSVL", "b-Jet Multiplicity;b-Jet Multiplicity (CSVL);Events", 5, 0, 5, 0.1, 0.6,false);
+  analyzer->addMonitorPlot("nbJet30_CSVM", "nbjets30_CSVM", "b-Jet Multiplicity;b-Jet Multiplicity (CSVM);Events", 5, 0, 5, 0.1, 0.6,false);
+  analyzer->addMonitorPlot("nbJet30_CSVT", "nbjets30_CSVT", "b-Jet Multiplicity;b-Jet Multiplicity (CSVT);Events", 5, 0, 5, 0.1, 0.6,false);
+
+  analyzer->addMonitorPlot("nbJet30_CSVMT", "nbjets30_CSVMT", "b-Jet Multiplicity;b-Jet Multiplicity;Events", 5, 0, 5, 0.1, 0.6,false);
+
+  analyzer->addMonitorPlot("jet30bDiscriminator0", "jet30bDiscriminator[0]", "CSV distriminator;discriminator (CSV);Entries", 100, 0, 1, 0.1, 0.6,false);
+  analyzer->addMonitorPlot("jet30bDiscriminator1", "jet30bDiscriminator[1]", "CSV distriminator;discriminator (CSV);Entries", 100, 0, 1, 0.1, 0.6,false);
+  analyzer->addMonitorPlot("jet30bDiscriminator2", "jet30bDiscriminator[2]", "CSV distriminator;discriminator (CSV);Entries", 100, 0, 1, 0.1, 0.6,false);
+  analyzer->addMonitorPlot("jet30bDiscriminator3", "jet30bDiscriminator[3]", "CSV distriminator;discriminator (CSV);Entries", 100, 0, 1, 0.1, 0.6,false);
+
+  analyzer->addMonitorPlot("jet30ptrel1", "ptrel30[0]", "jet;p_{T}^{rel};Entries", 100, 0, 10, 0.1, 0.6,false);
+  analyzer->addMonitorPlot("jet30ptrel2", "ptrel30[1]", "jet;p_{T}^{rel};Entries", 100, 0, 10, 0.1, 0.6,false);
+  analyzer->addMonitorPlot("jet30ptrel3", "ptrel30[2]", "jet;p_{T}^{rel};Entries", 100, 0, 10, 0.1, 0.6,false);
+  analyzer->addMonitorPlot("jet30ptrel4", "ptrel30[3]", "jet;p_{T}^{rel};Entries", 100, 0, 10, 0.1, 0.6,false);
+  analyzer->addMonitorPlot("Mbb","sqrt( ( jetspt30[2].e()+jetspt30[3].e() )^2  - ( jetspt30[2].x()+jetspt30[3].x() )^2 - ( jetspt30[2].y()+jetspt30[3].y() )^2 -  ( jetspt30[2].z()+jetspt30[3].z() )^2)","Mbb:Mbb", 50, 0, 500, 0.1, 0.6, false);
 }
