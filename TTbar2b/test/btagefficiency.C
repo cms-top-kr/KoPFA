@@ -31,7 +31,7 @@ void btagefficiency()
     TCut ttll = "ttbarGen.NbJets20() < 4" + ttjj;
 	
     TCut precut_em =    "ZMass > 12 && isIso > 0 && PairSign < 0 && @jetspt30.size() >= 4";
-    TCut precut = precut_em + "Mbs(ZMass - 91.2) > 15 && MET > 30"; 
+    TCut precut = precut_em + "abs(ZMass - 91.2) > 15 && MET > 30"; 
     TCut bcut =  "abs(jetspt30flavor) == 5";
     TCut ccut =  "abs(jetspt30flavor) == 4";
     TCut csvm =  "jetspt30bDiscriminator > 0.679";
