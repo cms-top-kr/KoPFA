@@ -13,9 +13,9 @@ void btagefficiency()
 {
     gROOT->ProcessLine(".L tdrstyle.C");
     defaultStyle();
-    TFile* f1 = new TFile("/afs/cern.ch/work/t/tjkim/public/store/top/MuMu/v0/vallot_TTbarTuneZ2.root");
-    TFile* f2 = new TFile("/afs/cern.ch/work/t/tjkim/public/store/top/ElEl/v0/vallot_TTbarTuneZ2.root");
-    TFile* f3 = new TFile("/afs/cern.ch/work/t/tjkim/public/store/top/MuEl/v0/vallot_TTbarTuneZ2.root");
+    TFile* f1 = new TFile("/afs/cern.ch/work/t/tjkim/public/store/top/MuMu/v3/vallot_TTbarTuneZ2.root");
+    TFile* f2 = new TFile("/afs/cern.ch/work/t/tjkim/public/store/top/ElEl/v3/vallot_TTbarTuneZ2.root");
+    TFile* f3 = new TFile("/afs/cern.ch/work/t/tjkim/public/store/top/MuEl/v3/vallot_TTbarTuneZ2.root");
 	
     TTree* treeMuMu = (TTree*)f1->Get("MuMu/tree");
     TTree* treeElEl = (TTree*)f2->Get("ElEl/tree");
@@ -30,8 +30,8 @@ void btagefficiency()
     TCut ttbb = "ttbarGen.NbJets20() >= 4" + ttjj;
     TCut ttll = "ttbarGen.NbJets20() < 4" + ttjj;
 	
-    TCut precut_em =    "ZMass > 12 && isIso > 0 && PairSign < 0 && abs(ZMass - 91.2) > 15 && @jetspt30.size() >= 4";
-    TCut precut = precut_em + "MET > 30"; 
+    TCut precut_em =    "ZMass > 12 && isIso > 0 && PairSign < 0 && @jetspt30.size() >= 4";
+    TCut precut = precut_em + "Mbs(ZMass - 91.2) > 15 && MET > 30"; 
     TCut bcut =  "abs(jetspt30flavor) == 5";
     TCut ccut =  "abs(jetspt30flavor) == 4";
     TCut csvm =  "jetspt30bDiscriminator > 0.679";
