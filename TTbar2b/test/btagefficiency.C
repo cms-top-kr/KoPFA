@@ -45,8 +45,17 @@ void btagefficiency()
     TH1F* eff_b_pt_CSVT_ttll = eff(treeElEl, treeMuMu, treeMuEl, "jetspt30.pt()", nBinpt, binspt, precut, precut_em, bcut, csvt, ttll, "b_pt_CSVT_ttll","CSVT",4); 
     TH1F* eff_b_pt_CSVT_ttjj = eff(treeElEl, treeMuMu, treeMuEl, "jetspt30.pt()", nBinpt, binspt, precut, precut_em, bcut, csvt, ttjj, "b_pt_CSVT_ttjj","CSVT",12); 
 
-    TCanvas * c_b_pt_CSVM = new TCanvas("c_b_pt_CSVM","c_b_pt_CSVM",500,500);
+    //we can not use ttbb for mis-tag rate.
+    //TH1F* eff_c_pt_CSVM_ttbb = eff(treeElEl, treeMuMu, treeMuEl, "jetspt30.pt()", nBinpt, binspt, precut, precut_em, ccut, csvm, ttbb, "c_pt_CSVM_ttbb","CSVM",2);
+    TH1F* eff_c_pt_CSVM_ttll = eff(treeElEl, treeMuMu, treeMuEl, "jetspt30.pt()", nBinpt, binspt, precut, precut_em, ccut, csvm, ttll, "c_pt_CSVM_ttll","CSVM",4);
+    TH1F* eff_c_pt_CSVM_ttjj = eff(treeElEl, treeMuMu, treeMuEl, "jetspt30.pt()", nBinpt, binspt, precut, precut_em, ccut, csvm, ttjj, "c_pt_CSVM_ttjj","CSVM",12);
 
+    //TH1F* eff_c_pt_CSVT_ttbb = eff(treeElEl, treeMuMu, treeMuEl, "jetspt30.pt()", nBinpt, binspt, precut, precut_em, ccut, csvt, ttbb, "c_pt_CSVT_ttbb","CSVT",2);
+    TH1F* eff_c_pt_CSVT_ttll = eff(treeElEl, treeMuMu, treeMuEl, "jetspt30.pt()", nBinpt, binspt, precut, precut_em, ccut, csvt, ttll, "c_pt_CSVT_ttll","CSVT",4);
+    TH1F* eff_c_pt_CSVT_ttjj = eff(treeElEl, treeMuMu, treeMuEl, "jetspt30.pt()", nBinpt, binspt, precut, precut_em, ccut, csvt, ttjj, "c_pt_CSVT_ttjj","CSVT",12);
+
+
+    TCanvas * c_b_pt_CSVM = new TCanvas("c_b_pt_CSVM","c_b_pt_CSVM",500,500);
     eff_b_pt_CSVM_ttbb->Draw("e3");
     eff_b_pt_CSVM_ttll->Draw("e3 same");
     eff_b_pt_CSVM_ttjj->Draw("e3 same");
@@ -55,15 +64,10 @@ void btagefficiency()
     l->AddEntry(eff_b_pt_CSVM_ttbb,"tt + bb","F");
     l->AddEntry(eff_b_pt_CSVM_ttll,"tt + ll","F");
     l->AddEntry(eff_b_pt_CSVM_ttjj,"tt + jj","F");
-    l->SetTextSize(0.04);
-    l->SetFillColor(0);
-    l->SetLineColor(0);   
-    l->Draw();
-
+    SetLegend(l);
     c_b_pt_CSVM->Print("compare_b_pt_CSVM.png");
 
     TCanvas * c_b_pt_CSVT = new TCanvas("c_b_pt_CSVT","c_b_pt_CSVT",500,500);
-
     eff_b_pt_CSVT_ttbb->Draw("e3");
     eff_b_pt_CSVT_ttll->Draw("e3 same");
     eff_b_pt_CSVT_ttjj->Draw("e3 same");
@@ -72,13 +76,32 @@ void btagefficiency()
     l->AddEntry(eff_b_pt_CSVT_ttbb,"tt + bb","F");
     l->AddEntry(eff_b_pt_CSVT_ttll,"tt + ll","F");
     l->AddEntry(eff_b_pt_CSVT_ttjj,"tt + jj","F");
-    l->SetTextSize(0.04);
-    l->SetFillColor(0);
-    l->SetLineColor(0);
-    l->Draw();
-
+    SetLegend(l)
     c_b_pt_CSVT->Print("compare_b_pt_CSVT.png");
- 
+
+    TCanvas * c_c_pt_CSVM = new TCanvas("c_c_pt_CSVM","c_c_pt_CSVM",500,500);
+    //eff_c_pt_CSVM_ttbb->Draw("e3");
+    eff_c_pt_CSVM_ttll->Draw("e3");
+    eff_c_pt_CSVM_ttjj->Draw("e3 same");
+
+    TLegend *l = new TLegend(0.78,0.76,0.89,0.87);
+    //l->AddEntry(eff_c_pt_CSVM_ttbb,"tt + bb","F");
+    l->AddEntry(eff_c_pt_CSVM_ttll,"tt + ll","F");
+    l->AddEntry(eff_c_pt_CSVM_ttjj,"tt + jj","F");
+    SetLegend(l);
+    c_c_pt_CSVM->Print("compare_c_pt_CSVM.png");
+
+    TCanvas * c_c_pt_CSVT = new TCanvas("c_c_pt_CSVT","c_c_pt_CSVT",500,500);
+    //eff_c_pt_CSVT_ttbb->Draw("e3");
+    eff_c_pt_CSVT_ttll->Draw("e3");
+    eff_c_pt_CSVT_ttjj->Draw("e3 same");
+
+    TLegend *l = new TLegend(0.78,0.78,0.89,0.89);
+    //l->AddEntry(eff_c_pt_CSVT_ttbb,"tt + bb","F");
+    l->AddEntry(eff_c_pt_CSVT_ttll,"tt + ll","F");
+    l->AddEntry(eff_c_pt_CSVT_ttjj,"tt + jj","F");
+    SetLegend(l);
+    c_c_pt_CSVT->Print("compare_c_pt_CSVT.png"); 
 
 }
 
@@ -141,4 +164,11 @@ TH1F* eff(TTree* treeElEl, TTree* treeMuMu, TTree* treeMuEl, const TString &vari
   tag_eff->Print(Form("eff_%s.png",name.Data()));
   return h_effint;
 
+}
+
+void SetLegend(TLegend* l){
+  l->SetTextSize(0.04);
+  l->SetFillColor(0);
+  l->SetLineColor(0);
+  l->Draw();
 }
