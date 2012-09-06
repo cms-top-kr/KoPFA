@@ -13,7 +13,7 @@
 //
 // Original Author:  Tae Jeong Kim,40 R-A32,+41227678602,
 //         Created:  Fri Jun  4 17:19:29 CEST 2010
-// $Id: TopDILAnalyzer.h,v 1.87 2012/08/09 16:31:13 tjkim Exp $
+// $Id: TopDILAnalyzer.h,v 1.88 2012/08/10 07:24:56 tjkim Exp $
 //
 //
 
@@ -134,6 +134,9 @@ class TopDILAnalyzer : public edm::EDFilter {
     edm::Service<TFileService> fs;
     tree = fs->make<TTree>("tree", "Tree for Top quark study");
     tmp = fs->make<TH1F>("EventSummary","EventSummary",filters_.size(),0,filters_.size());
+ 
+    TFileDirectory btagdir = fs->mkdir(Form("btagEff", i));
+    
 
     Z = new std::vector<Ko::ZCandidate>();
     lepton1 = new std::vector<Ko::Lepton>();
@@ -145,6 +148,11 @@ class TopDILAnalyzer : public edm::EDFilter {
     jetspt30 = new std::vector<math::XYZTLorentzVector>();
     jetspt30flavor = new std::vector<int>();
     jetspt30bDiscriminator = new std::vector<double>();
+    jetspt30bDiscriminatorSSV = new std::vector<double>();
+
+    bCSVL_ext = new std::vector<int>();
+    bCSVM_ext = new std::vector<int>();
+    bCSVT_ext = new std::vector<int>();
 
     //jetspt20 = new std::vector<math::XYZTLorentzVector>();
     //jetspt20flavor = new std::vector<int>();
@@ -234,6 +242,8 @@ class TopDILAnalyzer : public edm::EDFilter {
     tree->Branch("ttbar","std::vector<Ko::TTbarMass>", &ttbar);
     tree->Branch("ttbarGen","std::vector<Ko::TTbarCandidate>", &ttbarGen);
     tree->Branch("kinttbarM",&kinttbarM,"kinttbarM/d");
+    tree->Branch("kinttbarMCSVM",&kinttbarMCSVM,"kinttbarMCSVM/d");
+    tree->Branch("kinttbarMCSVT",&kinttbarMCSVT,"kinttbarMCSVT/d");
 
     tree->Branch("nJet30",&nJet30,"nJet30/i");
     //tree->Branch("nJet20",&nJet20,"nJet20/i");
@@ -241,6 +251,11 @@ class TopDILAnalyzer : public edm::EDFilter {
     tree->Branch("jetspt30","std::vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >", &jetspt30);
     tree->Branch("jetspt30flavor","std::vector<int>", &jetspt30flavor);
     tree->Branch("jetspt30bDiscriminator","std::vector<double>", &jetspt30bDiscriminator);
+    tree->Branch("jetspt30bDiscriminatorSSV","std::vector<double>", &jetspt30bDiscriminatorSSV);
+
+    tree->Branch("bCSVL_ext","std::vector<int>", &bCSVL_ext);
+    tree->Branch("bCSVM_ext","std::vector<int>", &bCSVM_ext);
+    tree->Branch("bCSVT_ext","std::vector<int>", &bCSVT_ext);
 
     //tree->Branch("jetspt20","std::vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >", &jetspt20);
     //tree->Branch("jetspt20flavor","std::vector<int>", &jetspt20flavor);
@@ -252,6 +267,8 @@ class TopDILAnalyzer : public edm::EDFilter {
       tree->Branch(("nbjets30_"+name).c_str(), &(nbjets30_[i]), ("nbjets30_"+name+"/i").c_str());
       //tree->Branch(("nbjets20_"+name).c_str(), &(nbjets20_[i]), ("nbjets20_"+name+"/i").c_str());
     }
+  
+    tree->Branch("nbjets30_CSVMT",&nbjets30_CSVMT,"nbjets30_CSVMT/i");
 
     tree->Branch("MET",&MET,"MET/d");
     tree->Branch("genttbarM",&genttbarM,"genttbarM/d");
@@ -375,7 +392,11 @@ class TopDILAnalyzer : public edm::EDFilter {
    //   nbjets20_[bTagIndex] = 0;
    // }
 
-    std::vector<int> bidcs;
+    std::vector<int> bidcs_CSVL;
+    std::vector<int> bidcs_CSVM;
+    std::vector<int> bidcs_CSVT;
+    std::vector<double> bCSVM_CSV; 
+
     int nj30=0;
     //int nj20=0;
 
@@ -384,6 +405,7 @@ class TopDILAnalyzer : public edm::EDFilter {
       corrjet.SetPxPyPzE(jit->px(),jit->py(),jit->pz(),jit->energy());
       int flavor = jit->partonFlavour();
       double bDiscriminator = jit->bDiscriminator("combinedSecondaryVertexBJetTags");
+      double bDiscriminatorSSV = jit->bDiscriminator(bTagAlgos_[4]);
       //if(jit->pt() > 20){
       //  jetspt20->push_back(corrjet);
       //  jetspt20flavor->push_back(flavor);
@@ -400,14 +422,24 @@ class TopDILAnalyzer : public edm::EDFilter {
         jetspt30->push_back(corrjet);
         jetspt30flavor->push_back(flavor);
         jetspt30bDiscriminator->push_back(bDiscriminator);
+        jetspt30bDiscriminatorSSV->push_back(bDiscriminatorSSV);
        
         for ( int bTagIndex=0, nBTagAlgo=bTagAlgos_.size(); bTagIndex<nBTagAlgo; ++bTagIndex )
         {
           const double bTagValue = jit->bDiscriminator(bTagAlgos_[bTagIndex]);
           if ( (bTagIsCutMin_[bTagIndex]) xor (bTagValue < bTagCutValues_[bTagIndex]) ) ++nbjets30_[bTagIndex];
         }
-
-        if ( bDiscriminator > bTagCutValues_[1]) bidcs.push_back(nj30); //for kinematic solution
+        
+        if ( bDiscriminator > bTagCutValues_[1]) {
+          bidcs_CSVL.push_back(nj30); //for kinematic solution
+        }
+        if ( bDiscriminator > bTagCutValues_[2]) {
+          bidcs_CSVM.push_back(nj30); //for kinematic solution
+          bCSVM_CSV.push_back(bDiscriminator);
+        }
+        if ( bDiscriminator > bTagCutValues_[3]) {
+          bidcs_CSVT.push_back(nj30); //for kinematic solution
+        }
         nj30++;  
       }//pt > 30 loop
     }
@@ -499,34 +531,57 @@ class TopDILAnalyzer : public edm::EDFilter {
       const Ko::TTbarMass ttbarMass(lep1, lep2, jetspt30->at(0), jetspt30->at(1), met->at(0));
       ttbar->push_back(ttbarMass);
 
-      int cmb = 0 ;
-      const string hypo = "kKinSolution"; 
+      const string hypo = "kKinSolution";
       if( fullLepEvt.isValid()){
         if( fullLepEvt->isHypoValid(hypo) ){
-          int btagsinhypo;
-          bool foundOneTagSolution = false;
-          for(size_t i=0;i<fullLepEvt->numberOfAvailableHypos(hypo);++i){
-            btagsinhypo = 0;
-            for(size_t j=0; j<bidcs.size(); ++j){
-              if(fullLepEvt->jetLeptonCombination(hypo,i)[0]==bidcs[j]) btagsinhypo++;
-              if(fullLepEvt->jetLeptonCombination(hypo,i)[1]==bidcs[j]) btagsinhypo++;		
-            }
-            if(btagsinhypo==2){ // stop if hypothesis has two b-jets
-              cmb = i;
-	      break;
-            }else if(btagsinhypo==1 && !foundOneTagSolution){ // if one b-tag in hypothesis store index but go on and look for solution with 2 tags
-              cmb = i;
-              foundOneTagSolution = true;
-            }   
-          }
+          //int btagsinhypo;
+          //bool foundOneTagSolution = false;
+          //for(size_t i=0;i<fullLepEvt->numberOfAvailableHypos(hypo);++i){
+          //  btagsinhypo = 0;
+          //  for(size_t j=0; j<bidcs.size(); ++j){
+          //    if(fullLepEvt->jetLeptonCombination(hypo,i)[0]==bidcs[j]) btagsinhypo++;
+          //    if(fullLepEvt->jetLeptonCombination(hypo,i)[1]==bidcs[j]) btagsinhypo++;		
+          //  }
+          //  if(btagsinhypo==2){ // stop if hypothesis has two b-jets
+          //    cmb = i;
+	  //    break;
+          //  }else if(btagsinhypo==1 && !foundOneTagSolution){ // if one b-tag in hypothesis store index but go on and look for solution with 2 tags
+          //    cmb = i;
+          //    foundOneTagSolution = true;
+          //  }   
+          //}
 
-          const reco::Candidate* topCand = fullLepEvt->top(hypo, cmb);
-          const reco::Candidate* topBarCand = fullLepEvt->topBar(hypo, cmb);
-          reco::Candidate::LorentzVector kinttbar =  topCand->p4() + topBarCand->p4() ; 
-          kinttbarM = kinttbar.mass();
+          int cmb_CSVL = findKinSolution(fullLepEvt, hypo, bidcs_CSVL, bCSVL_ext);
+          int cmb_CSVM = findKinSolution(fullLepEvt, hypo, bidcs_CSVM, bCSVM_ext);
+          int cmb_CSVT = findKinSolution(fullLepEvt, hypo, bidcs_CSVT, bCSVT_ext);
+
+          const reco::Candidate* topCand_CSVL = fullLepEvt->top(hypo, cmb_CSVL);
+          const reco::Candidate* topBarCand_CSVL = fullLepEvt->topBar(hypo, cmb_CSVL);
+          reco::Candidate::LorentzVector kinttbarCSVL =  topCand_CSVL->p4() + topBarCand_CSVL->p4() ; 
+          kinttbarM = kinttbarCSVL.mass();
+
+          const reco::Candidate* topCand_CSVM = fullLepEvt->top(hypo, cmb_CSVM);
+          const reco::Candidate* topBarCand_CSVM = fullLepEvt->topBar(hypo, cmb_CSVM);
+          reco::Candidate::LorentzVector kinttbarCSVM =  topCand_CSVM->p4() + topBarCand_CSVM->p4() ;
+          kinttbarMCSVM = kinttbarCSVM.mass();
+
+          const reco::Candidate* topCand_CSVT = fullLepEvt->top(hypo, cmb_CSVT);
+          const reco::Candidate* topBarCand_CSVT = fullLepEvt->topBar(hypo, cmb_CSVT);
+          reco::Candidate::LorentzVector kinttbarCSVT =  topCand_CSVT->p4() + topBarCand_CSVT->p4() ;
+          kinttbarMCSVT = kinttbarCSVT.mass();
+
         }
       }
     }
+
+    int ntopb = (int)bidcs_CSVM.size() - (int)bCSVM_ext->size();
+    int nextb = 0 ;
+
+    for(size_t i = 0; i < bCSVM_ext->size() ; i++){
+      if ( bCSVM_CSV[i] > 0.898 ) ++nextb;
+    }
+
+    nbjets30_CSVMT = ntopb + nextb;
 
     //gen information
     Ko::TTbarCandidate ttbarGenLevel;
@@ -702,9 +757,14 @@ class TopDILAnalyzer : public edm::EDFilter {
     jetspt30->clear();
     jetspt30flavor->clear();
     jetspt30bDiscriminator->clear();
+    jetspt30bDiscriminatorSSV->clear();
     //jetspt20->clear();
     //jetspt20flavor->clear();
     //jetspt20bDiscriminator->clear();
+
+    bCSVL_ext->clear();
+    bCSVM_ext->clear();
+    bCSVT_ext->clear();
 
     for ( int bTagIndex=0, nBTag=nbjets30_.size(); bTagIndex<nBTag; ++bTagIndex )
     {
@@ -775,10 +835,59 @@ class TopDILAnalyzer : public edm::EDFilter {
     phi2 = -999;
 
     kinttbarM = -999;
+    kinttbarMCSVM = -999;
+    kinttbarMCSVT = -999;
     genttbarM = -999;
 
     nJet30 = 0;
     //nJet20 = 0;
+
+    nbjets30_CSVMT = 0;
+
+  }
+
+  int findKinSolution( edm::Handle<TtFullLeptonicEvent>  fullLepEvt, const string hypo, std::vector<int> bidcs, std::vector<int>* extb ){
+
+    vector<int> topbid;
+
+    int cmb = 0;
+    int btagsinhypo;
+    bool foundOneTagSolution = false;
+    for(size_t i=0;i<fullLepEvt->numberOfAvailableHypos(hypo);++i){
+      btagsinhypo = 0;
+      vector<int> tmp;
+      for(size_t j=0; j<bidcs.size(); ++j){
+        if(fullLepEvt->jetLeptonCombination(hypo,i)[0]==bidcs[j]) {
+          btagsinhypo++;
+          tmp.push_back(j);
+        }
+        if(fullLepEvt->jetLeptonCombination(hypo,i)[1]==bidcs[j]) {
+          btagsinhypo++;
+          tmp.push_back(j);
+        }
+      }
+      if(btagsinhypo==2){ // stop if hypothesis has two b-jets
+        cmb = i;
+        topbid = tmp;
+        break;
+      }else if(btagsinhypo==1 && !foundOneTagSolution){ // if one b-tag in hypothesis store index but go on and look for solution with 2 tags
+        cmb = i;
+        topbid = tmp;
+        foundOneTagSolution = true;
+      }
+    }
+
+    for(size_t i=0; i < bidcs.size(); ++i){
+      bool topid = false;
+      for(size_t j=0; j < topbid.size() ; ++j){
+        if( bidcs[i] == topbid[j] ){
+          topid = true;
+        } 
+      }
+      if( !topid ) extb->push_back(i);
+    }
+
+    return cmb;
 
   }
 
@@ -878,9 +987,15 @@ class TopDILAnalyzer : public edm::EDFilter {
   std::vector<math::XYZTLorentzVector>* jetspt30;
   std::vector<int>* jetspt30flavor;
   std::vector<double>* jetspt30bDiscriminator;  
+  std::vector<double>* jetspt30bDiscriminatorSSV;  
   //std::vector<math::XYZTLorentzVector>* jetspt20;
   //std::vector<int>* jetspt20flavor;
   //std::vector<double>* jetspt20bDiscriminator;  
+
+  std::vector<int>* bCSVL_ext;
+  std::vector<int>* bCSVM_ext;
+  std::vector<int>* bCSVT_ext;
+
 
   double MET;
   double ZMass;
@@ -898,6 +1013,8 @@ class TopDILAnalyzer : public edm::EDFilter {
   double phi2;
 
   double kinttbarM;
+  double kinttbarMCSVM;
+  double kinttbarMCSVT;
   double genttbarM;
 
 
@@ -911,6 +1028,7 @@ class TopDILAnalyzer : public edm::EDFilter {
   unsigned int nvertex;
   //unsigned int nJet20;
   unsigned int nJet30;
+  unsigned int nbjets30_CSVMT;
 
   double puweight;
   double puweightplus;
