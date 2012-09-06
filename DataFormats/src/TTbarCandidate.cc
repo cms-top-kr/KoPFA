@@ -257,37 +257,28 @@ void TTbarCandidate::building( const reco::GenJetCollection* genJets, const reco
     double minDRlepton = 999;
     for(unsigned int i=0 ; i < leptons_.size() ; i++){
       if( leptons_[i] == null ) continue;
-      double deta = gJet.eta()-leptons_[i].eta();
-      double dphi = gJet.phi()-leptons_[i].phi();
-      double dR = sqrt( deta*deta + dphi*dphi );
+      double dR = reco::deltaR(gJet.eta(), gJet.phi(), leptons_[i].eta(), leptons_[i].phi());
       if( dR < minDRlepton ) minDRlepton = dR;
     }
-
     if( minDRlepton < 0.5) continue;
 
     double minDR = 999;
     for(unsigned int i=0 ; i < bquarks.size() ; i++){
-      double deta = gJet.eta()-bquarks[i].eta();
-      double dphi = gJet.phi()-bquarks[i].phi();
-      double dR = sqrt( deta*deta + dphi*dphi );
+      double dR = reco::deltaR(gJet.eta(), gJet.phi(), bquarks[i].eta(), bquarks[i].phi());
       if( dR < minDR ) minDR = dR;
     }
     if( minDR < 0.5 ) bJets.push_back(gJet.p4());
 
     double minDR2b = 999;
     for(unsigned int i=0 ; i < bquarksfromnotop.size() ; i++){
-      double deta = gJet.eta()-bquarksfromnotop[i].eta();
-      double dphi = gJet.phi()-bquarksfromnotop[i].phi();
-      double dR = sqrt( deta*deta + dphi*dphi ); 
+      double dR = reco::deltaR(gJet.eta(), gJet.phi(), bquarksfromnotop[i].eta(), bquarksfromnotop[i].phi());
       if( dR < minDR2b ) minDR2b = dR;
     }
     if( minDR2b < 0.5 ) bJetsfromnotop.push_back(gJet.p4());
 
     double minDR2c = 999;
     for(unsigned int i=0 ; i < cquarks.size() ; i++){
-      double deta = gJet.eta()-cquarks[i].eta();
-      double dphi = gJet.phi()-cquarks[i].phi();
-      double dR = sqrt( deta*deta + dphi*dphi );
+      double dR = reco::deltaR(gJet.eta(), gJet.phi(), cquarks[i].eta(), cquarks[i].phi());
       if( dR < minDR2c ) minDR2c = dR;
     }
     if( minDR2c < 0.5 ) cJets.push_back(gJet.p4());
