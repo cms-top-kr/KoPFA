@@ -9,7 +9,7 @@
 #include "TROOT.h"
 #include "TGraphAsymmErrors.h"
 //using namespace std;
-void btagefficiency(bool type, bool type2, bool type3)
+void btagefficiency(bool type, bool type2)
 {
     gROOT->ProcessLine(".L tdrstyle.C");
     defaultStyle();
@@ -48,16 +48,14 @@ void btagefficiency(bool type, bool type2, bool type3)
 
 //    bool type=true, type2=false;
 //////////
-   bool type4=false;
-if(type==false && type2 ==false && type3==false)
+if(type==true)
 {
-
+if(type2==true)
+{
     TH1F* eff_b_pt_CSVM_fromTop = eff(treeElEl, treeMuMu, treeMuEl, "jetspt30.pt()", nBinpt, binspt, precut, precut_em, bcut, csvm, fromTop, "b_pt_CSVM_fromTop","CSVM",4,"p_{T}(GeV/c)",3395);
     TH1F* eff_b_pt_CSVM_notfromTop = eff(treeElEl, treeMuMu, treeMuEl, "jetspt30.pt()", nBinpt, binspt, precut, precut_em, bcut, csvm, notfromTop, "b_pt_CSVM_notfromTop","CSVM",6,"p_{T}(GeV/c)",3010); 
 
-    TH1F* eff_b_pt_CSVT_fromTop = eff(treeElEl, treeMuMu, treeMuEl, "jetspt30.pt()", nBinpt, binspt, precut, precut_em, bcut, csvt, fromTop, "b_pt_CSVT_fromTop","CSVT",4,"p_{T}(GeV/c)",3395);
-    TH1F* eff_b_pt_CSVT_notfromTop = eff(treeElEl, treeMuMu, treeMuEl, "jetspt30.pt()", nBinpt, binspt, precut, precut_em, bcut, csvt, notfromTop, "b_pt_CSVT_notfromTop","CSVT",6,"p_{T}(GeV/c)",3010); 
- 
+
     TCanvas * c_b_pt_CSVM = new TCanvas("c_b_pt_CSVM","c_b_pt_CSVM",500,500);
     eff_b_pt_CSVM_fromTop->Draw("e3");
     eff_b_pt_CSVM_notfromTop->Draw("e3 same");
@@ -70,6 +68,26 @@ if(type==false && type2 ==false && type3==false)
     c_b_pt_CSVM->Print("compare_b_pt_CSVM_Top.png");
     c_b_pt_CSVM->Print("compare_b_pt_CSVM_Top.eps");
 
+//////////////////////////
+    TH1F *eff_b_pt_CSVM_fromTop_new = (TH1F*) eff_b_pt_CSVM_fromTop->Clone();
+    eff_b_pt_CSVM_fromTop_new->SetName(Form("%s_new",eff_b_pt_CSVM_fromTop_new->GetName()));
+    eff_b_pt_CSVM_fromTop->Add(eff_b_pt_CSVM_notfromTop,-1);
+
+    eff_b_pt_CSVM_fromTop->Divide(eff_b_pt_CSVM_fromTop_new);
+    eff_b_pt_CSVM_fromTop->Draw();
+
+    for(int i=1;i<eff_b_pt_CSVM_fromTop->GetNbinsX()+1;i++)
+    {
+       cout << Form("%.0f",binspt[i-1]) << ",\t "<<eff_b_pt_CSVM_fromTop->GetBinContent(i) << "," << endl;
+    }
+
+
+//////////////////////////////////////
+}
+else{
+    TH1F* eff_b_pt_CSVT_fromTop = eff(treeElEl, treeMuMu, treeMuEl, "jetspt30.pt()", nBinpt, binspt, precut, precut_em, bcut, csvt, fromTop, "b_pt_CSVT_fromTop","CSVT",4,"p_{T}(GeV/c)",3395);
+    TH1F* eff_b_pt_CSVT_notfromTop = eff(treeElEl, treeMuMu, treeMuEl, "jetspt30.pt()", nBinpt, binspt, precut, precut_em, bcut, csvt, notfromTop, "b_pt_CSVT_notfromTop","CSVT",6,"p_{T}(GeV/c)",3010); 
+ 
     TCanvas * c_b_pt_CSVT = new TCanvas("c_b_pt_CSVT","c_b_pt_CSVT",500,500);
     eff_b_pt_CSVT_fromTop->Draw("e3");
     eff_b_pt_CSVT_notfromTop->Draw("e3 same");
@@ -81,15 +99,31 @@ if(type==false && type2 ==false && type3==false)
     SetLegend(l);
     c_b_pt_CSVT->Print("compare_b_pt_CSVT_Top.png");
     c_b_pt_CSVT->Print("compare_b_pt_CSVT_Top.eps");
+
+    TH1F *eff_b_pt_CSVT_fromTop_new = (TH1F*) eff_b_pt_CSVT_fromTop->Clone();
+    eff_b_pt_CSVT_fromTop_new->SetName(Form("%s_new",eff_b_pt_CSVT_fromTop_new->GetName()));
+    eff_b_pt_CSVT_fromTop->Add(eff_b_pt_CSVT_notfromTop,-1);
+
+    eff_b_pt_CSVT_fromTop->Divide(eff_b_pt_CSVT_fromTop_new);
+    eff_b_pt_CSVT_fromTop->Draw();
+
+    for(int i=1;i<eff_b_pt_CSVT_fromTop->GetNbinsX()+1;i++)
+    {
+       cout << Form("%.0f",binspt[i-1]) << ",\t  "<<eff_b_pt_CSVT_fromTop->GetBinContent(i) << "," << endl;
+    }
+
+
+
+}
 }
 else{
+if(type2==true)
+{
 ////////
 TH1F* eff_b_eta_CSVM_fromTop= eff(treeElEl, treeMuMu, treeMuEl, "jetspt30.eta()", nBineta, binseta, precut, precut_em, bcut, csvm, fromTop, "b_eta_CSVM_fromTop","CSVM",4,"#eta",3395);
 TH1F* eff_b_eta_CSVM_notfromTop = eff(treeElEl, treeMuMu, treeMuEl, "jetspt30.eta()", nBineta, binseta, precut, precut_em, bcut, csvm, notfromTop, "b_eta_CSVM_notfromTop","CSVM",6,"#eta",3010); 
 
-TH1F* eff_b_eta_CSVT_fromTop= eff(treeElEl, treeMuMu, treeMuEl, "jetspt30.eta()", nBineta, binseta, precut, precut_em, bcut, csvt, fromTop, "b_eta_CSVT_fromTop","CSVT",4,"#eta",3395);
-TH1F* eff_b_eta_CSVT_notfromTop = eff(treeElEl, treeMuMu, treeMuEl, "jetspt30.eta()", nBineta, binseta, precut, precut_em, bcut, csvt, notfromTop, "b_eta_CSVT_notfromTop","CSVT",6,"#eta",3010); 
- 
+
     TCanvas * c_b_eta_CSVM = new TCanvas("c_b_eta_CSVM","c_b_eta_CSVM",500,500);
     eff_b_eta_CSVM_fromTop->Draw("e3");
     eff_b_eta_CSVM_notfromTop->Draw("e3 same");
@@ -102,6 +136,25 @@ TH1F* eff_b_eta_CSVT_notfromTop = eff(treeElEl, treeMuMu, treeMuEl, "jetspt30.et
     c_b_eta_CSVM->Print("compare_b_eta_CSVM_Top.png");
     c_b_eta_CSVM->Print("compare_b_eta_CSVM_Top.eps");
 
+    TH1F *eff_b_eta_CSVM_fromTop_new = (TH1F*) eff_b_eta_CSVM_fromTop->Clone();
+    eff_b_eta_CSVM_fromTop_new->SetName(Form("%s_new",eff_b_eta_CSVM_fromTop_new->GetName()));
+    eff_b_eta_CSVM_fromTop->Add(eff_b_eta_CSVM_notfromTop,-1);
+
+    eff_b_eta_CSVM_fromTop->Divide(eff_b_eta_CSVM_fromTop_new);
+    eff_b_eta_CSVM_fromTop->Draw();
+
+    for(int i=1;i<eff_b_eta_CSVM_fromTop->GetNbinsX()+1;i++)
+    {
+       cout << Form("%.1f",binseta[i-1]) << ",\t "<<eff_b_eta_CSVM_fromTop->GetBinContent(i) << "," << endl;
+    }
+
+
+}
+else {
+
+TH1F* eff_b_eta_CSVT_fromTop= eff(treeElEl, treeMuMu, treeMuEl, "jetspt30.eta()", nBineta, binseta, precut, precut_em, bcut, csvt, fromTop, "b_eta_CSVT_fromTop","CSVT",4,"#eta",3395);
+TH1F* eff_b_eta_CSVT_notfromTop = eff(treeElEl, treeMuMu, treeMuEl, "jetspt30.eta()", nBineta, binseta, precut, precut_em, bcut, csvt, notfromTop, "b_eta_CSVT_notfromTop","CSVT",6,"#eta",3010); 
+ 
     TCanvas * c_b_eta_CSVT = new TCanvas("c_b_eta_CSVT","c_b_eta_CSVT",500,500);
     eff_b_eta_CSVT_fromTop->Draw("e3");
     eff_b_eta_CSVT_notfromTop->Draw("e3 same");
@@ -114,381 +167,19 @@ TH1F* eff_b_eta_CSVT_notfromTop = eff(treeElEl, treeMuMu, treeMuEl, "jetspt30.et
     c_b_eta_CSVT->Print("compare_b_eta_CSVT_Top.png");
     c_b_eta_CSVT->Print("compare_b_eta_CSVT_Top.eps");
 
-}
+    TH1F *eff_b_eta_CSVT_fromTop_new = (TH1F*) eff_b_eta_CSVT_fromTop->Clone();
+    eff_b_eta_CSVT_fromTop_new->SetName(Form("%s_new",eff_b_eta_CSVT_fromTop_new->GetName()));
+    eff_b_eta_CSVT_fromTop->Add(eff_b_eta_CSVT_notfromTop,-1);
 
-//if(type4)
-if(type)
-{
-if(type2)
-{
-if(type3)
-{
- //   TH1F* eff_b_pt_CSVM_tag0 = eff(treeElEl, treeMuMu, treeMuEl, "jetspt30.pt()", nBinpt, binspt, precut, precut_em, bcut, csvm, tag0, "b_pt_CSVM_tag0","CSVM",2, "p_{T}(GeV/c)",3005); 
-//    TH1F* eff_b_pt_CSVM_tag1 = eff(treeElEl, treeMuMu, treeMuEl, "jetspt30.pt()", nBinpt, binspt, precut, precut_em, bcut, csvm, tag1, "b_pt_CSVM_tag1","CSVM",3, "p_{T}(GeV/c)",3004); 
-    TH1F* eff_b_pt_CSVM_tag2 = eff(treeElEl, treeMuMu, treeMuEl, "jetspt30.pt()", nBinpt, binspt, precut, precut_em, bcut, csvm, tag2, "b_pt_CSVM_tag2","CSVM",4,"p_{T}(GeV/c)",3395); 
-    TH1F* eff_b_pt_CSVM_tag3 = eff(treeElEl, treeMuMu, treeMuEl, "jetspt30.pt()", nBinpt, binspt, precut, precut_em, bcut, csvm, tag3, "b_pt_CSVM_tag3","CSVM",6,"p_{T}(GeV/c)",3010); 
-    TH1F* eff_b_pt_CSVM_tag4 = eff(treeElEl, treeMuMu, treeMuEl, "jetspt30.pt()", nBinpt, binspt, precut, precut_em, bcut, csvm, tag4, "b_pt_CSVM_tag4","CSVM",12,"p_{T}(GeV/c)",3012); 
+    eff_b_eta_CSVT_fromTop->Divide(eff_b_eta_CSVT_fromTop_new);
+    eff_b_eta_CSVT_fromTop->Draw();
 
-//    TH1F* eff_b_pt_CSVT_tag0 = eff(treeElEl, treeMuMu, treeMuEl, "jetspt30.pt()", nBinpt, binspt, precut, precut_em, bcut, csvt, tag0, "b_pt_CSVT_tag0","CSVT",2, "p_{T}(GeV/c)",3005); 
-//    TH1F* eff_b_pt_CSVT_tag1 = eff(treeElEl, treeMuMu, treeMuEl, "jetspt30.pt()", nBinpt, binspt, precut, precut_em, bcut, csvt, tag1, "b_pt_CSVT_tag1","CSVT",3, "p_{T}(GeV/c)",3004); 
-    TH1F* eff_b_pt_CSVT_tag2 = eff(treeElEl, treeMuMu, treeMuEl, "jetspt30.pt()", nBinpt, binspt, precut, precut_em, bcut, csvt, tag2, "b_pt_CSVT_tag2","CSVT",4,"p_{T}(GeV/c)",3395); 
-    TH1F* eff_b_pt_CSVT_tag3 = eff(treeElEl, treeMuMu, treeMuEl, "jetspt30.pt()", nBinpt, binspt, precut, precut_em, bcut, csvt, tag3, "b_pt_CSVT_tag3","CSVT",6,"p_{T}(GeV/c)",3010); 
-    TH1F* eff_b_pt_CSVT_tag4 = eff(treeElEl, treeMuMu, treeMuEl, "jetspt30.pt()", nBinpt, binspt, precut, precut_em, bcut, csvt, tag4, "b_pt_CSVT_tag4","CSVT",12,"p_{T}(GeV/c)",3012); 
-
-    TCanvas * c_b_pt_CSVM = new TCanvas("c_b_pt_CSVM","c_b_pt_CSVM",500,500);
- //   eff_b_pt_CSVM_tag0->Draw("e3");
-//    eff_b_pt_CSVM_tag1->Draw("e3 same");
-    eff_b_pt_CSVM_tag2->Draw("e3");
-    eff_b_pt_CSVM_tag3->Draw("e3 same");
-    eff_b_pt_CSVM_tag4->Draw("e3 same");
-
-    TLegend *l = new TLegend(0.78,0.70,0.89,0.87);
- //   l->AddEntry(eff_b_pt_CSVM_tag0,"tt + 0jet","F");
- //   l->AddEntry(eff_b_pt_CSVM_tag1,"tt + 1jet","F");
-    l->AddEntry(eff_b_pt_CSVM_tag2,"2bjets","F");
-    l->AddEntry(eff_b_pt_CSVM_tag3,"3bjets","F");
-    l->AddEntry(eff_b_pt_CSVM_tag4,"4bjets","F");
-
-    SetLegend(l);
-    c_b_pt_CSVM->Print("Ncompare_b_pt_CSVM_tag.png");
-    c_b_pt_CSVM->Print("Ncompare_b_pt_CSVM_tag.eps");
-
-    TCanvas * c_b_pt_CSVT = new TCanvas("c_b_pt_CSVT","c_b_pt_CSVT",500,500);
-//    eff_b_pt_CSVT_tag0->Draw("e3");
-//    eff_b_pt_CSVT_tag1->Draw("e3 same");
-    eff_b_pt_CSVT_tag2->Draw("e3");
-    eff_b_pt_CSVT_tag3->Draw("e3 same");
-    eff_b_pt_CSVT_tag4->Draw("e3 same");
-
-    TLegend *l = new TLegend(0.78,0.70,0.89,0.87);
-//    l->AddEntry(eff_b_pt_CSVT_tag0,"0bjets","F");
-//    l->AddEntry(eff_b_pt_CSVT_tag1,"1bjets","F");
-    l->AddEntry(eff_b_pt_CSVT_tag2,"2bjets","F");
-    l->AddEntry(eff_b_pt_CSVT_tag3,"3bjets","F");
-    l->AddEntry(eff_b_pt_CSVT_tag4,"4bjets","F");
-
-    SetLegend(l);
-    c_b_pt_CSVT->Print("Ncompare_b_pt_CSVT_tag.png");
-    c_b_pt_CSVT->Print("Ncompare_b_pt_CSVT_tag.eps");
-
-}
-else
-{
-/////////////////
-
-    //TH1F* eff_c_pt_CSVM_tag0 = eff(treeElEl, treeMuMu, treeMuEl, "jetspt30.pt()", nBinpt, binspt, precut, precut_em, ccut, csvm, tag0, "c_pt_CSVM_tag0","CSVM",2, "p_{T}(GeV/c)",3005); 
-    TH1F* eff_c_pt_CSVM_tag1 = eff(treeElEl, treeMuMu, treeMuEl, "jetspt30.pt()", nBinpt, binspt, precut, precut_em, ccut, csvm, tag1, "c_pt_CSVM_tag1","CSVM",3, "p_{T}(GeV/c)",3004); 
-    TH1F* eff_c_pt_CSVM_tag2 = eff(treeElEl, treeMuMu, treeMuEl, "jetspt30.pt()", nBinpt, binspt, precut, precut_em, ccut, csvm, tag2, "c_pt_CSVM_tag2","CSVM",4,"p_{T}(GeV/c)",3395); 
-//    TH1F* eff_c_pt_CSVM_tag3 = eff(treeElEl, treeMuMu, treeMuEl, "jetspt30.pt()", nBinpt, binspt, precut, precut_em, ccut, csvm, tag3, "c_pt_CSVM_tag3","CSVM",6,"p_{T}(GeV/c)",3010); 
-//    TH1F* eff_c_pt_CSVM_tag4 = eff(treeElEl, treeMuMu, treeMuEl, "jetspt30.pt()", nBinpt, binspt, precut, precut_em, ccut, csvm, tag4, "c_pt_CSVM_tag4","CSVM",12,"p_{T}(GeV/c)",3012); 
-
-    //TH1F* eff_c_pt_CSVT_tag0 = eff(treeElEl, treeMuMu, treeMuEl, "jetspt30.pt()", nBinpt, binspt, precut, precut_em, ccut, csvt, tag0, "c_pt_CSVT_tag0","CSVT",2, "p_{T}(GeV/c)",3005); 
-    TH1F* eff_c_pt_CSVT_tag1 = eff(treeElEl, treeMuMu, treeMuEl, "jetspt30.pt()", nBinpt, binspt, precut, precut_em, ccut, csvt, tag1, "c_pt_CSVT_tag1","CSVT",3, "p_{T}(GeV/c)",3004); 
-    TH1F* eff_c_pt_CSVT_tag2 = eff(treeElEl, treeMuMu, treeMuEl, "jetspt30.pt()", nBinpt, binspt, precut, precut_em, ccut, csvt, tag2, "c_pt_CSVT_tag2","CSVT",4,"p_{T}(GeV/c)",3395); 
-//    TH1F* eff_c_pt_CSVT_tag3 = eff(treeElEl, treeMuMu, treeMuEl, "jetspt30.pt()", nBinpt, binspt, precut, precut_em, ccut, csvt, tag3, "c_pt_CSVT_tag3","CSVT",6,"p_{T}(GeV/c)",3010); 
-//    TH1F* eff_c_pt_CSVT_tag4 = eff(treeElEl, treeMuMu, treeMuEl, "jetspt30.pt()", nBinpt, binspt, precut, precut_em, ccut, csvt, tag4, "c_pt_CSVT_tag4","CSVT",12,"p_{T}(GeV/c)",3012); 
-
-    TCanvas * c_c_pt_CSVM = new TCanvas("c_c_pt_CSVM","c_c_pt_CSVM",500,500);
- //   eff_c_pt_CSVM_tag0->Draw("e3");
-    eff_c_pt_CSVM_tag1->Draw("e3");// same");
-    eff_c_pt_CSVM_tag2->Draw("e3 same");
-//    eff_c_pt_CSVM_tag3->Draw("e3 same");
-//    eff_c_pt_CSVM_tag4->Draw("e3 same");
-
-    TLegend *l = new TLegend(0.78,0.70,0.89,0.87);
-//    l->AddEntry(eff_c_pt_CSVM_tag0,"0bjets","F");
-    l->AddEntry(eff_c_pt_CSVM_tag1,"1bjets","F");
-    l->AddEntry(eff_c_pt_CSVM_tag2,"2bjets","F");
-  //  l->AddEntry(eff_c_pt_CSVM_tag3,"3bjets","F");
-  //  l->AddEntry(eff_c_pt_CSVM_tag4,"4bjets","F");
-
-    SetLegend(l);
-    c_c_pt_CSVM->Print("Ncompare_c_pt_CSVM_tag.png");
-    c_c_pt_CSVM->Print("Ncompare_c_pt_CSVM_tag.eps");
-
-    TCanvas * c_c_pt_CSVT = new TCanvas("c_c_pt_CSVT","c_c_pt_CSVT",500,500);
-//    eff_c_pt_CSVT_tag0->Draw("e3");
-    eff_c_pt_CSVT_tag1->Draw("e3");// same");
-    eff_c_pt_CSVT_tag2->Draw("e3 same");
-//    eff_c_pt_CSVT_tag3->Draw("e3 same");
-//    eff_c_pt_CSVT_tag4->Draw("e3 same");
-
-    TLegend *l = new TLegend(0.78,0.70,0.89,0.87);
- //   l->AddEntry(eff_c_pt_CSVT_tag0,"0bjets","F");
-    l->AddEntry(eff_c_pt_CSVT_tag1,"1bjets","F");
-    l->AddEntry(eff_c_pt_CSVT_tag2,"2bjets","F");
- //   l->AddEntry(eff_c_pt_CSVT_tag3,"3bjets","F");
- //   l->AddEntry(eff_c_pt_CSVT_tag4,"tt + 4jets","F");
-
-    SetLegend(l);
-    c_c_pt_CSVT->Print("Ncompare_c_pt_CSVT_tag.png");
-    c_c_pt_CSVT->Print("Ncompare_c_pt_CSVT_tag.eps");
-}
-}
-else
-{
-if(type3)
-{
-//////////////////////////////////////////////////////////////////////////////////////
-// TH1F* eff_b_eta_CSVM_tag0 = eff(treeElEl, treeMuMu, treeMuEl, "TMath::Abs(jetspt30.eta())", nBineta, binseta, precut, precut_em, bcut, csvm, tag0, "b_eta_CSVM_tag0","CSVM",2, "#eta",3005);
-// TH1F* eff_b_eta_CSVM_tag1 = eff(treeElEl, treeMuMu, treeMuEl, "TMath::Abs(jetspt30.eta())", nBineta, binseta, precut, precut_em, bcut, csvm, tag1, "b_eta_CSVM_tag1","CSVM",3, "#eta",3004);
-   TH1F* eff_b_eta_CSVM_tag2 = eff(treeElEl, treeMuMu, treeMuEl, "TMath::Abs(jetspt30.eta())", nBineta, binseta, precut, precut_em, bcut, csvm, tag2, "b_eta_CSVM_tag2","CSVM",4, "#eta",3395);
-   TH1F* eff_b_eta_CSVM_tag3 = eff(treeElEl, treeMuMu, treeMuEl, "TMath::Abs(jetspt30.eta())", nBineta, binseta, precut, precut_em, bcut, csvm, tag3, "b_eta_CSVM_tag3","CSVM",6, "#eta",3010);
-   TH1F* eff_b_eta_CSVM_tag4 = eff(treeElEl, treeMuMu, treeMuEl, "TMath::Abs(jetspt30.eta())", nBineta, binseta, precut, precut_em, bcut, csvm, tag4, "b_eta_CSVM_tag4","CSVM",12,"#eta",3012); 
-// TH1F* eff_b_eta_CSVT_tag0 = eff(treeElEl, treeMuMu, treeMuEl, "TMath::Abs(jetspt30.eta())", nBineta, binseta, precut, precut_em, bcut, csvt, tag0, "b_eta_CSVT_tag0","CSVT",2, "#eta",3005);
-// TH1F* eff_b_eta_CSVT_tag1 = eff(treeElEl, treeMuMu, treeMuEl, "TMath::Abs(jetspt30.eta())", nBineta, binseta, precut, precut_em, bcut, csvt, tag1, "b_eta_CSVT_tag1","CSVT",3, "#eta",3004);
-   TH1F* eff_b_eta_CSVT_tag2 = eff(treeElEl, treeMuMu, treeMuEl, "TMath::Abs(jetspt30.eta())", nBineta, binseta, precut, precut_em, bcut, csvt, tag2, "b_eta_CSVT_tag2","CSVT",4, "#eta",3395);
-   TH1F* eff_b_eta_CSVT_tag3 = eff(treeElEl, treeMuMu, treeMuEl, "TMath::Abs(jetspt30.eta())", nBineta, binseta, precut, precut_em, bcut, csvt, tag3, "b_eta_CSVT_tag3","CSVT",6, "#eta",3010);
-   TH1F* eff_b_eta_CSVT_tag4 = eff(treeElEl, treeMuMu, treeMuEl, "TMath::Abs(jetspt30.eta())", nBineta, binseta, precut, precut_em, bcut, csvt, tag4, "b_eta_CSVT_tag4","CSVT",12,"#eta",3012);
-
-    TCanvas * c_b_eta_CSVM = new TCanvas("c_b_eta_CSVM","c_b_eta_CSVM",500,500);
-  //  eff_b_eta_CSVM_tag0->Draw("e3");
-  //  eff_b_eta_CSVM_tag1->Draw("e3 same");
-    eff_b_eta_CSVM_tag2->Draw("e3");
-    eff_b_eta_CSVM_tag3->Draw("e3 same");
-    eff_b_eta_CSVM_tag4->Draw("e3 same");
-
-    TLegend *l = new TLegend(0.78,0.70,0.89,0.87);
-   // l->AddEntry(eff_b_eta_CSVM_tag0,"tt + 0jet","F");
-   // l->AddEntry(eff_b_eta_CSVM_tag1,"tt + 1jet","F");
-    l->AddEntry(eff_b_eta_CSVM_tag2,"2bjets","F");
-    l->AddEntry(eff_b_eta_CSVM_tag3,"3bjets","F");
-    l->AddEntry(eff_b_eta_CSVM_tag4,"4bjets","F");
-
-    SetLegend(l);
-    c_b_eta_CSVM->Print("Ncompare_b_eta_CSVM_tag.png");
-    c_b_eta_CSVM->Print("Ncompare_b_eta_CSVM_tag.eps");
-
-    TCanvas * c_b_eta_CSVT = new TCanvas("c_b_eta_CSVT","c_b_eta_CSVT",500,500);
-    //eff_b_eta_CSVT_tag0->Draw("e3");
-    //eff_b_eta_CSVT_tag1->Draw("e3 same");
-    eff_b_eta_CSVT_tag2->Draw("e3");
-    eff_b_eta_CSVT_tag3->Draw("e3 same");
-    eff_b_eta_CSVT_tag4->Draw("e3 same");
-
-    TLegend *l = new TLegend(0.78,0.70,0.89,0.87);
-   // l->AddEntry(eff_b_eta_CSVT_tag0,"tt + 0jet","F");
-   // l->AddEntry(eff_b_eta_CSVT_tag1,"tt + 1jet","F");
-    l->AddEntry(eff_b_eta_CSVT_tag2,"2bjets","F");
-    l->AddEntry(eff_b_eta_CSVT_tag3,"3bjets","F");
-    l->AddEntry(eff_b_eta_CSVT_tag4,"4bjets","F");
-
-    SetLegend(l);
-    c_b_eta_CSVT->Print("Ncompare_b_eta_CSVT_tag.png");
-    c_b_eta_CSVT->Print("Ncompare_b_eta_CSVT_tag.eps");
-}
-else
-{
-/////////////////
- //TH1F* eff_c_eta_CSVM_tag0 = eff(treeElEl, treeMuMu, treeMuEl, "TMath::Abs(jetspt30.eta())", nBineta, binseta, precut, precut_em, ccut, csvm, tag0, "c_eta_CSVM_tag0","CSVM",2, "#eta",3005);
-   TH1F* eff_c_eta_CSVM_tag1 = eff(treeElEl, treeMuMu, treeMuEl, "TMath::Abs(jetspt30.eta())", nBineta, binseta, precut, precut_em, ccut, csvm, tag1, "c_eta_CSVM_tag1","CSVM",3, "#eta",3004);
-   TH1F* eff_c_eta_CSVM_tag2 = eff(treeElEl, treeMuMu, treeMuEl, "TMath::Abs(jetspt30.eta())", nBineta, binseta, precut, precut_em, ccut, csvm, tag2, "c_eta_CSVM_tag2","CSVM",4, "#eta",3395);
-// TH1F* eff_c_eta_CSVM_tag3 = eff(treeElEl, treeMuMu, treeMuEl, "TMath::Abs(jetspt30.eta())", nBineta, binseta, precut, precut_em, ccut, csvm, tag3, "c_eta_CSVM_tag3","CSVM",6, "#eta",3010);
-// TH1F* eff_c_eta_CSVM_tag4 = eff(treeElEl, treeMuMu, treeMuEl, "TMath::Abs(jetspt30.eta())", nBineta, binseta, precut, precut_em, ccut, csvm, tag4, "c_eta_CSVM_tag4","CSVM",12,"#eta",3012);
-
-//TH1F* eff_c_eta_CSVT_tag0 = eff(treeElEl, treeMuMu, treeMuEl, "TMath::Abs(jetspt30.eta())", nBineta, binseta, precut, precut_em, ccut, csvt, tag0, "c_eta_CSVT_tag0","CSVT",2, "#eta",3005); 
-  TH1F* eff_c_eta_CSVT_tag1 = eff(treeElEl, treeMuMu, treeMuEl, "TMath::Abs(jetspt30.eta())", nBineta, binseta, precut, precut_em, ccut, csvt, tag1, "c_eta_CSVT_tag1","CSVT",3, "#eta",3004); 
-  TH1F* eff_c_eta_CSVT_tag2 = eff(treeElEl, treeMuMu, treeMuEl, "TMath::Abs(jetspt30.eta())", nBineta, binseta, precut, precut_em, ccut, csvt, tag2, "c_eta_CSVT_tag2","CSVT",4, "#eta",3395); 
-// TH1F* eff_c_eta_CSVT_tag3 = eff(treeElEl, treeMuMu, treeMuEl, "TMath::Abs(jetspt30.eta())", nBineta, binseta, precut, precut_em, ccut, csvt, tag3, "c_eta_CSVT_tag3","CSVT",6, "#eta",3010);
-// TH1F* eff_c_eta_CSVT_tag4 = eff(treeElEl, treeMuMu, treeMuEl, "TMath::Abs(jetspt30.eta())", nBineta, binseta, precut, precut_em, ccut, csvt, tag4, "c_eta_CSVT_tag4","CSVT",12,"#eta",3012); 
-    TCanvas * c_c_eta_CSVM = new TCanvas("c_c_eta_CSVM","c_c_eta_CSVM",500,500);
-    //eff_c_eta_CSVM_tag0->Draw("e3");
-    eff_c_eta_CSVM_tag1->Draw("e3");// same");
-    eff_c_eta_CSVM_tag2->Draw("e3 same");
-//    eff_c_eta_CSVM_tag3->Draw("e3 same");
-//    eff_c_eta_CSVM_tag4->Draw("e3 same");
-
-    TLegend *l = new TLegend(0.78,0.70,0.89,0.87);
-    //l->AddEntry(eff_c_eta_CSVM_tag0,"0bjets","F");
-    l->AddEntry(eff_c_eta_CSVM_tag1,"1bjets","F");
-    l->AddEntry(eff_c_eta_CSVM_tag2,"2bjets","F");
-//    l->AddEntry(eff_c_eta_CSVM_tag3,"3bjet","F");
-//    l->AddEntry(eff_c_eta_CSVM_tag4,"4bjets","F");
-
-    SetLegend(l);
-    c_c_eta_CSVM->Print("Ncompare_c_eta_CSVM_tag.png");
-    c_c_eta_CSVM->Print("Ncompare_c_eta_CSVM_tag.eps");
-
-    TCanvas * c_c_eta_CSVT = new TCanvas("c_c_eta_CSVT","c_c_eta_CSVT",500,500);
-    //eff_c_eta_CSVT_tag0->Draw("e3");
-    eff_c_eta_CSVT_tag1->Draw("e3");// same");
-    eff_c_eta_CSVT_tag2->Draw("e3 same");
-//    eff_c_eta_CSVT_tag3->Draw("e3 same");
-//    eff_c_eta_CSVT_tag4->Draw("e3 same");
-
-    TLegend *l = new TLegend(0.78,0.70,0.89,0.87);
-   // l->AddEntry(eff_c_eta_CSVT_tag0,"0bjets","F");
-    l->AddEntry(eff_c_eta_CSVT_tag1,"1bjets","F");
-    l->AddEntry(eff_c_eta_CSVT_tag2,"2bjets","F");
-   // l->AddEntry(eff_c_eta_CSVT_tag3,"3bjets","F");
-   // l->AddEntry(eff_c_eta_CSVT_tag4,"4bjets","F");
-
-    SetLegend(l);
-    c_c_eta_CSVT->Print("Ncompare_c_eta_CSVT_tag.png");
-    c_c_eta_CSVT->Print("Ncompare_c_eta_CSVT_tag.eps");
-
-}
-}
-}
-else
-{
-if(type3=true) if(type2)
-{
-///////////////////////////////////////
-   
-    TH1F* eff_b_pt_CSVM_ttbb = eff(treeElEl, treeMuMu, treeMuEl, "jetspt30.pt()", nBinpt, binspt, precut, precut_em, bcut, csvm, ttbb, "b_pt_CSVM_ttbb","CSVM",2, "p_{T}(GeV/c)",3005); 
-    TH1F* eff_b_pt_CSVM_ttll = eff(treeElEl, treeMuMu, treeMuEl, "jetspt30.pt()", nBinpt, binspt, precut, precut_em, bcut, csvm, ttll, "b_pt_CSVM_ttll","CSVM",4, "p_{T}(GeV/c)",3004); 
-    TH1F* eff_b_pt_CSVM_ttjj = eff(treeElEl, treeMuMu, treeMuEl, "jetspt30.pt()", nBinpt, binspt, precut, precut_em, bcut, csvm, ttjj, "b_pt_CSVM_ttjj","CSVM",12,"p_{T}(GeV/c)",3395); 
-                                                                                                                                                                                     
-    TH1F* eff_b_pt_CSVT_ttbb = eff(treeElEl, treeMuMu, treeMuEl, "jetspt30.pt()", nBinpt, binspt, precut, precut_em, bcut, csvt, ttbb, "b_pt_CSVT_ttbb","CSVT",2, "p_{T}(GeV/c)",3005); 
-    TH1F* eff_b_pt_CSVT_ttll = eff(treeElEl, treeMuMu, treeMuEl, "jetspt30.pt()", nBinpt, binspt, precut, precut_em, bcut, csvt, ttll, "b_pt_CSVT_ttll","CSVT",4, "p_{T}(GeV/c)",3004); 
-    TH1F* eff_b_pt_CSVT_ttjj = eff(treeElEl, treeMuMu, treeMuEl, "jetspt30.pt()", nBinpt, binspt, precut, precut_em, bcut, csvt, ttjj, "b_pt_CSVT_ttjj","CSVT",12,"p_{T}(GeV/c)",3995); 
-
-   TH1F* eff_b_eta_CSVM_ttbb = eff(treeElEl, treeMuMu, treeMuEl, "TMath::Abs(jetspt30.eta())", nBineta, binseta, precut, precut_em, bcut, csvm, ttbb, "b_eta_CSVM_ttbb","CSVM",2,"#eta",3005); 
-   TH1F* eff_b_eta_CSVM_ttll = eff(treeElEl, treeMuMu, treeMuEl, "TMath::Abs(jetspt30.eta())", nBineta, binseta, precut, precut_em, bcut, csvm, ttll, "b_eta_CSVM_ttll","CSVM",4,"#eta",3004); 
-   TH1F* eff_b_eta_CSVM_ttjj = eff(treeElEl, treeMuMu, treeMuEl, "TMath::Abs(jetspt30.eta())", nBineta, binseta, precut, precut_em, bcut, csvm, ttjj, "b_eta_CSVM_ttjj","CSVM",12,"#eta",3395); 
-   TH1F* eff_b_eta_CSVT_ttbb = eff(treeElEl, treeMuMu, treeMuEl, "TMath::Abs(jetspt30.eta())", nBineta, binseta, precut, precut_em, bcut, csvt, ttbb, "b_eta_CSVT_ttbb","CSVT",2,"#eta",3005);
-   TH1F* eff_b_eta_CSVT_ttll = eff(treeElEl, treeMuMu, treeMuEl, "TMath::Abs(jetspt30.eta())", nBineta, binseta, precut, precut_em, bcut, csvt, ttll, "b_eta_CSVT_ttll","CSVT",4,"#eta",3004);
-   TH1F* eff_b_eta_CSVT_ttjj = eff(treeElEl, treeMuMu, treeMuEl, "TMath::Abs(jetspt30.eta())", nBineta, binseta, precut, precut_em, bcut, csvt, ttjj, "b_eta_CSVT_ttjj","CSVT",12,"#eta",3995);
-
-    TCanvas * c_b_pt_CSVM = new TCanvas("c_b_pt_CSVM","c_b_pt_CSVM",500,500);
-    eff_b_pt_CSVM_ttbb->Draw("e3");
-    eff_b_pt_CSVM_ttll->Draw("e3 same");
-    eff_b_pt_CSVM_ttjj->Draw("e3 same");
-
-    TLegend *l = new TLegend(0.78,0.70,0.89,0.87);
-    //TLegend *l = new TLegend(0.58,0.78,0.69,0.87);
-    l->AddEntry(eff_b_pt_CSVM_ttbb,"tt + bb","F");
-    l->AddEntry(eff_b_pt_CSVM_ttll,"tt + LF","F");
-    l->AddEntry(eff_b_pt_CSVM_ttjj,"tt + jj","F");
-    SetLegend(l);
-    c_b_pt_CSVM->Print("compare_b_pt_CSVM.png");
-    c_b_pt_CSVM->Print("compare_b_pt_CSVM.eps");
-
-    TCanvas * c_b_pt_CSVT = new TCanvas("c_b_pt_CSVT","c_b_pt_CSVT",500,500);
-    eff_b_pt_CSVT_ttbb->Draw("e3");
-    eff_b_pt_CSVT_ttll->Draw("e3 same");
-    eff_b_pt_CSVT_ttjj->Draw("e3 same");
-
-    TLegend *l = new TLegend(0.78,0.70,0.89,0.87);
-    //TLegend *l = new TLegend(0.58,0.78,0.69,0.87);
-    l->AddEntry(eff_b_pt_CSVT_ttbb,"tt + bb","F");
-    l->AddEntry(eff_b_pt_CSVT_ttll,"tt + LF","F");
-    l->AddEntry(eff_b_pt_CSVT_ttjj,"tt + jj","F");
-    SetLegend(l);
-    c_b_pt_CSVT->Print("compare_b_pt_CSVT.png");
-    c_b_pt_CSVT->Print("compare_b_pt_CSVT.eps");
-//////////////
-    TCanvas * c_b_eta_CSVM = new TCanvas("c_b_eta_CSVM","c_b_eta_CSVM",500,500);
-    eff_b_eta_CSVM_ttbb->Draw("e3");
-    eff_b_eta_CSVM_ttll->Draw("e3 same");
-    eff_b_eta_CSVM_ttjj->Draw("e3 same");
+    for(int i=1;i<eff_b_eta_CSVT_fromTop->GetNbinsX()+1;i++)
+    {
+       cout << Form("%.1f",binseta[i-1]) << ",\t "<<eff_b_eta_CSVT_fromTop->GetBinContent(i) << "," << endl;
+    }
 
 
-    TLegend *l = new TLegend(0.78,0.70,0.89,0.87);
-    //TLegend *l = new TLegend(0.58,0.78,0.69,0.87);
-    l->AddEntry(eff_b_eta_CSVM_ttbb,"tt + bb","F");
-    l->AddEntry(eff_b_eta_CSVM_ttll,"tt + LF","F");
-    l->AddEntry(eff_b_eta_CSVM_ttjj,"tt + jj","F");
-    SetLegend(l);
-    c_b_eta_CSVM->Print("compare_b_eta_CSVM.png");
-    c_b_eta_CSVM->Print("compare_b_eta_CSVM.eps");
-
-    TCanvas * c_b_eta_CSVT = new TCanvas("c_b_eta_CSVT","c_b_eta_CSVT",500,500);
-    eff_b_eta_CSVT_ttbb->Draw("e3");
-    eff_b_eta_CSVT_ttll->Draw("e3 same");
-    eff_b_eta_CSVT_ttjj->Draw("e3 same");
-
-
-    TLegend *l = new TLegend(0.78,0.70,0.89,0.87);
-    //TLegend *l = new TLegend(0.58,0.78,0.69,0.87);
-    l->AddEntry(eff_b_eta_CSVT_ttbb,"tt + bb","F");
-    l->AddEntry(eff_b_eta_CSVT_ttll,"tt + LF","F");
-    l->AddEntry(eff_b_eta_CSVT_ttjj,"tt + jj","F");
-    SetLegend(l);
-    c_b_eta_CSVT->Print("compare_b_eta_CSVT.png");
-    c_b_eta_CSVT->Print("compare_b_eta_CSVT.eps");
-}
-else
-{
-    //we can not use ttbb for mis-tag rate.
-    //TH1F* eff_c_pt_CSVM_ttbb = eff(treeElEl, treeMuMu, treeMuEl, "jetspt30.pt()", nBinpt, binspt, precut, precut_em, ccut, csvm, ttbb, "c_pt_CSVM_ttbb","CSVM",2);
-    TH1F* eff_c_pt_CSVM_ttll = eff(treeElEl, treeMuMu, treeMuEl, "jetspt30.pt()", nBinpt, binspt, precut, precut_em, ccut, csvm, ttll, "c_pt_CSVM_ttll","CSVM",4, "p_{T}(GeV/c)",3004);
-    TH1F* eff_c_pt_CSVM_ttjj = eff(treeElEl, treeMuMu, treeMuEl, "jetspt30.pt()", nBinpt, binspt, precut, precut_em, ccut, csvm, ttjj, "c_pt_CSVM_ttjj","CSVM",12,"p_{T}(GeV/c)",3395);
-
-    //TH1F* eff_c_pt_CSVT_ttbb = eff(treeElEl, treeMuMu, treeMuEl, "jetspt30.pt()", nBinpt, binspt, precut, precut_em, ccut, csvt, ttbb, "c_pt_CSVT_ttbb","CSVT",2);
-    TH1F* eff_c_pt_CSVT_ttll = eff(treeElEl, treeMuMu, treeMuEl, "jetspt30.pt()", nBinpt, binspt, precut, precut_em, ccut, csvt, ttll, "c_pt_CSVT_ttll","CSVT",4, "p_{T}(GeV/c)",3004);
-    TH1F* eff_c_pt_CSVT_ttjj = eff(treeElEl, treeMuMu, treeMuEl, "jetspt30.pt()", nBinpt, binspt, precut, precut_em, ccut, csvt, ttjj, "c_pt_CSVT_ttjj","CSVT",12,"p_{T}(GeV/c)",3395);
-
-  //TH1F* eff_c_eta_CSVM_ttbb = eff(treeElEl, treeMuMu, treeMuEl, "TMath::Abs(jetspt30.eta())", nBineta, binseta, precut, precut_em, ccut, csvm, ttbb, "c_eta_CSVM_ttbb","CSVM",2,"#eta",3005);
-   TH1F* eff_c_eta_CSVM_ttll = eff(treeElEl, treeMuMu, treeMuEl, "TMath::Abs(jetspt30.eta())", nBineta, binseta, precut, precut_em, ccut, csvm, ttll, "c_eta_CSVM_ttll","CSVM",4,"#eta",3004); 
-   TH1F* eff_c_eta_CSVM_ttjj = eff(treeElEl, treeMuMu, treeMuEl, "TMath::Abs(jetspt30.eta())", nBineta, binseta, precut, precut_em, ccut, csvm, ttjj, "c_eta_CSVM_ttjj","CSVM",12,"#eta",3395); 
-  //TH1F* eff_c_eta_CSVT_ttbb = eff(treeElEl, treeMuMu, treeMuEl, "TMath::Abs(jetspt30.eta())", nBineta, binseta, precut, precut_em, ccut, csvt, ttbb, "c_eta_CSVT_ttbb","CSVT",2,"#eta",3005);
-   TH1F* eff_c_eta_CSVT_ttll = eff(treeElEl, treeMuMu, treeMuEl, "TMath::Abs(jetspt30.eta())", nBineta, binseta, precut, precut_em, ccut, csvt, ttll, "c_eta_CSVT_ttll","CSVT",4,"#eta",3004);
-   TH1F* eff_c_eta_CSVT_ttjj = eff(treeElEl, treeMuMu, treeMuEl, "TMath::Abs(jetspt30.eta())", nBineta, binseta, precut, precut_em, ccut, csvt, ttjj, "c_eta_CSVT_ttjj","CSVT",12,"#eta",3995);
-
-
-/////////////////////////////////////
-    TCanvas * c_c_pt_CSVM = new TCanvas("c_c_pt_CSVM","c_c_pt_CSVM",500,500);
-    //eff_c_pt_CSVM_ttbb->Draw("e3");
-    eff_c_pt_CSVM_ttll->Draw("e3");
-    eff_c_pt_CSVM_ttjj->Draw("e3 same");
-
-
-    TLegend *l = new TLegend(0.78,0.70,0.89,0.87);
-    //TLegend *l = new TLegend(0.58,0.78,0.69,0.87);
-    //l->AddEntry(eff_c_pt_CSVM_ttbb,"tt + bb","F");
-    l->AddEntry(eff_c_pt_CSVM_ttll,"tt + LF","F");
-    l->AddEntry(eff_c_pt_CSVM_ttjj,"tt + jj","F");
-    SetLegend(l);
-    c_c_pt_CSVM->Print("compare_c_pt_CSVM.png");
-    c_c_pt_CSVM->Print("compare_c_pt_CSVM.eps");
-
-    TCanvas * c_c_pt_CSVT = new TCanvas("c_c_pt_CSVT","c_c_pt_CSVT",500,500);
-    //eff_c_pt_CSVT_ttbb->Draw("e3");
-    eff_c_pt_CSVT_ttll->Draw("e3");
-    eff_c_pt_CSVT_ttjj->Draw("e3 same");
-
-
-    TLegend *l = new TLegend(0.78,0.70,0.89,0.87);
-    //TLegend *l = new TLegend(0.58,0.78,0.69,0.87);
-    //l->AddEntry(eff_c_pt_CSVT_ttbb,"tt + bb","F");
-    l->AddEntry(eff_c_pt_CSVT_ttll,"tt + LF","F");
-    l->AddEntry(eff_c_pt_CSVT_ttjj,"tt + jj","F");
-    SetLegend(l);
-    c_c_pt_CSVT->Print("compare_c_pt_CSVT.png"); 
-    c_c_pt_CSVT->Print("compare_c_pt_CSVT.eps"); 
-
-///////////////////////////////////////////
-    TCanvas * c_c_eta_CSVM = new TCanvas("c_c_eta_CSVM","c_c_eta_CSVM",500,500);
-    //eff_c_eta_CSVM_ttbb->Draw("e3");
-    eff_c_eta_CSVM_ttll->Draw("e3");
-    eff_c_eta_CSVM_ttjj->Draw("e3 same");
-
-
-    TLegend *l = new TLegend(0.78,0.70,0.89,0.87);
-    //TLegend *l = new TLegend(0.58,0.78,0.69,0.87);
-    //l->AddEntry(eff_c_eta_CSVM_ttbb,"tt + bb","F");
-    l->AddEntry(eff_c_eta_CSVM_ttll,"tt + LF","F");
-    l->AddEntry(eff_c_eta_CSVM_ttjj,"tt + jj","F");
-    SetLegend(l);
-    c_c_eta_CSVM->Print("compare_c_eta_CSVM.png");
-    c_c_eta_CSVM->Print("compare_c_eta_CSVM.eps");
-
-    TCanvas * c_c_eta_CSVT = new TCanvas("c_c_eta_CSVT","c_c_eta_CSVT",500,500);
-    //eff_c_eta_CSVT_ttbb->Draw("e3");
-    eff_c_eta_CSVT_ttll->Draw("e3");
-    eff_c_eta_CSVT_ttjj->Draw("e3 same");
-
-
-    TLegend *l = new TLegend(0.78,0.70,0.89,0.87);
-    //TLegend *l = new TLegend(0.58,0.78,0.69,0.87);
-    //l->AddEntry(eff_c_eta_CSVT_ttbb,"tt + bb","F");
-    l->AddEntry(eff_c_eta_CSVT_ttll,"tt + LF","F");
-    l->AddEntry(eff_c_eta_CSVT_ttjj,"tt + jj","F");
-    SetLegend(l);
-    c_c_eta_CSVT->Print("compare_c_eta_CSVT.png"); 
-    c_c_eta_CSVT->Print("compare_c_eta_CSVT.eps"); 
 
 }
 }
