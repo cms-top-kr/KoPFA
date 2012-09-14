@@ -21,7 +21,7 @@ void bjet_pt(bool type, int i)
     TTree* treeElEl = (TTree*)f2->Get("ElEl/tree");
     TTree* treeMuEl = (TTree*)f3->Get("MuEl/tree");
 	
-    float binspt[] = {20,30,40,50,60,70,80,90,100,110,120,130,140,150,160,170,180,190,200,210,220,230,240,250,260,270,280,290,300,310,320,330,340,350,360,370,380,390,400,410,420,430,440,450};
+    float binspt[] = {20,30,40,50,60,70,80,90,100,110,120,130,140,150,160,170,180,190,200,210,220,230,240,250};//,260,270,280,290,300};//,310,320,330,340,350,360,370,380,390,400,410,420,430,440,450};
     int nBinpt = sizeof(binspt)/sizeof(float) - 1;
     float binseta[] = {0.,0.4,0.8,1.2,1.6,2.0,2.4};
     int nBineta = sizeof(binseta)/sizeof(float) - 1;
@@ -48,6 +48,38 @@ void bjet_pt(bool type, int i)
      tag[4] = "abs(jetspt30.eta()) >= 2.0 && abs(jetspt30.eta()) < 2.5";
 
 if(type)
+{
+        TH2F* eff_b_pt_fromTop;  
+        TH2F* eff_b_pt_notfromTop; 
+
+        eff_b_pt_eta_fromTop =   distribution(treeElEl, treeMuMu, treeMuEl,  "abs(jetspt30.eta()):jetspt30.pt()", nBinpt, binspt,nBineta,binseta, precut, precut_em, bcut,  fromTop, Form("eff_b_pt_eta_fromTop"),"","p_{T}(GeV/c)", "#eta", " from top");
+        eff_b_pt_eta_notfromTop = distribution(treeElEl, treeMuMu, treeMuEl, "abs(jetspt30.eta()):jetspt30.pt()", nBinpt, binspt,nBineta,binseta, precut, precut_em, bcut, notfromTop, Form("eff_b_pt_eta_notfromTop"),"","p_{T}(GeV/c)", "#eta", " not form top"); 
+
+        gStyle->SetPalette(1);
+        gStyle->SetPadRightMargin(0.18);
+
+        double s1 = eff_b_pt_eta_fromTop->Integral();
+        double s2 = eff_b_pt_eta_notfromTop->Integral();
+ 
+        eff_b_pt_eta_fromTop->Scale(1/s1);
+        eff_b_pt_eta_notfromTop->Scale(1/s2);
+
+       // eff_b_pt_eta_fromTop->SetMaximum(0.085);
+       // eff_b_pt_eta_notfromTop->SetMaximum(0.085);  
+       
+        TCanvas * c_b_pt = new TCanvas("c_b_pt","c_b_pt_eta_from_top",500,500);
+        eff_b_pt_eta_fromTop->Draw("colz");
+        c_b_pt->Print(Form("compare_b_pt_eta_from_Top.png"));
+        c_b_pt->Print(Form("compare_b_pt_eta_from_Top.eps"));
+
+        TCanvas * c_b_pt_not = new TCanvas("c_b_pt_not","c_b_pt_eta_not_from_top",500,500);
+        eff_b_pt_eta_notfromTop->Draw("colz");
+        c_b_pt_not->Print(Form("compare_b_pt_eta_not_from_Top.png"));
+        c_b_pt_not->Print(Form("compare_b_pt_eta_not_from_Top.eps"));
+
+}
+//////////////////
+else if(type && i>-1 )
 {
     
     //for(int i=0;i<5;i++)
@@ -166,6 +198,38 @@ TH1F* distribution(TTree* treeElEl, TTree* treeMuMu, TTree* treeMuEl, const TStr
  return hden;
 
 }
+
+TH2F* distribution(TTree* treeElEl, TTree* treeMuMu, TTree* treeMuEl, const TString &variable, int xnBin, float * xbins, int ynBin, float * ybins, TCut precut, TCut precut_em, TCut fcut, TCut process,const TString & name, const TString &title, const TString &xtitle, const TString &ytitle, const TString &with){
+
+  TCut dencut_em =  precut_em + fcut;
+  TCut dencut    =  precut    + fcut;
+
+
+  TH2F* hden = new TH2F(Form("hden_%s",name.Data()),Form("b %s", with.Data()),xnBin,xbins, ynBin,ybins);
+
+  TH2F* hden_ee = new TH2F(Form("hden_%s_ee",name.Data()),"hden_ee",xnBin,xbins, ynBin,ybins);
+  TH2F* hden_mm = new TH2F(Form("hden_%s_mm",name.Data()),"hden_mm",xnBin,xbins, ynBin,ybins);
+  TH2F* hden_em = new TH2F(Form("hden_%s_em",name.Data()),"hden_em",xnBin,xbins, ynBin,ybins);
+
+  treeElEl->Project(Form("hden_%s_ee",name.Data()),Form("%s",variable.Data()),dencut+process,"");
+  treeMuMu->Project(Form("hden_%s_mm",name.Data()),Form("%s ",variable.Data()),dencut+process,"");
+  treeMuEl->Project(Form("hden_%s_em",name.Data()),Form("%s",variable.Data()),dencut_em+process,"");
+
+  hden->Add(hden_ee,1);
+  hden->Add(hden_mm,1);
+  hden->Add(hden_em,1);
+
+  hden->GetXaxis()->SetTitle(xtitle);//"p_{T}(GeV/c)");
+  hden->GetYaxis()->SetTitle(ytitle);
+
+//  hden->Sumw2();
+//  hden->SetLineColor(color);
+
+ return hden;
+
+}
+
+
 
 void SetLegend(TLegend* l){
   l->SetTextSize(0.04);
