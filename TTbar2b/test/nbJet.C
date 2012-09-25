@@ -116,8 +116,13 @@ void draw(TTree* t_MuMu, TTree* t_ElEl, TTree* t_MuEl, const TString & name){
   //h_nbjets_ttjj->Draw("same");
 
   SetLabel(0.2, 0.82, 4982);
+  TLatex *label= new TLatex;
+  label->SetNDC();
+  label->SetTextSize(0.05);
+  label->DrawLatex(0.15,0.82,"CMS Simulation, at #sqrt{s} = 7 TeV");
 
-  TLegend *l = new TLegend(0.75,0.68,0.92,0.88);
+
+  TLegend *l = new TLegend(0.80,0.70,0.92,0.88);
   l->AddEntry(h_nbjets_ttbb,"tt + bb","L");
   l->AddEntry(h_nbjets_ttcc,"tt + cc","L");
   l->AddEntry(h_nbjets_ttll,"tt + LF","L");
@@ -130,5 +135,6 @@ void draw(TTree* t_MuMu, TTree* t_ElEl, TTree* t_MuEl, const TString & name){
   l->Draw();
 
   c->Print(Form("c_reco_jet_ttbb_ttcc_ttll_%s.eps",name.Data()));
+  c->Print(Form("c_reco_jet_ttbb_ttcc_ttll_%s.C",name.Data()));
 
 }

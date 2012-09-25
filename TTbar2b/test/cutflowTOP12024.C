@@ -6,11 +6,11 @@ void cutflowTOP12024(){
   gROOT->ProcessLine(".L tdrstyle.C");
   defaultStyle();
 
-  print("TTBB_01Sep2012_CSVM_CutFlow","CSVM");
-  print("TTBB_01Sep2012_CSVT_CutFlow","CSVT");
+ //print("~/public/cutFlow/CSVM/","CSVM");
+ //print("TTBB_01Sep2012_CSVT_CutFlow","CSVT");
 
-  //print("TTBB_01Sep2012_CSVM","CSVM", true, 0.079, 0.88);
-  //print("TTBB_01Sep2012_CSVT","CSVT", true, 0.080, 0.93);
+ print("TTBB_01Sep2012_CSVM","CSVM", true, 0.079, 0.88);
+ print("TTBB_01Sep2012_CSVT","CSVT", true, 0.080, 0.93);
 
 }
 
