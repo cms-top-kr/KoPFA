@@ -33,9 +33,10 @@ void acceptance(){
   decayMode.push_back("MuEl");
 
   //MC
-  mcPath.push_back("$WORK/data/export/common/Top/ntuple/ElEl/MC/Fall11_v4/vallot_TTbarTuneZ2.root");
-  mcPath.push_back("$WORK/data/export/common/Top/ntuple/MuMu/MC/Fall11_v4/vallot_TTbarTuneZ2.root");
-  mcPath.push_back("$WORK/data/export/common/Top/ntuple/MuEl/MC/Fall11_v4/vallot_TTbarTuneZ2.root");
+  mcPath.push_back("/afs/cern.ch/work/t/tjkim/public/store/top/ElEl/v0/vallot_TTbarTuneZ2.root");
+  mcPath.push_back("/afs/cern.ch/work/t/tjkim/public/store/top/MuMu/v0/vallot_TTbarTuneZ2.root");
+  mcPath.push_back("/afs/cern.ch/work/t/tjkim/public/store/top/MuEl/v0/vallot_TTbarTuneZ2.root");
+  
 
   //measured data distribution after final cut:version 6->take into account QCD
   //rdPath.push_back("/data/export/common/Top/finalHisto/v6/ElEl.root");
@@ -43,9 +44,9 @@ void acceptance(){
   //rdPath.push_back("/data/export/common/Top/finalHisto/v6/MuEl.root");
 
   //note for v3
-  rdPath.push_back("$WORK/data/export/common/Top/finalHisto/2011full/v3/ElEl.root");
-  rdPath.push_back("$WORK/data/export/common/Top/finalHisto/2011full/v3/MuMu.root");
-  rdPath.push_back("$WORK/data/export/common/Top/finalHisto/2011full/v3/MuEl.root");
+  rdPath.push_back("TOP11013_12072012/ElEl/ElEl.root");
+  rdPath.push_back("TOP11013_12072012/MuMu/MuMu.root");
+  rdPath.push_back("TOP11013_12072012/MuEl/MuEl.root");
 
   const std::string cutStep = "Step_8";
   string recon = "kin";
