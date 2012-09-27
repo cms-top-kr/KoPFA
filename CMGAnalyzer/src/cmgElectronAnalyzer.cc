@@ -23,7 +23,7 @@ cmgElectronAnalyzer::cmgElectronAnalyzer(const edm::ParameterSet& cfg)
   vertexLabel_ =  cfg.getUntrackedParameter<edm::InputTag>("vertexLabel");
   rhoIsoLabel_ =  cfg.getUntrackedParameter<edm::InputTag>("rhoIsoLabel");
 
-  produces<std::vector<pat::Electron> >("");
+  produces<std::vector<cmg::Electron> >("");
 
   edm::Service<TFileService> fs;
 
@@ -101,17 +101,17 @@ void cmgElectronAnalyzer::produce(edm::Event& iEvent, const edm::EventSetup& es)
   iEvent.getByLabel(jetLabel_, Jets);
   iEvent.getByLabel(vertexLabel_,recVtxs_);
   iEvent.getByLabel(metLabel_,MET_);
-  pat::METCollection::const_iterator mi = MET_->begin();
+  cmg::METCollection::const_iterator mi = MET_->begin();
   const double MET = mi->pt();
 
   int nvertex = recVtxs_->size();
   
-  std::auto_ptr<std::vector<pat::Electron> > pos(new std::vector<pat::Electron>());
+  std::auto_ptr<std::vector<cmg::Electron> > pos(new std::vector<cmg::Electron>());
 
   //preselection
   for (unsigned int i=0; i < electrons_->size(); ++i){
 
-    pat::Electron electron = electrons_->at(i);
+    cmg::Electron electron = electrons_->at(i);
 
     //bool passPre = electron.pt() > 20 && fabs(electron.eta()) < 2.5 && fabs(electron.gsfTrack()->dxy(beamSpot_->position())) < 0.04;
     bool passPre = electron.pt() > 20 && fabs(electron.eta()) < 2.5;
@@ -125,16 +125,16 @@ void cmgElectronAnalyzer::produce(edm::Event& iEvent, const edm::EventSetup& es)
   }
 
  
-  std::auto_ptr<std::vector<pat::Jet> > cleanedJets(new std::vector<pat::Jet>());
+  std::auto_ptr<std::vector<cmg::Jet> > cleanedJets(new std::vector<cmg::Jet>());
 
   for (unsigned int j=0 ; j < Jets->size(); j++) {
-    pat::Jet jet = Jets->at(j);
+    cmg::Jet jet = Jets->at(j);
 
     if( !(jet.pt() > 30 && abs(jet.eta()) < 2.5) ) continue;
     bool overlap = false;
     
     for (unsigned int i=0; i < pos->size(); ++i){
-      pat::Electron electron = pos->at(i);
+      cmg::Electron electron = pos->at(i);
 
       reco::isodeposit::Direction Dir = Direction(electron.superCluster()->eta(), electron.superCluster()->phi());
 
@@ -147,10 +147,10 @@ void cmgElectronAnalyzer::produce(edm::Event& iEvent, const edm::EventSetup& es)
         vetos_ph.push_back(new ConeVeto( Dir, 0.08 ));
       }
 
-      double chIso03 = electron.isoDeposit(pat::PfChargedHadronIso)->depositAndCountWithin(0.3, vetos_ch).first;
-      double puChIso03 = electron.isoDeposit(pat::PfPUChargedHadronIso)->depositAndCountWithin(0.3, vetos_ch).first;
-      double nhIso03 = electron.isoDeposit(pat::PfNeutralHadronIso)->depositAndCountWithin(0.3, vetos_nh).first;
-      double phIso03 = electron.isoDeposit(pat::PfGammaIso)->depositAndCountWithin(0.3, vetos_ph).first;
+      double chIso03 = electron.chargedHadronIso(0.3);
+      double puChIso03 = electron.puChargedHadronIso(0.3);
+      double nhIso03 = electron.neutralHadronIso(0.3);
+      double phIso03 = electron.photonIso(0.3);
 
       double relPfIso03 = ( chIso03 + nhIso03 + phIso03 )/ electron.pt();
       double mvaTrigV0 = electron.electronID("mvaTrigV0");
@@ -176,15 +176,15 @@ void cmgElectronAnalyzer::produce(edm::Event& iEvent, const edm::EventSetup& es)
 
   double mtW = 0.0;
   if( pos->size() >=1) {
-    const pat::Electron leading = pos->at(0);
+    const cmg::Electron leading = pos->at(0);
     mtW =  transverseMass( leading.p4() , mi->p4() );
   }
 
   if( pos->size() >=2 ){  
     for (unsigned int i=0; i < pos->size()-1; ++i){
       for (unsigned int j=i+1; j < pos->size(); ++j){
-	pat::Electron Lep1 = electrons_->at(i);
-	pat::Electron Lep2 = electrons_->at(j);
+	cmg::Electron Lep1 = electrons_->at(i);
+	cmg::Electron Lep2 = electrons_->at(j);
 
         float AEff03Lep1 = 0.00;
         float AEff03Lep2 = 0.00; 
@@ -213,15 +213,15 @@ void cmgElectronAnalyzer::produce(edm::Event& iEvent, const edm::EventSetup& es)
         double nhIso03Lep2 = Lep2.neutralHadronIso(0.3);
         double phIso03Lep2 = Lep2.photonIso(0.3);
  
-	double chIso04Lep1 = Lep1.isoDeposit(pat::PfChargedHadronIso)->depositAndCountWithin(0.4, vetos_ch_Lep1).first;
-        double puChIso04Lep1 = Lep1.isoDeposit(pat::PfPUChargedHadronIso)->depositAndCountWithin(0.4, vetos_ch_Lep1).first;
-	double nhIso04Lep1 = Lep1.isoDeposit(pat::PfNeutralHadronIso)->depositAndCountWithin(0.4, vetos_nh_Lep1).first;
-	double phIso04Lep1 = Lep1.isoDeposit(pat::PfGammaIso)->depositAndCountWithin(0.4, vetos_ph_Lep1).first;
+        double chIso04Lep1 = Lep1.chargedHadronIso(0.4);
+        double puChIso04Lep1 = Lep1.puChargedHadronIso(0.4);
+        double nhIso04Lep1 = Lep1.neutralHadronIso(0.4);
+        double phIso04Lep1 = Lep1.photonIso(0.4);
 
-	double chIso04Lep2 = Lep2.isoDeposit(pat::PfChargedHadronIso)->depositAndCountWithin(0.4, vetos_ch_Lep2).first;
-        double puChIso04Lep2 = Lep2.isoDeposit(pat::PfPUChargedHadronIso)->depositAndCountWithin(0.4, vetos_ch_Lep2).first;
-	double nhIso04Lep2 = Lep2.isoDeposit(pat::PfNeutralHadronIso)->depositAndCountWithin(0.4, vetos_nh_Lep2).first;
-	double phIso04Lep2 = Lep2.isoDeposit(pat::PfGammaIso)->depositAndCountWithin(0.4, vetos_ph_Lep2).first;
+        double chIso04Lep2 = Lep2.chargedHadronIso(0.4);
+        double puChIso04Lep2 = Lep2.puChargedHadronIso(0.4);
+        double nhIso04Lep2 = Lep2.neutralHadronIso(0.4);
+        double phIso04Lep2 = Lep2.photonIso(0.4);
 
 	double mvaTrigV0Lep1 = Lep1.electronID("mvaTrigV0");
 	double relPfIso03Lep1 = ( chIso03Lep1 + nhIso03Lep1 + phIso03Lep1 )/ Lep1.pt(); 
