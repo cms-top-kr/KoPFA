@@ -13,7 +13,7 @@
 //
 // Original Author:  Tae Jeong Kim,40 R-A32,+41227678602,
 //         Created:  Fri Jun  4 17:19:29 CEST 2010
-// $Id: TopDILAnalyzer.h,v 1.88 2012/08/10 07:24:56 tjkim Exp $
+// $Id: TopDILAnalyzer.h,v 1.89 2012/09/06 12:50:23 tjkim Exp $
 //
 //
 
@@ -135,7 +135,7 @@ class TopDILAnalyzer : public edm::EDFilter {
     tree = fs->make<TTree>("tree", "Tree for Top quark study");
     tmp = fs->make<TH1F>("EventSummary","EventSummary",filters_.size(),0,filters_.size());
  
-    TFileDirectory btagdir = fs->mkdir(Form("btagEff", i));
+    //TFileDirectory btagdir = fs->mkdir(Form("btagEff", i));
     
 
     Z = new std::vector<Ko::ZCandidate>();
@@ -147,6 +147,7 @@ class TopDILAnalyzer : public edm::EDFilter {
     met = new std::vector<math::XYZTLorentzVector>();
     jetspt30 = new std::vector<math::XYZTLorentzVector>();
     jetspt30flavor = new std::vector<int>();
+    jetspt30fromtop = new std::vector<int>();
     jetspt30bDiscriminator = new std::vector<double>();
     jetspt30bDiscriminatorSSV = new std::vector<double>();
 
@@ -246,10 +247,13 @@ class TopDILAnalyzer : public edm::EDFilter {
     tree->Branch("kinttbarMCSVT",&kinttbarMCSVT,"kinttbarMCSVT/d");
 
     tree->Branch("nJet30",&nJet30,"nJet30/i");
+    tree->Branch("nGenJet20",&nGenJet20,"nGenJet20/i");
+    tree->Branch("nGenbJet20",&nGenbJet20,"nGenbJet20/i");
     //tree->Branch("nJet20",&nJet20,"nJet20/i");
 
     tree->Branch("jetspt30","std::vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >", &jetspt30);
     tree->Branch("jetspt30flavor","std::vector<int>", &jetspt30flavor);
+    tree->Branch("jetspt30fromtop","std::vector<int>", &jetspt30fromtop);
     tree->Branch("jetspt30bDiscriminator","std::vector<double>", &jetspt30bDiscriminator);
     tree->Branch("jetspt30bDiscriminatorSSV","std::vector<double>", &jetspt30bDiscriminatorSSV);
 
@@ -399,11 +403,16 @@ class TopDILAnalyzer : public edm::EDFilter {
 
     int nj30=0;
     //int nj20=0;
-
     for (JI jit = Jets->begin(); jit != Jets->end(); ++jit) {
       ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > corrjet;
       corrjet.SetPxPyPzE(jit->px(),jit->py(),jit->pz(),jit->energy());
       int flavor = jit->partonFlavour();
+      int isfromtop = 0;
+      if( jit->genParton() ){
+        const reco::GenParticle & genparton = *jit->genParton();
+        bool istop = isFromtop( genparton );
+        if(istop) isfromtop = 1;
+      }
       double bDiscriminator = jit->bDiscriminator("combinedSecondaryVertexBJetTags");
       double bDiscriminatorSSV = jit->bDiscriminator(bTagAlgos_[4]);
       //if(jit->pt() > 20){
@@ -421,6 +430,7 @@ class TopDILAnalyzer : public edm::EDFilter {
       if(jit->pt() > 30){
         jetspt30->push_back(corrjet);
         jetspt30flavor->push_back(flavor);
+        jetspt30fromtop->push_back(isfromtop);
         jetspt30bDiscriminator->push_back(bDiscriminator);
         jetspt30bDiscriminatorSSV->push_back(bDiscriminatorSSV);
        
@@ -494,13 +504,14 @@ class TopDILAnalyzer : public edm::EDFilter {
       bweight30CSVM = bTag.reweight( jet30, jet30flavor, nbjets30_[2], BTagWeight::CSVM, BTagWeight::NORM);
       bweight30CSVT = bTag.reweight( jet30, jet30flavor, nbjets30_[3], BTagWeight::CSVT, BTagWeight::NORM);
 
+      //add adddtional erro for b : set it true
       bweight30CSVLup = bTag.reweight( jet30, jet30flavor, nbjets30_[1], BTagWeight::CSVL, BTagWeight::UP);
-      bweight30CSVMup = bTag.reweight( jet30, jet30flavor, nbjets30_[2], BTagWeight::CSVM, BTagWeight::UP);
-      bweight30CSVTup = bTag.reweight( jet30, jet30flavor, nbjets30_[3], BTagWeight::CSVT, BTagWeight::UP);
+      bweight30CSVMup = bTag.reweight( jet30, jet30flavor, nbjets30_[2], BTagWeight::CSVM, BTagWeight::UP, true);
+      bweight30CSVTup = bTag.reweight( jet30, jet30flavor, nbjets30_[3], BTagWeight::CSVT, BTagWeight::UP, true);
 
       bweight30CSVLdw = bTag.reweight( jet30, jet30flavor, nbjets30_[1], BTagWeight::CSVL, BTagWeight::DW);
-      bweight30CSVMdw = bTag.reweight( jet30, jet30flavor, nbjets30_[2], BTagWeight::CSVM, BTagWeight::DW);
-      bweight30CSVTdw = bTag.reweight( jet30, jet30flavor, nbjets30_[3], BTagWeight::CSVT, BTagWeight::DW);
+      bweight30CSVMdw = bTag.reweight( jet30, jet30flavor, nbjets30_[2], BTagWeight::CSVM, BTagWeight::DW, true);
+      bweight30CSVTdw = bTag.reweight( jet30, jet30flavor, nbjets30_[3], BTagWeight::CSVT, BTagWeight::DW, true);
 
       bweight30CSVLuplight = bTag.reweight( jet30, jet30flavor, nbjets30_[1], BTagWeight::CSVL, BTagWeight::UPLight);
       bweight30CSVMuplight = bTag.reweight( jet30, jet30flavor, nbjets30_[2], BTagWeight::CSVM, BTagWeight::UPLight);
@@ -632,6 +643,9 @@ class TopDILAnalyzer : public edm::EDFilter {
       genttbarM = ttbarGenLevel.mass();
     }
 
+    nGenJet20 = ttbarGenLevel.NJets20();
+    nGenbJet20 = ttbarGenLevel.NbJets20();
+
     ttbarGen->push_back(ttbarGenLevel);
 
     //ESHandle<SetupData> pSetup;
@@ -756,6 +770,7 @@ class TopDILAnalyzer : public edm::EDFilter {
     met->clear();
     jetspt30->clear();
     jetspt30flavor->clear();
+    jetspt30fromtop->clear();
     jetspt30bDiscriminator->clear();
     jetspt30bDiscriminatorSSV->clear();
     //jetspt20->clear();
@@ -840,11 +855,32 @@ class TopDILAnalyzer : public edm::EDFilter {
     genttbarM = -999;
 
     nJet30 = 0;
+    nGenJet20 = 0;
+    nGenbJet20 = 0;
     //nJet20 = 0;
 
     nbjets30_CSVMT = 0;
 
   }
+
+  bool isFromtop( const reco::GenParticle& p){
+    bool out = false;
+
+    string pt = Form("%f", p.pt());
+    string pdgid = Form("%i",p.pdgId());
+    const reco::GenParticle* mother = dynamic_cast<const reco::GenParticle*>(p.mother());
+    while( mother != 0 ){
+      string id = Form("%i", mother->pdgId());
+      string mopt = Form("%f", mother->pt());
+      if( abs(mother->pdgId()) == 6 ) {
+        out = true;
+      }
+      mother = dynamic_cast<const reco::GenParticle*>(mother->mother());
+    }
+
+    return out;
+  }
+
 
   int findKinSolution( edm::Handle<TtFullLeptonicEvent>  fullLepEvt, const string hypo, std::vector<int> bidcs, std::vector<int>* extb ){
 
@@ -986,6 +1022,7 @@ class TopDILAnalyzer : public edm::EDFilter {
   std::vector<math::XYZTLorentzVector>* met;
   std::vector<math::XYZTLorentzVector>* jetspt30;
   std::vector<int>* jetspt30flavor;
+  std::vector<int>* jetspt30fromtop;
   std::vector<double>* jetspt30bDiscriminator;  
   std::vector<double>* jetspt30bDiscriminatorSSV;  
   //std::vector<math::XYZTLorentzVector>* jetspt20;
@@ -1028,6 +1065,8 @@ class TopDILAnalyzer : public edm::EDFilter {
   unsigned int nvertex;
   //unsigned int nJet20;
   unsigned int nJet30;
+  unsigned int nGenJet20;
+  unsigned int nGenbJet20;
   unsigned int nbjets30_CSVMT;
 
   double puweight;

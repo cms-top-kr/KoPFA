@@ -27,7 +27,7 @@ public:
   TTbar2bGenFilter(const edm::ParameterSet& pset);
   ~TTbar2bGenFilter() {};
 
-  void beginJob() {};
+  void beginJob();
   bool filter(edm::Event& event, const edm::EventSetup& eventSetup);
   void endJob() {};
   bool isLastQuark(const reco::GenParticle&, const int&);
@@ -37,6 +37,9 @@ public:
 
 private:
   bool applyFilter_;
+  edm::InputTag genJetsLabel_;
+
+  TTree* tree;
 
   TH1F* b_status3_daughterid;
 
@@ -99,14 +102,22 @@ private:
   TH1F* h_multiplicity_GenJets30DILVISTTCC;
 
   TH1F* h_nEvents;
+  TH1F* h_nEvents_parton;
+
+  TH1F* h_nEvents_inclusive;
+  TH1F* h_nEvents_parton_inclusive;
+
+  std::vector<Ko::TTbarCandidate>* ttbarGen;
 
 };
 
 TTbar2bGenFilter::TTbar2bGenFilter(const edm::ParameterSet& pset)
 {
   applyFilter_= pset.getUntrackedParameter<bool>("applyFilter",true);
+  genJetsLabel_= pset.getParameter<edm::InputTag>("genJetsLabel");
 
   edm::Service<TFileService> fs;
+  tree = fs->make<TTree>("tree", "Tree for Top quark study");
 
   b_from_top_pt  = fs->make<TH1F>( "b_from_top_pt"  , "p_{T}", 100,  0., 150. );
   b_from_top_multi  = fs->make<TH1F>( "b_from_top_multi"  , "Multiplicity", 10,  0, 10 );
@@ -167,6 +178,16 @@ TTbar2bGenFilter::TTbar2bGenFilter(const edm::ParameterSet& pset)
   h_multiplicity_GenJets30DILVISTTCC  = fs->make<TH1F>( "h_multiplicity_GenJets30DILVISTTCC"  , "Multiplicity", 12,  0, 12 );
 
   h_nEvents = fs->make<TH1F>( "h_nEvents"  , "h_nEvents", 6,  0, 6 );
+  h_nEvents_parton = fs->make<TH1F>( "h_nEvents_parton"  , "h_nEvents_parton", 6,  0, 6 );
+
+  h_nEvents_inclusive = fs->make<TH1F>( "h_nEvents_inclusive"  , "h_nEvents", 6,  0, 6 );
+  h_nEvents_parton_inclusive = fs->make<TH1F>( "h_nEvents_parton_inclusive"  , "h_nEvents_parton", 6,  0, 6 );
+
+  ttbarGen = new std::vector<Ko::TTbarCandidate>();
+}
+
+void TTbar2bGenFilter::beginJob(){
+  tree->Branch("ttbarGen","std::vector<Ko::TTbarCandidate>", &ttbarGen);
 }
 
 bool TTbar2bGenFilter::filter(edm::Event& iEvent, const edm::EventSetup& eventSetup)
@@ -177,6 +198,8 @@ bool TTbar2bGenFilter::filter(edm::Event& iEvent, const edm::EventSetup& eventSe
   if (!applyFilter_ || isRealData )
     return true;
 
+  ttbarGen->clear();
+
   bool accepted = false;
 
   using namespace std;
@@ -186,7 +209,7 @@ bool TTbar2bGenFilter::filter(edm::Event& iEvent, const edm::EventSetup& eventSe
   debug += "---------EVENT start---------\n" ;
 
   edm::Handle<reco::GenJetCollection> genJets_;
-  iEvent.getByLabel("ak5GenJets",genJets_);
+  iEvent.getByLabel( genJetsLabel_, genJets_);
 
   const reco::GenParticleCollection* myGenParticles = 0;
 
@@ -242,11 +265,18 @@ bool TTbar2bGenFilter::filter(edm::Event& iEvent, const edm::EventSetup& eventSe
 
     ttbarGenLevel.building(myGenJets, myGenParticles);
 
+    ttbarGen->push_back(ttbarGenLevel);
+
     bool dil = ttbarGenLevel.diLeptonic() == 1 ;
-    bool vis = ttbarGenLevel.lepton1().pt() > 20 && abs(ttbarGenLevel.lepton1().eta()) < 2.4 && ttbarGenLevel.lepton2().pt() > 20 && abs(ttbarGenLevel.lepton2().eta()) < 2.4 && ttbarGenLevel.NbJets15() >= 2;
-    bool njets4 = ttbarGenLevel.NJets15() >= 4;
-    bool ttbb = ttbarGenLevel.NbJets15() >= 4;
-    bool ttcc = ttbarGenLevel.NcJets15() >= 2;
+    bool vis = ttbarGenLevel.lepton1().pt() > 20 && abs(ttbarGenLevel.lepton1().eta()) < 2.4 && ttbarGenLevel.lepton2().pt() > 20 && abs(ttbarGenLevel.lepton2().eta()) < 2.4 && ttbarGenLevel.NbJets20() >= 2;
+    bool nbjets2 = ttbarGenLevel.NbJets20() >= 2;
+    bool njets4 = ttbarGenLevel.NJets20() >= 4;
+    bool ttbb = ttbarGenLevel.NbJets20() >= 4;
+    bool ttcc = ttbarGenLevel.NcJets20() >= 2;
+
+    bool nbpartons2 = ttbarGenLevel.NbQuarks20() >= 2;
+    bool vis_parton = ttbarGenLevel.lepton1().pt() > 20 && abs(ttbarGenLevel.lepton1().eta()) < 2.4 && ttbarGenLevel.lepton2().pt() > 20 && abs(ttbarGenLevel.lepton2().eta()) < 2.4 && ttbarGenLevel.NbQuarks20() >= 2;
+    bool ttbb_parton = ttbarGenLevel.NbQuarks20() >= 4;
 
     h_multiplicity_bQuarks->Fill( ttbarGenLevel.NbQuarks() ) ;
     h_multiplicity_bQuarks20->Fill( ttbarGenLevel.NbQuarks20() ) ;
@@ -264,6 +294,27 @@ bool TTbar2bGenFilter::filter(edm::Event& iEvent, const edm::EventSetup& eventSe
     if( dil && vis && njets4 && ttbb  ) h_nEvents->Fill(4);
     if( dil && vis && njets4 && !ttbb && ttcc  ) h_nEvents->Fill(5);
 
+    if( njets4 && nbjets2 ) h_nEvents_inclusive->Fill(0);
+    if( njets4 && nbjets2 && ttbb  ) h_nEvents_inclusive->Fill(1);
+    if( dil && nbjets2 && njets4  ) h_nEvents_inclusive->Fill(2);
+    if( dil && nbjets2 && njets4 && ttbb  ) h_nEvents_inclusive->Fill(3);
+    if( vis && njets4  ) h_nEvents_inclusive->Fill(4);
+    if( vis && njets4 && ttbb  ) h_nEvents_inclusive->Fill(5);
+
+    h_nEvents_parton->Fill(0);
+    if( dil ) h_nEvents_parton->Fill(1);
+    if( dil && vis_parton ) h_nEvents_parton->Fill(2);
+    if( dil && vis_parton && njets4  ) h_nEvents_parton->Fill(3);
+    if( dil && vis_parton && njets4 && ttbb_parton  ) h_nEvents_parton->Fill(4);
+    if( dil && vis_parton && njets4 && !ttbb_parton && ttcc  ) h_nEvents_parton->Fill(5);    
+
+    if( njets4 && nbpartons2 ) h_nEvents_parton_inclusive->Fill(0);
+    if( njets4 && nbpartons2 && ttbb_parton  ) h_nEvents_parton_inclusive->Fill(1);
+    if( dil && nbpartons2 && njets4  ) h_nEvents_parton_inclusive->Fill(2);
+    if( dil && nbpartons2 && njets4 && ttbb_parton  ) h_nEvents_parton_inclusive->Fill(3);
+    if( vis_parton && njets4  ) h_nEvents_parton_inclusive->Fill(4);
+    if( vis_parton && njets4 && ttbb_parton  ) h_nEvents_parton_inclusive->Fill(5);
+ 
     h_multiplicity_GenJets->Fill( ttbarGenLevel.NJets() );
     h_multiplicity_GenJets10->Fill( ttbarGenLevel.NJets10() );
     h_multiplicity_GenJets15->Fill( ttbarGenLevel.NJets15() );
@@ -319,6 +370,8 @@ bool TTbar2bGenFilter::filter(edm::Event& iEvent, const edm::EventSetup& eventSe
 
   b_from_top_multi->Fill(nb_from_top);
   b_from_nontop_multi->Fill(nb_from_nontop);
+
+  tree->Fill();
 
   return accepted;
 }

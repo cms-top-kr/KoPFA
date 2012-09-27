@@ -27,11 +27,108 @@ class BTagWeight
       UPLight
     };
 
-    double reweight(const std::vector<TLorentzVector *> &jets, const std::vector<int> &jetflavor, int ntag, AlgoType algo, SYS sys = NORM);
+    double reweight(const std::vector<TLorentzVector *> &jets, const std::vector<int> &jetflavor, int ntag, AlgoType algo, SYS sys = NORM, bool addberr = false);
 
     double probmc(const std::vector<TLorentzVector *> &jets, const std::vector<int> &jetflavor, int ntag, int fromi=0);
     double probdata(const std::vector<TLorentzVector *> &jets, const std::vector<int> &jetflavor, int ntag, int fromi=0);
-    
+   
+    //additional scale factor  
+    double addsfbErr(double pt, double eta){
+      float ptmin[] = {30, 40, 50, 60, 70, 80, 100, 120, 160, 210, 260, 320, 400, 500};
+      float ptmax[] = {40, 50, 60, 70, 80,100, 120, 160, 210, 260, 320, 400, 500, 670};
+
+      double err = 0;
+
+      if( addberr_ == false ) return 0;
+
+      if( algo_ == CSVL){
+        double SFb_error[] = {
+          0.0188743,
+          0.0161816,
+          0.0139824,
+          0.0152644,
+          0.0161226,
+          0.0157396,
+          0.0161619,
+          0.0168747,
+          0.0257175,
+          0.026424,
+          0.0264928,
+          0.0315127,
+          0.030734,
+          0.0438259
+        };
+        if( pt < 30 ) err = 0.12;
+        if( pt >= 30 && pt <= 670){
+          for(int i=0; i < 14; i++){
+            if( pt > ptmin[i] && pt <= ptmax[i] ) {
+              err = SFb_error[i];
+              break;
+            }
+          }
+        }
+        if( pt > 670 ) err = SFb_error[13]*2;
+      }else if( algo_ == CSVM){
+        double SFb_error[] = {
+          0.0406352,
+          0.0484605,
+          0.0611548,
+          0.0771357,
+          0.0952684,
+          0.114691,
+          0.144759,
+          0.183734,
+          0.232564,
+          0.265411,
+          0.226111,
+          0.113314,
+          0.144885,
+          0.144885
+        };
+        if( pt < 30 ) err = 0.12;
+        if( pt >= 30 && pt <= 670){
+          for(int i=0; i < 14; i++){
+            if( pt > ptmin[i] && pt <= ptmax[i] ) {
+              err = SFb_error[i];
+              break;
+            }
+          }
+        }
+        if( pt > 670 ) err = SFb_error[13]*2;
+      }else if( algo_ == CSVT){
+        double SFb_error[] = {
+	  0.0785076,
+	  0.0709218,
+	  0.0752186,
+	  0.0873988,
+	  0.105107,
+	  0.126819,
+	  0.164604,
+	  0.22064,
+	  0.306062,
+	  0.400132,
+	  0.384858,
+	  0.190207,
+	  0.0384921,
+	  0.0384921
+        };
+        if( pt < 30 ) err = 0.12;
+        if( pt >= 30 && pt <= 670){
+          for(int i=0; i < 14; i++){
+            if( pt > ptmin[i] && pt <= ptmax[i] ) {
+              err = SFb_error[i];
+              break;
+            }
+          }
+        }
+        if( pt > 670 ) err = SFb_error[13]*2;
+      }
+
+      if( sys_ == UP ) return err;
+      else if( sys_ == DW ) return -err;
+      else return 0;
+    }
+
 
     double sfbErr(double pt, double eta){
       float ptmin[] = {30, 40, 50, 60, 70, 80, 100, 120, 160, 210, 260, 320, 400, 500};
@@ -132,17 +229,17 @@ class BTagWeight
     {
       double sf = 1;
       if( algo_ == CSVL ) {
-        if( pt > 30 && pt < 670)  sf =  1.02658*((1.+(0.0195388*pt))/(1.+(0.0209145*pt))) + sfbErr(pt,eta);
-        else if( pt <= 30 )  sf =  1.02658*((1.+(0.0195388*30.0))/(1.+(0.0209145*30.0))) + sfbErr(pt,eta);
-        else  sf =  1.02658*((1.+(0.0195388*670.0))/(1.+(0.0209145*670.0))) + sfbErr(pt,eta);
+        if( pt > 30 && pt < 670)  sf =  1.02658*((1.+(0.0195388*pt))/(1.+(0.0209145*pt))) + sfbErr(pt,eta) + addsfbErr(pt,eta);
+        else if( pt <= 30 )  sf =  1.02658*((1.+(0.0195388*30.0))/(1.+(0.0209145*30.0))) + sfbErr(pt,eta) + addsfbErr(pt,eta);
+        else  sf =  1.02658*((1.+(0.0195388*670.0))/(1.+(0.0209145*670.0))) + sfbErr(pt,eta) + addsfbErr(pt,eta);
       } else if( algo_ == CSVM ){
-        if( pt > 30 && pt < 670)  sf =  0.6981*((1.+(0.414063*pt))/(1.+(0.300155*pt))) + sfbErr(pt,eta);
-        else if( pt <= 30 )  sf =  0.6981*((1.+(0.414063*30.0))/(1.+(0.300155*30.0))) + sfbErr(pt,eta);
-        else  sf =  0.6981*((1.+(0.414063*670.0))/(1.+(0.300155*670.0))) + sfbErr(pt,eta);
+        if( pt > 30 && pt < 670)  sf =  0.6981*((1.+(0.414063*pt))/(1.+(0.300155*pt))) + sfbErr(pt,eta) + addsfbErr(pt,eta);
+        else if( pt <= 30 )  sf =  0.6981*((1.+(0.414063*30.0))/(1.+(0.300155*30.0))) + sfbErr(pt,eta) + addsfbErr(pt,eta);
+        else  sf =  0.6981*((1.+(0.414063*670.0))/(1.+(0.300155*670.0))) + sfbErr(pt,eta) + addsfbErr(pt,eta);
       } else if( algo_ == CSVT ){
-        if( pt > 30 && pt < 670)  sf =  0.901615*((1.+(0.552628*pt))/(1.+(0.547195*pt))) + sfbErr(pt,eta);
-        else if( pt <= 30 )  sf =  0.901615*((1.+(0.552628*30.0))/(1.+(0.547195*30.0))) + sfbErr(pt,eta);
-        else  sf =  0.901615*((1.+(0.552628*670.0))/(1.+(0.547195*670.0))) + sfbErr(pt,eta);
+        if( pt > 30 && pt < 670)  sf =  0.901615*((1.+(0.552628*pt))/(1.+(0.547195*pt))) + sfbErr(pt,eta) + addsfbErr(pt,eta);
+        else if( pt <= 30 )  sf =  0.901615*((1.+(0.552628*30.0))/(1.+(0.547195*30.0))) + sfbErr(pt,eta) + addsfbErr(pt,eta);
+        else  sf =  0.901615*((1.+(0.552628*670.0))/(1.+(0.547195*670.0))) + sfbErr(pt,eta) + addsfbErr(pt,eta);
       } else  sf =  1.0; 
       return sf;
     }
@@ -342,7 +439,7 @@ class BTagWeight
 
       AlgoType algo_;
       SYS sys_;
-
+      bool addberr_;
 };
 
 #endif
