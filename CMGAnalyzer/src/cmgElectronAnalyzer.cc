@@ -203,38 +203,16 @@ void cmgElectronAnalyzer::produce(edm::Event& iEvent, const edm::EventSetup& es)
           AEff04Lep2 = ElectronEffectiveArea::GetElectronEffectiveArea(ElectronEffectiveArea::kEleGammaAndNeutralHadronIso04, Lep2.superCluster()->eta(), ElectronEffectiveArea::kEleEAFall11MC);
         }
 
-	reco::isodeposit::Direction Dir1 = Direction(Lep1.superCluster()->eta(),Lep1.superCluster()->phi());
-	reco::isodeposit::Direction Dir2 = Direction(Lep2.superCluster()->eta(),Lep2.superCluster()->phi());
-
-	reco::IsoDeposit::AbsVetos vetos_ch_Lep1;
-	reco::IsoDeposit::AbsVetos vetos_ph_Lep1;
-	reco::IsoDeposit::AbsVetos vetos_nh_Lep1;
-
-	reco::IsoDeposit::AbsVetos vetos_ch_Lep2;
-	reco::IsoDeposit::AbsVetos vetos_ph_Lep2;
-	reco::IsoDeposit::AbsVetos vetos_nh_Lep2;
-
-	//pf isolation setup
-	if( abs( Lep1.superCluster()->eta() ) > 1.479 ){
-	  vetos_ch_Lep1.push_back(new ConeVeto( Dir1, 0.015 ));
-	  vetos_ph_Lep1.push_back(new ConeVeto( Dir1, 0.08 ));
-	}
-
-	if( abs( Lep2.superCluster()->eta() ) > 1.479 ){
-	  vetos_ch_Lep2.push_back(new ConeVeto( Dir2, 0.015 ));
-	  vetos_ph_Lep2.push_back(new ConeVeto( Dir2, 0.08 ));
-	}
-
-	double chIso03Lep1 = Lep1.isoDeposit(pat::PfChargedHadronIso)->depositAndCountWithin(0.3, vetos_ch_Lep1).first;
-	double puChIso03Lep1 = Lep1.isoDeposit(pat::PfPUChargedHadronIso)->depositAndCountWithin(0.3, vetos_ch_Lep1).first;
-	double nhIso03Lep1 = Lep1.isoDeposit(pat::PfNeutralHadronIso)->depositAndCountWithin(0.3, vetos_nh_Lep1).first;
-	double phIso03Lep1 = Lep1.isoDeposit(pat::PfGammaIso)->depositAndCountWithin(0.3, vetos_ph_Lep1).first;
-   
-	double chIso03Lep2 = Lep2.isoDeposit(pat::PfChargedHadronIso)->depositAndCountWithin(0.3, vetos_ch_Lep2).first;
-        double puChIso03Lep2 = Lep2.isoDeposit(pat::PfPUChargedHadronIso)->depositAndCountWithin(0.3, vetos_ch_Lep2).first;
-	double nhIso03Lep2 = Lep2.isoDeposit(pat::PfNeutralHadronIso)->depositAndCountWithin(0.3, vetos_nh_Lep2).first;
-	double phIso03Lep2 = Lep2.isoDeposit(pat::PfGammaIso)->depositAndCountWithin(0.3, vetos_ph_Lep2).first;
-
+	double chIso03Lep1 = Lep1.chargedHadronIso(0.3);
+	double puChIso03Lep1 = Lep1.puChargedHadronIso(0.3);
+	double nhIso03Lep1 = Lep1.neutralHadronIso(0.3);
+	double phIso03Lep1 = Lep1.photonIso(0.3);
+  
+        double chIso03Lep2 = Lep2.chargedHadronIso(0.3);
+        double puChIso03Lep2 = Lep2.puChargedHadronIso(0.3);
+        double nhIso03Lep2 = Lep2.neutralHadronIso(0.3);
+        double phIso03Lep2 = Lep2.photonIso(0.3);
+ 
 	double chIso04Lep1 = Lep1.isoDeposit(pat::PfChargedHadronIso)->depositAndCountWithin(0.4, vetos_ch_Lep1).first;
         double puChIso04Lep1 = Lep1.isoDeposit(pat::PfPUChargedHadronIso)->depositAndCountWithin(0.4, vetos_ch_Lep1).first;
 	double nhIso04Lep1 = Lep1.isoDeposit(pat::PfNeutralHadronIso)->depositAndCountWithin(0.4, vetos_nh_Lep1).first;
