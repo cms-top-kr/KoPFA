@@ -7,7 +7,7 @@
 int initbtag  = 0;
 double fraction = 0.01;
 bool draw = true;
-const int nbins = 5;
+const int nbins = 4;
 bool combine = false;
 
 double nttbb[nbins*3];
@@ -104,7 +104,7 @@ double Fit(TH1* data, TH1* ttbb, TH1* ttcc, TH1* ttll, TH1* bakg, TH1* dbkg, con
     hdata->Add(hbakg,-1.0);
     hdata->Add(hdbkg,-1.0);
 
-    httbb->SetFillColor(kRed+2);
+    httbb->SetFillColor(kRed+3);
     //httcc->SetFillColor(kRed+1);
     httll->SetFillColor(kRed);
 
@@ -146,9 +146,9 @@ double Fit(TH1* data, TH1* ttbb, TH1* ttcc, TH1* ttll, TH1* bakg, TH1* dbkg, con
     line2->SetLineWidth(2);
     line2->Draw();
 
-    TLegend *l = new TLegend(0.75,0.74,0.92,0.88);
+    TLegend *l = new TLegend(0.73,0.74,0.90,0.88);
     l->AddEntry(hdata,"Data","PL");
-    l->AddEntry(httll,"t#bar{t} + ll/cc","F");
+    l->AddEntry(httll,"t#bar{t} + cc/LF","F");
     //l->AddEntry(httcc,"t#bar{t} + cc","F");
     l->AddEntry(httbb,"t#bar{t} + bb","F");
     l->SetTextSize(0.04);
@@ -158,6 +158,7 @@ double Fit(TH1* data, TH1* ttbb, TH1* ttcc, TH1* ttll, TH1* bakg, TH1* dbkg, con
 
     if(draw){
       c->Print(Form("%s/c_ttbb_fraction_%s_%s.eps",path.Data(),decayMode.Data(),balgo.Data()));
+      c->Print(Form("%s/c_ttbb_fraction_%s_%s.C",path.Data(),decayMode.Data(),balgo.Data()));
     }  
 
     return R;
@@ -192,17 +193,13 @@ TH1F* getHistBakg(TFile * f, const TString & name, const TString& balgo){
   TH1F * hout = new TH1F(Form("%s",name.Data()),Form("%s",name.Data()),nbins,-0.5,nbins - 0.5);
 
   TH1F * h1 = (TH1F*) f->Get("Step_5/hMC_TTbarOthers_Step_5_nbJet30_"+balgo);
-  TH1F * h2 = (TH1F*) f->Get("Step_5/hMC_TTbarNonvis_Step_5_nbJet30_"+balgo);
-  TH1F * h3 = (TH1F*) f->Get("Step_5/hMC_Wl_Step_5_nbJet30_"+balgo);
-  TH1F * h4 = (TH1F*) f->Get("Step_5/hMC_VV_Step_5_nbJet30_"+balgo);
-  TH1F * h5 = (TH1F*) f->Get("Step_5/hMC_SingleTop_Step_5_nbJet30_"+balgo);
-  TH1F * h6 = (TH1F*) f->Get("Step_5/hMC_DYtt_Step_5_nbJet30_"+balgo);
+  TH1F * h2 = (TH1F*) f->Get("Step_5/hMC_Wl_Step_5_nbJet30_"+balgo);
+  TH1F * h3 = (TH1F*) f->Get("Step_5/hMC_VV_Step_5_nbJet30_"+balgo);
+  TH1F * h4 = (TH1F*) f->Get("Step_5/hMC_SingleTop_Step_5_nbJet30_"+balgo);
 
   h1->Add(h2);
   h1->Add(h3);
   h1->Add(h4);
-  h1->Add(h5);
-  h1->Add(h6);
 
   for(int i=1 ; i <= nbins; i++){
     if( i < initbtag ){
@@ -226,17 +223,8 @@ TH1F* getHistDbkg(TFile * f, const TString & name, const TString& balgo){
 
   TH1F * h7 = (TH1F*) f->Get("Step_5/hMC_DYll_Step_5_nbJet30_"+balgo);
   TH1F * h8 = (TH1F*) f->Get("Step_5/hDataBkg_QCD_Step_5_nbJet30_"+balgo);
-  TH1F * h3 = (TH1F*) f->Get("Step_5/hMC_Wl_Step_5_nbJet30_"+balgo);
-  TH1F * h4 = (TH1F*) f->Get("Step_5/hMC_VV_Step_5_nbJet30_"+balgo);
-  TH1F * h5 = (TH1F*) f->Get("Step_5/hMC_SingleTop_Step_5_nbJet30_"+balgo);
-  TH1F * h6 = (TH1F*) f->Get("Step_5/hMC_DYtt_Step_5_nbJet30_"+balgo);
-
 
   h7->Add(h8);
-  //h7->Add(h3);
-  //h7->Add(h4);
-  //h7->Add(h5);
-  //h7->Add(h6);
 
   for(int i=1 ; i <= nbins; i++){
     if( i < initbtag ) {
@@ -352,13 +340,19 @@ double extractR(const TString & path, const TString & balgo){
 
 
 void extractR(){
-  double R = extractR("TTBB_12072018_CSVM_jet30GeV_Tau_2tag_SF","CSVM");
-  //double Rdwlight = extractR("TTBB_12072018_CSVMdwlight_jet30GeV_Tau_2tag_SF","CSVM");
-  //double Ruplight = extractR("TTBB_12072018_CSVMuplight_jet30GeV_Tau_2tag_SF","CSVM");
-  //extractR("TTBB_12072018_CSVTdw_jet30GeV_Tau_2tag_SF","CSVT");
-  //extractR("TTBB_12072018_CSVTup_jet30GeV_Tau_2tag_SF","CSVT"); 
+  double R = extractR("TTBB_01Sep2012_CSVT","CSVT");
+  //double R = extractR("TTBB_09Sep2012_CSVM_parton","CSVM");
+  //double Rdwlight = extractR("TTBB_01Sep2012_CSVMdwlight","CSVM");
+  //double Ruplight = extractR("TTBB_01Sep2012_CSVMuplight","CSVM");
+  //double Rdw = extractR("TTBB_01Sep2012_CSVMdw_addb","CSVM");
+  //double Rup = extractR("TTBB_01Sep2012_CSVMup_addb","CSVM");
   //double dwlight = (Rdwlight-R)/R;
   //double uplight = (Ruplight-R)/R;
+  //double dw = (Rdw-R)/R;
+  //double up = (Rup-R)/R;
   //cout << "dwlight = " << dwlight << endl;
   //cout << "uplight = " << uplight << endl;
+  //cout << "dw = " << dw << endl;
+  //cout << "up = " << up << endl;
+
 }
