@@ -13,7 +13,7 @@
 //
 // Original Author:  Tae Jeong Kim
 //         Created:  Mon Dec 14 01:29:35 CET 2009
-// $Id: CMGMuonFilter.cc,v 1.13 2012/07/03 14:53:27 tjkim Exp $
+// $Id: CMGMuonFilter.cc,v 1.1 2012/08/01 15:40:12 tjkim Exp $
 //
 //
 
@@ -149,7 +149,7 @@ CMGMuonFilter::filter(edm::Event& iEvent, const edm::EventSetup& iSetup)
 
     bool passIso =  relIso03 < relIso_;
 
-    bool passId = muon.isPFMuon() && muon.isGlobalMuon() && muon.isTrackerMuon();
+    bool passId = muon.sourcePtr()->get()->isPFMuon() && muon.sourcePtr()->get()->isGlobalMuon() && muon.sourcePtr()->get()->isTrackerMuon();
 
     bool passed = passPre && passIso && passId;
 
