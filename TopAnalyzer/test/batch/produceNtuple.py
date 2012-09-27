@@ -11,8 +11,7 @@ sample = sys.argv[1]
 decay = sys.argv[2]
 
 mclist = ["ZJets","ZtauDecay", "ZJets10To50", "ZtauDecay10To50", "WJetsToLNu", "WW", "WZ", "ZZ", "TTbarTuneZ2","TTbarOthers","SingleToptW"]
-#mclist += ["DYmm20to50", "DYmm10to20"]
-#mclist += ["DYee20to50", "DYee10to20"]
+mclist += ["TTbarMatchingUp","TTbarMatchingDw","TTbarScaleUp","TTbarScaleDw"]
 
 #qcdlist = ["QCDPt20to30PCtoE","QCDPt30to80BCtoE","QCDPt80to170BCtoE","QCDPt20to30EM","QCDPt30to80EM","QCDPt80to170EM"]
 qcdlist = ["QCD"]
@@ -23,16 +22,15 @@ def processSample(ch, sample, dir):
     os.system("rm -rf "+dir+"/"+sample)
     os.system("rfmkdir "+dir+"/"+sample)
     os.system("rfmkdir "+dir+"/"+sample+"/Res")
-    os.system("cmsBatch0.py 1 "+ch+"/top"+ch+"Analyzer_"+sample+"_cfg.py -o "+dir+"/"+sample+"/Log -r "+dir+"/"+sample+"/Res -b 'bsub -q 1nh < batchScript.sh'")
+    os.system("cmsBatch.py 1 "+ch+"/top"+ch+"Analyzer_"+sample+"_cfg.py -o "+dir+"/"+sample+"/Log -r "+dir+"/"+sample+"/Res -b 'bsub -G u_zh -q 1nh < batchScript.sh'")
+    #os.system("cmsBatch.py 1 "+ch+"/top"+ch+"Analyzer_"+sample+"_cfg.py -o "+dir+"/"+sample+"/Log -r "+dir+"/"+sample+"/Res -b 'bsub -q 1nh < batchScript.sh'")
 
 currdir = commands.getoutput('pwd') 
 print currdir
 
 outdir = currdir+"/Out/"+decay
-
 #if you want to save ntuple in castor
 #outdir = "/castor/cern.ch/user/t/tjkim/ntuple/top/Out/"+decay
-
 #to save log information in local
 os.system("rfmkdir Out")
 os.system("rfmkdir "+outdir)
