@@ -35,9 +35,9 @@ void preUnfolding(){
   decayMode.push_back("MuMu");
 
   //response matrix
-  mcPath.push_back("$WORK/data/export/common/Top/ntuple/MuEl/MC/Fall11_v4/vallot_TTbarTuneZ2.root");
-  mcPath.push_back("$WORK/data/export/common/Top/ntuple/ElEl/MC/Fall11_v4/vallot_TTbarTuneZ2.root");
-  mcPath.push_back("$WORK/data/export/common/Top/ntuple/MuMu/MC/Fall11_v4/vallot_TTbarTuneZ2.root");
+  mcPath.push_back("/afs/cern.ch/work/t/tjkim/public/store/top/MuEl/v0/vallot_TTbarTuneZ2.root");
+  mcPath.push_back("/afs/cern.ch/work/t/tjkim/public/store/top/ElEl/v0/vallot_TTbarTuneZ2.root");
+  mcPath.push_back("/afs/cern.ch/work/t/tjkim/public/store/top/MuMu/v0/vallot_TTbarTuneZ2.root");
 
   //measured mc distribution after final cut
   //mePath.push_back("$WORK/data/export/common/Top/ntuple/MuEl/MC/Summer11_new/vallot_TTbarPowheg.root");
@@ -56,9 +56,13 @@ void preUnfolding(){
   //rdPath.push_back("/data/export/common/Top/finalHisto/v6/MuEl.root");
   //rdPath.push_back("/data/export/common/Top/finalHisto/v6/ElEl.root");
   //rdPath.push_back("/data/export/common/Top/finalHisto/v6/MuMu.root");
-  rdPath.push_back("$WORK/data/export/common/Top/finalHisto/2011full/v3/MuEl.root");
-  rdPath.push_back("$WORK/data/export/common/Top/finalHisto/2011full/v3/ElEl.root");
-  rdPath.push_back("$WORK/data/export/common/Top/finalHisto/2011full/v3/MuMu.root");
+  //rdPath.push_back("$WORK/data/export/common/Top/finalHisto/2011full/v3/MuEl.root");
+  //rdPath.push_back("$WORK/data/export/common/Top/finalHisto/2011full/v3/ElEl.root");
+  //rdPath.push_back("$WORK/data/export/common/Top/finalHisto/2011full/v3/MuMu.root");
+
+  rdPath.push_back("TOP11013_12072012/MuEl/MuEl.root");
+  rdPath.push_back("TOP11013_12072012/ElEl/ElEl.root");
+  rdPath.push_back("TOP11013_12072012/MuMu/MuMu.root");
 
   //const std::string cutStep = "Step_7";
   const std::string cutStep = "Step_8";

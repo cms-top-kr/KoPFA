@@ -296,11 +296,11 @@ void DrawCMSLabels(bool cmsprelim=true, double luminosity=0.0, double textSize=0
 
   if (cmsprelim)
     {
-      label -> AddText(Form("CMS Preliminary, %3.1f fb^{-1} at #sqrt{s}=7 TeV",luminosity/1000));
+      label -> AddText(Form("CMS Preliminary, %3.1f fb^{-1} at #sqrt{s} = 7 TeV",luminosity/1000));
     }
   else
     {
-      label -> AddText(Form("%2.1f fb^{-1} at #sqrt{s}=7 TeV",luminosity));
+      label -> AddText(Form("CMS, %3.1f fb^{-1} at #sqrt{s} = 7 TeV",luminosity/1000));
     }
 
   label->SetFillStyle(0);
