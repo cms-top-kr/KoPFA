@@ -21,6 +21,16 @@
 #include "DataFormats/METReco/interface/PFMET.h"
 #include "DataFormats/PatCandidates/interface/Jet.h"
 
+#include "DataFormats/PatCandidates/interface/Muon.h"
+#include "DataFormats/PatCandidates/interface/Electron.h"
+#include "DataFormats/PatCandidates/interface/MET.h"
+
+#include "AnalysisDataFormats/CMGTools/interface/BaseMET.h"
+#include "AnalysisDataFormats/CMGTools/interface/BaseJet.h"
+#include "AnalysisDataFormats/CMGTools/interface/PFJet.h"
+#include "AnalysisDataFormats/CMGTools/interface/Electron.h"
+#include "AnalysisDataFormats/CMGTools/interface/Muon.h"
+
 #include "TFile.h"
 #include "TTree.h"
 #include "TH1.h"
@@ -39,7 +49,7 @@ class cmgElectronAnalyzer : public edm::EDProducer
 
  private:
 
-  bool trainTrigPresel(const reco::GsfElectron& ele);
+  bool trainTrigPresel(const cmg::Electron& ele);
   double transverseMass( const reco::Candidate::LorentzVector& lepton, const reco::Candidate::LorentzVector& met);
 
   edm::InputTag electronLabel_; 
@@ -52,11 +62,15 @@ class cmgElectronAnalyzer : public edm::EDProducer
   typedef pat::ElectronCollection::const_iterator MI;
   typedef pat::JetCollection::const_iterator JI;
 
-  edm::Handle<pat::ElectronCollection> electrons_;
+  //edm::Handle<pat::ElectronCollection> electrons_;
   edm::Handle<reco::BeamSpot> beamSpot_;
-  edm::Handle<pat::JetCollection> Jets;
+ // edm::Handle<pat::JetCollection> Jets;
   edm::Handle<reco::VertexCollection> recVtxs_;
-  edm::Handle<pat::METCollection> MET_;
+
+  edm::Handle<std::vector<cmg::Electron> > electrons_;
+  edm::Handle<std::vector<cmg::PFJet> > Jets;
+  edm::Handle<std::vector<cmg::BaseMET> > MET_;
+ // edm::Handle<pat::METCollection> MET_;
 
   TH1F * h_mvaTrigV0[2][3][2];
 

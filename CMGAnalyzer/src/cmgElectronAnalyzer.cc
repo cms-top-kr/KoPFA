@@ -101,7 +101,8 @@ void cmgElectronAnalyzer::produce(edm::Event& iEvent, const edm::EventSetup& es)
   iEvent.getByLabel(jetLabel_, Jets);
   iEvent.getByLabel(vertexLabel_,recVtxs_);
   iEvent.getByLabel(metLabel_,MET_);
-  cmg::METCollection::const_iterator mi = MET_->begin();
+  std::vector<cmg::BaseMET>::const_iterator mi = MET_->begin();
+  //cmg::METCollection::const_iterator mi = MET_->begin();
   const double MET = mi->pt();
 
   int nvertex = recVtxs_->size();
@@ -115,7 +116,7 @@ void cmgElectronAnalyzer::produce(edm::Event& iEvent, const edm::EventSetup& es)
 
     //bool passPre = electron.pt() > 20 && fabs(electron.eta()) < 2.5 && fabs(electron.gsfTrack()->dxy(beamSpot_->position())) < 0.04;
     bool passPre = electron.pt() > 20 && fabs(electron.eta()) < 2.5;
-    bool passTrig = trainTrigPresel(electron);
+    bool passTrig = trainTrigPresel(electron);//->get());
 
     if( !passPre ) continue;
     if( !passTrig ) continue;
@@ -125,10 +126,10 @@ void cmgElectronAnalyzer::produce(edm::Event& iEvent, const edm::EventSetup& es)
   }
 
  
-  std::auto_ptr<std::vector<cmg::Jet> > cleanedJets(new std::vector<cmg::Jet>());
+  std::auto_ptr<std::vector<cmg::PFJet> > cleanedJets(new std::vector<cmg::PFJet>());
 
   for (unsigned int j=0 ; j < Jets->size(); j++) {
-    cmg::Jet jet = Jets->at(j);
+    cmg::PFJet jet = Jets->at(j);
 
     if( !(jet.pt() > 30 && abs(jet.eta()) < 2.5) ) continue;
     bool overlap = false;
@@ -136,13 +137,13 @@ void cmgElectronAnalyzer::produce(edm::Event& iEvent, const edm::EventSetup& es)
     for (unsigned int i=0; i < pos->size(); ++i){
       cmg::Electron electron = pos->at(i);
 
-      reco::isodeposit::Direction Dir = Direction(electron.superCluster()->eta(), electron.superCluster()->phi());
+      reco::isodeposit::Direction Dir = Direction(electron.sourcePtr()->get()->superCluster()->eta(), electron.sourcePtr()->get()->superCluster()->phi());
 
       reco::IsoDeposit::AbsVetos vetos_ch;
       reco::IsoDeposit::AbsVetos vetos_ph;
       reco::IsoDeposit::AbsVetos vetos_nh;
 
-      if( abs( electron.superCluster()->eta() ) > 1.479 ){
+      if( abs( electron.sourcePtr()->get()->superCluster()->eta() ) > 1.479 ){
         vetos_ch.push_back(new ConeVeto( Dir, 0.015 ));
         vetos_ph.push_back(new ConeVeto( Dir, 0.08 ));
       }
@@ -153,7 +154,7 @@ void cmgElectronAnalyzer::produce(edm::Event& iEvent, const edm::EventSetup& es)
       double phIso03 = electron.photonIso(0.3);
 
       double relPfIso03 = ( chIso03 + nhIso03 + phIso03 )/ electron.pt();
-      double mvaTrigV0 = electron.electronID("mvaTrigV0");
+      double mvaTrigV0 = electron.sourcePtr()->get()->electronID("mvaTrigV0");
  
       bool pass = mvaTrigV0 > 0.0 && relPfIso03 < 0.2;
       if( !pass ) continue;
@@ -192,15 +193,15 @@ void cmgElectronAnalyzer::produce(edm::Event& iEvent, const edm::EventSetup& es)
         float AEff04Lep2 = 0.00;
 
         if(isRealData){
-          AEff03Lep1 = ElectronEffectiveArea::GetElectronEffectiveArea(ElectronEffectiveArea::kEleGammaAndNeutralHadronIso03, Lep1.superCluster()->eta(), ElectronEffectiveArea::kEleEAData2011);
-          AEff03Lep2 = ElectronEffectiveArea::GetElectronEffectiveArea(ElectronEffectiveArea::kEleGammaAndNeutralHadronIso03, Lep2.superCluster()->eta(), ElectronEffectiveArea::kEleEAData2011);
-          AEff04Lep1 = ElectronEffectiveArea::GetElectronEffectiveArea(ElectronEffectiveArea::kEleGammaAndNeutralHadronIso04, Lep1.superCluster()->eta(), ElectronEffectiveArea::kEleEAData2012);
-          AEff04Lep2 = ElectronEffectiveArea::GetElectronEffectiveArea(ElectronEffectiveArea::kEleGammaAndNeutralHadronIso04, Lep2.superCluster()->eta(), ElectronEffectiveArea::kEleEAData2011);
+          AEff03Lep1 = ElectronEffectiveArea::GetElectronEffectiveArea(ElectronEffectiveArea::kEleGammaAndNeutralHadronIso03, Lep1.sourcePtr()->get()->superCluster()->eta(), ElectronEffectiveArea::kEleEAData2011);
+          AEff03Lep2 = ElectronEffectiveArea::GetElectronEffectiveArea(ElectronEffectiveArea::kEleGammaAndNeutralHadronIso03, Lep2.sourcePtr()->get()->superCluster()->eta(), ElectronEffectiveArea::kEleEAData2011);
+          AEff04Lep1 = ElectronEffectiveArea::GetElectronEffectiveArea(ElectronEffectiveArea::kEleGammaAndNeutralHadronIso04, Lep1.sourcePtr()->get()->superCluster()->eta(), ElectronEffectiveArea::kEleEAData2012);
+          AEff04Lep2 = ElectronEffectiveArea::GetElectronEffectiveArea(ElectronEffectiveArea::kEleGammaAndNeutralHadronIso04, Lep2.sourcePtr()->get()->superCluster()->eta(), ElectronEffectiveArea::kEleEAData2011);
         }else{
-          AEff03Lep1 = ElectronEffectiveArea::GetElectronEffectiveArea(ElectronEffectiveArea::kEleGammaAndNeutralHadronIso03, Lep1.superCluster()->eta(), ElectronEffectiveArea::kEleEAFall11MC);
-          AEff03Lep2 = ElectronEffectiveArea::GetElectronEffectiveArea(ElectronEffectiveArea::kEleGammaAndNeutralHadronIso03, Lep2.superCluster()->eta(), ElectronEffectiveArea::kEleEAFall11MC);
-          AEff04Lep1 = ElectronEffectiveArea::GetElectronEffectiveArea(ElectronEffectiveArea::kEleGammaAndNeutralHadronIso04, Lep1.superCluster()->eta(), ElectronEffectiveArea::kEleEAFall11MC);
-          AEff04Lep2 = ElectronEffectiveArea::GetElectronEffectiveArea(ElectronEffectiveArea::kEleGammaAndNeutralHadronIso04, Lep2.superCluster()->eta(), ElectronEffectiveArea::kEleEAFall11MC);
+          AEff03Lep1 = ElectronEffectiveArea::GetElectronEffectiveArea(ElectronEffectiveArea::kEleGammaAndNeutralHadronIso03, Lep1.sourcePtr()->get()->superCluster()->eta(), ElectronEffectiveArea::kEleEAFall11MC);
+          AEff03Lep2 = ElectronEffectiveArea::GetElectronEffectiveArea(ElectronEffectiveArea::kEleGammaAndNeutralHadronIso03, Lep2.sourcePtr()->get()->superCluster()->eta(), ElectronEffectiveArea::kEleEAFall11MC);
+          AEff04Lep1 = ElectronEffectiveArea::GetElectronEffectiveArea(ElectronEffectiveArea::kEleGammaAndNeutralHadronIso04, Lep1.sourcePtr()->get()->superCluster()->eta(), ElectronEffectiveArea::kEleEAFall11MC);
+          AEff04Lep2 = ElectronEffectiveArea::GetElectronEffectiveArea(ElectronEffectiveArea::kEleGammaAndNeutralHadronIso04, Lep2.sourcePtr()->get()->superCluster()->eta(), ElectronEffectiveArea::kEleEAFall11MC);
         }
 
 	double chIso03Lep1 = Lep1.chargedHadronIso(0.3);
@@ -223,7 +224,7 @@ void cmgElectronAnalyzer::produce(edm::Event& iEvent, const edm::EventSetup& es)
         double nhIso04Lep2 = Lep2.neutralHadronIso(0.4);
         double phIso04Lep2 = Lep2.photonIso(0.4);
 
-	double mvaTrigV0Lep1 = Lep1.electronID("mvaTrigV0");
+	double mvaTrigV0Lep1 = Lep1.sourcePtr()->get()->electronID("mvaTrigV0");
 	double relPfIso03Lep1 = ( chIso03Lep1 + nhIso03Lep1 + phIso03Lep1 )/ Lep1.pt(); 
 	double relPfIso04Lep1 = ( chIso04Lep1 + nhIso04Lep1 + phIso04Lep1 )/ Lep1.pt();
         double relPfIso03dbLep1 = ( chIso03Lep1 + max(0.0, nhIso03Lep1 + phIso03Lep1 - 0.5*puChIso03Lep1) )/ Lep1.pt();
@@ -232,7 +233,7 @@ void cmgElectronAnalyzer::produce(edm::Event& iEvent, const edm::EventSetup& es)
         double relPfIso04rhoLep1 = ( chIso04Lep1 + max(0.0, nhIso04Lep1 + phIso04Lep1 - rhoIso*AEff04Lep1) )/ Lep1.pt();
 
 
-	double mvaTrigV0Lep2 = Lep2.electronID("mvaTrigV0");
+	double mvaTrigV0Lep2 = Lep2.sourcePtr()->get()->electronID("mvaTrigV0");
 	double relPfIso03Lep2 = ( chIso03Lep2 + nhIso03Lep2 + phIso03Lep2 )/ Lep2.pt();
 	double relPfIso04Lep2 = ( chIso04Lep2 + nhIso04Lep2 + phIso04Lep2 )/ Lep2.pt();
         double relPfIso03dbLep2 = ( chIso03Lep2 + max(0.0, nhIso03Lep2 + phIso03Lep2 - 0.5*puChIso03Lep2) )/ Lep2.pt();
@@ -245,7 +246,7 @@ void cmgElectronAnalyzer::produce(edm::Event& iEvent, const edm::EventSetup& es)
         double dRLep2 = 999;
 
         for (unsigned jid = 0; jid < cleanedJets->size(); jid++){
-          pat::Jet jet = cleanedJets->at(jid);
+          cmg::PFJet jet = cleanedJets->at(jid);
           double tmpLep1= sqrt( (Lep1.eta()-jet.eta())*(Lep1.eta()-jet.eta()) + (Lep1.phi()-jet.phi())*(Lep1.phi()-jet.phi()) );
           double tmpLep2= sqrt( (Lep2.eta()-jet.eta())*(Lep2.eta()-jet.eta()) + (Lep2.phi()-jet.phi())*(Lep2.phi()-jet.phi()) );
           if( tmpLep1 < dRLep1 ) dRLep1 = tmpLep1;
@@ -262,7 +263,7 @@ void cmgElectronAnalyzer::produce(edm::Event& iEvent, const edm::EventSetup& es)
         bool passIso = relPfIso03Lep1 < 0.15 && relPfIso03Lep2 < 0.15 ;
 
         int isEB;
-        if( Lep1.superCluster()->eta() < 1.479 && Lep2.superCluster()->eta() < 1.479){
+        if( Lep1.sourcePtr()->get()->superCluster()->eta() < 1.479 && Lep2.sourcePtr()->get()->superCluster()->eta() < 1.479){
           isEB = 1;
         }else{
           isEB = 0;
@@ -364,25 +365,25 @@ void
 cmgElectronAnalyzer::endJob() {
 }
 
-bool cmgElectronAnalyzer::trainTrigPresel(const reco::GsfElectron& ele) {
+bool cmgElectronAnalyzer::trainTrigPresel(const cmg::Electron& ele) {
   
   bool myTrigPresel = false;
-  if(fabs(ele.superCluster()->eta()) < 1.479) {
-    if(ele.sigmaIetaIeta() < 0.014 &&
-       ele.hadronicOverEm() < 0.15 &&
-       ele.dr03TkSumPt()/ele.pt() < 0.2 &&
-       ele.dr03EcalRecHitSumEt()/ele.pt() < 0.2 &&
-       ele.dr03HcalTowerSumEt()/ele.pt() < 0.2 &&
-       ele.gsfTrack()->trackerExpectedHitsInner().numberOfLostHits() == 0)
+  if(fabs(ele.sourcePtr()->get()->superCluster()->eta()) < 1.479) {
+    if(ele.sourcePtr()->get()->sigmaIetaIeta() < 0.014 &&
+       ele.sourcePtr()->get()->hadronicOverEm() < 0.15 &&
+       ele.sourcePtr()->get()->dr03TkSumPt()/ele.sourcePtr()->get()->pt() < 0.2 &&
+       ele.sourcePtr()->get()->dr03EcalRecHitSumEt()/ele.sourcePtr()->get()->pt() < 0.2 &&
+       ele.sourcePtr()->get()->dr03HcalTowerSumEt()/ele.sourcePtr()->get()->pt() < 0.2 &&
+       ele.sourcePtr()->get()->gsfTrack()->trackerExpectedHitsInner().numberOfLostHits() == 0)
       myTrigPresel = true;
   }
   else {
-    if(ele.sigmaIetaIeta() < 0.035 &&
-       ele.hadronicOverEm() < 0.10 &&
-       ele.dr03TkSumPt()/ele.pt() < 0.2 &&
-       ele.dr03EcalRecHitSumEt()/ele.pt() < 0.2 &&
-       ele.dr03HcalTowerSumEt()/ele.pt() < 0.2 &&
-       ele.gsfTrack()->trackerExpectedHitsInner().numberOfLostHits() == 0)
+    if(ele.sourcePtr()->get()->sigmaIetaIeta() < 0.035 &&
+       ele.sourcePtr()->get()->hadronicOverEm() < 0.10 &&
+       ele.sourcePtr()->get()->dr03TkSumPt()/ele.sourcePtr()->get()->pt() < 0.2 &&
+       ele.sourcePtr()->get()->dr03EcalRecHitSumEt()/ele.sourcePtr()->get()->pt() < 0.2 &&
+       ele.sourcePtr()->get()->dr03HcalTowerSumEt()/ele.sourcePtr()->get()->pt() < 0.2 &&
+       ele.sourcePtr()->get()->gsfTrack()->trackerExpectedHitsInner().numberOfLostHits() == 0)
       myTrigPresel = true;
   }
   
