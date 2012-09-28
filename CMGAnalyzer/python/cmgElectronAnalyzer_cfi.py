@@ -6,7 +6,8 @@ ElectronAnalysis = cms.EDProducer("cmgElectronAnalyzer",
   metLabel = cms.InputTag('cmgPFMET'),
   jetLabel = cms.InputTag('cmgPFJetSelCHS'),
   vertexLabel = cms.untracked.InputTag('offlinePrimaryVertices'),
-  rhoIsoLabel =  cms.untracked.InputTag('kt6PFJets','rho')
+  rhoIsoLabel =  cms.untracked.InputTag('kt6PFJets','rho'),
+  useZMassWindow = cms.untracked.bool(True)
 )
 
 #ElectronAnalysis = cms.EDAnalyzer("pfElectronAnalyzer",

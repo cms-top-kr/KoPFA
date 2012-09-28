@@ -22,6 +22,7 @@ cmgElectronAnalyzer::cmgElectronAnalyzer(const edm::ParameterSet& cfg)
   jetLabel_ = cfg.getParameter<edm::InputTag>("jetLabel");
   vertexLabel_ =  cfg.getUntrackedParameter<edm::InputTag>("vertexLabel");
   rhoIsoLabel_ =  cfg.getUntrackedParameter<edm::InputTag>("rhoIsoLabel");
+  useZMassWindow_ =  cfg.getUntrackedParameter<bool>("useZMassWindow");
 
   produces<std::vector<cmg::Electron> >("");
 
@@ -77,7 +78,25 @@ cmgElectronAnalyzer::cmgElectronAnalyzer(const edm::ParameterSet& cfg)
       }
     }
   }
-
+//////////////////////////
+  for(int d=0 ; d < 2 ; d++){
+    for(int i=0 ; i < 2 ; i++){
+      TString dirName = "";
+        if(d == 0){
+            if(i==1) dirName = "GoodIDed/Barrel";
+            if(i==0) dirName = "GoodIDed/Endcap";
+        }else if(d==1){
+            if(i==1) dirName = "PFIDed/Barrel";
+            if(i==0) dirName = "PFIDed/Endcap";
+        }
+        TFileDirectory dir2 = fs->mkdir(Form("%s",dirName.Data()));
+        h_pt[d][i] = dir2.make<TH1F>( "h_pt", "h_pt", 200, 0, 200);
+        h_eta[d][i] = dir2.make<TH1F>( "h_eta", "h_eta", 50, -2.5, 2.5);
+        h_pv[d][i] = dir2.make<TH1F>( "h_pv", "h_pv", 200, 0, 80);
+        h_njet[d][i] = dir2.make<TH1F>( "h_njet", "h_njet", 20, 0, 20);
+    }
+  }  
+////////////////////////
 }
 
 cmgElectronAnalyzer::~cmgElectronAnalyzer()
@@ -137,6 +156,7 @@ void cmgElectronAnalyzer::produce(edm::Event& iEvent, const edm::EventSetup& es)
     for (unsigned int i=0; i < pos->size(); ++i){
       cmg::Electron electron = pos->at(i);
 
+      /*
       reco::isodeposit::Direction Dir = Direction(electron.sourcePtr()->get()->superCluster()->eta(), electron.sourcePtr()->get()->superCluster()->phi());
 
       reco::IsoDeposit::AbsVetos vetos_ch;
@@ -146,7 +166,7 @@ void cmgElectronAnalyzer::produce(edm::Event& iEvent, const edm::EventSetup& es)
       if( abs( electron.sourcePtr()->get()->superCluster()->eta() ) > 1.479 ){
         vetos_ch.push_back(new ConeVeto( Dir, 0.015 ));
         vetos_ph.push_back(new ConeVeto( Dir, 0.08 ));
-      }
+      }*/
 
       double chIso03 = electron.chargedHadronIso(0.3);
       double puChIso03 = electron.puChargedHadronIso(0.3);
@@ -256,19 +276,48 @@ void cmgElectronAnalyzer::produce(edm::Event& iEvent, const edm::EventSetup& es)
 
         //bool QCD1 = relPfIso03Lep2 > 0.2 && MET < 30 && nJets >= 1 && abs( dimass-91 ) > 15 ;
         //bool QCD2 = relPfIso03Lep1 > 0.2 && MET < 30 && nJets >= 1 && abs( dimass-91 ) > 15 ;
-        bool QCD1 = relPfIso03Lep2 > 0.3 && Lep1.charge()*Lep2.charge() > 0 && MET < 30 && nJets >= 1 && mtW < 20;
-        bool QCD2 = relPfIso03Lep1 > 0.3 && Lep1.charge()*Lep2.charge() > 0 && MET < 30 && nJets >= 1 && mtW < 20;
+        bool QCD1 = relPfIso03Lep2 > 0.3 && Lep1.charge()*Lep2.charge() > 0 ;//&& MET < 30 && nJets >= 1 && mtW < 20;
+        bool QCD2 = relPfIso03Lep1 > 0.3 && Lep1.charge()*Lep2.charge() > 0 ;//&& MET < 30 && nJets >= 1 && mtW < 20;
+        //bool QCD1 = relPfIso03Lep2 > 0.3 && Lep1.charge()*Lep2.charge() > 0 && MET < 30 && nJets >= 1 ;//&& fabs( dimass-91.2 ) > 15.;// mtW < 20;
+        //bool QCD2 = relPfIso03Lep1 > 0.3 && Lep1.charge()*Lep2.charge() > 0 && MET < 30 && nJets >= 1 ;//&& fabs( dimass-91.2 ) > 15.;// mtW < 20;
 
         bool passID = mvaTrigV0Lep1 > 0.0 && mvaTrigV0Lep2 > 0.0;
         bool passIso = relPfIso03Lep1 < 0.15 && relPfIso03Lep2 < 0.15 ;
+        bool passDimass = fabs( dimass-91.2 ) < 15.;
 
         int isEB;
-        if( Lep1.sourcePtr()->get()->superCluster()->eta() < 1.479 && Lep2.sourcePtr()->get()->superCluster()->eta() < 1.479){
+        if( fabs(Lep1.sourcePtr()->get()->superCluster()->eta()) < 1.479 && fabs(Lep2.sourcePtr()->get()->superCluster()->eta()) < 1.479){
           isEB = 1;
         }else{
           isEB = 0;
         }
+//////////////////////
+       for(int d = 0 ; d < 2 ; d++){
 
+            bool passGoodIDBarrel = Lep1.sourcePtr()->get()->electronID("mvaTrigV0") > 0.0; // 
+            bool passGoodIDEndCaps = Lep1.sourcePtr()->get()->electronID("mvaTrigV0") > 0.0; // 
+            bool passPFID = Lep1.sourcePtr()->get()->isPF();
+            bool PASSID = false;
+            bool isEB1 = fabs(Lep1.sourcePtr()->get()->superCluster()->eta()) < 1.4790;
+            
+            // d=0: goodid , d=1: pfid 
+            if(d==0 && isEB1==1 ) PASSID = passGoodIDBarrel;
+            if(d==0 && isEB1==0 ) PASSID = passGoodIDEndCaps; 
+
+            if(d==1 && isEB1==1 ) PASSID = passGoodIDBarrel && passPFID;
+            if(d==1 && isEB1==0 ) PASSID = passGoodIDEndCaps && passPFID; 
+
+
+            if(PASSID)
+            {
+               h_pt[d][isEB1]->Fill(Lep1.pt());
+               h_eta[d][isEB1]->Fill(Lep1.eta());
+               h_pv[d][isEB1]->Fill(nvertex);
+               h_njet[d][isEB1]->Fill(nJets);
+            }
+
+        }
+////////////////////////
         for(int k = 0 ; k < 3 ; k++){
 
           bool pass = true;
@@ -281,9 +330,12 @@ void cmgElectronAnalyzer::produce(edm::Event& iEvent, const edm::EventSetup& es)
             bool fillLep1 = false;  
             bool fillLep2 = false;  
 
-            //Is this event QCD when d=0?
-            if( d == 0){  //for Signal
-              if( k == 0){
+            //Is this event QCD when d=1?
+            if( d == 0 ){  //for Signal
+
+               if(useZMassWindow_ && !passDimass ) continue;
+
+               if( k == 0){
                 fillLep1 = relPfIso03Lep1 < 0.15;
                 fillLep2 = relPfIso03Lep2 < 0.15;
               }else{

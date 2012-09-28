@@ -58,9 +58,10 @@ class cmgElectronAnalyzer : public edm::EDProducer
   edm::InputTag jetLabel_;
   edm::InputTag vertexLabel_;
   edm::InputTag rhoIsoLabel_;
+  bool  useZMassWindow_;
 
-  typedef pat::ElectronCollection::const_iterator MI;
-  typedef pat::JetCollection::const_iterator JI;
+  //typedef pat::ElectronCollection::const_iterator MI;
+  //typedef pat::JetCollection::const_iterator JI;
 
   //edm::Handle<pat::ElectronCollection> electrons_;
   edm::Handle<reco::BeamSpot> beamSpot_;
@@ -95,6 +96,10 @@ class cmgElectronAnalyzer : public edm::EDProducer
   TH2F * h2_pfRelIso03rho[2][3][2];
   TH2F * h2_pfRelIso04rho[2][3][2];
 
+  TH1F * h_pt[2][2];
+  TH1F * h_eta[2][2]; 
+  TH1F * h_pv[2][2];
+  TH1F * h_njet[2][2];
 
   //add run event data
   unsigned int EVENT;
