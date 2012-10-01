@@ -3,14 +3,15 @@
 // Created: June 5 2012
 #include "KoPFA/CMGAnalyzer/interface/CMGBTagWeight.h"
 
-double BTagWeight::reweight(const std::vector<TLorentzVector *> &jets, const std::vector<int> &jetflavor, int ntag, AlgoType algo, SYS sys)
+double BTagWeight::reweight(const std::vector<TLorentzVector *> &jets, const std::vector<int> &jetflavor, int ntag, AlgoType algo, SYS sys, bool addberr)
 {
     algo_ = algo;
     sys_ = sys;
+    addberr_ = addberr;
 
     double pmc = probmc(jets, jetflavor, ntag);
     double pdata = probdata(jets, jetflavor, ntag);
-   
+
     return pdata/pmc;
 }
 
