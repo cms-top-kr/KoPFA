@@ -283,7 +283,7 @@ void cmgElectronAnalyzer::produce(edm::Event& iEvent, const edm::EventSetup& es)
 
         bool passID = mvaTrigV0Lep1 > 0.0 && mvaTrigV0Lep2 > 0.0;
         bool passIso = relPfIso03Lep1 < 0.15 && relPfIso03Lep2 < 0.15 ;
-        bool passDimass = fabs( dimass-91.2 ) < 15.;
+        bool passDimass = fabs( dimass-91.2 ) > 15.;
 
         int isEB;
         if( fabs(Lep1.sourcePtr()->get()->superCluster()->eta()) < 1.479 && fabs(Lep2.sourcePtr()->get()->superCluster()->eta()) < 1.479){
