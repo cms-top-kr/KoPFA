@@ -13,7 +13,7 @@
 //
 // Original Author:  Tae Jeong Kim,40 R-A32,+41227678602,
 //         Created:  Fri Jun  4 17:19:29 CEST 2010
-// $Id: CMGTopDILAnalyzer.h,v 1.1 2012/08/01 15:40:20 tjkim Exp $
+// $Id: CMGTopDILAnalyzer.h,v 1.2 2012/10/03 10:27:07 tjkim Exp $
 //
 //
 
@@ -524,8 +524,8 @@ class CMGTopDILAnalyzer : public edm::EDFilter {
       myGenParticles = &(*genParticles_);
       const std::vector<cmg::GenJet>* myGenJets = 0;
       myGenJets = &(*genJets_);
-      //ttbarGenLevel.building(myGenJets, myGenParticles);
-      //genttbarM = ttbarGenLevel.mass();
+      ttbarGenLevel.building(myGenJets, myGenParticles);
+      genttbarM = ttbarGenLevel.mass();
     }
 
     ttbarGen->push_back(ttbarGenLevel);
