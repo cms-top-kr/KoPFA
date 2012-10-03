@@ -31,6 +31,8 @@
 #include "AnalysisDataFormats/CMGTools/interface/Electron.h"
 #include "AnalysisDataFormats/CMGTools/interface/Muon.h"
 
+#include "EGamma/EGammaAnalysisTools/interface/EGammaCutBasedEleId.h"
+
 #include "TFile.h"
 #include "TTree.h"
 #include "TH1.h"
@@ -51,6 +53,8 @@ class cmgElectronAnalyzer : public edm::EDProducer
 
   bool trainTrigPresel(const cmg::Electron& ele);
   double transverseMass( const reco::Candidate::LorentzVector& lepton, const reco::Candidate::LorentzVector& met);
+  bool PassWP(EgammaCutBasedEleId::WorkingPoint workingPoint, const cmg::Electron &ele,   const double &iso_ch,
+                                         const double &iso_em,       const double &iso_nh,    const double &rho);
 
   edm::InputTag electronLabel_; 
   edm::InputTag beamSpotLabel_;
@@ -73,28 +77,29 @@ class cmgElectronAnalyzer : public edm::EDProducer
   edm::Handle<std::vector<cmg::BaseMET> > MET_;
  // edm::Handle<pat::METCollection> MET_;
 
-  TH1F * h_mvaTrigV0[2][3][2];
 
-  TH1F * h_pfRelIso03[2][3][2];
-  TH1F * h_pfRelIso04[2][3][2];
-  TH1F * h_pfRelIso03db[2][3][2];
-  TH1F * h_pfRelIso04db[2][3][2];
-  TH1F * h_pfRelIso03rho[2][3][2];
-  TH1F * h_pfRelIso04rho[2][3][2];
+  TH1F * h_mvaTrigV0[2][8][2];
 
-  TH1F * h_mtW[2][3][2];
-  TH1F * h_dimass[2][3][2];
-  TH1F * h_nJet[2][3][2];
-  TH1F * h_met[2][3][2];
-  TH1F * h_dR[2][3][2];
+  TH1F * h_pfRelIso03[2][8][2];
+  TH1F * h_pfRelIso04[2][8][2];
+  TH1F * h_pfRelIso03db[2][8][2];
+  TH1F * h_pfRelIso04db[2][8][2];
+  TH1F * h_pfRelIso03rho[2][8][2];
+  TH1F * h_pfRelIso04rho[2][8][2];
 
-  TH2F * h2_mvaTrigV0[2][3][2];
-  TH2F * h2_pfRelIso03[2][3][2];
-  TH2F * h2_pfRelIso04[2][3][2];
-  TH2F * h2_pfRelIso03db[2][3][2];
-  TH2F * h2_pfRelIso04db[2][3][2];
-  TH2F * h2_pfRelIso03rho[2][3][2];
-  TH2F * h2_pfRelIso04rho[2][3][2];
+  TH1F * h_mtW[2][8][2];
+  TH1F * h_dimass[2][8][2];
+  TH1F * h_nJet[2][8][2];
+  TH1F * h_met[2][8][2];
+  TH1F * h_dR[2][8][2];
+
+  TH2F * h2_mvaTrigV0[2][8][2];
+  TH2F * h2_pfRelIso03[2][8][2];
+  TH2F * h2_pfRelIso04[2][8][2];
+  TH2F * h2_pfRelIso03db[2][8][2];
+  TH2F * h2_pfRelIso04db[2][8][2];
+  TH2F * h2_pfRelIso03rho[2][8][2];
+  TH2F * h2_pfRelIso04rho[2][8][2];
 
   TH1F * h_pt[2][2];
   TH1F * h_eta[2][2]; 
@@ -105,6 +110,21 @@ class cmgElectronAnalyzer : public edm::EDProducer
   unsigned int EVENT;
   unsigned int RUN;
   unsigned int LUMI;
+
+/////
+   enum CutType {
+      DETAIN          = (1<<0),
+      DPHIIN          = (1<<1),
+      SIGMAIETAIETA   = (1<<2),
+      HOE             = (1<<3),
+      OOEMOOP         = (1<<4),
+      D0VTX           = (1<<5),
+      DZVTX           = (1<<6),
+      ISO             = (1<<7),
+      VTXFIT          = (1<<8),
+      MHITS           = (1<<9)
+   };
+   static const unsigned int PassAll         = DETAIN | DPHIIN | SIGMAIETAIETA | HOE | OOEMOOP | D0VTX | DZVTX | ISO | VTXFIT | MHITS;
 
 };
 
