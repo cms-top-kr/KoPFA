@@ -55,11 +55,14 @@ class cmgElectronAnalyzer : public edm::EDProducer
   double transverseMass( const reco::Candidate::LorentzVector& lepton, const reco::Candidate::LorentzVector& met);
   bool PassWP(EgammaCutBasedEleId::WorkingPoint workingPoint, const cmg::Electron &ele,   const double &iso_ch,
                                          const double &iso_em,       const double &iso_nh,    const double &rho);
+  bool isFromW( const reco::Candidate::LorentzVector& lepton, const edm::Handle<reco::GenParticleCollection> & genParticles );
+  bool MatchObjects( const reco::Candidate::LorentzVector& pasObj, const reco::Candidate::LorentzVector& proObj, bool exact ); 
 
   edm::InputTag electronLabel_; 
   edm::InputTag beamSpotLabel_;
   edm::InputTag metLabel_;
   edm::InputTag jetLabel_;
+  edm::InputTag genParticlesLabel_;
   edm::InputTag vertexLabel_;
   edm::InputTag rhoIsoLabel_;
   bool  useZMassWindow_;

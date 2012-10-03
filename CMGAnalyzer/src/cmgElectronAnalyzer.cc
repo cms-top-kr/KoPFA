@@ -20,6 +20,7 @@ cmgElectronAnalyzer::cmgElectronAnalyzer(const edm::ParameterSet& cfg)
   beamSpotLabel_ = cfg.getParameter<edm::InputTag>("beamSpotLabel");
   metLabel_ = cfg.getParameter<edm::InputTag>("metLabel");
   jetLabel_ = cfg.getParameter<edm::InputTag>("jetLabel");
+  genParticlesLabel_= cfg.getParameter<edm::InputTag>("genParticlesLabel");
   vertexLabel_ =  cfg.getUntrackedParameter<edm::InputTag>("vertexLabel");
   rhoIsoLabel_ =  cfg.getUntrackedParameter<edm::InputTag>("rhoIsoLabel");
   useZMassWindow_ =  cfg.getUntrackedParameter<bool>("useZMassWindow");
@@ -135,6 +136,9 @@ void cmgElectronAnalyzer::produce(edm::Event& iEvent, const edm::EventSetup& es)
   EVENT  = iEvent.id().event();
   RUN    = iEvent.id().run();
   LUMI   = iEvent.id().luminosityBlock();
+
+  edm::Handle<reco::GenParticleCollection> genParticles_;
+  iEvent.getByLabel(genParticlesLabel_,genParticles_);
 
   iEvent.getByLabel(electronLabel_, electrons_);
   iEvent.getByLabel(beamSpotLabel_,beamSpot_); 
@@ -353,6 +357,9 @@ void cmgElectronAnalyzer::produce(edm::Event& iEvent, const edm::EventSetup& es)
 ////////////////////////
         for(int k = 0 ; k < 7 ; k++){
 
+          bool isMatchedLep1 = isFromW(Lep1.p4(), genParticles_);
+          bool isMatchedLep2 = isFromW(Lep2.p4(), genParticles_);
+
           bool fillLep1 = false;  
           bool fillLep2 = false;
 
@@ -376,8 +383,12 @@ void cmgElectronAnalyzer::produce(edm::Event& iEvent, const edm::EventSetup& es)
             //Is this event QCD when d=1?
             if( d == 0 ){  //for Signal
 
-               if(useZMassWindow_ && !passDimass ) continue;
-
+               if(useZMassWindow_){
+                 if( !passDimass ) continue; 
+               }else{
+                 fillLep1 = fillLep1 && isMatchedLep1;
+                 fillLep2 = fillLep2 && isMatchedLep2;
+               }
               /* if( k == 0){
                 fillLep1 = relPfIso03Lep1 < 0.15;
                 fillLep2 = relPfIso03Lep2 < 0.15;
@@ -387,8 +398,8 @@ void cmgElectronAnalyzer::produce(edm::Event& iEvent, const edm::EventSetup& es)
               }*/
             }
             if( d == 1){ //for QCD 
-              fillLep1 = QCD1;
-              fillLep2 = QCD2;
+              fillLep1 = fillLep1 && QCD1;
+              fillLep2 = fillLep2 && QCD2;
             }
 
 
@@ -537,6 +548,52 @@ bool cmgElectronAnalyzer::PassWP(EgammaCutBasedEleId::WorkingPoint workingPoint,
     if ((mask & PassAll) == PassAll) return true;
     return false;
 }
+
+bool cmgElectronAnalyzer::isFromW( const reco::Candidate::LorentzVector& lepton, const edm::Handle<reco::GenParticleCollection> & genParticles_ ){
+
+  bool out = false;
+
+  for (reco::GenParticleCollection::const_iterator mcIter=genParticles_->begin(); mcIter != genParticles_->end(); mcIter++ ) {
+    int genId = mcIter->pdgId();
+
+    if( abs(genId) != 11 ) continue;
+
+    bool match = MatchObjects(lepton, mcIter->p4(), false);
+
+    if( match != true) continue;
+   
+    const reco::Candidate* mother = mcIter->mother();
+    while( mother != 0 ){
+      if( abs(mother->pdgId()) == 24 ) { 
+        out = true;
+      }
+      mother = mother->mother();
+    }
+  }
+
+  return out;
+}
+
+bool cmgElectronAnalyzer::MatchObjects( const reco::Candidate::LorentzVector& pasObj,
+      const reco::Candidate::LorentzVector& proObj,
+      bool exact ) {
+    double proEta = proObj.eta();
+    double proPhi = proObj.phi();
+    double proPt  = proObj.pt();
+    double pasEta = pasObj.eta();
+    double pasPhi = pasObj.phi();
+    double pasPt  = pasObj.pt();
+
+    double dRval = deltaR(proEta, proPhi, pasEta, pasPhi);
+    double dPtRel = 999.0;
+    if( proPt > 0.0 ) dPtRel = fabs( pasPt - proPt )/proPt;
+    // If we are comparing two objects for which the candidates should
+    // be exactly the same, cut hard. Otherwise take cuts from user.
+    if( exact ) return ( dRval < 1e-3 && dPtRel < 1e-3 );
+    else        return ( dRval < 0.025 && dPtRel < 0.025 );
+}
+
+
 
 ////////////////
 #include "FWCore/Framework/interface/MakerMacros.h"
