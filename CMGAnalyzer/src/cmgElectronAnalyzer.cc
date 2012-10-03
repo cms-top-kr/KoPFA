@@ -357,8 +357,13 @@ void cmgElectronAnalyzer::produce(edm::Event& iEvent, const edm::EventSetup& es)
 ////////////////////////
         for(int k = 0 ; k < 7 ; k++){
 
-          bool isMatchedLep1 = isFromW(Lep1.p4(), genParticles_);
-          bool isMatchedLep2 = isFromW(Lep2.p4(), genParticles_);
+          bool isMatchedLep1 = true;
+          bool isMatchedLep2 = true;
+
+          if( !isRealData ){
+            isMatchedLep1 = isFromW(Lep1.p4(), genParticles_);
+            isMatchedLep2 = isFromW(Lep2.p4(), genParticles_);
+          }
 
           bool fillLep1 = false;  
           bool fillLep2 = false;
