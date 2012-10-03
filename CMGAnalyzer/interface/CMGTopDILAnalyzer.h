@@ -13,7 +13,7 @@
 //
 // Original Author:  Tae Jeong Kim,40 R-A32,+41227678602,
 //         Created:  Fri Jun  4 17:19:29 CEST 2010
-// $Id: CMGTopDILAnalyzer.h,v 1.2 2012/10/03 10:27:07 tjkim Exp $
+// $Id: CMGTopDILAnalyzer.h,v 1.3 2012/10/03 10:27:50 tjkim Exp $
 //
 //
 
@@ -149,6 +149,7 @@ class CMGTopDILAnalyzer : public edm::EDFilter {
     met = new std::vector<math::XYZTLorentzVector>();
     jetspt30 = new std::vector<math::XYZTLorentzVector>();
     jetspt30flavor = new std::vector<int>();
+    jetspt30fromtop = new std::vector<int>(); 
     jetspt30bDiscriminator = new std::vector<double>();
 
     nCutStep_ = 7;
@@ -236,6 +237,7 @@ class CMGTopDILAnalyzer : public edm::EDFilter {
 
     tree->Branch("jetspt30","std::vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >", &jetspt30);
     tree->Branch("jetspt30flavor","std::vector<int>", &jetspt30flavor);
+    tree->Branch("jetspt30fromtop","std::vector<int>", &jetspt30fromtop);
     tree->Branch("jetspt30bDiscriminator","std::vector<double>", &jetspt30bDiscriminator);
 	
     for ( int i=0, n=bTagAlgos_.size(); i<n; ++i )
@@ -369,15 +371,25 @@ class CMGTopDILAnalyzer : public edm::EDFilter {
     std::vector<int> bidcs;
     int idx=0;
 
+    bool isPAT = false;
+
     for (JI jit = Jets->begin(); jit != Jets->end(); ++jit) {
       ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > corrjet;
       corrjet.SetPxPyPzE(jit->px(),jit->py(),jit->pz(),jit->energy());
       int flavor = jit->partonFlavour();
+      int isfromtop = 0;
+      if ( jit->sourcePtr()->isAvailable() ) {
+        if( isPAT == false) isPAT = true;
+        const reco::GenParticle & genparton = *jit->sourcePtr()->get()->genParton();
+        bool istop = isFromtop( genparton );
+        if(istop) isfromtop = 1;
+      }
       double bDiscriminator = jit->bDiscriminator("combinedSecondaryVertexBJetTags");
 
       if(jit->pt() > 30){
         jetspt30->push_back(corrjet);
         jetspt30flavor->push_back(flavor);
+        jetspt30fromtop->push_back(isfromtop);
         jetspt30bDiscriminator->push_back(bDiscriminator);
        
         for ( int bTagIndex=0, nBTagAlgo=bTagAlgos_.size(); bTagIndex<nBTagAlgo; ++bTagIndex )
@@ -484,7 +496,7 @@ class CMGTopDILAnalyzer : public edm::EDFilter {
 
     double genZmass = -999;
  
-    if(genParticles_.isValid() && zSample_){
+    if(genParticles_.isValid()){
       //now this loop is for Z mass only
       for (reco::GenParticleCollection::const_iterator mcIter=genParticles_->begin(); mcIter != genParticles_->end(); mcIter++ ) {
 	int genId = mcIter->pdgId();
@@ -519,13 +531,15 @@ class CMGTopDILAnalyzer : public edm::EDFilter {
       genZMass = genZmass;
     }
 
-    if( genParticles_.isValid() && genJets_.isValid() && topSample_){
+    if( genParticles_.isValid() && genJets_.isValid() ){ // && topSample_){
       const reco::GenParticleCollection* myGenParticles = 0;
       myGenParticles = &(*genParticles_);
       const std::vector<cmg::GenJet>* myGenJets = 0;
       myGenJets = &(*genJets_);
-      ttbarGenLevel.building(myGenJets, myGenParticles);
-      genttbarM = ttbarGenLevel.mass();
+      if( isPAT ) {
+        ttbarGenLevel.building(myGenJets, myGenParticles);
+        genttbarM = ttbarGenLevel.mass();
+      }
     }
 
     ttbarGen->push_back(ttbarGenLevel);
@@ -656,6 +670,7 @@ class CMGTopDILAnalyzer : public edm::EDFilter {
     met->clear();
     jetspt30->clear();
     jetspt30flavor->clear();
+    jetspt30fromtop->clear();
     jetspt30bDiscriminator->clear();
 
     for ( int bTagIndex=0, nBTag=nbjets30_.size(); bTagIndex<nBTag; ++bTagIndex )
@@ -805,6 +820,7 @@ class CMGTopDILAnalyzer : public edm::EDFilter {
   std::vector<math::XYZTLorentzVector>* met;
   std::vector<math::XYZTLorentzVector>* jetspt30;
   std::vector<int>* jetspt30flavor;
+  std::vector<int>* jetspt30fromtop;
   std::vector<double>* jetspt30bDiscriminator;  
 
   double MET;
@@ -870,6 +886,25 @@ class CMGTopDILAnalyzer : public edm::EDFilter {
 
   int nCutStep_;
   std::vector<Histograms> h_;
+
+  bool isFromtop( const reco::GenParticle& p){
+    bool out = false;
+
+    string pt = Form("%f", p.pt());
+    string pdgid = Form("%i",p.pdgId());
+    const reco::GenParticle* mother = dynamic_cast<const reco::GenParticle*>(p.mother());
+    while( mother != 0 ){
+      string id = Form("%i", mother->pdgId());
+      string mopt = Form("%f", mother->pt());
+      if( abs(mother->pdgId()) == 6 ) {
+        out = true;
+      }
+      mother = dynamic_cast<const reco::GenParticle*>(mother->mother());
+    }
+
+    return out;
+  }
+
 
 };
 
