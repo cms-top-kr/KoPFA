@@ -13,7 +13,7 @@
 //
 // Original Author:  Tae Jeong Kim
 //         Created:  Mon Dec 14 01:29:35 CET 2009
-// $Id: CMGJetFilter.cc,v 1.13 2012/07/03 14:53:27 tjkim Exp $
+// $Id: CMGJetFilter.cc,v 1.1 2012/08/01 15:40:12 tjkim Exp $
 //
 //
 
@@ -123,7 +123,7 @@ CMGJetFilter::CMGJetFilter(const edm::ParameterSet& ps)
   ptcut_ = ps.getUntrackedParameter<double>("ptcut",30.0);
   absetacut_ = ps.getUntrackedParameter<double>("absetacut",2.5);
   pfJetIdParams_ = ps.getParameter<edm::ParameterSet> ("looseJetId");
-  doJecFly_ = ps.getUntrackedParameter<bool>("doJecFly", true);
+  doJecFly_ = ps.getUntrackedParameter<bool>("doJecFly", false);
   doResJec_ = ps.getUntrackedParameter<bool>("doResJec", false);
   doJecUnc_ = ps.getUntrackedParameter<bool>("doJecUnc", false);
   up_ = ps.getUntrackedParameter<bool>("up", true); // uncertainty up
@@ -187,22 +187,25 @@ CMGJetFilter::filter(edm::Event& iEvent, const edm::EventSetup& iSetup)
   edm::Handle<reco::VertexCollection> recVtxs_;
   iEvent.getByLabel(vertexLabel_,recVtxs_);
 
-  const int nv = recVtxs_->size();
+  //const int nv = recVtxs_->size();
 
   PFJetIDSelectionFunctor looseJetIdSelector_(pfJetIdParams_);
 
   for (JI it = Jets->begin(); it != Jets->end(); ++it) {
     cmg::PFJet correctedJet = *it;
 
-    if(abs(it->eta()) >= 2.4) continue;
+    if(fabs(it->eta()) >= absetacut_) continue;
 
     //pat::strbitset looseJetIdSel = looseJetIdSelector_.getBitTemplate();
     //bool passId = looseJetIdSelector_( *it, looseJetIdSel);
-    bool passId = checkPFJetId( &correctedJet);
+
+    // it is identical : checkPFJetId and using the cut string
+    bool passId  = checkPFJetId( &correctedJet);
+    //bool passId = it->getSelection("cuts_looseJetId");
 
     if(!passId) continue;
 
-    double scaleF = 1.0;
+    //double scaleF = 1.0;
     //if(doJecFly_){
     //  correctedJet.scaleEnergy( it->jecFactor(0) ); //set it to uncorrected jet energy
       //debug
