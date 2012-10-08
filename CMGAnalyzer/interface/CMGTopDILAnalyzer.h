@@ -13,7 +13,7 @@
 //
 // Original Author:  Tae Jeong Kim,40 R-A32,+41227678602,
 //         Created:  Fri Jun  4 17:19:29 CEST 2010
-// $Id: CMGTopDILAnalyzer.h,v 1.3 2012/10/03 10:27:50 tjkim Exp $
+// $Id: CMGTopDILAnalyzer.h,v 1.4 2012/10/03 12:11:37 tjkim Exp $
 //
 //
 
@@ -59,6 +59,7 @@
 #include "DataFormats/RecoCandidate/interface/IsoDeposit.h"
 #include "DataFormats/RecoCandidate/interface/IsoDepositVetos.h"
 #include "DataFormats/PatCandidates/interface/Isolation.h"
+#include "DataFormats/JetReco/interface/GenJet.h"
 #include "SimDataFormats/PileupSummaryInfo/interface/PileupSummaryInfo.h"
 #include "PhysicsTools/Utilities/interface/LumiReWeighting.h"
 
@@ -184,35 +185,20 @@ class CMGTopDILAnalyzer : public edm::EDFilter {
     tree->Branch("puweightminus",&puweightminus, "puweightminus/d");
 
     tree->Branch("bweight30CSVL",&bweight30CSVL, "bweight30CSVL/d");
-
     tree->Branch("bweight30CSVM",&bweight30CSVM, "bweight30CSVM/d");
-
     tree->Branch("bweight30CSVT",&bweight30CSVT, "bweight30CSVT/d");
-
     tree->Branch("bweight30CSVLup",&bweight30CSVLup, "bweight30CSVLup/d");
-
     tree->Branch("bweight30CSVMup",&bweight30CSVMup, "bweight30CSVMup/d");
-
     tree->Branch("bweight30CSVTup",&bweight30CSVTup, "bweight30CSVTup/d");
-
     tree->Branch("bweight30CSVLdw",&bweight30CSVLdw, "bweight30CSVLdw/d");
-
     tree->Branch("bweight30CSVMdw",&bweight30CSVMdw, "bweight30CSVMdw/d");
-
     tree->Branch("bweight30CSVTdw",&bweight30CSVTdw, "bweight30CSVTdw/d");
-
     tree->Branch("bweight30CSVLuplight",&bweight30CSVLuplight, "bweight30CSVLuplight/d");
-
     tree->Branch("bweight30CSVMuplight",&bweight30CSVMuplight, "bweight30CSVMuplight/d");
-
     tree->Branch("bweight30CSVTuplight",&bweight30CSVTuplight, "bweight30CSVTuplight/d");
-
     tree->Branch("bweight30CSVLdwlight",&bweight30CSVLdwlight, "bweight30CSVLdwlight/d");
-
     tree->Branch("bweight30CSVMdwlight",&bweight30CSVMdwlight, "bweight30CSVMdwlight/d");
-
     tree->Branch("bweight30CSVTdwlight",&bweight30CSVTdwlight, "bweight30CSVTdwlight/d");
-
 
     tree->Branch("ZMass",&ZMass,"ZMass/d");
     tree->Branch("genZMass",&genZMass,"ZMass/d");
@@ -235,6 +221,10 @@ class CMGTopDILAnalyzer : public edm::EDFilter {
     tree->Branch("ttbarGen","std::vector<Ko::CMGTTbarCandidate>", &ttbarGen);
     tree->Branch("kinttbarM",&kinttbarM,"kinttbarM/d");
 
+    tree->Branch("nJet30",&nJet30,"nJet30/i");
+    tree->Branch("nGenJet20",&nGenJet20,"nGenJet20/i");
+    tree->Branch("nGenbJet20",&nGenbJet20,"nGenbJet20/i");
+
     tree->Branch("jetspt30","std::vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >", &jetspt30);
     tree->Branch("jetspt30flavor","std::vector<int>", &jetspt30flavor);
     tree->Branch("jetspt30fromtop","std::vector<int>", &jetspt30fromtop);
@@ -247,10 +237,6 @@ class CMGTopDILAnalyzer : public edm::EDFilter {
     }
 
     tree->Branch("MET",&MET,"MET/d");
-    tree->Branch("dphimetlepton1",&dphimetlepton1,"dphimetlepton1/d");
-    tree->Branch("dphimetlepton2",&dphimetlepton2,"dphimetlepton2/d");
-    tree->Branch("dphimetjet1",&dphimetjet1,"dphimetjet1/d");
-    tree->Branch("dphimetjet2",&dphimetjet2,"dphimetjet2/d");
 
     tree->Branch("genttbarM",&genttbarM,"genttbarM/d");
 
@@ -377,12 +363,22 @@ class CMGTopDILAnalyzer : public edm::EDFilter {
       ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > corrjet;
       corrjet.SetPxPyPzE(jit->px(),jit->py(),jit->pz(),jit->energy());
       int flavor = jit->partonFlavour();
-      int isfromtop = 0;
+      int isfromtop = -9;
       if ( jit->sourcePtr()->isAvailable() ) {
         if( isPAT == false) isPAT = true;
-        const reco::GenParticle & genparton = *jit->sourcePtr()->get()->genParton();
-        bool istop = isFromtop( genparton );
-        if(istop) isfromtop = 1;
+        bool validgen = jit->sourcePtr()->get()->genParton() != 0;
+        if(validgen){
+          if( abs( flavor) == 5 ) {  
+            const reco::GenParticle & genparton = *jit->sourcePtr()->get()->genParton();
+            bool topdecay = isFromtop( genparton );
+            if( topdecay ) isfromtop = 1;
+            else isfromtop = 0;
+          }else{
+           isfromtop = -1;
+          }
+        }else{
+          if( abs( flavor) == 5 ) isfromtop = -8;
+        }
       }
       double bDiscriminator = jit->bDiscriminator("combinedSecondaryVertexBJetTags");
 
@@ -405,7 +401,7 @@ class CMGTopDILAnalyzer : public edm::EDFilter {
 
     BTagWeight bTag;
 
-    unsigned int nJet30 = jetspt30->size();
+    nJet30 = jetspt30->size();
     std::vector<TLorentzVector *> jet30(nJet30);
     std::vector<int> jet30flavor(nJet30);
 
@@ -436,11 +432,6 @@ class CMGTopDILAnalyzer : public edm::EDFilter {
       bweight30CSVMdwlight = bTag.reweight( jet30, jet30flavor, nbjets30_[2], BTagWeight::CSVM, BTagWeight::DWLight);
       bweight30CSVTdwlight = bTag.reweight( jet30, jet30flavor, nbjets30_[3], BTagWeight::CSVT, BTagWeight::DWLight);
 
-    }
-
-    if( jetspt30->size() >= 2 ){
-      dphimetjet1 = fabs(deltaPhi(mi->phi(),jetspt30->at(0).phi()));
-      dphimetjet2 = fabs(deltaPhi(mi->phi(),jetspt30->at(1).phi()));
     }
 
     ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > corrmet;
@@ -539,10 +530,11 @@ class CMGTopDILAnalyzer : public edm::EDFilter {
       if( isPAT ) {
         ttbarGenLevel.building(myGenJets, myGenParticles);
         genttbarM = ttbarGenLevel.mass();
+        nGenJet20 = ttbarGenLevel.NJets20();
+        nGenbJet20 = ttbarGenLevel.NbJets20();
+        ttbarGen->push_back(ttbarGenLevel);
       }
     }
-
-    ttbarGen->push_back(ttbarGenLevel);
 
     //ESHandle<SetupData> pSetup;
     //iSetup.get<SetupRecord>().get(pSetup);
@@ -640,10 +632,6 @@ class CMGTopDILAnalyzer : public edm::EDFilter {
         }
 
         h_[cutStep].hZMass->Fill(ZMass);
-        h_[cutStep].hDphiMETLepton1->Fill(dphimetlepton1);
-        h_[cutStep].hDphiMETLepton2->Fill(dphimetlepton2);
-        h_[cutStep].hDphiMETJet1->Fill(dphimetjet1);
-        h_[cutStep].hDphiMETJet2->Fill(dphimetjet2);
 
         if ( !ttbar->empty() )
         {
@@ -702,11 +690,6 @@ class CMGTopDILAnalyzer : public edm::EDFilter {
     bweight30CSVMdwlight = 1.0;
     bweight30CSVTdwlight = 1.0;
 
-    dphimetlepton1 = -999;  
-    dphimetlepton2 = -999;  
-    dphimetjet1 = -999;
-    dphimetjet2 = -999;
-
     ZMass = -999; 
     genZMass = -999; 
     ZtauDecay = 0; 
@@ -723,6 +706,10 @@ class CMGTopDILAnalyzer : public edm::EDFilter {
 
     kinttbarM = -999;
     genttbarM = -999;
+
+    nJet30 = 0;
+    nGenJet20 = 0;
+    nGenbJet20 = 0;
 
   }
 
@@ -824,10 +811,6 @@ class CMGTopDILAnalyzer : public edm::EDFilter {
   std::vector<double>* jetspt30bDiscriminator;  
 
   double MET;
-  double dphimetlepton1;
-  double dphimetlepton2;
-  double dphimetjet1;
-  double dphimetjet2;
   double ZMass;
   double genZMass;
   int ZtauDecay;
@@ -845,6 +828,9 @@ class CMGTopDILAnalyzer : public edm::EDFilter {
   double kinttbarM;
   double genttbarM;
 
+  unsigned int nJet30;
+  unsigned int nGenJet20;
+  unsigned int nGenbJet20;
 
   // ----------member data ---------------------------
 
@@ -889,10 +875,10 @@ class CMGTopDILAnalyzer : public edm::EDFilter {
 
   bool isFromtop( const reco::GenParticle& p){
     bool out = false;
-
     string pt = Form("%f", p.pt());
     string pdgid = Form("%i",p.pdgId());
     const reco::GenParticle* mother = dynamic_cast<const reco::GenParticle*>(p.mother());
+
     while( mother != 0 ){
       string id = Form("%i", mother->pdgId());
       string mopt = Form("%f", mother->pt());
@@ -901,7 +887,6 @@ class CMGTopDILAnalyzer : public edm::EDFilter {
       }
       mother = dynamic_cast<const reco::GenParticle*>(mother->mother());
     }
-
     return out;
   }
 
