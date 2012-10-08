@@ -4,7 +4,7 @@ process = cms.Process("Ntuple")
 
 process.options   = cms.untracked.PSet( wantSummary = cms.untracked.bool(True) )
 
-process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(1000) )
+process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
 
 process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring()
@@ -19,21 +19,18 @@ process.load("KoPFA.CMGAnalyzer.ZFilter_cfi")
 from KoPFA.CommonTools.PileUpWeight_cff import *
 
 runOnMC = True
-TTbar = True
-TTbarOthers = False
-ZJets = False
-ZtauDecay = False
 runOn2012 = True
 
 #Data
-#process.load("KoPFA.CommonTools.Sources.CMG.V5_4_0.RD.Run2012.patTuple_Run2012ADoubleMu_cff")
+#process.load("KoPFA.CommonTools.Sources.CMG.V5_7_0.Run2012.patTuple_Run2012ADoubleMu_cff")
 #MC
-process.load("KoPFA.CommonTools.Sources.CMG.V5_4_0.MC.Summer12.patTuple_TTbarTuneZ2_cff")
-#process.load("KoPFA.CommonTools.Sources.CMG.V5_4_0.MC.Summer12.cmgTuple_TTbarTuneZ2_cff")
-#process.load("KoPFA.CommonTools.Sources.CMG.V5_4_0.MC.Summer12.cmgTuple_ZJets_cff")
+process.load("KoPFA.CommonTools.Sources.CMG.V5_7_0.Summer12.patTuple_TTbarTuneZ2_cff")
+#process.load("KoPFA.CommonTools.Sources.CMG.V5_7_0.Summer12.cmgTuple_TTH_HToBB_M125_cff")
+#process.load("KoPFA.CommonTools.Sources.CMG.V5_7_0.Summer12.cmgTuple_TTbarTuneZ2_cff")
+#process.load("KoPFA.CommonTools.Sources.CMG.V5_7_0.Summer12.cmgTuple_ZJets_cff")
 
 from CMGTools.Common.Tools.applyJSON_cff import applyJSON
-json = '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions12/8TeV/Prompt/Cert_190456-194479_8TeV_PromptReco_Collisions12_JSON.txt'
+json = '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions12/8TeV/Prompt/Cert_190456-203002_8TeV_PromptReco_Collisions12_JSON_v2.txt'
 if not runOnMC:
     applyJSON(process, json )
 
@@ -46,15 +43,12 @@ if runOn2012 == True:
 
 process.nEventsFilter = cms.EDProducer("EventCountProducer")
 
-process.JetEnergyScale.globalTag = cms.untracked.string('GR_R_52_V9')
-process.JetEnergyScale.doResJec = cms.untracked.bool(True)
-
 process.BaseSequence = cms.Sequence(
     process.nEventsPatHLT*
     process.EventFilter*
     process.nEventsFilter*
  #   process.topDecayGenFilter*
-    process.GenZmassFilter*
+ #   process.GenZmassFilter*
     process.PUweight*
     process.JetEnergyScale*
     process.Electrons*
@@ -66,20 +60,6 @@ process.BaseSequence = cms.Sequence(
 process.topDecayGenFilter.genParticlesLabel = cms.InputTag("genParticlesPruned")
 process.GenZmassFilter.genParticlesLabel = cms.InputTag("genParticlesPruned")
 ###################################################################
-
-##### This is only for MC ##################
-if runOnMC == True:
-  process.JetEnergyScale.globalTag = cms.untracked.string('START52_V11')
-  process.JetEnergyScale.doResJec = cms.untracked.bool(False)
-
-  if ZJets == True:
-    process.GenZmassFilter.applyFilter = True
-    process.GenZmassFilter.decayMode = [11, 13]
-  if ZtauDecay == True:
-    process.GenZmassFilter.applyFilter = True
-    process.GenZmassFilter.decayMode = [15]
-
-#############################################
 
 from PhysicsTools.PatAlgos.tools.helpers import cloneProcessingSnippet
 process.BaseSequenceMuMu = cloneProcessingSnippet(process, process.BaseSequence, 'MuMu')
