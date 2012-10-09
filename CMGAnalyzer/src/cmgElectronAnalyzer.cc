@@ -151,7 +151,8 @@ void cmgElectronAnalyzer::produce(edm::Event& iEvent, const edm::EventSetup& es)
 
   int nvertex = recVtxs_->size();
   
-  std::auto_ptr<std::vector<cmg::Electron> > pos(new std::vector<cmg::Electron>());
+  std::auto_ptr<std::vector<cmg::Electron> > triggeredElectrons(new std::vector<cmg::Electron>());
+  std::auto_ptr<std::vector<cmg::Electron> > selectedElectrons(new std::vector<cmg::Electron>());
 
   //preselection
   for (unsigned int i=0; i < electrons_->size(); ++i){
@@ -165,7 +166,12 @@ void cmgElectronAnalyzer::produce(edm::Event& iEvent, const edm::EventSetup& es)
     if( !passPre ) continue;
     if( !passTrig ) continue;
 
-    pos->push_back((*electrons_)[i]);
+    triggeredElectrons->push_back((*electrons_)[i]);
+ 
+    bool passMVA = electron.sourcePtr()->get()->electronID("mvaTrigV0") > 0.0 ;
+    if( !passMVA ) continue;
+
+    selectedElectrons->push_back((*electrons_)[i]);
 
   }
 
@@ -178,8 +184,8 @@ void cmgElectronAnalyzer::produce(edm::Event& iEvent, const edm::EventSetup& es)
     if( !(jet.pt() > 30 && abs(jet.eta()) < 2.5) ) continue;
     bool overlap = false;
     
-    for (unsigned int i=0; i < pos->size(); ++i){
-      cmg::Electron electron = pos->at(i);
+    for (unsigned int i=0; i < selectedElectrons->size(); ++i){
+      cmg::Electron electron = selectedElectrons->at(i);
 
       double chIso03 = electron.chargedHadronIso(0.3);
       double puChIso03 = electron.puChargedHadronIso(0.3);
@@ -203,20 +209,21 @@ void cmgElectronAnalyzer::produce(edm::Event& iEvent, const edm::EventSetup& es)
   }
 
   int nJets = cleanedJets->size();
+  int nLeps = selectedElectrons->size();
 
   edm::Handle<double>  rho_;
   iEvent.getByLabel(rhoIsoLabel_, rho_);
   double rhoIso = *(rho_.product());
 
   double mtW = 0.0;
-  if( pos->size() >=1) {
-    const cmg::Electron leading = pos->at(0);
+  if( selectedElectrons->size() >=1) {
+    const cmg::Electron leading = selectedElectrons->at(0);
     mtW =  transverseMass( leading.p4() , mi->p4() );
   }
 
-  if( pos->size() >=2 ){  
-    for (unsigned int i=0; i < pos->size()-1; ++i){
-      for (unsigned int j=i+1; j < pos->size(); ++j){
+  if( triggeredElectrons->size() >=2 ){  
+    for (unsigned int i=0; i < triggeredElectrons->size()-1; ++i){
+      for (unsigned int j=i+1; j < triggeredElectrons->size(); ++j){
 	cmg::Electron Lep1 = electrons_->at(i);
 	cmg::Electron Lep2 = electrons_->at(j);
 
@@ -463,7 +470,7 @@ void cmgElectronAnalyzer::produce(edm::Event& iEvent, const edm::EventSetup& es)
     }//check if two leptons
   }
 
-  iEvent.put(pos);
+  iEvent.put(triggeredElectrons);
  
 }
 
