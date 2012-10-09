@@ -659,9 +659,13 @@ TH1* getMeasuredCrossSection( TH1F* h_unfold, TH1F* accept, double lumi, bool no
            << sigma*1000 << " $\\pm$ " << sigmaErr*1000  
            << " \\\\" <<  endl;
       }else{
+        //this is for top11013
+        double relErr = sigmaErr/sigma;
+        double relSystErr = sigmaSystErr/sigma;
+        double reltotalErr = totalE/sigma;
         cout << "$" << bincenter-width/2 << "-" << bincenter+width/2 << "$   ~&~ "
            << setprecision (4) << unfolded << " $\\pm$ " << abserr << " ~&~ "
-           << sigma*1000 << " $\\pm$ " << sigmaErr*1000 << "(stat.) $\\pm$ " << sigmaSystErr*1000 << "(syst.) $\\pm$ " << totalE*1000 << "(total)"
+           << sigma*1000 << " $\\pm$ " << sigmaErr*1000 << "(" << relErr << ")" << "(stat.) $\\pm$ " << sigmaSystErr*1000 << "(" << relSystErr << ")" << "(syst.) $\\pm$ " << totalE*1000 << "(" << reltotalErr << ")" << "(total)"
            << " \\\\" <<  endl;
       }
     }
