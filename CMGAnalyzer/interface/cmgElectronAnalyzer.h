@@ -67,47 +67,43 @@ class cmgElectronAnalyzer : public edm::EDProducer
   edm::InputTag rhoIsoLabel_;
   bool  useZMassWindow_;
 
-  //typedef pat::ElectronCollection::const_iterator MI;
-  //typedef pat::JetCollection::const_iterator JI;
-
-  //edm::Handle<pat::ElectronCollection> electrons_;
   edm::Handle<reco::BeamSpot> beamSpot_;
- // edm::Handle<pat::JetCollection> Jets;
   edm::Handle<reco::VertexCollection> recVtxs_;
 
   edm::Handle<std::vector<cmg::Electron> > electrons_;
   edm::Handle<std::vector<cmg::PFJet> > Jets;
   edm::Handle<std::vector<cmg::BaseMET> > MET_;
- // edm::Handle<pat::METCollection> MET_;
 
+  //electron loop
+  //[i][j][k] : i=QCD, j=selection, k=region
+  TH1F * h_mvaTrigV0[2][11][2];
+  TH1F * h_pfRelIso03[2][11][2];
+  TH1F * h_pfRelIso04[2][11][2];
+  TH1F * h_pfRelIso03db[2][11][2];
+  TH1F * h_pfRelIso04db[2][11][2];
+  TH1F * h_pfRelIso03rho[2][11][2];
+  TH1F * h_pfRelIso04rho[2][11][2];
+  TH1F * h_dR[2][11][2];
+  TH1F * h_pt[2][11][2];
+  TH1F * h_eta[2][11][2];
+  TH1F * h_pv[2][11][2];
+  TH1F * h_njet[2][11][2];
 
-  TH1F * h_mvaTrigV0[2][8][2];
+  //event loop
+  //[i] : i=QCD
+  TH1F * h_mtW[2];
+  TH1F * h_dimass[2];
+  TH1F * h_nJet[2];
+  TH1F * h_met[2];
 
-  TH1F * h_pfRelIso03[2][8][2];
-  TH1F * h_pfRelIso04[2][8][2];
-  TH1F * h_pfRelIso03db[2][8][2];
-  TH1F * h_pfRelIso04db[2][8][2];
-  TH1F * h_pfRelIso03rho[2][8][2];
-  TH1F * h_pfRelIso04rho[2][8][2];
-
-  TH1F * h_mtW[2][8][2];
-  TH1F * h_dimass[2][8][2];
-  TH1F * h_nJet[2][8][2];
-  TH1F * h_met[2][8][2];
-  TH1F * h_dR[2][8][2];
-
-  TH2F * h2_mvaTrigV0[2][8][2];
-  TH2F * h2_pfRelIso03[2][8][2];
-  TH2F * h2_pfRelIso04[2][8][2];
-  TH2F * h2_pfRelIso03db[2][8][2];
-  TH2F * h2_pfRelIso04db[2][8][2];
-  TH2F * h2_pfRelIso03rho[2][8][2];
-  TH2F * h2_pfRelIso04rho[2][8][2];
-
-  TH1F * h_pt[2][2];
-  TH1F * h_eta[2][2]; 
-  TH1F * h_pv[2][2];
-  TH1F * h_njet[2][2];
+  //pileup dependency
+  TH2F * h2_mvaTrigV0[2][11][2];
+  TH2F * h2_pfRelIso03[2][11][2];
+  TH2F * h2_pfRelIso04[2][11][2];
+  TH2F * h2_pfRelIso03db[2][11][2];
+  TH2F * h2_pfRelIso04db[2][11][2];
+  TH2F * h2_pfRelIso03rho[2][11][2];
+  TH2F * h2_pfRelIso04rho[2][11][2];
 
   //add run event data
   unsigned int EVENT;

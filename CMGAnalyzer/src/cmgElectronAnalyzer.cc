@@ -29,98 +29,78 @@ cmgElectronAnalyzer::cmgElectronAnalyzer(const edm::ParameterSet& cfg)
 
   edm::Service<TFileService> fs;
 
+  ///////Electron loop
   for(int d=0 ; d < 2 ; d++){
-    for(int i=0 ; i < 8 ; i++){
+    TString mainDirName = "";
+
+    if( d == 0 ) mainDirName = "Signal";
+    else mainDirName = "QCD";
+
+    for(int i=0 ; i < 11 ; i++){
+
+      TString selDirName = "";
+      if(i==0) selDirName = "Preselection";
+      if(i==1) selDirName = "IDMVA";
+      if(i==2) selDirName = "IDVeto";
+      if(i==3) selDirName = "IDLoose";
+      if(i==4) selDirName = "IDMedium";
+      if(i==5) selDirName = "IDTight";
+      if(i==6) selDirName = "IDMediumIso";
+      if(i==7) selDirName = "IDTightIso";
+      if(i==8) selDirName = "IDMediumIsoPF";
+      if(i==9) selDirName = "IDTightIsoPF";
+      if(i==10) selDirName = "IDMVAPF";
+
       for(int k=0 ; k <2 ; k++){
-      TString dirName = "";
-        if(d == 0){
-          if(k==1){
-            if(i==0) dirName = "Preselection/Barrel";
-            if(i==1) dirName = "MVAID/Barrel";
-            if(i==2) dirName = "Isolated/Barrel";
-            if(i==3) dirName = "IDISO/Barrel";
-            if(i==4) dirName = "VetoID/Barrel";
-            if(i==5) dirName = "LoosedID/Barrel";
-            if(i==6) dirName = "MediumID/Barrel";
-            if(i==7) dirName = "TightID/Barrel";
-          }else if(k==0){
-            if(i==0) dirName = "Preselection/Endcap";
-            if(i==1) dirName = "MVAID/Endcap";
-            if(i==2) dirName = "Isolated/Endcap";
-            if(i==3) dirName = "IDISO/Endcap";
-            if(i==4) dirName = "VetoID/Endcap";
-            if(i==5) dirName = "LoosedID/Endcap";
-            if(i==6) dirName = "MediumID/Endcap";
-            if(i==7) dirName = "TightID/Endcap";
-          }
-        }else if(d == 1){
-          if(k==1){
-            if(i==0) dirName = "Preselection/Barrel/QCD";
-            if(i==1) dirName = "MVAID/Barrel/QCD";
-            if(i==2) dirName = "Isolated/Barrel/QCD";
-            if(i==3) dirName = "IDISO/Barrel/QCD"; 
-            if(i==4) dirName = "VetoID/Barrel/QCD";
-            if(i==5) dirName = "LoosedID/Barrel/QCD";
-            if(i==6) dirName = "MediumID/Barrel/QCD";
-            if(i==7) dirName = "TightID/Barrel/QCD";
-          }else if(k==0){
-            if(i==0) dirName = "Preselection/Endcap/QCD";
-            if(i==1) dirName = "MVAID/Endcap/QCD";
-            if(i==2) dirName = "Isolated/Endcap/QCD";
-            if(i==3) dirName = "IDISO/Endcap/QCD";
-            if(i==4) dirName = "VetoID/Endcap/QCD";
-            if(i==5) dirName = "LoosedID/Endcap/QCD";
-            if(i==6) dirName = "MediumID/Endcap/QCD";
-            if(i==7) dirName = "TightID/Endcap/QCD";
-          }
+        TString dirName = "";
+        if(k==1){
+          dirName = "Barrel";
+        }else {
+          dirName = "Endcap";
         }
-        TFileDirectory dir = fs->mkdir(Form("%s",dirName.Data()));
+
+        TFileDirectory dir = fs->mkdir(Form("%s/%s/%s",mainDirName.Data(), selDirName.Data(), dirName.Data()));
+
         h_mvaTrigV0[d][i][k] = dir.make<TH1F>( "h_mvaTrigV0", "h_mvaTrigV0", 200, -1, 1);
-        h_pfRelIso03[d][i][k] = dir.make<TH1F>( "h_pfRelIso03", "h_pfRelIso03", 500, 0, 5);
-        h_pfRelIso04[d][i][k] = dir.make<TH1F>( "h_pfRelIso04", "h_pfRelIso04", 500, 0, 5);
-        h_pfRelIso03db[d][i][k] = dir.make<TH1F>( "h_pfRelIso03db", "h_pfRelIso03db", 500, 0, 5);
-        h_pfRelIso04db[d][i][k] = dir.make<TH1F>( "h_pfRelIso04db", "h_pfRelIso04db", 500, 0, 5);
-        h_pfRelIso03rho[d][i][k] = dir.make<TH1F>( "h_pfRelIso03rho", "h_pfRelIso03rho", 500, 0, 5);
-        h_pfRelIso04rho[d][i][k] = dir.make<TH1F>( "h_pfRelIso04rho", "h_pfRelIso04rho", 500, 0, 5);
-        h_dR[d][i][k] = dir.make<TH1F>( "h_dR", "h_dR", 100, 0, 1);
-        h_nJet[d][i][k] = dir.make<TH1F>( "h_nJet", "h_nJet", 10, 0, 10);
+        h_pfRelIso03[d][i][k] = dir.make<TH1F>( "h_pfRelIso03", "h_pfRelIso03", 200, 0, 2);
+        h_pfRelIso04[d][i][k] = dir.make<TH1F>( "h_pfRelIso04", "h_pfRelIso04", 200, 0, 2);
+        h_pfRelIso03db[d][i][k] = dir.make<TH1F>( "h_pfRelIso03db", "h_pfRelIso03db", 200, 0, 2);
+        h_pfRelIso04db[d][i][k] = dir.make<TH1F>( "h_pfRelIso04db", "h_pfRelIso04db", 200, 0, 2);
+        h_pfRelIso03rho[d][i][k] = dir.make<TH1F>( "h_pfRelIso03rho", "h_pfRelIso03rho", 200, 0, 2);
+        h_pfRelIso04rho[d][i][k] = dir.make<TH1F>( "h_pfRelIso04rho", "h_pfRelIso04rho", 200, 0, 2);
+        h_dR[d][i][k] = dir.make<TH1F>( "h_dR", "h_dR", 300, 0, 3);
+        h_njet[d][i][k] = dir.make<TH1F>( "h_njet", "h_njet", 10, 0, 10);
+        h_pt[d][i][k] = dir.make<TH1F>( "h_pt", "h_pt", 40, 0, 200);
+        h_eta[d][i][k] = dir.make<TH1F>( "h_eta", "h_eta", 30, 0, 3);
+        h_pv[d][i][k] = dir.make<TH1F>( "h_pv", "h_pv", 60, 0, 60);
 
         h2_mvaTrigV0[d][i][k] = dir.make<TH2F>( "h2_mvaTrigV0", "h2_mvaTrigV0", 60,0,60,200, -1, 1);
-        h2_pfRelIso03[d][i][k] = dir.make<TH2F>( "h2_pfRelIso03", "h2_pfRelIso03", 60,0,60,500, 0, 5);
-        h2_pfRelIso04[d][i][k] = dir.make<TH2F>( "h2_pfRelIso04", "h2_pfRelIso04", 60,0,60,500, 0, 5);
-        h2_pfRelIso03db[d][i][k] = dir.make<TH2F>( "h2_pfRelIso03db", "h2_pfRelIso03db", 60,0,60,500, 0, 5);
-        h2_pfRelIso04db[d][i][k] = dir.make<TH2F>( "h2_pfRelIso04db", "h2_pfRelIso04db", 60,0,60,500, 0, 5);
-        h2_pfRelIso03rho[d][i][k] = dir.make<TH2F>( "h2_pfRelIso03rho", "h2_pfRelIso03rho", 60,0,60,500, 0, 5);
-        h2_pfRelIso04rho[d][i][k] = dir.make<TH2F>( "h2_pfRelIso04rho", "h2_pfRelIso04rho", 60,0,60,500, 0, 5);
+        h2_pfRelIso03[d][i][k] = dir.make<TH2F>( "h2_pfRelIso03", "h2_pfRelIso03", 60,0,60,200, 0, 2);
+        h2_pfRelIso04[d][i][k] = dir.make<TH2F>( "h2_pfRelIso04", "h2_pfRelIso04", 60,0,60,200, 0, 2);
+        h2_pfRelIso03db[d][i][k] = dir.make<TH2F>( "h2_pfRelIso03db", "h2_pfRelIso03db", 60,0,60,200, 0, 2);
+        h2_pfRelIso04db[d][i][k] = dir.make<TH2F>( "h2_pfRelIso04db", "h2_pfRelIso04db", 60,0,60,200, 0, 2);
+        h2_pfRelIso03rho[d][i][k] = dir.make<TH2F>( "h2_pfRelIso03rho", "h2_pfRelIso03rho", 60,0,60,200, 0, 2);
+        h2_pfRelIso04rho[d][i][k] = dir.make<TH2F>( "h2_pfRelIso04rho", "h2_pfRelIso04rho", 60,0,60,200, 0, 2);
 
       }
     }
   }
-////////////////
-        h_mtW = fs->make<TH1F>( "h_mtW", "h_mtW", 200, 0, 200);
-        h_dimass = fs->make<TH1F>( "h_dimass", "h_dimass", 200, 0, 200);
-        h_met = fs->make<TH1F>( "h_met", "h_met", 20, 0, 200);
+  //////////////// Event loop //////////////////////
+  for(int d = 0 ; d < 2 ; d++){
+    TString mainDirName = "";
 
-//////////////////////////
-  for(int d=0 ; d < 2 ; d++){
-    for(int i=0 ; i < 2 ; i++){
-      TString dirName = "";
-        if(d == 0){
-            if(i==1) dirName = "GoodIDed/Barrel";
-            if(i==0) dirName = "GoodIDed/Endcap";
-        }else if(d==1){
-            if(i==1) dirName = "PFIDed/Barrel";
-            if(i==0) dirName = "PFIDed/Endcap";
-        }
-        TFileDirectory dir2 = fs->mkdir(Form("%s",dirName.Data()));
-        h_pt[d][i] = dir2.make<TH1F>( "h_pt", "h_pt", 200, 0, 200);
-        h_eta[d][i] = dir2.make<TH1F>( "h_eta", "h_eta", 50, -2.5, 2.5);
-        h_pv[d][i] = dir2.make<TH1F>( "h_pv", "h_pv", 200, 0, 80);
-        h_njet[d][i] = dir2.make<TH1F>( "h_njet", "h_njet", 20, 0, 20);
-    }
-  } 
+    if( d == 0 ) mainDirName = "Signal";
+    else mainDirName = "QCD";
 
-////////////////////////
+    TFileDirectory dir = fs->mkdir(Form("%s",mainDirName.Data()));
+
+    h_mtW[d]    = dir.make<TH1F>( "h_mtW", "h_mtW", 200, 0, 200);
+    h_dimass[d] = dir.make<TH1F>( "h_dimass", "h_dimass", 200, 0, 200);
+    h_met[d]    = dir.make<TH1F>( "h_met", "h_met", 20, 0, 200);
+    h_nJet[d]   = dir.make<TH1F>( "h_nJet", "h_nJet", 10, 0, 10);
+
+  }
+
 }
 
 cmgElectronAnalyzer::~cmgElectronAnalyzer()
@@ -139,6 +119,10 @@ void cmgElectronAnalyzer::produce(edm::Event& iEvent, const edm::EventSetup& es)
   RUN    = iEvent.id().run();
   LUMI   = iEvent.id().luminosityBlock();
 
+  edm::Handle<double>  rho_;
+  iEvent.getByLabel(rhoIsoLabel_, rho_);
+  double rhoIso = *(rho_.product());
+
   edm::Handle<reco::GenParticleCollection> genParticles_;
   iEvent.getByLabel(genParticlesLabel_,genParticles_);
 
@@ -148,58 +132,72 @@ void cmgElectronAnalyzer::produce(edm::Event& iEvent, const edm::EventSetup& es)
   iEvent.getByLabel(vertexLabel_,recVtxs_);
   iEvent.getByLabel(metLabel_,MET_);
   std::vector<cmg::BaseMET>::const_iterator mi = MET_->begin();
-  //cmg::METCollection::const_iterator mi = MET_->begin();
   const double MET = mi->pt();
 
-  int nvertex = recVtxs_->size();
-  
+  std::auto_ptr<std::vector<reco::Vertex> > goodOfflinePrimaryVertices(new std::vector<reco::Vertex>());
+  int nvertex = 0 ;
+  for(unsigned int i=0; i < recVtxs_->size();  ++i){
+    reco::Vertex v = recVtxs_->at(i);
+    if (!(v.isFake()) && (v.ndof()>4) && (fabs(v.z())<=24.0) && (v.position().Rho()<=2.0) ) {
+      goodOfflinePrimaryVertices->push_back((*recVtxs_)[i]);
+      nvertex++;
+    }
+  }
+
   std::auto_ptr<std::vector<cmg::Electron> > triggeredElectrons(new std::vector<cmg::Electron>());
-  std::auto_ptr<std::vector<cmg::Electron> > selectedElectrons(new std::vector<cmg::Electron>());
+  std::auto_ptr<std::vector<cmg::Electron> > looseElectrons(new std::vector<cmg::Electron>());
+  std::auto_ptr<std::vector<cmg::Electron> > mediumElectrons(new std::vector<cmg::Electron>());
+  std::auto_ptr<std::vector<cmg::Electron> > tightElectrons(new std::vector<cmg::Electron>());
+  std::auto_ptr<std::vector<cmg::Electron> > mvaElectrons(new std::vector<cmg::Electron>());
 
   //preselection
   for (unsigned int i=0; i < electrons_->size(); ++i){
-
     cmg::Electron electron = electrons_->at(i);
+    double sceta = electron.sourcePtr()->get()->superCluster()->eta();
 
     //bool passPre = electron.pt() > 20 && fabs(electron.eta()) < 2.5 && fabs(electron.gsfTrack()->dxy(beamSpot_->position())) < 0.04;
+    //if( goodOfflinePrimaryVertices->size() < 1 ) continue;
+    //reco::Vertex pv = goodOfflinePrimaryVertices->at(0);
+    //bool passPre = electron.pt() > 20 && fabs(electron.eta()) < 2.5 && fabs( electron.sourcePtr()->get()->gsfTrack()->dxy(pv.position()) ) < 0.04;
     bool passPre = electron.pt() > 20 && fabs(electron.eta()) < 2.5;
-    bool passTrig = trainTrigPresel(electron);//->get());
 
-    if( !passPre ) continue;
-    if( !passTrig ) continue;
+    bool passTrig = passPre && electron.getSelection("cuts_premvaTrig"); //->get());
 
-    triggeredElectrons->push_back((*electrons_)[i]);
- 
-    bool passMVA = electron.sourcePtr()->get()->electronID("mvaTrigV0") > 0.0 ;
-    if( !passMVA ) continue;
+    if( passTrig ) triggeredElectrons->push_back((*electrons_)[i]);
 
-    selectedElectrons->push_back((*electrons_)[i]);
+    double chIso03 = electron.chargedHadronIso(0.3);
+    double nhIso03 = electron.neutralHadronIso(0.3);
+    double phIso03 = electron.photonIso(0.3);
+
+    //bool passLoose     = PassWP(EgammaCutBasedEleId::LOOSE, electron, chIso03, phIso03, nhIso03, rhoIso);
+    //bool passMedium    = PassWP(EgammaCutBasedEleId::MEDIUM,electron, chIso03, phIso03, nhIso03, rhoIso);
+    //bool passTight     = PassWP(EgammaCutBasedEleId::TIGHT, electron, chIso03, phIso03, nhIso03, rhoIso);
+    bool passLoose     = electron.getSelection("cuts_looseNoVtx");
+    bool passMedium     = electron.getSelection("cuts_mediumNoVtx");
+    bool passTight     = electron.getSelection("cuts_tightNoVtx");
+    bool passMva       = electron.sourcePtr()->get()->electronID("mvaTrigV0") > 0.0 ;
+
+    if( passMva ) mvaElectrons->push_back((*electrons_)[i]);
+    if( passLoose ) looseElectrons->push_back((*electrons_)[i]);
+    if( passMedium ) mediumElectrons->push_back((*electrons_)[i]);
+    if( passTight ) tightElectrons->push_back((*electrons_)[i]);
 
   }
-
  
   std::auto_ptr<std::vector<cmg::PFJet> > cleanedJets(new std::vector<cmg::PFJet>());
 
   for (unsigned int j=0 ; j < Jets->size(); j++) {
     cmg::PFJet jet = Jets->at(j);
 
+    bool passLooseJetId = jet.getSelection("cuts_looseJetId");
+
+    if( !passLooseJetId ) continue;
     if( !(jet.pt() > 30 && abs(jet.eta()) < 2.5) ) continue;
+
     bool overlap = false;
     
-    for (unsigned int i=0; i < selectedElectrons->size(); ++i){
-      cmg::Electron electron = selectedElectrons->at(i);
-
-      double chIso03 = electron.chargedHadronIso(0.3);
-      double puChIso03 = electron.puChargedHadronIso(0.3);
-      double nhIso03 = electron.neutralHadronIso(0.3);
-      double phIso03 = electron.photonIso(0.3);
-
-      double relPfIso03 = ( chIso03 + nhIso03 + phIso03 )/ electron.pt();
-      double mvaTrigV0 = electron.sourcePtr()->get()->electronID("mvaTrigV0");
- 
-      bool pass = mvaTrigV0 > 0.0 && relPfIso03 < 0.2;
-      if( !pass ) continue;
-
+    for (unsigned int i=0; i < mediumElectrons->size(); ++i){
+      cmg::Electron electron = mediumElectrons->at(i);
       double dR= sqrt( (electron.eta()-jet.eta())*(electron.eta()-jet.eta()) + (electron.phi()-jet.phi())*(electron.phi()-jet.phi()) );
       if( dR < 0.5 ) {
         overlap = true;
@@ -211,43 +209,59 @@ void cmgElectronAnalyzer::produce(edm::Event& iEvent, const edm::EventSetup& es)
   }
 
   int nJets = cleanedJets->size();
-  int nLeps = selectedElectrons->size();
-
-  edm::Handle<double>  rho_;
-  iEvent.getByLabel(rhoIsoLabel_, rho_);
-  double rhoIso = *(rho_.product());
+  int nLeps = mediumElectrons->size();
 
   double mtW = 0.0;
-  if( selectedElectrons->size() >=1) {
-    const cmg::Electron leading = selectedElectrons->at(0);
+  double delphi = 0.0;
+  if( mediumElectrons->size() >=1) {
+    const cmg::Electron leading = mediumElectrons->at(0);
     mtW =  transverseMass( leading.p4() , mi->p4() );
+    delphi = fabs(deltaPhi(leading.phi(), mi->p4().phi()));
   }
 
-   bool QCD1 = nLeps <=1 && mtW < 20 && MET < 30 && nJets >=1 ;
-   int d = 0;
-   if(QCD1 ) d=1;
-
-   double dimass = 0.;
-  if( triggeredElectrons->size() >=2 ){  
-     dimass = (triggeredElectrons->at(0).p4() + triggeredElectrons->at(1).p4()).M();
+  double dimass = 0.;
+  for( unsigned int i = 0 ; i < mediumElectrons->size() ; i++){
+    for( unsigned int j = 0 ; j < looseElectrons->size() ; j++){
+      cmg::Electron electron1 = mediumElectrons->at(i);
+      cmg::Electron electron2 = looseElectrons->at(j);
+      const bool match = MatchObjects( electron1.p4(), electron2.p4(), true);
+      if(match) continue; 
+      dimass = (electron1.p4() + electron2.p4()).M();
+      break;
+    }
   }
+  
+  //// QCD EVENT selection ////
+  bool QCD =  dimass <= 0  && mtW < 20 && MET < 30 && nJets >=1 && delphi < 1.5;
+  int d = 0;
+  if(QCD ) d=1;
 
-  h_mtW->Fill(mtW);
-  h_dimass->Fill(dimass);
-  h_met->Fill(MET);
+  h_mtW[d]->Fill(mtW);
+  h_dimass[d]->Fill(dimass);
+  h_met[d]->Fill(MET);
+  h_nJet[d]->Fill(nJets);
  
   for (unsigned int j=0; j < triggeredElectrons->size(); ++j){
     cmg::Electron Lep1 = electrons_->at(j);
+
+    bool isMatchedLep1 = true;
+   
+    if( !isRealData )isMatchedLep1 = isFromW(Lep1.p4(), genParticles_);
+
+    if( !isMatchedLep1 ) continue;
+
+    double pt1  = Lep1.pt();
+    double sceta1 = Lep1.sourcePtr()->get()->superCluster()->eta();
 
     float AEff03Lep1 = 0.00;
     float AEff04Lep1 = 0.00;
 
     if(isRealData){
-      AEff03Lep1 = ElectronEffectiveArea::GetElectronEffectiveArea(ElectronEffectiveArea::kEleGammaAndNeutralHadronIso03, Lep1.sourcePtr()->get()->superCluster()->eta(), ElectronEffectiveArea::kEleEAData2011);
-      AEff04Lep1 = ElectronEffectiveArea::GetElectronEffectiveArea(ElectronEffectiveArea::kEleGammaAndNeutralHadronIso04, Lep1.sourcePtr()->get()->superCluster()->eta(), ElectronEffectiveArea::kEleEAData2012);
+      AEff03Lep1 = ElectronEffectiveArea::GetElectronEffectiveArea(ElectronEffectiveArea::kEleGammaAndNeutralHadronIso03, sceta1, ElectronEffectiveArea::kEleEAData2011);
+      AEff04Lep1 = ElectronEffectiveArea::GetElectronEffectiveArea(ElectronEffectiveArea::kEleGammaAndNeutralHadronIso04, sceta1, ElectronEffectiveArea::kEleEAData2012);
     }else{
-      AEff03Lep1 = ElectronEffectiveArea::GetElectronEffectiveArea(ElectronEffectiveArea::kEleGammaAndNeutralHadronIso03, Lep1.sourcePtr()->get()->superCluster()->eta(), ElectronEffectiveArea::kEleEAFall11MC);
-      AEff04Lep1 = ElectronEffectiveArea::GetElectronEffectiveArea(ElectronEffectiveArea::kEleGammaAndNeutralHadronIso04, Lep1.sourcePtr()->get()->superCluster()->eta(), ElectronEffectiveArea::kEleEAFall11MC);
+      AEff03Lep1 = ElectronEffectiveArea::GetElectronEffectiveArea(ElectronEffectiveArea::kEleGammaAndNeutralHadronIso03, sceta1, ElectronEffectiveArea::kEleEAFall11MC);
+      AEff04Lep1 = ElectronEffectiveArea::GetElectronEffectiveArea(ElectronEffectiveArea::kEleGammaAndNeutralHadronIso04, sceta1, ElectronEffectiveArea::kEleEAFall11MC);
     }
 
     double chIso03Lep1 = Lep1.chargedHadronIso(0.3);
@@ -272,138 +286,68 @@ void cmgElectronAnalyzer::produce(edm::Event& iEvent, const edm::EventSetup& es)
 
     for (unsigned jid = 0; jid < cleanedJets->size(); jid++){
       cmg::PFJet jet = cleanedJets->at(jid);
-      double tmpLep1= sqrt( (Lep1.eta()-jet.eta())*(Lep1.eta()-jet.eta()) + (Lep1.phi()-jet.phi())*(Lep1.phi()-jet.phi()) );
-      if( tmpLep1 < dRLep1 ) dRLep1 = tmpLep1;
+      double dRval = deltaR(Lep1.eta(), Lep1.phi(), jet.eta(), jet.phi());
+      if( dRval < dRLep1 ) dRLep1 = dRval;
       break;//consider only leading jet
     }
-///////////////
-/////for cutbased
-///////////////////
 
-   bool veto1_      = PassWP(EgammaCutBasedEleId::LOOSE, Lep1, chIso03Lep1, phIso03Lep1, nhIso03Lep1, rhoIso);
-   bool loose1_     = PassWP(EgammaCutBasedEleId::LOOSE, Lep1, chIso03Lep1, phIso03Lep1, nhIso03Lep1, rhoIso);
-   bool medium1_    = PassWP(EgammaCutBasedEleId::MEDIUM,Lep1, chIso03Lep1, phIso03Lep1, nhIso03Lep1, rhoIso);
-   bool tight1_     = PassWP(EgammaCutBasedEleId::TIGHT, Lep1, chIso03Lep1, phIso03Lep1, nhIso03Lep1, rhoIso);
+    //////////////////////////
+    /////for selections //////
+    //////////////////////////
 
-   bool passID1_ = Lep1.sourcePtr()->get()->electronID("mvaTrigV0") > 0.0;  
-   bool passIso1_ = relPfIso03Lep1 < 0.15 ;
+    //bool veto1      = PassWP(EgammaCutBasedEleId::LOOSE, Lep1, chIso03Lep1, phIso03Lep1, nhIso03Lep1, rhoIso);
+    //bool loose1     = PassWP(EgammaCutBasedEleId::LOOSE, Lep1, chIso03Lep1, phIso03Lep1, nhIso03Lep1, rhoIso);
+    //bool medium1    = PassWP(EgammaCutBasedEleId::MEDIUM,Lep1, chIso03Lep1, phIso03Lep1, nhIso03Lep1, rhoIso);
+    //bool tight1     = PassWP(EgammaCutBasedEleId::TIGHT, Lep1, chIso03Lep1, phIso03Lep1, nhIso03Lep1, rhoIso);
 
-   bool isEB1_ = fabs(Lep1.sourcePtr()->get()->superCluster()->eta()) < 1.4790;
+    bool passMva      = Lep1.sourcePtr()->get()->electronID("mvaTrigV0") > 0.0;
+    bool passVeto     = Lep1.getSelection("cuts_vetoNoVtx");
+    bool passLoose     = Lep1.getSelection("cuts_looseNoVtx");
+    bool passMedium    = Lep1.getSelection("cuts_mediumNoVtx");
+    bool passTight     = Lep1.getSelection("cuts_tightNoVtx");
+    bool passPF        = Lep1.sourcePtr()->get()->isPF();
 
-  //  bool QCD1 = relPfIso03Lep1 > 0.3 ;
-  // cout << ""
-//for mva
-///////////////////////
-    //bool QCD1 = relPfIso03Lep2 > 0.2 && MET < 30 && nJets >= 1 && abs( dimass-91 ) > 15 ;
-    //bool QCD2 = relPfIso03Lep1 > 0.2 && MET < 30 && nJets >= 1 && abs( dimass-91 ) > 15 ;
-    //bool QCD1 = relPfIso03Lep1 > 0.3 ;//&& Lep1.charge()*Lep2.charge() > 0 ;//&& MET < 30 && nJets >= 1 && mtW < 20;
-    //bool QCD1 = relPfIso03Lep2 > 0.3 && Lep1.charge()*Lep2.charge() > 0 && MET < 30 && nJets >= 1 ;//&& fabs( dimass-91.2 ) > 15.;// mtW < 20;
-    //bool QCD2 = relPfIso03Lep1 > 0.3 && Lep1.charge()*Lep2.charge() > 0 && MET < 30 && nJets >= 1 ;//&& fabs( dimass-91.2 ) > 15.;// mtW < 20;
+    bool passIso = relPfIso03rhoLep1 < 0.15 ;
 
-    //bool passID = mvaTrigV0Lep1 > 0.0 ;//&& mvaTrigV0Lep2 > 0.0;
-    //bool passIso = relPfIso03Lep1 < 0.15 ;//&& relPfIso03Lep2 < 0.15 ;
-    //bool passDimass = fabs( dimass-91.2 ) > 15.;
+    bool isEB1 = fabs(sceta1) < 1.4790;
 
-    /*int isEB;
-    if( fabs(Lep1.sourcePtr()->get()->superCluster()->eta()) < 1.479)// && fabs(Lep2.sourcePtr()->get()->superCluster()->eta()) < 1.479){
-      isEB = 1;
-    }else{
-      isEB = 0;
-    }*/
-//////////////////
-   for(int d = 0 ; d < 2 ; d++){
+    for( int sel = 0 ; sel < 11 ; sel++){
 
-        bool passGoodIDBarrel = Lep1.sourcePtr()->get()->electronID("mvaTrigV0") > 0.0; // 
-        bool passGoodIDEndCaps = Lep1.sourcePtr()->get()->electronID("mvaTrigV0") > 0.0; // 
-        bool passPFID = Lep1.sourcePtr()->get()->isPF();
-        bool PASSID = false;
-        bool isEB1 = fabs(Lep1.sourcePtr()->get()->superCluster()->eta()) < 1.4790;
-        
-        // d=0: goodid , d=1: pfid 
-        if(d==0 && isEB1==1 ) PASSID = passGoodIDBarrel;
-        if(d==0 && isEB1==0 ) PASSID = passGoodIDEndCaps; 
+      bool fill = true;
+      if( sel == 1 ) fill = passMva;
+      if( sel == 2 ) fill = passVeto;
+      if( sel == 3 ) fill = passLoose;
+      if( sel == 4 ) fill = passMedium;
+      if( sel == 5 ) fill = passTight;
+      if( sel == 6 ) fill = passMedium && passIso;
+      if( sel == 7 ) fill = passTight && passIso;
+      if( sel == 8 ) fill = passMedium && passIso && passPF;
+      if( sel == 9 ) fill = passTight && passIso && passPF;
+      if( sel == 10 ) fill = passMva && passPF;
 
-        if(d==1 && isEB1==1 ) PASSID = passGoodIDBarrel && passPFID;
-        if(d==1 && isEB1==0 ) PASSID = passGoodIDEndCaps && passPFID; 
+      if( fill ){
+        h_mvaTrigV0[d][sel][isEB1]->Fill( mvaTrigV0Lep1 );
+        h_pfRelIso03[d][sel][isEB1]->Fill( relPfIso03Lep1 );
+        h_pfRelIso04[d][sel][isEB1]->Fill( relPfIso04Lep1 );
+        h_pfRelIso03db[d][sel][isEB1]->Fill( relPfIso03dbLep1 );
+        h_pfRelIso04db[d][sel][isEB1]->Fill( relPfIso04dbLep1 );
+        h_pfRelIso03rho[d][sel][isEB1]->Fill( relPfIso03rhoLep1 );
+        h_pfRelIso04rho[d][sel][isEB1]->Fill( relPfIso04rhoLep1 );
+        if( nJets >= 1 ) h_dR[d][sel][isEB1]->Fill(dRLep1);
+        h_njet[d][sel][isEB1]->Fill(nJets);
+        h_pt[d][sel][isEB1]->Fill(pt1);
+        h_eta[d][sel][isEB1]->Fill(sceta1);
+        h_pv[d][sel][isEB1]->Fill(nvertex);
 
-
-        if(PASSID)
-        {
-           h_pt[d][isEB1]->Fill(Lep1.pt());
-           h_eta[d][isEB1]->Fill(Lep1.eta());
-           h_pv[d][isEB1]->Fill(nvertex);
-           h_njet[d][isEB1]->Fill(nJets);
-        }
-
+        h2_mvaTrigV0[d][sel][isEB1]->Fill( nvertex, mvaTrigV0Lep1 );
+        h2_pfRelIso03[d][sel][isEB1]->Fill( nvertex, relPfIso03Lep1 );
+        h2_pfRelIso04[d][sel][isEB1]->Fill( nvertex, relPfIso04Lep1 );
+        h2_pfRelIso03db[d][sel][isEB1]->Fill(nvertex, relPfIso03dbLep1 );
+        h2_pfRelIso04db[d][sel][isEB1]->Fill( nvertex, relPfIso04dbLep1 );
+        h2_pfRelIso03rho[d][sel][isEB1]->Fill( nvertex,  relPfIso03rhoLep1 );
+        h2_pfRelIso04rho[d][sel][isEB1]->Fill( nvertex, relPfIso04rhoLep1 );
+      }
     }
-////////////////////
-    for(int k = 0 ; k < 7 ; k++){
-
-      bool isMatchedLep1 = true;
-
-      if( !isRealData ){
-        isMatchedLep1 = isFromW(Lep1.p4(), genParticles_);
-      }
-
-      bool fillLep1 = false;  
-
-    //  bool pass = true;
-      if( k == 0 ) { fillLep1 = true;       } 
-      if( k == 1 ) { fillLep1 = passID1_;   }
-      if( k == 2 ) { fillLep1 = passIso1_;  } 
-      if( k == 3 ) { fillLep1 = passID1_ && passIso1_;  }
-      if( k == 4 ) { fillLep1 = veto1_;       }
-      if( k == 5 ) { fillLep1 = loose1_;      }
-      if( k == 6 ) { fillLep1 = medium1_;     }
-      if( k == 7 ) { fillLep1 = tight1_;      }
-
-      //if( !pass ) break;
-
-      for(int d = 0 ; d < 2 ; d++){
-
-        //Is this event QCD when d=1?
-        if( d == 0 ){  //for Signal
-
-           //if(useZMassWindow_){
-          //   if( !passDimass ) continue; 
-          // }else{
-             fillLep1 = fillLep1 && isMatchedLep1;
-           //}
-        }
-        if( d == 1){ //for QCD 
-          fillLep1 = fillLep1 && QCD1;
-        }
-
-
-        if(fillLep1){
-          h_mvaTrigV0[d][k][isEB1_]->Fill( mvaTrigV0Lep1 );
-          h_pfRelIso03[d][k][isEB1_]->Fill( relPfIso03Lep1 );
-          h_pfRelIso04[d][k][isEB1_]->Fill( relPfIso04Lep1 );
-          h_pfRelIso03db[d][k][isEB1_]->Fill( relPfIso03dbLep1 );
-          h_pfRelIso04db[d][k][isEB1_]->Fill( relPfIso04dbLep1 );
-          h_pfRelIso03rho[d][k][isEB1_]->Fill( relPfIso03rhoLep1 );
-          h_pfRelIso04rho[d][k][isEB1_]->Fill( relPfIso04rhoLep1 );
-          if( nJets >= 1 ) h_dR[d][k][isEB1_]->Fill(dRLep1);
-
-          h2_mvaTrigV0[d][k][isEB1_]->Fill( nvertex, mvaTrigV0Lep1 );
-          h2_pfRelIso03[d][k][isEB1_]->Fill( nvertex, relPfIso03Lep1 );
-          h2_pfRelIso04[d][k][isEB1_]->Fill( nvertex, relPfIso04Lep1 );
-          h2_pfRelIso03db[d][k][isEB1_]->Fill(nvertex, relPfIso03dbLep1 );
-          h2_pfRelIso04db[d][k][isEB1_]->Fill( nvertex, relPfIso04dbLep1 );
-          h2_pfRelIso03rho[d][k][isEB1_]->Fill( nvertex,  relPfIso03rhoLep1 );
-          h2_pfRelIso04rho[d][k][isEB1_]->Fill( nvertex, relPfIso04rhoLep1 );
-
-        }
-
-
-        if( fillLep1 ) {
-          h_nJet[d][k][isEB1_]->Fill(nJets);
-        }
-
-      }
-
-    }//fill histogram 
-
   }//electron loop
 
   iEvent.put(triggeredElectrons);
