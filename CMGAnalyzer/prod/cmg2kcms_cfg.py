@@ -15,6 +15,7 @@ process.MessageLogger.cerr.FwkReport.reportEvery = 10000
 
 process.load("KoPFA.CMGAnalyzer.topAnalysis_cff")
 process.load("KoPFA.CommonTools.eventFilter_cfi")
+process.load("KoPFA.CMGAnalyzer.cmgElectronAnalyzer_cfi")
 process.load("KoPFA.CMGAnalyzer.ZFilter_cfi")
 from KoPFA.CommonTools.PileUpWeight_cff import *
 
@@ -22,7 +23,7 @@ runOnMC = True
 runOn2012 = True
 
 #Data
-#process.load("KoPFA.CommonTools.Sources.CMG.V5_7_0.Run2012.patTuple_Run2012ADoubleMu_cff")
+#process.load("KoPFA.CommonTools.Sources.CMG.V5_7_0.Run2012.cmgTuple_Run2012AElEl_cff")
 #MC
 process.load("KoPFA.CommonTools.Sources.CMG.V5_7_0.Summer12.patTuple_TTbarTuneZ2_cff")
 #process.load("KoPFA.CommonTools.Sources.CMG.V5_7_0.Summer12.cmgTuple_TTH_HToBB_M125_cff")
@@ -66,6 +67,8 @@ process.BaseSequenceMuMu = cloneProcessingSnippet(process, process.BaseSequence,
 process.BaseSequenceMuEl = cloneProcessingSnippet(process, process.BaseSequence, 'MuEl')
 process.BaseSequenceElEl = cloneProcessingSnippet(process, process.BaseSequence, 'ElEl')
 
+### Ntuple producer for dilepton ###
+
 process.p = cms.Path(
     process.BaseSequenceMuMu*
     process.ZMuMu*
@@ -82,6 +85,12 @@ process.p3 = cms.Path(
     process.BaseSequenceElEl*
     process.ZElEl*
     process.ElEl
+)
+
+### Electron Analyzer ###
+
+process.p4 = cms.Path(
+    process.ElectronAnalysis
 )
 
 process.TFileService = cms.Service("TFileService",
