@@ -8,7 +8,7 @@ ElectronAnalysis = cms.EDProducer("cmgElectronAnalyzer",
   genParticlesLabel = cms.InputTag('genParticlesPruned'),
   vertexLabel = cms.untracked.InputTag('offlinePrimaryVertices'),
   rhoIsoLabel =  cms.untracked.InputTag('kt6PFJets','rho'),
-  useZMassWindow = cms.untracked.bool(True)
+  useZMassWindow = cms.untracked.bool(False)
 )
 
 #ElectronAnalysis = cms.EDAnalyzer("pfElectronAnalyzer",
