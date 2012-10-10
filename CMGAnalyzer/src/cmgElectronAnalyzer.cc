@@ -246,7 +246,7 @@ void cmgElectronAnalyzer::produce(edm::Event& iEvent, const edm::EventSetup& es)
 
     bool isMatchedLep1 = true;
    
-    if( !isRealData )isMatchedLep1 = isFromW(Lep1.p4(), genParticles_);
+    if( !isRealData )isMatchedLep1 = isFromWorZ(Lep1.p4(), genParticles_);
 
     if( !isMatchedLep1 ) continue;
 
@@ -441,7 +441,7 @@ bool cmgElectronAnalyzer::PassWP(EgammaCutBasedEleId::WorkingPoint workingPoint,
     return false;
 }
 
-bool cmgElectronAnalyzer::isFromW( const reco::Candidate::LorentzVector& lepton, const edm::Handle<reco::GenParticleCollection> & genParticles_ ){
+bool cmgElectronAnalyzer::isFromWorZ( const reco::Candidate::LorentzVector& lepton, const edm::Handle<reco::GenParticleCollection> & genParticles_ ){
 
   bool out = false;
 
@@ -456,7 +456,7 @@ bool cmgElectronAnalyzer::isFromW( const reco::Candidate::LorentzVector& lepton,
    
     const reco::Candidate* mother = mcIter->mother();
     while( mother != 0 ){
-      if( abs(mother->pdgId()) == 24 ) { 
+      if( abs(mother->pdgId()) == 24 || abs(mother->pdgId()) == 23 ) { 
         out = true;
       }
       mother = mother->mother();
