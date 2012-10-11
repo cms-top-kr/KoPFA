@@ -9,6 +9,8 @@
 #include "FWCore/Framework/interface/EventSetup.h"
 #include "DataFormats/PatCandidates/interface/Electron.h"
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
+#include "FWCore/Framework/interface/LuminosityBlock.h"
+#include "DataFormats/Common/interface/MergeableCounter.h"
 
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "FWCore/Utilities/interface/InputTag.h"
@@ -57,6 +59,7 @@ class cmgElectronAnalyzer : public edm::EDProducer
                                          const double &iso_em,       const double &iso_nh,    const double &rho);
   bool isFromWorZ( const reco::Candidate::LorentzVector& lepton, const edm::Handle<reco::GenParticleCollection> & genParticles );
   bool MatchObjects( const reco::Candidate::LorentzVector& pasObj, const reco::Candidate::LorentzVector& proObj, bool exact ); 
+  void endLuminosityBlock(edm::LuminosityBlock & lumi, const edm::EventSetup & setup);
 
   edm::InputTag electronLabel_; 
   edm::InputTag beamSpotLabel_;
@@ -73,6 +76,10 @@ class cmgElectronAnalyzer : public edm::EDProducer
   edm::Handle<std::vector<cmg::Electron> > electrons_;
   edm::Handle<std::vector<cmg::PFJet> > Jets;
   edm::Handle<std::vector<cmg::BaseMET> > MET_;
+
+  std::vector<std::string> filters_;
+  TH1F * tmp;
+  bool useEventCounter_;
 
   //electron loop
   //[i][j][k] : i=QCD, j=selection, k=region

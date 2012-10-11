@@ -25,9 +25,14 @@ cmgElectronAnalyzer::cmgElectronAnalyzer(const edm::ParameterSet& cfg)
   rhoIsoLabel_ =  cfg.getUntrackedParameter<edm::InputTag>("rhoIsoLabel");
   useZMassWindow_ =  cfg.getUntrackedParameter<bool>("useZMassWindow");
 
+  filters_ = cfg.getUntrackedParameter<std::vector<std::string> >("filters");
+  useEventCounter_ = cfg.getParameter<bool>("useEventCounter");
+
   produces<std::vector<cmg::Electron> >("");
 
   edm::Service<TFileService> fs;
+
+  tmp = fs->make<TH1F>("EventSummary","EventSummary",filters_.size(),0,filters_.size());
 
   ///////Electron loop
   for(int d=0 ; d < 2 ; d++){
@@ -483,6 +488,21 @@ bool cmgElectronAnalyzer::MatchObjects( const reco::Candidate::LorentzVector& pa
     // be exactly the same, cut hard. Otherwise take cuts from user.
     if( exact ) return ( dRval < 1e-3 && dPtRel < 1e-3 );
     else        return ( dRval < 0.025 && dPtRel < 0.025 );
+}
+
+void cmgElectronAnalyzer::endLuminosityBlock(edm::LuminosityBlock & lumi, const edm::EventSetup & setup){
+  if(useEventCounter_){
+    for(unsigned int i=0;i<filters_.size();++i) {
+      std::string name = filters_[i];
+      edm::Handle<edm::MergeableCounter> numEventsCounter;
+      lumi.getByLabel(name, numEventsCounter);
+      if( numEventsCounter.isValid()){
+        tmp->AddBinContent(i+1, numEventsCounter->value);
+        tmp->GetXaxis()->SetBinLabel(i+1,filters_[i].c_str());
+      }
+    }
+  }
+//  return true;
 }
 
 
