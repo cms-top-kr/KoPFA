@@ -40,8 +40,28 @@ def doWork(finalpath, action):
     if os.path.isfile( destinationfile ):
       print destinationfile + " exists."
     else:
-      os.system("hadd -f "+destinationfile+" "+finalpath+"/Res/vallot_*.root")
+      filelist = os.listdir(finalpath+"/Res")
+      #make list of 500 files
+      n = 0
+      list = [] 
+      tmp = ""
+      for f in filelist:
+        n += 1
+        k = n%500
+        if k == 0:
+          list.append(tmp)
+          tmp = ""
+        else:
+          tmp += finalpath+"/Res/"+f+" "
+      ## merge 500 files first to tmp file.
+      j = 0 
+      for l in list:
+        tmpfile = pathdir+"/tmp_"+sample+"_"+str(j)+".root"
+        os.system("hadd -f "+tmpfile+" "+l)
+        j += 1
 
+      os.system("hadd -f "+destinationfile+" "+pathdir+"/tmp_"+sample+"*.root")
+      os.system("rm -rf "+pathdir+"/tmp_"+sample+"*.root")
     x = raw_input("Remove directory %s (y/n)?" % (finalpath))
     if x == "y":
       os.system("rm -rf "+finalpath+"/Log")
