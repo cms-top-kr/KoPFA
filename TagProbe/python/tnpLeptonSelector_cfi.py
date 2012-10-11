@@ -25,6 +25,11 @@ taggedMuons = cms.EDProducer(
     muonIsoSelector = muonIso,
 )
 
+taggedLooseMuons = cms.EDFilter("PATMuonSelector",
+    src = cms.InputTag("selectedPatMuons"),
+    cut =cms.string("isGlobalMuon && pt > 20 && abs(eta) < 2.4 && (trackIso+ecalIso+hcalIso)/pt < 0.15")
+)
+
 taggedTightMuons = cms.EDFilter("PATMuonSelector",
     src = cms.InputTag("selectedPatMuons"),
     cut =cms.string("isGlobalMuon && pt > 20 && abs(eta) < 2.4 && globalTrack.normalizedChi2 < 10.0 && globalTrack.hitPattern.numberOfValidMuonHits > 0 && abs(dB) < 0.2 && innerTrack.hitPattern.numberOfValidPixelHits > 0 && innerTrack.hitPattern.numberOfValidTrackerHits > 10 && numberOfMatchedStations() > 1 && (trackIso+ecalIso+hcalIso)/pt < 0.15")
@@ -48,6 +53,11 @@ IDMuons = cms.EDProducer(
     beamSpotLabel = cms.InputTag("offlineBeamSpot"),
     muonIdSelector = muonprobId,
     muonIsoSelector = muonIso,
+)
+
+LooseMuons = cms.EDFilter("PATMuonSelector",
+    src = cms.InputTag("selectedPatMuons"),
+    cut =cms.string("isGlobalMuon && pt > 20 && abs(eta) < 2.4")
 )
 
 TightMuons = cms.EDFilter("PATMuonSelector",
