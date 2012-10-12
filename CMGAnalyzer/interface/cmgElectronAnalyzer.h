@@ -87,6 +87,7 @@ class cmgElectronAnalyzer : public edm::EDProducer
   TH1F * h_pfRelIso03[2][11][2];
   TH1F * h_pfRelIso04[2][11][2];
   TH1F * h_pfRelIso03db[2][11][2];
+  TH1F * h_pfRelIso03dbmod[2][11][2];
   TH1F * h_pfRelIso04db[2][11][2];
   TH1F * h_pfRelIso03rho[2][11][2];
   TH1F * h_pfRelIso04rho[2][11][2];
@@ -102,6 +103,7 @@ class cmgElectronAnalyzer : public edm::EDProducer
   TH1F * h_dimass[2];
   TH1F * h_nJet[2];
   TH1F * h_met[2];
+  TH1F * h_delphi[2];
 
   //pileup dependency
   TH2F * h2_mvaTrigV0[2][11][2];

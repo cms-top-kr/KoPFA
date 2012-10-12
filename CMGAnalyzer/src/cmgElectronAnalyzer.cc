@@ -54,7 +54,7 @@ cmgElectronAnalyzer::cmgElectronAnalyzer(const edm::ParameterSet& cfg)
       if(i==7) selDirName = "IDTightIso";
       if(i==8) selDirName = "IDMediumIsoPF";
       if(i==9) selDirName = "IDTightIsoPF";
-      if(i==10) selDirName = "IDMVAPF";
+      if(i==10) selDirName = "IDPF";
 
       for(int k=0 ; k <2 ; k++){
         TString dirName = "";
@@ -67,25 +67,26 @@ cmgElectronAnalyzer::cmgElectronAnalyzer(const edm::ParameterSet& cfg)
         TFileDirectory dir = fs->mkdir(Form("%s/%s/%s",mainDirName.Data(), selDirName.Data(), dirName.Data()));
 
         h_mvaTrigV0[d][i][k] = dir.make<TH1F>( "h_mvaTrigV0", "h_mvaTrigV0", 200, -1, 1);
-        h_pfRelIso03[d][i][k] = dir.make<TH1F>( "h_pfRelIso03", "h_pfRelIso03", 200, 0, 2);
-        h_pfRelIso04[d][i][k] = dir.make<TH1F>( "h_pfRelIso04", "h_pfRelIso04", 200, 0, 2);
-        h_pfRelIso03db[d][i][k] = dir.make<TH1F>( "h_pfRelIso03db", "h_pfRelIso03db", 200, 0, 2);
-        h_pfRelIso04db[d][i][k] = dir.make<TH1F>( "h_pfRelIso04db", "h_pfRelIso04db", 200, 0, 2);
-        h_pfRelIso03rho[d][i][k] = dir.make<TH1F>( "h_pfRelIso03rho", "h_pfRelIso03rho", 200, 0, 2);
-        h_pfRelIso04rho[d][i][k] = dir.make<TH1F>( "h_pfRelIso04rho", "h_pfRelIso04rho", 200, 0, 2);
+        h_pfRelIso03[d][i][k] = dir.make<TH1F>( "h_pfRelIso03", "h_pfRelIso03", 1000, 0, 10);
+        h_pfRelIso04[d][i][k] = dir.make<TH1F>( "h_pfRelIso04", "h_pfRelIso04", 1000, 0, 10);
+        h_pfRelIso03db[d][i][k] = dir.make<TH1F>( "h_pfRelIso03db", "h_pfRelIso03db", 1000, 0, 10);
+        h_pfRelIso03dbmod[d][i][k] = dir.make<TH1F>( "h_pfRelIso03dbmod", "h_pfRelIso03dbmod", 1000, 0, 10);
+        h_pfRelIso04db[d][i][k] = dir.make<TH1F>( "h_pfRelIso04db", "h_pfRelIso04db", 1000, 0, 10);
+        h_pfRelIso03rho[d][i][k] = dir.make<TH1F>( "h_pfRelIso03rho", "h_pfRelIso03rho", 1000, 0, 10);
+        h_pfRelIso04rho[d][i][k] = dir.make<TH1F>( "h_pfRelIso04rho", "h_pfRelIso04rho", 1000, 0, 10);
         h_dR[d][i][k] = dir.make<TH1F>( "h_dR", "h_dR", 300, 0, 3);
         h_njet[d][i][k] = dir.make<TH1F>( "h_njet", "h_njet", 10, 0, 10);
         h_pt[d][i][k] = dir.make<TH1F>( "h_pt", "h_pt", 40, 0, 200);
-        h_eta[d][i][k] = dir.make<TH1F>( "h_eta", "h_eta", 30, 0, 3);
-        h_pv[d][i][k] = dir.make<TH1F>( "h_pv", "h_pv", 60, 0, 60);
+        h_eta[d][i][k] = dir.make<TH1F>( "h_eta", "h_eta", 25, 0, 2.5);
+        h_pv[d][i][k] = dir.make<TH1F>( "h_pv", "h_pv", 50, 0, 50);
 
-        h2_mvaTrigV0[d][i][k] = dir.make<TH2F>( "h2_mvaTrigV0", "h2_mvaTrigV0", 60,0,60,200, -1, 1);
-        h2_pfRelIso03[d][i][k] = dir.make<TH2F>( "h2_pfRelIso03", "h2_pfRelIso03", 60,0,60,200, 0, 2);
-        h2_pfRelIso04[d][i][k] = dir.make<TH2F>( "h2_pfRelIso04", "h2_pfRelIso04", 60,0,60,200, 0, 2);
-        h2_pfRelIso03db[d][i][k] = dir.make<TH2F>( "h2_pfRelIso03db", "h2_pfRelIso03db", 60,0,60,200, 0, 2);
-        h2_pfRelIso04db[d][i][k] = dir.make<TH2F>( "h2_pfRelIso04db", "h2_pfRelIso04db", 60,0,60,200, 0, 2);
-        h2_pfRelIso03rho[d][i][k] = dir.make<TH2F>( "h2_pfRelIso03rho", "h2_pfRelIso03rho", 60,0,60,200, 0, 2);
-        h2_pfRelIso04rho[d][i][k] = dir.make<TH2F>( "h2_pfRelIso04rho", "h2_pfRelIso04rho", 60,0,60,200, 0, 2);
+        h2_mvaTrigV0[d][i][k] = dir.make<TH2F>( "h2_mvaTrigV0", "h2_mvaTrigV0", 50,0,50,200, -1, 1);
+        h2_pfRelIso03[d][i][k] = dir.make<TH2F>( "h2_pfRelIso03", "h2_pfRelIso03", 50,0,50,1000, 0, 10);
+        h2_pfRelIso04[d][i][k] = dir.make<TH2F>( "h2_pfRelIso04", "h2_pfRelIso04", 50,0,50,1000, 0, 10);
+        h2_pfRelIso03db[d][i][k] = dir.make<TH2F>( "h2_pfRelIso03db", "h2_pfRelIso03db", 50,0,50,1000, 0, 10);
+        h2_pfRelIso04db[d][i][k] = dir.make<TH2F>( "h2_pfRelIso04db", "h2_pfRelIso04db", 50,0,50,1000, 0, 10);
+        h2_pfRelIso03rho[d][i][k] = dir.make<TH2F>( "h2_pfRelIso03rho", "h2_pfRelIso03rho", 50,0,50,1000, 0, 10);
+        h2_pfRelIso04rho[d][i][k] = dir.make<TH2F>( "h2_pfRelIso04rho", "h2_pfRelIso04rho", 50,0,50,1000, 0, 10);
 
       }
     }
@@ -103,6 +104,7 @@ cmgElectronAnalyzer::cmgElectronAnalyzer(const edm::ParameterSet& cfg)
     h_dimass[d] = dir.make<TH1F>( "h_dimass", "h_dimass", 200, 0, 200);
     h_met[d]    = dir.make<TH1F>( "h_met", "h_met", 20, 0, 200);
     h_nJet[d]   = dir.make<TH1F>( "h_nJet", "h_nJet", 10, 0, 10);
+    h_delphi[d]   = dir.make<TH1F>( "h_delphi", "h_delphi", 32, 0, 3.2);
 
   }
 
@@ -166,7 +168,8 @@ void cmgElectronAnalyzer::produce(edm::Event& iEvent, const edm::EventSetup& es)
     //bool passPre = electron.pt() > 20 && fabs(electron.eta()) < 2.5 && fabs( electron.sourcePtr()->get()->gsfTrack()->dxy(pv.position()) ) < 0.04;
     bool passPre = electron.pt() > 20 && fabs(electron.eta()) < 2.5;
 
-    bool passTrig = passPre && electron.getSelection("cuts_premvaTrig"); //->get());
+    //bool passTrig = passPre && electron.getSelection("cuts_premvaTrig"); //->get());
+    bool passTrig = passPre && trainTrigPresel(electron);// no isolation 
 
     if( passTrig ) triggeredElectrons->push_back((*electrons_)[i]);
 
@@ -201,9 +204,9 @@ void cmgElectronAnalyzer::produce(edm::Event& iEvent, const edm::EventSetup& es)
 
     bool overlap = false;
     
-    for (unsigned int i=0; i < mediumElectrons->size(); ++i){
-      cmg::Electron electron = mediumElectrons->at(i);
-      double dR= sqrt( (electron.eta()-jet.eta())*(electron.eta()-jet.eta()) + (electron.phi()-jet.phi())*(electron.phi()-jet.phi()) );
+    for (unsigned int i=0; i < triggeredElectrons->size(); ++i){
+      cmg::Electron electron = triggeredElectrons->at(i);
+      double dR =  deltaR(electron.eta(), electron.phi(), jet.eta(), jet.phi());
       if( dR < 0.5 ) {
         overlap = true;
         break;
@@ -214,12 +217,12 @@ void cmgElectronAnalyzer::produce(edm::Event& iEvent, const edm::EventSetup& es)
   }
 
   int nJets = cleanedJets->size();
-  int nLeps = mediumElectrons->size();
+  int nLeps = triggeredElectrons->size();
 
   double mtW = 0.0;
   double delphi = 0.0;
-  if( mediumElectrons->size() >=1) {
-    const cmg::Electron leading = mediumElectrons->at(0);
+  if( triggeredElectrons->size() >=1) {
+    const cmg::Electron leading = triggeredElectrons->at(0);
     mtW =  transverseMass( leading.p4() , mi->p4() );
     delphi = fabs(deltaPhi(leading.phi(), mi->p4().phi()));
   }
@@ -237,17 +240,21 @@ void cmgElectronAnalyzer::produce(edm::Event& iEvent, const edm::EventSetup& es)
   }
   
   //// QCD EVENT selection ////
-  bool QCD =  dimass <= 0  && mtW < 20 && MET < 30 && nJets >=1 && delphi < 1.5;
+  bool QCD =  nLeps <= 1  && mtW < 20 && MET < 20 && nJets == 1 && delphi < 1.5;
+
   int d = 0;
   if(QCD ) d=1;
 
-  h_mtW[d]->Fill(mtW);
-  h_dimass[d]->Fill(dimass);
-  h_met[d]->Fill(MET);
-  h_nJet[d]->Fill(nJets);
- 
+  if( triggeredElectrons->size() >= 1){
+    h_mtW[d]->Fill(mtW);
+    h_dimass[d]->Fill(dimass);
+    h_met[d]->Fill(MET);
+    h_nJet[d]->Fill(nJets);
+    h_delphi[d]->Fill(delphi);
+  } 
+
   for (unsigned int j=0; j < triggeredElectrons->size(); ++j){
-    cmg::Electron Lep1 = electrons_->at(j);
+    cmg::Electron Lep1 = triggeredElectrons->at(j);
 
     bool isMatchedLep1 = true;
    
@@ -278,11 +285,13 @@ void cmgElectronAnalyzer::produce(edm::Event& iEvent, const edm::EventSetup& es)
     double puChIso04Lep1 = Lep1.puChargedHadronIso(0.4);
     double nhIso04Lep1 = Lep1.neutralHadronIso(0.4);
     double phIso04Lep1 = Lep1.photonIso(0.4);
-
+    double sf = 0.5;
+    if( fabs(sceta1) > 2.0 ) sf = 1.0; 
     double mvaTrigV0Lep1 = Lep1.sourcePtr()->get()->electronID("mvaTrigV0");
     double relPfIso03Lep1 = ( chIso03Lep1 + nhIso03Lep1 + phIso03Lep1 )/ Lep1.pt(); 
     double relPfIso04Lep1 = ( chIso04Lep1 + nhIso04Lep1 + phIso04Lep1 )/ Lep1.pt();
     double relPfIso03dbLep1 = ( chIso03Lep1 + max(0.0, nhIso03Lep1 + phIso03Lep1 - 0.5*puChIso03Lep1) )/ Lep1.pt();
+    double relPfIso03dbmodLep1 = ( chIso03Lep1 + max(0.0, nhIso03Lep1 + phIso03Lep1 - sf*puChIso03Lep1) )/ Lep1.pt();
     double relPfIso04dbLep1 = ( chIso04Lep1 + max(0.0, nhIso04Lep1 + phIso04Lep1 - 0.5*puChIso04Lep1) )/ Lep1.pt();
     double relPfIso03rhoLep1 = ( chIso03Lep1 + max(0.0, nhIso03Lep1 + phIso03Lep1 - rhoIso*AEff03Lep1) )/ Lep1.pt();
     double relPfIso04rhoLep1 = ( chIso04Lep1 + max(0.0, nhIso04Lep1 + phIso04Lep1 - rhoIso*AEff04Lep1) )/ Lep1.pt();
@@ -328,13 +337,14 @@ void cmgElectronAnalyzer::produce(edm::Event& iEvent, const edm::EventSetup& es)
       if( sel == 7 ) fill = passTight && passIso;
       if( sel == 8 ) fill = passMedium && passIso && passPF;
       if( sel == 9 ) fill = passTight && passIso && passPF;
-      if( sel == 10 ) fill = passMva && passPF;
+      if( sel == 10 ) fill = passPF;
 
       if( fill ){
         h_mvaTrigV0[d][sel][isEB1]->Fill( mvaTrigV0Lep1 );
         h_pfRelIso03[d][sel][isEB1]->Fill( relPfIso03Lep1 );
         h_pfRelIso04[d][sel][isEB1]->Fill( relPfIso04Lep1 );
         h_pfRelIso03db[d][sel][isEB1]->Fill( relPfIso03dbLep1 );
+        h_pfRelIso03dbmod[d][sel][isEB1]->Fill( relPfIso03dbmodLep1 );
         h_pfRelIso04db[d][sel][isEB1]->Fill( relPfIso04dbLep1 );
         h_pfRelIso03rho[d][sel][isEB1]->Fill( relPfIso03rhoLep1 );
         h_pfRelIso04rho[d][sel][isEB1]->Fill( relPfIso04rhoLep1 );
@@ -353,6 +363,7 @@ void cmgElectronAnalyzer::produce(edm::Event& iEvent, const edm::EventSetup& es)
         h2_pfRelIso04rho[d][sel][isEB1]->Fill( nvertex, relPfIso04rhoLep1 );
       }
     }
+    //break;
   }//electron loop
 
   iEvent.put(triggeredElectrons);
@@ -374,18 +385,18 @@ bool cmgElectronAnalyzer::trainTrigPresel(const cmg::Electron& ele) {
   if(fabs(ele.sourcePtr()->get()->superCluster()->eta()) < 1.479) {
     if(ele.sourcePtr()->get()->sigmaIetaIeta() < 0.014 &&
        ele.sourcePtr()->get()->hadronicOverEm() < 0.15 &&
-       ele.sourcePtr()->get()->dr03TkSumPt()/ele.sourcePtr()->get()->pt() < 0.2 &&
-       ele.sourcePtr()->get()->dr03EcalRecHitSumEt()/ele.sourcePtr()->get()->pt() < 0.2 &&
-       ele.sourcePtr()->get()->dr03HcalTowerSumEt()/ele.sourcePtr()->get()->pt() < 0.2 &&
+       //ele.sourcePtr()->get()->dr03TkSumPt()/ele.sourcePtr()->get()->pt() < 0.2 &&
+       //ele.sourcePtr()->get()->dr03EcalRecHitSumEt()/ele.sourcePtr()->get()->pt() < 0.2 &&
+       //ele.sourcePtr()->get()->dr03HcalTowerSumEt()/ele.sourcePtr()->get()->pt() < 0.2 &&
        ele.sourcePtr()->get()->gsfTrack()->trackerExpectedHitsInner().numberOfLostHits() == 0)
       myTrigPresel = true;
   }
   else {
     if(ele.sourcePtr()->get()->sigmaIetaIeta() < 0.035 &&
        ele.sourcePtr()->get()->hadronicOverEm() < 0.10 &&
-       ele.sourcePtr()->get()->dr03TkSumPt()/ele.sourcePtr()->get()->pt() < 0.2 &&
-       ele.sourcePtr()->get()->dr03EcalRecHitSumEt()/ele.sourcePtr()->get()->pt() < 0.2 &&
-       ele.sourcePtr()->get()->dr03HcalTowerSumEt()/ele.sourcePtr()->get()->pt() < 0.2 &&
+       //ele.sourcePtr()->get()->dr03TkSumPt()/ele.sourcePtr()->get()->pt() < 0.2 &&
+       //ele.sourcePtr()->get()->dr03EcalRecHitSumEt()/ele.sourcePtr()->get()->pt() < 0.2 &&
+       //ele.sourcePtr()->get()->dr03HcalTowerSumEt()/ele.sourcePtr()->get()->pt() < 0.2 &&
        ele.sourcePtr()->get()->gsfTrack()->trackerExpectedHitsInner().numberOfLostHits() == 0)
       myTrigPresel = true;
   }
