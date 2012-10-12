@@ -6,7 +6,8 @@ import sys,os
 # use in the folder Out   
 # modify the name aaa by a channel for merging.
 
-aaa="TTbarTuneZ2"
+aaa=sys.argv[1]
+
 os.system("ls %s/Res/val* -1 | grep -c val > log  "% aaa)
 f = open("log","r")
 bb = f.read()
