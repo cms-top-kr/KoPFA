@@ -24,6 +24,8 @@ cmgElectronAnalyzer::cmgElectronAnalyzer(const edm::ParameterSet& cfg)
   vertexLabel_ =  cfg.getUntrackedParameter<edm::InputTag>("vertexLabel");
   rhoIsoLabel_ =  cfg.getUntrackedParameter<edm::InputTag>("rhoIsoLabel");
   useZMassWindow_ =  cfg.getUntrackedParameter<bool>("useZMassWindow");
+  applyPreTrigSel_ = cfg.getUntrackedParameter<bool>("applyPreTrigSel", true); 
+  numberOfHits_ = cfg.getUntrackedParameter<unsigned int>("numberOfHits",1); 
 
   filters_ = cfg.getUntrackedParameter<std::vector<std::string> >("filters");
   useEventCounter_ = cfg.getParameter<bool>("useEventCounter");
@@ -152,44 +154,29 @@ void cmgElectronAnalyzer::produce(edm::Event& iEvent, const edm::EventSetup& es)
   }
 
   std::auto_ptr<std::vector<cmg::Electron> > triggeredElectrons(new std::vector<cmg::Electron>());
-  std::auto_ptr<std::vector<cmg::Electron> > looseElectrons(new std::vector<cmg::Electron>());
-  std::auto_ptr<std::vector<cmg::Electron> > mediumElectrons(new std::vector<cmg::Electron>());
-  std::auto_ptr<std::vector<cmg::Electron> > tightElectrons(new std::vector<cmg::Electron>());
-  std::auto_ptr<std::vector<cmg::Electron> > mvaElectrons(new std::vector<cmg::Electron>());
 
   //preselection
   for (unsigned int i=0; i < electrons_->size(); ++i){
     cmg::Electron electron = electrons_->at(i);
-    double sceta = electron.sourcePtr()->get()->superCluster()->eta();
 
+    //double sceta = electron.sourcePtr()->get()->superCluster()->eta();
+
+    ////use dxy with respect to beamspot
     //bool passPre = electron.pt() > 20 && fabs(electron.eta()) < 2.5 && fabs(electron.gsfTrack()->dxy(beamSpot_->position())) < 0.04;
+    //// use dxy with respect to PV
     //if( goodOfflinePrimaryVertices->size() < 1 ) continue;
     //reco::Vertex pv = goodOfflinePrimaryVertices->at(0);
     //bool passPre = electron.pt() > 20 && fabs(electron.eta()) < 2.5 && fabs( electron.sourcePtr()->get()->gsfTrack()->dxy(pv.position()) ) < 0.04;
     bool passPre = electron.pt() > 20 && fabs(electron.eta()) < 2.5;
 
     //bool passTrig = passPre && electron.getSelection("cuts_premvaTrig"); //->get());
-    bool passTrig = passPre && trainTrigPresel(electron);// no isolation 
+    bool passTrig = passPre && trainTrigPresel(electron, numberOfHits_ ); 
 
-    if( passTrig ) triggeredElectrons->push_back((*electrons_)[i]);
+    if( applyPreTrigSel_ ) {
+      if( !passTrig ) continue; 
+    }
 
-    double chIso03 = electron.chargedHadronIso(0.3);
-    double nhIso03 = electron.neutralHadronIso(0.3);
-    double phIso03 = electron.photonIso(0.3);
-
-    //bool passLoose     = PassWP(EgammaCutBasedEleId::LOOSE, electron, chIso03, phIso03, nhIso03, rhoIso);
-    //bool passMedium    = PassWP(EgammaCutBasedEleId::MEDIUM,electron, chIso03, phIso03, nhIso03, rhoIso);
-    //bool passTight     = PassWP(EgammaCutBasedEleId::TIGHT, electron, chIso03, phIso03, nhIso03, rhoIso);
-    bool passLoose     = electron.getSelection("cuts_looseNoVtx");
-    bool passMedium     = electron.getSelection("cuts_mediumNoVtx");
-    bool passTight     = electron.getSelection("cuts_tightNoVtx");
-    bool passMva       = electron.sourcePtr()->get()->electronID("mvaTrigV0") > 0.0 ;
-
-    if( passMva ) mvaElectrons->push_back((*electrons_)[i]);
-    if( passLoose ) looseElectrons->push_back((*electrons_)[i]);
-    if( passMedium ) mediumElectrons->push_back((*electrons_)[i]);
-    if( passTight ) tightElectrons->push_back((*electrons_)[i]);
-
+    triggeredElectrons->push_back((*electrons_)[i]);
   }
  
   std::auto_ptr<std::vector<cmg::PFJet> > cleanedJets(new std::vector<cmg::PFJet>());
@@ -217,7 +204,6 @@ void cmgElectronAnalyzer::produce(edm::Event& iEvent, const edm::EventSetup& es)
   }
 
   int nJets = cleanedJets->size();
-  int nLeps = triggeredElectrons->size();
 
   double mtW = 0.0;
   double delphi = 0.0;
@@ -228,19 +214,23 @@ void cmgElectronAnalyzer::produce(edm::Event& iEvent, const edm::EventSetup& es)
   }
 
   double dimass = 0.;
-  for( unsigned int i = 0 ; i < mediumElectrons->size() ; i++){
-    for( unsigned int j = 0 ; j < looseElectrons->size() ; j++){
-      cmg::Electron electron1 = mediumElectrons->at(i);
-      cmg::Electron electron2 = looseElectrons->at(j);
+  double charge = 0;
+  for( unsigned int i = 0 ; i < triggeredElectrons->size() ; i++){
+    for( unsigned int j = 0 ; j < triggeredElectrons->size() ; j++){
+      cmg::Electron electron1 = triggeredElectrons->at(i);
+      cmg::Electron electron2 = triggeredElectrons->at(j);
       const bool match = MatchObjects( electron1.p4(), electron2.p4(), true);
       if(match) continue; 
       dimass = (electron1.p4() + electron2.p4()).M();
+      charge = electron1.charge()*electron2.charge();
       break;
     }
   }
   
   //// QCD EVENT selection ////
-  bool QCD =  nLeps <= 1  && mtW < 20 && MET < 20 && nJets == 1 && delphi < 1.5;
+  //int nLeps = triggeredElectrons->size();
+  //bool QCD =  nLeps <= 1  && mtW < 20 && MET < 20 && nJets == 1 && delphi < 1.5;
+  bool QCD =  charge > 0 && fabs(dimass-91) > 15 && mtW < 20 && MET < 30 && nJets >= 1 && delphi < 1.5;
 
   int d = 0;
   if(QCD ) d=1;
@@ -379,25 +369,27 @@ void
 cmgElectronAnalyzer::endJob() {
 }
 
-bool cmgElectronAnalyzer::trainTrigPresel(const cmg::Electron& ele) {
+bool cmgElectronAnalyzer::trainTrigPresel(const cmg::Electron& ele, unsigned int numberOfHits) {
   
   bool myTrigPresel = false;
   if(fabs(ele.sourcePtr()->get()->superCluster()->eta()) < 1.479) {
     if(ele.sourcePtr()->get()->sigmaIetaIeta() < 0.014 &&
        ele.sourcePtr()->get()->hadronicOverEm() < 0.15 &&
-       //ele.sourcePtr()->get()->dr03TkSumPt()/ele.sourcePtr()->get()->pt() < 0.2 &&
-       //ele.sourcePtr()->get()->dr03EcalRecHitSumEt()/ele.sourcePtr()->get()->pt() < 0.2 &&
-       //ele.sourcePtr()->get()->dr03HcalTowerSumEt()/ele.sourcePtr()->get()->pt() < 0.2 &&
-       ele.sourcePtr()->get()->gsfTrack()->trackerExpectedHitsInner().numberOfLostHits() == 0)
+       ele.sourcePtr()->get()->dr03TkSumPt()/ele.sourcePtr()->get()->pt() < 0.2 &&
+       ele.sourcePtr()->get()->dr03EcalRecHitSumEt()/ele.sourcePtr()->get()->pt() < 0.2 &&
+       ele.sourcePtr()->get()->dr03HcalTowerSumEt()/ele.sourcePtr()->get()->pt() < 0.2 &&
+       ele.sourcePtr()->get()->gsfTrack()->trackerExpectedHitsInner().numberOfLostHits() <= (int) numberOfHits
+      )
       myTrigPresel = true;
   }
   else {
     if(ele.sourcePtr()->get()->sigmaIetaIeta() < 0.035 &&
        ele.sourcePtr()->get()->hadronicOverEm() < 0.10 &&
-       //ele.sourcePtr()->get()->dr03TkSumPt()/ele.sourcePtr()->get()->pt() < 0.2 &&
-       //ele.sourcePtr()->get()->dr03EcalRecHitSumEt()/ele.sourcePtr()->get()->pt() < 0.2 &&
-       //ele.sourcePtr()->get()->dr03HcalTowerSumEt()/ele.sourcePtr()->get()->pt() < 0.2 &&
-       ele.sourcePtr()->get()->gsfTrack()->trackerExpectedHitsInner().numberOfLostHits() == 0)
+       ele.sourcePtr()->get()->dr03TkSumPt()/ele.sourcePtr()->get()->pt() < 0.2 &&
+       ele.sourcePtr()->get()->dr03EcalRecHitSumEt()/ele.sourcePtr()->get()->pt() < 0.2 &&
+       ele.sourcePtr()->get()->dr03HcalTowerSumEt()/ele.sourcePtr()->get()->pt() < 0.2 &&
+       ele.sourcePtr()->get()->gsfTrack()->trackerExpectedHitsInner().numberOfLostHits() <= (int) numberOfHits
+      )
       myTrigPresel = true;
   }
   

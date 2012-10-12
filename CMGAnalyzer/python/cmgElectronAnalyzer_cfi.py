@@ -9,6 +9,8 @@ ElectronAnalysis = cms.EDProducer("cmgElectronAnalyzer",
   vertexLabel = cms.untracked.InputTag('offlinePrimaryVertices'),
   rhoIsoLabel =  cms.untracked.InputTag('kt6PFJets','rho'),
   useZMassWindow = cms.untracked.bool(False),
+  applyPreTrigSel = cms.untracked.bool(True),
+  numberOfHits    = cms.untracked.uint32(1),
   useEventCounter = cms.bool( True ),
   filters = cms.untracked.vstring(
       'prePathCounter',
@@ -16,4 +18,3 @@ ElectronAnalysis = cms.EDProducer("cmgElectronAnalyzer",
   )
 )
 
-#ElectronAnalysis = cms.EDAnalyzer("pfElectronAnalyzer",

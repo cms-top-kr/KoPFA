@@ -53,7 +53,7 @@ class cmgElectronAnalyzer : public edm::EDProducer
 
  private:
 
-  bool trainTrigPresel(const cmg::Electron& ele);
+  bool trainTrigPresel(const cmg::Electron& ele, unsigned int numberOfHits);
   double transverseMass( const reco::Candidate::LorentzVector& lepton, const reco::Candidate::LorentzVector& met);
   bool PassWP(EgammaCutBasedEleId::WorkingPoint workingPoint, const cmg::Electron &ele,   const double &iso_ch,
                                          const double &iso_em,       const double &iso_nh,    const double &rho);
@@ -68,7 +68,9 @@ class cmgElectronAnalyzer : public edm::EDProducer
   edm::InputTag genParticlesLabel_;
   edm::InputTag vertexLabel_;
   edm::InputTag rhoIsoLabel_;
-  bool  useZMassWindow_;
+  bool useZMassWindow_;
+  bool applyPreTrigSel_;
+  unsigned int  numberOfHits_; 
 
   edm::Handle<reco::BeamSpot> beamSpot_;
   edm::Handle<reco::VertexCollection> recVtxs_;
