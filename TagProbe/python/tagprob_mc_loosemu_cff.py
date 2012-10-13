@@ -23,7 +23,7 @@ process.load("TrackPropagation.SteppingHelixPropagator.SteppingHelixPropagatorAn
 process.load("TrackPropagation.SteppingHelixPropagator.SteppingHelixPropagatorAlong_cfi")
 process.load("TrackPropagation.SteppingHelixPropagator.SteppingHelixPropagatorOpposite_cfi")
 #process.GlobalTag.globaltag = cms.string('MC_42_V17::All')
-process.GlobalTag.globaltag = cms.string('START42_V14B::All')
+process.GlobalTag.globaltag = cms.string('START53_V11::All')
 
 from KoPFA.TagProbe.common_variables_cff import *
 
@@ -42,14 +42,14 @@ process.options   = cms.untracked.PSet( wantSummary = cms.untracked.bool(True))
 
 
 ### Trigger matching
-triggerObjectSelection_Fall11 = 'type("TriggerMuon") && path("HLT_IsoMu24_v*")'
+triggerObjectSelection_Summer12 = 'type("TriggerMuon") && path("HLT_IsoMu24_v*")'
 
 #process.load("KoPFA.TagProbe.tnpLeptonSelector_cfi")
 process.load("KoPFA.TopAnalyzer.topLeptonSelector_cfi")
 process.load("KoPFA.CommonTools.triggerMatch_cfi")
-process.patMuonTriggerMatch.src = "Muons" #"taggedTightMuons"
-process.patMuonTriggerMatch.matchedCuts = cms.string(triggerObjectSelection_Fall11 )
-process.triggeredPatMuons.src = "Muons" #"taggedTightMuons"
+process.patMuonTriggerMatch.src = "Muons" #"taggedLooseMuons"
+process.patMuonTriggerMatch.matchedCuts = cms.string(triggerObjectSelection_Summer12 )
+process.triggeredPatMuons.src = "Muons" #"taggedLooseMuons"
 
 process.tagMuons = cms.EDFilter("PATMuonSelector",
     src = cms.InputTag("triggeredPatMuons"),
@@ -73,9 +73,9 @@ process.trackProbes = cms.EDFilter("CandViewRefSelector",
     cut = cms.string("pt > 5"),
 )
 
-process.tkToTightMuons = cms.EDProducer("MatcherUsingTracks",
+process.tkToLooseMuons = cms.EDProducer("MatcherUsingTracks",
     src     = cms.InputTag("trackCands"), # all tracks are available for matching
-    matched = cms.InputTag("Muons"), #TightMuons"), # to all global muons
+    matched = cms.InputTag("Muons"), #LooseMuons"), # to all global muons
     algorithm = cms.string("byDirectComparison"), # check that they
     srcTrack = cms.string("tracker"),             # have the same 
     srcState = cms.string("atVertex"),            # tracker track
@@ -87,9 +87,9 @@ process.tkToTightMuons = cms.EDProducer("MatcherUsingTracks",
     sortBy           = cms.string("deltaR"),
 )
 
-process.passingprobesForTightMuons = cms.EDProducer("MatchedCandidateSelector",
+process.passingprobesForLooseMuons = cms.EDProducer("MatchedCandidateSelector",
     src   = cms.InputTag("trackProbes"),
-    match = cms.InputTag("tkToTightMuons"),
+    match = cms.InputTag("tkToLooseMuons"),
 )
 
 process.tagProbes = cms.EDProducer("CandViewShallowCloneCombiner",
@@ -99,7 +99,7 @@ process.tagProbes = cms.EDProducer("CandViewShallowCloneCombiner",
 )
 
 process.tagProbesIso = cms.EDProducer("CandViewShallowCloneCombiner",
-    decay = cms.string("tagMuons@+ Muons@-"),#TightMuons@-"), # charge coniugate states are implied; 'tagMuons' and 'trkProbes' should be collections of Candidates
+    decay = cms.string("tagMuons@+ Muons@-"),#LooseMuons@-"), # charge coniugate states are implied; 'tagMuons' and 'trkProbes' should be collections of Candidates
     #cut   = cms.string("20 < mass < 200"),
     cut   = cms.string("60 < mass < 140"),
 )
@@ -138,7 +138,7 @@ process.tnpTree = cms.EDAnalyzer("TagProbeFitTreeProducer",
     ),
     # choice of what defines a 'passing' probe
     flags = cms.PSet(
-        isTightMuon = cms.InputTag("passingprobesForTightMuons")
+        isLooseMuon = cms.InputTag("passingprobesForLooseMuons")
     ),
     ## DATA-related info
     addRunLumiInfo = cms.bool(True),
@@ -178,7 +178,7 @@ process.tnpTreeIso = cms.EDAnalyzer("TagProbeFitTreeProducer",
     checkMotherInUnbiasEff = cms.bool(True),
     tagMatches = cms.InputTag("muMcMatchTag"),
     probeMatches  = cms.InputTag("muMcMatchIDMuonProbe"),
-    allProbes     = cms.InputTag("Muons"), #TightMuons"),
+    allProbes     = cms.InputTag("Muons"), #LooseMuons"),
     eventWeight = cms.InputTag("PUweight","weight")
 )
 
@@ -190,8 +190,8 @@ process.p = cms.Path(
                      process.goodTracks +
                      process.trackCands +
                      process.trackProbes +
-                     process.tkToTightMuons +
-                     process.passingprobesForTightMuons + # for ID study
+                     process.tkToLooseMuons +
+                     process.passingprobesForLooseMuons + # for ID study
                      process.muMcMatchTag +
                      process.muMcMatchTrackProbe +
                      process.muMcMatchIDMuonProbe +
