@@ -69,8 +69,10 @@ cmgElectronAnalyzer::cmgElectronAnalyzer(const edm::ParameterSet& cfg)
         TFileDirectory dir = fs->mkdir(Form("%s/%s/%s",mainDirName.Data(), selDirName.Data(), dirName.Data()));
 
         h_mvaTrigV0[d][i][k] = dir.make<TH1F>( "h_mvaTrigV0", "h_mvaTrigV0", 200, -1, 1);
+        h_pfRelIso02[d][i][k] = dir.make<TH1F>( "h_pfRelIso02", "h_pfRelIso02", 1000, 0, 10);
         h_pfRelIso03[d][i][k] = dir.make<TH1F>( "h_pfRelIso03", "h_pfRelIso03", 1000, 0, 10);
         h_pfRelIso04[d][i][k] = dir.make<TH1F>( "h_pfRelIso04", "h_pfRelIso04", 1000, 0, 10);
+        h_pfRelIso02db[d][i][k] = dir.make<TH1F>( "h_pfRelIso02db", "h_pfRelIso02db", 1000, 0, 10);
         h_pfRelIso03db[d][i][k] = dir.make<TH1F>( "h_pfRelIso03db", "h_pfRelIso03db", 1000, 0, 10);
         h_pfRelIso03dbmod[d][i][k] = dir.make<TH1F>( "h_pfRelIso03dbmod", "h_pfRelIso03dbmod", 1000, 0, 10);
         h_pfRelIso04db[d][i][k] = dir.make<TH1F>( "h_pfRelIso04db", "h_pfRelIso04db", 1000, 0, 10);
@@ -164,7 +166,7 @@ void cmgElectronAnalyzer::produce(edm::Event& iEvent, const edm::EventSetup& es)
     ////use dxy with respect to beamspot
     //bool passPre = electron.pt() > 20 && fabs(electron.eta()) < 2.5 && fabs(electron.gsfTrack()->dxy(beamSpot_->position())) < 0.04;
     //// use dxy with respect to PV
-    //if( goodOfflinePrimaryVertices->size() < 1 ) continue;
+    if( nvertex < 1 ) continue;
     //reco::Vertex pv = goodOfflinePrimaryVertices->at(0);
     //bool passPre = electron.pt() > 20 && fabs(electron.eta()) < 2.5 && fabs( electron.sourcePtr()->get()->gsfTrack()->dxy(pv.position()) ) < 0.04;
     bool passPre = electron.pt() > 20 && fabs(electron.eta()) < 2.5;
@@ -266,6 +268,11 @@ void cmgElectronAnalyzer::produce(edm::Event& iEvent, const edm::EventSetup& es)
       AEff04Lep1 = ElectronEffectiveArea::GetElectronEffectiveArea(ElectronEffectiveArea::kEleGammaAndNeutralHadronIso04, sceta1, ElectronEffectiveArea::kEleEAFall11MC);
     }
 
+    double chIso02Lep1 = Lep1.chargedHadronIso(0.2);
+    double puChIso02Lep1 = Lep1.puChargedHadronIso(0.2);
+    double nhIso02Lep1 = Lep1.neutralHadronIso(0.2);
+    double phIso02Lep1 = Lep1.photonIso(0.2);
+
     double chIso03Lep1 = Lep1.chargedHadronIso(0.3);
     double puChIso03Lep1 = Lep1.puChargedHadronIso(0.3);
     double nhIso03Lep1 = Lep1.neutralHadronIso(0.3);
@@ -276,12 +283,14 @@ void cmgElectronAnalyzer::produce(edm::Event& iEvent, const edm::EventSetup& es)
     double nhIso04Lep1 = Lep1.neutralHadronIso(0.4);
     double phIso04Lep1 = Lep1.photonIso(0.4);
     double sf = 0.5;
-    if( fabs(sceta1) > 2.0 ) sf = 1.0; 
+    if( fabs(sceta1) > 2.1 ) sf = 1.0; 
     double mvaTrigV0Lep1 = Lep1.sourcePtr()->get()->electronID("mvaTrigV0");
+    double relPfIso02Lep1 = ( chIso02Lep1 + nhIso02Lep1 + phIso02Lep1 )/ Lep1.pt(); 
     double relPfIso03Lep1 = ( chIso03Lep1 + nhIso03Lep1 + phIso03Lep1 )/ Lep1.pt(); 
     double relPfIso04Lep1 = ( chIso04Lep1 + nhIso04Lep1 + phIso04Lep1 )/ Lep1.pt();
+    double relPfIso02dbLep1 = ( chIso02Lep1 + max(0.0, nhIso02Lep1 + phIso02Lep1 - 0.5*puChIso02Lep1) )/ Lep1.pt();
     double relPfIso03dbLep1 = ( chIso03Lep1 + max(0.0, nhIso03Lep1 + phIso03Lep1 - 0.5*puChIso03Lep1) )/ Lep1.pt();
-    double relPfIso03dbmodLep1 = ( chIso03Lep1 + max(0.0, nhIso03Lep1 + phIso03Lep1 - sf*puChIso03Lep1) )/ Lep1.pt();
+    double relPfIso03dbmodLep1 = ( max(0.0, chIso03Lep1 + nhIso03Lep1 + phIso03Lep1 - sf*puChIso03Lep1) )/ Lep1.pt();
     double relPfIso04dbLep1 = ( chIso04Lep1 + max(0.0, nhIso04Lep1 + phIso04Lep1 - 0.5*puChIso04Lep1) )/ Lep1.pt();
     double relPfIso03rhoLep1 = ( chIso03Lep1 + max(0.0, nhIso03Lep1 + phIso03Lep1 - rhoIso*AEff03Lep1) )/ Lep1.pt();
     double relPfIso04rhoLep1 = ( chIso04Lep1 + max(0.0, nhIso04Lep1 + phIso04Lep1 - rhoIso*AEff04Lep1) )/ Lep1.pt();
@@ -331,8 +340,10 @@ void cmgElectronAnalyzer::produce(edm::Event& iEvent, const edm::EventSetup& es)
 
       if( fill ){
         h_mvaTrigV0[d][sel][isEB1]->Fill( mvaTrigV0Lep1 );
+        h_pfRelIso02[d][sel][isEB1]->Fill( relPfIso02Lep1 );
         h_pfRelIso03[d][sel][isEB1]->Fill( relPfIso03Lep1 );
         h_pfRelIso04[d][sel][isEB1]->Fill( relPfIso04Lep1 );
+        h_pfRelIso02db[d][sel][isEB1]->Fill( relPfIso02dbLep1 );
         h_pfRelIso03db[d][sel][isEB1]->Fill( relPfIso03dbLep1 );
         h_pfRelIso03dbmod[d][sel][isEB1]->Fill( relPfIso03dbmodLep1 );
         h_pfRelIso04db[d][sel][isEB1]->Fill( relPfIso04dbLep1 );

@@ -86,8 +86,10 @@ class cmgElectronAnalyzer : public edm::EDProducer
   //electron loop
   //[i][j][k] : i=QCD, j=selection, k=region
   TH1F * h_mvaTrigV0[2][11][2];
+  TH1F * h_pfRelIso02[2][11][2];
   TH1F * h_pfRelIso03[2][11][2];
   TH1F * h_pfRelIso04[2][11][2];
+  TH1F * h_pfRelIso02db[2][11][2];
   TH1F * h_pfRelIso03db[2][11][2];
   TH1F * h_pfRelIso03dbmod[2][11][2];
   TH1F * h_pfRelIso04db[2][11][2];
