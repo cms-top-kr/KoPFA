@@ -57,9 +57,8 @@ void ElectronPFIso(){
   gROOT->ProcessLine(".L tdrstyle.C");
   defaultStyle();
 
-  TFile * f_Signal = new TFile("/afs/cern.ch/work/y/youngjo/public/For8Tev/v20121012v3/vallot_TTbarTuneZ2.root");
-  //TFile * f_Signal = new TFile("/afs/cern.ch/work/y/youngjo/public/For8Tev/v20121012v3/vallot_ZJets.root");
-  TFile * f_QCD =new TFile("../prod/Out/vallot_Run2012BElEl_nohit.root");
+  TFile * f_Signal = new TFile("/afs/cern.ch/work/t/tjkim/public/store/electron/v1/vallot_TTbarTuneZ2.root");
+  TFile * f_QCD =new TFile("/afs/cern.ch/work/t/tjkim/public/store/electron/v1/vallot_Run2012ElEl.root");
 
   TH2F *h2Signal_pfRelIso03_barrel = (TH2F *) f_Signal->Get("ElectronAnalysis/Signal/IDPF/Barrel/h2_pfRelIso03");
   TH2F *h2Signal_pfRelIso03_endcap = (TH2F *) f_Signal->Get("ElectronAnalysis/Signal/IDPF/Endcap/h2_pfRelIso03");
@@ -106,6 +105,28 @@ void ElectronPFIso(){
   TH1D* hQCD_pfRelIso03_highPU = h2QCD_pfRelIso03->ProjectionY("hQCD_pfRelIso03_highPU",npu,50);
   TH1D* hQCD_pfRelIso03db_highPU = h2QCD_pfRelIso03db->ProjectionY("hQCD_pfRelIso03db_highPU",npu,50);
   TH1D* hQCD_pfRelIso03rho_highPU = h2QCD_pfRelIso03rho->ProjectionY("hQCD_pfRelIso03rho_highPU",npu,50);
+
+  TH1F *hSignal_pfRelIso02_barrel = (TH1F *) f_Signal->Get("ElectronAnalysis/Signal/IDPF/Barrel/h_pfRelIso02");
+  TH1F *hSignal_pfRelIso02_endcap = (TH1F *) f_Signal->Get("ElectronAnalysis/Signal/IDPF/Endcap/h_pfRelIso02");
+  TH1F *hSignal_pfRelIso02db_barrel = (TH1F *) f_Signal->Get("ElectronAnalysis/Signal/IDPF/Barrel/h_pfRelIso02db");
+  TH1F *hSignal_pfRelIso02db_endcap = (TH1F *) f_Signal->Get("ElectronAnalysis/Signal/IDPF/Endcap/h_pfRelIso02db");
+  
+  TH1F *hSignal_pfRelIso02 = hSignal_pfRelIso02_barrel->Clone();
+  TH1F *hSignal_pfRelIso02db = hSignal_pfRelIso02db_barrel->Clone();
+  
+  hSignal_pfRelIso02->Add(hSignal_pfRelIso02_endcap);
+  hSignal_pfRelIso02db->Add(hSignal_pfRelIso02db_endcap);
+
+  TH1F *hQCD_pfRelIso02_barrel = (TH1F *) f_QCD->Get("ElectronAnalysis/QCD/IDPF/Barrel/h_pfRelIso02");
+  TH1F *hQCD_pfRelIso02_endcap = (TH1F *) f_QCD->Get("ElectronAnalysis/QCD/IDPF/Endcap/h_pfRelIso02");
+  TH1F *hQCD_pfRelIso02db_barrel = (TH1F *) f_QCD->Get("ElectronAnalysis/QCD/IDPF/Barrel/h_pfRelIso02db");
+  TH1F *hQCD_pfRelIso02db_endcap = (TH1F *) f_QCD->Get("ElectronAnalysis/QCD/IDPF/Endcap/h_pfRelIso02db");
+  
+  TH1F *hQCD_pfRelIso02 = hQCD_pfRelIso02_barrel->Clone();
+  TH1F *hQCD_pfRelIso02db = hQCD_pfRelIso02db_barrel->Clone();
+  
+  hQCD_pfRelIso02->Add(hQCD_pfRelIso02_endcap);
+  hQCD_pfRelIso02db->Add(hQCD_pfRelIso02db_endcap);
 
   TH1F *hSignal_pfRelIso04_barrel = (TH1F *) f_Signal->Get("ElectronAnalysis/Signal/IDPF/Barrel/h_pfRelIso04");
   TH1F *hSignal_pfRelIso04_endcap = (TH1F *) f_Signal->Get("ElectronAnalysis/Signal/IDPF/Endcap/h_pfRelIso04");
@@ -167,6 +188,9 @@ void ElectronPFIso(){
   hQCD_pfRelIso03db->Add(hQCD_pfRelIso03db_endcap);
   hQCD_pfRelIso03rho->Add(hQCD_pfRelIso03rho_endcap);
 
+  ROC_pfRelIso02 = ROC( hSignal_pfRelIso02, hQCD_pfRelIso02);
+  ROC_pfRelIso02db = ROC( hSignal_pfRelIso02db, hQCD_pfRelIso02db);
+
   ROC_pfRelIso03 = ROC( hSignal_pfRelIso03, hQCD_pfRelIso03);
   ROC_pfRelIso03db = ROC( hSignal_pfRelIso03db, hQCD_pfRelIso03db);
   ROC_pfRelIso03rho = ROC( hSignal_pfRelIso03rho, hQCD_pfRelIso03rho);
@@ -184,19 +208,24 @@ void ElectronPFIso(){
   ROC_pfRelIso03rho_highPU = ROC( hSignal_pfRelIso03rho_highPU, hQCD_pfRelIso03rho_highPU);
 
   TCanvas * c_dR = new TCanvas("c_dR","c_dR",500,500);
-  Style( ROC_pfRelIso03db, 4, 1);
-  Style( ROC_pfRelIso04db, 2, 2);
-  ROC_pfRelIso03db->Draw("ALP");
+  Style( ROC_pfRelIso02db, 1, 1);
+  Style( ROC_pfRelIso03db, 2, 1);
+  Style( ROC_pfRelIso04db, 4, 1);
+  ROC_pfRelIso02db->Draw("ALP");
+  ROC_pfRelIso03db->Draw("sameLP");
   ROC_pfRelIso04db->Draw("sameLP");
   SetLabel("");
 
   TLegend *l= new TLegend(0.6,0.3,0.9,0.5);
+  l->AddEntry(ROC_pfRelIso02db,"dR = 0.2","LP");
   l->AddEntry(ROC_pfRelIso03db,"dR = 0.3","LP");
   l->AddEntry(ROC_pfRelIso04db,"dR = 0.4","LP");
   l->SetTextSize(0.04);
   l->SetFillColor(0);
   l->SetLineColor(0);
   l->Draw();
+
+  c_dR->Print("c_iso_dR.eps");
 
   TCanvas * c = new TCanvas("c","c",500,500);
   Style( ROC_pfRelIso03, 1, 1);
@@ -216,6 +245,8 @@ void ElectronPFIso(){
   l->SetFillColor(0);
   l->SetLineColor(0);
   l->Draw();
+
+  c->Print("c_iso_corrtype.eps");
 
   TCanvas * c_lowPU = new TCanvas("c_lowPU","c_lowPU",500,500);
   Style( ROC_pfRelIso03_lowPU, 1, 1);
