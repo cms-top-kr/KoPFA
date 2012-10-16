@@ -35,43 +35,14 @@ void SetFrame( TH1F * h, const TString & title, double max = 1.02, double min = 
   h->Draw();
 }
 
-void plotNJET(TFile *f, const TString & variable){
+void plotETA(TFile *f, const TString & variable, const TString & num, const TString & den){
 
   TCanvas *c = new TCanvas(Form("c_%s",variable.Data()),Form("c_%s",variable.Data()),500,500);
 
-  TH1F *h_den_barrel = (TH1F *) f->Get(Form("ElectronAnalysis/Signal/IDMediumIso/Barrel/h_%s", variable.Data()));
-  TH1F *h_num_barrel = (TH1F *) f->Get(Form("ElectronAnalysis/Signal/IDMediumIsoPF/Barrel/h_%s", variable.Data()));
-  TH1F *h_den_endcap = (TH1F *) f->Get(Form("ElectronAnalysis/Signal/IDMediumIso/Endcap/h_%s", variable.Data()));
-  TH1F *h_num_endcap = (TH1F *) f->Get(Form("ElectronAnalysis/Signal/IDMediumIsoPF/Endcap/h_%s", variable.Data()));
-
-  TH1F *h_num = h_num_barrel->Clone();
-  TH1F *h_den = h_den_barrel->Clone();
-  h_num->Add(h_num_endcap);
-  h_den->Add(h_den_endcap);
-
-  TH1F *h = h_den->Clone();
-  SetFrame( h , "Jet multiplicity", 1.02, 0.98);
-  SetLabel( "All" );
-
-  TGraphAsymmErrors *g = new TGraphAsymmErrors();
-  g->BayesDivide(h_num,h_den);
-  g->SetMarkerSize(0.5);
-  g->SetMarkerStyle(20);
-  g->SetMarkerColor(4);
-  g->Draw("PZsame");
-  c->Print(Form("PFID_%s.eps",variable.Data()));
-
-}
-
-
-void plotETA(TFile *f, const TString & variable){
-
-  TCanvas *c = new TCanvas(Form("c_%s",variable.Data()),Form("c_%s",variable.Data()),500,500);
-
-  TH1F *h_den_barrel = (TH1F *) f->Get(Form("ElectronAnalysis/Signal/IDMediumIso/Barrel/h_%s", variable.Data()));
-  TH1F *h_num_barrel = (TH1F *) f->Get(Form("ElectronAnalysis/Signal/IDMediumIsoPF/Barrel/h_%s", variable.Data()));
-  TH1F *h_den_endcap = (TH1F *) f->Get(Form("ElectronAnalysis/Signal/IDMediumIso/Endcap/h_%s", variable.Data()));
-  TH1F *h_num_endcap = (TH1F *) f->Get(Form("ElectronAnalysis/Signal/IDMediumIsoPF/Endcap/h_%s", variable.Data()));
+  TH1F *h_den_barrel = (TH1F *) f->Get(Form("ElectronAnalysis/Signal/%s/Barrel/h_%s", den.Data(), variable.Data()));
+  TH1F *h_num_barrel = (TH1F *) f->Get(Form("ElectronAnalysis/Signal/%s/Barrel/h_%s", num.Data(), variable.Data()));
+  TH1F *h_den_endcap = (TH1F *) f->Get(Form("ElectronAnalysis/Signal/%s/Endcap/h_%s", den.Data(), variable.Data()));
+  TH1F *h_num_endcap = (TH1F *) f->Get(Form("ElectronAnalysis/Signal/%s/Endcap/h_%s", num.Data(), variable.Data()));
 
   TH1F *h_num = h_num_barrel->Clone();
   TH1F *h_den = h_den_barrel->Clone();
@@ -92,17 +63,17 @@ void plotETA(TFile *f, const TString & variable){
 
 }
 
-void plot(TFile *f, const TString & variable, const TString & xtitle){
+void plot(TFile *f, const TString & variable, const TString & xtitle, const TString & num, const TString & den){
 
-  TH1F *h_den_barrel = (TH1F *) f->Get(Form("ElectronAnalysis/Signal/IDMediumIso/Barrel/h_%s", variable.Data()));
-  TH1F *h_num_barrel = (TH1F *) f->Get(Form("ElectronAnalysis/Signal/IDMediumIsoPF/Barrel/h_%s", variable.Data()));
-  TH1F *h_den_endcap = (TH1F *) f->Get(Form("ElectronAnalysis/Signal/IDMediumIso/Endcap/h_%s", variable.Data()));
-  TH1F *h_num_endcap = (TH1F *) f->Get(Form("ElectronAnalysis/Signal/IDMediumIsoPF/Endcap/h_%s", variable.Data()));
+  TH1F *h_den_barrel = (TH1F *) f->Get(Form("ElectronAnalysis/Signal/%s/Barrel/h_%s", den.Data(), variable.Data()));
+  TH1F *h_num_barrel = (TH1F *) f->Get(Form("ElectronAnalysis/Signal/%s/Barrel/h_%s", num.Data(), variable.Data()));
+  TH1F *h_den_endcap = (TH1F *) f->Get(Form("ElectronAnalysis/Signal/%s/Endcap/h_%s", den.Data(), variable.Data()));
+  TH1F *h_num_endcap = (TH1F *) f->Get(Form("ElectronAnalysis/Signal/%s/Endcap/h_%s", num.Data(), variable.Data()));
 
   TCanvas *c_barrel = new TCanvas(Form("c_%s_barrel",variable.Data()),Form("c_%s_barrel",variable.Data()),500,500);
 
   TH1F *h_barrel = h_den_barrel->Clone();
-  SetFrame( h_barrel , Form("%s",xtitle.Data()), 1.02, 0.98);
+  SetFrame( h_barrel , Form("%s",xtitle.Data()), 1.02, 0.96);
   SetLabel( "Barrel" );
 
   TGraphAsymmErrors *g_barrel = new TGraphAsymmErrors();
@@ -129,23 +100,23 @@ void plot(TFile *f, const TString & variable, const TString & xtitle){
 
 }
 
-void plotPV(TFile *f, const TString & variable){
+void plotPV(TFile *f, const TString & variable, const TString & num, const TString & den){
 
   Double_t newBins[31] = {0,4,6,8,10,
                          11,12,13,14,15,16,17,18,19,20,
                          21,22,23,24,25,26,27,28,29,30,
                          32,34,36,38,40,
-                         60};
+                         50};
 
-  TH1F *h_den_barrel = (TH1F *) f->Get(Form("ElectronAnalysis/Signal/IDMediumIso/Barrel/h_%s", variable.Data()));
-  TH1F *h_num_barrel = (TH1F *) f->Get(Form("ElectronAnalysis/Signal/IDMediumIsoPF/Barrel/h_%s", variable.Data()));
-  TH1F *h_den_endcap = (TH1F *) f->Get(Form("ElectronAnalysis/Signal/IDMediumIso/Endcap/h_%s", variable.Data()));
-  TH1F *h_num_endcap = (TH1F *) f->Get(Form("ElectronAnalysis/Signal/IDMediumIsoPF/Endcap/h_%s", variable.Data()));
+  TH1F *h_den_barrel = (TH1F *) f->Get(Form("ElectronAnalysis/Signal/%s/Barrel/h_%s", den.Data(), variable.Data()));
+  TH1F *h_num_barrel = (TH1F *) f->Get(Form("ElectronAnalysis/Signal/%s/Barrel/h_%s", num.Data(), variable.Data()));
+  TH1F *h_den_endcap = (TH1F *) f->Get(Form("ElectronAnalysis/Signal/%s/Endcap/h_%s", den.Data(), variable.Data()));
+  TH1F *h_num_endcap = (TH1F *) f->Get(Form("ElectronAnalysis/Signal/%s/Endcap/h_%s", num.Data(), variable.Data()));
  
   TCanvas *c_barrel = new TCanvas(Form("c_%s_barrel",variable.Data()),Form("c_%s_barrel",variable.Data()),500,500);
 
   TH1F *h_barrel = h_den_barrel->Clone();
-  SetFrame( h_barrel , "Number of vertices", 1.02, 0.98);
+  SetFrame( h_barrel , "Number of vertices", 1.02, 0.96);
   SetLabel( "Barrel" );
  
   h_den_barrel->Rebin(30,"hNew_den_barrel",newBins);
@@ -186,12 +157,15 @@ void ElectronPFId()
   gROOT->ProcessLine(".L tdrstyle.C");
   defaultStyle();
 
-  TFile *f=new TFile("/afs/cern.ch/work/t/tjkim/public/store/electron/vallot_TTbarTuneZ2.root");
+  TFile * f= new TFile("/afs/cern.ch/work/t/tjkim/public/store/electron/v1/vallot_TTbarTuneZ2.root");
 
-  plotETA(f , "eta");
-  plotPV(f , "pv");
-  plot(f , "pt","P_{T}");
-  plot(f , "njet","Jet multiplicity");
+  TString denominator = "IDMediumIso";
+  TString numerator = "IDMediumIsoPF";
+
+  plotETA(f , "eta", numerator, denominator);
+  plotPV(f , "pv", numerator, denominator);
+  plot(f , "pt","P_{T}", numerator, denominator);
+  plot(f , "njet","Jet multiplicity", numerator, denominator);
 
 }
 
