@@ -96,4 +96,17 @@ void plot( std::vector<Sample> sample, const TString & histName, const TString &
 }
 
 
+TH1F* plotSub( std::vector<Sample> sample, const TString & histName, const TString & canvasName, const TString & title,  double min, double max, bool log = false){
+
+  TH1F *hData = (TH1F *) sample[0].file->Get(Form("%s/%s", dir_.Data(), histName.Data()));
+
+  for( unsigned int i = 1 ; i < sample.size() ; i++){
+    TH1F *h = (TH1F *) sample[i].file->Get(Form("%s/%s", dir_.Data(), histName.Data()));
+    h->Scale( sample[i].norm );
+    hData->Add(h,-1);
+  }
+  return hData;
+
+}
+
 
