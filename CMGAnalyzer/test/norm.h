@@ -96,7 +96,7 @@ void plot( std::vector<Sample> sample, const TString & histName, const TString &
 }
 
 
-TH1F* plotSub( std::vector<Sample> sample, const TString & histName, const TString & canvasName, const TString & title,  double min, double max, bool log = false){
+TH1F* plotSub( std::vector<Sample> sample, const TString & histName){
 
   TH1F *hData = (TH1F *) sample[0].file->Get(Form("%s/%s", dir_.Data(), histName.Data()));
 
