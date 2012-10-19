@@ -14,16 +14,16 @@ namespace vallot{
     virtual ~Jet(){}
     Jet(const reco::Candidate::LorentzVector& p4);
 
-    int flavor(){ return flavor_; }
+    int flavor() const { return flavor_; }
     void setFlavor( int flavor ) { flavor_ = flavor; }
 
-    bool topdecay(){ return topdecay_; }
-    void setTopdecay( bool topdecay ){ topdecay_ = topdecay; }
+    bool topdecay() const { return topdecay_; }
+    void setTopdecay( bool topdecay ) { topdecay_ = topdecay; }
 
-    double bDiscriminator(){ return bDiscriminator_ ; }
-    void setbDiscriminator( double bDiscriminator ){ bDiscriminator_ = bDiscriminator; } 
+    double bDiscriminator() const { return bDiscriminator_ ; }
+    void setbDiscriminator( double bDiscriminator ) { bDiscriminator_ = bDiscriminator; } 
   
-    float secVtxMass(){ return secVtxMass_;}
+    float secVtxMass() const { return secVtxMass_;}
     void setSecVtxMass( float secVtxMass ){ secVtxMass_ = secVtxMass; }
 
   private:
