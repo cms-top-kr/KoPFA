@@ -87,6 +87,8 @@ void plot( std::vector<Sample> sample, const TString & histName, const TString &
   hs->Draw();
   hData->Draw("sameP");
   l->Draw();
+
+  c->Print(Form("c_%s.eps",canvasName.Data()));
 }
 
 void ElectronQCD(){
@@ -96,12 +98,13 @@ void ElectronQCD(){
   dir_ = "ElectronAnalysis";
 
   std::vector<Sample> Samples;
-  Samples.push_back( Add( new TFile("/afs/cern.ch/work/t/tjkim/public/store/electron/v2/vallot_Run2012ElEl.root") , "Run2012ElEl", "Data",  1 ) );
-  Samples.push_back( Add( new TFile("/afs/cern.ch/work/t/tjkim/public/store/electron/v2/vallot_TTbarTuneZ2.root") , "TTbarTuneZ2", "t#bar{t}", 2 , 225 ) );
-  Samples.push_back( Add( new TFile("/afs/cern.ch/work/t/tjkim/public/store/electron/v2/vallot_WJetsToLNu.root") , "WJetsToLNu",   "W+jets", 3 , 36257 ) );
-  Samples.push_back( Add( new TFile("/afs/cern.ch/work/t/tjkim/public/store/electron/v2/vallot_ZJets10To50.root") , "ZJets10To50", "Z+jets", 4 , 860, 4) );
-  Samples.push_back( Add( new TFile("/afs/cern.ch/work/t/tjkim/public/store/electron/v2/vallot_ZJets.root") ,       "ZJets",       "Z+jets", 4 , 3503.71 ) );
+  Samples.push_back( Add( new TFile("/afs/cern.ch/work/t/tjkim/public/store/electron/pfelectrons2/nhits0/njets2/vallot_Run2012ElEl.root") , "Run2012ElEl", "Data",  1 ) );
+  Samples.push_back( Add( new TFile("/afs/cern.ch/work/t/tjkim/public/store/electron/pfelectrons2/nhits0/njets2/vallot_TTbarTuneZ2.root") , "TTbarTuneZ2", "t#bar{t}", 2 , 225 ) );
+  Samples.push_back( Add( new TFile("/afs/cern.ch/work/t/tjkim/public/store/electron/pfelectrons2/nhits0/njets2/vallot_WJetsToLNu.root") , "WJetsToLNu",   "W+jets", 3 , 36257 ) );
+  Samples.push_back( Add( new TFile("/afs/cern.ch/work/t/tjkim/public/store/electron/pfelectrons2/nhits0/njets2/vallot_ZJets10To50.root") , "ZJets10To50", "Z+jets", 4 , 860, 4) );
+  Samples.push_back( Add( new TFile("/afs/cern.ch/work/t/tjkim/public/store/electron/pfelectrons2/nhits0/njets2/vallot_ZJets.root") ,       "ZJets",       "Z+jets", 4 , 3503.71 ) );
   
+
   plot( Samples, "Signal/h_dimass" , "signal_dimass", " Dimass;Dimass (GeV);Entries", 0.1, 10e7, true);  
   plot( Samples, "Signal/h_met" ,    "signal_met",  " MET;MET (GeV);Entries", 0.1, 10e7, true);  
   plot( Samples, "Signal/h_nJet" ,   "signal_nJet", " nJet;Jet multiplicity;Entries", 0.1, 10e7, true);  

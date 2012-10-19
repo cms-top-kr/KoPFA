@@ -36,6 +36,7 @@ TGraphAsymmErrors* ROC( TH1* hSignal, TH1* hQCD){
   int nbins = hSignal->GetNbinsX();
   double totalS = hSignal->GetEntries();
   double totalB = hQCD->GetEntries();
+  cout << hSignal->GetTitle() << endl;
   cout << "totalS = " << totalS << " totalB= " << totalB << endl;
   for(int i=0 ; i < 40; i++){
     double Bi = hQCD->Integral(1,i+1);
@@ -43,6 +44,8 @@ TGraphAsymmErrors* ROC( TH1* hSignal, TH1* hQCD){
     double eff_qcd = Bi / totalB;
     double eff_signal = Si/ totalS; 
     double err_qcd = sqrt(Bi) / totalB;
+    //double purity = 0.9;
+    //double eff_qcd_real = ( eff_qcd - eff_signal * ( 1- purity) ) / purity; 
     double soverb = Si/Bi;
     cout << "i= " << 0.01*(i+1) << " signal eff = " << eff_signal << " background eff = " << eff_qcd << " s/s+b= " << soverb << endl ;
     out->SetPoint(i, eff_qcd, eff_signal);
@@ -57,8 +60,8 @@ void ElectronPFIso(){
   gROOT->ProcessLine(".L tdrstyle.C");
   defaultStyle();
 
-  TFile * f_Signal = new TFile("/afs/cern.ch/work/t/tjkim/public/store/electron/v1/vallot_TTbarTuneZ2.root");
-  TFile * f_QCD =new TFile("/afs/cern.ch/work/t/tjkim/public/store/electron/v1/vallot_Run2012ElEl.root");
+  TFile * f_Signal = new TFile("/afs/cern.ch/work/t/tjkim/public/store/electron/electrons2/nhits0/vallot_TTbarTuneZ2.root");
+  TFile * f_QCD =new TFile("/afs/cern.ch/work/t/tjkim/public/store/electron/electrons2/nhits0/vallot_Run2012ElEl.root");
 
   TH2F *h2Signal_pfRelIso03_barrel = (TH2F *) f_Signal->Get("ElectronAnalysis/Signal/IDPF/Barrel/h2_pfRelIso03");
   TH2F *h2Signal_pfRelIso03_endcap = (TH2F *) f_Signal->Get("ElectronAnalysis/Signal/IDPF/Endcap/h2_pfRelIso03");
@@ -98,6 +101,8 @@ void ElectronPFIso(){
   h2QCD_pfRelIso03->Add(h2QCD_pfRelIso03_endcap);
   h2QCD_pfRelIso03db->Add(h2QCD_pfRelIso03db_endcap);
   h2QCD_pfRelIso03rho->Add(h2QCD_pfRelIso03rho_endcap);
+
+  /// 1D plots
 
   TH1D* hQCD_pfRelIso03_lowPU = h2QCD_pfRelIso03->ProjectionY("hQCD_pfRelIso03_lowPU",1,npu); 
   TH1D* hQCD_pfRelIso03db_lowPU = h2QCD_pfRelIso03db->ProjectionY("hQCD_pfRelIso03db_lowPU",1,npu); 
@@ -267,6 +272,5 @@ void ElectronPFIso(){
   ROC_pfRelIso03rho_highPU->Draw("sameLP");
   SetLabel("PU #geq 15");
   l->Draw();
-
 
 }

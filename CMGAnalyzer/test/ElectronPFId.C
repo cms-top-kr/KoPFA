@@ -17,7 +17,7 @@ void SetLabel(const TString & region){
   label->Draw();
 }
 
-void SetFrame( TH1F * h, const TString & title, double max = 1.02, double min = 0.96){
+void SetFrame( TH1F * h, const TString & title, double max = 1.02, double min = 0.94){
   h->Reset();
   h->SetTitle("");
   h->GetXaxis()->SetTitle(Form("%s",title.Data()));
@@ -73,7 +73,7 @@ void plot(TFile *f, const TString & variable, const TString & xtitle, const TStr
   TCanvas *c_barrel = new TCanvas(Form("c_%s_barrel",variable.Data()),Form("c_%s_barrel",variable.Data()),500,500);
 
   TH1F *h_barrel = h_den_barrel->Clone();
-  SetFrame( h_barrel , Form("%s",xtitle.Data()), 1.02, 0.96);
+  SetFrame( h_barrel , Form("%s",xtitle.Data()), 1.02, 0.94);
   SetLabel( "Barrel" );
 
   TGraphAsymmErrors *g_barrel = new TGraphAsymmErrors();
@@ -87,7 +87,7 @@ void plot(TFile *f, const TString & variable, const TString & xtitle, const TStr
   TCanvas *c_endcap = new TCanvas(Form("c_%s_endcap",variable.Data()),Form("c_%s_endcap",variable.Data()),500,500);
   
   TH1F *h_endcap = h_den_endcap->Clone();
-  SetFrame( h_endcap , Form("%s",xtitle.Data()), 1.02, 0.96);
+  SetFrame( h_endcap , Form("%s",xtitle.Data()), 1.02, 0.94);
   SetLabel( "Endcap" );
 
   TGraphAsymmErrors *g_endcap = new TGraphAsymmErrors();
@@ -116,7 +116,7 @@ void plotPV(TFile *f, const TString & variable, const TString & num, const TStri
   TCanvas *c_barrel = new TCanvas(Form("c_%s_barrel",variable.Data()),Form("c_%s_barrel",variable.Data()),500,500);
 
   TH1F *h_barrel = h_den_barrel->Clone();
-  SetFrame( h_barrel , "Number of vertices", 1.02, 0.96);
+  SetFrame( h_barrel , "Number of vertices", 1.02, 0.94);
   SetLabel( "Barrel" );
  
   h_den_barrel->Rebin(30,"hNew_den_barrel",newBins);
@@ -134,7 +134,7 @@ void plotPV(TFile *f, const TString & variable, const TString & num, const TStri
   TCanvas *c_endcap = new TCanvas(Form("c_%s_endcap",variable.Data()),Form("c_%s_endcap",variable.Data()),500,500);
 
   TH1F *h_endcap = h_den_endcap->Clone();
-  SetFrame( h_endcap , "Number of vertices", 1.02, 0.96);
+  SetFrame( h_endcap , "Number of vertices", 1.02, 0.94);
   SetLabel( "Endcap" );
 
   h_den_endcap->Rebin(30,"hNew_den_endcap",newBins);
@@ -157,7 +157,7 @@ void ElectronPFId()
   gROOT->ProcessLine(".L tdrstyle.C");
   defaultStyle();
 
-  TFile * f= new TFile("/afs/cern.ch/work/t/tjkim/public/store/electron/v1/vallot_TTbarTuneZ2.root");
+  TFile * f= new TFile("/afs/cern.ch/work/t/tjkim/public/store/electron/electrons1/nhits1/vallot_TTbarTuneZ2.root");
 
   TString denominator = "IDMediumIso";
   TString numerator = "IDMediumIsoPF";
