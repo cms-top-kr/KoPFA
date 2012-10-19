@@ -12,6 +12,12 @@
   <class name="edm::Wrapper<std::vector<Ko::Lepton> >"/>
   <class name="edm::Ptr<Ko::Lepton>"/>
 
+  <class name="vallot::Jet"/>
+  <class name="std::vector<vallot::Jet>"/>
+  <class name="edm::Wrapper<vallot::Jet>"/>
+  <class name="edm::Wrapper<std::vector<vallot::Jet> >"/>
+  <class name="edm::Ptr<vallot::Jet>"/>
+
   <class name="Ko::METCandidate"/>
   <class name="std::vector<Ko::METCandidate>"/>
   <class name="edm::Wrapper<Ko::METCandidate>"/>

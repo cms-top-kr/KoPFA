@@ -7,6 +7,7 @@
 #include "KoPFA/DataFormats/interface/TTbarMass.h"
 #include "KoPFA/DataFormats/interface/TTbarCandidate.h"
 #include "KoPFA/DataFormats/interface/H2WWMass.h"
+#include "KoPFA/DataFormats/interface/Jet.h"
 
 #include <vector>
 
@@ -24,6 +25,12 @@ namespace {
     std::vector<Ko::Lepton> dummyLeptonCollection;
     edm::Wrapper<std::vector<Ko::Lepton> > dummyLeptonCollectionWrapper;
     edm::Ptr<Ko::Lepton> dummyLeptonPtr;
+
+    vallot::Jet dummyJet;
+    edm::Wrapper<vallot::Jet> dummyJetWrapper;
+    std::vector<vallot::Jet> dummyJetCollection;
+    edm::Wrapper<std::vector<vallot::Jet> > dummyJetCollectionWrapper;
+    edm::Ptr<vallot::Jet> dummyJetPtr;
 
     Ko::METCandidate dummyMETCandidate;
     edm::Wrapper<Ko::METCandidate> dummyMETCandidateWrapper;
