@@ -13,7 +13,7 @@
 //
 // Original Author:  Tae Jeong Kim,40 R-A32,+41227678602,
 //         Created:  Fri Jun  4 17:19:29 CEST 2010
-// $Id: CMGTopDILAnalyzer.h,v 1.4 2012/10/03 12:11:37 tjkim Exp $
+// $Id: CMGTopDILAnalyzer.h,v 1.5 2012/10/08 12:02:36 tjkim Exp $
 //
 //
 
@@ -64,6 +64,7 @@
 #include "PhysicsTools/Utilities/interface/LumiReWeighting.h"
 
 #include "KoPFA/DataFormats/interface/Maos.h"
+#include "KoPFA/DataFormats/interface/Jet.h"
 #include "KoPFA/CMGDataFormats/interface/CMGTTbarCandidate.h"
 #include "TFile.h"
 #include "TTree.h"
@@ -82,6 +83,7 @@ using namespace edm;
 using namespace std;
 using namespace reco;
 using namespace isodeposit;
+using namespace vallot;
 
 template<typename T1, typename T2>
 class CMGTopDILAnalyzer : public edm::EDFilter {
@@ -141,17 +143,15 @@ class CMGTopDILAnalyzer : public edm::EDFilter {
     tree = fs->make<TTree>("tree", "Tree for Top quark study");
     tmp = fs->make<TH1F>("EventSummary","EventSummary",filters_.size(),0,filters_.size());
 
-    Z = new std::vector<Ko::ZCandidate>();
-    lepton1 = new std::vector<Ko::Lepton>();
-    lepton2 = new std::vector<Ko::Lepton>();
-    pfMet = new std::vector<Ko::METCandidate>();
-    ttbar = new std::vector<Ko::TTbarMass>();
-    ttbarGen = new std::vector<Ko::CMGTTbarCandidate>();
+    Z = new std::vector<vallot::ZCandidate>();
+    lepton1 = new std::vector<vallot::Lepton>();
+    lepton2 = new std::vector<vallot::Lepton>();
+    pfMet = new std::vector<vallot::METCandidate>();
+    ttbar = new std::vector<vallot::TTbarMass>();
+    ttbarGen = new std::vector<vallot::CMGTTbarCandidate>();
+    jets = new std::vector<vallot::Jet>();
     met = new std::vector<math::XYZTLorentzVector>();
     jetspt30 = new std::vector<math::XYZTLorentzVector>();
-    jetspt30flavor = new std::vector<int>();
-    jetspt30fromtop = new std::vector<int>(); 
-    jetspt30bDiscriminator = new std::vector<double>();
 
     nCutStep_ = 7;
     for ( int i = 0; i<nCutStep_; ++i )
@@ -204,32 +204,31 @@ class CMGTopDILAnalyzer : public edm::EDFilter {
     tree->Branch("genZMass",&genZMass,"ZMass/d");
     tree->Branch("ZtauDecay",&ZtauDecay,"ZtauDecay/i");
     tree->Branch("PairSign",&PairSign,"PairSign/d");
-    tree->Branch("relIso1",&relIso1,"relIso1/d");
-    tree->Branch("relIso2",&relIso2,"relIso2/d");
-    tree->Branch("isIso",&isIso,"isIso/d");
-    tree->Branch("pt1",&pt1,"pt1/d");
-    tree->Branch("pt2",&pt2,"pt2/d");
-    tree->Branch("eta1",&eta1,"eta1/d");
-    tree->Branch("eta2",&eta2,"eta2/d");
-    tree->Branch("phi1",&phi1,"phi1/d");
-    tree->Branch("phi2",&phi2,"phi2/d");
+    //tree->Branch("relIso1",&relIso1,"relIso1/d");
+    //tree->Branch("relIso2",&relIso2,"relIso2/d");
+    //tree->Branch("isIso",&isIso,"isIso/d");
+    //tree->Branch("pt1",&pt1,"pt1/d");
+    //tree->Branch("pt2",&pt2,"pt2/d");
+    //tree->Branch("eta1",&eta1,"eta1/d");
+    //tree->Branch("eta2",&eta2,"eta2/d");
+    //tree->Branch("phi1",&phi1,"phi1/d");
+    //tree->Branch("phi2",&phi2,"phi2/d");
 
-    tree->Branch("pfMet","std::vector<Ko::METCandidate>", &pfMet);
+    tree->Branch("lepton1","std::vector<vallot::Lepton>",&lepton1);
+    tree->Branch("lepton2","std::vector<vallot::Lepton>",&lepton2);
+    tree->Branch("jets","std::vector<vallot::Jet>",&jets);
+
+    //tree->Branch("pfMet","std::vector<vallot::METCandidate>", &pfMet);
     //tree->Branch("met","std::vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >", &met);
 
-    tree->Branch("ttbar","std::vector<Ko::TTbarMass>", &ttbar);
-    tree->Branch("ttbarGen","std::vector<Ko::CMGTTbarCandidate>", &ttbarGen);
+    tree->Branch("ttbar","std::vector<vallot::TTbarMass>", &ttbar);
+    tree->Branch("ttbarGen","std::vector<vallot::CMGTTbarCandidate>", &ttbarGen);
     tree->Branch("kinttbarM",&kinttbarM,"kinttbarM/d");
 
     tree->Branch("nJet30",&nJet30,"nJet30/i");
     tree->Branch("nGenJet20",&nGenJet20,"nGenJet20/i");
     tree->Branch("nGenbJet20",&nGenbJet20,"nGenbJet20/i");
 
-    tree->Branch("jetspt30","std::vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >", &jetspt30);
-    tree->Branch("jetspt30flavor","std::vector<int>", &jetspt30flavor);
-    tree->Branch("jetspt30fromtop","std::vector<int>", &jetspt30fromtop);
-    tree->Branch("jetspt30bDiscriminator","std::vector<double>", &jetspt30bDiscriminator);
-	
     for ( int i=0, n=bTagAlgos_.size(); i<n; ++i )
     {
       const std::string& name = bTagNames_[i];
@@ -314,7 +313,7 @@ class CMGTopDILAnalyzer : public edm::EDFilter {
     edm::Handle<std::vector<cmg::GenJet> > genJets_;
     iEvent.getByLabel(genJetsLabel_,genJets_);
 
-    edm::Handle<vector<Ko::ZCandidate> > ZCand;
+    edm::Handle<vector<vallot::ZCandidate> > ZCand;
     iEvent.getByLabel(dileptonLabel_, ZCand);
 
     int mode = 0;
@@ -344,6 +343,8 @@ class CMGTopDILAnalyzer : public edm::EDFilter {
       eta2 = ZCand->at(0).leg2().eta();
       phi1 = ZCand->at(0).leg1().phi();
       phi2 = ZCand->at(0).leg2().phi();
+      lepton1->push_back( ZCand->at(0).leg1() );
+      lepton2->push_back( ZCand->at(0).leg2() );
     }
 
     bool iso = relIso1 < relIso1_ && relIso2 < relIso2_;
@@ -360,6 +361,7 @@ class CMGTopDILAnalyzer : public edm::EDFilter {
     bool isPAT = false;
 
     for (JI jit = Jets->begin(); jit != Jets->end(); ++jit) {
+
       ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > corrjet;
       corrjet.SetPxPyPzE(jit->px(),jit->py(),jit->pz(),jit->energy());
       int flavor = jit->partonFlavour();
@@ -381,12 +383,17 @@ class CMGTopDILAnalyzer : public edm::EDFilter {
         }
       }
       double bDiscriminator = jit->bDiscriminator("combinedSecondaryVertexBJetTags");
+      float secvtxmass = jit->secvtxMass();
 
       if(jit->pt() > 30){
+        vallot::Jet jet( jit->p4() );
+        jet.setFlavor( flavor );
+        jet.setTopdecay( isfromtop );
+        jet.setbDiscriminator( bDiscriminator );
+        jet.setSecVtxMass( secvtxmass );  
+        jets->push_back(jet);
+     
         jetspt30->push_back(corrjet);
-        jetspt30flavor->push_back(flavor);
-        jetspt30fromtop->push_back(isfromtop);
-        jetspt30bDiscriminator->push_back(bDiscriminator);
        
         for ( int bTagIndex=0, nBTagAlgo=bTagAlgos_.size(); bTagIndex<nBTagAlgo; ++bTagIndex )
         {
@@ -401,14 +408,14 @@ class CMGTopDILAnalyzer : public edm::EDFilter {
 
     BTagWeight bTag;
 
-    nJet30 = jetspt30->size();
+    nJet30 = jets->size();
     std::vector<TLorentzVector *> jet30(nJet30);
     std::vector<int> jet30flavor(nJet30);
 
     for (unsigned int i=0; i < nJet30; i++)
     {
-      jet30[i] = new TLorentzVector( jetspt30->at(i).px(), jetspt30->at(i).py(), jetspt30->at(i).pz(), jetspt30->at(i).energy() );
-      jet30flavor[i] = jetspt30flavor->at(i);
+      jet30[i] = new TLorentzVector( jets->at(i).px(), jets->at(i).py(), jets->at(i).pz(), jets->at(i).energy() );
+      jet30flavor[i] = jets->at(i).flavor();
     }
    
     if( !isRealData ){
@@ -440,7 +447,7 @@ class CMGTopDILAnalyzer : public edm::EDFilter {
     met->push_back(corrmet);
 
     //if(metStudy_){
-      //const Ko::METCandidate pfmet(MET, mi->sumEt(), mi->NeutralEMFraction(),mi->NeutralHadEtFraction(),mi->ChargedHadEtFraction(),mi->ChargedEMEtFraction(),mi->MuonEtFraction() );
+      //const vallot::METCandidate pfmet(MET, mi->sumEt(), mi->NeutralEMFraction(),mi->NeutralHadEtFraction(),mi->ChargedHadEtFraction(),mi->ChargedEMEtFraction(),mi->MuonEtFraction() );
       //pfMet->push_back(pfmet);
     //}
 
@@ -450,7 +457,7 @@ class CMGTopDILAnalyzer : public edm::EDFilter {
       lep1.SetPxPyPzE(ZCand->at(0).leg1().px(),ZCand->at(0).leg1().py(),ZCand->at(0).leg1().pz(),ZCand->at(0).leg1().energy());
       lep2.SetPxPyPzE(ZCand->at(0).leg2().px(),ZCand->at(0).leg2().py(),ZCand->at(0).leg2().pz(),ZCand->at(0).leg2().energy());
 
-      const Ko::TTbarMass ttbarMass(lep1, lep2, jetspt30->at(0), jetspt30->at(1), met->at(0));
+      const vallot::TTbarMass ttbarMass(lep1, lep2, jetspt30->at(0), jetspt30->at(1), met->at(0));
       ttbar->push_back(ttbarMass);
 
       int cmb = 0 ;
@@ -483,7 +490,7 @@ class CMGTopDILAnalyzer : public edm::EDFilter {
     }
 
     //gen information
-    Ko::CMGTTbarCandidate ttbarGenLevel;
+    vallot::CMGTTbarCandidate ttbarGenLevel;
 
     double genZmass = -999;
  
@@ -655,11 +662,9 @@ class CMGTopDILAnalyzer : public edm::EDFilter {
     pfMet->clear();
     ttbar->clear();
     ttbarGen->clear();
+    jets->clear();
     met->clear();
     jetspt30->clear();
-    jetspt30flavor->clear();
-    jetspt30fromtop->clear();
-    jetspt30bDiscriminator->clear();
 
     for ( int bTagIndex=0, nBTag=nbjets30_.size(); bTagIndex<nBTag; ++bTagIndex )
     {
@@ -798,17 +803,15 @@ class CMGTopDILAnalyzer : public edm::EDFilter {
 
   TH1F * tmp;
 
-  std::vector<Ko::ZCandidate>* Z;
-  std::vector<Ko::Lepton>* lepton1;
-  std::vector<Ko::Lepton>* lepton2;
-  std::vector<Ko::METCandidate>* pfMet;
-  std::vector<Ko::TTbarMass>* ttbar;
-  std::vector<Ko::CMGTTbarCandidate>* ttbarGen;
+  std::vector<vallot::ZCandidate>* Z;
+  std::vector<vallot::Lepton>* lepton1;
+  std::vector<vallot::Lepton>* lepton2;
+  std::vector<vallot::METCandidate>* pfMet;
+  std::vector<vallot::TTbarMass>* ttbar;
+  std::vector<vallot::CMGTTbarCandidate>* ttbarGen;
+  std::vector<vallot::Jet>* jets;
   std::vector<math::XYZTLorentzVector>* met;
   std::vector<math::XYZTLorentzVector>* jetspt30;
-  std::vector<int>* jetspt30flavor;
-  std::vector<int>* jetspt30fromtop;
-  std::vector<double>* jetspt30bDiscriminator;  
 
   double MET;
   double ZMass;

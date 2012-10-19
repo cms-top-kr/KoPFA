@@ -13,7 +13,7 @@
 //
 // Original Author:  Tae Jeong Kim,40 R-A32,+41227678602,
 //         Created:  Fri Jun  4 17:19:29 CEST 2010
-// $Id: CMGZFilter.h,v 1.3 2012/07/06 14:54:17 tjkim Exp $
+// $Id: CMGZFilter.h,v 1.1 2012/08/01 15:40:20 tjkim Exp $
 //
 //
 
@@ -94,7 +94,7 @@ class CMGZFilter : public edm::EDFilter {
     relIso1_ = iConfig.getUntrackedParameter<double>("relIso1");
     relIso2_ = iConfig.getUntrackedParameter<double>("relIso2");
 
-    produces<std::vector<Ko::ZCandidate> >("DiLepton");
+    produces<std::vector<vallot::ZCandidate> >("DiLepton");
     produces<std::vector<T1> >("Lepton1");
     produces<std::vector<T2> >("Lepton2");
 
@@ -114,8 +114,8 @@ class CMGZFilter : public edm::EDFilter {
   {
     bool accept = false;
 
-    std::auto_ptr<std::vector<Ko::ZCandidate> > dilp(new std::vector<Ko::ZCandidate>());
-    std::auto_ptr<std::vector<Ko::ZCandidate> > seldilp(new std::vector<Ko::ZCandidate>());
+    std::auto_ptr<std::vector<vallot::ZCandidate> > dilp(new std::vector<vallot::ZCandidate>());
+    std::auto_ptr<std::vector<vallot::ZCandidate> > seldilp(new std::vector<vallot::ZCandidate>());
     std::auto_ptr<std::vector<T1> > lep1(new std::vector<T1>());
     std::auto_ptr<std::vector<T2> > lep2(new std::vector<T2>());
     std::auto_ptr<std::vector<T1> > sellep1(new std::vector<T1>());
@@ -134,47 +134,14 @@ class CMGZFilter : public edm::EDFilter {
         const bool match = MatchObjects( it1.p4(), it2.p4(), true);
         if(match) continue;
 
-        Ko::Lepton lepton1(it1.p4(), (int) it1.charge());
-        Ko::Lepton lepton2(it2.p4(), (int) it2.charge());
-
-        reco::isodeposit::AbsVetos vetos_ch1;
-        reco::isodeposit::AbsVetos vetos_nh1;
-        reco::isodeposit::AbsVetos vetos_ph1;
-
-        reco::isodeposit::AbsVetos vetos_ch2;
-        reco::isodeposit::AbsVetos vetos_nh2;
-        reco::isodeposit::AbsVetos vetos_ph2;
-
-        if( it1.isMuon() ){
-          vetos_nh1.push_back(new ThresholdVeto( 0.5 ));
-          vetos_ph1.push_back(new ThresholdVeto( 0.5 ));
-        }else{
-          reco::isodeposit::Direction Dir1 = Direction(it1.sourcePtr()->get()->superCluster()->eta(),it1.phi());
-          if( abs( it1.sourcePtr()->get()->superCluster()->eta() ) > 1.479 ){
-            vetos_ch1.push_back(new ConeVeto( Dir1, 0.015 ));
-            vetos_ph1.push_back(new ConeVeto( Dir1, 0.08 ));
-          }
-        }
-
-        if( it2.isMuon() ){
-          vetos_nh2.push_back(new ThresholdVeto( 0.5 ));
-          vetos_ph2.push_back(new ThresholdVeto( 0.5 ));
-        }else{
-          reco::isodeposit::Direction Dir2 = Direction(it2.sourcePtr()->get()->superCluster()->eta(),it2.phi());
-          if( abs( it2.sourcePtr()->get()->superCluster()->eta() ) > 1.479 ){
-            vetos_ch2.push_back(new ConeVeto( Dir2, 0.015 ));
-            vetos_ph2.push_back(new ConeVeto( Dir2, 0.08 ));
-          }
-        }
+        vallot::Lepton lepton1(it1.p4(), (int) it1.charge());
+        vallot::Lepton lepton2(it2.p4(), (int) it2.charge());
 
         //pf isolation setup
-        lepton1.setIsoDeposit( pat::PfChargedHadronIso, it1.sourcePtr()->get()->isoDeposit(pat::PfChargedHadronIso), vetos_ch1 );
-        lepton1.setIsoDeposit( pat::PfNeutralHadronIso, it1.sourcePtr()->get()->isoDeposit(pat::PfNeutralHadronIso), vetos_nh1 );
-        lepton1.setIsoDeposit( pat::PfGammaIso, it1.sourcePtr()->get()->isoDeposit(pat::PfGammaIso), vetos_ph1 );
-
-        lepton2.setIsoDeposit( pat::PfChargedHadronIso, it2.sourcePtr()->get()->isoDeposit(pat::PfChargedHadronIso), vetos_ch2 );
-        lepton2.setIsoDeposit( pat::PfNeutralHadronIso, it2.sourcePtr()->get()->isoDeposit(pat::PfNeutralHadronIso), vetos_nh2 );
-        lepton2.setIsoDeposit( pat::PfGammaIso, it2.sourcePtr()->get()->isoDeposit(pat::PfGammaIso), vetos_ph2 );
+        lepton1.setPFIsoValues03( it1.chargedHadronIso(0.3), it1.puChargedHadronIso(0.3), it1.neutralHadronIso(0.3), it1.photonIso(0.3) );
+        lepton2.setPFIsoValues03( it2.chargedHadronIso(0.3), it2.puChargedHadronIso(0.3), it2.neutralHadronIso(0.3), it2.photonIso(0.3) );
+        lepton1.setPFIsoValues04( it1.chargedHadronIso(0.4), it1.puChargedHadronIso(0.4), it1.neutralHadronIso(0.4), it1.photonIso(0.4) );
+        lepton2.setPFIsoValues04( it2.chargedHadronIso(0.4), it2.puChargedHadronIso(0.4), it2.neutralHadronIso(0.4), it2.photonIso(0.4) );
 
         //detector based isolation
         double trackIso1 = it1.sourcePtr()->get()->trackIso();
@@ -188,10 +155,10 @@ class CMGZFilter : public edm::EDFilter {
         lepton1.setIsoDeposit( trackIso1, ecalIso1, hcalIso1);
         lepton2.setIsoDeposit( trackIso2, ecalIso2, hcalIso2);
    
-        bool iso = lepton1.relpfIso03() < relIso1_ && lepton2.relpfIso03() < relIso2_;
+        bool iso = lepton1.relpfIso03(1) < relIso1_ && lepton2.relpfIso03(1) < relIso2_;
         bool opp = it1.sourcePtr()->get()->charge() * it2.sourcePtr()->get()->charge() < 0;
 
-        Ko::ZCandidate dimuon(lepton1, lepton2);
+        vallot::ZCandidate dimuon(lepton1, lepton2);
 
         if( iso && opp){
           seldilp->push_back( dimuon );

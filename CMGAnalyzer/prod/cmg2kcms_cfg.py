@@ -25,10 +25,10 @@ runOn2012 = True
 #Data
 #process.load("KoPFA.CommonTools.Sources.CMG.V5_7_0.Run2012.cmgTuple_Run2012AElEl_cff")
 #MC
-process.load("KoPFA.CommonTools.Sources.CMG.V5_7_0.Summer12.patTuple_TTbarTuneZ2_cff")
-#process.load("KoPFA.CommonTools.Sources.CMG.V5_7_0.Summer12.cmgTuple_TTH_HToBB_M125_cff")
-#process.load("KoPFA.CommonTools.Sources.CMG.V5_7_0.Summer12.cmgTuple_TTbarTuneZ2_cff")
-#process.load("KoPFA.CommonTools.Sources.CMG.V5_7_0.Summer12.cmgTuple_ZJets_cff")
+process.load("KoPFA.CommonTools.Sources.CMG.V5_10_0.Summer12.patTuple_TTbarTuneZ2_cff")
+#process.load("KoPFA.CommonTools.Sources.CMG.V5_10_0.Summer12.cmgTuple_TTH_HToBB_M125_cff")
+#process.load("KoPFA.CommonTools.Sources.CMG.V5_10_0.Summer12.cmgTuple_TTbarTuneZ2_cff")
+#process.load("KoPFA.CommonTools.Sources.CMG.V5_10_0.Summer12.cmgTuple_ZJets_cff")
 
 from CMGTools.Common.Tools.applyJSON_cff import applyJSON
 json = '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions12/8TeV/Prompt/Cert_190456-203002_8TeV_PromptReco_Collisions12_JSON_v2.txt'
