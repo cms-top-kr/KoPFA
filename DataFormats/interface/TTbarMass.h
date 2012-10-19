@@ -6,7 +6,7 @@
 #include "DataFormats/PatCandidates/interface/Lepton.h"
 #include "TLorentzVector.h"
 
-namespace Ko{
+namespace vallot{
 
   class TTbarMass{
   public:

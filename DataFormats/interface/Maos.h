@@ -6,7 +6,7 @@
 #include "TMinuit.h"
 #include "Minuit2/Minuit2Minimizer.h"
 
-namespace Ko
+namespace vallot
 {
   class MaxMtsq : public ROOT::Math::Functor
   {

@@ -14,17 +14,17 @@
 namespace {
   struct KoPFA_DataFormats {
 
-    Ko::ZCandidate dummyZCandidate;
-    edm::Wrapper<Ko::ZCandidate> dummyZCandidateWrapper;
-    std::vector<Ko::ZCandidate> dummyZCandidateCollection;
-    edm::Wrapper<std::vector<Ko::ZCandidate> > dummyZCandidateCollectionWrapper;
-    edm::Ptr<Ko::ZCandidate> dummyZCandidatePtr;
+    vallot::ZCandidate dummyZCandidate;
+    edm::Wrapper<vallot::ZCandidate> dummyZCandidateWrapper;
+    std::vector<vallot::ZCandidate> dummyZCandidateCollection;
+    edm::Wrapper<std::vector<vallot::ZCandidate> > dummyZCandidateCollectionWrapper;
+    edm::Ptr<vallot::ZCandidate> dummyZCandidatePtr;
 
-    Ko::Lepton dummyLepton;
-    edm::Wrapper<Ko::Lepton> dummyLeptonWrapper;
-    std::vector<Ko::Lepton> dummyLeptonCollection;
-    edm::Wrapper<std::vector<Ko::Lepton> > dummyLeptonCollectionWrapper;
-    edm::Ptr<Ko::Lepton> dummyLeptonPtr;
+    vallot::Lepton dummyLepton;
+    edm::Wrapper<vallot::Lepton> dummyLeptonWrapper;
+    std::vector<vallot::Lepton> dummyLeptonCollection;
+    edm::Wrapper<std::vector<vallot::Lepton> > dummyLeptonCollectionWrapper;
+    edm::Ptr<vallot::Lepton> dummyLeptonPtr;
 
     vallot::Jet dummyJet;
     edm::Wrapper<vallot::Jet> dummyJetWrapper;
@@ -32,35 +32,35 @@ namespace {
     edm::Wrapper<std::vector<vallot::Jet> > dummyJetCollectionWrapper;
     edm::Ptr<vallot::Jet> dummyJetPtr;
 
-    Ko::METCandidate dummyMETCandidate;
-    edm::Wrapper<Ko::METCandidate> dummyMETCandidateWrapper;
-    std::vector<Ko::METCandidate> dummyMETCandidateCollection;
-    edm::Wrapper<std::vector<Ko::METCandidate> > dummyMETCandidateCollectionWrapper;
-    edm::Ptr<Ko::METCandidate> dummyMETCandidatePtr;
+    vallot::METCandidate dummyMETCandidate;
+    edm::Wrapper<vallot::METCandidate> dummyMETCandidateWrapper;
+    std::vector<vallot::METCandidate> dummyMETCandidateCollection;
+    edm::Wrapper<std::vector<vallot::METCandidate> > dummyMETCandidateCollectionWrapper;
+    edm::Ptr<vallot::METCandidate> dummyMETCandidatePtr;
 
-    Ko::TTbarGenEvent dummyTTbarGenEvent;
-    edm::Wrapper<Ko::TTbarGenEvent> dummyTTbarGenEventWrapper;
-    std::vector<Ko::TTbarGenEvent> dummyTTbarGenEventCollection;
-    edm::Wrapper<std::vector<Ko::TTbarGenEvent> > dummyTTbarGenEventCollectionWrapper;
-    edm::Ptr<Ko::TTbarGenEvent> dummyTTbarGenEventPtr;
+    vallot::TTbarGenEvent dummyTTbarGenEvent;
+    edm::Wrapper<vallot::TTbarGenEvent> dummyTTbarGenEventWrapper;
+    std::vector<vallot::TTbarGenEvent> dummyTTbarGenEventCollection;
+    edm::Wrapper<std::vector<vallot::TTbarGenEvent> > dummyTTbarGenEventCollectionWrapper;
+    edm::Ptr<vallot::TTbarGenEvent> dummyTTbarGenEventPtr;
 
-    Ko::TTbarMass dummyTTbarMass;
-    edm::Wrapper<Ko::TTbarMass> dummyTTbarMassWrapper;
-    std::vector<Ko::TTbarMass> dummyTTbarMassCollection;
-    edm::Wrapper<std::vector<Ko::TTbarMass> > dummyTTbarMassCollectionWrapper;
-    edm::Ptr<Ko::TTbarMass> dummyTTbarMassPtr;
+    vallot::TTbarMass dummyTTbarMass;
+    edm::Wrapper<vallot::TTbarMass> dummyTTbarMassWrapper;
+    std::vector<vallot::TTbarMass> dummyTTbarMassCollection;
+    edm::Wrapper<std::vector<vallot::TTbarMass> > dummyTTbarMassCollectionWrapper;
+    edm::Ptr<vallot::TTbarMass> dummyTTbarMassPtr;
 
-    Ko::TTbarCandidate dummyTTbarCandidate;
-    edm::Wrapper<Ko::TTbarCandidate> dummyTTbarCandidateWrapper;
-    std::vector<Ko::TTbarCandidate> dummyTTbarCandidateCollection;
-    edm::Wrapper<std::vector<Ko::TTbarCandidate> > dummyTTbarCandidateCollectionWrapper;
-    edm::Ptr<Ko::TTbarCandidate> dummyTTbarCandidatePtr;
+    vallot::TTbarCandidate dummyTTbarCandidate;
+    edm::Wrapper<vallot::TTbarCandidate> dummyTTbarCandidateWrapper;
+    std::vector<vallot::TTbarCandidate> dummyTTbarCandidateCollection;
+    edm::Wrapper<std::vector<vallot::TTbarCandidate> > dummyTTbarCandidateCollectionWrapper;
+    edm::Ptr<vallot::TTbarCandidate> dummyTTbarCandidatePtr;
 
-    Ko::H2WWMass dummyH2WWMass;
-    edm::Wrapper<Ko::H2WWMass> dummyH2WWMassWrapper;
-    std::vector<Ko::H2WWMass> dummyH2WWMassCollection;
-    edm::Wrapper<std::vector<Ko::H2WWMass> > dummyH2WWMassCollectionWrapper;
-    edm::Ptr<Ko::H2WWMass> dummyH2WWMassPtr;
+    vallot::H2WWMass dummyH2WWMass;
+    edm::Wrapper<vallot::H2WWMass> dummyH2WWMassWrapper;
+    std::vector<vallot::H2WWMass> dummyH2WWMassCollection;
+    edm::Wrapper<std::vector<vallot::H2WWMass> > dummyH2WWMassCollectionWrapper;
+    edm::Ptr<vallot::H2WWMass> dummyH2WWMassPtr;
   };
 
 }

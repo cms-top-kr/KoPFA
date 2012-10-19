@@ -13,7 +13,7 @@
 //
 // Original Author:  Tae Jeong Kim,40 R-A32,+41227678602,
 //         Created:  Fri Jun  4 17:19:29 CEST 2010
-// $Id: ZFilter.h,v 1.3 2012/07/06 14:54:17 tjkim Exp $
+// $Id: ZFilter.h,v 1.4 2012/08/09 19:58:58 tjkim Exp $
 //
 //
 
@@ -93,7 +93,7 @@ class ZFilter : public edm::EDFilter {
     relIso1_ = iConfig.getUntrackedParameter<double>("relIso1");
     relIso2_ = iConfig.getUntrackedParameter<double>("relIso2");
 
-    produces<std::vector<Ko::ZCandidate> >("DiLepton");
+    produces<std::vector<vallot::ZCandidate> >("DiLepton");
     produces<std::vector<T1> >("Lepton1");
     produces<std::vector<T2> >("Lepton2");
 
@@ -113,8 +113,8 @@ class ZFilter : public edm::EDFilter {
   {
     bool accept = false;
 
-    std::auto_ptr<std::vector<Ko::ZCandidate> > dilp(new std::vector<Ko::ZCandidate>());
-    std::auto_ptr<std::vector<Ko::ZCandidate> > seldilp(new std::vector<Ko::ZCandidate>());
+    std::auto_ptr<std::vector<vallot::ZCandidate> > dilp(new std::vector<vallot::ZCandidate>());
+    std::auto_ptr<std::vector<vallot::ZCandidate> > seldilp(new std::vector<vallot::ZCandidate>());
     std::auto_ptr<std::vector<T1> > lep1(new std::vector<T1>());
     std::auto_ptr<std::vector<T2> > lep2(new std::vector<T2>());
     std::auto_ptr<std::vector<T1> > sellep1(new std::vector<T1>());
@@ -135,8 +135,8 @@ class ZFilter : public edm::EDFilter {
         const bool match = MatchObjects( it1.p4(), it2.p4(), true);
         if(match) continue;
 
-        Ko::Lepton lepton1(it1.p4(), (int) it1.charge());
-        Ko::Lepton lepton2(it2.p4(), (int) it2.charge());
+        vallot::Lepton lepton1(it1.p4(), (int) it1.charge());
+        vallot::Lepton lepton2(it2.p4(), (int) it2.charge());
 
         reco::isodeposit::Direction Dir1 = Direction(it1.eta(),it1.phi());
         reco::isodeposit::Direction Dir2 = Direction(it2.eta(),it2.phi());
@@ -174,7 +174,7 @@ class ZFilter : public edm::EDFilter {
         bool iso = lepton1.relpfIso03() < relIso1_ && lepton2.relpfIso03() < relIso2_;
         bool opp = it1.charge() * it2.charge() < 0;
 
-        Ko::ZCandidate dimuon(lepton1, lepton2);
+        vallot::ZCandidate dimuon(lepton1, lepton2);
 
 
         if( iso && opp){

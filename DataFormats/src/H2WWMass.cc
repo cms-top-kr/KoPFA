@@ -1,7 +1,7 @@
 #include "KoPFA/DataFormats/interface/H2WWMass.h"
 #include "KoPFA/DataFormats/interface/Maos.h"
 
-using namespace Ko;
+using namespace vallot;
 
 H2WWMass::H2WWMass(const reco::Candidate::LorentzVector& lep1, const reco::Candidate::LorentzVector& lep2, const TLorentzVector& met, const float& charge1, const float& charge2 ) {
 
@@ -33,7 +33,7 @@ void H2WWMass::SetMaosM() {
 
   //maos mass 
   //Fill tree for h2ww 
-  Ko::Maos h2ww;
+  vallot::Maos h2ww;
   double h2wwMt2 = sqrt( h2ww.MAOS(met_, leg1_, leg2_, 0.0, 0.0, false) );
 
     Mt2_ = h2wwMt2;

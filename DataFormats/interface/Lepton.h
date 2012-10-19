@@ -11,7 +11,7 @@
 #include "TLorentzVector.h"
 #include "TMath.h"
 
-namespace Ko{
+namespace vallot{
 
   typedef reco::Candidate::LorentzVector LorentzVector;
 

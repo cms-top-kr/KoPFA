@@ -2,7 +2,7 @@
 #include "DataFormats/JetReco/interface/GenJetCollection.h"
 #include "DataFormats/JetReco/interface/GenJet.h"
 
-namespace Ko {
+namespace vallot {
 
   std::vector<const reco::Candidate *> getAncestors(const reco::Candidate &c);
   bool hasBottom(const reco::Candidate &c);

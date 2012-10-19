@@ -4,9 +4,9 @@
 
 using namespace std;
 using namespace reco;
-using namespace Ko;
+using namespace vallot;
 
-std::vector<const reco::Candidate *> Ko::getAncestors(const reco::Candidate &c)
+std::vector<const reco::Candidate *> vallot::getAncestors(const reco::Candidate &c)
 {
   vector<const reco::Candidate *> moms;
   if( c.numberOfMothers() == 1 ) {
@@ -22,7 +22,7 @@ std::vector<const reco::Candidate *> Ko::getAncestors(const reco::Candidate &c)
 }
 
 
-bool Ko::hasBottom(const reco::Candidate &c) 
+bool vallot::hasBottom(const reco::Candidate &c) 
 {
   int code1;
   int code2;
@@ -33,7 +33,7 @@ bool Ko::hasBottom(const reco::Candidate &c)
   return tmpHasBottom;
 }
 
-bool Ko::decayFromBHadron(const Candidate & c)
+bool vallot::decayFromBHadron(const Candidate & c)
 {
    bool isFromB = false;
    vector<const Candidate *> allParents = getAncestors( c );
@@ -51,7 +51,7 @@ bool Ko::decayFromBHadron(const Candidate & c)
    return isFromB;
 }
 
-const Candidate* Ko::lastBHadron(const Candidate & c)
+const Candidate* vallot::lastBHadron(const Candidate & c)
 {
    const Candidate * out;
    
@@ -66,7 +66,7 @@ const Candidate* Ko::lastBHadron(const Candidate & c)
    return out;
 }
 
-double Ko::dR( const Candidate& pasObj, const GenJet& proObj ) {
+double vallot::dR( const Candidate& pasObj, const GenJet& proObj ) {
     
   double pasEta = pasObj.eta();
   double pasPhi = pasObj.phi();

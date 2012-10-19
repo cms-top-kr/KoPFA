@@ -6,7 +6,7 @@
  
 using namespace std;
 using namespace reco;
-using namespace Ko;
+using namespace vallot;
 
 void TTbarCandidate::building( const reco::GenJetCollection* genJets, const reco::GenParticleCollection* genParticles  ){
 

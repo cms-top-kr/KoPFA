@@ -1,7 +1,7 @@
 #include "KoPFA/DataFormats/interface/TTbarMass.h"
 #include "KoPFA/DataFormats/interface/Maos.h"
 
-using namespace Ko;
+using namespace vallot;
 
 TTbarMass::TTbarMass(const reco::Candidate::LorentzVector& lep1, const reco::Candidate::LorentzVector& lep2, const reco::Candidate::LorentzVector& jet1, const reco::Candidate::LorentzVector& jet2, const reco::Candidate::LorentzVector& met) {
 
@@ -43,9 +43,9 @@ void TTbarMass::SetMaosM() {
   const TLorentzVector metvec(invis.Px(), invis.Py(), 0, invis.Pt());
 
   //Fill tree for ttbar invariant mass and top mass for two different cases
-  Ko::Maos ttbar1;
+  vallot::Maos ttbar1;
   double ttbar1Mt2 = sqrt( ttbar1.MAOS(metvec, lep1op1, lep2op1, 0.0, 0.0, false) );
-  Ko::Maos ttbar2;
+  vallot::Maos ttbar2;
   double ttbar2Mt2 = sqrt( ttbar2.MAOS(metvec, lep1op2, lep2op2, 0.0, 0.0, false) );
 
   if( ttbar1Mt2 < ttbar2Mt2 ){

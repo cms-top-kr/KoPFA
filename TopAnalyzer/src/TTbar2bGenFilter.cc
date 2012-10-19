@@ -107,7 +107,7 @@ private:
   TH1F* h_nEvents_inclusive;
   TH1F* h_nEvents_parton_inclusive;
 
-  std::vector<Ko::TTbarCandidate>* ttbarGen;
+  std::vector<vallot::TTbarCandidate>* ttbarGen;
 
 };
 
@@ -183,11 +183,11 @@ TTbar2bGenFilter::TTbar2bGenFilter(const edm::ParameterSet& pset)
   h_nEvents_inclusive = fs->make<TH1F>( "h_nEvents_inclusive"  , "h_nEvents", 6,  0, 6 );
   h_nEvents_parton_inclusive = fs->make<TH1F>( "h_nEvents_parton_inclusive"  , "h_nEvents_parton", 6,  0, 6 );
 
-  ttbarGen = new std::vector<Ko::TTbarCandidate>();
+  ttbarGen = new std::vector<vallot::TTbarCandidate>();
 }
 
 void TTbar2bGenFilter::beginJob(){
-  tree->Branch("ttbarGen","std::vector<Ko::TTbarCandidate>", &ttbarGen);
+  tree->Branch("ttbarGen","std::vector<vallot::TTbarCandidate>", &ttbarGen);
 }
 
 bool TTbar2bGenFilter::filter(edm::Event& iEvent, const edm::EventSetup& eventSetup)
@@ -257,7 +257,7 @@ bool TTbar2bGenFilter::filter(edm::Event& iEvent, const edm::EventSetup& eventSe
   b_multiplicity->Fill(nb);
 
   //gen information
-  Ko::TTbarCandidate ttbarGenLevel;
+  vallot::TTbarCandidate ttbarGenLevel;
 
   if(genJets_.isValid()){
     const reco::GenJetCollection* myGenJets = 0;

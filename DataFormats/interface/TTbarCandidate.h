@@ -13,7 +13,7 @@
 
 #include <vector>
 
-namespace Ko{
+namespace vallot{
 
   class TTbarCandidate{
   public:

@@ -49,7 +49,7 @@ KoMuonSelector::KoMuonSelector(const edm::ParameterSet& cfg)
   ecalIso = new std::vector<double>();
   hcalIso = new std::vector<double>();
 
-  lepton = new std::vector<Ko::Lepton>();
+  lepton = new std::vector<vallot::Lepton>();
 }
 
 KoMuonSelector::~KoMuonSelector()
@@ -137,7 +137,7 @@ void KoMuonSelector::produce(edm::Event& iEvent, const edm::EventSetup& es)
     else if(version_==3) passed = muonIdSel.test("TOPDIL") && C2;
     else if(version_==4) passed = C2 && muonIsoSel.test("pfOptimizedRel");
 
-    const Ko::Lepton mu(muon.p4(), (int) muon.charge());
+    const vallot::Lepton mu(muon.p4(), (int) muon.charge());
     lepton->push_back(mu);
     reco::isodeposit::Direction Dir = Direction(muon.eta(),muon.phi());
     vetos_nh.push_back(new ThresholdVeto( 0.5 ));

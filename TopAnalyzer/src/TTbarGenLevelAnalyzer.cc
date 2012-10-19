@@ -43,7 +43,7 @@ private:
   edm::InputTag genMETLabel_;
 
   TTree* tree_;
-  Ko::TTbarGenEvent* ttbarGenEvent_;
+  vallot::TTbarGenEvent* ttbarGenEvent_;
 
   TH1F* hmTT_Full_; // mTT in the full PS
   TH1F* hmTT_Pton_; // mTT in the visible PS with partons
@@ -71,7 +71,7 @@ TTbarGenLevelAnalyzer::TTbarGenLevelAnalyzer(const edm::ParameterSet& pset)
 
   doTree_ = pset.getUntrackedParameter<bool>("doTree", false);
 
-  ttbarGenEvent_ = new Ko::TTbarGenEvent;
+  ttbarGenEvent_ = new vallot::TTbarGenEvent;
 
 }
 
@@ -82,7 +82,7 @@ void TTbarGenLevelAnalyzer::beginJob()
   if ( doTree_ )
   {
     tree_ = fs->make<TTree>("tree", "Tree for ttbar dilepton generator level study");
-    tree_->Branch("ttbarGen", "Ko::TTbarGenEvent", &ttbarGenEvent_);
+    tree_->Branch("ttbarGen", "vallot::TTbarGenEvent", &ttbarGenEvent_);
   }
 
   hmTT_Full_ = fs->make<TH1F>("hmTT_Full", "m(t#bar{t}) in the full phase space;Mass [GeV/c^{2}];Events per 1GeV", 2000, 0, 2000);

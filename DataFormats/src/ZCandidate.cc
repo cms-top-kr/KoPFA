@@ -1,6 +1,6 @@
 #include "KoPFA/DataFormats/interface/ZCandidate.h"
 
-using namespace Ko;
+using namespace vallot;
 
 float ZCandidate::deltaR() const{
  

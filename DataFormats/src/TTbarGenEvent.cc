@@ -4,7 +4,7 @@
 #include "TMath.h"
 
 using namespace std;
-using namespace Ko;
+using namespace vallot;
 
 void TTbarGenEvent::clear()
 {

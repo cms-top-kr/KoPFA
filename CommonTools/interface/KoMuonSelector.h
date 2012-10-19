@@ -63,7 +63,7 @@ class KoMuonSelector : public edm::EDProducer
   unsigned int RUN;
   unsigned int LUMI;
 
-  std::vector<Ko::Lepton>* lepton;
+  std::vector<vallot::Lepton>* lepton;
 
   std::vector<double>* eta;
   std::vector<double>* phi;

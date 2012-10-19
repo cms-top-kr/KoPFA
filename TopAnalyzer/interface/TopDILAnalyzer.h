@@ -13,7 +13,7 @@
 //
 // Original Author:  Tae Jeong Kim,40 R-A32,+41227678602,
 //         Created:  Fri Jun  4 17:19:29 CEST 2010
-// $Id: TopDILAnalyzer.h,v 1.89 2012/09/06 12:50:23 tjkim Exp $
+// $Id: TopDILAnalyzer.h,v 1.90 2012/09/27 13:31:29 tjkim Exp $
 //
 //
 
@@ -138,12 +138,12 @@ class TopDILAnalyzer : public edm::EDFilter {
     //TFileDirectory btagdir = fs->mkdir(Form("btagEff", i));
     
 
-    Z = new std::vector<Ko::ZCandidate>();
-    lepton1 = new std::vector<Ko::Lepton>();
-    lepton2 = new std::vector<Ko::Lepton>();
-    pfMet = new std::vector<Ko::METCandidate>();
-    ttbar = new std::vector<Ko::TTbarMass>();
-    ttbarGen = new std::vector<Ko::TTbarCandidate>();
+    Z = new std::vector<vallot::ZCandidate>();
+    lepton1 = new std::vector<vallot::Lepton>();
+    lepton2 = new std::vector<vallot::Lepton>();
+    pfMet = new std::vector<vallot::METCandidate>();
+    ttbar = new std::vector<vallot::TTbarMass>();
+    ttbarGen = new std::vector<vallot::TTbarCandidate>();
     met = new std::vector<math::XYZTLorentzVector>();
     jetspt30 = new std::vector<math::XYZTLorentzVector>();
     jetspt30flavor = new std::vector<int>();
@@ -237,11 +237,11 @@ class TopDILAnalyzer : public edm::EDFilter {
     tree->Branch("phi1",&phi1,"phi1/d");
     tree->Branch("phi2",&phi2,"phi2/d");
 
-    //tree->Branch("pfMet","std::vector<Ko::METCandidate>", &pfMet);
+    //tree->Branch("pfMet","std::vector<vallot::METCandidate>", &pfMet);
     tree->Branch("met","std::vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >", &met);
 
-    tree->Branch("ttbar","std::vector<Ko::TTbarMass>", &ttbar);
-    tree->Branch("ttbarGen","std::vector<Ko::TTbarCandidate>", &ttbarGen);
+    tree->Branch("ttbar","std::vector<vallot::TTbarMass>", &ttbar);
+    tree->Branch("ttbarGen","std::vector<vallot::TTbarCandidate>", &ttbarGen);
     tree->Branch("kinttbarM",&kinttbarM,"kinttbarM/d");
     tree->Branch("kinttbarMCSVM",&kinttbarMCSVM,"kinttbarMCSVM/d");
     tree->Branch("kinttbarMCSVT",&kinttbarMCSVT,"kinttbarMCSVT/d");
@@ -351,7 +351,7 @@ class TopDILAnalyzer : public edm::EDFilter {
     edm::Handle<reco::GenJetCollection> genJets_;
     iEvent.getByLabel(genJetsLabel_,genJets_);
 
-    edm::Handle<vector<Ko::ZCandidate> > ZCand;
+    edm::Handle<vector<vallot::ZCandidate> > ZCand;
     iEvent.getByLabel(dileptonLabel_, ZCand);
 
     int mode = 0;
@@ -529,7 +529,7 @@ class TopDILAnalyzer : public edm::EDFilter {
     met->push_back(corrmet);
 
     if(metStudy_){
-      const Ko::METCandidate pfmet(MET, mi->sumEt(), mi->NeutralEMFraction(),mi->NeutralHadEtFraction(),mi->ChargedHadEtFraction(),mi->ChargedEMEtFraction(),mi->MuonEtFraction() );
+      const vallot::METCandidate pfmet(MET, mi->sumEt(), mi->NeutralEMFraction(),mi->NeutralHadEtFraction(),mi->ChargedHadEtFraction(),mi->ChargedEMEtFraction(),mi->MuonEtFraction() );
       pfMet->push_back(pfmet);
     }
 
@@ -539,7 +539,7 @@ class TopDILAnalyzer : public edm::EDFilter {
       lep1.SetPxPyPzE(ZCand->at(0).leg1().px(),ZCand->at(0).leg1().py(),ZCand->at(0).leg1().pz(),ZCand->at(0).leg1().energy());
       lep2.SetPxPyPzE(ZCand->at(0).leg2().px(),ZCand->at(0).leg2().py(),ZCand->at(0).leg2().pz(),ZCand->at(0).leg2().energy());
 
-      const Ko::TTbarMass ttbarMass(lep1, lep2, jetspt30->at(0), jetspt30->at(1), met->at(0));
+      const vallot::TTbarMass ttbarMass(lep1, lep2, jetspt30->at(0), jetspt30->at(1), met->at(0));
       ttbar->push_back(ttbarMass);
 
       const string hypo = "kKinSolution";
@@ -595,7 +595,7 @@ class TopDILAnalyzer : public edm::EDFilter {
     nbjets30_CSVMT = ntopb + nextb;
 
     //gen information
-    Ko::TTbarCandidate ttbarGenLevel;
+    vallot::TTbarCandidate ttbarGenLevel;
 
     double genZmass = -999;
  
@@ -1013,12 +1013,12 @@ class TopDILAnalyzer : public edm::EDFilter {
 
   TH1F * tmp;
 
-  std::vector<Ko::ZCandidate>* Z;
-  std::vector<Ko::Lepton>* lepton1;
-  std::vector<Ko::Lepton>* lepton2;
-  std::vector<Ko::METCandidate>* pfMet;
-  std::vector<Ko::TTbarMass>* ttbar;
-  std::vector<Ko::TTbarCandidate>* ttbarGen;
+  std::vector<vallot::ZCandidate>* Z;
+  std::vector<vallot::Lepton>* lepton1;
+  std::vector<vallot::Lepton>* lepton2;
+  std::vector<vallot::METCandidate>* pfMet;
+  std::vector<vallot::TTbarMass>* ttbar;
+  std::vector<vallot::TTbarCandidate>* ttbarGen;
   std::vector<math::XYZTLorentzVector>* met;
   std::vector<math::XYZTLorentzVector>* jetspt30;
   std::vector<int>* jetspt30flavor;

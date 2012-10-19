@@ -1,6 +1,6 @@
 #include "KoPFA/DataFormats/interface/Lepton.h"
 
-using namespace Ko; 
+using namespace vallot; 
 using namespace std;
 
 Lepton::Lepton( const reco::Candidate::LorentzVector& p4, const int& charge  ) : LorentzVector(p4){

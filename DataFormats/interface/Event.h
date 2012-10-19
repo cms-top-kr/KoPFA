@@ -1,7 +1,7 @@
 #ifndef MyEvent_H
 #define MyEvent_H
 
-namespace Ko{
+namespace vallot{
 
   class Event{
     public:

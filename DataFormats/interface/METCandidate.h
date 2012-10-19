@@ -7,7 +7,7 @@
 #include "DataFormats/PatCandidates/interface/MET.h"
 #include "TLorentzVector.h"
 
-namespace Ko{
+namespace vallot{
 
   class METCandidate{
   public:

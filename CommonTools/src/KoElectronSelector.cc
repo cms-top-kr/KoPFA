@@ -71,7 +71,7 @@ KoElectronSelector::KoElectronSelector(const edm::ParameterSet& cfg)
     hcalIso = new std::vector<double>();
   }
 
-  lepton = new std::vector<Ko::Lepton>();
+  lepton = new std::vector<vallot::Lepton>();
 
 }
 
@@ -128,7 +128,7 @@ void KoElectronSelector::produce(edm::Event& iEvent, const edm::EventSetup& es)
       electron.setP4(electron.pfCandidateRef()->p4());
     }
 
-    const Ko::Lepton ele(electron.p4(), (int) electron.charge());
+    const vallot::Lepton ele(electron.p4(), (int) electron.charge());
     lepton->push_back(ele);
     reco::isodeposit::Direction Dir = Direction(electron.superCluster()->eta(),electron.superCluster()->phi());
 

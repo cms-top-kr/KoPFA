@@ -1,16 +1,16 @@
 #include "KoPFA/DataFormats/interface/Maos.h"
 
 using namespace std;
-using namespace Ko;
+using namespace vallot;
 
-double Ko::mtsq(const TLorentzVector &ptl, const TLorentzVector &qt, double ml, double mchi)
+double vallot::mtsq(const TLorentzVector &ptl, const TLorentzVector &qt, double ml, double mchi)
 {
     TVector3 l1 = ptl.Vect();
     TVector3 l2 = qt.Vect();
     return mtsq(l1, l2, ml, mchi);
 }
 
-double Ko::mtsq(const TVector3 &ptl, const TVector3 &qt, double ml, double mchi)
+double vallot::mtsq(const TVector3 &ptl, const TVector3 &qt, double ml, double mchi)
 {
     TVector3 l1 = ptl;
     TVector3 l2 = qt;
@@ -24,9 +24,9 @@ double Ko::mtsq(const TVector3 &ptl, const TVector3 &qt, double ml, double mchi)
 }
 
 #ifndef __MAKECINT__
-TLorentzVector Ko::tmpl1_;
-TLorentzVector Ko::tmpl2_;
-TLorentzVector Ko::tmpmet_;
+TLorentzVector vallot::tmpl1_;
+TLorentzVector vallot::tmpl2_;
+TLorentzVector vallot::tmpmet_;
 #endif
 
 void minfn(Int_t &npar, Double_t *gin, Double_t &retval, Double_t *par, Int_t iflag){
@@ -36,14 +36,14 @@ void minfn(Int_t &npar, Double_t *gin, Double_t &retval, Double_t *par, Int_t if
     double mt12, mt22;
 
     p1.SetPxPyPzE(par[0], par[1], 0.0, TMath::Hypot(par[0], par[1]));
-    p2 = Ko::tmpmet_ - p1;
-    mt12 = Ko::mtsq(Ko::tmpl1_, p1, Ko::tmpl1_.M(), 0.0);
-    mt22 = Ko::mtsq(Ko::tmpl2_, p2, Ko::tmpl2_.M(), 0.0);
+    p2 = vallot::tmpmet_ - p1;
+    mt12 = vallot::mtsq(vallot::tmpl1_, p1, vallot::tmpl1_.M(), 0.0);
+    mt22 = vallot::mtsq(vallot::tmpl2_, p2, vallot::tmpl2_.M(), 0.0);
     // should try swapping
     retval = fmax(mt12, mt22);
 }
 
-double Ko::Maos::MT2(const TLorentzVector& metvec, const TLorentzVector &lep1, const TLorentzVector &lep2, double mchi){
+double vallot::Maos::MT2(const TLorentzVector& metvec, const TLorentzVector &lep1, const TLorentzVector &lep2, double mchi){
 
 #ifndef __MAKECINT__
     TMinuit *gMinuit = new TMinuit(2);
@@ -112,7 +112,7 @@ double Ko::Maos::MT2(const TLorentzVector& metvec, const TLorentzVector &lep1, c
 }
 
 // use Minuit minimizer
-double Ko::Maos::MAOS(const TLorentzVector& metvec, const TLorentzVector &lep1,const TLorentzVector &lep2, 
+double vallot::Maos::MAOS(const TLorentzVector& metvec, const TLorentzVector &lep1,const TLorentzVector &lep2, 
                            double mchi, double mY, bool orig){
     double mt22 = MT2(metvec, lep1, lep2, mchi);
 
