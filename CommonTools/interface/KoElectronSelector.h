@@ -44,9 +44,6 @@ class KoElectronSelector : public edm::EDProducer
   edm::InputTag electronLabel_;
   double ptcut_;
   double etacut_;
-  double mvacut_;
-
-  bool usemva_;
   
   std::string eidName_;
   int eidBitMask_;

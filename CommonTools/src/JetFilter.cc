@@ -13,7 +13,7 @@
 //
 // Original Author:  Tae Jeong Kim
 //         Created:  Mon Dec 14 01:29:35 CET 2009
-// $Id: JetFilter.cc,v 1.8 2012/05/02 20:22:39 jhgoh Exp $
+// $Id: JetFilter.cc,v 1.7 2012/05/02 16:01:22 jhgoh Exp $
 //
 //
 
@@ -60,7 +60,6 @@ class JetFilter : public edm::EDFilter {
       typedef pat::JetCollection::const_iterator JI;
 
       bool applyFilter_;
-      edm::InputTag rhoLabel_;
       edm::InputTag jetLabel_;
       edm::InputTag metLabel_;
       string outputJetLabel_;
@@ -100,7 +99,6 @@ JetFilter::JetFilter(const edm::ParameterSet& ps)
 {
    //now do what ever initialization is needed
   applyFilter_=ps.getUntrackedParameter<bool>("applyFilter",false);
-  rhoLabel_ =  ps.getParameter<edm::InputTag>("rhoLabel");
   jetLabel_ =  ps.getParameter<edm::InputTag>("jetLabel");
   metLabel_ = ps.getParameter<edm::InputTag>("metLabel");
   vertexLabel_ =  ps.getUntrackedParameter<edm::InputTag>("vertexLabel");
@@ -171,7 +169,7 @@ JetFilter::filter(edm::Event& iEvent, const edm::EventSetup& iSetup)
   double metDn_x = met_x, metDn_y = met_y;
 
   edm::Handle<double>  rho;
-  iEvent.getByLabel(rhoLabel_, rho);
+  iEvent.getByLabel(edm::InputTag("kt6PFJetsPFlow","rho"), rho);
 
   edm::Handle<reco::VertexCollection> recVtxs_;
   iEvent.getByLabel(vertexLabel_,recVtxs_);
