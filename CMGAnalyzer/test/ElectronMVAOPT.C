@@ -39,9 +39,9 @@ void ElectronMVAOPT()
   gROOT->ProcessLine(".L tdrstyle.C");
   defaultStyle();
 
-  TFile * f_Signal_ttbar = new TFile("/afs/cern.ch/work/t/tjkim/public/store/electron/v2/vallot_TTbarTuneZ2.root");
-  TFile * f_Signal_zjets = new TFile("/afs/cern.ch/work/t/tjkim/public/store/electron/v2/vallot_ZJets.root");
-  TFile * f_QCD = new TFile("/afs/cern.ch/work/t/tjkim/public/store/electron/v2/vallot_Run2012ElEl.root");
+  TFile * f_Signal_ttbar = new TFile("/afs/cern.ch/work/t/tjkim/public/store/electron/electrons2/nhits0/vallot_TTbarTuneZ2.root");
+  TFile * f_Signal_zjets = new TFile("/afs/cern.ch/work/t/tjkim/public/store/electron/electrons2/nhits0/vallot_ZJets.root");
+  TFile * f_QCD = new TFile("/afs/cern.ch/work/t/tjkim/public/store/electron/electrons2/nhits0/vallot_Run2012ElEl.root");
 
   TH1F *hSignal_ttbar_mvaTrigV0_barrel = (TH1F *) f_Signal_ttbar->Get("ElectronAnalysis/Signal/IDPF/Barrel/h_mvaTrigV0");
   TH1F *hSignal_ttbar_mvaTrigV0_endcap = (TH1F *) f_Signal_ttbar->Get("ElectronAnalysis/Signal/IDPF/Endcap/h_mvaTrigV0");
@@ -67,20 +67,23 @@ void ElectronMVAOPT()
   TH1F * hQCD_mvaTrigV0 = hQCD_mvaTrigV0_barrel;
   hQCD_mvaTrigV0->Add(hQCD_mvaTrigV0_endcap);
 
-  //double sf_ttbar_signal = hSignal_ttbar_mvaTrigV0->Integral();
-  //double sf_zjets_signal = hSignal_zjets_mvaTrigV0->Integral();
-  //double sf_qcd = hQCD_mvaTrigV0->Integral();
+  double sf_ttbar_signal = hSignal_ttbar_mvaTrigV0->Integral();
+  double sf_zjets_signal = hSignal_zjets_mvaTrigV0->Integral();
+  double sf_qcd = hQCD_mvaTrigV0->Integral();
   
   hSignal_ttbar_mvaTrigV0->Scale(norm_Signal_ttbar);
   hSignal_zjets_mvaTrigV0->Scale(norm_Signal_zjets);
-  //TH1F * hSignal_mvaTrigV0 = hSignal_ttbar_mvaTrigV0;
-  TH1F * hSignal_mvaTrigV0 = hSignal_zjets_mvaTrigV0;
+  TH1F * hSignal_mvaTrigV0 = hSignal_ttbar_mvaTrigV0;
+  //TH1F * hSignal_mvaTrigV0 = hSignal_zjets_mvaTrigV0;
   //hSignal_mvaTrigV0->Add( hSignal_zjets_mvaTrigV0 ); 
-  //hQCD_mvaTrigV0->Scale(1.0/sf_qcd);
-  hQCD_mvaTrigV0->Scale(16.0);
+  hSignal_mvaTrigV0->Scale(1.0/sf_ttbar_signal);
+  hQCD_mvaTrigV0->Scale(0.02/sf_qcd);
+  //hQCD_mvaTrigV0->Scale(0.1);
 
   TCanvas * c = new TCanvas("c","c",500,500);
   c->SetLogy();
+  c->SetGridy();
+  c->SetGridx();
   SetFrame( hSignal_mvaTrigV0, "MVA TrigV0","Entries");
   SetFrame( hQCD_mvaTrigV0, "MVA TrigV0","Entries");
   hSignal_mvaTrigV0->SetLineColor(4);
@@ -99,9 +102,11 @@ void ElectronMVAOPT()
   l->SetLineColor(0);
   l->Draw();
 
-  c->Print("c_mva_zjets.eps");
+  c->Print("c_mva_ttbar.eps");
 
   TCanvas * c_opt = new TCanvas("c_opt","c_opt",500,500);
+  c_opt->SetGridy();
+  c_opt->SetGridx();
   TH1* h_opt = new TH1F("h_opt","h_opt",200,-1-0.005,1-0.005);
   for(int i=0; i < 200 ; i++){
     double Si = hSignal_mvaTrigV0->Integral(i+1,200);
@@ -112,9 +117,11 @@ void ElectronMVAOPT()
   SetFrame( h_opt, "MVA TrigV0", "S/#sqrt{S+B}");
   h_opt->Draw();
 
-  c_opt->Print("c_mvaopt_zjets.eps");
+  c_opt->Print("c_mvaopt_ttbar.eps");
 
   TCanvas * c_eff = new TCanvas("c_eff","c_eff",500,500);
+  c_eff->SetGridy();
+  c_eff->SetGridx();
   TH1* h_eff = new TH1F("h_eff","h_eff",200,-1-0.005,1-0.005);
   double total = hSignal_mvaTrigV0->Integral(1,200); 
   for(int i=0; i < 200 ; i++){
@@ -126,7 +133,7 @@ void ElectronMVAOPT()
   SetFrame( h_eff, "MVA TrigV0", "Efficiency");
   h_eff->Draw();
 
-  c_eff->Print("c_mvaeff_zjets.eps");
+  c_eff->Print("c_mvaeff_ttbar.eps");
 
 }
 
