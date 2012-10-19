@@ -14,7 +14,7 @@
 
 #include <vector>
 
-namespace Ko{
+namespace vallot{
 
   class CMGTTbarCandidate{
   public:
@@ -31,6 +31,10 @@ namespace Ko{
 
     const math::XYZTLorentzVector lepton1() const { return leptons_[0]; }
     const math::XYZTLorentzVector lepton2() const { return leptons_[1]; }
+    const math::XYZTLorentzVector nu1() const { return nus_[0]; }
+    const math::XYZTLorentzVector nu2() const { return nus_[1]; }
+    const math::XYZTLorentzVector taunu1() const { return taunus_[0]; }
+    const math::XYZTLorentzVector taunu2() const { return taunus_[1]; }
 
     const math::XYZTLorentzVector bJets1() const { return bJets_[0]; }
     const math::XYZTLorentzVector bJets2() const { return bJets_[1]; }
@@ -166,6 +170,8 @@ namespace Ko{
 
     LorentzVectors bquarks_;
     LorentzVectors leptons_;
+    LorentzVectors nus_;
+    LorentzVectors taunus_;
     LorentzVectors bJets_;
 
     double mass_;

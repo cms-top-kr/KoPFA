@@ -6,7 +6,7 @@
  
 using namespace std;
 using namespace reco;
-using namespace Ko;
+using namespace vallot;
 
 void CMGTTbarCandidate::building( const std::vector<cmg::GenJet>* genJets, const reco::GenParticleCollection* genParticles  ){
 
@@ -19,6 +19,10 @@ void CMGTTbarCandidate::building( const std::vector<cmg::GenJet>* genJets, const
 
   leptons_.push_back(null);
   leptons_.push_back(null);
+  nus_.push_back(null);
+  nus_.push_back(null);
+  taunus_.push_back(null);
+  taunus_.push_back(null);
 
   std::vector<bool> electronic(2,static_cast<bool>(false));
   std::vector<bool> muonic(2,static_cast<bool>(false));
@@ -85,40 +89,59 @@ void CMGTTbarCandidate::building( const std::vector<cmg::GenJet>* genJets, const
       for ( unsigned iWDaughter=0; iWDaughter<nWDaughters; ++iWDaughter ) {
 	const reco::Candidate* decay = daugh->daughter(iWDaughter);
 	int decayId = abs(decay->pdgId());
-	if ( decayId == 11  ) {  
-          leptons_[ntop] = decay->p4() ;
-	  electronic[ntop] = true;
+	if ( decayId == 11 || decayId == 12 ) {  
+          if( decayId == 11 ) {
+            electronic[ntop] = true;
+            leptons_[ntop] = decay->p4() ;
+          }
+          if( decayId == 12 ) nus_[ntop] = decay->p4() ;
 	  break; 
-	} else if ( decayId == 13 ) {  
-	  muonic[ntop] = true;
-          leptons_[ntop] = decay->p4() ;
+	} else if ( decayId == 13 || decayId == 14 ) {  
+          if( decayId == 13 ) {
+            muonic[ntop] = true;
+            leptons_[ntop] = decay->p4() ;
+          }
+          if( decayId == 14 ) nus_[ntop] = decay->p4() ;
 	  break;
-	} else if ( decayId == 15  ) {  
-          taunic[ntop] = true;
+	} else if ( decayId == 15 || decayId == 16 ) {  
+          if( decayId == 15 ) taunic[ntop] = true;
+          if( decayId == 16 ) taunus_[ntop] = decay->p4() ;
           unsigned int nTauDaughters = decay->numberOfDaughters();
           for ( unsigned iTauDaughter=0; iTauDaughter<nTauDaughters; ++iTauDaughter ) {
             const reco::Candidate* tauDecay = decay->daughter(iTauDaughter);
             int tauDecayId = abs(tauDecay->pdgId());
-            if ( tauDecayId == 11  ) {
-              electronic[ntop] = true;
-              leptons_[ntop] = tauDecay->p4() ;
+            if ( tauDecayId == 11 || tauDecayId == 12 ) {
+              if( tauDecayId == 11) {
+                electronic[ntop] = true;
+                leptons_[ntop] = tauDecay->p4() ;
+              }
+              if( tauDecayId == 12) nus_[ntop] = tauDecay->p4() ;
               break;
-            } else if ( tauDecayId == 13 ) {
-              muonic[ntop] = true;
-              leptons_[ntop] = tauDecay->p4() ;
+            } else if ( tauDecayId == 13 || tauDecayId == 14 ) {
+              if( tauDecayId == 13) {
+                muonic[ntop] = true;
+                leptons_[ntop] = tauDecay->p4() ;
+              }
+              if( tauDecayId == 14) nus_[ntop] = tauDecay->p4() ;
               break;
-            } else if (  tauDecayId == 15 ) {
+            } else if (  tauDecayId == 15 || tauDecayId == 16) {
               unsigned int nTauGrandDaughters = tauDecay->numberOfDaughters();
               for ( unsigned iTauGrandDaughter=0; iTauGrandDaughter<nTauGrandDaughters; ++iTauGrandDaughter ) {
                 const reco::Candidate* tauGrandDecay = tauDecay->daughter(iTauGrandDaughter);
                 int tauGrandDecayId = abs(tauGrandDecay->pdgId());
-                if ( tauGrandDecayId == 11 ) {
-                  electronic[ntop] = true;
-                  leptons_[ntop] = tauGrandDecay->p4() ;
+                if ( tauGrandDecayId == 11 || tauGrandDecayId == 12 ) {
+                  if( tauGrandDecayId == 11){
+                    electronic[ntop] = true;
+                    leptons_[ntop] = tauGrandDecay->p4() ;
+                  }
+                  if( tauGrandDecayId == 12 ) nus_[ntop] = tauGrandDecay->p4() ;
                   break;
-                } else if ( tauGrandDecayId == 13 ) {
-                  muonic[ntop] = true;
-                  leptons_[ntop] = tauGrandDecay->p4() ;
+                } else if ( tauGrandDecayId == 13 || tauGrandDecayId == 14 ) {
+                  if( tauGrandDecayId == 13 ){
+                    muonic[ntop] = true;
+                    leptons_[ntop] = tauGrandDecay->p4() ;
+                  }
+                  if( tauGrandDecayId == 12 ) nus_[ntop] = tauGrandDecay->p4() ;
                   break;
                 } else {
                   continue;

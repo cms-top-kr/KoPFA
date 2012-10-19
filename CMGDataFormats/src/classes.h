@@ -6,11 +6,11 @@
 namespace {
   struct KoPFA_CMGAnalyzer {
 
-    Ko::CMGTTbarCandidate dummyCMGTTbarCandidate;
-    edm::Wrapper<Ko::CMGTTbarCandidate> dummyCMGTTbarCandidateWrapper;
-    std::vector<Ko::CMGTTbarCandidate> dummyCMGTTbarCandidateCollection;
-    edm::Wrapper<std::vector<Ko::CMGTTbarCandidate> > dummyCMGTTbarCandidateCollectionWrapper;
-    edm::Ptr<Ko::CMGTTbarCandidate> dummyCMGTTbarCandidatePtr;
+    vallot::CMGTTbarCandidate dummyCMGTTbarCandidate;
+    edm::Wrapper<vallot::CMGTTbarCandidate> dummyCMGTTbarCandidateWrapper;
+    std::vector<vallot::CMGTTbarCandidate> dummyCMGTTbarCandidateCollection;
+    edm::Wrapper<std::vector<vallot::CMGTTbarCandidate> > dummyCMGTTbarCandidateCollectionWrapper;
+    edm::Ptr<vallot::CMGTTbarCandidate> dummyCMGTTbarCandidatePtr;
 
   };
 
