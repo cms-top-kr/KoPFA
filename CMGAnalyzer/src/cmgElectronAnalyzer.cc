@@ -25,7 +25,10 @@ cmgElectronAnalyzer::cmgElectronAnalyzer(const edm::ParameterSet& cfg)
   rhoIsoLabel_ =  cfg.getUntrackedParameter<edm::InputTag>("rhoIsoLabel");
   useZMassWindow_ =  cfg.getUntrackedParameter<bool>("useZMassWindow");
   applyPreTrigSel_ = cfg.getUntrackedParameter<bool>("applyPreTrigSel", true); 
+  applyPFId_ = cfg.getUntrackedParameter<bool>("applyPFId", false); 
   numberOfHits_ = cfg.getUntrackedParameter<unsigned int>("numberOfHits",1); 
+  numberOfLeptons_ = cfg.getUntrackedParameter<unsigned int>("numberOfLeptons",2); 
+  numberOfJets_ = cfg.getUntrackedParameter<unsigned int>("numberOfJets",1); 
 
   filters_ = cfg.getUntrackedParameter<std::vector<std::string> >("filters");
   useEventCounter_ = cfg.getParameter<bool>("useEventCounter");
@@ -170,12 +173,17 @@ void cmgElectronAnalyzer::produce(edm::Event& iEvent, const edm::EventSetup& es)
     //reco::Vertex pv = goodOfflinePrimaryVertices->at(0);
     //bool passPre = electron.pt() > 20 && fabs(electron.eta()) < 2.5 && fabs( electron.sourcePtr()->get()->gsfTrack()->dxy(pv.position()) ) < 0.04;
     bool passPre = electron.pt() > 20 && fabs(electron.eta()) < 2.5;
+    bool passPF = electron.sourcePtr()->get()->isPF(); 
 
     //bool passTrig = passPre && electron.getSelection("cuts_premvaTrig"); //->get());
     bool passTrig = passPre && trainTrigPresel(electron, numberOfHits_ ); 
 
     if( applyPreTrigSel_ ) {
       if( !passTrig ) continue; 
+    }
+
+    if( applyPFId_ ){
+      if( !passPF ) continue;
     }
 
     triggeredElectrons->push_back((*electrons_)[i]);
@@ -237,7 +245,9 @@ void cmgElectronAnalyzer::produce(edm::Event& iEvent, const edm::EventSetup& es)
   int d = 0;
   if(QCD ) d=1;
 
-  if( triggeredElectrons->size() >= 1){
+  bool eventsel = triggeredElectrons->size() >= numberOfLeptons_ && nJets >=  (int) numberOfJets_ ;
+
+  if( eventsel ){
     h_mtW[d]->Fill(mtW);
     h_dimass[d]->Fill(dimass);
     h_met[d]->Fill(MET);
@@ -245,7 +255,7 @@ void cmgElectronAnalyzer::produce(edm::Event& iEvent, const edm::EventSetup& es)
     h_delphi[d]->Fill(delphi);
   } 
 
-  for (unsigned int j=0; j < triggeredElectrons->size(); ++j){
+  for (unsigned int j=0; j < triggeredElectrons->size() && eventsel ; ++j){
     cmg::Electron Lep1 = triggeredElectrons->at(j);
 
     bool isMatchedLep1 = true;

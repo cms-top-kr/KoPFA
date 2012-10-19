@@ -70,7 +70,10 @@ class cmgElectronAnalyzer : public edm::EDProducer
   edm::InputTag rhoIsoLabel_;
   bool useZMassWindow_;
   bool applyPreTrigSel_;
+  bool applyPFId_;
   unsigned int  numberOfHits_; 
+  unsigned int  numberOfLeptons_; 
+  unsigned int  numberOfJets_; 
 
   edm::Handle<reco::BeamSpot> beamSpot_;
   edm::Handle<reco::VertexCollection> recVtxs_;
