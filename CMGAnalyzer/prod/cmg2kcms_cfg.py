@@ -44,6 +44,8 @@ if runOn2012 == True:
 
 process.nEventsFilter = cms.EDProducer("EventCountProducer")
 
+process.load("KoPFA.CMGAnalyzer.TtFullLepKinSolutionProducer_cfi")
+
 process.BaseSequence = cms.Sequence(
     process.nEventsPatHLT*
     process.EventFilter*
@@ -66,24 +68,30 @@ from PhysicsTools.PatAlgos.tools.helpers import cloneProcessingSnippet
 process.BaseSequenceMuMu = cloneProcessingSnippet(process, process.BaseSequence, 'MuMu')
 process.BaseSequenceMuEl = cloneProcessingSnippet(process, process.BaseSequence, 'MuEl')
 process.BaseSequenceElEl = cloneProcessingSnippet(process, process.BaseSequence, 'ElEl')
+process.kinSolutionTtFullLepEventMuMu = process.kinSolutionTtFullLepEvent.clone()
+process.kinSolutionTtFullLepEventMuEl = process.kinSolutionTtFullLepEvent.clone()
+process.kinSolutionTtFullLepEventElEl = process.kinSolutionTtFullLepEvent.clone()
 
 ### Ntuple producer for dilepton ###
 
 process.p = cms.Path(
     process.BaseSequenceMuMu*
     process.ZMuMu*
+    process.kinSolutionTtFullLepEventMuMu*
     process.MuMu
 )
 
 process.p2 = cms.Path(
     process.BaseSequenceMuEl*
     process.ZMuEl*
+    process.kinSolutionTtFullLepEventMuEl*
     process.MuEl
 )
 
 process.p3 = cms.Path(
     process.BaseSequenceElEl*
     process.ZElEl*
+    process.kinSolutionTtFullLepEventElEl*
     process.ElEl
 )
 
