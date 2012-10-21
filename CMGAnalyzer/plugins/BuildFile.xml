@@ -1,0 +1,9 @@
+<use   name="KoPFA/CMGAnalyzer"/>
+<use   name="PhysicsTools/KinFitter"/>
+<use   name="DataFormats/PatCandidates"/>
+<use   name="FWCore/ParameterSet"/>
+<use   name="FWCore/Framework"/>
+<library   file="*.cc" name="KoPFACMGAnalyzerPlugins">
+  <flags   EDM_PLUGIN="1"/>
+  <use   name="TopQuarkAnalysis/TopKinFitter"/>
+</library>
