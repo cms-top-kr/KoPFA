@@ -3,6 +3,8 @@
 
 #include "DataFormats/Candidate/interface/CandidateFwd.h"
 #include "DataFormats/Candidate/interface/Candidate.h"
+#include <iostream>
+#include <map>
 
 namespace vallot{
 
@@ -20,6 +22,13 @@ namespace vallot{
     bool topdecay() const { return topdecay_; }
     void setTopdecay( bool topdecay ) { topdecay_ = topdecay; }
 
+    bool recoTopdecay(const std::string &algo ) const { 
+      bool found = false;
+      if( find( recoTopdecay_.begin(), recoTopdecay_.end(), algo ) != recoTopdecay_.end() ) found = true;
+      return found; 
+    }
+    void setRecoTopdecay( const std::string & algo) { recoTopdecay_.push_back(algo); }
+
     double bDiscriminator() const { return bDiscriminator_ ; }
     void setbDiscriminator( double bDiscriminator ) { bDiscriminator_ = bDiscriminator; } 
   
@@ -32,6 +41,8 @@ namespace vallot{
     bool topdecay_;
     double bDiscriminator_; 
     float secVtxMass_;
+
+    std::vector<std::string> recoTopdecay_; 
 
   };
 
