@@ -13,7 +13,7 @@
 //
 // Original Author:  Tae Jeong Kim,40 R-A32,+41227678602,
 //         Created:  Fri Jun  4 17:19:29 CEST 2010
-// $Id: CMGTopDILAnalyzer.h,v 1.5 2012/10/08 12:02:36 tjkim Exp $
+// $Id: CMGTopDILAnalyzer.h,v 1.6 2012/10/19 09:49:53 tjkim Exp $
 //
 //
 
@@ -71,7 +71,7 @@
 #include "TH1.h"
 #include "TLorentzVector.h"
 
-#include "KoPFA/CMGAnalyzer/interface/CMGBTagWeight.h"
+#include "KoPFA/TopAnalyzer/interface/BTagWeight.h"
 #include "AnalysisDataFormats/TopObjects/interface/TtFullLeptonicEvent.h"
 #include "KoPFA/TopAnalyzer/interface/Histograms.h"
 #include "AnalysisDataFormats/CMGTools/interface/GenericTypes.h"
@@ -391,6 +391,7 @@ class CMGTopDILAnalyzer : public edm::EDFilter {
         jet.setTopdecay( isfromtop );
         jet.setbDiscriminator( bDiscriminator );
         jet.setSecVtxMass( secvtxmass );  
+        if( isfromtop == 1) jet.setRecoTopdecay("kinSolution");
         jets->push_back(jet);
      
         jetspt30->push_back(corrjet);
