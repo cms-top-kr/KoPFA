@@ -18,6 +18,8 @@
 <use   name="TopQuarkAnalysis/TopKinFitter"/>
 <use   name="TopQuarkAnalysis/TopJetCombination"/>
 <use   name="AnalysisDataFormats/CMGTools"/>
+<use   name="PhysicsTools/KinFitter"/>
+<use   name="AnalysisDataFormats/TopObjects"/>
 <use   name="EGamma/EGammaAnalysisTools"/>
 <use   name="rootrflx"/>
 <use   name="rootminuit"/>
@@ -25,4 +27,5 @@
 <flags   EDM_PLUGIN="1"/>
 <export>
   <lib   name="1"/>
+  <use   name="KoPFA/TopAnalyzer"/>
 </export>
