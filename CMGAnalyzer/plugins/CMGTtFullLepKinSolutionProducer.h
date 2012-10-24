@@ -2,7 +2,7 @@
 #define CMGTtFullLepKinSolutionProducer_h
 
 //
-// $Id: CMGTtFullLepKinSolutionProducer.h,v 1.10 2010/12/02 10:48:13 snaumann Exp $
+// $Id: CMGTtFullLepKinSolutionProducer.h,v 1.1 2012/10/21 19:37:23 tjkim Exp $
 //
 #include <memory>
 #include <string>
@@ -21,6 +21,7 @@
 #include "AnalysisDataFormats/CMGTools/interface/PFJet.h"
 #include "AnalysisDataFormats/CMGTools/interface/Electron.h"
 #include "AnalysisDataFormats/CMGTools/interface/Muon.h"
+#include "KoPFA/DataFormats/interface/TTbarDILEvent.h"
 
 class CMGTtFullLepKinSolutionProducer : public edm::EDProducer {
 
@@ -100,6 +101,7 @@ CMGTtFullLepKinSolutionProducer::CMGTtFullLepKinSolutionProducer(const edm::Para
   produces<std::vector<reco::LeafCandidate> >("fullLepNeutrinoBars");        
   produces<std::vector<double> >("solWeight");          //weight for a specific kin solution 
   produces<bool>("isWrongCharge");                      //true if leptons have the same charge    
+  produces<std::vector<vallot::TTbarDILEvent> >("ttbars");
 }
 
 CMGTtFullLepKinSolutionProducer::~CMGTtFullLepKinSolutionProducer() 
@@ -130,7 +132,8 @@ void CMGTtFullLepKinSolutionProducer::produce(edm::Event & evt, const edm::Event
   std::auto_ptr<std::vector<reco::LeafCandidate> > pNuBars(new std::vector<reco::LeafCandidate>);
   std::auto_ptr<std::vector<double> >              pWeight(new std::vector<double>);  
   std::auto_ptr<bool> pWrongCharge(new bool);  
-    
+  std::auto_ptr<std::vector<vallot::TTbarDILEvent> >    ttbarKinSolutions(new std::vector<vallot::TTbarDILEvent>());  
+ 
   edm::Handle<std::vector<cmg::PFJet> > jets;
   evt.getByLabel(jets_, jets);
   edm::Handle<std::vector<cmg::Electron> > electrons;
@@ -235,7 +238,6 @@ void CMGTtFullLepKinSolutionProducer::produce(edm::Event & evt, const edm::Event
        
     // counter for number of found kinematic solutions
     int nSol=0;
-      
     // consider all permutations
     for (int ib = 0; ib<stop; ib++) {
       // second loop of the permutations
@@ -400,7 +402,6 @@ void CMGTtFullLepKinSolutionProducer::produce(edm::Event & evt, const edm::Event
         // calculate neutrino momenta and eventweight
         solver->SetConstraints(xconstraint, yconstraint);
         TtFullLepKinSolver::NeutrinoSolution nuSol= solver->getNuSolution( LV_l1, LV_l2 , LV_b, LV_bbar);
-		
 	// add solution to the vectors of solutions if solution exists 
 	if(nuSol.weight>0){
 	  // add the leptons and jets indices to the vector of combinations
@@ -455,7 +456,6 @@ void CMGTtFullLepKinSolutionProducer::produce(edm::Event & evt, const edm::Event
   // determine the number of solutions which is written in the event
   int stop=weightL;
   if(maxNComb_>0 && maxNComb_<stop) stop=maxNComb_;
-    
   for(int i=0; i<stop; ++i){
     pWeight->push_back(weightsV[i].first);
     pNus   ->push_back(nusV[weightsV[i].second]);
@@ -463,12 +463,112 @@ void CMGTtFullLepKinSolutionProducer::produce(edm::Event & evt, const edm::Event
     pIdcs  ->push_back(idcsV[weightsV[i].second]);    
   }
 
+  ///// Set the combination for top quark four-momentum
+  for(int i=0; i<stop; ++i){
+    double weight = pWeight->at(i);
+    std::vector<int> match = pIdcs->at(i);
+    //debug
+    //for(unsigned int k = 0; k < match.size() ; k++){
+    //  std::cout << match[k] << " " ; 
+    //}
+    //std::cout << std::endl;
+    if( weight < 0 ) continue;
+    int ib = match[0];
+    int ibbar = match[1];
+    TLorentzVector nu( pNus->at(i).px(), pNus->at(i).py(), pNus->at(i).pz(), pNus->at(i).energy() );
+    TLorentzVector nuBar( pNuBars->at(i).px(), pNuBars->at(i).py(), pNuBars->at(i).pz(), pNuBars->at(i).energy() );
+    TLorentzVector b( (*jets)[ib].px(), (*jets)[ib].py(), (*jets)[ib].pz(), (*jets)[ib].energy() );
+    TLorentzVector bBar( (*jets)[ibbar].px(), (*jets)[ibbar].py(), (*jets)[ibbar].pz(), (*jets)[ibbar].energy() );
+
+    TLorentzVector LepBar(0,0,0,0);  
+    TLorentzVector Lep(0,0,0,0);  
+    
+    if( !electrons->empty() && match[2]>=0) {
+      //std::cout << "LepBar= " ;
+      LepBar.SetPxPyPzE( (*electrons)[match[2]].px(), (*electrons)[match[2]].py(), (*electrons)[match[2]].pz(), (*electrons)[match[2]].energy() );
+      //std::cout << LepBar.Pt();
+    }
+
+    if( !electrons->empty() && match[3]>=0){
+      //std::cout << "Lep= " ;
+      Lep.SetPxPyPzE( (*electrons)[match[3]].px(), (*electrons)[match[3]].py(), (*electrons)[match[3]].pz(), (*electrons)[match[3]].energy() );
+      //std::cout << Lep.Pt();
+    }
+
+    if( !muons->empty() && match[4]>=0 && match[2]<0){
+      //std::cout << "LepBar= " ;
+      LepBar.SetPxPyPzE( (*muons)[match[4]].px(), (*muons)[match[4]].py(), (*muons)[match[4]].pz(), (*muons)[match[4]].energy() );
+      //std::cout << LepBar.Pt();
+    }
+    // this 'else' happens if you have a wrong charge electron-muon-
+    // solution so the indices are (b-idx, bbar-idx, 0, -1, 0, -1)
+    // so the mu^+ is stored as l^-
+    else if( !muons->empty() && match[4]>=0){
+      //std::cout << "Lep= " ;
+      Lep.SetPxPyPzE( (*muons)[match[4]].px(), (*muons)[match[4]].py(), (*muons)[match[4]].pz(), (*muons)[match[4]].energy() );
+      //std::cout << Lep.Pt();
+    }
+    if( !muons->empty()  && match[5]>=0 && match[3]<0){ 
+      //std::cout << "Lep= " ;
+      Lep.SetPxPyPzE( (*muons)[match[5]].px(), (*muons)[match[5]].py(), (*muons)[match[5]].pz(), (*muons)[match[5]].energy() );
+      //std::cout << Lep.Pt();
+    }
+    // this 'else' happens if you have a wrong charge electron-muon-
+    // solution so the indices are (b-idx, bbar-idx, -1, 0, -1, 0)  
+    // so the mu^- is stored as l^+
+    else if( !muons->empty()  && match[5]>=0){ 
+      //std::cout << "LepBar= " ;
+      LepBar.SetPxPyPzE( (*muons)[match[5]].px(), (*muons)[match[5]].py(), (*muons)[match[5]].pz(), (*muons)[match[5]].energy() );
+      //std::cout << LepBar.Pt();
+    }
+    TLorentzVector top = LepBar + nu + b;
+    TLorentzVector topBar = Lep + nuBar + bBar;
+
+    TLorentzVector ttbar = top + topBar;
+
+    vallot::TTbarDILEvent ttbarKinSolution;
+
+    ttbarKinSolution.SetLeg1( top );
+    ttbarKinSolution.SetLeg2( topBar );
+
+    ttbarKinSolution.SetNu1( nu );
+    ttbarKinSolution.SetNu2( nuBar );
+
+    ttbarKinSolution.SetM( ttbar.M() );
+    ttbarKinSolution.SetBId( ib, ibbar );  
+    
+    int j1 = -1; 
+    int j2 = -1;
+    double Mbb = -1;
+    std::vector<int> add;
+    if( jets->size() >= 4){  
+      for( int n =0 ; n < (int) jets->size(); n++){
+        if( !( n == ib || n == ibbar) ) add.push_back(n);
+      }
+ 
+      j1 = add[0];
+      j2 = add[1];
+ 
+      TLorentzVector j1p4( (*jets)[j1].px(), (*jets)[j1].py(), (*jets)[j1].pz(), (*jets)[j1].energy() );
+      TLorentzVector j2p4( (*jets)[j2].px(), (*jets)[j2].py(), (*jets)[j2].pz(), (*jets)[j2].energy() );
+      TLorentzVector Mbbp4 = j1p4 + j2p4;
+      Mbb = Mbbp4.M();
+    }
+
+    ttbarKinSolution.SetJId( j1, j2);
+    ttbarKinSolution.SetMbb( Mbb );
+
+    ttbarKinSolutions->push_back(ttbarKinSolution); 
+  }
+  /////
+
   // put the results in the event
   evt.put(pIdcs);     
   evt.put(pNus,         "fullLepNeutrinos");  
   evt.put(pNuBars,      "fullLepNeutrinoBars");             
   evt.put(pWeight,      "solWeight");  
   evt.put(pWrongCharge, "isWrongCharge"); 
+  evt.put(ttbarKinSolutions,   "ttbars");
 }
 
 #endif
