@@ -4,7 +4,7 @@ process = cms.Process("Ntuple")
 
 process.options   = cms.untracked.PSet( wantSummary = cms.untracked.bool(True) )
 
-process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
+process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(10000) )
 
 process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring()
@@ -15,6 +15,7 @@ process.MessageLogger.cerr.FwkReport.reportEvery = 10000
 
 process.load("KoPFA.CMGAnalyzer.topAnalysis_cff")
 process.load("KoPFA.CommonTools.eventFilter_cfi")
+process.load("KoPFA.CMGAnalyzer.finalLeptonProducer_cfi")
 process.load("KoPFA.CMGAnalyzer.cmgElectronAnalyzer_cfi")
 process.load("KoPFA.CMGAnalyzer.ZFilter_cfi")
 from KoPFA.CommonTools.PileUpWeight_cff import *
@@ -58,7 +59,6 @@ process.BaseSequence = cms.Sequence(
     process.Muons
 )
 
-
 #############This is only for CMG patTuple########################
 process.topDecayGenFilter.genParticlesLabel = cms.InputTag("genParticlesPruned")
 process.GenZmassFilter.genParticlesLabel = cms.InputTag("genParticlesPruned")
@@ -71,12 +71,16 @@ process.BaseSequenceElEl = cloneProcessingSnippet(process, process.BaseSequence,
 process.kinSolutionTtFullLepEventMuMu = process.kinSolutionTtFullLepEvent.clone()
 process.kinSolutionTtFullLepEventMuEl = process.kinSolutionTtFullLepEvent.clone()
 process.kinSolutionTtFullLepEventElEl = process.kinSolutionTtFullLepEvent.clone()
+process.CMGFinalLeptonsMuMu = process.CMGFinalLeptons.clone()
+process.CMGFinalLeptonsMuEl = process.CMGFinalLeptons.clone()
+process.CMGFinalLeptonsElEl = process.CMGFinalLeptons.clone()
 
 ### Ntuple producer for dilepton ###
 
 process.p = cms.Path(
     process.BaseSequenceMuMu*
     process.ZMuMu*
+    process.CMGFinalLeptonsMuMu*
     process.kinSolutionTtFullLepEventMuMu*
     process.MuMu
 )
@@ -84,6 +88,7 @@ process.p = cms.Path(
 process.p2 = cms.Path(
     process.BaseSequenceMuEl*
     process.ZMuEl*
+    process.CMGFinalLeptonsMuEl*
     process.kinSolutionTtFullLepEventMuEl*
     process.MuEl
 )
@@ -91,6 +96,7 @@ process.p2 = cms.Path(
 process.p3 = cms.Path(
     process.BaseSequenceElEl*
     process.ZElEl*
+    process.CMGFinalLeptonsElEl*
     process.kinSolutionTtFullLepEventElEl*
     process.ElEl
 )
@@ -106,6 +112,22 @@ process.TFileService = cms.Service("TFileService",
 )
 
 #############This is only for combining three channels#######################
+
+process.kinSolutionTtFullLepEventMuMu.mumuChannel = True
+process.kinSolutionTtFullLepEventMuMu.jets = cms.InputTag("JetEnergyScaleMuMu","Jets")
+process.kinSolutionTtFullLepEventMuMu.electrons = cms.InputTag("CMGFinalLeptonsMuMu","Electrons")
+process.kinSolutionTtFullLepEventMuMu.muons = cms.InputTag("CMGFinalLeptonsMuMu","Muons")
+process.kinSolutionTtFullLepEventMuMu.mets = cms.InputTag("JetEnergyScaleMuMu","MET")
+process.kinSolutionTtFullLepEventMuEl.emuChannel  = True
+process.kinSolutionTtFullLepEventMuEl.jets = cms.InputTag("JetEnergyScaleMuEl","Jets")
+process.kinSolutionTtFullLepEventMuEl.electrons = cms.InputTag("CMGFinalLeptonsMuEl","Electrons")
+process.kinSolutionTtFullLepEventMuEl.muons = cms.InputTag("CMGFinalLeptonsMuEl","Muons")
+process.kinSolutionTtFullLepEventMuEl.mets = cms.InputTag("JetEnergyScaleMuEl","MET")
+process.kinSolutionTtFullLepEventElEl.eeChannel  = True
+process.kinSolutionTtFullLepEventElEl.jets = cms.InputTag("JetEnergyScaleElEl","Jets")
+process.kinSolutionTtFullLepEventElEl.electrons = cms.InputTag("CMGFinalLeptonsElEl","Electrons")
+process.kinSolutionTtFullLepEventElEl.muons = cms.InputTag("CMGFinalLeptonsElEl","Muons")
+process.kinSolutionTtFullLepEventElEl.mets = cms.InputTag("JetEnergyScaleElEl","MET")
 
 process.ZMuMu.muonLabel1 =  cms.InputTag('MuonsMuMu')
 process.ZMuMu.muonLabel2 =  cms.InputTag('MuonsMuMu')
