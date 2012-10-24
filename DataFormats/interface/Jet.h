@@ -19,8 +19,8 @@ namespace vallot{
     int flavor() const { return flavor_; }
     void setFlavor( int flavor ) { flavor_ = flavor; }
 
-    bool topdecay() const { return topdecay_; }
-    void setTopdecay( bool topdecay ) { topdecay_ = topdecay; }
+    int topdecay() const { return topdecay_; }
+    void setTopdecay( int topdecay ) { topdecay_ = topdecay; }
 
     bool recoTopdecay(const std::string &algo ) const { 
       bool found = false;
@@ -32,13 +32,13 @@ namespace vallot{
     double bDiscriminator() const { return bDiscriminator_ ; }
     void setbDiscriminator( double bDiscriminator ) { bDiscriminator_ = bDiscriminator; } 
   
-    float secVtxMass() const { return secVtxMass_;}
+    float secvtxMass() const { return secVtxMass_;}
     void setSecVtxMass( float secVtxMass ){ secVtxMass_ = secVtxMass; }
 
   private:
 
     int flavor_;
-    bool topdecay_;
+    int topdecay_;
     double bDiscriminator_; 
     float secVtxMass_;
 
