@@ -13,7 +13,7 @@
 //
 // Original Author:  Tae Jeong Kim,40 R-A32,+41227678602,
 //         Created:  Fri Jun  4 17:19:29 CEST 2010
-// $Id: CMGTopDILAnalyzer.h,v 1.6 2012/10/19 09:49:53 tjkim Exp $
+// $Id: CMGTopDILAnalyzer.h,v 1.7 2012/10/21 19:43:10 tjkim Exp $
 //
 //
 
@@ -51,6 +51,7 @@
 #include "KoPFA/DataFormats/interface/Lepton.h"
 #include "KoPFA/DataFormats/interface/ZCandidate.h"
 #include "KoPFA/DataFormats/interface/TTbarGenEvent.h"
+#include "KoPFA/DataFormats/interface/TTbarDILEvent.h"
 #include "KoPFA/DataFormats/interface/TTbarMass.h"
 #include "KoPFA/DataFormats/interface/METCandidate.h"
 #include "PhysicsTools/SelectorUtils/interface/PFJetIDSelectionFunctor.h"
@@ -109,6 +110,7 @@ class CMGTopDILAnalyzer : public edm::EDFilter {
     relIso2_ = iConfig.getUntrackedParameter<double>("relIso2");
     applyIso_ = iConfig.getUntrackedParameter<bool>("applyIso",true);
     oppPair_ = iConfig.getUntrackedParameter<bool>("oppPair",true);
+    fullLepEvt_ = iConfig.getUntrackedParameter<edm::InputTag>("fullLepEvt");
     topSample_ = iConfig.getUntrackedParameter<bool>("topSample",false);
     zSample_ = iConfig.getUntrackedParameter<bool>("zSample",false);
     std::vector<edm::ParameterSet> bTagSets = iConfig.getUntrackedParameter<std::vector<edm::ParameterSet> >("bTagSets");
@@ -148,6 +150,7 @@ class CMGTopDILAnalyzer : public edm::EDFilter {
     lepton2 = new std::vector<vallot::Lepton>();
     pfMet = new std::vector<vallot::METCandidate>();
     ttbar = new std::vector<vallot::TTbarMass>();
+    ttbarKin = new std::vector<vallot::TTbarDILEvent>();
     ttbarGen = new std::vector<vallot::CMGTTbarCandidate>();
     jets = new std::vector<vallot::Jet>();
     met = new std::vector<math::XYZTLorentzVector>();
@@ -222,6 +225,7 @@ class CMGTopDILAnalyzer : public edm::EDFilter {
     //tree->Branch("met","std::vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >", &met);
 
     tree->Branch("ttbar","std::vector<vallot::TTbarMass>", &ttbar);
+    tree->Branch("ttbarKin","std::vector<vallot::TTbarDILEvent>", &ttbarKin);
     tree->Branch("ttbarGen","std::vector<vallot::CMGTTbarCandidate>", &ttbarGen);
     tree->Branch("kinttbarM",&kinttbarM,"kinttbarM/d");
 
@@ -254,9 +258,9 @@ class CMGTopDILAnalyzer : public edm::EDFilter {
     LUMI   = iEvent.id().luminosityBlock();
 
 
-    edm::Handle<TtFullLeptonicEvent> fullLepEvt;
-    iEvent.getByLabel("ttFullLepEvent", fullLepEvt);
-
+    edm::Handle<vector<vallot::TTbarDILEvent> > fullLepEvt;
+    iEvent.getByLabel(fullLepEvt_, fullLepEvt);
+ 
     edm::Handle<double>  rho;
     iEvent.getByLabel(edm::InputTag("kt6PFJetsPFlow","rho"), rho);
 
@@ -384,14 +388,12 @@ class CMGTopDILAnalyzer : public edm::EDFilter {
       }
       double bDiscriminator = jit->bDiscriminator("combinedSecondaryVertexBJetTags");
       float secvtxmass = jit->secvtxMass();
-
       if(jit->pt() > 30){
         vallot::Jet jet( jit->p4() );
         jet.setFlavor( flavor );
         jet.setTopdecay( isfromtop );
         jet.setbDiscriminator( bDiscriminator );
         jet.setSecVtxMass( secvtxmass );  
-        if( isfromtop == 1) jet.setRecoTopdecay("kinSolution");
         jets->push_back(jet);
      
         jetspt30->push_back(corrjet);
@@ -463,30 +465,34 @@ class CMGTopDILAnalyzer : public edm::EDFilter {
 
       int cmb = 0 ;
       const string hypo = "kKinSolution"; 
-      if( fullLepEvt.isValid()){
-        if( fullLepEvt->isHypoValid(hypo) ){
-          int btagsinhypo;
-          bool foundOneTagSolution = false;
-          for(size_t i=0;i<fullLepEvt->numberOfAvailableHypos(hypo);++i){
-            btagsinhypo = 0;
-            for(size_t j=0; j<bidcs.size(); ++j){
-              if(fullLepEvt->jetLeptonCombination(hypo,i)[0]==bidcs[j]) btagsinhypo++;
-              if(fullLepEvt->jetLeptonCombination(hypo,i)[1]==bidcs[j]) btagsinhypo++;		
-            }
-            if(btagsinhypo==2){ // stop if hypothesis has two b-jets
-              cmb = i;
-	      break;
-            }else if(btagsinhypo==1 && !foundOneTagSolution){ // if one b-tag in hypothesis store index but go on and look for solution with 2 tags
-              cmb = i;
-              foundOneTagSolution = true;
-            }   
-          }
 
-          const reco::Candidate* topCand = fullLepEvt->top(hypo, cmb);
-          const reco::Candidate* topBarCand = fullLepEvt->topBar(hypo, cmb);
-          reco::Candidate::LorentzVector kinttbar =  topCand->p4() + topBarCand->p4() ; 
-          kinttbarM = kinttbar.mass();
+      if( fullLepEvt->size() > 0){
+        int btagsinhypo;
+        bool foundOneTagSolution = false;
+        for(size_t i=0;i<fullLepEvt->size() ;++i){
+          btagsinhypo = 0;
+          for(size_t j=0; j<bidcs.size(); ++j){
+            if(fullLepEvt->at(i).bid(0)==(unsigned int) bidcs[j]) btagsinhypo++;
+            if(fullLepEvt->at(i).bid(1)==(unsigned int) bidcs[j]) btagsinhypo++;		
+          }
+          if(btagsinhypo==2){ // stop if hypothesis has two b-jets
+            cmb = i;
+            break;
+          }else if(btagsinhypo==1 && !foundOneTagSolution){ // if one b-tag in hypothesis store index but go on and look for solution with 2 tags
+            cmb = i;
+            foundOneTagSolution = true;
+          }   
         }
+        //const reco::Candidate* topCand = fullLepEvt->top(hypo, cmb);
+        //const reco::Candidate* topBarCand = fullLepEvt->topBar(hypo, cmb);
+        //reco::Candidate::LorentzVector kinttbar =  topCand->p4() + topBarCand->p4() ; 
+        //kinttbarM = kinttbar.mass();
+        kinttbarM = fullLepEvt->at(cmb).M();
+        unsigned int b = fullLepEvt->at(cmb).bid(0);
+        unsigned int bbar = fullLepEvt->at(cmb).bid(1);
+        jets->at(b).setRecoTopdecay("kinSolution");
+        jets->at(bbar).setRecoTopdecay("kinSolution");
+        ttbarKin->push_back( fullLepEvt->at(cmb) );
       }
     }
 
@@ -662,6 +668,7 @@ class CMGTopDILAnalyzer : public edm::EDFilter {
     lepton2->clear();
     pfMet->clear();
     ttbar->clear();
+    ttbarKin->clear();
     ttbarGen->clear();
     jets->clear();
     met->clear();
@@ -787,6 +794,8 @@ class CMGTopDILAnalyzer : public edm::EDFilter {
   edm::InputTag puDwWeightLabel_;
   edm::InputTag puNVertexLabel_;
 
+  edm::InputTag fullLepEvt_;
+
   std::vector<std::string> filters_;
   bool metStudy_;
   bool useEventCounter_;
@@ -809,6 +818,7 @@ class CMGTopDILAnalyzer : public edm::EDFilter {
   std::vector<vallot::Lepton>* lepton2;
   std::vector<vallot::METCandidate>* pfMet;
   std::vector<vallot::TTbarMass>* ttbar;
+  std::vector<vallot::TTbarDILEvent>* ttbarKin;
   std::vector<vallot::CMGTTbarCandidate>* ttbarGen;
   std::vector<vallot::Jet>* jets;
   std::vector<math::XYZTLorentzVector>* met;
