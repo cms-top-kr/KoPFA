@@ -36,6 +36,12 @@
   <class name="edm::Wrapper<std::vector<vallot::TTbarMass> >"/>
   <class name="edm::Ptr<vallot::TTbarMass>"/>
 
+  <class name="vallot::TTbarDILEvent" />
+  <class name="std::vector<vallot::TTbarDILEvent>" />
+  <class name="edm::Wrapper<vallot::TTbarDILEvent>"/>
+  <class name="edm::Wrapper<std::vector<vallot::TTbarDILEvent> >"/>
+  <class name="edm::Ptr<vallot::TTbarDILEvent>"/>
+
   <class name="vallot::TTbarCandidate" />
   <class name="std::vector<vallot::TTbarCandidate>" />
   <class name="edm::Wrapper<vallot::TTbarCandidate>"/>

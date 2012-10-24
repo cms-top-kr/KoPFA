@@ -5,6 +5,7 @@
 #include "KoPFA/DataFormats/interface/METCandidate.h"
 #include "KoPFA/DataFormats/interface/TTbarGenEvent.h"
 #include "KoPFA/DataFormats/interface/TTbarMass.h"
+#include "KoPFA/DataFormats/interface/TTbarDILEvent.h"
 #include "KoPFA/DataFormats/interface/TTbarCandidate.h"
 #include "KoPFA/DataFormats/interface/H2WWMass.h"
 #include "KoPFA/DataFormats/interface/Jet.h"
@@ -49,6 +50,12 @@ namespace {
     std::vector<vallot::TTbarMass> dummyTTbarMassCollection;
     edm::Wrapper<std::vector<vallot::TTbarMass> > dummyTTbarMassCollectionWrapper;
     edm::Ptr<vallot::TTbarMass> dummyTTbarMassPtr;
+
+    vallot::TTbarDILEvent dummyTTbarDILEvent;
+    edm::Wrapper<vallot::TTbarDILEvent> dummyTTbarDILEventWrapper;
+    std::vector<vallot::TTbarDILEvent> dummyTTbarDILEventCollection;
+    edm::Wrapper<std::vector<vallot::TTbarDILEvent> > dummyTTbarDILEventCollectionWrapper;
+    edm::Ptr<vallot::TTbarDILEvent> dummyTTbarDILEventPtr;
 
     vallot::TTbarCandidate dummyTTbarCandidate;
     edm::Wrapper<vallot::TTbarCandidate> dummyTTbarCandidateWrapper;
