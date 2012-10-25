@@ -4,3 +4,6 @@
 
 DEFINE_FWK_MODULE(CMGTtFullLepKinSolutionProducer);
 
+#include "KoPFA/CMGAnalyzer/plugins/CMGTtFullLepMaosSolutionProducer.h"
+
+DEFINE_FWK_MODULE(CMGTtFullLepMaosSolutionProducer);
