@@ -2,7 +2,7 @@
 #define CMGTtFullLepMaosSolutionProducer_h
 
 //
-// $Id: CMGTtFullLepMaosSolutionProducer.h,v 1.2 2012/10/24 12:53:24 tjkim Exp $
+// $Id: CMGTtFullLepMaosSolutionProducer.h,v 1.1 2012/10/25 15:43:38 youngjo Exp $
 //
 #include <memory>
 #include <string>
@@ -25,6 +25,7 @@
 #include "AnalysisDataFormats/CMGTools/interface/Electron.h"
 #include "AnalysisDataFormats/CMGTools/interface/Muon.h"
 #include "KoPFA/DataFormats/interface/TTbarDILEvent.h"
+#include "Math/LorentzVector.h"
 
 class CMGTtFullLepMaosSolutionProducer : public edm::EDProducer {
 
@@ -101,8 +102,8 @@ CMGTtFullLepMaosSolutionProducer::CMGTtFullLepMaosSolutionProducer(const edm::Pa
   
   // define what will be produced
   produces<std::vector<std::vector<int> > >  (); // vector of the particle inices (b, bbar, e1, e2, mu1, mu2)
-  produces<std::vector<reco::Candidate::LorentzVector> >("fullLepNeutrinos");  
-  produces<std::vector<reco::Candidate::LorentzVector> >("fullLepNeutrinoBars");        
+  produces<std::vector<reco::LeafCandidate> >("fullLepNeutrinos");
+  produces<std::vector<reco::LeafCandidate> >("fullLepNeutrinoBars");
   produces<std::vector<double> >("solWeight");          //weight for a specific kin solution 
   produces<bool>("isWrongCharge");                      //true if leptons have the same charge    
   produces<std::vector<vallot::TTbarDILEvent> >("ttbars");
@@ -127,14 +128,14 @@ void CMGTtFullLepMaosSolutionProducer::produce(edm::Event & evt, const edm::Even
 {    
   //create vectors fo runsorted output
   std::vector<std::vector<int> > idcsV;
-  std::vector<reco::Candidate> nusV;
-  std::vector<reco::Candidate> nuBarsV;
+  std::vector<reco::LeafCandidate> nusV;
+  std::vector<reco::LeafCandidate> nuBarsV;
   std::vector<std::pair<double, int> > weightsV;
 
   //create pointer for products
   std::auto_ptr<std::vector<std::vector<int> > >   pIdcs(new std::vector<std::vector<int> >);
-  std::auto_ptr<std::vector<reco::Candidate> > pNus(new std::vector<reco::Candidate>);
-  std::auto_ptr<std::vector<reco::Candidate> > pNuBars(new std::vector<reco::Candidate>);
+  std::auto_ptr<std::vector<reco::LeafCandidate> > pNus(new std::vector<reco::LeafCandidate>);
+  std::auto_ptr<std::vector<reco::LeafCandidate> > pNuBars(new std::vector<reco::LeafCandidate>);
   std::auto_ptr<std::vector<double> >              pWeight(new std::vector<double>);  
   std::auto_ptr<bool> pWrongCharge(new bool);  
   std::auto_ptr<std::vector<vallot::TTbarDILEvent> >    ttbarMaosSolutions(new std::vector<vallot::TTbarDILEvent>());  
@@ -271,24 +272,18 @@ void CMGTtFullLepMaosSolutionProducer::produce(edm::Event & evt, const edm::Even
 						(*jets)[ibbar].pz(), 
 						(*jets)[ibbar].energy());  
 			
-        double xconstraint = 0, yconstraint = 0;
-	
 	if (ee) {
           idcs.push_back(selElectron1);	  
 	  LV_l1.SetXYZT((*electrons)[selElectron1].px(), 
 	                (*electrons)[selElectron1].py(), 
 		        (*electrons)[selElectron1].pz(), 
 		        (*electrons)[selElectron1].energy());	  
-          xconstraint += (*electrons)[selElectron1].px();
-          yconstraint += (*electrons)[selElectron1].py();	
 	
           idcs.push_back(selElectron2);	  
 	  LV_l2.SetXYZT((*electrons)[selElectron2].px(), 
 	                (*electrons)[selElectron2].py(), 
 		        (*electrons)[selElectron2].pz(), 
 		        (*electrons)[selElectron2].energy());	  
-          xconstraint += (*electrons)[selElectron2].px();
-          yconstraint += (*electrons)[selElectron2].py();
 
 	  idcs.push_back(-1);
 	  idcs.push_back(-1);
@@ -302,8 +297,6 @@ void CMGTtFullLepMaosSolutionProducer::produce(edm::Event & evt, const edm::Even
 	                    (*electrons)[selElectron1].py(), 
 		            (*electrons)[selElectron1].pz(), 
 		            (*electrons)[selElectron1].energy());	  
-              xconstraint += (*electrons)[selElectron1].px();
-              yconstraint += (*electrons)[selElectron1].py();
 
 	      idcs.push_back(-1);
 	      idcs.push_back(-1);	    
@@ -313,8 +306,6 @@ void CMGTtFullLepMaosSolutionProducer::produce(edm::Event & evt, const edm::Even
 	                    (*muons)[selMuon1].py(), 
 		            (*muons)[selMuon1].pz(), 
 		            (*muons)[selMuon1].energy());	  
-              xconstraint += (*muons)[selMuon1].px();
-              yconstraint += (*muons)[selMuon1].py();
 	    }
 	    else{
 	      idcs.push_back(-1);	    
@@ -324,16 +315,12 @@ void CMGTtFullLepMaosSolutionProducer::produce(edm::Event & evt, const edm::Even
 	                    (*muons)[selMuon1].py(), 
 		            (*muons)[selMuon1].pz(), 
 		            (*muons)[selMuon1].energy());	  
-              xconstraint += (*muons)[selMuon1].px();
-              yconstraint += (*muons)[selMuon1].py();
 	      
               idcs.push_back(selElectron1);	  
 	      LV_l2.SetXYZT((*electrons)[selElectron1].px(), 
 	                    (*electrons)[selElectron1].py(), 
 		            (*electrons)[selElectron1].pz(), 
 		            (*electrons)[selElectron1].energy());	  
-              xconstraint += (*electrons)[selElectron1].px();
-              yconstraint += (*electrons)[selElectron1].py();	      
 	      	  
 	      idcs.push_back(-1);			    
 	    }	    	    
@@ -345,8 +332,6 @@ void CMGTtFullLepMaosSolutionProducer::produce(edm::Event & evt, const edm::Even
 	                    (*electrons)[selElectron1].py(), 
 		            (*electrons)[selElectron1].pz(), 
 		            (*electrons)[selElectron1].energy());	  
-              xconstraint += (*electrons)[selElectron1].px();
-              yconstraint += (*electrons)[selElectron1].py();
 	      
               idcs.push_back(-1);
     
@@ -355,8 +340,6 @@ void CMGTtFullLepMaosSolutionProducer::produce(edm::Event & evt, const edm::Even
 	                    (*muons)[selMuon1].py(), 
 		            (*muons)[selMuon1].pz(), 
 		            (*muons)[selMuon1].energy());	  
-              xconstraint += (*muons)[selMuon1].px();
-              yconstraint += (*muons)[selMuon1].py();
 	      	  
 	      idcs.push_back(-1);	    
 	    }
@@ -368,8 +351,6 @@ void CMGTtFullLepMaosSolutionProducer::produce(edm::Event & evt, const edm::Even
 	                    (*electrons)[selElectron1].py(), 
 		            (*electrons)[selElectron1].pz(), 
 		            (*electrons)[selElectron1].energy());	  
-              xconstraint += (*electrons)[selElectron1].px();
-              yconstraint += (*electrons)[selElectron1].py();
 	      
 	      idcs.push_back(-1);
     
@@ -378,8 +359,6 @@ void CMGTtFullLepMaosSolutionProducer::produce(edm::Event & evt, const edm::Even
 	                    (*muons)[selMuon1].py(), 
 		            (*muons)[selMuon1].pz(), 
 		            (*muons)[selMuon1].energy());	  
-              xconstraint += (*muons)[selMuon1].px();
-              yconstraint += (*muons)[selMuon1].py();	      	  	    
 	    }
 	  }	  
         }
@@ -393,24 +372,15 @@ void CMGTtFullLepMaosSolutionProducer::produce(edm::Event & evt, const edm::Even
 	                (*muons)[selMuon1].py(), 
 		        (*muons)[selMuon1].pz(), 
 		        (*muons)[selMuon1].energy());	  
-          xconstraint += (*muons)[selMuon1].px();
-          yconstraint += (*muons)[selMuon1].py();	
 	
           idcs.push_back(selMuon2);	  
 	  LV_l2.SetXYZT((*muons)[selMuon2].px(), 
 	                (*muons)[selMuon2].py(), 
 		        (*muons)[selMuon2].pz(), 
 		        (*muons)[selMuon2].energy());	  
-          xconstraint += (*muons)[selMuon2].px();
-          yconstraint += (*muons)[selMuon2].py();
         }
 	 		
-        xconstraint += (*jets)[ib].px() + (*jets)[ibbar].px() + (*mets)[0].px();
-        yconstraint += (*jets)[ib].py() + (*jets)[ibbar].py() + (*mets)[0].py();
-			 
         // calculate neutrino momenta and eventweight
-        //solver->SetConstraints(xconstraint, yconstraint);
-        //TtFullLepKinSolver::NeutrinoSolution nuSol= solver->getNuSolution( LV_l1, LV_l2 , LV_b, LV_bbar);
         //vallot::Maos* solver = new vallot::Maos();
         double mt2 = solver->MAOS(metV,LV_l1+LV_b,LV_l2+LV_bbar, 0.0, 0.0, false );
 	// add solution to the vectors of solutions if solution exists 
@@ -418,11 +388,21 @@ void CMGTtFullLepMaosSolutionProducer::produce(edm::Event & evt, const edm::Even
 	  // add the leptons and jets indices to the vector of combinations
 	  idcsV.push_back(idcs);
 
-           nu1->setP4(LorentzVector(solver->nu1().Px(),solver->nu1().Py(),solver->nu1().Pz(),solver->nu1().Pt()));
-           nu2->setP4(LorentzVector(solver->nu2().Px(),solver->nu2().Py(),solver->nu2().Pz(),solver->nu2().Pt()));
+          reco::LeafCandidate nu1;
+          reco::LeafCandidate nu2;
+
+          ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > nu1p4;
+          ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > nu2p4;
+
+          nu1p4.SetPxPyPzE( solver->nu1().Px(),solver->nu1().Py(),solver->nu1().Pz(),solver->nu1().Pt() );
+          nu2p4.SetPxPyPzE( solver->nu2().Px(),solver->nu2().Py(),solver->nu2().Pz(),solver->nu2().Pt() );
+ 
+          nu1.setP4( nu1p4 );
+          nu2.setP4( nu2p4 );
+
 	  // add the neutrinos
-	  nusV.push_back( nu1);//new TLorentzVector(solver->nu1().Px(),solver->nu1().Py(),solver->nu1().Pz(),solver->nu1().Pt()));	
-	  nuBarsV.push_back( nu2);//new TLorentzVector(solver->nu2().Px(),solver->nu2().Py(),solver->nu2().Pz(),solver->nu2().Pt()));
+	  nusV.push_back( nu1);	
+	  nuBarsV.push_back( nu2);
 
           double weight = 1/((pow(solver->leg1().M()-174.,2) + pow(solver->leg2().M()-174.,2))/pow(9.5,2)+
                              (pow((solver->nu1()+LV_l1).M()-80.4,2) + pow((solver->nu2()+LV_l2).M()-80.4,2))/pow(7.5,2) +
@@ -446,9 +426,9 @@ void CMGTtFullLepMaosSolutionProducer::produce(edm::Event & evt, const edm::Even
 
     idcsV.push_back(idcs);
     weightsV.push_back(std::make_pair(-1,0));
-    reco::Candidate nu;
+    reco::LeafCandidate nu;
     nusV.push_back(nu);
-    reco::Candidate nuBar;
+    reco::LeafCandidate nuBar;
     nuBarsV.push_back(nuBar);
   }
 
