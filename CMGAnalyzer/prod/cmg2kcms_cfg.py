@@ -46,6 +46,7 @@ if runOn2012 == True:
 process.nEventsFilter = cms.EDProducer("EventCountProducer")
 
 process.load("KoPFA.CMGAnalyzer.TtFullLepKinSolutionProducer_cfi")
+process.load("KoPFA.CMGAnalyzer.TtFullLepMaosSolutionProducer_cfi")
 
 process.BaseSequence = cms.Sequence(
     process.nEventsPatHLT*
@@ -68,9 +69,15 @@ from PhysicsTools.PatAlgos.tools.helpers import cloneProcessingSnippet
 process.BaseSequenceMuMu = cloneProcessingSnippet(process, process.BaseSequence, 'MuMu')
 process.BaseSequenceMuEl = cloneProcessingSnippet(process, process.BaseSequence, 'MuEl')
 process.BaseSequenceElEl = cloneProcessingSnippet(process, process.BaseSequence, 'ElEl')
+
 process.kinSolutionTtFullLepEventMuMu = process.kinSolutionTtFullLepEvent.clone()
 process.kinSolutionTtFullLepEventMuEl = process.kinSolutionTtFullLepEvent.clone()
 process.kinSolutionTtFullLepEventElEl = process.kinSolutionTtFullLepEvent.clone()
+
+process.maosSolutionTtFullLepEventMuMu = process.maosSolutionTtFullLepEvent.clone()
+process.maosSolutionTtFullLepEventMuEl = process.maosSolutionTtFullLepEvent.clone()
+process.maosSolutionTtFullLepEventElEl = process.maosSolutionTtFullLepEvent.clone()
+
 process.CMGFinalLeptonsMuMu = process.CMGFinalLeptons.clone()
 process.CMGFinalLeptonsMuEl = process.CMGFinalLeptons.clone()
 process.CMGFinalLeptonsElEl = process.CMGFinalLeptons.clone()
@@ -82,6 +89,7 @@ process.p = cms.Path(
     process.ZMuMu*
     process.CMGFinalLeptonsMuMu*
     process.kinSolutionTtFullLepEventMuMu*
+    process.maosSolutionTtFullLepEventMuMu*
     process.MuMu
 )
 
@@ -90,6 +98,7 @@ process.p2 = cms.Path(
     process.ZMuEl*
     process.CMGFinalLeptonsMuEl*
     process.kinSolutionTtFullLepEventMuEl*
+    process.maosSolutionTtFullLepEventMuEl*
     process.MuEl
 )
 
@@ -98,6 +107,7 @@ process.p3 = cms.Path(
     process.ZElEl*
     process.CMGFinalLeptonsElEl*
     process.kinSolutionTtFullLepEventElEl*
+    process.maosSolutionTtFullLepEventElEl*
     process.ElEl
 )
 
@@ -128,6 +138,24 @@ process.kinSolutionTtFullLepEventElEl.jets = cms.InputTag("JetEnergyScaleElEl","
 process.kinSolutionTtFullLepEventElEl.electrons = cms.InputTag("CMGFinalLeptonsElEl","Electrons")
 process.kinSolutionTtFullLepEventElEl.muons = cms.InputTag("CMGFinalLeptonsElEl","Muons")
 process.kinSolutionTtFullLepEventElEl.mets = cms.InputTag("JetEnergyScaleElEl","MET")
+
+process.maosSolutionTtFullLepEventMuMu.mumuChannel = True
+process.maosSolutionTtFullLepEventMuMu.jets = cms.InputTag("JetEnergyScaleMuMu","Jets")
+process.maosSolutionTtFullLepEventMuMu.electrons = cms.InputTag("CMGFinalLeptonsMuMu","Electrons")
+process.maosSolutionTtFullLepEventMuMu.muons = cms.InputTag("CMGFinalLeptonsMuMu","Muons")
+process.maosSolutionTtFullLepEventMuMu.mets = cms.InputTag("JetEnergyScaleMuMu","MET")
+process.maosSolutionTtFullLepEventMuEl.emuChannel  = True
+process.maosSolutionTtFullLepEventMuEl.jets = cms.InputTag("JetEnergyScaleMuEl","Jets")
+process.maosSolutionTtFullLepEventMuEl.electrons = cms.InputTag("CMGFinalLeptonsMuEl","Electrons")
+process.maosSolutionTtFullLepEventMuEl.muons = cms.InputTag("CMGFinalLeptonsMuEl","Muons")
+process.maosSolutionTtFullLepEventMuEl.mets = cms.InputTag("JetEnergyScaleMuEl","MET")
+process.maosSolutionTtFullLepEventElEl.eeChannel  = True
+process.maosSolutionTtFullLepEventElEl.jets = cms.InputTag("JetEnergyScaleElEl","Jets")
+process.maosSolutionTtFullLepEventElEl.electrons = cms.InputTag("CMGFinalLeptonsElEl","Electrons")
+process.maosSolutionTtFullLepEventElEl.muons = cms.InputTag("CMGFinalLeptonsElEl","Muons")
+process.maosSolutionTtFullLepEventElEl.mets = cms.InputTag("JetEnergyScaleElEl","MET")
+
+
 
 process.ZMuMu.muonLabel1 =  cms.InputTag('MuonsMuMu')
 process.ZMuMu.muonLabel2 =  cms.InputTag('MuonsMuMu')
