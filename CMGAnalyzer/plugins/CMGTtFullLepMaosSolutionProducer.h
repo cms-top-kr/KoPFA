@@ -2,7 +2,7 @@
 #define CMGTtFullLepMaosSolutionProducer_h
 
 //
-// $Id: CMGTtFullLepMaosSolutionProducer.h,v 1.2 2012/10/25 16:05:32 tjkim Exp $
+// $Id: CMGTtFullLepMaosSolutionProducer.h,v 1.3 2012/10/26 11:26:09 youngjo Exp $
 //
 #include <memory>
 #include <string>
@@ -138,13 +138,13 @@ void CMGTtFullLepMaosSolutionProducer::produce(edm::Event & evt, const edm::Even
   std::vector<std::pair<double, int> > weightsV;
   std::vector<double> Mt2V;
 
-  if(debug_) std::cout << "start Maos..." << std::endl;
 
   //create pointer for products
   std::auto_ptr<std::vector<std::vector<int> > >   pIdcs(new std::vector<std::vector<int> >);
   std::auto_ptr<std::vector<reco::LeafCandidate> > pNus(new std::vector<reco::LeafCandidate>);
   std::auto_ptr<std::vector<reco::LeafCandidate> > pNuBars(new std::vector<reco::LeafCandidate>);
   std::auto_ptr<std::vector<double> >              pWeight(new std::vector<double>);  
+  std::auto_ptr<std::vector<double> >              pMt2V(new std::vector<double>);
   std::auto_ptr<bool> pWrongCharge(new bool);  
   std::auto_ptr<std::vector<vallot::TTbarDILEvent> >    ttbarMaosSolutions(new std::vector<vallot::TTbarDILEvent>());  
  
@@ -179,6 +179,8 @@ void CMGTtFullLepMaosSolutionProducer::produce(edm::Event & evt, const edm::Even
      metV.SetPxPyPzE((*mets)[0].px(),(*mets)[0].py(),0,(*mets)[0].pt());
   }
  
+  if(debug_) std::cout << "start Maos... MET( "<< (*mets)[0].px() <<", "<<(*mets)[0].py() <<") " << std::endl;
+
   // If we have electrons and muons available, 
   // build a solutions with electrons and muons.
   if(muons->size() + electrons->size() >=2) {     
@@ -405,7 +407,7 @@ void CMGTtFullLepMaosSolutionProducer::produce(edm::Event & evt, const edm::Even
                      << ", top2M: " << top2M << ", W1M: " << W1M << ", W2M: " << W2M << ", weight: "<< weight << std::endl; 
         }*/
 	// add solution to the vectors of solutions if solution exists 
-	if(mt2 > Mt2min_ && mt2 < Mt2max_ ){
+	//if(mt2 > Mt2min_ && mt2 < Mt2max_ && top1M > 0 && top2M > 0 && W1M > 0 && W2M > 0 ){
 	  // add the leptons and jets indices to the vector of combinations
 	  idcsV.push_back(idcs);
           Mt2V.push_back(mt2);
@@ -430,7 +432,7 @@ void CMGTtFullLepMaosSolutionProducer::produce(edm::Event & evt, const edm::Even
 	  weightsV.push_back(std::make_pair(weight, nSol));
 	  
 	  nSol++;
-	}
+	//}
       }
     }           
   }
@@ -475,7 +477,8 @@ void CMGTtFullLepMaosSolutionProducer::produce(edm::Event & evt, const edm::Even
   for(int i=0; i<stop; ++i){
     pWeight->push_back(weightsV[i].first);
     pNus   ->push_back(nusV[weightsV[i].second]);
-    pNuBars->push_back(nuBarsV[weightsV[i].second]);    
+    pNuBars->push_back(nuBarsV[weightsV[i].second]);   
+    pMt2V->push_back(Mt2V[weightsV[i].second]); 
     pIdcs  ->push_back(idcsV[weightsV[i].second]);    
   }
 
@@ -570,22 +573,27 @@ void CMGTtFullLepMaosSolutionProducer::produce(edm::Event & evt, const edm::Even
       TLorentzVector Mbbp4 = j1p4 + j2p4;
       Mbb = Mbbp4.M();
     }
-    float Mt2 = Mt2V[i];
+    float Mt2 = pMt2V->at(i);
 
-    if(debug_){
-       std::cout << " Mt2: " << Mt2 << ", ttbar.M: " << ttbar.M() << 
-                    ", top1M:" << top.M() << ", top2M: " << topBar.M() << 
-                    ", W1M: " << (LepBar + nu).M() << ", W2M: " << (Lep + nuBar).M() <<
-                    ", JetID( " << ib <<", " <<  ibbar << ") " << 
-                    ", weight: "<< weight << std::endl; 
-    }
-	
-
-    ttbarMaosSolution.SetJId( j1, j2);
-    ttbarMaosSolution.SetMbb( Mbb );
-    ttbarMaosSolution.SetMt2( Mt2 );
-
-    ttbarMaosSolutions->push_back(ttbarMaosSolution); 
+    if(Mt2 > Mt2min_ && Mt2 < Mt2max_ &&
+        top.M()> 0 && topBar.M() > 0 &&
+        (Lep + nuBar).M() > 0 && (LepBar + nu).M() > 0 ){
+        if(debug_){
+           std::cout << "\tMt2: " << Mt2 << ", ttbar.M: " << ttbar.M() << 
+                        ", top1M:" << top.M() << ", top2M: " << topBar.M() << 
+                        ", W1M: " << (LepBar + nu).M() << ", W2M: " << (Lep + nuBar).M() << std::endl;
+           std::cout << "\t\tJetID( " << ib <<", " <<  ibbar << ") " <<
+                        ", nu1(" << nu.Px() <<", " << nu.Py() << ")" << 
+                        ", nu2(" << nuBar.Px() <<", " << nuBar.Py() << ")" << 
+                        ", weight: "<< weight << std::endl; 
+        }
+        
+        ttbarMaosSolution.SetJId( j1, j2);
+        ttbarMaosSolution.SetMbb( Mbb );
+        ttbarMaosSolution.SetMt2( Mt2 );
+        
+        ttbarMaosSolutions->push_back(ttbarMaosSolution);
+    } 
   }
   /////
   // put the results in the event
