@@ -2,7 +2,7 @@
 #define CMGTtFullLepKinSolutionProducer_h
 
 //
-// $Id: CMGTtFullLepKinSolutionProducer.h,v 1.1 2012/10/21 19:37:23 tjkim Exp $
+// $Id: CMGTtFullLepKinSolutionProducer.h,v 1.2 2012/10/24 12:53:24 tjkim Exp $
 //
 #include <memory>
 #include <string>
@@ -557,6 +557,7 @@ void CMGTtFullLepKinSolutionProducer::produce(edm::Event & evt, const edm::Event
 
     ttbarKinSolution.SetJId( j1, j2);
     ttbarKinSolution.SetMbb( Mbb );
+    ttbarKinSolution.SetMt2(-1);
 
     ttbarKinSolutions->push_back(ttbarKinSolution); 
   }
