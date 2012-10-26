@@ -2,7 +2,7 @@
 #define CMGTtFullLepMaosSolutionProducer_h
 
 //
-// $Id: CMGTtFullLepMaosSolutionProducer.h,v 1.3 2012/10/26 11:26:09 youngjo Exp $
+// $Id: CMGTtFullLepMaosSolutionProducer.h,v 1.4 2012/10/26 12:16:59 youngjo Exp $
 //
 #include <memory>
 #include <string>
@@ -583,9 +583,9 @@ void CMGTtFullLepMaosSolutionProducer::produce(edm::Event & evt, const edm::Even
                         ", top1M:" << top.M() << ", top2M: " << topBar.M() << 
                         ", W1M: " << (LepBar + nu).M() << ", W2M: " << (Lep + nuBar).M() << std::endl;
            std::cout << "\t\tJetID( " << ib <<", " <<  ibbar << ") " <<
-                        ", nu1(" << nu.Px() <<", " << nu.Py() << ")" << 
-                        ", nu2(" << nuBar.Px() <<", " << nuBar.Py() << ")" << 
-                        ", weight: "<< weight << std::endl; 
+                        ", nu1(" << nu.Px()    <<", " << nu.Py()    << ", " << nu.Pz()    <<")" << 
+                        ", nu2(" << nuBar.Px() <<", " << nuBar.Py() << ", " << nuBar.Pz() <<")" << std::endl <<
+                        "\t\tWeight: "<< (float)((int)(weight*1000.))/1000. << ", A: "<< (int) (1/weight)  << std::endl; 
         }
         
         ttbarMaosSolution.SetJId( j1, j2);
