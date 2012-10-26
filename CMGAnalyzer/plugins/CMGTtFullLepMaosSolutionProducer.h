@@ -2,7 +2,7 @@
 #define CMGTtFullLepMaosSolutionProducer_h
 
 //
-// $Id: CMGTtFullLepMaosSolutionProducer.h,v 1.1 2012/10/25 15:43:38 youngjo Exp $
+// $Id: CMGTtFullLepMaosSolutionProducer.h,v 1.2 2012/10/25 16:05:32 tjkim Exp $
 //
 #include <memory>
 #include <string>
@@ -26,6 +26,8 @@
 #include "AnalysisDataFormats/CMGTools/interface/Muon.h"
 #include "KoPFA/DataFormats/interface/TTbarDILEvent.h"
 #include "Math/LorentzVector.h"
+
+using namespace std;
 
 class CMGTtFullLepMaosSolutionProducer : public edm::EDProducer {
 
@@ -60,7 +62,8 @@ class CMGTtFullLepMaosSolutionProducer : public edm::EDProducer {
     int maxNJets_, maxNComb_;
     bool eeChannel_, emuChannel_, mumuChannel_, searchWrongCharge_;
     double tmassbegin_, tmassend_, tmassstep_;
-    std::vector<double> nupars_;
+    double Mt2min_, Mt2max_;
+    bool debug_;
 
     vallot::Maos* solver; 
     //TtFullLepKinSolver* solver;
@@ -98,7 +101,9 @@ CMGTtFullLepMaosSolutionProducer::CMGTtFullLepMaosSolutionProducer(const edm::Pa
   tmassbegin_       = iConfig.getParameter<double>("tmassbegin");
   tmassend_         = iConfig.getParameter<double>("tmassend");
   tmassstep_        = iConfig.getParameter<double>("tmassstep");
-  nupars_           = iConfig.getParameter<std::vector<double> >("neutrino_parameters");
+  Mt2min_           = iConfig.getParameter<double>("Mt2min");
+  Mt2max_           = iConfig.getParameter<double>("Mt2max");
+  debug_ = iConfig.getParameter<bool> ("debug");
   
   // define what will be produced
   produces<std::vector<std::vector<int> > >  (); // vector of the particle inices (b, bbar, e1, e2, mu1, mu2)
@@ -131,6 +136,9 @@ void CMGTtFullLepMaosSolutionProducer::produce(edm::Event & evt, const edm::Even
   std::vector<reco::LeafCandidate> nusV;
   std::vector<reco::LeafCandidate> nuBarsV;
   std::vector<std::pair<double, int> > weightsV;
+  std::vector<double> Mt2V;
+
+  if(debug_) std::cout << "start Maos..." << std::endl;
 
   //create pointer for products
   std::auto_ptr<std::vector<std::vector<int> > >   pIdcs(new std::vector<std::vector<int> >);
@@ -170,7 +178,7 @@ void CMGTtFullLepMaosSolutionProducer::produce(edm::Event & evt, const edm::Even
      METFound = true; 
      metV.SetPxPyPzE((*mets)[0].px(),(*mets)[0].py(),0,(*mets)[0].pt());
   }
-  
+ 
   // If we have electrons and muons available, 
   // build a solutions with electrons and muons.
   if(muons->size() + electrons->size() >=2) {     
@@ -232,7 +240,7 @@ void CMGTtFullLepMaosSolutionProducer::produce(edm::Event & evt, const edm::Even
   if(int(ee)+int(emu)+int(mumu)>1) {
     edm::LogWarning("CMGTtFullLepMaosSolutionProducer") << "Lepton selection criteria uncorrectly defined";
   }
-    
+
   // Check if the leptons for the required Channel are available
   bool correctLeptons = ((electronsFound && eeChannel_) || (muonsFound && mumuChannel_) || (electronMuonFound && emuChannel_) );
   // Check for equally charged leptons if for wrong charge combinations is searched
@@ -382,11 +390,25 @@ void CMGTtFullLepMaosSolutionProducer::produce(edm::Event & evt, const edm::Even
 	 		
         // calculate neutrino momenta and eventweight
         //vallot::Maos* solver = new vallot::Maos();
-        double mt2 = solver->MAOS(metV,LV_l1+LV_b,LV_l2+LV_bbar, 0.0, 0.0, false );
+        double mt2 = sqrt(solver->MAOS(metV,LV_l1+LV_b,LV_l2+LV_bbar, 0.0, 0.0, false ));
+        double top1M = solver->leg1().M(), top2M = solver->leg2().M();
+        double ttbarM = solver->M();
+        double W1M=(solver->nu1()+LV_l1).M(), W2M=(solver->nu2()+LV_l2).M();
+        double weight = 1/((pow(top1M-174.,2) + pow(top2M-174.,2))/pow(9.5,2)+
+                           (pow(W1M-80.4,2) + pow(W2M-80.4,2))/pow(7.5,2) +
+                            pow(top1M-top2M,2)/pow(9.5,2)+
+                            pow(W1M-W2M,2)/pow(7.5,2) 
+                            );	
+	
+        /*if(debug_){
+           std::cout << " Mt2: " << mt2 << ", ttbar.M: " << ttbarM << ", top1M:" << top1M 
+                     << ", top2M: " << top2M << ", W1M: " << W1M << ", W2M: " << W2M << ", weight: "<< weight << std::endl; 
+        }*/
 	// add solution to the vectors of solutions if solution exists 
-	if(mt2>0){
+	if(mt2 > Mt2min_ && mt2 < Mt2max_ ){
 	  // add the leptons and jets indices to the vector of combinations
 	  idcsV.push_back(idcs);
+          Mt2V.push_back(mt2);
 
           reco::LeafCandidate nu1;
           reco::LeafCandidate nu2;
@@ -404,11 +426,6 @@ void CMGTtFullLepMaosSolutionProducer::produce(edm::Event & evt, const edm::Even
 	  nusV.push_back( nu1);	
 	  nuBarsV.push_back( nu2);
 
-          double weight = 1/((pow(solver->leg1().M()-174.,2) + pow(solver->leg2().M()-174.,2))/pow(9.5,2)+
-                             (pow((solver->nu1()+LV_l1).M()-80.4,2) + pow((solver->nu2()+LV_l2).M()-80.4,2))/pow(7.5,2) +
-                              pow(solver->leg1().M()-solver->leg2().M(),2)/pow(9.5,2)+
-                              pow((solver->nu1()+LV_l1).M()-(solver->nu2()+LV_l2).M(),2)/pow(7.5,2) 
-                            );	
 	  // add the solution weight
 	  weightsV.push_back(std::make_pair(weight, nSol));
 	  
@@ -425,6 +442,7 @@ void CMGTtFullLepMaosSolutionProducer::produce(edm::Event & evt, const edm::Even
       idcs.push_back(-1);
 
     idcsV.push_back(idcs);
+    Mt2V.push_back(-1);
     weightsV.push_back(std::make_pair(-1,0));
     reco::LeafCandidate nu;
     nusV.push_back(nu);
@@ -552,18 +570,28 @@ void CMGTtFullLepMaosSolutionProducer::produce(edm::Event & evt, const edm::Even
       TLorentzVector Mbbp4 = j1p4 + j2p4;
       Mbb = Mbbp4.M();
     }
+    float Mt2 = Mt2V[i];
+
+    if(debug_){
+       std::cout << " Mt2: " << Mt2 << ", ttbar.M: " << ttbar.M() << 
+                    ", top1M:" << top.M() << ", top2M: " << topBar.M() << 
+                    ", W1M: " << (LepBar + nu).M() << ", W2M: " << (Lep + nuBar).M() <<
+                    ", JetID( " << ib <<", " <<  ibbar << ") " << 
+                    ", weight: "<< weight << std::endl; 
+    }
+	
 
     ttbarMaosSolution.SetJId( j1, j2);
     ttbarMaosSolution.SetMbb( Mbb );
+    ttbarMaosSolution.SetMt2( Mt2 );
 
     ttbarMaosSolutions->push_back(ttbarMaosSolution); 
   }
   /////
-
   // put the results in the event
   evt.put(pIdcs);     
-  //evt.put(pNus,         "fullLepNeutrinos");  
-  //evt.put(pNuBars,      "fullLepNeutrinoBars");             
+  evt.put(pNus,         "fullLepNeutrinos");  
+  evt.put(pNuBars,      "fullLepNeutrinoBars");             
   evt.put(pWeight,      "solWeight");  
   evt.put(pWrongCharge, "isWrongCharge"); 
   evt.put(ttbarMaosSolutions,   "ttbars");
