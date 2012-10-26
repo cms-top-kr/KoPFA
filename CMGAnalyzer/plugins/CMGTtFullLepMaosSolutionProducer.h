@@ -2,7 +2,7 @@
 #define CMGTtFullLepMaosSolutionProducer_h
 
 //
-// $Id: CMGTtFullLepMaosSolutionProducer.h,v 1.4 2012/10/26 12:16:59 youngjo Exp $
+// $Id: CMGTtFullLepMaosSolutionProducer.h,v 1.5 2012/10/26 12:43:43 youngjo Exp $
 //
 #include <memory>
 #include <string>
@@ -574,10 +574,11 @@ void CMGTtFullLepMaosSolutionProducer::produce(edm::Event & evt, const edm::Even
       Mbb = Mbbp4.M();
     }
     float Mt2 = pMt2V->at(i);
+    float A =  (1/weight);
 
     if(Mt2 > Mt2min_ && Mt2 < Mt2max_ &&
         top.M()> 0 && topBar.M() > 0 &&
-        (Lep + nuBar).M() > 0 && (LepBar + nu).M() > 0 ){
+        (Lep + nuBar).M() > 0 && (LepBar + nu).M() > 0 && A < 200){
         if(debug_){
            std::cout << "\tMt2: " << Mt2 << ", ttbar.M: " << ttbar.M() << 
                         ", top1M:" << top.M() << ", top2M: " << topBar.M() << 
@@ -585,7 +586,7 @@ void CMGTtFullLepMaosSolutionProducer::produce(edm::Event & evt, const edm::Even
            std::cout << "\t\tJetID( " << ib <<", " <<  ibbar << ") " <<
                         ", nu1(" << nu.Px()    <<", " << nu.Py()    << ", " << nu.Pz()    <<")" << 
                         ", nu2(" << nuBar.Px() <<", " << nuBar.Py() << ", " << nuBar.Pz() <<")" << std::endl <<
-                        "\t\tWeight: "<< (float)((int)(weight*1000.))/1000. << ", A: "<< (int) (1/weight)  << std::endl; 
+                        "\t\tWeight: "<< (float)((int)(weight*1000.))/1000. << ", A: "<<  ((int) A)  << std::endl; 
         }
         
         ttbarMaosSolution.SetJId( j1, j2);
