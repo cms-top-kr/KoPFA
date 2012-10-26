@@ -61,7 +61,7 @@ maosSolutionTtFullLepEvent = cms.EDProducer("CMGTtFullLepMaosSolutionProducer",
     # ------------------------------------------------  
     Mt2min  = cms.double(  20),
     Mt2max  = cms.double(  10000),
-    debug = cms.bool(True)   
+    debug = cms.bool(False)   
 )
 
 
