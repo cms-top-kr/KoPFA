@@ -2,7 +2,7 @@
 #define CMGTtFullLepMaosSolutionProducer_h
 
 //
-// $Id: CMGTtFullLepMaosSolutionProducer.h,v 1.5 2012/10/26 12:43:43 youngjo Exp $
+// $Id: CMGTtFullLepMaosSolutionProducer.h,v 1.6 2012/10/26 13:26:15 youngjo Exp $
 //
 #include <memory>
 #include <string>
@@ -407,7 +407,7 @@ void CMGTtFullLepMaosSolutionProducer::produce(edm::Event & evt, const edm::Even
                      << ", top2M: " << top2M << ", W1M: " << W1M << ", W2M: " << W2M << ", weight: "<< weight << std::endl; 
         }*/
 	// add solution to the vectors of solutions if solution exists 
-	//if(mt2 > Mt2min_ && mt2 < Mt2max_ && top1M > 0 && top2M > 0 && W1M > 0 && W2M > 0 ){
+	if(mt2 > Mt2min_ && mt2 < Mt2max_ && top1M > 0 && top2M > 0 && W1M > 0 && W2M > 0 ){
 	  // add the leptons and jets indices to the vector of combinations
 	  idcsV.push_back(idcs);
           Mt2V.push_back(mt2);
@@ -432,7 +432,7 @@ void CMGTtFullLepMaosSolutionProducer::produce(edm::Event & evt, const edm::Even
 	  weightsV.push_back(std::make_pair(weight, nSol));
 	  
 	  nSol++;
-	//}
+	}
       }
     }           
   }
