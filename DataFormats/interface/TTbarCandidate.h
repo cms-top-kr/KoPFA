@@ -23,8 +23,10 @@ namespace Ko{
     typedef std::vector<math::XYZTLorentzVector> LorentzVectors;
 
     // status 3
-    const math::XYZTLorentzVector bquarks1() const { return bJets_[0]; }
-    const math::XYZTLorentzVector bquarks2() const { return bJets_[1]; }
+    const math::XYZTLorentzVector bquarks1() const { return bquarks_[0]; }
+    const math::XYZTLorentzVector bquarks2() const { return bquarks_[1]; }
+    const math::XYZTLorentzVector bquarks3() const { return bquarks_[2]; }
+    const math::XYZTLorentzVector bquarks4() const { return bquarks_[3]; }
 
     const math::XYZTLorentzVector lepton1() const { return leptons_[0]; }
     const math::XYZTLorentzVector lepton2() const { return leptons_[1]; }
@@ -39,8 +41,44 @@ namespace Ko{
 
     double mass() const { return mass_; }
 
-    bool taunic() const { return taunic_; }
+    bool taunic(int i = -1) const { 
+      bool hasTau = false;
+      if( i == -1) hasTau = taunic1_ || taunic2_;
+      if( i == 0 ) hasTau = taunic1_;
+      if( i == 1 ) hasTau = taunic2_;
+      return hasTau;
+    }
 
+    bool allHadronic() const { return allHadronic_; }
+
+    bool semiLeptonic(int i = -1) const { 
+      bool decay = false;
+      if( i == -1) decay = semiLeptonic_;
+      if( i == 0) decay = semiLeptonicMuo_ || semiLeptonicEle_;
+      if( i == 1) decay = ( semiLeptonicMuo_ || semiLeptonicEle_ ) && !semiLeptonicTau_;
+      return decay;
+    }
+
+    bool semiLeptonicMuo() const { return semiLeptonicMuo_; }
+    bool semiLeptonicEle() const { return semiLeptonicEle_; }
+    bool semiLeptonicTau() const { return semiLeptonicTau_; }
+
+    bool diLeptonic(int i = -1) const { 
+      bool decay = false;
+      if( i == -1) decay = diLeptonic_;
+      if( i == 0) decay = diLeptonicMuoMuo_ || diLeptonicMuoEle_ || diLeptonicEleEle_;
+      if( i == 1) decay = ( diLeptonicMuoMuo_ || diLeptonicMuoEle_ || diLeptonicEleEle_) && !( diLeptonicTauMuo_ || diLeptonicTauEle_ || diLeptonicTauTau_);
+      return decay; 
+    }
+
+    bool diLeptonicMuoMuo() const { return diLeptonicMuoMuo_; }
+    bool diLeptonicMuoEle() const { return diLeptonicMuoEle_; }
+    bool diLeptonicEleEle() const { return diLeptonicEleEle_; }
+    bool diLeptonicTauMuo() const { return diLeptonicTauMuo_; }
+    bool diLeptonicTauEle() const { return diLeptonicTauEle_; }
+    bool diLeptonicTauTau() const { return diLeptonicTauTau_; }
+
+    int NbQuarks() const { return NbQuarks_ ; }
     int NbJets() const { return NbJets_ ; }
 
   private:
@@ -60,9 +98,24 @@ namespace Ko{
 
     double mass_;
 
-    bool taunic_;
+    bool allHadronic_;
+    bool semiLeptonic_;
+    bool semiLeptonicMuo_;
+    bool semiLeptonicEle_;
+    bool semiLeptonicTau_;
+    bool diLeptonic_;
+    bool diLeptonicMuoMuo_;
+    bool diLeptonicMuoEle_;
+    bool diLeptonicEleEle_;
+    bool diLeptonicTauMuo_;
+    bool diLeptonicTauEle_;
+    bool diLeptonicTauTau_;
+
+    bool taunic1_;
+    bool taunic2_;
 
     int NbJets_;
+    int NbQuarks_;
 
   };
 
