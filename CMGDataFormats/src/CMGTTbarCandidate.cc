@@ -39,7 +39,8 @@ void CMGTTbarCandidate::building( const std::vector<cmg::GenJet>* genJets, const
   std::vector<math::XYZTLorentzVector> cquarks;
 
   mass_ = 0;
-
+  //debug
+  //cout << "EVENT= " << endl;
   for ( unsigned int ip=0; ip<nParticles; ++ip ) { 
 
 
@@ -67,12 +68,13 @@ void CMGTTbarCandidate::building( const std::vector<cmg::GenJet>* genJets, const
     }
 
     if ( ntop == 2 ) continue;
-
     if ( abs(p.pdgId()) != 6 ) continue;
 
     bool isLast = isLastParton(p);
     if(isLast != true) continue;
-     
+    //debug
+    //cout << "ntop = " << ntop << endl;
+ 
     ttbarGen += p.p4();
     if( ntop == 1 ) {
       mass_ = ttbarGen.M();
@@ -86,23 +88,36 @@ void CMGTTbarCandidate::building( const std::vector<cmg::GenJet>* genJets, const
       if ( abs(daughTemp->pdgId()) != 24 ) continue;
       const reco::Candidate* daugh = getLast( *daughTemp );
       unsigned int nWDaughters = daugh->numberOfDaughters();
+      //debug
+      //cout << "nW daughters= " << nWDaughters << endl;
+      int nWleptonDaughters = 0;
       for ( unsigned iWDaughter=0; iWDaughter<nWDaughters; ++iWDaughter ) {
 	const reco::Candidate* decay = daugh->daughter(iWDaughter);
 	int decayId = abs(decay->pdgId());
+        //debug
+        //cout << "W decay Id = " << decayId << endl;
 	if ( decayId == 11 || decayId == 12 ) {  
+          if( nWleptonDaughters == 2 ) break;
           if( decayId == 11 ) {
             electronic[ntop] = true;
             leptons_[ntop] = decay->p4() ;
+            nWleptonDaughters++;
           }
-          if( decayId == 12 ) nus_[ntop] = decay->p4() ;
-	  break; 
+          if( decayId == 12 ) {
+            nus_[ntop] = decay->p4() ;
+            nWleptonDaughters++;
+          }
 	} else if ( decayId == 13 || decayId == 14 ) {  
+          if( nWleptonDaughters == 2 ) break;
           if( decayId == 13 ) {
             muonic[ntop] = true;
             leptons_[ntop] = decay->p4() ;
+            nWleptonDaughters++;
           }
-          if( decayId == 14 ) nus_[ntop] = decay->p4() ;
-	  break;
+          if( decayId == 14 ) {
+            nus_[ntop] = decay->p4() ;
+            nWleptonDaughters++;
+          }
 	} else if ( decayId == 15 || decayId == 16 ) {  
           if( decayId == 15 ) taunic[ntop] = true;
           if( decayId == 16 ) taunus_[ntop] = decay->p4() ;
@@ -111,38 +126,54 @@ void CMGTTbarCandidate::building( const std::vector<cmg::GenJet>* genJets, const
             const reco::Candidate* tauDecay = decay->daughter(iTauDaughter);
             int tauDecayId = abs(tauDecay->pdgId());
             if ( tauDecayId == 11 || tauDecayId == 12 ) {
+              if( nWleptonDaughters == 2 ) break;
               if( tauDecayId == 11) {
                 electronic[ntop] = true;
                 leptons_[ntop] = tauDecay->p4() ;
+                nWleptonDaughters++;
               }
-              if( tauDecayId == 12) nus_[ntop] = tauDecay->p4() ;
-              break;
+              if( tauDecayId == 12) {
+                nus_[ntop] = tauDecay->p4() ;
+                nWleptonDaughters++;
+              }
             } else if ( tauDecayId == 13 || tauDecayId == 14 ) {
+              if( nWleptonDaughters == 2 ) break;
               if( tauDecayId == 13) {
                 muonic[ntop] = true;
                 leptons_[ntop] = tauDecay->p4() ;
+                nWleptonDaughters++;
               }
-              if( tauDecayId == 14) nus_[ntop] = tauDecay->p4() ;
-              break;
+              if( tauDecayId == 14) {
+                nus_[ntop] = tauDecay->p4() ;
+                nWleptonDaughters++;
+             }
             } else if (  tauDecayId == 15 || tauDecayId == 16) {
               unsigned int nTauGrandDaughters = tauDecay->numberOfDaughters();
               for ( unsigned iTauGrandDaughter=0; iTauGrandDaughter<nTauGrandDaughters; ++iTauGrandDaughter ) {
                 const reco::Candidate* tauGrandDecay = tauDecay->daughter(iTauGrandDaughter);
                 int tauGrandDecayId = abs(tauGrandDecay->pdgId());
                 if ( tauGrandDecayId == 11 || tauGrandDecayId == 12 ) {
+                  if( nWleptonDaughters == 2 ) break;
                   if( tauGrandDecayId == 11){
                     electronic[ntop] = true;
                     leptons_[ntop] = tauGrandDecay->p4() ;
+                    nWleptonDaughters++;
                   }
-                  if( tauGrandDecayId == 12 ) nus_[ntop] = tauGrandDecay->p4() ;
-                  break;
+                  if( tauGrandDecayId == 12 ) {
+                    nus_[ntop] = tauGrandDecay->p4() ;
+                    nWleptonDaughters++;
+                  }
                 } else if ( tauGrandDecayId == 13 || tauGrandDecayId == 14 ) {
+                  if( nWleptonDaughters == 2 ) break;
                   if( tauGrandDecayId == 13 ){
                     muonic[ntop] = true;
                     leptons_[ntop] = tauGrandDecay->p4() ;
+                    nWleptonDaughters++;
                   }
-                  if( tauGrandDecayId == 12 ) nus_[ntop] = tauGrandDecay->p4() ;
-                  break;
+                  if( tauGrandDecayId == 12 ) {
+                    nus_[ntop] = tauGrandDecay->p4() ;
+                    nWleptonDaughters++;
+                  }
                 } else {
                   continue;
                 }
@@ -212,6 +243,15 @@ void CMGTTbarCandidate::building( const std::vector<cmg::GenJet>* genJets, const
     // Tau-Tau
     if ( taunic[0] == true && taunic[1] == true ) diLeptonicTauTau_ = true;
   }
+
+  // debug
+  //cout << "diLeptonic= " << diLeptonic_ << endl;
+  //cout << "diLeptonicMuoMuo= " << diLeptonicMuoMuo_ << endl;
+  //cout << "diLeptonicMuoEle= " << diLeptonicMuoEle_ << endl;
+  //cout << "diLeptonicEleEle= " << diLeptonicEleEle_ << endl;
+  //cout << "diLeptonicTauMuo= " << diLeptonicTauMuo_ << endl;
+  //cout << "diLeptonicTauEle= " << diLeptonicTauEle_ << endl;
+  //cout << "diLeptonicTauTau= " << diLeptonicTauTau_ << endl;
 
   taunic1_ = taunic[0];
   taunic2_ = taunic[1];
@@ -647,7 +687,6 @@ const reco::Candidate* CMGTTbarCandidate::getLast( const reco::Candidate& p ){
 
    const reco::Candidate* last = 0;
    int id = abs( p.pdgId() );
-
    unsigned int nDaughters = p.numberOfDaughters();
    if( nDaughters == 1) {
      const reco::Candidate* daugh = p.daughter(0);
