@@ -13,7 +13,7 @@
 //
 // Original Author:  Tae Jeong Kim
 //         Created:  Mon Dec 14 01:29:35 CET 2009
-// $Id: CMGJetFilter.cc,v 1.2 2012/10/08 12:06:40 tjkim Exp $
+// $Id: CMGJetFilter.cc,v 1.3 2012/10/30 11:46:59 youngjo Exp $
 //
 //
 
@@ -236,6 +236,7 @@ CMGJetFilter::filter(edm::Event& iEvent, const edm::EventSetup& iSetup)
         break;
       }
     }
+    if(overlap) continue;
 
 
 
