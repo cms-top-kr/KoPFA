@@ -13,7 +13,7 @@
 //
 // Original Author:  Tae Jeong Kim
 //         Created:  Mon Dec 14 01:29:35 CET 2009
-// $Id: CMGJetFilter.cc,v 1.1 2012/08/01 15:40:12 tjkim Exp $
+// $Id: CMGJetFilter.cc,v 1.2 2012/10/08 12:06:40 tjkim Exp $
 //
 //
 
@@ -35,7 +35,8 @@
 #include "AnalysisDataFormats/CMGTools/interface/BaseMET.h"
 #include "AnalysisDataFormats/CMGTools/interface/BaseJet.h"
 #include "AnalysisDataFormats/CMGTools/interface/PFJet.h"
-
+#include "AnalysisDataFormats/CMGTools/interface/Electron.h"
+#include "AnalysisDataFormats/CMGTools/interface/Muon.h"
 
 #include "PhysicsTools/SelectorUtils/interface/PFJetIDSelectionFunctor.h"
 //#include "JetMETCorrections/Objects/interface/JetCorrector.h"
@@ -73,6 +74,9 @@ class CMGJetFilter : public edm::EDFilter {
       edm::InputTag rhoLabel_;
       edm::InputTag jetLabel_;
       edm::InputTag metLabel_;
+      edm::InputTag electronLabel_;
+      edm::InputTag muonLabel_;
+
       string outputJetLabel_;
       string outputMETLabel_;
       edm::InputTag vertexLabel_;
@@ -131,6 +135,9 @@ CMGJetFilter::CMGJetFilter(const edm::ParameterSet& ps)
   resolutionFactor_ = ps.getUntrackedParameter<double>("resolutionFactor", 1.0);
   globalTag_ = ps.getUntrackedParameter<string>("globalTag","GR_R_42_V23");
 
+  electronLabel_ = ps.getParameter<edm::InputTag>("electronLabel");
+  muonLabel_ = ps.getParameter<edm::InputTag>("muonLabel");
+
   resJetCorrector_ = 0;
   jecUnc_ = 0;
 
@@ -181,6 +188,12 @@ CMGJetFilter::filter(edm::Event& iEvent, const edm::EventSetup& iSetup)
   double met_x = MET->begin()->px();
   double met_y = MET->begin()->py();
 
+  edm::Handle<std::vector<cmg::Electron> > electrons_;
+  iEvent.getByLabel(electronLabel_, electrons_);
+
+  edm::Handle<std::vector<cmg::Muon> > muons_;
+  iEvent.getByLabel(muonLabel_, muons_);
+
   edm::Handle<double>  rho;
   iEvent.getByLabel(rhoLabel_, rho);
 
@@ -204,6 +217,27 @@ CMGJetFilter::filter(edm::Event& iEvent, const edm::EventSetup& iSetup)
     //bool passId = it->getSelection("cuts_looseJetId");
 
     if(!passId) continue;
+
+    bool overlap = false;
+    
+    for (unsigned int i=0; i < electrons_->size(); ++i){
+      cmg::Electron electron = electrons_->at(i);
+      double dR =  deltaR(electron.eta(), electron.phi(), it->eta(), it->phi());
+      if( dR < 0.5 ) {
+        overlap = true;
+        break;
+      }
+    }
+    for (unsigned int i=0; i < muons_->size(); ++i){
+      cmg::Muon muon = muons_->at(i);
+      double dR =  deltaR(muon.eta(), muon.phi(), it->eta(), it->phi());
+      if( dR < 0.5 ) {
+        overlap = true;
+        break;
+      }
+    }
+
+
 
     //double scaleF = 1.0;
     //if(doJecFly_){

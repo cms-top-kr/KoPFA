@@ -23,4 +23,6 @@ JetEnergyScale = cms.EDFilter('CMGJetFilter',
     doJERUnc = cms.untracked.bool(False),
     resolutionFactor = cms.untracked.double(1.0),
     globalTag = cms.untracked.string("GR_R_42_V23"),
+    electronLabel = cms.InputTag("FinalLeptons","Electrons"),
+    muonLabel_ = cms.InputTag("FinalLeptons","Muons"),
 )

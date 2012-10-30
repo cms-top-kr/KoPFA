@@ -4,7 +4,7 @@ process = cms.Process("Ntuple")
 
 process.options   = cms.untracked.PSet( wantSummary = cms.untracked.bool(True) )
 
-process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(10000) )
+process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
 
 process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring()
@@ -55,7 +55,7 @@ process.BaseSequence = cms.Sequence(
  #   process.topDecayGenFilter*
  #   process.GenZmassFilter*
     process.PUweight*
-    process.JetEnergyScale*
+ #   process.JetEnergyScale*
     process.Electrons*
     process.Muons
 )
@@ -82,12 +82,16 @@ process.CMGFinalLeptonsMuMu = process.CMGFinalLeptons.clone()
 process.CMGFinalLeptonsMuEl = process.CMGFinalLeptons.clone()
 process.CMGFinalLeptonsElEl = process.CMGFinalLeptons.clone()
 
+process.JetEnergyScaleMuMu = process.JetEnergyScale.clone()
+process.JetEnergyScaleMuEl = process.JetEnergyScale.clone()
+process.JetEnergyScaleElEl = process.JetEnergyScale.clone()
 ### Ntuple producer for dilepton ###
 
 process.p = cms.Path(
     process.BaseSequenceMuMu*
     process.ZMuMu*
     process.CMGFinalLeptonsMuMu*
+    process.JetEnergyScaleMuMu*
     process.kinSolutionTtFullLepEventMuMu*
     process.maosSolutionTtFullLepEventMuMu*
     process.MuMu
@@ -97,6 +101,7 @@ process.p2 = cms.Path(
     process.BaseSequenceMuEl*
     process.ZMuEl*
     process.CMGFinalLeptonsMuEl*
+    process.JetEnergyScaleMuEl*
     process.kinSolutionTtFullLepEventMuEl*
     process.maosSolutionTtFullLepEventMuEl*
     process.MuEl
@@ -106,6 +111,7 @@ process.p3 = cms.Path(
     process.BaseSequenceElEl*
     process.ZElEl*
     process.CMGFinalLeptonsElEl*
+    process.JetEnergyScaleElEl*
     process.kinSolutionTtFullLepEventElEl*
     process.maosSolutionTtFullLepEventElEl*
     process.ElEl
@@ -155,6 +161,14 @@ process.maosSolutionTtFullLepEventElEl.electrons = cms.InputTag("CMGFinalLeptons
 process.maosSolutionTtFullLepEventElEl.muons = cms.InputTag("CMGFinalLeptonsElEl","Muons")
 process.maosSolutionTtFullLepEventElEl.mets = cms.InputTag("JetEnergyScaleElEl","MET")
 
+process.JetEnergyScaleMuMu.electronLabel = cms.InputTag("CMGFinalLeptonsMuMu","Electrons")
+process.JetEnergyScaleMuMu.muonLabel = cms.InputTag("CMGFinalLeptonsMuMu","Muons")
+
+process.JetEnergyScaleMuEl.electronLabel = cms.InputTag("CMGFinalLeptonsMuEl","Electrons")
+process.JetEnergyScaleMuEl.muonLabel = cms.InputTag("CMGFinalLeptonsMuEl","Muons")
+
+process.JetEnergyScaleElEl.electronLabel = cms.InputTag("CMGFinalLeptonsElEl","Electrons")
+process.JetEnergyScaleElEl.muonLabel = cms.InputTag("CMGFinalLeptonsElEl","Muons")
 
 
 process.ZMuMu.muonLabel1 =  cms.InputTag('MuonsMuMu')
