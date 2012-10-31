@@ -2,7 +2,7 @@
 #define CMGTtFullLepMaosSolutionProducer_h
 
 //
-// $Id: CMGTtFullLepMaosSolutionProducer.h,v 1.6 2012/10/26 13:26:15 youngjo Exp $
+// $Id: CMGTtFullLepMaosSolutionProducer.h,v 1.7 2012/10/29 10:55:17 youngjo Exp $
 //
 #include <memory>
 #include <string>
@@ -65,7 +65,7 @@ class CMGTtFullLepMaosSolutionProducer : public edm::EDProducer {
     double Mt2min_, Mt2max_;
     bool debug_;
 
-    vallot::Maos* solver; 
+    //vallot::Maos* solver; 
     //TtFullLepKinSolver* solver;
 };
 
@@ -120,13 +120,13 @@ CMGTtFullLepMaosSolutionProducer::~CMGTtFullLepMaosSolutionProducer()
 
 void CMGTtFullLepMaosSolutionProducer::beginJob()
 {
-    solver = new vallot::Maos();
+  //  solver = new vallot::Maos();
   //solver = new TtFullLepKinSolver(tmassbegin_, tmassend_, tmassstep_, nupars_);
 }
 
 void CMGTtFullLepMaosSolutionProducer::endJob()
 {
-  delete solver;
+  //delete solver;
 }
 
 void CMGTtFullLepMaosSolutionProducer::produce(edm::Event & evt, const edm::EventSetup & iSetup) 
@@ -391,7 +391,7 @@ void CMGTtFullLepMaosSolutionProducer::produce(edm::Event & evt, const edm::Even
         }
 	 		
         // calculate neutrino momenta and eventweight
-        //vallot::Maos* solver = new vallot::Maos();
+        vallot::Maos* solver = new vallot::Maos();
         double mt2 = sqrt(solver->MAOS(metV,LV_l1+LV_b,LV_l2+LV_bbar, 0.0, 0.0, false ));
         double top1M = solver->leg1().M(), top2M = solver->leg2().M();
         double ttbarM = solver->M();
