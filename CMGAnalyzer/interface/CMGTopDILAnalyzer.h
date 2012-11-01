@@ -13,7 +13,7 @@
 //
 // Original Author:  Tae Jeong Kim,40 R-A32,+41227678602,
 //         Created:  Fri Jun  4 17:19:29 CEST 2010
-// $Id: CMGTopDILAnalyzer.h,v 1.8 2012/10/24 12:54:27 tjkim Exp $
+// $Id: CMGTopDILAnalyzer.h,v 1.9 2012/10/26 11:29:34 youngjo Exp $
 //
 //
 
@@ -147,8 +147,8 @@ class CMGTopDILAnalyzer : public edm::EDFilter {
     tmp = fs->make<TH1F>("EventSummary","EventSummary",filters_.size(),0,filters_.size());
 
     Z = new std::vector<vallot::ZCandidate>();
-    lepton1 = new std::vector<vallot::Lepton>();
-    lepton2 = new std::vector<vallot::Lepton>();
+    lep1 = new std::vector<vallot::Lepton>();
+    lep2 = new std::vector<vallot::Lepton>();
     pfMet = new std::vector<vallot::METCandidate>();
     ttbar = new std::vector<vallot::TTbarMass>();
     ttbarKin = new std::vector<vallot::TTbarDILEvent>();
@@ -211,7 +211,7 @@ class CMGTopDILAnalyzer : public edm::EDFilter {
     tree->Branch("PairSign",&PairSign,"PairSign/d");
     //tree->Branch("relIso1",&relIso1,"relIso1/d");
     //tree->Branch("relIso2",&relIso2,"relIso2/d");
-    //tree->Branch("isIso",&isIso,"isIso/d");
+    tree->Branch("isIso",&isIso,"isIso/d");
     //tree->Branch("pt1",&pt1,"pt1/d");
     //tree->Branch("pt2",&pt2,"pt2/d");
     //tree->Branch("eta1",&eta1,"eta1/d");
@@ -219,8 +219,8 @@ class CMGTopDILAnalyzer : public edm::EDFilter {
     //tree->Branch("phi1",&phi1,"phi1/d");
     //tree->Branch("phi2",&phi2,"phi2/d");
 
-    tree->Branch("lepton1","std::vector<vallot::Lepton>",&lepton1);
-    tree->Branch("lepton2","std::vector<vallot::Lepton>",&lepton2);
+    tree->Branch("lep1","std::vector<vallot::Lepton>",&lep1);
+    tree->Branch("lep2","std::vector<vallot::Lepton>",&lep2);
     tree->Branch("jets","std::vector<vallot::Jet>",&jets);
 
     //tree->Branch("pfMet","std::vector<vallot::METCandidate>", &pfMet);
@@ -346,16 +346,16 @@ class CMGTopDILAnalyzer : public edm::EDFilter {
     if( ZCand->size() > 0){
       ZMass = ZCand->at(0).mass();
       PairSign =  ZCand->at(0).sign();
-      relIso1 =  ZCand->at(0).leg1().relpfIso03();
-      relIso2 = ZCand->at(0).leg2().relpfIso03();
+      relIso1 =  ZCand->at(0).leg1().relIso03();
+      relIso2 = ZCand->at(0).leg2().relIso03();
       pt1 = ZCand->at(0).leg1().pt();
       pt2 = ZCand->at(0).leg2().pt();
       eta1 = ZCand->at(0).leg1().eta();
       eta2 = ZCand->at(0).leg2().eta();
       phi1 = ZCand->at(0).leg1().phi();
       phi2 = ZCand->at(0).leg2().phi();
-      lepton1->push_back( ZCand->at(0).leg1() );
-      lepton2->push_back( ZCand->at(0).leg2() );
+      lep1->push_back( ZCand->at(0).leg1() );
+      lep2->push_back( ZCand->at(0).leg2() );
     }
 
     bool iso = relIso1 < relIso1_ && relIso2 < relIso2_;
@@ -704,8 +704,8 @@ class CMGTopDILAnalyzer : public edm::EDFilter {
   void clear(){
 
     Z->clear();
-    lepton1->clear();
-    lepton2->clear();
+    lep1->clear();
+    lep2->clear();
     pfMet->clear();
     ttbar->clear();
     ttbarKin->clear();
@@ -857,8 +857,8 @@ class CMGTopDILAnalyzer : public edm::EDFilter {
   TH1F * tmp;
 
   std::vector<vallot::ZCandidate>* Z;
-  std::vector<vallot::Lepton>* lepton1;
-  std::vector<vallot::Lepton>* lepton2;
+  std::vector<vallot::Lepton>* lep1;
+  std::vector<vallot::Lepton>* lep2;
   std::vector<vallot::METCandidate>* pfMet;
   std::vector<vallot::TTbarMass>* ttbar;
   std::vector<vallot::TTbarDILEvent>* ttbarKin;
