@@ -63,7 +63,7 @@ void ana(string decayMode = "ElEl", string imageOutDir = "")
   addTopVariables(analyzer); //add Top analysis related variables for plotting
 
   //Step1 -----------------------------------------------------------------------
-  analyzer->addCutStep("ZMass > 12 && lepton1.relIso03() < 0.15 && lepton2.relIso03() < 0.15 && PairSign < 0", "");
+  analyzer->addCutStep("ZMass > 12 && lep1.relIso03() < 0.15 && lep2.relIso03() < 0.15 && PairSign < 0", "");
 
   //Step2 ------------------------------------------------------------------------------------
   if ( decayMode == "MuEl") 
@@ -87,13 +87,7 @@ void ana(string decayMode = "ElEl", string imageOutDir = "")
   //Step5
   analyzer->addCutStep("nbjets30_CSVT >= 2", "Mbb", 0.5);
 
-  //if ( decayMode == "MuMu"){
-  //  analyzer->replaceDataBkgCut("QCD", "relIso1 < 0.20 && relIso2 < 0.20", "relIso1 > 0.25 && relIso2 > 0.25");
-  //}else if( decayMode == "ElEl"){ 
- //   analyzer->replaceDataBkgCut("QCD", "relIso1 < 0.17 && relIso2 < 0.17", "relIso1 > 0.25 && relIso2 > 0.25");
- // }else if( decayMode == "MuEl"){
- //   analyzer->replaceDataBkgCut("QCD", "relIso1 < 0.20 && relIso2 < 0.17", "relIso1 > 0.25 && relIso2 > 0.25");
- // }
+  //analyzer->replaceDataBkgCut("QCD", "lep1.relIso03() < 0.15 && lep2.relIso03() < 0.15", "lep1.relIso03() > 0.25 && lep2.relIso03() > 0.25");
 
   if( decayMode == "MuMu"){
     analyzer->setEventWeightVar("puweight*bweight30CSVT");
