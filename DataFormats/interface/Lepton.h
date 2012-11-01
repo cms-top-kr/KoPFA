@@ -37,14 +37,14 @@ namespace vallot{
     double ecalIso() const { return ecalIso_; }
     double hcalIso() const { return hcalIso_; }
 
-    double relpfIso03(int type = 0) const { 
+    double relIso03(int type = 0) const { 
       if( type == 0 ) return (chIso03_ + nhIso03_ + phIso03_) / pt_; 
       else if( type == 1) return (chIso03_ + TMath::Max( 0.0, nhIso03_ + phIso03_ - puChIso03_) ) / pt_; 
       else if( type == 2) return (chIso03_ + TMath::Max( 0.0, nhIso03_ + phIso03_ - puChIso03_) ) / pt_;
       else return -1.0;
     }
 
-    double relpfIso04(int type = 0) const { 
+    double relIso04(int type = 0) const { 
       if( type == 0 ) return (chIso04_ + nhIso04_ + phIso04_) / pt_; 
       else if( type == 1) return (chIso04_ + TMath::Max( 0.0, nhIso04_ + phIso04_ - puChIso04_) ) / pt_;
       else if( type == 2) return (chIso04_ + TMath::Max( 0.0, nhIso04_ + phIso04_ - puChIso04_) ) / pt_;

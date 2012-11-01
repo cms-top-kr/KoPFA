@@ -13,7 +13,7 @@
 //
 // Original Author:  Tae Jeong Kim,40 R-A32,+41227678602,
 //         Created:  Fri Jun  4 17:19:29 CEST 2010
-// $Id: ZFilter.h,v 1.4 2012/08/09 19:58:58 tjkim Exp $
+// $Id: ZFilter.h,v 1.5 2012/10/19 09:42:20 tjkim Exp $
 //
 //
 
@@ -171,7 +171,7 @@ class ZFilter : public edm::EDFilter {
         lepton1.setIsoDeposit( trackIso1, ecalIso1, hcalIso1);
         lepton2.setIsoDeposit( trackIso2, ecalIso2, hcalIso2);
    
-        bool iso = lepton1.relpfIso03() < relIso1_ && lepton2.relpfIso03() < relIso2_;
+        bool iso = lepton1.relIso03() < relIso1_ && lepton2.relIso03() < relIso2_;
         bool opp = it1.charge() * it2.charge() < 0;
 
         vallot::ZCandidate dimuon(lepton1, lepton2);

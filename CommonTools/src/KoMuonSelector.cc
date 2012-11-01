@@ -146,7 +146,7 @@ void KoMuonSelector::produce(edm::Event& iEvent, const edm::EventSetup& es)
     lepton->back().setIsoDeposit( pat::PfChargedHadronIso, muon.isoDeposit(pat::PfChargedHadronIso), vetos_ch );
     lepton->back().setIsoDeposit( pat::PfNeutralHadronIso, muon.isoDeposit(pat::PfNeutralHadronIso), vetos_nh );
     lepton->back().setIsoDeposit( pat::PfGammaIso, muon.isoDeposit(pat::PfGammaIso), vetos_ph );
-    bool passIso =  lepton->back().relpfIso03() < relIso_;
+    bool passIso =  lepton->back().relIso03() < relIso_;
 
     passed = passed && passIso;
 

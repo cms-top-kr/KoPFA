@@ -13,7 +13,7 @@
 //
 // Original Author:  Tae Jeong Kim,40 R-A32,+41227678602,
 //         Created:  Fri Jun  4 17:19:29 CEST 2010
-// $Id: CMGZFilter.h,v 1.1 2012/08/01 15:40:20 tjkim Exp $
+// $Id: CMGZFilter.h,v 1.2 2012/10/19 09:49:53 tjkim Exp $
 //
 //
 
@@ -155,7 +155,7 @@ class CMGZFilter : public edm::EDFilter {
         lepton1.setIsoDeposit( trackIso1, ecalIso1, hcalIso1);
         lepton2.setIsoDeposit( trackIso2, ecalIso2, hcalIso2);
    
-        bool iso = lepton1.relpfIso03(1) < relIso1_ && lepton2.relpfIso03(1) < relIso2_;
+        bool iso = lepton1.relIso03(1) < relIso1_ && lepton2.relIso03(1) < relIso2_;
         bool opp = it1.sourcePtr()->get()->charge() * it2.sourcePtr()->get()->charge() < 0;
 
         vallot::ZCandidate dimuon(lepton1, lepton2);

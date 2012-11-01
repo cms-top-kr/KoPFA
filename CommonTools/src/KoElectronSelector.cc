@@ -154,7 +154,7 @@ void KoElectronSelector::produce(edm::Event& iEvent, const edm::EventSetup& es)
     lepton->back().setIsoDeposit( pat::PfNeutralHadronIso, electron.isoDeposit(pat::PfNeutralHadronIso), vetos_nh_cone);
     lepton->back().setIsoDeposit( pat::PfGammaIso, electron.isoDeposit(pat::PfGammaIso), vetos_ph_cone );
 
-    bool passIso =  lepton->back().relpfIso03() < relIso_; 
+    bool passIso =  lepton->back().relIso03() < relIso_; 
 
     bool passPre = electron.pt() > ptcut_ && fabs(electron.eta()) < etacut_ && fabs(electron.gsfTrack()->dxy(beamSpot_->position())) < 0.04;
 
@@ -165,14 +165,14 @@ void KoElectronSelector::produce(edm::Event& iEvent, const edm::EventSetup& es)
 
     if(i == 0 ) {
       mvaTrigV0Lep1 = mvaV0;
-      relPfIso03Lep1 = lepton->back().relpfIso03();
-      relPfIso04Lep1 = lepton->back().relpfIso04();
+      relPfIso03Lep1 = lepton->back().relIso03();
+      relPfIso04Lep1 = lepton->back().relIso04();
       chargeLep1 = (int)electron.charge();
     }
     if(i == 1 ) {
       mvaTrigV0Lep2 = mvaV0;
-      relPfIso03Lep2 = lepton->back().relpfIso03();
-      relPfIso04Lep2 = lepton->back().relpfIso04();
+      relPfIso03Lep2 = lepton->back().relIso03();
+      relPfIso04Lep2 = lepton->back().relIso04();
       chargeLep2 = (int)electron.charge();
     }
 
