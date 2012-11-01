@@ -13,7 +13,7 @@
 //
 // Original Author:  Tae Jeong Kim,40 R-A32,+41227678602,
 //         Created:  Fri Jun  4 17:19:29 CEST 2010
-// $Id: TopDILAnalyzer.h,v 1.90 2012/09/27 13:31:29 tjkim Exp $
+// $Id: TopDILAnalyzer.h,v 1.91 2012/10/19 09:46:22 tjkim Exp $
 //
 //
 
@@ -373,8 +373,8 @@ class TopDILAnalyzer : public edm::EDFilter {
     if( ZCand->size() > 0){
       ZMass = ZCand->at(0).mass();
       PairSign =  ZCand->at(0).sign();
-      relIso1 =  ZCand->at(0).leg1().relpfIso03();
-      relIso2 = ZCand->at(0).leg2().relpfIso03();
+      relIso1 =  ZCand->at(0).leg1().relIso03();
+      relIso2 = ZCand->at(0).leg2().relIso03();
       pt1 = ZCand->at(0).leg1().pt();
       pt2 = ZCand->at(0).leg2().pt();
       eta1 = ZCand->at(0).leg1().eta();
