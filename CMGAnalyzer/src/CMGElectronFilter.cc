@@ -13,7 +13,7 @@
 //
 // Original Author:  Tae Jeong Kim
 //         Created:  Mon Dec 14 01:29:35 CET 2009
-// $Id: CMGElectronFilter.cc,v 1.1 2012/08/01 15:40:12 tjkim Exp $
+// $Id: CMGElectronFilter.cc,v 1.2 2012/10/30 15:57:31 tjkim Exp $
 //
 //
 
@@ -132,8 +132,9 @@ CMGElectronFilter::filter(edm::Event& iEvent, const edm::EventSetup& iSetup)
   for (unsigned int i=0; i < electrons_->size();++i){
     cmg::Electron electron = electrons_->at(i);
 
-    bool passPre = electron.pt() > ptcut_ && fabs(electron.eta()) < etacut_ ;//&& fabs(electron.sourcePtr()->get()->gsfTrack()->dxy()) < 0.04;
+    bool passPre = electron.pt() > ptcut_ && fabs(electron.eta()) < etacut_ ; // && fabs(electron.sourcePtr()->get()->gsfTrack()->dxy()) < 0.04;
     bool passTrig = electron.getSelection("cuts_premvaTrig"); 
+    bool passPF = electron.sourcePtr()->get()->isPF();
 
     reco::isodeposit::Direction Dir = Direction(electron.sourcePtr()->get()->superCluster()->eta(),electron.phi());
 
@@ -158,7 +159,7 @@ CMGElectronFilter::filter(edm::Event& iEvent, const edm::EventSetup& iSetup)
     bool passId = mva > mvacut_;
 
     //cout << "relIso  = " << relIso03 << " mva = " << electron.mvaTrigV0() << endl;
-    bool passed = passPre && passTrig && passIso && passId;
+    bool passed = passPre && passPF && passTrig && passIso && passId;
 
     if ( passed ) pos->push_back((*electrons_)[i]);
 
