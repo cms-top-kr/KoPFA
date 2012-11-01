@@ -5,7 +5,7 @@ from PhysicsTools.SelectorUtils.pfJetIDSelector_cfi import pfJetIDSelector
 myJetId = pfJetIDSelector.clone()
 
 from KoPFA.TopAnalyzer.triggerFilterByRun_cfi import *
-from KoPFA.TopAnalyzer.topHLTfilter_cff import *
+from KoPFA.CMGAnalyzer.topHLTfilter_cff import *
 from KoPFA.CommonTools.EventWeightProducer_cfi import *
 from KoPFA.CMGAnalyzer.JetEnergyScale_cfi import *
 from KoPFA.CMGAnalyzer.ElectronFilter_cfi import *

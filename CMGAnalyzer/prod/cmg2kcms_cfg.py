@@ -88,6 +88,7 @@ process.JetEnergyScaleElEl = process.JetEnergyScale.clone()
 ### Ntuple producer for dilepton ###
 
 process.p = cms.Path(
+    process.hltHighLevelMuMu*
     process.BaseSequenceMuMu*
     process.ZMuMu*
     process.CMGFinalLeptonsMuMu*
@@ -98,6 +99,7 @@ process.p = cms.Path(
 )
 
 process.p2 = cms.Path(
+    process.hltHighLevelMuEl*
     process.BaseSequenceMuEl*
     process.ZMuEl*
     process.CMGFinalLeptonsMuEl*
@@ -108,6 +110,7 @@ process.p2 = cms.Path(
 )
 
 process.p3 = cms.Path(
+    process.hltHighLevelElEl*
     process.BaseSequenceElEl*
     process.ZElEl*
     process.CMGFinalLeptonsElEl*
