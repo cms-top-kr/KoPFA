@@ -157,9 +157,6 @@ void PatRelIsoLeptonSelector<Lepton>::makeIsoVeto(const pat::Electron& electron,
 {
   reco::isodeposit::Direction dir(electron.superCluster()->eta(), electron.superCluster()->phi());
 
-  vetos_nh.push_back(new reco::isodeposit::ThresholdVeto(0.5));
-  vetos_ph.push_back(new reco::isodeposit::ThresholdVeto(0.5));
-
   if ( abs(electron.superCluster()->eta()) > 1.479 )
   {
     vetos_ch.push_back(new reco::isodeposit::ConeVeto(dir, 0.015));
