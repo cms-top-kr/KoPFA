@@ -168,7 +168,7 @@ TopAnalyzerLite::TopAnalyzerLite(const string subDirName, const string imageOutD
   }
   else writeSummary_ = false;
 
-  scanVariables_ = "RUN:LUMI:EVENT:ZMass:@jetspt30.size():MET";
+  scanVariables_ = "RUN:LUMI:EVENT:ZMass:nJet30:MET";
   eventWeightVar_ = "";
 
 }
@@ -524,7 +524,6 @@ void TopAnalyzerLite::plot(const string name, const TCut cut, MonitorPlot& monit
     TH1F* hMCSig = new TH1F(mcSigHistName, title.c_str(), nBins, xBins);
 
     TCut mcWeightStr = Form("(%s)*(%s)", eventWeightVar_.c_str(),weight.c_str());
-
     mcSample.chain->Project(mcSigHistName, varexp.c_str(),mcWeightStr);
     hMCSig->AddBinContent(nBins, hMCSig->GetBinContent(nBins+1));
     hMCSig->Scale(lumi_*mcSample.xsec/mcSample.nEvents);
