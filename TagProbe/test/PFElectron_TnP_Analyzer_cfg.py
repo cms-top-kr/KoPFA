@@ -13,6 +13,7 @@ if 'MODE' not in os.environ:
     mode = 'MC'
 else:
     mode = os.environ['MODE']
+step = os.environ['STEP']
 
 from KoPFA.TagProbe.common_PDFs_cff import *
 
@@ -85,8 +86,15 @@ def makeTnPFitter(process, suffix, categories):
 
 process.p = cms.Path()
 
-makeTnPFitter(process, 'Nh', ['nh0', 'nh1'])
-makeTnPFitter(process, 'Nh0Mva', ['mva00', 'mva03', 'mva05', 'mva07', 'mva09'])
-makeTnPFitter(process, 'Nh0Mva05Iso', ['iso10', 'iso15', 'iso17', 'iso20', 'iso25', 'diso10', 'diso15', 'diso17', 'diso20', 'diso25'])
-makeTnPFitter(process, 'Nh0Mva05Diso20Pf', ['pf'])
-makeTnPFitter(process, 'Nh0Mva05Diso20PfTrg', ['trg'])
+categoryMap = {}
+categoryMap['Nh'                 ] = ['nh0', 'nh1']
+categoryMap['Nh0Mva'             ] = ['mva00', 'mva03', 'mva05', 'mva07', 'mva09']
+categoryMap['Nh0Mva05Iso'        ] = [
+    'iso10' , 'iso15' , 'iso17' , 'iso20' , 
+    'diso10', 'diso15', 'diso17', 'diso20',
+    'riso10', 'riso15', 'riso17', 'riso20',
+]
+categoryMap['Nh0Mva05Diso15Pf'   ] = ['pf']
+categoryMap['Nh0Mva05Diso15PfTrg'] = ['trg']
+
+makeTnPFitter(process, step, categoryMap[step])
