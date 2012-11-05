@@ -25,9 +25,10 @@ process.source = cms.Source("PoolSource",
 #from KoPFA.TagProbe.Sources.MU.RD.patTuple_Run2011B_cff import readFiles
 #process.source.fileNames = readFiles
 #process.load("KoPFA.TagProbe.Sources.MU.RD.patTuple_Run2011B_cff")
-process.load("KoPFA.TagProbe.Sources.MU.MC.patTuple_ZJets_cff")
+#process.load("KoPFA.TagProbe.Sources.MU.MC.patTuple_ZJets_cff")
+process.load("KoPFA.CommonTools.Sources.CMG.V5_10_0.Summer12.cmgTuple_ZJets_cff")
 
-process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
+process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(10000) )
 
 mode = "MC"
 
@@ -37,16 +38,16 @@ process.TFileService = cms.Service("TFileService",
 
 #process.load("KoPFA.TagProbe.Muon_TnP_Producer_cff")
 
-relIso05 = "(chargedHadronIso+neutralHadronIso+photonIso)/pt < 0.05"
-relIso10 = "(chargedHadronIso+neutralHadronIso+photonIso)/pt < 0.10"
-relIso15 = "(chargedHadronIso+neutralHadronIso+photonIso)/pt < 0.15"
-relIso17 = "(chargedHadronIso+neutralHadronIso+photonIso)/pt < 0.17"
-relIso20 = "(chargedHadronIso+neutralHadronIso+photonIso)/pt < 0.20"
-relIso05dbeta = "(chargedHadronIso+ max(0.0 , neutralHadronIso+photonIso - 0.5*puChargedHadronIso) )/pt < 0.05"
-relIso10dbeta = "(chargedHadronIso+ max(0.0 , neutralHadronIso+photonIso - 0.5*puChargedHadronIso) )/pt < 0.10"
-relIso15dbeta = "(chargedHadronIso+ max(0.0 , neutralHadronIso+photonIso - 0.5*puChargedHadronIso) )/pt < 0.15"
-relIso17dbeta = "(chargedHadronIso+ max(0.0 , neutralHadronIso+photonIso - 0.5*puChargedHadronIso) )/pt < 0.17"
-relIso20dbeta = "(chargedHadronIso+ max(0.0 , neutralHadronIso+photonIso - 0.5*puChargedHadronIso) )/pt < 0.20"
+relIso05 = "(pfIsolationR03().sumChargedHadronPt+pfIsolationR03().sumNeutralHadronEt+pfIsolationR03().sumPhotonEt)/pt < 0.05"
+relIso10 = "(pfIsolationR03().sumChargedHadronPt+pfIsolationR03().sumNeutralHadronEt+pfIsolationR03().sumPhotonEt)/pt < 0.10"
+relIso15 = "(pfIsolationR03().sumChargedHadronPt+pfIsolationR03().sumNeutralHadronEt+pfIsolationR03().sumPhotonEt)/pt < 0.15"
+relIso17 = "(pfIsolationR03().sumChargedHadronPt+pfIsolationR03().sumNeutralHadronEt+pfIsolationR03().sumPhotonEt)/pt < 0.17"
+relIso20 = "(pfIsolationR03().sumChargedHadronPt+pfIsolationR03().sumNeutralHadronEt+pfIsolationR03().sumPhotonEt)/pt < 0.20"
+relIso05dbeta = "(pfIsolationR03().sumChargedHadronPt+max(0.0, pfIsolationR03().sumNeutralHadronEt+pfIsolationR03().sumPhotonEt - 0.5*pfIsolationR03().sumPUPt))/pt < 0.05"
+relIso10dbeta = "(pfIsolationR03().sumChargedHadronPt+max(0.0, pfIsolationR03().sumNeutralHadronEt+pfIsolationR03().sumPhotonEt - 0.5*pfIsolationR03().sumPUPt))/pt < 0.10"
+relIso15dbeta = "(pfIsolationR03().sumChargedHadronPt+max(0.0, pfIsolationR03().sumNeutralHadronEt+pfIsolationR03().sumPhotonEt - 0.5*pfIsolationR03().sumPUPt))/pt < 0.15"
+relIso17dbeta = "(pfIsolationR03().sumChargedHadronPt+max(0.0, pfIsolationR03().sumNeutralHadronEt+pfIsolationR03().sumPhotonEt - 0.5*pfIsolationR03().sumPUPt))/pt < 0.17"
+relIso20dbeta = "(pfIsolationR03().sumChargedHadronPt+max(0.0, pfIsolationR03().sumNeutralHadronEt+pfIsolationR03().sumPhotonEt - 0.5*pfIsolationR03().sumPUPt))/pt < 0.20"
 # FIXME:was not able to call pfCandidateRef for gsf electron
 #relIso10 = "(chargedHadronIso+neutralHadronIso+photonIso)/pfCandidateRef.p4.pt < 0.10"
 #relIso15 = "(chargedHadronIso+neutralHadronIso+photonIso)/pfCandidateRef.p4.pt < 0.15"
@@ -68,7 +69,7 @@ process.patMuonTrigger = cms.EDProducer("PATTriggerProducer",
 )
 
 process.patMuonTriggerMatch = cms.EDProducer("PATTriggerMatcherDRDPtLessByR",
-    src = cms.InputTag( 'acceptedMuons'),
+    src = cms.InputTag( 'patMuonTrigger'),
     matched = cms.InputTag( "patMuonTrigger" ),
     andOr = cms.bool( False ),
     filterIdsEnum = cms.vstring( '*' ),
@@ -83,34 +84,15 @@ process.patMuonTriggerMatch = cms.EDProducer("PATTriggerMatcherDRDPtLessByR",
 )
 
 process.triggeredPatMuons = cms.EDProducer("PATTriggerMatchMuonEmbedder",
-    src = cms.InputTag('acceptedMuons'),
+    src = cms.InputTag('patMuonTrigger'),
     matches = cms.VInputTag( "patMuonTriggerMatch")
-)
-
-process.patPFMuonTriggerMatch = cms.EDProducer("PATTriggerMatcherDRDPtLessByR",
-    src = cms.InputTag( 'acceptedMuons'),
-    matched = cms.InputTag( "patMuonTrigger" ),
-    andOr = cms.bool( False ),
-    filterIdsEnum = cms.vstring( '*' ),
-    filterIds = cms.vint32( 0 ),
-    filterLabels = cms.vstring( '*' ),
-    matchedCuts = cms.string( ""),
-    collectionTags = cms.vstring( '*' ),
-    maxDPtRel = cms.double( 0.5 ),
-    maxDeltaR = cms.double( 0.2 ),
-    resolveAmbiguities    = cms.bool( True ),
-    resolveByMatchQuality = cms.bool( False )
-)
-
-process.triggeredPatPFMuons = cms.EDProducer("PATTriggerMatchMuonEmbedder",
-    src = cms.InputTag('acceptedMuons'),
-    matches = cms.VInputTag( "patPFMuonTriggerMatch")
 )
 
 ###Tags###
 
 process.muTag = cms.EDFilter("PATMuonSelector",
-    src = cms.InputTag("triggeredPatPFMuons"),
+    #src = cms.InputTag("triggeredPatMuons"),
+    src = cms.InputTag("patMuonsWithTrigger"),
     cut = cms.string(
         relIso10 + "&&" + midLooseMC
         + "&&" + "(" + "!triggerObjectMatchesByPath('HLT_Mu17_Mu8_v*',1,0).empty()"
@@ -123,7 +105,7 @@ process.muTag = cms.EDFilter("PATMuonSelector",
 ###Probes###
 
 process.muIdLoose = cms.EDFilter("PATMuonSelector",
-    src = cms.InputTag("acceptedMuons"),
+    src = cms.InputTag("patMuonsWithTrigger"),
     cut = cms.string(
         midLooseMC 
     ),  
@@ -131,7 +113,7 @@ process.muIdLoose = cms.EDFilter("PATMuonSelector",
 )
 
 process.muIdHighPt = cms.EDFilter("PATMuonSelector",
-    src = cms.InputTag("acceptedMuons"),
+    src = cms.InputTag("patMuonsWithTrigger"),
     cut = cms.string(
         midHighPtMC
     ),  
@@ -139,34 +121,18 @@ process.muIdHighPt = cms.EDFilter("PATMuonSelector",
 )
 
 process.muIdTight = cms.EDFilter("PATMuonSelector",
-    src = cms.InputTag("acceptedMuons"),
+    src = cms.InputTag("patMuonsWithTrigger"),
     cut = cms.string(
         midTightMC 
     ),  
     filter = cms.bool(False),
 )
 
-process.muPFIdLoose = cms.EDFilter("PATMuonSelector",
-    src = cms.InputTag("triggeredPatPFMuons"),
-    cut = cms.string(
-        midLooseMC 
-    ),
-    filter = cms.bool(False),
-)
-
-process.muPFIdTight = cms.EDFilter("PATMuonSelector",
-    src = cms.InputTag("triggeredPatPFMuons"),
-    cut = cms.string(
-        midTightMC 
-    ),
-    filter = cms.bool(False),
-)
-
-
 ###Z Pairs###
 
 process.zBase = cms.EDProducer("CandViewShallowCloneCombiner",
-    decay = cms.string("muTag@+ triggeredPatPFMuons@-"),
+    #decay = cms.string("muTag@+ triggeredPatPFMuons@-"),
+    decay = cms.string("muTag@+ patMuonsWithTrigger@-"),
     checkCharge = cms.bool(False),
     cut = cms.string("50 < mass < 130"),
 )
@@ -189,18 +155,6 @@ process.zIdTight = cms.EDProducer("CandViewShallowCloneCombiner",
     cut = cms.string("50 < mass < 130"),
 )
 
-process.zPFIdLoose = cms.EDProducer("CandViewShallowCloneCombiner",
-    decay = cms.string("muTag@+ muPFIdLoose@-"),
-    checkCharge = cms.bool(False),
-    cut = cms.string("50 < mass < 130"),
-)
-
-process.zPFIdTight = cms.EDProducer("CandViewShallowCloneCombiner",
-    decay = cms.string("muTag@+ muPFIdTight@-"),
-    checkCharge = cms.bool(False),
-    cut = cms.string("50 < mass < 130"),
-)
-
 ###Fill Trees###
 
 process.tnpId = cms.EDAnalyzer("TagProbeFitTreeProducer",
@@ -214,25 +168,8 @@ process.tnpId = cms.EDAnalyzer("TagProbeFitTreeProducer",
     ),
     flags = cms.PSet(
         IdLoose = cms.string(midLooseMC),
-        IdHighPt = cms.string(midHighPtMC),
+        #IdHighPt = cms.string(midHighPtMC),
         IdTight = cms.string(midTightMC),
-    ),
-    addRunLumiInfo = cms.bool(True),
-    isMC = cms.bool(False),
-    eventWeight = cms.InputTag("PUweight","weight")
-)
-
-process.tnpPFId = cms.EDAnalyzer("TagProbeFitTreeProducer",
-    tagProbePairs = cms.InputTag("zIdTight"),
-    arbitration = cms.string("OneProbe"),
-    #arbitration = cms.string("BestMass"),
-    variables = cms.PSet(
-        pt = cms.string("pt"),
-        eta = cms.string("eta"),
-        abseta = cms.string("abs(eta)"),
-    ),
-    flags = cms.PSet(
-        PFId = cms.string("isPFMuon"),
     ),
     addRunLumiInfo = cms.bool(True),
     isMC = cms.bool(False),
@@ -258,8 +195,8 @@ process.tnpHighPtIdIso = cms.EDAnalyzer("TagProbeFitTreeProducer",
     eventWeight = cms.InputTag("PUweight","weight")
 )
 
-process.tnpTightIdIso = cms.EDAnalyzer("TagProbeFitTreeProducer",
-    tagProbePairs = cms.InputTag("zPFIdTight"),
+process.tnpLooseIdIso = cms.EDAnalyzer("TagProbeFitTreeProducer",
+    tagProbePairs = cms.InputTag("zIdLoose"),
     arbitration = cms.string("OneProbe"),
     #arbitration = cms.string("BestMass"),
     variables = cms.PSet(
@@ -285,7 +222,7 @@ process.tnpTightIdIso = cms.EDAnalyzer("TagProbeFitTreeProducer",
 )
 
 process.tnpTrigger = cms.EDAnalyzer("TagProbeFitTreeProducer",
-    tagProbePairs = cms.InputTag("zPFIdLoose"),
+    tagProbePairs = cms.InputTag("zIdLoose"),
     arbitration = cms.string("OneProbe"),
     #arbitration = cms.string("BestMass"),
     variables = cms.PSet(
@@ -306,15 +243,14 @@ process.tnpTrigger = cms.EDAnalyzer("TagProbeFitTreeProducer",
 
 process.p = cms.Path(
     process.PUweight
-  + process.patMuonTrigger 
-#  + process.patMuonTriggerMatch + process.triggeredPatMuons 
-  + process.patPFMuonTriggerMatch + process.triggeredPatPFMuons 
+  #+ process.patMuonTrigger 
+  #+ process.patMuonTriggerMatch + process.triggeredPatMuons 
   + process.muTag #produce tag muon 
-  + process.muIdLoose + process.muPFIdLoose #produce probe muon
-  + process.zBase + process.zIdLoose + process.zPFIdLoose #produce Z pair
-  #+ process.muIdTight + process.muPFIdTight #produce probe muon
-  #+ process.zBase + process.zIdTight + process.zPFIdTight #produce Z pair
-  + process.tnpId + process.tnpPFId + process.tnpTightIdIso #produce trees for Id, isolation
+  + process.muIdLoose  #produce probe muon
+  + process.zBase + process.zIdLoose #produce Z pair
+  #+ process.muIdTight #produce probe muon
+  #+ process.zBase + process.zIdTight #produce Z pair
+  + process.tnpId + process.tnpLooseIdIso #produce trees for Id, isolation
   + process.tnpTrigger #trigger study
   #FIXME: if you want to get isolation efficiency with respect to HighPt muon.
   #+ process.muIdHighPt
