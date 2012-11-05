@@ -49,10 +49,10 @@ process.probe = cms.EDFilter("PatRelIsoElectronSelector",
 process.tag = cms.EDFilter("PATElectronSelector",
     src = cms.InputTag("probe"),
     cut = cms.string(
-        'pt > 35 && abs(eta) < 2.5'
+        'pt > 20 && abs(eta) < 2.5'
         ' && electronID("mvaTrigV0") > 0.5 '
         ' && gsfTrack.trackerExpectedHitsInner.numberOfHits <= 0'
-        ' && userIsolation("User1Iso") < 0.10'
+        ' && userIsolation("User2Iso") < 0.10'
     ),
     filter = cms.bool(True),
 )
@@ -119,15 +119,20 @@ process.tnpNh0Mva = process.tnpNh.clone(
 process.tnpNh0Mva05Iso = process.tnpNh.clone(
     tagProbePairs = cms.InputTag("zNh0Mva05"),
     flags = cms.PSet(
-        diso10 = cms.string('userIsolation("User1Iso") < 0.10'),
-        diso15 = cms.string('userIsolation("User1Iso") < 0.15'),
-        diso17 = cms.string('userIsolation("User1Iso") < 0.17'),
-        diso20 = cms.string('userIsolation("User1Iso") < 0.20'),
+        iso10 = cms.string('userIsolation("User1Iso") < 0.10'),
+        iso15 = cms.string('userIsolation("User1Iso") < 0.15'),
+        iso17 = cms.string('userIsolation("User1Iso") < 0.17'),
+        iso20 = cms.string('userIsolation("User1Iso") < 0.20'),
 
-        riso10 = cms.string('userIsolation("User2Iso") < 0.10'),
-        riso15 = cms.string('userIsolation("User2Iso") < 0.15'),
-        riso17 = cms.string('userIsolation("User2Iso") < 0.17'),
-        riso20 = cms.string('userIsolation("User2Iso") < 0.20'),
+        diso10 = cms.string('userIsolation("User2Iso") < 0.10'),
+        diso15 = cms.string('userIsolation("User2Iso") < 0.15'),
+        diso17 = cms.string('userIsolation("User2Iso") < 0.17'),
+        diso20 = cms.string('userIsolation("User2Iso") < 0.20'),
+
+        riso10 = cms.string('userIsolation("User3Iso") < 0.10'),
+        riso15 = cms.string('userIsolation("User3Iso") < 0.15'),
+        riso17 = cms.string('userIsolation("User3Iso") < 0.17'),
+        riso20 = cms.string('userIsolation("User3Iso") < 0.20'),
     ),
 ) 
 
