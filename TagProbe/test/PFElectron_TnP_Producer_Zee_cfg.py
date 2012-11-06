@@ -1,9 +1,17 @@
 import FWCore.ParameterSet.Config as cms
 import os
 
-mode = "MC"
-if 'MODE' in os.environ:
-    mode = os.environ['MODE']
+def loadDataset(process, dataset, cmgVersion="V5_10_0"):
+    if 'Run2012' in dataset:
+        process.load("KoPFA.CommonTools.Sources.CMG.%s.Run2012.cmgTuple_%sElEl_cff" % (cmgVersion, dataset))
+    else:
+        production, dataset = dataset.split("-")
+        process.load("KoPFA.CommonTools.Sources.CMG.%s.%s.cmgTuple_%s_cff" % (cmgVersion, production, dataset))
+
+section = int(os.environ['SECTION'])
+begin = int(os.environ['BEGIN'])
+end = int(os.environ['END'])
+dataset = os.environ['DATASET']
 
 process = cms.Process("TagProbe")
 
@@ -15,22 +23,26 @@ process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
 process.options   = cms.untracked.PSet( wantSummary = cms.untracked.bool(True) )
 process.MessageLogger.cerr.FwkReport.reportEvery = 10000
 
-process.load("KoPFA.CommonTools.EventWeightProducer_cfi") 
+process.load("KoPFA.CommonTools.EventWeightProducer_cfi")
 
 ## Input and output ##
-process.source = cms.Source("PoolSource", 
-    fileNames = cms.untracked.vstring(),
-)
-
-if mode == 'MC':
-    for i in range(0, 2575):
-        process.source.fileNames.append("/store/cmst3/user/cmgtools/CMG/DYJetsToLL_M-50_TuneZ2Star_8TeV-madgraph-tarball/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_10_0/cmgTuple_%d.root" % i)
-else:
-    for i in range(0, 1588):
-        process.source.fileNames.append("/store/cmst3/user/cmgtools/CMG/DoubleElectron/Run2012B-13Jul2012-v1/AOD/V5/PAT_CMG_V5_10_0/cmgTuple_%d.root" % i)
+process.source = cms.Source("PoolSource", fileNames = cms.untracked.vstring(),)
+loadDataset(process, dataset)
+process.source.fileNames = process.source.fileNames[begin:end]
 
 process.TFileService = cms.Service("TFileService",
-    fileName = cms.string("tnpTree_%s.root" % mode)
+    fileName = cms.string("result/tnpTree_%s_%03d.root" % (dataset, section))
+)
+
+
+process.goodOfflinePrimaryVertices = cms.EDFilter("PrimaryVertexObjectFilter",
+    src = cms.InputTag('offlinePrimaryVertices'),
+    filterParams =  cms.PSet(
+        minNdof = cms.double(4.),
+        maxZ    = cms.double(24.),
+        maxRho  = cms.double(2.)
+    ),
+    filter = cms.bool(True),
 )
 
 process.probe = cms.EDFilter("PatRelIsoElectronSelector",
@@ -134,7 +146,7 @@ process.tnpNh0Mva05Iso = process.tnpNh.clone(
         riso17 = cms.string('userIsolation("User3Iso") < 0.17'),
         riso20 = cms.string('userIsolation("User3Iso") < 0.20'),
     ),
-) 
+)
 
 process.tnpNh0Mva05Diso15Pf = process.tnpNh.clone(
     tagProbePairs = cms.InputTag("zNh0Mva05Diso15"),
@@ -152,7 +164,8 @@ process.tnpNh0Mva05Diso15PfTrg = process.tnpNh.clone(
 
 process.p = cms.Path(
 #    process.hltHighLevel
-    process.PUweight
+    process.goodOfflinePrimaryVertices
+  * process.PUweight
   * process.probe * process.tag * process.z * process.tnpNh
   * process.probeNh0 * process.zNh0 * process.tnpNh0Mva
   * process.probeNh0Mva05 * process.zNh0Mva05 * process.tnpNh0Mva05Iso
