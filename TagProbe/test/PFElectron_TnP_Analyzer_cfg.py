@@ -35,8 +35,7 @@ def tnpEffPSet(categories):
             EfficiencyCategoryAndState = cms.vstring(category, "pass"),
             UnbinnedVariables = cms.vstring("mass", "weight"),
             BinnedVariables = cms.PSet(
-                abseta = cms.vdouble(0.0, 1.4442, 1.5660, 2.5)
-                #abseta = cms.vdouble(0.0, 1.5, 2.4)
+                abseta = cms.vdouble(0.0, 0.8, 1.478, 2.5)
             ),
             BinToPDFmap = cms.vstring("bwResCBExp")
         ))
@@ -47,8 +46,18 @@ def tnpEffPSet(categories):
             BinnedVariables = cms.PSet(
                 #pt = cms.vdouble(20, 25, 30, 35, 40, 50, 150),
                 pt = cms.vdouble(20, 30, 40, 50, 150),
-                abseta = cms.vdouble(0.0, 1.4442, 1.5660, 2.5)
+                abseta = cms.vdouble(0.0, 0.8, 1.478, 2.5)
                 #abseta = cms.vdouble(0.0, 1.5, 2.4)
+            ),
+            BinToPDFmap = cms.vstring("bwResCBExp")
+        ))
+
+        setattr(effSet, category+"_nPV", cms.PSet(
+            EfficiencyCategoryAndState = cms.vstring(category, "pass"),
+            UnbinnedVariables = cms.vstring("mass", "weight"),
+            BinnedVariables = cms.PSet(
+                #abseta = cms.vdouble(0.0, 1.5, 2.4)
+                event_nPV = cms.vdouble(*range(0,25)),
             ),
             BinToPDFmap = cms.vstring("bwResCBExp")
         ))
@@ -62,13 +71,14 @@ def makeTnPFitter(process, suffix, categories):
         InputTreeName = cms.string("fitter_tree"),
         OutputFileName = cms.string("result_%s_%s.root" % (suffix, mode)),
         NumCPU = cms.uint32(4),
-        SaveWorkspace = cms.bool(True),
+        SaveWorkspace = cms.bool(False),
         floatShapeParameters = cms.bool(True),
         WeightVariable = cms.string("weight"),
         Variables = cms.PSet(
             mass = cms.vstring("Tag-Probe mass", "70.0", "110.0", "GeV/c^{2}"),
             pt = cms.vstring("Probe p_{T}", "0", "1000", "GeV/c"),
             abseta = cms.vstring("Probe |#eta|", "0", "2.5", ""),
+            event_nPV = cms.vstring("Number of vertex", "0", "25", ""),
             weight = cms.vstring("Weight", "0.0", "2.0", ""),
         ),
         Categories = cms.PSet(),
