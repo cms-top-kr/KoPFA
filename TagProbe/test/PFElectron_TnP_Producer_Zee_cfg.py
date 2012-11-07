@@ -81,7 +81,7 @@ process.probeNh0Mva05 = cms.EDFilter("PATElectronSelector",
 
 process.probeNh0Mva05Diso15 = cms.EDFilter("PATElectronSelector",
     src = cms.InputTag("probeNh0Mva05"),
-    cut = cms.string('userIsolation("User1Iso") > 0.15'),
+    cut = cms.string('userIsolation("User2Iso") < 0.15'),
 )
 
 process.probeNh0Mva05Diso15Pf = cms.EDFilter("PATElectronSelector",
