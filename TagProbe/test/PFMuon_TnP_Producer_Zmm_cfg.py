@@ -55,7 +55,7 @@ process.tag = cms.EDFilter("PATMuonSelector",
         'pt > 35 && abs(eta) < 2.4'
         '&&' +idLoose+
 		#' && isPFMuon && (isGlobalMuon || isTrackerMuon)'
-        ' && userIsolation("User1Iso") < 0.10'
+        ' && userIsolation("User2Iso") < 0.10'
     ),
     filter = cms.bool(True),
 )
@@ -72,12 +72,12 @@ process.probetightId = cms.EDFilter("PATMuonSelector",
 
 process.probelooseIdiso15 = cms.EDFilter("PATMuonSelector",
     src = cms.InputTag("probelooseId"),
-    cut = cms.string('userIsolation("User1Iso") > 0.15'),
+    cut = cms.string('userIsolation("User2Iso") < 0.15'),
 )
 
 process.probetightIdiso10 = cms.EDFilter("PATMuonSelector",
     src = cms.InputTag("probetightId"),
-    cut = cms.string('userIsolation("User1Iso") > 0.10'),
+    cut = cms.string('userIsolation("User2Iso") < 0.10'),
 )
 
 process.z = cms.EDProducer("CandViewShallowCloneCombiner",
@@ -111,30 +111,30 @@ process.tnpId = cms.EDAnalyzer("TagProbeFitTreeProducer",
 process.tnplooseIdIso = process.tnpId.clone(
     tagProbePairs = cms.InputTag("zlooseId"),
     flags = cms.PSet(
-        diso10 = cms.string('userIsolation("User1Iso") < 0.10'),
-        diso15 = cms.string('userIsolation("User1Iso") < 0.15'),
-        diso17 = cms.string('userIsolation("User1Iso") < 0.17'),
-        diso20 = cms.string('userIsolation("User1Iso") < 0.20'),
+        diso10 = cms.string('userIsolation("User2Iso") < 0.10'),
+        diso15 = cms.string('userIsolation("User2Iso") < 0.15'),
+        diso17 = cms.string('userIsolation("User2Iso") < 0.17'),
+        diso20 = cms.string('userIsolation("User2Iso") < 0.20'),
 
-        riso10 = cms.string('userIsolation("User2Iso") < 0.10'),
-        riso15 = cms.string('userIsolation("User2Iso") < 0.15'),
-        riso17 = cms.string('userIsolation("User2Iso") < 0.17'),
-        riso20 = cms.string('userIsolation("User2Iso") < 0.20'),
+        riso10 = cms.string('userIsolation("User3Iso") < 0.10'),
+        riso15 = cms.string('userIsolation("User3Iso") < 0.15'),
+        riso17 = cms.string('userIsolation("User3Iso") < 0.17'),
+        riso20 = cms.string('userIsolation("User3Iso") < 0.20'),
     ),
 ) 
 
 process.tnptightIdIso = process.tnpId.clone(
     tagProbePairs = cms.InputTag("ztightId"),
     flags = cms.PSet(
-        diso10 = cms.string('userIsolation("User1Iso") < 0.10'),
-        diso15 = cms.string('userIsolation("User1Iso") < 0.15'),
-        diso17 = cms.string('userIsolation("User1Iso") < 0.17'),
-        diso20 = cms.string('userIsolation("User1Iso") < 0.20'),
+        diso10 = cms.string('userIsolation("User2Iso") < 0.10'),
+        diso15 = cms.string('userIsolation("User2Iso") < 0.15'),
+        diso17 = cms.string('userIsolation("User2Iso") < 0.17'),
+        diso20 = cms.string('userIsolation("User2Iso") < 0.20'),
 
-        riso10 = cms.string('userIsolation("User2Iso") < 0.10'),
-        riso15 = cms.string('userIsolation("User2Iso") < 0.15'),
-        riso17 = cms.string('userIsolation("User2Iso") < 0.17'),
-        riso20 = cms.string('userIsolation("User2Iso") < 0.20'),
+        riso10 = cms.string('userIsolation("User3Iso") < 0.10'),
+        riso15 = cms.string('userIsolation("User3Iso") < 0.15'),
+        riso17 = cms.string('userIsolation("User3Iso") < 0.17'),
+        riso20 = cms.string('userIsolation("User3Iso") < 0.20'),
     ),
 ) 
 
