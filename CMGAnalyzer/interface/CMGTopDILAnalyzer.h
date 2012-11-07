@@ -13,7 +13,7 @@
 //
 // Original Author:  Tae Jeong Kim,40 R-A32,+41227678602,
 //         Created:  Fri Jun  4 17:19:29 CEST 2010
-// $Id: CMGTopDILAnalyzer.h,v 1.11 2012/11/07 15:10:46 tjkim Exp $
+// $Id: CMGTopDILAnalyzer.h,v 1.12 2012/11/07 15:26:17 tjkim Exp $
 //
 //
 
@@ -376,8 +376,6 @@ class CMGTopDILAnalyzer : public edm::EDFilter {
     std::vector<int> bidcs;
     int idx=0;
 
-    bool isPAT = false;
-
     for (JI jit = Jets->begin(); jit != Jets->end(); ++jit) {
 
       ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > corrjet;
@@ -385,7 +383,6 @@ class CMGTopDILAnalyzer : public edm::EDFilter {
       int flavor = jit->partonFlavour();
       int isfromtop = -9;
       if ( jit->sourcePtr()->isAvailable() ) {
-        if( isPAT == false) isPAT = true;
         bool validgen = jit->sourcePtr()->get()->genParton() != 0;
         if(validgen){
           if( abs( flavor) == 5 ) {  
@@ -588,19 +585,18 @@ class CMGTopDILAnalyzer : public edm::EDFilter {
       myGenParticles = &(*genParticles_);
       const std::vector<cmg::GenJet>* myGenJets = 0;
       myGenJets = &(*genJets_);
-      if( isPAT ) {
-        ttbarGenLevel.building(myGenJets, myGenParticles);
-        genttbarM = ttbarGenLevel.mass();
-        nGenJet20 = ttbarGenLevel.NJets20();
-        nGenbJet20 = ttbarGenLevel.NbJets20();
-        nGencJet20 = ttbarGenLevel.NcJets20();
-        genLep1_pt = ttbarGenLevel.lepton1().pt();
-        genLep2_pt = ttbarGenLevel.lepton2().pt();
-        genLep1_eta = ttbarGenLevel.lepton1().eta();
-        genLep2_eta = ttbarGenLevel.lepton2().eta();
 
-        ttbarGen->push_back(ttbarGenLevel);
-      }
+      ttbarGenLevel.building(myGenJets, myGenParticles);
+      genttbarM = ttbarGenLevel.mass();
+      nGenJet20 = ttbarGenLevel.NJets20();
+      nGenbJet20 = ttbarGenLevel.NbJets20();
+      nGencJet20 = ttbarGenLevel.NcJets20();
+      genLep1_pt = ttbarGenLevel.lepton1().pt();
+      genLep2_pt = ttbarGenLevel.lepton2().pt();
+      genLep1_eta = ttbarGenLevel.lepton1().eta();
+      genLep2_eta = ttbarGenLevel.lepton2().eta();
+
+      ttbarGen->push_back(ttbarGenLevel);
     }
 
     //ESHandle<SetupData> pSetup;
