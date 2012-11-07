@@ -13,7 +13,7 @@
 //
 // Original Author:  Tae Jeong Kim,40 R-A32,+41227678602,
 //         Created:  Fri Jun  4 17:19:29 CEST 2010
-// $Id: CMGTopDILAnalyzer.h,v 1.10 2012/11/01 06:02:33 tjkim Exp $
+// $Id: CMGTopDILAnalyzer.h,v 1.11 2012/11/07 15:10:46 tjkim Exp $
 //
 //
 
@@ -237,6 +237,12 @@ class CMGTopDILAnalyzer : public edm::EDFilter {
     tree->Branch("nGenJet20",&nGenJet20,"nGenJet20/i");
     tree->Branch("nGenbJet20",&nGenbJet20,"nGenbJet20/i");
     tree->Branch("nGencJet20",&nGencJet20,"nGencJet20/i");
+
+    tree->Branch("genLep1_pt",&genLep1_pt,"genLep1_pt/d");
+    tree->Branch("genLep2_pt",&genLep2_pt,"genLep2_pt/d");
+
+    tree->Branch("genLep1_eta",&genLep1_eta,"genLep1_eta/d");
+    tree->Branch("genLep2_eta",&genLep2_eta,"genLep2_eta/d");
 
     for ( int i=0, n=bTagAlgos_.size(); i<n; ++i )
     {
@@ -588,6 +594,11 @@ class CMGTopDILAnalyzer : public edm::EDFilter {
         nGenJet20 = ttbarGenLevel.NJets20();
         nGenbJet20 = ttbarGenLevel.NbJets20();
         nGencJet20 = ttbarGenLevel.NcJets20();
+        genLep1_pt = ttbarGenLevel.lepton1().pt();
+        genLep2_pt = ttbarGenLevel.lepton2().pt();
+        genLep1_eta = ttbarGenLevel.lepton1().eta();
+        genLep2_eta = ttbarGenLevel.lepton2().eta();
+
         ttbarGen->push_back(ttbarGenLevel);
       }
     }
@@ -769,6 +780,12 @@ class CMGTopDILAnalyzer : public edm::EDFilter {
     nGenbJet20 = 0;
     nGencJet20 = 0;
 
+    genLep1_pt = 0;
+    genLep2_pt = 0;
+
+    genLep1_eta = 0;
+    genLep2_eta = 0;
+
   }
 
   virtual bool endLuminosityBlock(edm::LuminosityBlock & lumi, const edm::EventSetup & setup){
@@ -894,6 +911,12 @@ class CMGTopDILAnalyzer : public edm::EDFilter {
   unsigned int nGenJet20;
   unsigned int nGenbJet20;
   unsigned int nGencJet20;
+
+  double genLep1_pt;
+  double genLep2_pt;
+
+  double genLep1_eta;
+  double genLep2_eta;
 
   // ----------member data ---------------------------
 
