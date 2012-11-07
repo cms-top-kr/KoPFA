@@ -52,12 +52,12 @@ def tnpEffPSet(categories):
             BinToPDFmap = cms.vstring("bwResCBExp")
         ))
 
-        setattr(effSet, category+"_nPV", cms.PSet(
+        setattr(effSet, category+"_event_nPV", cms.PSet(
             EfficiencyCategoryAndState = cms.vstring(category, "pass"),
             UnbinnedVariables = cms.vstring("mass", "weight"),
             BinnedVariables = cms.PSet(
                 #abseta = cms.vdouble(0.0, 1.5, 2.4)
-                event_nPV = cms.vdouble(*range(0,25)),
+                event_nPV = cms.vdouble(*range(0,30)),
             ),
             BinToPDFmap = cms.vstring("bwResCBExp")
         ))
@@ -78,7 +78,7 @@ def makeTnPFitter(process, suffix, categories):
             mass = cms.vstring("Tag-Probe mass", "70.0", "110.0", "GeV/c^{2}"),
             pt = cms.vstring("Probe p_{T}", "0", "1000", "GeV/c"),
             abseta = cms.vstring("Probe |#eta|", "0", "2.5", ""),
-            event_nPV = cms.vstring("Number of vertex", "0", "25", ""),
+            event_nPV = cms.vstring("Number of vertex", "0", "30", ""),
             weight = cms.vstring("Weight", "0.0", "2.0", ""),
         ),
         Categories = cms.PSet(),
@@ -100,11 +100,12 @@ categoryMap = {}
 categoryMap['Nh'                 ] = ['nh0', 'nh1']
 categoryMap['Nh0Mva'             ] = ['mva00', 'mva03', 'mva05', 'mva07', 'mva09']
 categoryMap['Nh0Mva05Iso'        ] = [
-    'iso10' , 'iso15' , 'iso17' , 'iso20' , 
-    'diso10', 'diso15', 'diso17', 'diso20',
-    'riso10', 'riso15', 'riso17', 'riso20',
+    #'iso10' , 'iso15' , 'iso17' , 'iso20' , 
+    #'diso10', 'diso15', 'diso17', 'diso20',
+    #'riso10', 'riso15', 'riso17', 'riso20',
+    'iso15' , 'diso15', 'riso15',
 ]
-categoryMap['Nh0Mva05Diso15Pf'   ] = ['pf']
-categoryMap['Nh0Mva05Diso15PfTrg'] = ['trg']
+categoryMap['Nh0Mva05Riso15Pf'   ] = ['pf']
+categoryMap['Nh0Mva05Riso15PfTrg'] = ['trg']
 
 makeTnPFitter(process, step, categoryMap[step])
