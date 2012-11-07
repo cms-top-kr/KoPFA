@@ -64,7 +64,7 @@ process.tag = cms.EDFilter("PATElectronSelector",
         'pt > 20 && abs(eta) < 2.5'
         ' && electronID("mvaTrigV0") > 0.5 '
         ' && gsfTrack.trackerExpectedHitsInner.numberOfHits <= 0'
-        ' && userIsolation("User2Iso") < 0.10'
+        ' && userIsolation("User3Iso") < 0.10'
     ),
     filter = cms.bool(True),
 )
@@ -79,13 +79,13 @@ process.probeNh0Mva05 = cms.EDFilter("PATElectronSelector",
     cut = cms.string('electronID("mvaTrigV0") > 0.5'),
 )
 
-process.probeNh0Mva05Diso15 = cms.EDFilter("PATElectronSelector",
+process.probeNh0Mva05Riso15 = cms.EDFilter("PATElectronSelector",
     src = cms.InputTag("probeNh0Mva05"),
-    cut = cms.string('userIsolation("User2Iso") < 0.15'),
+    cut = cms.string('userIsolation("User3Iso") < 0.15'),
 )
 
-process.probeNh0Mva05Diso15Pf = cms.EDFilter("PATElectronSelector",
-    src = cms.InputTag("probeNh0Mva05Diso15"),
+process.probeNh0Mva05Riso15Pf = cms.EDFilter("PATElectronSelector",
+    src = cms.InputTag("probeNh0Mva05Riso15"),
     cut = cms.string("isPF"),
 )
 
@@ -97,8 +97,8 @@ process.z = cms.EDProducer("CandViewShallowCloneCombiner",
 
 process.zNh0 = process.z.clone(decay = cms.string("tag@+ probeNh0@-"),)
 process.zNh0Mva05 = process.z.clone(decay = cms.string("tag@+ probeNh0Mva05@-"),)
-process.zNh0Mva05Diso15 = process.z.clone(decay = cms.string("tag@+ probeNh0Mva05Diso15@-"),)
-process.zNh0Mva05Diso15Pf = process.z.clone(decay = cms.string("tag@+ probeNh0Mva05Diso15Pf@-"),)
+process.zNh0Mva05Riso15 = process.z.clone(decay = cms.string("tag@+ probeNh0Mva05Riso15@-"),)
+process.zNh0Mva05Riso15Pf = process.z.clone(decay = cms.string("tag@+ probeNh0Mva05Riso15Pf@-"),)
 
 process.tnpNh = cms.EDAnalyzer("TagProbeFitTreeProducer",
     tagProbePairs = cms.InputTag("z"),
@@ -148,15 +148,15 @@ process.tnpNh0Mva05Iso = process.tnpNh.clone(
     ),
 )
 
-process.tnpNh0Mva05Diso15Pf = process.tnpNh.clone(
-    tagProbePairs = cms.InputTag("zNh0Mva05Diso15"),
+process.tnpNh0Mva05Riso15Pf = process.tnpNh.clone(
+    tagProbePairs = cms.InputTag("zNh0Mva05Riso15"),
     flags = cms.PSet(
         pf = cms.string("isPF"),
     ),
 )
 
-process.tnpNh0Mva05Diso15PfTrg = process.tnpNh.clone(
-    tagProbePairs = cms.InputTag("zNh0Mva05Diso15Pf"),
+process.tnpNh0Mva05Riso15PfTrg = process.tnpNh.clone(
+    tagProbePairs = cms.InputTag("zNh0Mva05Riso15Pf"),
     flags = cms.PSet(
         trg = cms.string('!triggerObjectMatchesByPath("HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v*",1,0).empty()'),
     ),
@@ -169,7 +169,7 @@ process.p = cms.Path(
   * process.probe * process.tag * process.z * process.tnpNh
   * process.probeNh0 * process.zNh0 * process.tnpNh0Mva
   * process.probeNh0Mva05 * process.zNh0Mva05 * process.tnpNh0Mva05Iso
-  * process.probeNh0Mva05Diso15 * process.zNh0Mva05Diso15 * process.tnpNh0Mva05Diso15Pf
-  * process.probeNh0Mva05Diso15Pf * process.zNh0Mva05Diso15Pf * process.tnpNh0Mva05Diso15PfTrg
+  * process.probeNh0Mva05Riso15 * process.zNh0Mva05Riso15 * process.tnpNh0Mva05Riso15Pf
+  * process.probeNh0Mva05Riso15Pf * process.zNh0Mva05Riso15Pf * process.tnpNh0Mva05Riso15PfTrg
 )
 
