@@ -13,7 +13,7 @@
 //
 // Original Author:  Tae Jeong Kim,40 R-A32,+41227678602,
 //         Created:  Fri Jun  4 17:19:29 CEST 2010
-// $Id: CMGTopDILAnalyzer.h,v 1.9 2012/10/26 11:29:34 youngjo Exp $
+// $Id: CMGTopDILAnalyzer.h,v 1.10 2012/11/01 06:02:33 tjkim Exp $
 //
 //
 
@@ -236,6 +236,7 @@ class CMGTopDILAnalyzer : public edm::EDFilter {
     tree->Branch("nJet30",&nJet30,"nJet30/i");
     tree->Branch("nGenJet20",&nGenJet20,"nGenJet20/i");
     tree->Branch("nGenbJet20",&nGenbJet20,"nGenbJet20/i");
+    tree->Branch("nGencJet20",&nGencJet20,"nGencJet20/i");
 
     for ( int i=0, n=bTagAlgos_.size(); i<n; ++i )
     {
@@ -586,6 +587,7 @@ class CMGTopDILAnalyzer : public edm::EDFilter {
         genttbarM = ttbarGenLevel.mass();
         nGenJet20 = ttbarGenLevel.NJets20();
         nGenbJet20 = ttbarGenLevel.NbJets20();
+        nGencJet20 = ttbarGenLevel.NcJets20();
         ttbarGen->push_back(ttbarGenLevel);
       }
     }
@@ -765,6 +767,7 @@ class CMGTopDILAnalyzer : public edm::EDFilter {
     nJet30 = 0;
     nGenJet20 = 0;
     nGenbJet20 = 0;
+    nGencJet20 = 0;
 
   }
 
@@ -890,6 +893,7 @@ class CMGTopDILAnalyzer : public edm::EDFilter {
   unsigned int nJet30;
   unsigned int nGenJet20;
   unsigned int nGenbJet20;
+  unsigned int nGencJet20;
 
   // ----------member data ---------------------------
 
