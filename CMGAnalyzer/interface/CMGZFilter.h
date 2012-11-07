@@ -13,7 +13,7 @@
 //
 // Original Author:  Tae Jeong Kim,40 R-A32,+41227678602,
 //         Created:  Fri Jun  4 17:19:29 CEST 2010
-// $Id: CMGZFilter.h,v 1.2 2012/10/19 09:49:53 tjkim Exp $
+// $Id: CMGZFilter.h,v 1.3 2012/11/01 06:06:53 tjkim Exp $
 //
 //
 
@@ -72,6 +72,8 @@
 #include "TTree.h"
 #include "TH1.h"
 #include "TLorentzVector.h"
+#include "EGamma/EGammaAnalysisTools/interface/ElectronEffectiveArea.h"
+
 
 //
 // class declaration
@@ -93,6 +95,7 @@ class CMGZFilter : public edm::EDFilter {
     max_ = iConfig.getParameter<double>("max");  
     relIso1_ = iConfig.getUntrackedParameter<double>("relIso1");
     relIso2_ = iConfig.getUntrackedParameter<double>("relIso2");
+    rhoIsoLabel_ =  iConfig.getUntrackedParameter<edm::InputTag>("rhoIsoLabel");
 
     produces<std::vector<vallot::ZCandidate> >("DiLepton");
     produces<std::vector<T1> >("Lepton1");
@@ -113,6 +116,7 @@ class CMGZFilter : public edm::EDFilter {
   virtual bool filter(edm::Event& iEvent, const edm::EventSetup& iSetup)
   {
     bool accept = false;
+    const bool isRealData = iEvent.isRealData();
 
     std::auto_ptr<std::vector<vallot::ZCandidate> > dilp(new std::vector<vallot::ZCandidate>());
     std::auto_ptr<std::vector<vallot::ZCandidate> > seldilp(new std::vector<vallot::ZCandidate>());
@@ -125,6 +129,10 @@ class CMGZFilter : public edm::EDFilter {
     edm::Handle<std::vector<T2> > muons2_;
     iEvent.getByLabel(muonLabel1_,muons1_);
     iEvent.getByLabel(muonLabel2_,muons2_);
+
+    edm::Handle<double>  rho_;
+    iEvent.getByLabel(rhoIsoLabel_, rho_);
+    double rhoIso = *(rho_.product());
 
     for(unsigned i = 0; i != muons1_->size(); i++){
       for(unsigned j = 0; j != muons2_->size(); j++){
@@ -143,6 +151,42 @@ class CMGZFilter : public edm::EDFilter {
         lepton1.setPFIsoValues04( it1.chargedHadronIso(0.4), it1.puChargedHadronIso(0.4), it1.neutralHadronIso(0.4), it1.photonIso(0.4) );
         lepton2.setPFIsoValues04( it2.chargedHadronIso(0.4), it2.puChargedHadronIso(0.4), it2.neutralHadronIso(0.4), it2.photonIso(0.4) );
 
+
+        double AEff03Lep1 = 0.00;
+        double AEff04Lep1 = 0.00;
+
+        double AEff03Lep2 = 0.00;
+        double AEff04Lep2 = 0.00;
+
+        if( !it1.isMuon() ){
+          double sceta1 = it1.sourcePtr()->get()->superCluster()->eta(); 
+          if(isRealData){
+            AEff03Lep1 = ElectronEffectiveArea::GetElectronEffectiveArea(ElectronEffectiveArea::kEleGammaAndNeutralHadronIso03, sceta1, ElectronEffectiveArea::kEleEAData2012);
+            AEff04Lep1 = ElectronEffectiveArea::GetElectronEffectiveArea(ElectronEffectiveArea::kEleGammaAndNeutralHadronIso04, sceta1, ElectronEffectiveArea::kEleEAData2012);
+          }else{
+            AEff03Lep1 = ElectronEffectiveArea::GetElectronEffectiveArea(ElectronEffectiveArea::kEleGammaAndNeutralHadronIso03, sceta1, ElectronEffectiveArea::kEleEAFall11MC);
+            AEff04Lep1 = ElectronEffectiveArea::GetElectronEffectiveArea(ElectronEffectiveArea::kEleGammaAndNeutralHadronIso04, sceta1, ElectronEffectiveArea::kEleEAFall11MC);
+          }
+        }
+
+        if( !it1.isMuon() ){ 
+          double sceta2 = it2.sourcePtr()->get()->superCluster()->eta(); 
+          if(isRealData){
+            AEff03Lep2 = ElectronEffectiveArea::GetElectronEffectiveArea(ElectronEffectiveArea::kEleGammaAndNeutralHadronIso03, sceta2, ElectronEffectiveArea::kEleEAData2012);
+            AEff04Lep2 = ElectronEffectiveArea::GetElectronEffectiveArea(ElectronEffectiveArea::kEleGammaAndNeutralHadronIso04, sceta2, ElectronEffectiveArea::kEleEAData2012);
+          }else{
+            AEff03Lep2 = ElectronEffectiveArea::GetElectronEffectiveArea(ElectronEffectiveArea::kEleGammaAndNeutralHadronIso03, sceta2, ElectronEffectiveArea::kEleEAFall11MC);
+            AEff04Lep2 = ElectronEffectiveArea::GetElectronEffectiveArea(ElectronEffectiveArea::kEleGammaAndNeutralHadronIso04, sceta2, ElectronEffectiveArea::kEleEAFall11MC);
+          }
+        }
+   
+        lepton1.setRho( rhoIso );
+        lepton2.setRho( rhoIso );
+        lepton1.setAEff03( AEff03Lep1 );
+        lepton2.setAEff03( AEff03Lep2 );
+        lepton1.setAEff04( AEff04Lep1 );
+        lepton2.setAEff04( AEff04Lep2 );
+
         //detector based isolation
         double trackIso1 = it1.sourcePtr()->get()->trackIso();
         double ecalIso1 = it1.sourcePtr()->get()->ecalIso();
@@ -154,8 +198,27 @@ class CMGZFilter : public edm::EDFilter {
 
         lepton1.setIsoDeposit( trackIso1, ecalIso1, hcalIso1);
         lepton2.setIsoDeposit( trackIso2, ecalIso2, hcalIso2);
-   
-        bool iso = lepton1.relIso03(1) < relIso1_ && lepton2.relIso03(1) < relIso2_;
+  
+        double lepton1_relIso03 = 999;
+        double lepton2_relIso03 = 999;
+
+        if( it1.isMuon() ) {
+          lepton1.setType(1);
+          lepton1_relIso03 = lepton1.relIso03(1);  
+        }else{
+          lepton1.setType(0);
+          lepton1_relIso03 = lepton1.relIso03(2);
+        }
+
+        if( it2.isMuon() ) {
+          lepton2.setType(1);
+          lepton2_relIso03 = lepton1.relIso03(1);
+        }else{
+          lepton2.setType(0);
+          lepton2_relIso03 = lepton1.relIso03(2);
+        }
+
+        bool iso = lepton1_relIso03 < relIso1_ && lepton2_relIso03 < relIso2_;
         bool opp = it1.sourcePtr()->get()->charge() * it2.sourcePtr()->get()->charge() < 0;
 
         vallot::ZCandidate dimuon(lepton1, lepton2);
@@ -220,6 +283,7 @@ class CMGZFilter : public edm::EDFilter {
   double max_;
   double relIso1_;
   double relIso2_;
+  edm::InputTag rhoIsoLabel_;
 
 };
 
