@@ -353,29 +353,33 @@ void CMGTTbarCandidate::building( const std::vector<cmg::GenJet>* genJets, const
     if( gJet.pt() > 15 && fabs(gJet.eta()) < 2.5 ) NJets15_++;
     if( gJet.pt() > 10 && fabs(gJet.eta()) < 2.5 ) NJets10_++;
 
-    std::vector <const reco::GenParticle*> mcparts = (*(genJet->sourcePtr()))->getGenConstituents();
-    for (unsigned i = 0; i < mcparts.size (); i++) {
-      const GenParticle* mcpart = mcparts[i];
-      int PDG = std::abs( mcpart->pdgId());
-      bool isB = decayFromBHadron(*mcpart);
-      if(isB){
-         const reco::Candidate* lastB = lastBHadron(*mcpart);
-         vector<const reco::Candidate*>::iterator it = find ( mapJetToBHadrons[idx].begin(), mapJetToBHadrons[idx].begin(), lastB );
-         if( it == mapJetToBHadrons[idx].end() ){
-           mapJetToBHadrons[idx].push_back(lastB);
-           mapJetToBMatched[idx] = 1;
-           mapBHadronToJets[lastB].push_back( idx );
-         }
-      }
-      bool isC = decayFromCHadron(*mcpart);
-      if(isC){
-         const reco::Candidate* lastC = lastCHadron(*mcpart);
-         vector<const reco::Candidate*>::iterator it = find ( mapJetToCHadrons[idx].begin(), mapJetToCHadrons[idx].begin(), lastC );
-         if( it == mapJetToCHadrons[idx].end() ){
-           mapJetToCHadrons[idx].push_back(lastC);
-           mapJetToCMatched[idx] = 1;
-           mapCHadronToJets[lastC].push_back( idx );
-         }
+    bool isPAT = genJet->sourcePtr()->isAvailable(); 
+
+    if( isPAT ){
+      std::vector <const reco::GenParticle*> mcparts = (*(genJet->sourcePtr()))->getGenConstituents();
+      for (unsigned i = 0; i < mcparts.size (); i++) {
+        const GenParticle* mcpart = mcparts[i];
+        int PDG = std::abs( mcpart->pdgId());
+        bool isB = decayFromBHadron(*mcpart);
+        if(isB){
+           const reco::Candidate* lastB = lastBHadron(*mcpart);
+           vector<const reco::Candidate*>::iterator it = find ( mapJetToBHadrons[idx].begin(), mapJetToBHadrons[idx].begin(), lastB );
+           if( it == mapJetToBHadrons[idx].end() ){
+             mapJetToBHadrons[idx].push_back(lastB);
+             mapJetToBMatched[idx] = 1;
+             mapBHadronToJets[lastB].push_back( idx );
+           }
+        }
+        bool isC = decayFromCHadron(*mcpart);
+        if(isC){
+          const reco::Candidate* lastC = lastCHadron(*mcpart);
+          vector<const reco::Candidate*>::iterator it = find ( mapJetToCHadrons[idx].begin(), mapJetToCHadrons[idx].begin(), lastC );
+          if( it == mapJetToCHadrons[idx].end() ){
+            mapJetToCHadrons[idx].push_back(lastC);
+            mapJetToCMatched[idx] = 1;
+            mapCHadronToJets[lastC].push_back( idx );
+          }
+        }
       }
     }
 
