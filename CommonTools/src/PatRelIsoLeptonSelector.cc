@@ -97,6 +97,7 @@ PatRelIsoLeptonSelector<Lepton>::PatRelIsoLeptonSelector(const edm::ParameterSet
 template<typename Lepton>
 bool PatRelIsoLeptonSelector<Lepton>::filter(edm::Event& event, const edm::EventSetup& eventSetup)
 {
+  // isMC_ is true by default, first decided here.
   if ( isMC_ and event.isRealData() )
   {
     // Give correct MC flag in case of conflict
@@ -104,6 +105,8 @@ bool PatRelIsoLeptonSelector<Lepton>::filter(edm::Event& event, const edm::Event
 
     // #ISMC_DEPENDENT_PART#
     electronEATarget_ = ElectronEffectiveArea::kEleEAData2012;
+    // FIXME : Due to implementation in electron EA for Run2012, cone size 0.3 is missing...
+    if ( coneSize_ == 0.3 ) electronEATarget_ = ElectronEffectiveArea::kEleEAData2011;
     muonEATarget_ = MuonEffectiveArea::kMuEAData2012;
     // end of #ISMC_DEPENDENT_PART#
   }
