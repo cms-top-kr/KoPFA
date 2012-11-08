@@ -1,10 +1,17 @@
 import FWCore.ParameterSet.Config as cms
 import os
 
-#mode = "MC"
-mode = "RD"
-if 'MODE' in os.environ:
-    mode = os.environ['MODE']
+def loadDataset(process, dataset, cmgVersion="V5_10_0"):
+    if 'Run2012' in dataset:
+        process.load("KoPFA.CommonTools.Sources.CMG.%s.Run2012.cmgTuple_%sMuMu_cff" % (cmgVersion, dataset))
+    else:
+        production, dataset = dataset.split("-")
+        process.load("KoPFA.CommonTools.Sources.CMG.%s.%s.cmgTuple_%s_cff" % (cmgVersion, production, dataset))
+
+section = int(os.environ['SECTION'])
+begin = int(os.environ['BEGIN'])
+end = int(os.environ['END'])
+dataset = os.environ['DATASET']
 
 process = cms.Process("TagProbe")
 
@@ -18,23 +25,28 @@ process.MessageLogger.cerr.FwkReport.reportEvery = 10000
 
 process.load("KoPFA.CommonTools.EventWeightProducer_cfi") 
 
-idLoose = "isPFMuon && ( isGlobalMuon || isTrackerMuon )"
-idTight = "isPFMuon && isGlobalMuon && globalTrack.normalizedChi2 < 10.0 && globalTrack.hitPattern.numberOfValidMuonHits > 0 && abs(dB) < 0.2 && innerTrack.hitPattern.numberOfValidPixelHits > 0 && innerTrack.hitPattern.numberOfValidTrackerHits > 10 && numberOfMatchedStations() > 1"
 ## Input and output ##
-process.source = cms.Source("PoolSource", 
-    fileNames = cms.untracked.vstring(),
-)
-
-if mode == 'MC':
-    for i in range(0, 2575):
-        process.source.fileNames.append("/store/cmst3/user/cmgtools/CMG/DYJetsToLL_M-50_TuneZ2Star_8TeV-madgraph-tarball/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_10_0/cmgTuple_%d.root" % i)
-else:
-    for i in range(0, 1588):
-        process.source.fileNames.append("/store/cmst3/user/cmgtools/CMG/DoubleMu/Run2012A-13Jul2012-v1/AOD/V5_B/PAT_CMG_V5_10_0/cmgTuple_%d.root" % i)
+process.source = cms.Source("PoolSource", fileNames = cms.untracked.vstring(),)
+loadDataset(process, dataset)
+process.source.fileNames = process.source.fileNames[begin:end]
 
 process.TFileService = cms.Service("TFileService",
-    fileName = cms.string("tnpTree_%s.root" % mode)
+    fileName = cms.string("result/tnpTree_%s_%03d.root" % (dataset, section))
 )
+
+
+process.goodOfflinePrimaryVertices = cms.EDFilter("PrimaryVertexObjectFilter",
+    src = cms.InputTag('offlinePrimaryVertices'),
+    filterParams =  cms.PSet(
+        minNdof = cms.double(4.),
+        maxZ    = cms.double(24.),
+        maxRho  = cms.double(2.)
+    ),
+    filter = cms.bool(True),
+)
+
+idLoose = "isPFMuon && ( isGlobalMuon || isTrackerMuon )"
+idTight = "isPFMuon && isGlobalMuon && globalTrack.normalizedChi2 < 10.0 && globalTrack.hitPattern.numberOfValidMuonHits > 0 && abs(dB) < 0.2 && innerTrack.hitPattern.numberOfValidPixelHits > 0 && innerTrack.hitPattern.numberOfValidTrackerHits > 10 && numberOfMatchedStations() > 1"
 
 process.probe = cms.EDFilter("PatRelIsoMuonSelector",
     rho = cms.InputTag("kt6PFJets", "rho"),
@@ -54,7 +66,6 @@ process.tag = cms.EDFilter("PATMuonSelector",
     cut = cms.string(
         'pt > 35 && abs(eta) < 2.4'
         '&&' +idLoose+
-		#' && isPFMuon && (isGlobalMuon || isTrackerMuon)'
         ' && userIsolation("User2Iso") < 0.10'
     ),
     filter = cms.bool(True),
@@ -111,6 +122,11 @@ process.tnpId = cms.EDAnalyzer("TagProbeFitTreeProducer",
 process.tnplooseIdIso = process.tnpId.clone(
     tagProbePairs = cms.InputTag("zlooseId"),
     flags = cms.PSet(
+        iso10 = cms.string('userIsolation("User1Iso") < 0.10'),
+        iso15 = cms.string('userIsolation("User1Iso") < 0.15'),
+        iso17 = cms.string('userIsolation("User1Iso") < 0.17'),
+        iso20 = cms.string('userIsolation("User1Iso") < 0.20'),
+
         diso10 = cms.string('userIsolation("User2Iso") < 0.10'),
         diso15 = cms.string('userIsolation("User2Iso") < 0.15'),
         diso17 = cms.string('userIsolation("User2Iso") < 0.17'),
@@ -126,6 +142,11 @@ process.tnplooseIdIso = process.tnpId.clone(
 process.tnptightIdIso = process.tnpId.clone(
     tagProbePairs = cms.InputTag("ztightId"),
     flags = cms.PSet(
+        iso10 = cms.string('userIsolation("User1Iso") < 0.10'),
+        iso15 = cms.string('userIsolation("User1Iso") < 0.15'),
+        iso17 = cms.string('userIsolation("User1Iso") < 0.17'),
+        iso20 = cms.string('userIsolation("User1Iso") < 0.20'),
+
         diso10 = cms.string('userIsolation("User2Iso") < 0.10'),
         diso15 = cms.string('userIsolation("User2Iso") < 0.15'),
         diso17 = cms.string('userIsolation("User2Iso") < 0.17'),
@@ -141,20 +162,21 @@ process.tnptightIdIso = process.tnpId.clone(
 process.tnplooseIdiso15Trg = process.tnpId.clone(
     tagProbePairs = cms.InputTag("zlooseIdiso15"),
     flags = cms.PSet(
-        trg = cms.string('!triggerObjectMatchesByPath("HLT_IsoMu24*_v*",1,0).empty()'),
+        trg = cms.string('!triggerObjectMatchesByPath("HLT_Mu17_*Mu8_v*",1,0).empty()'),
     ),
 )
 
 process.tnptightIdiso10Trg = process.tnpId.clone(
     tagProbePairs = cms.InputTag("ztightIdiso10"),
     flags = cms.PSet(
-        trg = cms.string('!triggerObjectMatchesByPath("HLT_IsoMu24*_v*",1,0).empty()'),
+        trg = cms.string('!triggerObjectMatchesByPath("HLT_Mu17_*Mu8_v*",1,0).empty()'),
     ),
 )
 
 process.p = cms.Path(
 #    process.hltHighLevel
-    process.PUweight
+    process.goodOfflinePrimaryVertices
+  * process.PUweight
   * process.probe * process.tag * process.z * process.tnpId
   * process.probelooseId * process.probetightId * process.zlooseId * process.ztightId * process.tnplooseIdIso * process.tnptightIdIso
   * process.probelooseIdiso15 * process.probetightIdiso10 * process.zlooseIdiso15 * process.ztightIdiso10

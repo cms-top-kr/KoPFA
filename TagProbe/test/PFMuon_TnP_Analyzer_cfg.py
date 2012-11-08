@@ -36,8 +36,7 @@ def tnpEffPSet(categories):
             EfficiencyCategoryAndState = cms.vstring(category, "pass"),
             UnbinnedVariables = cms.vstring("mass","weight"),
             BinnedVariables = cms.PSet(
-                abseta = cms.vdouble(0.0, 0.5, 1.0, 1.4, 1.6, 2.0, 2.4)
-                #abseta = cms.vdouble(0.0, 1.5, 2.4)
+                abseta = cms.vdouble(0.0, 0.8, 1.478, 2.5)
             ),
             BinToPDFmap = cms.vstring("vpvPlusExpo")
         ))
@@ -48,10 +47,20 @@ def tnpEffPSet(categories):
             BinnedVariables = cms.PSet(
                 #pt = cms.vdouble(20, 25, 30, 35, 40, 50, 150),
                 pt = cms.vdouble(20, 30, 40, 50, 150),
-                abseta = cms.vdouble(0.0, 1.4, 1.6, 2.4)
+                abseta = cms.vdouble(0.0, 0.8, 1.478, 2.5)
                 #abseta = cms.vdouble(0.0, 1.5, 2.4)
             ),
             BinToPDFmap = cms.vstring("vpvPlusQuadratic") #"vpvPlusExpo")
+        ))
+
+        setattr(effSet, category+"_event_nPV", cms.PSet(
+            EfficiencyCategoryAndState = cms.vstring(category, "pass"),
+            UnbinnedVariables = cms.vstring("mass","weight"),
+            BinnedVariables = cms.PSet(
+                #abseta = cms.vdouble(0.0, 1.5, 2.4)
+                event_nPV = cms.vdouble(*range(0,30))
+            ),
+            BinToPDFmap = cms.vstring("vpvPlusExpo")
         ))
 
     return effSet
@@ -71,6 +80,7 @@ def makeTnPFitter(process, suffix, categories):
             mass = cms.vstring("Tag-Probe mass", "70.0", "110.0", "GeV/c^{2}"),
             pt = cms.vstring("Probe p_{T}", "0", "1000", "GeV/c"),
             abseta = cms.vstring("Probe |#eta|", "0", "2.5", ""),
+            event_nPV = cms.vstring("Number of vertex", "0", "30", ""),
             weight = cms.vstring("Weight", "0.0", "2.0", ""),
         ),
         Categories = cms.PSet(),
