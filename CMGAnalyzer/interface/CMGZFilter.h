@@ -13,7 +13,7 @@
 //
 // Original Author:  Tae Jeong Kim,40 R-A32,+41227678602,
 //         Created:  Fri Jun  4 17:19:29 CEST 2010
-// $Id: CMGZFilter.h,v 1.3 2012/11/01 06:06:53 tjkim Exp $
+// $Id: CMGZFilter.h,v 1.4 2012/11/07 17:40:16 tjkim Exp $
 //
 //
 
@@ -161,8 +161,8 @@ class CMGZFilter : public edm::EDFilter {
         if( !it1.isMuon() ){
           double sceta1 = it1.sourcePtr()->get()->superCluster()->eta(); 
           if(isRealData){
-            AEff03Lep1 = ElectronEffectiveArea::GetElectronEffectiveArea(ElectronEffectiveArea::kEleGammaAndNeutralHadronIso03, sceta1, ElectronEffectiveArea::kEleEAData2012);
-            AEff04Lep1 = ElectronEffectiveArea::GetElectronEffectiveArea(ElectronEffectiveArea::kEleGammaAndNeutralHadronIso04, sceta1, ElectronEffectiveArea::kEleEAData2012);
+            AEff03Lep1 = ElectronEffectiveArea::GetElectronEffectiveArea(ElectronEffectiveArea::kEleGammaAndNeutralHadronIso03, sceta1, ElectronEffectiveArea::kEleEAData2011);
+            AEff04Lep1 = ElectronEffectiveArea::GetElectronEffectiveArea(ElectronEffectiveArea::kEleGammaAndNeutralHadronIso04, sceta1, ElectronEffectiveArea::kEleEAData2011);
           }else{
             AEff03Lep1 = ElectronEffectiveArea::GetElectronEffectiveArea(ElectronEffectiveArea::kEleGammaAndNeutralHadronIso03, sceta1, ElectronEffectiveArea::kEleEAFall11MC);
             AEff04Lep1 = ElectronEffectiveArea::GetElectronEffectiveArea(ElectronEffectiveArea::kEleGammaAndNeutralHadronIso04, sceta1, ElectronEffectiveArea::kEleEAFall11MC);
@@ -172,8 +172,8 @@ class CMGZFilter : public edm::EDFilter {
         if( !it1.isMuon() ){ 
           double sceta2 = it2.sourcePtr()->get()->superCluster()->eta(); 
           if(isRealData){
-            AEff03Lep2 = ElectronEffectiveArea::GetElectronEffectiveArea(ElectronEffectiveArea::kEleGammaAndNeutralHadronIso03, sceta2, ElectronEffectiveArea::kEleEAData2012);
-            AEff04Lep2 = ElectronEffectiveArea::GetElectronEffectiveArea(ElectronEffectiveArea::kEleGammaAndNeutralHadronIso04, sceta2, ElectronEffectiveArea::kEleEAData2012);
+            AEff03Lep2 = ElectronEffectiveArea::GetElectronEffectiveArea(ElectronEffectiveArea::kEleGammaAndNeutralHadronIso03, sceta2, ElectronEffectiveArea::kEleEAData2011);
+            AEff04Lep2 = ElectronEffectiveArea::GetElectronEffectiveArea(ElectronEffectiveArea::kEleGammaAndNeutralHadronIso04, sceta2, ElectronEffectiveArea::kEleEAData2011);
           }else{
             AEff03Lep2 = ElectronEffectiveArea::GetElectronEffectiveArea(ElectronEffectiveArea::kEleGammaAndNeutralHadronIso03, sceta2, ElectronEffectiveArea::kEleEAFall11MC);
             AEff04Lep2 = ElectronEffectiveArea::GetElectronEffectiveArea(ElectronEffectiveArea::kEleGammaAndNeutralHadronIso04, sceta2, ElectronEffectiveArea::kEleEAFall11MC);
