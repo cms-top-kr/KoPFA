@@ -13,7 +13,7 @@
 //
 // Original Author:  Tae Jeong Kim
 //         Created:  Mon Dec 14 01:29:35 CET 2009
-// $Id: CMGJetFilter.cc,v 1.4 2012/10/30 11:54:53 youngjo Exp $
+// $Id: CMGJetFilter.cc,v 1.5 2012/11/07 08:42:17 youngjo Exp $
 //
 //
 
@@ -223,7 +223,7 @@ CMGJetFilter::filter(edm::Event& iEvent, const edm::EventSetup& iSetup)
     for (unsigned int i=0; i < electrons_->size(); ++i){
       cmg::Electron electron = electrons_->at(i);
       double dR =  deltaR(electron.eta(), electron.phi(), it->eta(), it->phi());
-      if( dR < 0.3 ) {
+      if( dR < 0.5 ) {
         overlap = true;
         break;
       }
@@ -231,7 +231,7 @@ CMGJetFilter::filter(edm::Event& iEvent, const edm::EventSetup& iSetup)
     for (unsigned int i=0; i < muons_->size(); ++i){
       cmg::Muon muon = muons_->at(i);
       double dR =  deltaR(muon.eta(), muon.phi(), it->eta(), it->phi());
-      if( dR < 0.3 ) {
+      if( dR < 0.5 ) {
         overlap = true;
         break;
       }
