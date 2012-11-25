@@ -109,6 +109,7 @@ class cmgElectronAnalyzer : public edm::EDProducer
   TH1F * h_mtW[2];
   TH1F * h_dimass[2];
   TH1F * h_nJet[2];
+  TH1F * h_nElectron[2];
   TH1F * h_met[2];
   TH1F * h_delphi[2];
 

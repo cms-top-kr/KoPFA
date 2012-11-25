@@ -111,6 +111,7 @@ cmgElectronAnalyzer::cmgElectronAnalyzer(const edm::ParameterSet& cfg)
     h_dimass[d] = dir.make<TH1F>( "h_dimass", "h_dimass", 200, 0, 200);
     h_met[d]    = dir.make<TH1F>( "h_met", "h_met", 20, 0, 200);
     h_nJet[d]   = dir.make<TH1F>( "h_nJet", "h_nJet", 10, 0, 10);
+    h_nElectron[d]   = dir.make<TH1F>( "h_nElectron", "h_nElectron", 10, 0, 10);
     h_delphi[d]   = dir.make<TH1F>( "h_delphi", "h_delphi", 32, 0, 3.2);
 
   }
@@ -214,6 +215,7 @@ void cmgElectronAnalyzer::produce(edm::Event& iEvent, const edm::EventSetup& es)
   }
 
   int nJets = cleanedJets->size();
+  int nElectrons = triggeredElectrons->size();
 
   double mtW = 0.0;
   double delphi = 0.0;
@@ -252,6 +254,7 @@ void cmgElectronAnalyzer::produce(edm::Event& iEvent, const edm::EventSetup& es)
     h_dimass[d]->Fill(dimass);
     h_met[d]->Fill(MET);
     h_nJet[d]->Fill(nJets);
+    h_nElectron[d]->Fill(nElectrons);
     h_delphi[d]->Fill(delphi);
   } 
 
