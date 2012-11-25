@@ -17,6 +17,7 @@ process.load("KoPFA.CMGAnalyzer.topAnalysis_cff")
 process.load("KoPFA.CommonTools.eventFilter_cfi")
 process.load("KoPFA.CMGAnalyzer.finalLeptonProducer_cfi")
 process.load("KoPFA.CMGAnalyzer.cmgElectronAnalyzer_cfi")
+process.load("KoPFA.CMGAnalyzer.cmgMuonAnalyzer_cfi")
 process.load("KoPFA.CMGAnalyzer.ZFilter_cfi")
 from KoPFA.CommonTools.PileUpWeight_cff import *
 
@@ -125,6 +126,10 @@ process.p3 = cms.Path(
 process.p4 = cms.Path(
     process.ElectronAnalysis
 )
+
+#process.p5 = cms.Path(
+#    process.MuonAnalysis
+#)
 
 process.TFileService = cms.Service("TFileService",
     fileName = cms.string('vallot.root')
