@@ -2,7 +2,7 @@
 #define CMGTtFullLepMaosSolutionProducer_h
 
 //
-// $Id: CMGTtFullLepMaosSolutionProducer.h,v 1.8 2012/10/31 07:23:06 youngjo Exp $
+// $Id: CMGTtFullLepMaosSolutionProducer.h,v 1.9 2012/11/26 13:56:28 youngjo Exp $
 //
 #include <memory>
 #include <string>
@@ -47,7 +47,8 @@ class CMGTtFullLepMaosSolutionProducer : public edm::EDProducer {
     inline bool PTComp(const reco::Candidate*, const reco::Candidate*) const;
     inline bool LepDiffCharge(const reco::Candidate* , const reco::Candidate*) const;
     inline bool HasPositiveCharge(const reco::Candidate*) const;
-    
+    inline double MaosWeight(TLorentzVector, TLorentzVector) const;
+ 
     struct Compare{
       bool operator()(std::pair<double, int> a, std::pair<double, int> b){
         return a.first > b.first;
@@ -66,7 +67,7 @@ class CMGTtFullLepMaosSolutionProducer : public edm::EDProducer {
     double Mt2min_, Mt2max_;
     bool debug_;
 
-    //vallot::Maos* solver; 
+    vallot::Maos* solver; 
     //TtFullLepKinSolver* solver;
 };
 
@@ -83,6 +84,17 @@ inline bool CMGTtFullLepMaosSolutionProducer::LepDiffCharge(const reco::Candidat
 inline bool CMGTtFullLepMaosSolutionProducer::HasPositiveCharge(const reco::Candidate* l) const 
 {
   return (l->charge() > 0);
+}
+
+inline double CMGTtFullLepMaosSolutionProducer::MaosWeight(TLorentzVector LV_l1, TLorentzVector LV_l2) const
+{
+   return 1/((pow(solver->leg1().M()-174.,2) + pow(solver->leg2().M()-174.,2))/pow(9.5,2)+
+                           (pow((solver->nu1()+LV_l1).M()-80.4,2) +
+                            pow((solver->nu2()+LV_l2).M()-80.4,2))/pow(7.5,2) +
+                            pow(solver->leg1().M()-solver->leg2().M(),2)/pow(9.5,2)+
+                            pow((solver->nu1()+LV_l1).M()-(solver->nu2()+LV_l2).M(),2)/pow(7.5,2)
+                            );
+
 }
 
 CMGTtFullLepMaosSolutionProducer::CMGTtFullLepMaosSolutionProducer(const edm::ParameterSet & iConfig) 
@@ -121,13 +133,13 @@ CMGTtFullLepMaosSolutionProducer::~CMGTtFullLepMaosSolutionProducer()
 
 void CMGTtFullLepMaosSolutionProducer::beginJob()
 {
-  //  solver = new vallot::Maos();
+   solver = new vallot::Maos();
   //solver = new TtFullLepKinSolver(tmassbegin_, tmassend_, tmassstep_, nupars_);
 }
 
 void CMGTtFullLepMaosSolutionProducer::endJob()
 {
-  //delete solver;
+   delete solver;
 }
 
 void CMGTtFullLepMaosSolutionProducer::produce(edm::Event & evt, const edm::EventSetup & iSetup) 
@@ -392,9 +404,9 @@ void CMGTtFullLepMaosSolutionProducer::produce(edm::Event & evt, const edm::Even
         }
 	 		
         // calculate neutrino momenta and eventweight
-        vallot::Maos solver;
-        double mt2 = sqrt(solver.MAOS(metV,LV_l1+LV_b,LV_l2+LV_bbar, 0.0, 0.0, false ));
-        double top1M = solver.leg1().M(), top2M = solver.leg2().M();
+        //vallot::Maos solver;
+        double mt2 = sqrt(solver->MAOS(metV,LV_l1+LV_b,LV_l2+LV_bbar, 0.0, 0.0, false ));
+        /*double top1M = solver.leg1().M(), top2M = solver.leg2().M();
 
         double ttbarM = solver.M();
         double W1M=(solver.nu1()+LV_l1).M(), W2M=(solver.nu2()+LV_l2).M();
@@ -408,13 +420,13 @@ void CMGTtFullLepMaosSolutionProducer::produce(edm::Event & evt, const edm::Even
                             pow(top1M-top2M,2)/pow(9.5,2)+
                             pow(W1M-W2M,2)/pow(7.5,2) 
                             );	
-	
+	*/
         /*if(debug_){
            std::cout << " Mt2: " << mt2 << ", ttbar.M: " << ttbarM << ", top1M:" << top1M 
                      << ", top2M: " << top2M << ", W1M: " << W1M << ", W2M: " << W2M << ", weight: "<< weight << std::endl; 
         }*/
 	// add solution to the vectors of solutions if solution exists 
-	if(mt2 > Mt2min_ && mt2 < Mt2max_ && ttbarM > 0. ) { //&& top1M > 0 && top2M > 0 && W1M > 0 && W2M > 0 ){
+	if(mt2 > Mt2min_ && mt2 < Mt2max_ ) { //&& top1M > 0 && top2M > 0 && W1M > 0 && W2M > 0 ){
 	  // add the leptons and jets indices to the vector of combinations
 	  idcsV.push_back(idcs);
           Mt2V.push_back(mt2);
@@ -425,8 +437,8 @@ void CMGTtFullLepMaosSolutionProducer::produce(edm::Event & evt, const edm::Even
           ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > nu1p4;
           ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > nu2p4;
 
-          nu1p4.SetPxPyPzE( solver.nu1().Px(),solver.nu1().Py(),solver.nu1().Pz(),solver.nu1().Pt() );
-          nu2p4.SetPxPyPzE( solver.nu2().Px(),solver.nu2().Py(),solver.nu2().Pz(),solver.nu2().Pt() );
+          nu1p4.SetPxPyPzE( solver->nu1().Px(),solver->nu1().Py(),solver->nu1().Pz(),solver->nu1().Pt() );
+          nu2p4.SetPxPyPzE( solver->nu2().Px(),solver->nu2().Py(),solver->nu2().Pz(),solver->nu2().Pt() );
  
           nu1.setP4( nu1p4 );
           nu2.setP4( nu2p4 );
@@ -436,7 +448,7 @@ void CMGTtFullLepMaosSolutionProducer::produce(edm::Event & evt, const edm::Even
 	  nuBarsV.push_back( nu2);
 
 	  // add the solution weight
-	  weightsV.push_back(std::make_pair(weight, nSol));
+	  weightsV.push_back(std::make_pair(MaosWeight(LV_l1, LV_l2), nSol));
 	  
 	  nSol++;
 	}
