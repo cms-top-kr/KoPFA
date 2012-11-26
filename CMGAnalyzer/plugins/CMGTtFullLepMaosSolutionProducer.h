@@ -2,7 +2,7 @@
 #define CMGTtFullLepMaosSolutionProducer_h
 
 //
-// $Id: CMGTtFullLepMaosSolutionProducer.h,v 1.7 2012/10/29 10:55:17 youngjo Exp $
+// $Id: CMGTtFullLepMaosSolutionProducer.h,v 1.8 2012/10/31 07:23:06 youngjo Exp $
 //
 #include <memory>
 #include <string>
@@ -26,6 +26,7 @@
 #include "AnalysisDataFormats/CMGTools/interface/Muon.h"
 #include "KoPFA/DataFormats/interface/TTbarDILEvent.h"
 #include "Math/LorentzVector.h"
+#include "TF2.h"
 
 using namespace std;
 
@@ -391,11 +392,17 @@ void CMGTtFullLepMaosSolutionProducer::produce(edm::Event & evt, const edm::Even
         }
 	 		
         // calculate neutrino momenta and eventweight
-        vallot::Maos* solver = new vallot::Maos();
-        double mt2 = sqrt(solver->MAOS(metV,LV_l1+LV_b,LV_l2+LV_bbar, 0.0, 0.0, false ));
-        double top1M = solver->leg1().M(), top2M = solver->leg2().M();
-        double ttbarM = solver->M();
-        double W1M=(solver->nu1()+LV_l1).M(), W2M=(solver->nu2()+LV_l2).M();
+        vallot::Maos solver;
+        double mt2 = sqrt(solver.MAOS(metV,LV_l1+LV_b,LV_l2+LV_bbar, 0.0, 0.0, false ));
+        double top1M = solver.leg1().M(), top2M = solver.leg2().M();
+
+        double ttbarM = solver.M();
+        double W1M=(solver.nu1()+LV_l1).M(), W2M=(solver.nu2()+LV_l2).M();
+
+        //TF2* EventShape_ = new TF2("landau2D","[0]*TMath::Landau(x,[1],[2],0)*TMath::Landau(y,[3],[4],0)",0,500,0,500);
+        //EventShape_->SetParameters(30.7137,56.2880,23.0744,59.1015,24.9145);
+        //double weight = 1./mt2;//EventShape_->Eval(solver->nu1().E(),solver->nu2().E());
+
         double weight = 1/((pow(top1M-174.,2) + pow(top2M-174.,2))/pow(9.5,2)+
                            (pow(W1M-80.4,2) + pow(W2M-80.4,2))/pow(7.5,2) +
                             pow(top1M-top2M,2)/pow(9.5,2)+
@@ -407,7 +414,7 @@ void CMGTtFullLepMaosSolutionProducer::produce(edm::Event & evt, const edm::Even
                      << ", top2M: " << top2M << ", W1M: " << W1M << ", W2M: " << W2M << ", weight: "<< weight << std::endl; 
         }*/
 	// add solution to the vectors of solutions if solution exists 
-	if(mt2 > Mt2min_ && mt2 < Mt2max_ && top1M > 0 && top2M > 0 && W1M > 0 && W2M > 0 ){
+	if(mt2 > Mt2min_ && mt2 < Mt2max_ && ttbarM > 0. ) { //&& top1M > 0 && top2M > 0 && W1M > 0 && W2M > 0 ){
 	  // add the leptons and jets indices to the vector of combinations
 	  idcsV.push_back(idcs);
           Mt2V.push_back(mt2);
@@ -418,8 +425,8 @@ void CMGTtFullLepMaosSolutionProducer::produce(edm::Event & evt, const edm::Even
           ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > nu1p4;
           ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > nu2p4;
 
-          nu1p4.SetPxPyPzE( solver->nu1().Px(),solver->nu1().Py(),solver->nu1().Pz(),solver->nu1().Pt() );
-          nu2p4.SetPxPyPzE( solver->nu2().Px(),solver->nu2().Py(),solver->nu2().Pz(),solver->nu2().Pt() );
+          nu1p4.SetPxPyPzE( solver.nu1().Px(),solver.nu1().Py(),solver.nu1().Pz(),solver.nu1().Pt() );
+          nu2p4.SetPxPyPzE( solver.nu2().Px(),solver.nu2().Py(),solver.nu2().Pz(),solver.nu2().Pt() );
  
           nu1.setP4( nu1p4 );
           nu2.setP4( nu2p4 );
@@ -576,9 +583,9 @@ void CMGTtFullLepMaosSolutionProducer::produce(edm::Event & evt, const edm::Even
     float Mt2 = pMt2V->at(i);
     float A =  (1/weight);
 
-    if(Mt2 > Mt2min_ && Mt2 < Mt2max_ &&
-        top.M()> 0 && topBar.M() > 0 &&
-        (Lep + nuBar).M() > 0 && (LepBar + nu).M() > 0 && A < 200){
+    if(Mt2 > Mt2min_ && Mt2 < Mt2max_ ){ //&&
+     //   top.M()> 0 && topBar.M() > 0 &&
+     //   (Lep + nuBar).M() > 0 && (LepBar + nu).M() > 0 ){//&& A < 200){
         if(debug_){
            std::cout << "\tMt2: " << Mt2 << ", ttbar.M: " << ttbar.M() << 
                         ", top1M:" << top.M() << ", top2M: " << topBar.M() << 
