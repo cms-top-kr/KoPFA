@@ -55,154 +55,121 @@ TGraphAsymmErrors* ROC( TH1* hSignal, TH1* hQCD){
   return out;
 }
 
-void ElectronPFIso(){
+void ElectronPFIso(bool merge=true, const int area=0){
+  const int n =3;
+  //if merge is true, area should be 0. The area is where to look among n
 
   gROOT->ProcessLine(".L tdrstyle.C");
   defaultStyle();
 
-  TFile * f_Signal = new TFile("/afs/cern.ch/work/t/tjkim/public/store/electron/electrons2/nhits0/vallot_TTbarTuneZ2.root");
-  TFile * f_QCD =new TFile("/afs/cern.ch/work/t/tjkim/public/store/electron/electrons2/nhits0/vallot_Run2012ElEl.root");
+  TFile * f_Signal = new TFile("/afs/cern.ch/work/t/tjkim/public/store/electron/electrons2/nhits0/njet1_update/vallot_TTbarTuneZ2.root");
+  TFile * f_QCD =new TFile("/afs/cern.ch/work/t/tjkim/public/store/electron/electrons2/nhits0/njet1_update/vallot_Run2012ElEl.root");
 
-  TH2F *h2Signal_pfRelIso03_barrel = (TH2F *) f_Signal->Get("ElectronAnalysis/Signal/IDPF/Barrel/h2_pfRelIso03");
-  TH2F *h2Signal_pfRelIso03_endcap = (TH2F *) f_Signal->Get("ElectronAnalysis/Signal/IDPF/Endcap/h2_pfRelIso03");
-  TH2F *h2Signal_pfRelIso03db_barrel = (TH2F *) f_Signal->Get("ElectronAnalysis/Signal/IDPF/Barrel/h2_pfRelIso03db");
-  TH2F *h2Signal_pfRelIso03db_endcap = (TH2F *) f_Signal->Get("ElectronAnalysis/Signal/IDPF/Endcap/h2_pfRelIso03db");
-  TH2F *h2Signal_pfRelIso03rho_barrel = (TH2F *) f_Signal->Get("ElectronAnalysis/Signal/IDPF/Barrel/h2_pfRelIso03rho");
-  TH2F *h2Signal_pfRelIso03rho_endcap = (TH2F *) f_Signal->Get("ElectronAnalysis/Signal/IDPF/Endcap/h2_pfRelIso03rho");
+  TH2F * h2Signal_pfRelIso03[n];
+  TH2F * h2Signal_pfRelIso03db[n];
+  TH2F * h2Signal_pfRelIso03rho[n];
 
-  TH2F *h2Signal_pfRelIso03 = h2Signal_pfRelIso03_barrel->Clone();
-  TH2F *h2Signal_pfRelIso03db = h2Signal_pfRelIso03db_barrel->Clone();
-  TH2F *h2Signal_pfRelIso03rho = h2Signal_pfRelIso03rho_barrel->Clone();
+  TH2F * h2QCD_pfRelIso03[n];
+  TH2F * h2QCD_pfRelIso03db[n];
+  TH2F * h2QCD_pfRelIso03rho[n];
 
-  h2Signal_pfRelIso03->Add(h2Signal_pfRelIso03_endcap);
-  h2Signal_pfRelIso03db->Add(h2Signal_pfRelIso03db_endcap);
-  h2Signal_pfRelIso03rho->Add(h2Signal_pfRelIso03rho_endcap);
+  for(int i=0; i < n; i++){
+    TString region = "";
+    if( i== 0) region = "Endcap";
+    if( i== 1) region = "Barrel1";
+    if( i== 2) region = "Barrel2";
+
+    h2Signal_pfRelIso03[i] = (TH2F *) f_Signal->Get(Form("ElectronAnalysis/Signal/IDPF/%s/h2_pfRelIso03",region.Data()));
+    h2Signal_pfRelIso03db[i] = (TH2F *) f_Signal->Get(Form("ElectronAnalysis/Signal/IDPF/%s/h2_pfRelIso03db",region.Data()));
+    h2Signal_pfRelIso03rho[i] = (TH2F *) f_Signal->Get(Form("ElectronAnalysis/Signal/IDPF/%s/h2_pfRelIso03rho",region.Data()));
+
+    h2QCD_pfRelIso03[i] = (TH2F *) f_QCD->Get(Form("ElectronAnalysis/QCD/IDPF/%s/h2_pfRelIso03",region.Data()));
+    h2QCD_pfRelIso03db[i] = (TH2F *) f_QCD->Get(Form("ElectronAnalysis/QCD/IDPF/%s/h2_pfRelIso03db",region.Data()));
+    h2QCD_pfRelIso03rho[i] = (TH2F *) f_QCD->Get(Form("ElectronAnalysis/QCD/IDPF/%s/h2_pfRelIso03rho",region.Data()));
+  }
+
+  /////merge three regions
+  if(merge){
+    for(int i=1; i < n; i++){
+      h2Signal_pfRelIso03[0]->Add(h2Signal_pfRelIso03[i]);
+      h2Signal_pfRelIso03db[0]->Add(h2Signal_pfRelIso03db[i]);
+      h2Signal_pfRelIso03rho[0]->Add(h2Signal_pfRelIso03rho[i]);
+   
+      h2QCD_pfRelIso03[0]->Add(h2QCD_pfRelIso03[i]);
+      h2QCD_pfRelIso03db[0]->Add(h2QCD_pfRelIso03db[i]);
+      h2QCD_pfRelIso03rho[0]->Add(h2QCD_pfRelIso03rho[i]);
+    }
+  }
+  ////////
 
   int npu = 15;
 
-  TH1D* hSignal_pfRelIso03_lowPU = h2Signal_pfRelIso03->ProjectionY("hSignal_pfRelIso03_lowPU",1,npu);
-  TH1D* hSignal_pfRelIso03db_lowPU = h2Signal_pfRelIso03db->ProjectionY("hSignal_pfRelIso03db_lowPU",1,npu);
-  TH1D* hSignal_pfRelIso03rho_lowPU = h2Signal_pfRelIso03rho->ProjectionY("hSignal_pfRelIso03rho_lowPU",1,npu);
-  TH1D* hSignal_pfRelIso03_highPU = h2Signal_pfRelIso03->ProjectionY("hSignal_pfRelIso03_highPU",npu,50);
-  TH1D* hSignal_pfRelIso03db_highPU = h2Signal_pfRelIso03db->ProjectionY("hSignal_pfRelIso03db_highPU",npu,50);
-  TH1D* hSignal_pfRelIso03rho_highPU = h2Signal_pfRelIso03rho->ProjectionY("hSignal_pfRelIso03rho_highPU",npu,50);
+  TH1D* hSignal_pfRelIso03_lowPU = h2Signal_pfRelIso03[area]->ProjectionY("hSignal_pfRelIso03_lowPU",1,npu);
+  TH1D* hSignal_pfRelIso03db_lowPU = h2Signal_pfRelIso03db[area]->ProjectionY("hSignal_pfRelIso03db_lowPU",1,npu);
+  TH1D* hSignal_pfRelIso03rho_lowPU = h2Signal_pfRelIso03rho[area]->ProjectionY("hSignal_pfRelIso03rho_lowPU",1,npu);
+  TH1D* hSignal_pfRelIso03_highPU = h2Signal_pfRelIso03[area]->ProjectionY("hSignal_pfRelIso03_highPU",npu,50);
+  TH1D* hSignal_pfRelIso03db_highPU = h2Signal_pfRelIso03db[area]->ProjectionY("hSignal_pfRelIso03db_highPU",npu,50);
+  TH1D* hSignal_pfRelIso03rho_highPU = h2Signal_pfRelIso03rho[area]->ProjectionY("hSignal_pfRelIso03rho_highPU",npu,50);
 
-  TH2F *h2QCD_pfRelIso03_barrel = (TH2F *) f_QCD->Get("ElectronAnalysis/QCD/IDPF/Barrel/h2_pfRelIso03");
-  TH2F *h2QCD_pfRelIso03_endcap = (TH2F *) f_QCD->Get("ElectronAnalysis/QCD/IDPF/Endcap/h2_pfRelIso03");
-  TH2F *h2QCD_pfRelIso03db_barrel = (TH2F *) f_QCD->Get("ElectronAnalysis/QCD/IDPF/Barrel/h2_pfRelIso03db");
-  TH2F *h2QCD_pfRelIso03db_endcap = (TH2F *) f_QCD->Get("ElectronAnalysis/QCD/IDPF/Endcap/h2_pfRelIso03db");
-  TH2F *h2QCD_pfRelIso03rho_barrel = (TH2F *) f_QCD->Get("ElectronAnalysis/QCD/IDPF/Barrel/h2_pfRelIso03rho");
-  TH2F *h2QCD_pfRelIso03rho_endcap = (TH2F *) f_QCD->Get("ElectronAnalysis/QCD/IDPF/Endcap/h2_pfRelIso03rho");
+  TH1D* hQCD_pfRelIso03_lowPU = h2QCD_pfRelIso03[area]->ProjectionY("hQCD_pfRelIso03_lowPU",1,npu); 
+  TH1D* hQCD_pfRelIso03db_lowPU = h2QCD_pfRelIso03db[area]->ProjectionY("hQCD_pfRelIso03db_lowPU",1,npu); 
+  TH1D* hQCD_pfRelIso03rho_lowPU = h2QCD_pfRelIso03rho[area]->ProjectionY("hQCD_pfRelIso03rho_lowPU",1,npu); 
+  TH1D* hQCD_pfRelIso03_highPU = h2QCD_pfRelIso03[area]->ProjectionY("hQCD_pfRelIso03_highPU",npu,50);
+  TH1D* hQCD_pfRelIso03db_highPU = h2QCD_pfRelIso03db[area]->ProjectionY("hQCD_pfRelIso03db_highPU",npu,50);
+  TH1D* hQCD_pfRelIso03rho_highPU = h2QCD_pfRelIso03rho[area]->ProjectionY("hQCD_pfRelIso03rho_highPU",npu,50);
 
-  TH2F *h2QCD_pfRelIso03 = h2QCD_pfRelIso03_barrel->Clone();
-  TH2F *h2QCD_pfRelIso03db = h2QCD_pfRelIso03db_barrel->Clone();
-  TH2F *h2QCD_pfRelIso03rho = h2QCD_pfRelIso03rho_barrel->Clone();
+  ///////1d plots//////
 
-  h2QCD_pfRelIso03->Add(h2QCD_pfRelIso03_endcap);
-  h2QCD_pfRelIso03db->Add(h2QCD_pfRelIso03db_endcap);
-  h2QCD_pfRelIso03rho->Add(h2QCD_pfRelIso03rho_endcap);
+  TH1F *hSignal_pfRelIso[3][n];
+  TH1F *hSignal_pfRelIsodb[3][n];
+  TH1F *hSignal_pfRelIsorho[3][n];
 
-  /// 1D plots
+  TH1F *hQCD_pfRelIso[3][n];
+  TH1F *hQCD_pfRelIsodb[3][n];
+  TH1F *hQCD_pfRelIsorho[3][n];
 
-  TH1D* hQCD_pfRelIso03_lowPU = h2QCD_pfRelIso03->ProjectionY("hQCD_pfRelIso03_lowPU",1,npu); 
-  TH1D* hQCD_pfRelIso03db_lowPU = h2QCD_pfRelIso03db->ProjectionY("hQCD_pfRelIso03db_lowPU",1,npu); 
-  TH1D* hQCD_pfRelIso03rho_lowPU = h2QCD_pfRelIso03rho->ProjectionY("hQCD_pfRelIso03rho_lowPU",1,npu); 
-  TH1D* hQCD_pfRelIso03_highPU = h2QCD_pfRelIso03->ProjectionY("hQCD_pfRelIso03_highPU",npu,50);
-  TH1D* hQCD_pfRelIso03db_highPU = h2QCD_pfRelIso03db->ProjectionY("hQCD_pfRelIso03db_highPU",npu,50);
-  TH1D* hQCD_pfRelIso03rho_highPU = h2QCD_pfRelIso03rho->ProjectionY("hQCD_pfRelIso03rho_highPU",npu,50);
+  for(int r=0; r < 2; r++){
+    TString dR = "";
+    if( r == 0 ) dR = "03";
+    if( r == 1 ) dR = "04";
+    for(int i=0; i < n; i++){
+      TString region = "";
+      if( i== 0) region = "Endcap";
+      if( i== 1) region = "Barrel1";
+      if( i== 2) region = "Barrel2";
+      hSignal_pfRelIso[r][i] = (TH1F *) f_Signal->Get(Form("ElectronAnalysis/Signal/IDPF/%s/h_pfRelIso%s",region.Data(),dR.Data()));
+      hSignal_pfRelIsodb[r][i] = (TH1F *) f_Signal->Get(Form("ElectronAnalysis/Signal/IDPF/%s/h_pfRelIso%sdb",region.Data(),dR.Data()));
+      hSignal_pfRelIsorho[r][i] = (TH1F *) f_Signal->Get(Form("ElectronAnalysis/Signal/IDPF/%s/h_pfRelIso%srho",region.Data(),dR.Data()));
 
-  TH1F *hSignal_pfRelIso02_barrel = (TH1F *) f_Signal->Get("ElectronAnalysis/Signal/IDPF/Barrel/h_pfRelIso02");
-  TH1F *hSignal_pfRelIso02_endcap = (TH1F *) f_Signal->Get("ElectronAnalysis/Signal/IDPF/Endcap/h_pfRelIso02");
-  TH1F *hSignal_pfRelIso02db_barrel = (TH1F *) f_Signal->Get("ElectronAnalysis/Signal/IDPF/Barrel/h_pfRelIso02db");
-  TH1F *hSignal_pfRelIso02db_endcap = (TH1F *) f_Signal->Get("ElectronAnalysis/Signal/IDPF/Endcap/h_pfRelIso02db");
-  
-  TH1F *hSignal_pfRelIso02 = hSignal_pfRelIso02_barrel->Clone();
-  TH1F *hSignal_pfRelIso02db = hSignal_pfRelIso02db_barrel->Clone();
-  
-  hSignal_pfRelIso02->Add(hSignal_pfRelIso02_endcap);
-  hSignal_pfRelIso02db->Add(hSignal_pfRelIso02db_endcap);
+      hQCD_pfRelIso[r][i] = (TH1F *) f_QCD->Get(Form("ElectronAnalysis/QCD/IDPF/%s/h_pfRelIso%s",region.Data(),dR.Data()));
+      hQCD_pfRelIsodb[r][i] = (TH1F *) f_QCD->Get(Form("ElectronAnalysis/QCD/IDPF/%s/h_pfRelIso%sdb",region.Data(),dR.Data()));
+      hQCD_pfRelIsorho[r][i] = (TH1F *) f_QCD->Get(Form("ElectronAnalysis/QCD/IDPF/%s/h_pfRelIso%srho",region.Data(),dR.Data()));
 
-  TH1F *hQCD_pfRelIso02_barrel = (TH1F *) f_QCD->Get("ElectronAnalysis/QCD/IDPF/Barrel/h_pfRelIso02");
-  TH1F *hQCD_pfRelIso02_endcap = (TH1F *) f_QCD->Get("ElectronAnalysis/QCD/IDPF/Endcap/h_pfRelIso02");
-  TH1F *hQCD_pfRelIso02db_barrel = (TH1F *) f_QCD->Get("ElectronAnalysis/QCD/IDPF/Barrel/h_pfRelIso02db");
-  TH1F *hQCD_pfRelIso02db_endcap = (TH1F *) f_QCD->Get("ElectronAnalysis/QCD/IDPF/Endcap/h_pfRelIso02db");
-  
-  TH1F *hQCD_pfRelIso02 = hQCD_pfRelIso02_barrel->Clone();
-  TH1F *hQCD_pfRelIso02db = hQCD_pfRelIso02db_barrel->Clone();
-  
-  hQCD_pfRelIso02->Add(hQCD_pfRelIso02_endcap);
-  hQCD_pfRelIso02db->Add(hQCD_pfRelIso02db_endcap);
+    }
 
-  TH1F *hSignal_pfRelIso04_barrel = (TH1F *) f_Signal->Get("ElectronAnalysis/Signal/IDPF/Barrel/h_pfRelIso04");
-  TH1F *hSignal_pfRelIso04_endcap = (TH1F *) f_Signal->Get("ElectronAnalysis/Signal/IDPF/Endcap/h_pfRelIso04");
-  TH1F *hSignal_pfRelIso04db_barrel = (TH1F *) f_Signal->Get("ElectronAnalysis/Signal/IDPF/Barrel/h_pfRelIso04db");
-  TH1F *hSignal_pfRelIso04db_endcap = (TH1F *) f_Signal->Get("ElectronAnalysis/Signal/IDPF/Endcap/h_pfRelIso04db");
-  TH1F *hSignal_pfRelIso04rho_barrel = (TH1F *) f_Signal->Get("ElectronAnalysis/Signal/IDPF/Barrel/h_pfRelIso04rho");
-  TH1F *hSignal_pfRelIso04rho_endcap = (TH1F *) f_Signal->Get("ElectronAnalysis/Signal/IDPF/Endcap/h_pfRelIso04rho");
+  }
 
-  TH1F *hSignal_pfRelIso04 = hSignal_pfRelIso04_barrel->Clone();
-  TH1F *hSignal_pfRelIso04db = hSignal_pfRelIso04db_barrel->Clone();
-  TH1F *hSignal_pfRelIso04rho = hSignal_pfRelIso04rho_barrel->Clone();
+  if(merge){
+    for(int r=0; r < 2; r++){
+      for( int i =1; i < n ;i++){
+        hSignal_pfRelIso[r][0]->Add(hSignal_pfRelIso[r][i]);
+        hSignal_pfRelIsodb[r][0]->Add(hSignal_pfRelIsodb[r][i]);
+        hSignal_pfRelIsorho[r][0]->Add(hSignal_pfRelIsorho[r][i]);
 
-  hSignal_pfRelIso04->Add(hSignal_pfRelIso04_endcap);
-  hSignal_pfRelIso04db->Add(hSignal_pfRelIso04db_endcap);
-  hSignal_pfRelIso04rho->Add(hSignal_pfRelIso04rho_endcap);
+        hQCD_pfRelIso[r][0]->Add(hQCD_pfRelIso[r][i]);
+        hQCD_pfRelIsodb[r][0]->Add(hQCD_pfRelIsodb[r][i]);
+        hQCD_pfRelIsorho[r][0]->Add(hQCD_pfRelIsorho[r][i]);
+      } 
+    }
+  }
 
-  TH1F *hQCD_pfRelIso04_barrel = (TH1F *) f_QCD->Get("ElectronAnalysis/QCD/IDPF/Barrel/h_pfRelIso04");
-  TH1F *hQCD_pfRelIso04_endcap = (TH1F *) f_QCD->Get("ElectronAnalysis/QCD/IDPF/Endcap/h_pfRelIso04");
-  TH1F *hQCD_pfRelIso04db_barrel = (TH1F *) f_QCD->Get("ElectronAnalysis/QCD/IDPF/Barrel/h_pfRelIso04db");
-  TH1F *hQCD_pfRelIso04db_endcap = (TH1F *) f_QCD->Get("ElectronAnalysis/QCD/IDPF/Endcap/h_pfRelIso04db");
-  TH1F *hQCD_pfRelIso04rho_barrel = (TH1F *) f_QCD->Get("ElectronAnalysis/QCD/IDPF/Barrel/h_pfRelIso04rho");
-  TH1F *hQCD_pfRelIso04rho_endcap = (TH1F *) f_QCD->Get("ElectronAnalysis/QCD/IDPF/Endcap/h_pfRelIso04rho");
+  ROC_pfRelIso03 = ROC( hSignal_pfRelIso[0][area], hQCD_pfRelIso[0][area]);
+  ROC_pfRelIso03db = ROC( hSignal_pfRelIsodb[0][area], hQCD_pfRelIsodb[0][area]);
+  ROC_pfRelIso03rho = ROC( hSignal_pfRelIsorho[0][area], hQCD_pfRelIsorho[0][area]);
 
-  TH1F *hQCD_pfRelIso04 = hQCD_pfRelIso04_barrel->Clone();
-  TH1F *hQCD_pfRelIso04db = hQCD_pfRelIso04db_barrel->Clone();
-  TH1F *hQCD_pfRelIso04rho = hQCD_pfRelIso04rho_barrel->Clone();
-
-  hQCD_pfRelIso04->Add(hQCD_pfRelIso04_endcap);
-  hQCD_pfRelIso04db->Add(hQCD_pfRelIso04db_endcap);
-  hQCD_pfRelIso04rho->Add(hQCD_pfRelIso04rho_endcap);
-
-  TH1F *hSignal_pfRelIso03_barrel = (TH1F *) f_Signal->Get("ElectronAnalysis/Signal/IDPF/Barrel/h_pfRelIso03");
-  TH1F *hSignal_pfRelIso03_endcap = (TH1F *) f_Signal->Get("ElectronAnalysis/Signal/IDPF/Endcap/h_pfRelIso03");
-  TH1F *hSignal_pfRelIso03db_barrel = (TH1F *) f_Signal->Get("ElectronAnalysis/Signal/IDPF/Barrel/h_pfRelIso03db");
-  TH1F *hSignal_pfRelIso03db_endcap = (TH1F *) f_Signal->Get("ElectronAnalysis/Signal/IDPF/Endcap/h_pfRelIso03db");
-  TH1F *hSignal_pfRelIso03rho_barrel = (TH1F *) f_Signal->Get("ElectronAnalysis/Signal/IDPF/Barrel/h_pfRelIso03rho");
-  TH1F *hSignal_pfRelIso03rho_endcap = (TH1F *) f_Signal->Get("ElectronAnalysis/Signal/IDPF/Endcap/h_pfRelIso03rho");
-
-  TH1F *hSignal_pfRelIso03 = hSignal_pfRelIso03_barrel->Clone();
-  TH1F *hSignal_pfRelIso03db = hSignal_pfRelIso03db_barrel->Clone();
-  TH1F *hSignal_pfRelIso03rho = hSignal_pfRelIso03rho_barrel->Clone();
-
-  hSignal_pfRelIso03->Add(hSignal_pfRelIso03_endcap);
-  hSignal_pfRelIso03db->Add(hSignal_pfRelIso03db_endcap);
-  hSignal_pfRelIso03rho->Add(hSignal_pfRelIso03rho_endcap);
-
-  TH1F *hQCD_pfRelIso03_barrel = (TH1F *) f_QCD->Get("ElectronAnalysis/QCD/IDPF/Barrel/h_pfRelIso03");
-  TH1F *hQCD_pfRelIso03_endcap = (TH1F *) f_QCD->Get("ElectronAnalysis/QCD/IDPF/Endcap/h_pfRelIso03");
-  TH1F *hQCD_pfRelIso03db_barrel = (TH1F *) f_QCD->Get("ElectronAnalysis/QCD/IDPF/Barrel/h_pfRelIso03db");
-  TH1F *hQCD_pfRelIso03db_endcap = (TH1F *) f_QCD->Get("ElectronAnalysis/QCD/IDPF/Endcap/h_pfRelIso03db");
-  TH1F *hQCD_pfRelIso03rho_barrel = (TH1F *) f_QCD->Get("ElectronAnalysis/QCD/IDPF/Barrel/h_pfRelIso03rho");
-  TH1F *hQCD_pfRelIso03rho_endcap = (TH1F *) f_QCD->Get("ElectronAnalysis/QCD/IDPF/Endcap/h_pfRelIso03rho");
-
-  TH1F *hQCD_pfRelIso03 = hQCD_pfRelIso03_barrel->Clone();
-  TH1F *hQCD_pfRelIso03db = hQCD_pfRelIso03db_barrel->Clone();
-  TH1F *hQCD_pfRelIso03rho = hQCD_pfRelIso03rho_barrel->Clone();
-
-  hQCD_pfRelIso03->Add(hQCD_pfRelIso03_endcap);
-  hQCD_pfRelIso03db->Add(hQCD_pfRelIso03db_endcap);
-  hQCD_pfRelIso03rho->Add(hQCD_pfRelIso03rho_endcap);
-
-  ROC_pfRelIso02 = ROC( hSignal_pfRelIso02, hQCD_pfRelIso02);
-  ROC_pfRelIso02db = ROC( hSignal_pfRelIso02db, hQCD_pfRelIso02db);
-
-  ROC_pfRelIso03 = ROC( hSignal_pfRelIso03, hQCD_pfRelIso03);
-  ROC_pfRelIso03db = ROC( hSignal_pfRelIso03db, hQCD_pfRelIso03db);
-  ROC_pfRelIso03rho = ROC( hSignal_pfRelIso03rho, hQCD_pfRelIso03rho);
-
-  ROC_pfRelIso04 = ROC( hSignal_pfRelIso04, hQCD_pfRelIso04);
-  ROC_pfRelIso04db = ROC( hSignal_pfRelIso04db, hQCD_pfRelIso04db);
-  ROC_pfRelIso04rho = ROC( hSignal_pfRelIso04rho, hQCD_pfRelIso04rho);
+  ROC_pfRelIso04 = ROC( hSignal_pfRelIso[1][area], hQCD_pfRelIso[1][area]);
+  ROC_pfRelIso04db = ROC( hSignal_pfRelIsodb[1][area], hQCD_pfRelIsodb[1][area]);
+  ROC_pfRelIso04rho = ROC( hSignal_pfRelIsorho[1][area], hQCD_pfRelIsorho[1][area]);
 
   ROC_pfRelIso03_lowPU = ROC( hSignal_pfRelIso03_lowPU, hQCD_pfRelIso03_lowPU);
   ROC_pfRelIso03db_lowPU = ROC( hSignal_pfRelIso03db_lowPU, hQCD_pfRelIso03db_lowPU);
@@ -213,16 +180,13 @@ void ElectronPFIso(){
   ROC_pfRelIso03rho_highPU = ROC( hSignal_pfRelIso03rho_highPU, hQCD_pfRelIso03rho_highPU);
 
   TCanvas * c_dR = new TCanvas("c_dR","c_dR",500,500);
-  Style( ROC_pfRelIso02db, 1, 1);
   Style( ROC_pfRelIso03db, 2, 1);
   Style( ROC_pfRelIso04db, 4, 1);
-  ROC_pfRelIso02db->Draw("ALP");
-  ROC_pfRelIso03db->Draw("sameLP");
+  ROC_pfRelIso03db->Draw("ALP");
   ROC_pfRelIso04db->Draw("sameLP");
   SetLabel("");
 
   TLegend *l= new TLegend(0.6,0.3,0.9,0.5);
-  l->AddEntry(ROC_pfRelIso02db,"dR = 0.2","LP");
   l->AddEntry(ROC_pfRelIso03db,"dR = 0.3","LP");
   l->AddEntry(ROC_pfRelIso04db,"dR = 0.4","LP");
   l->SetTextSize(0.04);
