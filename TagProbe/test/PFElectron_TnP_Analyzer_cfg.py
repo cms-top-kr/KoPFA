@@ -9,10 +9,7 @@ process.MessageLogger.destinations = ['cout', 'cerr']
 process.MessageLogger.cerr.FwkReport.reportEvery = 1000
 
 import os
-if 'MODE' not in os.environ:
-    mode = 'MC'
-else:
-    mode = os.environ['MODE']
+mode = os.environ['MODE']
 step = os.environ['STEP']
 
 from KoPFA.TagProbe.common_PDFs_cff import *
@@ -26,7 +23,7 @@ def tnpEffPSet(categories):
             UnbinnedVariables = cms.vstring("mass", "weight"),
             BinnedVariables = cms.PSet(
                 #pt = cms.vdouble(20, 25, 30, 35, 40, 50, 150),
-                pt = cms.vdouble(20, 30, 40, 50, 150),
+                pt = cms.vdouble(5, 7, 10, 15, 20, 30, 40, 50, 150),
             ),
             BinToPDFmap = cms.vstring("bwResCBExp")
         ))
@@ -45,7 +42,7 @@ def tnpEffPSet(categories):
             UnbinnedVariables = cms.vstring("mass", "weight"),
             BinnedVariables = cms.PSet(
                 #pt = cms.vdouble(20, 25, 30, 35, 40, 50, 150),
-                pt = cms.vdouble(20, 30, 40, 50, 150),
+                pt = cms.vdouble(5, 7, 10, 15, 20, 30, 40, 50, 150),
                 abseta = cms.vdouble(0.0, 0.8, 1.478, 2.5)
                 #abseta = cms.vdouble(0.0, 1.5, 2.4)
             ),
@@ -56,8 +53,7 @@ def tnpEffPSet(categories):
             EfficiencyCategoryAndState = cms.vstring(category, "pass"),
             UnbinnedVariables = cms.vstring("mass", "weight"),
             BinnedVariables = cms.PSet(
-                #abseta = cms.vdouble(0.0, 1.5, 2.4)
-                event_nPV = cms.vdouble(*range(0,30)),
+                event_nPV = cms.vdouble(*[i-0.5 for i in range(0, 32)])
             ),
             BinToPDFmap = cms.vstring("bwResCBExp")
         ))
@@ -66,11 +62,11 @@ def tnpEffPSet(categories):
 
 def makeTnPFitter(process, suffix, categories):
     fitter = cms.EDAnalyzer("TagProbeFitTreeAnalyzer",
-        InputFileNames = cms.vstring("tnpTree_%s.root" % mode),
+        InputFileNames = cms.vstring("ntuple/dR04/tnpTree_%s.root" % mode),
         InputDirectoryName = cms.string("tnp"+suffix),
         InputTreeName = cms.string("fitter_tree"),
-        OutputFileName = cms.string("result_%s_%s.root" % (suffix, mode)),
-        NumCPU = cms.uint32(4),
+        OutputFileName = cms.string("result/dR04/result_%s_%s.root" % (suffix, mode)),
+        NumCPU = cms.uint32(1),
         SaveWorkspace = cms.bool(False),
         floatShapeParameters = cms.bool(True),
         WeightVariable = cms.string("weight"),
@@ -99,13 +95,11 @@ process.p = cms.Path()
 categoryMap = {}
 categoryMap['Nh'                 ] = ['nh0', 'nh1']
 categoryMap['Nh0Mva'             ] = ['mva00', 'mva03', 'mva05', 'mva07', 'mva09']
-categoryMap['Nh0Mva05Iso'        ] = [
-    #'iso10' , 'iso15' , 'iso17' , 'iso20' , 
-    #'diso10', 'diso15', 'diso17', 'diso20',
-    #'riso10', 'riso15', 'riso17', 'riso20',
-    'iso15' , 'diso15', 'riso15',
-]
+categoryMap['Nh0Mva05Iso'        ] = ['iso15' , 'diso15', 'riso15',]
 categoryMap['Nh0Mva05Riso15Pf'   ] = ['pf']
-categoryMap['Nh0Mva05Riso15PfTrg'] = ['trg']
+categoryMap['Nh0Mva05Riso15PfTrg'] = ['trgPath', 'trgHL', 'trgDZ']
+categoryMap['Nh0Mva00Iso'        ] = ['iso15' , 'diso15', 'riso15',]
+categoryMap['Nh0Mva00Riso15Pf'   ] = ['pf']
+categoryMap['Nh0Mva00Riso15PfTrg'] = ['trgPath', 'trgHL', 'trgDZ']
 
 makeTnPFitter(process, step, categoryMap[step])
