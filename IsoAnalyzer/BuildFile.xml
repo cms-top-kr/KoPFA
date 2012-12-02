@@ -1,8 +1,28 @@
 <use   name="FWCore/Framework"/>
 <use   name="FWCore/PluginManager"/>
+<use   name="FWCore/MessageLogger"/>
 <use   name="FWCore/ParameterSet"/>
+<use   name="FWCore/Utilities"/>
 <use   name="DataFormats/PatCandidates"/>
 <use   name="PhysicsTools/UtilAlgos"/>
 <use   name="FWCore/ServiceRegistry"/>
 <use   name="DataFormats/Common"/>
+<use   name="CondFormats/JetMETObjects"/>
+<use   name="DQMServices/Core"/>
+<use   name="SimDataFormats/PileupSummaryInfo"/>
+<use   name="PhysicsTools/Utilities"/>
+<use   name="HLTrigger/HLTcore" />
+<use   name="KoPFA/DataFormats"/>
+<use   name="KoPFA/CMGDataFormats"/>
+<use   name="KoPFA/CommonTools"/>
+<use   name="AnalysisDataFormats/CMGTools"/>
+<use   name="EGamma/EGammaAnalysisTools"/>
+<use   name="MuonAnalysis/MuonAssociators"/>
+<use   name="rootrflx"/>
+<use   name="rootminuit"/>
+<use   name="rootminuit2"/>
 <flags   EDM_PLUGIN="1"/>
+<export>
+  <lib   name="1"/>
+  <use   name="KoPFA/TopAnalyzer"/>
+</export>
