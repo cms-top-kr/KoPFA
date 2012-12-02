@@ -18,8 +18,7 @@ mclist = ["TTbarTuneZ2","ZJets"]
 #mclist += ["SingleToptW","SingleTopBartW","TTH"]
 #mclist += ["ZtauDecay","ZtauDecay10To50"]
 
-#rdlist = ["Run2012AMuMu"]
-#rdlist = ["Run2012BMuMu","Run2012CMuMu"]
+rdlist = ["Run2012AMuMu","Run2012BMuMu","Run2012CMuMu"]
 #rdlist += ["Run2012AElEl","Run2012BElEl","Run2012CElEl"]
 #rdlist += ["Run2012AMuEl","Run2012BMuEl","Run2012CMuEl"]
 
@@ -88,7 +87,7 @@ def processSample( sample, dir):
     out.write(process.dumpPython())
     out.close()
     ################################################ Running the batch job
-    #os.system("cmsBatch0.py 1 "+dir+'/cmg2kcms_'+sample+'_cfg.py'+" -o "+dir+"/"+sample+"/Log -r "+dir+"/"+sample+"/Res -b 'bsub -q 1nh < batchScript.sh'")
+    os.system("cmsBatch0.py 1 "+dir+'/cmg2kcms_'+sample+'_cfg.py'+" -o "+dir+"/"+sample+"/Log -r "+dir+"/"+sample+"/Res -b 'bsub -q 1nh < batchScript.sh'")
     #os.system("cmsBatch0.py 3 "+dir+'/cmg2kcms_'+sample+'_cfg.py'+" -o "+dir+"/"+sample+"/Log -r "+dir+"/"+sample+"/Res -b 'bsub -G u_zh -q 1nh < batchScript.sh'")
     ################################################
 currdir = commands.getoutput('pwd') 
