@@ -43,21 +43,21 @@ void CMGFinalLeptonProducer::produce(edm::Event& iEvent, const edm::EventSetup& 
   iEvent.getByLabel(ElElLep2Label_, eelep2_);
 
   if( mmlep1_.isValid() && mmlep2_.isValid()  ) {
-    if( mmlep1_->size() > 0 && mmlep1_->size() > 0 ){
+    if( mmlep1_->size() > 0 && mmlep2_->size() > 0 ){
      muons->push_back((*mmlep1_)[0]);
      muons->push_back((*mmlep2_)[0]);
     }
   }
 
   if( melep1_.isValid() && melep2_.isValid()  ) {
-    if( melep1_->size() > 0 && melep1_->size() > 0 ){
+    if( melep1_->size() > 0 && melep2_->size() > 0 ){
      muons->push_back((*melep1_)[0]);
      electrons->push_back((*melep2_)[0]);
     }
   }
 
   if( eelep1_.isValid() && eelep2_.isValid()  ) {
-    if( eelep1_->size() > 0 && eelep1_->size() > 0 ){
+    if( eelep1_->size() > 0 && eelep2_->size() > 0 ){
      electrons->push_back((*eelep1_)[0]);
      electrons->push_back((*eelep2_)[0]);
     }
