@@ -51,7 +51,7 @@ def doWork(finalpath, action):
         tmp = ""
         for f in filelist:
           tmp += finalpath+"/Res/"+f+" "
-          k = n%100
+          k = n%500
           if k == 0 or n == nlist:
             list.append(tmp)
             tmp = ""
