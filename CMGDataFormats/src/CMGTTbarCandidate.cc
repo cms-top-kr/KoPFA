@@ -276,9 +276,10 @@ void CMGTTbarCandidate::building( const std::vector<cmg::GenJet>* genJets, const
     }
     if( bquarksfromtop[i].pt() > 20 && fabs(bquarksfromtop[i].eta()) < 2.5) nbQuark20++;
   }
+
   for( unsigned int i = 0 ; i < bquarksfromnotop.size() ; i++){
     if( i < 2){
-      bquarks_[i] = bquarksfromnotop[i];
+      bquarks_[2+i] = bquarksfromnotop[i];
     }
     if( bquarksfromnotop[i].pt() > 20 && fabs(bquarksfromnotop[i].eta()) < 2.5) nbQuark20++;
   }
