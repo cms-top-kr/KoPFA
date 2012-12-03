@@ -85,9 +85,8 @@ ElEl = cms.EDFilter('CMGTopElElAnalyzer',
     relIso1 = cms.untracked.double(0.15),
     relIso2 = cms.untracked.double(0.15),
     fullLepEvt = cms.untracked.InputTag("kinSolutionTtFullLepEventElEl","ttbars"),
-    fullLepEvt2 = cms.untracked.InputTag("maosSolutionTtFullLepEventElEl","ttbars"),
-    topSample = cms.untracked.bool(True),
-    zSample = cms.untracked.bool(True),
+    #fullLepEvt2 = cms.untracked.InputTag("maosSolutionTtFullLepEventElEl","ttbars"),
+    nstep    = cms.untracked.uint32(4), ## isIso+PairSign+ZMass veto+MET
     bTagSets = bTagSets,
 )
 
@@ -111,9 +110,8 @@ MuMu = cms.EDFilter('CMGTopMuMuAnalyzer',
     relIso1 = cms.untracked.double(0.15),
     relIso2 = cms.untracked.double(0.15),
     fullLepEvt = cms.untracked.InputTag("kinSolutionTtFullLepEventMuMu","ttbars"),
-    fullLepEvt2 = cms.untracked.InputTag("maosSolutionTtFullLepEventMuMu","ttbars"),
-    topSample = cms.untracked.bool(True),
-    zSample = cms.untracked.bool(True),
+    #fullLepEvt2 = cms.untracked.InputTag("maosSolutionTtFullLepEventMuMu","ttbars"),
+    nstep    = cms.untracked.uint32(4), ## isIso+PairSign+ZMass veto+MET
     bTagSets = bTagSets,
 )
 
@@ -137,9 +135,8 @@ MuEl = cms.EDFilter('CMGTopMuElAnalyzer',
     relIso1 = cms.untracked.double(0.15),
     relIso2 = cms.untracked.double(0.15),
     fullLepEvt = cms.untracked.InputTag("kinSolutionTtFullLepEventMuEl","ttbars"),
-    fullLepEvt2 = cms.untracked.InputTag("maosSolutionTtFullLepEventMuEl","ttbars"),
-    topSample = cms.untracked.bool(True),
-    zSample = cms.untracked.bool(True),
+    #fullLepEvt2 = cms.untracked.InputTag("maosSolutionTtFullLepEventMuEl","ttbars"),
+    nstep    = cms.untracked.uint32(4), ## isIso+PairSign+ZMass veto+MET
     bTagSets = bTagSets,
 )
 
