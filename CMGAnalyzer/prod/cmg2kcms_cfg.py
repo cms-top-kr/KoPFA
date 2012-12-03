@@ -25,9 +25,10 @@ runOnMC = True
 runOn2012 = True
 
 #Data
-#process.load("KoPFA.CommonTools.Sources.CMG.V5_7_0.Run2012.cmgTuple_Run2012AElEl_cff")
+#process.load("KoPFA.CommonTools.Sources.CMG.V5_10_0.Run2012.cmgTuple_Run2012CElEl_cff")
 #MC
 process.load("KoPFA.CommonTools.Sources.CMG.V5_10_0.Summer12.patTuple_TTbarTuneZ2_cff")
+#process.load("KoPFA.CommonTools.Sources.CMG.V5_10_0.Summer12.patTuple_TTbarFullLepMGDecays_cff")
 #process.load("KoPFA.CommonTools.Sources.CMG.V5_10_0.Summer12.cmgTuple_TTH_HToBB_M125_cff")
 #process.load("KoPFA.CommonTools.Sources.CMG.V5_10_0.Summer12.cmgTuple_TTbarTuneZ2_cff")
 #process.load("KoPFA.CommonTools.Sources.CMG.V5_10_0.Summer12.cmgTuple_ZJets_cff")
@@ -95,7 +96,7 @@ process.p = cms.Path(
     process.CMGFinalLeptonsMuMu*
     process.JetEnergyScaleMuMu*
     process.kinSolutionTtFullLepEventMuMu*
-    process.maosSolutionTtFullLepEventMuMu*
+#    process.maosSolutionTtFullLepEventMuMu*
     process.MuMu
 )
 
@@ -106,7 +107,7 @@ process.p2 = cms.Path(
     process.CMGFinalLeptonsMuEl*
     process.JetEnergyScaleMuEl*
     process.kinSolutionTtFullLepEventMuEl*
-    process.maosSolutionTtFullLepEventMuEl*
+#    process.maosSolutionTtFullLepEventMuEl*
     process.MuEl
 )
 
@@ -117,15 +118,15 @@ process.p3 = cms.Path(
     process.CMGFinalLeptonsElEl*
     process.JetEnergyScaleElEl*
     process.kinSolutionTtFullLepEventElEl*
-    process.maosSolutionTtFullLepEventElEl*
+#    process.maosSolutionTtFullLepEventElEl*
     process.ElEl
 )
 
 ### Electron Analyzer ###
 
-process.p4 = cms.Path(
-    process.ElectronAnalysis
-)
+#process.p4 = cms.Path(
+#    process.ElectronAnalysis
+#)
 
 #process.p5 = cms.Path(
 #    process.MuonAnalysis
