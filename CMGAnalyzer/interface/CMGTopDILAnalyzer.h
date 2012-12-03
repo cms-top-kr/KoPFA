@@ -13,7 +13,7 @@
 //
 // Original Author:  Tae Jeong Kim,40 R-A32,+41227678602,
 //         Created:  Fri Jun  4 17:19:29 CEST 2010
-// $Id: CMGTopDILAnalyzer.h,v 1.12 2012/11/07 15:26:17 tjkim Exp $
+// $Id: CMGTopDILAnalyzer.h,v 1.13 2012/11/07 16:03:59 tjkim Exp $
 //
 //
 
@@ -111,9 +111,9 @@ class CMGTopDILAnalyzer : public edm::EDFilter {
     applyIso_ = iConfig.getUntrackedParameter<bool>("applyIso",true);
     oppPair_ = iConfig.getUntrackedParameter<bool>("oppPair",true);
     fullLepEvt_ = iConfig.getUntrackedParameter<edm::InputTag>("fullLepEvt");
-    fullLepEvt2_ = iConfig.getUntrackedParameter<edm::InputTag>("fullLepEvt2");
-    topSample_ = iConfig.getUntrackedParameter<bool>("topSample",false);
-    zSample_ = iConfig.getUntrackedParameter<bool>("zSample",false);
+    //fullLepEvt2_ = iConfig.getUntrackedParameter<edm::InputTag>("fullLepEvt2");
+    nstep_ = iConfig.getUntrackedParameter<unsigned int>("nstep",0);
+ 
     std::vector<edm::ParameterSet> bTagSets = iConfig.getUntrackedParameter<std::vector<edm::ParameterSet> >("bTagSets");
     for ( int i=0, n=bTagSets.size(); i<n; ++i )
     {
@@ -272,8 +272,8 @@ class CMGTopDILAnalyzer : public edm::EDFilter {
     edm::Handle<vector<vallot::TTbarDILEvent> > fullLepEvt;
     iEvent.getByLabel(fullLepEvt_, fullLepEvt);
 
-    edm::Handle<vector<vallot::TTbarDILEvent> > fullLepEvt2;
-    iEvent.getByLabel(fullLepEvt2_, fullLepEvt2);
+    //edm::Handle<vector<vallot::TTbarDILEvent> > fullLepEvt2;
+    //iEvent.getByLabel(fullLepEvt2_, fullLepEvt2);
  
     edm::Handle<double>  rho;
     iEvent.getByLabel(edm::InputTag("kt6PFJetsPFlow","rho"), rho);
@@ -506,6 +506,7 @@ class CMGTopDILAnalyzer : public edm::EDFilter {
         ttbarKin->push_back( fullLepEvt->at(cmb) );
       }
 //////////
+      /*
       cmb = 0 ;
 
       if( fullLepEvt2->size() > 0){
@@ -538,6 +539,7 @@ class CMGTopDILAnalyzer : public edm::EDFilter {
         ttbarMaos->push_back( fullLepEvt2->at(cmb) );
         
       }
+      */
     }
 //////////
     //gen information
@@ -601,24 +603,23 @@ class CMGTopDILAnalyzer : public edm::EDFilter {
 
     //ESHandle<SetupData> pSetup;
     //iSetup.get<SetupRecord>().get(pSetup);
-    tree->Fill();
 
     if ( accept )
     {
       cutStepBit[0] = (ZMass > 12);
       cutStepBit[1] = (relIso1 < relIso1_ && relIso2 < relIso2_); 
       cutStepBit[2] = (PairSign < 0);
-      cutStepBit[4] = (jetspt30->size() >= 2);
       if ( mode == 1 or mode == 2 )
       {
         cutStepBit[3] = true;
-        cutStepBit[5] = true;
+        cutStepBit[4] = true;
       }
       else
       {
         cutStepBit[3] = abs(ZMass - 91.2) > 15;
-        cutStepBit[5] = MET > 30;
+        cutStepBit[4] = MET > 30;
       }
+      cutStepBit[5] = (jetspt30->size() >= 4);
       cutStepBit[6] = (nbjets30_[1] >= 1);
       
       for ( int cutStep = 0; cutStep < nCutStep_; ++cutStep )
@@ -704,6 +705,18 @@ class CMGTopDILAnalyzer : public edm::EDFilter {
           h_[cutStep].htopMass2->Fill(ttbar->at(0).leg2().M());
         }
       }
+    }
+
+    bool fill = true;
+    for( unsigned int i = 0 ; i <= nstep_ ; i++){
+      if ( !cutStepBit[i] ) {
+        fill = false;
+        break;
+      }
+    }
+
+    if( fill ){
+      tree->Fill();
     }
 
     return accept;
@@ -853,7 +866,7 @@ class CMGTopDILAnalyzer : public edm::EDFilter {
   edm::InputTag puNVertexLabel_;
 
   edm::InputTag fullLepEvt_;
-  edm::InputTag fullLepEvt2_;
+  //edm::InputTag fullLepEvt2_;
 
   std::vector<std::string> filters_;
   bool metStudy_;
@@ -949,8 +962,8 @@ class CMGTopDILAnalyzer : public edm::EDFilter {
 
   bool applyIso_;
   bool oppPair_;
-  bool topSample_;
-  bool zSample_;
+
+  unsigned int nstep_;
 
   int nCutStep_;
   std::vector<Histograms> h_;
