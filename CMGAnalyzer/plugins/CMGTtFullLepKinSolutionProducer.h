@@ -2,7 +2,7 @@
 #define CMGTtFullLepKinSolutionProducer_h
 
 //
-// $Id: CMGTtFullLepKinSolutionProducer.h,v 1.2 2012/10/24 12:53:24 tjkim Exp $
+// $Id: CMGTtFullLepKinSolutionProducer.h,v 1.3 2012/10/26 11:32:37 youngjo Exp $
 //
 #include <memory>
 #include <string>
@@ -22,6 +22,8 @@
 #include "AnalysisDataFormats/CMGTools/interface/Electron.h"
 #include "AnalysisDataFormats/CMGTools/interface/Muon.h"
 #include "KoPFA/DataFormats/interface/TTbarDILEvent.h"
+
+using namespace std;
 
 class CMGTtFullLepKinSolutionProducer : public edm::EDProducer {
 
@@ -541,14 +543,27 @@ void CMGTtFullLepKinSolutionProducer::produce(edm::Event & evt, const edm::Event
     int j2 = -1;
     double Mbb = -1;
     std::vector<int> add;
+    //std::cout << "Solution----" << endl; 
+    int nbtag = 0;
     if( jets->size() >= 4){  
+    
       for( int n =0 ; n < (int) jets->size(); n++){
-        if( !( n == ib || n == ibbar) ) add.push_back(n);
+        if( nbtag == 2) break;
+        if( !( n == ib || n == ibbar) ) {
+          double bDiscriminator = (*jets)[n].bDiscriminator("combinedSecondaryVertexBJetTags");
+          double secvtx = (*jets)[n].secvtxMass();
+          //bool btagged =  bDiscriminator > 0.898;
+          bool btagged =  secvtx > 0;
+          if( btagged ) nbtag++;
+          if( add.size() < 2 || btagged ){
+            add.push_back(n);
+          }
+        }
       }
- 
-      j1 = add[0];
-      j2 = add[1];
- 
+
+      j1 = add[add.size()-2];
+      j2 = add[add.size()-1];
+
       TLorentzVector j1p4( (*jets)[j1].px(), (*jets)[j1].py(), (*jets)[j1].pz(), (*jets)[j1].energy() );
       TLorentzVector j2p4( (*jets)[j2].px(), (*jets)[j2].py(), (*jets)[j2].pz(), (*jets)[j2].energy() );
       TLorentzVector Mbbp4 = j1p4 + j2p4;
