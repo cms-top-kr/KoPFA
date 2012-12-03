@@ -1,9 +1,9 @@
 // -*- C++ -*-
 //
-// Package:    JetFilter
-// Class:      JetFilter
+// Package:    CMGJetFilter
+// Class:      CMGJetFilter
 //
-/**\class JetFilter JetFilter.cc UserCode/JetFilter/src/JetFilter.cc
+/**\class CMGJetFilter CMGJetFilter.cc UserCode/CMGJetFilter/src/CMGJetFilter.cc
 
  Description: <one line class summary>
 
@@ -13,12 +13,13 @@
 //
 // Original Author:  Tae Jeong Kim
 //         Created:  Mon Dec 14 01:29:35 CET 2009
-// $Id: JetFilter.cc,v 1.9 2012/05/07 03:00:31 tjkim Exp $
+// $Id: CMGJetFilter.cc,v 1.5 2012/11/07 08:42:17 youngjo Exp $
 //
 //
 
 // system include files
 #include <memory>
+#include <cmath>
 
 // user include files
 #include "FWCore/Framework/interface/Frameworkfwd.h"
@@ -30,6 +31,12 @@
 
 #include "DataFormats/PatCandidates/interface/MET.h"
 #include "DataFormats/PatCandidates/interface/Jet.h"
+#include "DataFormats/Candidate/interface/CompositePtrCandidate.h"
+#include "AnalysisDataFormats/CMGTools/interface/BaseMET.h"
+#include "AnalysisDataFormats/CMGTools/interface/BaseJet.h"
+#include "AnalysisDataFormats/CMGTools/interface/PFJet.h"
+#include "AnalysisDataFormats/CMGTools/interface/Electron.h"
+#include "AnalysisDataFormats/CMGTools/interface/Muon.h"
 
 #include "PhysicsTools/SelectorUtils/interface/PFJetIDSelectionFunctor.h"
 //#include "JetMETCorrections/Objects/interface/JetCorrector.h"
@@ -45,19 +52,20 @@
 using namespace edm;
 using namespace std;
 
-class JetFilter : public edm::EDFilter {
+class CMGJetFilter : public edm::EDFilter {
    public:
-      explicit JetFilter(const edm::ParameterSet&);
-      ~JetFilter();
+      explicit CMGJetFilter(const edm::ParameterSet&);
+      ~CMGJetFilter();
 
    private:
       virtual void beginJob() ;
       virtual bool filter(edm::Event&, const edm::EventSetup&);
       virtual void endJob() ;
-      double resolutionFactor(const pat::Jet&);
+      //double resolutionFactor(const cmg::PFJet&);
+      bool checkPFJetId(const cmg::PFJet * jet);
       // ----------member data ---------------------------
 
-      typedef pat::JetCollection::const_iterator JI;
+      typedef vector<cmg::PFJet>::const_iterator JI;
 
       bool applyFilter_;
       bool bJetFirst_; 
@@ -66,6 +74,9 @@ class JetFilter : public edm::EDFilter {
       edm::InputTag rhoLabel_;
       edm::InputTag jetLabel_;
       edm::InputTag metLabel_;
+      edm::InputTag electronLabel_;
+      edm::InputTag muonLabel_;
+
       string outputJetLabel_;
       string outputMETLabel_;
       edm::InputTag vertexLabel_;
@@ -77,6 +88,7 @@ class JetFilter : public edm::EDFilter {
       bool doJecFly_;
       bool doResJec_;
       bool isRealData_;
+      bool doJecUnc_;
       bool up_;
       bool doJERUnc_;
       double resolutionFactor_;
@@ -100,7 +112,7 @@ class JetFilter : public edm::EDFilter {
 //
 // constructors and destructor
 //
-JetFilter::JetFilter(const edm::ParameterSet& ps)
+CMGJetFilter::CMGJetFilter(const edm::ParameterSet& ps)
 {
    //now do what ever initialization is needed
   applyFilter_=ps.getUntrackedParameter<bool>("applyFilter",false);
@@ -115,11 +127,16 @@ JetFilter::JetFilter(const edm::ParameterSet& ps)
   ptcut_ = ps.getUntrackedParameter<double>("ptcut",30.0);
   absetacut_ = ps.getUntrackedParameter<double>("absetacut",2.5);
   pfJetIdParams_ = ps.getParameter<edm::ParameterSet> ("looseJetId");
-  doJecFly_ = ps.getUntrackedParameter<bool>("doJecFly", true);
+  doJecFly_ = ps.getUntrackedParameter<bool>("doJecFly", false);
   doResJec_ = ps.getUntrackedParameter<bool>("doResJec", false);
+  doJecUnc_ = ps.getUntrackedParameter<bool>("doJecUnc", false);
+  up_ = ps.getUntrackedParameter<bool>("up", true); // uncertainty up
   doJERUnc_ = ps.getUntrackedParameter<bool>("doJERUnc", false);
   resolutionFactor_ = ps.getUntrackedParameter<double>("resolutionFactor", 1.0);
   globalTag_ = ps.getUntrackedParameter<string>("globalTag","GR_R_42_V23");
+
+  electronLabel_ = ps.getParameter<edm::InputTag>("electronLabel");
+  muonLabel_ = ps.getParameter<edm::InputTag>("muonLabel");
 
   resJetCorrector_ = 0;
   jecUnc_ = 0;
@@ -127,17 +144,13 @@ JetFilter::JetFilter(const edm::ParameterSet& ps)
   outputJetLabel_ = jetLabel_.label();
   outputMETLabel_ = metLabel_.label();
 
-  produces<std::vector<pat::Jet> >(outputJetLabel_);
-  produces<std::vector<pat::Jet> >(outputJetLabel_+"Up");
-  produces<std::vector<pat::Jet> >(outputJetLabel_+"Dn");
-  produces<std::vector<pat::MET> >(outputMETLabel_+"");
-  produces<std::vector<pat::MET> >(outputMETLabel_+"Up");
-  produces<std::vector<pat::MET> >(outputMETLabel_+"Dn");
+  produces<std::vector<cmg::PFJet> >("Jets");
+  produces<std::vector<cmg::BaseMET> >("MET");
 
 }
 
 
-JetFilter::~JetFilter()
+CMGJetFilter::~CMGJetFilter()
 {
 
    // do anything here that needs to be done at desctruction time
@@ -152,7 +165,7 @@ JetFilter::~JetFilter()
 
 // ------------ method called on each new Event  ------------
 bool
-JetFilter::filter(edm::Event& iEvent, const edm::EventSetup& iSetup)
+CMGJetFilter::filter(edm::Event& iEvent, const edm::EventSetup& iSetup)
 {
 
   isRealData_ = iEvent.isRealData();
@@ -162,24 +175,24 @@ JetFilter::filter(edm::Event& iEvent, const edm::EventSetup& iSetup)
   using namespace std;
   using namespace reco;
 
-  std::auto_ptr<std::vector<pat::Jet> > corrJets(new std::vector<pat::Jet>());
-  std::auto_ptr<std::vector<pat::Jet> > corrJetsUp(new std::vector<pat::Jet>());
-  std::auto_ptr<std::vector<pat::Jet> > corrJetsDn(new std::vector<pat::Jet>());
-  std::auto_ptr<std::vector<pat::MET> > corrMETs(new std::vector<pat::MET>());
-  std::auto_ptr<std::vector<pat::MET> > corrMETsUp(new std::vector<pat::MET>());
-  std::auto_ptr<std::vector<pat::MET> > corrMETsDn(new std::vector<pat::MET>());
-  std::auto_ptr<std::vector<pat::Jet> > corrbJets(new std::vector<pat::Jet>());
+  std::auto_ptr<std::vector<cmg::PFJet> > corrJets(new std::vector<cmg::PFJet>());
+  std::auto_ptr<std::vector<cmg::BaseMET> > corrMETs(new std::vector<cmg::BaseMET>());
+  std::auto_ptr<std::vector<cmg::PFJet> > corrbJets(new std::vector<cmg::PFJet>());
 
-  edm::Handle<pat::JetCollection> Jets;
+  edm::Handle<vector<cmg::PFJet> > Jets;
   iEvent.getByLabel(jetLabel_,Jets);
 
-  edm::Handle<pat::METCollection> MET;
+  edm::Handle<std::vector<cmg::BaseMET> > MET;
   iEvent.getByLabel(metLabel_,MET);
-  pat::METCollection::const_iterator met = MET->begin();
-  double met_x = met->px();
-  double met_y = met->py();
-  double metUp_x = met_x, metUp_y = met_y;
-  double metDn_x = met_x, metDn_y = met_y;
+  //std::vector<cmg::BaseMET>::const_iterator met = MET->begin();
+  double met_x = MET->begin()->px();
+  double met_y = MET->begin()->py();
+
+  edm::Handle<std::vector<cmg::Electron> > electrons_;
+  iEvent.getByLabel(electronLabel_, electrons_);
+
+  edm::Handle<std::vector<cmg::Muon> > muons_;
+  iEvent.getByLabel(muonLabel_, muons_);
 
   edm::Handle<double>  rho;
   iEvent.getByLabel(rhoLabel_, rho);
@@ -187,80 +200,96 @@ JetFilter::filter(edm::Event& iEvent, const edm::EventSetup& iSetup)
   edm::Handle<reco::VertexCollection> recVtxs_;
   iEvent.getByLabel(vertexLabel_,recVtxs_);
 
-  const int nv = recVtxs_->size();
+  //const int nv = recVtxs_->size();
 
   PFJetIDSelectionFunctor looseJetIdSelector_(pfJetIdParams_);
 
   for (JI it = Jets->begin(); it != Jets->end(); ++it) {
-    pat::Jet correctedJet = *it;
+    cmg::PFJet correctedJet = *it;
 
-    if(abs(it->eta()) >= 2.4) continue;
+    if(fabs(it->eta()) >= absetacut_) continue;
 
-    pat::strbitset looseJetIdSel = looseJetIdSelector_.getBitTemplate();
-    bool passId = looseJetIdSelector_( *it, looseJetIdSel);
+    //pat::strbitset looseJetIdSel = looseJetIdSelector_.getBitTemplate();
+    //bool passId = looseJetIdSelector_( *it, looseJetIdSel);
+
+    // it is identical : checkPFJetId and using the cut string
+    bool passId  = checkPFJetId( &correctedJet);
+    //bool passId = it->getSelection("cuts_looseJetId");
 
     if(!passId) continue;
 
-    double scaleF = 1.0;
-    if(doJecFly_){
-      correctedJet.scaleEnergy( it->jecFactor(0) ); //set it to uncorrected jet energy
+    bool overlap = false;
+    
+    for (unsigned int i=0; i < electrons_->size(); ++i){
+      cmg::Electron electron = electrons_->at(i);
+      double dR =  deltaR(electron.eta(), electron.phi(), it->eta(), it->phi());
+      if( dR < 0.5 ) {
+        overlap = true;
+        break;
+      }
+    }
+    for (unsigned int i=0; i < muons_->size(); ++i){
+      cmg::Muon muon = muons_->at(i);
+      double dR =  deltaR(muon.eta(), muon.phi(), it->eta(), it->phi());
+      if( dR < 0.5 ) {
+        overlap = true;
+        break;
+      }
+    }
+    if(overlap) continue;
+
+
+
+    //double scaleF = 1.0;
+    //if(doJecFly_){
+    //  correctedJet.scaleEnergy( it->jecFactor(0) ); //set it to uncorrected jet energy
       //debug
       //cout << "uncorrected jet pt= " << correctedJet.pt() << endl;
-      reco::Candidate::LorentzVector uncorrJet = it->correctedP4(0);
+    //  reco::Candidate::LorentzVector uncorrJet = it->correctedP4(0);
 
-      resJetCorrector_->setJetEta( uncorrJet.eta() );
-      resJetCorrector_->setJetPt ( uncorrJet.pt() );
-      resJetCorrector_->setJetE  ( uncorrJet.energy() );
-      resJetCorrector_->setJetA  ( it->jetArea() );
-      resJetCorrector_->setRho   ( *(rho.product()) );
-      resJetCorrector_->setNPV   ( nv );
+    //  resJetCorrector_->setJetEta( uncorrJet.eta() );
+    //  resJetCorrector_->setJetPt ( uncorrJet.pt() );
+    //  resJetCorrector_->setJetE  ( uncorrJet.energy() );
+    //  resJetCorrector_->setJetA  ( it->jetArea() );
+    //  resJetCorrector_->setRho   ( *(rho.product()) );
+    //  resJetCorrector_->setNPV   ( nv );
 
-      scaleF = resJetCorrector_->getCorrection();
+      //scaleF = resJetCorrector_->getCorrection();
+    //}
+
+    //correctedJet.scaleEnergy( scaleF );
+
+    if(doJecUnc_){
+      jecUnc_->setJetEta(correctedJet.eta());
+      jecUnc_->setJetPt(correctedJet.pt());
+      met_x += correctedJet.px();
+      met_y += correctedJet.py();
+      double unc = jecUnc_->getUncertainty(up_);
+      double ptscaleunc = 0;
+      if(up_) ptscaleunc = 1 + unc;
+      else ptscaleunc = 1 - unc;
+      //correctedJet.scaleEnergy( ptscaleunc );
+      correctedJet.setP4( correctedJet.p4()*ptscaleunc );
+      met_x -= correctedJet.px();
+      met_y -= correctedJet.py();
     }
 
-    correctedJet.scaleEnergy( scaleF );
-
-    // Do JEC uncertainty
-    pat::Jet correctedJetUp = correctedJet;
-    pat::Jet correctedJetDn = correctedJet;
-
-    jecUnc_->setJetEta(correctedJetUp.eta());
-    jecUnc_->setJetPt(correctedJetUp.pt());
-    correctedJetUp.scaleEnergy(1+jecUnc_->getUncertainty(true));
-
-    jecUnc_->setJetEta(correctedJetDn.eta());
-    jecUnc_->setJetPt(correctedJetDn.pt());
-    correctedJetDn.scaleEnergy(1-jecUnc_->getUncertainty(false));
-
-    metUp_x += correctedJet.px() - correctedJetUp.px();
-    metUp_y += correctedJet.py() - correctedJetUp.py();
-    metDn_x += correctedJet.px() - correctedJetDn.px();
-    metDn_y += correctedJet.py() - correctedJetDn.py();
-
-    if(doJERUnc_){
-      const double jetpx = correctedJet.px();
-      const double jetpy = correctedJet.py();
-      const double jetpxUp = correctedJetUp.px();
-      const double jetpyUp = correctedJetUp.py();
-      const double jetpxDn = correctedJetDn.px();
-      const double jetpyDn = correctedJetDn.py();
-      correctedJet.scaleEnergy( resolutionFactor(correctedJet)  );
-      correctedJetUp.scaleEnergy( resolutionFactor(correctedJetUp) );
-      correctedJetDn.scaleEnergy( resolutionFactor(correctedJetDn) );
-      met_x -= correctedJet.px() - jetpx;
-      met_y -= correctedJet.py() - jetpy;
-      metUp_x  -= correctedJet.px() - jetpxUp;
-      metUp_y  -= correctedJet.py() - jetpyUp;
-      metDn_x  -= correctedJet.px() - jetpxDn;
-      metDn_y  -= correctedJet.py() - jetpyDn;
-    }
+    //if(doJERUnc_){
+    //  double jetpx = correctedJet.px();
+    //  double jetpy = correctedJet.py();
+    //  correctedJet.setP4( correctedJet.p4()*resolutionFactor(correctedJet)  );
+    //  double dpx = correctedJet.px() - jetpx;
+    //  double dpy = correctedJet.py() - jetpy;
+    //  met_x -= dpx;
+    //  met_y -= dpy;
+    //} 
 
     //debug
     //cout << "corrected= " << correctedJet.pt() << " default= " << it->pt() << endl;
 
     if ( correctedJet.pt() > ptcut_ ) {
       if( bJetFirst_ ){
-        double bTagValue = correctedJet.bDiscriminator(bTagAlgo_);
+        double bTagValue = correctedJet.bDiscriminator(bTagAlgo_.c_str());
         if( bTagValue > bTagValue_ ) {
           corrbJets->push_back(correctedJet);
         }else{
@@ -271,52 +300,42 @@ JetFilter::filter(edm::Event& iEvent, const edm::EventSetup& iSetup)
       }
     }
 
-    if ( correctedJetUp.pt() > ptcut_ ) corrJetsUp->push_back(correctedJetUp);
-    if ( correctedJetDn.pt() > ptcut_ ) corrJetsDn->push_back(correctedJetDn);
-
   }
 
-  if( corrJets->size() >= min_ ) accepted = true;
-
-  pat::MET corrMET(reco::MET ( sqrt(met_x*met_x + met_y*met_y)   , reco::MET::LorentzVector(met_x,met_y,0,sqrt(met_x*met_x + met_y*met_y))  , reco::MET::Point(0,0,0)));
-
+  cmg::BaseMET corrMET(reco::MET ( sqrt(met_x*met_x + met_y*met_y)   , reco::MET::LorentzVector(met_x,met_y,0,sqrt(met_x*met_x + met_y*met_y))  , reco::MET::Point(0,0,0)));
   corrMETs->push_back(corrMET);
 
   // Jets passing identification criteria are sorted by decreasing pT
-  std::sort(corrJets->begin(), corrJets->end(), GreaterByPt<pat::Jet>());
-  std::sort(corrbJets->begin(), corrbJets->end(), GreaterByPt<pat::Jet>());
-  std::sort(corrJetsUp->begin(), corrJetsUp->end(), GreaterByPt<pat::Jet>());
-  std::sort(corrJetsDn->begin(), corrJetsDn->end(), GreaterByPt<pat::Jet>());
+  std::sort(corrJets->begin(), corrJets->end(), GreaterByPt<cmg::PFJet>());
+  std::sort(corrbJets->begin(), corrbJets->end(), GreaterByPt<cmg::PFJet>());
 
   if( bJetFirst_ ){
     corrJets->insert( corrJets->begin(), corrbJets->begin(), corrbJets->end());
   }
 
-  iEvent.put(corrJets, outputJetLabel_);
-  iEvent.put(corrJetsUp, outputJetLabel_+"Up");
-  iEvent.put(corrJetsDn, outputJetLabel_+"Dn");
-  iEvent.put(corrMETs, outputMETLabel_);
-  iEvent.put(corrMETsUp, outputMETLabel_+"Up");
-  iEvent.put(corrMETsDn, outputMETLabel_+"Dn");
+  if( corrJets->size() >= min_ ) accepted = true;
+
+  iEvent.put(corrJets, "Jets");
+  iEvent.put(corrMETs, "MET");
 
   if( applyFilter_ ) return accepted;
   else return true;
 
 }
 
-double
-JetFilter::resolutionFactor(const pat::Jet& jet)
-{
-    if(!jet.genJet()) {
-      return 1.;
-    }
-    double factor = 1. + (resolutionFactor_-1.)*(jet.pt() - jet.genJet()->pt())/jet.pt();
-    return (factor<0 ? 0. : factor);
-}
+//double
+//CMGJetFilter::resolutionFactor(const cmg::PFJet& jet)
+//{
+//    if(!jet.genJet()) {
+//      return 1.;
+//    }
+//    double factor = 1. + (resolutionFactor_-1.)*(jet.pt() - jet.genJet()->pt())/jet.pt();
+//    return (factor<0 ? 0. : factor);
+//}
 
 // ------------ method called once each job just before starting event loop  ------------
 void
-JetFilter::beginJob()
+CMGJetFilter::beginJob()
 {
 
   if ( doJecFly_ ){
@@ -328,7 +347,7 @@ JetFilter::beginJob()
     jecParams.push_back(JetCorrectorParameters(jecL1File.fullPath()));
     jecParams.push_back(JetCorrectorParameters(jecL2File.fullPath()));
     jecParams.push_back(JetCorrectorParameters(jecL3File.fullPath()));
-    if( isRealData_ ) {
+    if( doResJec_ ) {
       jecParams.push_back(JetCorrectorParameters(jecL2L3File.fullPath()));
     }
     resJetCorrector_ = new FactorizedJetCorrector(jecParams);
@@ -341,12 +360,25 @@ JetFilter::beginJob()
 
 // ------------ method called once each job just after ending the event loop  ------------
 void
-JetFilter::endJob() {
+CMGJetFilter::endJob() {
   if ( resJetCorrector_ ) delete resJetCorrector_;
 }
 
+bool CMGJetFilter::checkPFJetId(const cmg::PFJet * jet){
+    //Loose PF Jet id 
+    ///https://twiki.cern.ch/twiki/bin/viewauth/CMS/JetID
+    if(jet->component(5).fraction() < 0.99
+       &&jet->component(4).fraction() < 0.99
+       &&jet->nConstituents() > 1
+       &&(jet->component(1).fraction() > 0 || abs(jet->eta()) > 2.4)
+       &&(jet->component(1).number() > 0 || abs(jet->eta()) > 2.4)
+       &&(jet->component(2).fraction() < 0.99 || abs(jet->eta()) > 2.4)        
+       )return 1;
+    else return 0;
+}
+
 //define this as a plug-in
-DEFINE_FWK_MODULE(JetFilter);
+DEFINE_FWK_MODULE(CMGJetFilter);
 
 
 
