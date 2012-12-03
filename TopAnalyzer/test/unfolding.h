@@ -536,10 +536,13 @@ void TOP11013Plot(TH1F* h_unfold, TH1F* hgen, TH1F* accept, TH1* hTr1, TH1* hTr2
   TGaxis::SetMaxDigits(4);
   if(log) c_dsigma->SetLogy();
 
+  //htmp->Draw();
+  //hTr1->Draw("same");
+
   TH1F* fSigmaTruth = getFitHistogram(hTr1, "madgraph");
   //TH1F* fSigmaTruth2 = getFitHistogram(hTr2, "mcatnlo");
   //TH1F* fSigmaTruth3 = getFitHistogram(hTr3, "powheg");
-
+  
   //for the band curve
   //TH1F* fSigmaTruth2_up = getFitHistogram(hTr2_up, "mcatnlo");
   //TH1F* fSigmaTruth2_dw = getFitHistogram(hTr2_dw, "mcatnlo");
@@ -561,6 +564,7 @@ void TOP11013Plot(TH1F* h_unfold, TH1F* hgen, TH1F* accept, TH1* hTr1, TH1* hTr2
   dsigmaTruth->SetLineStyle(5);
   dsigmaTruth->SetLineColor(kBlue);
   dsigmaTruth->SetFillColor(kGray);
+  //dsigmaTruth->SetFillStyle(3001);
   dsigmaTruth->Draw("2e"); //histogram
   //dsigmaTruth->Draw("e3"); //curve
 
@@ -569,14 +573,21 @@ void TOP11013Plot(TH1F* h_unfold, TH1F* hgen, TH1F* accept, TH1* hTr1, TH1* hTr2
   hSigmaTruth3->Draw("same");
   hSigmaTruth->Draw("same");
 
+  //hTr1->Draw("hist same");
+  //hTr1->SetLineWidth(0.4);
   //curve 
+  fSigmaTruth->Smooth();
   fSigmaTruth->Draw("hist c same"); //madgraph only
   //fSigmaTruth2->Draw("hist c same");
   //fSigmaTruth3->Draw("hist c same");
+  
+  htmp->Draw("AXIS SAME");
  
   TGraphAsymmErrors* dsigmaDataCentered = BinCenterCorrection(dsigmaData, hSigmaTruth, fSigmaTruth);
   TGraphAsymmErrors* dsigmaDataCenteredOnlyWithStats = BinCenterCorrection(dsigmaDataOnlyWithStat, hSigmaTruth, fSigmaTruth);
+  dsigmaDataCentered->SetMarkerSize(1.2);
   dsigmaDataCentered->Draw("ZPsame");
+  dsigmaDataCenteredOnlyWithStats->SetMarkerSize(1.2);
   dsigmaDataCenteredOnlyWithStats->Draw("||");
   //dsigmaData->Draw("ZPsame");
 
@@ -585,7 +596,7 @@ void TOP11013Plot(TH1F* h_unfold, TH1F* hgen, TH1F* accept, TH1* hTr1, TH1* hTr2
   DrawDecayChLabel("Dilepton Combined");
 
   TLegend *l= new TLegend();
-  l->AddEntry(dsigmaData, "Data" ,"P");
+  l->AddEntry(dsigmaDataCentered, "Data" ,"P");
   l->AddEntry(fSigmaTruth,  "MadGraph" ,"L");
   l->AddEntry(dsigmaTruth,  "MC@NLO"   ,"FL");
   l->AddEntry(hSigmaTruth3, "POWHEG"   ,"L");
@@ -983,27 +994,29 @@ TH1F * getFitHistogram(TH1* h, string model){
   }
   else if(model=="madgraph"){
     //tail:
-    fitLowEdge=425.0;
-    fitHighEdge=1700.0;
+    fitLowEdge=430.0;
+    fitHighEdge=950.0;
     def="[0]*exp([1]*x)+[2]";
     a= 164748.0;  
-    b=-0.00810181; 
+    //b=-0.00810181; 
+    b=-0.00780181; 
     c= 3.59495;   
     // start:
     fitLowEdgeB=345.;
-    fitHighEdgeB=425.;
+    fitHighEdgeB=430.;
     defB="[3]*TMath::GammaDist(x,[0],[1],[2])";
     aB=1.50;
     bB=345.;
     cB=79.3;
     dB=1010990;
     //end of tail:
-    //fitLowEdgeC=830.0;
-    //fitHighEdgeC=1600.0;
-    //defC="[0]*exp([1]*x)+[2]";
-    //aC= 54699.0;  
+    fitLowEdgeC=950.0;
+    fitHighEdgeC=1750.0;
+    defC="[0]*exp([1]*x)+[2]";
+    aC= 54699.0;  
     //bC=-0.0068;
-    //cC= 0.979;
+    bC=-0.00685;
+    cC= 0.979;
   }
   else if(model=="powheg"){
     fitLowEdge=440.;
@@ -1030,37 +1043,37 @@ TH1F * getFitHistogram(TH1* h, string model){
   }
 
   TF1* function=new TF1("function",def,fitLowEdge,fitHighEdge);
-  function->SetParLimits(0, 0.0, 0.1442);
-  function->SetParLimits(1, -0.01, 0.00);
-  function->SetParLimits(2, 0.0, 0.0000036);
+  //function->SetParLimits(0, 0.0, 0.1442);
+  //function->SetParLimits(1, -0.01, 0.00);
+  //function->SetParLimits(2, 0.0, 0.0000036);
 
   //FIXME: it does not work
-  //function->SetParameter(0,a);
-  //function->SetParLimits(1,0.85*b,1.15*b);
-  //function->SetParameter(2,c);
+  function->SetParameter(0,a);
+  function->SetParameter(1,b);
+  function->SetParLimits(1,1.2*b,0.8*b);
+  function->SetParameter(2,c);
 
   TF1* functionB=new TF1("functionB",defB,fitLowEdgeB, fitHighEdgeB);
   functionB->SetParameter(0,aB);
+  //functionB->SetParLimits(0,0.99*aB,1.01*aB);
   functionB->SetParameter(1,bB);
-  if(bB<0.) functionB->SetParLimits(1,1.15*bB,0.85*bB);
-  if(bB>0.) functionB->SetParLimits(1,0.85*bB,1.15*bB);
+  if(bB<0.) functionB->SetParLimits(1,1.2*bB,0.8*bB);
+  if(bB>0.) functionB->SetParLimits(1,0.8*bB,1.2*bB);
   functionB->SetParameter(2,cB);
+  //functionB->SetParLimits(2,0.8*cB,1.2*cB);
 
   TF1* functionC=new TF1("functionC",defC, fitLowEdgeC, fitHighEdgeC);
   functionC->SetParameter(0,aC);
   functionC->SetParameter(1,bC);
-  functionC->SetParLimits(1,0.85*bC,1.15*bC);
+  functionC->SetParLimits(1,0.8*bC,1.2*bC);
   functionC->SetParameter(2,cC);
 
   tmp->Fit(function,"R","same", fitLowEdge, fitHighEdge);
   result->Add(function);
   tmp->Fit(functionB,"R+","same", fitLowEdgeB, fitHighEdgeB);
   result->Add(functionB);
-
-  if( model != "madgraph" ){
-    tmp->Fit(functionC,"R+","same", fitLowEdgeC, fitHighEdgeC);
-    result->Add(functionC);
-  }
+  tmp->Fit(functionC,"R+","same", fitLowEdgeC, fitHighEdgeC);
+  result->Add(functionC);
 
   return result;
 }
