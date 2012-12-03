@@ -13,7 +13,7 @@
 //
 // Original Author:  Tae Jeong Kim,40 R-A32,+41227678602,
 //         Created:  Fri Jun  4 17:19:29 CEST 2010
-// $Id: CMGTopDILAnalyzer.h,v 1.13 2012/11/07 16:03:59 tjkim Exp $
+// $Id: CMGTopDILAnalyzer.h,v 1.14 2012/12/03 15:21:40 tjkim Exp $
 //
 //
 
@@ -415,7 +415,8 @@ class CMGTopDILAnalyzer : public edm::EDFilter {
           if ( (bTagIsCutMin_[bTagIndex]) xor (bTagValue < bTagCutValues_[bTagIndex]) ) ++nbjets30_[bTagIndex];
         }
 
-        if ( bDiscriminator > bTagCutValues_[1]) bidcs.push_back(idx); //for kinematic solution
+        //if ( bDiscriminator > bTagCutValues_[1]) bidcs.push_back(idx); //for kinematic solution
+        if ( secvtxmass > 0 ) bidcs.push_back(idx); //for kinematic solution
         idx++;  
       }//pt > 30 loop
     }
