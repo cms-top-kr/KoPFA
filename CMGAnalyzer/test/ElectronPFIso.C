@@ -8,12 +8,13 @@
 #include <algorithm>
 #include <sstream>
 
-void SetLabel(const TString & region){
+void SetLabel(const TString& pu, const TString & region){
   TLatex *label= new TLatex;
   label->SetNDC();
   label->SetTextSize(0.05);
-  label->DrawLatex(0.55,0.6,"t#bar{t} signal in 53X");
+  //label->DrawLatex(0.55,0.6,"t#bar{t} signal in 53X");
   //label->DrawLatex(0.55,0.6-0.05,Form("%s at #sqrt{s} = 8 TeV",region.Data()));
+  label->DrawLatex(0.55,0.6,Form("%s",pu.Data()));
   label->DrawLatex(0.55,0.6-0.05,Form("%s",region.Data()));
   label->Draw();
 }
@@ -75,9 +76,9 @@ void ElectronPFIso(bool merge=true, const int area=0){
 
   for(int i=0; i < n; i++){
     TString region = "";
-    if( i== 0) region = "Endcap";
-    if( i== 1) region = "Barrel1";
-    if( i== 2) region = "Barrel2";
+    if( i== 0) region = "Barrel1";
+    if( i== 1) region = "Barrel2";
+    if( i== 2) region = "Endcap";
 
     h2Signal_pfRelIso03[i] = (TH2F *) f_Signal->Get(Form("ElectronAnalysis/Signal/IDPF/%s/h2_pfRelIso03",region.Data()));
     h2Signal_pfRelIso03db[i] = (TH2F *) f_Signal->Get(Form("ElectronAnalysis/Signal/IDPF/%s/h2_pfRelIso03db",region.Data()));
@@ -134,9 +135,9 @@ void ElectronPFIso(bool merge=true, const int area=0){
     if( r == 1 ) dR = "04";
     for(int i=0; i < n; i++){
       TString region = "";
-      if( i== 0) region = "Endcap";
-      if( i== 1) region = "Barrel1";
-      if( i== 2) region = "Barrel2";
+      if( i== 0) region = "Barrel1";
+      if( i== 1) region = "Barrel2";
+      if( i== 2) region = "Endcap";
       hSignal_pfRelIso[r][i] = (TH1F *) f_Signal->Get(Form("ElectronAnalysis/Signal/IDPF/%s/h_pfRelIso%s",region.Data(),dR.Data()));
       hSignal_pfRelIsodb[r][i] = (TH1F *) f_Signal->Get(Form("ElectronAnalysis/Signal/IDPF/%s/h_pfRelIso%sdb",region.Data(),dR.Data()));
       hSignal_pfRelIsorho[r][i] = (TH1F *) f_Signal->Get(Form("ElectronAnalysis/Signal/IDPF/%s/h_pfRelIso%srho",region.Data(),dR.Data()));
@@ -184,7 +185,14 @@ void ElectronPFIso(bool merge=true, const int area=0){
   Style( ROC_pfRelIso04db, 4, 1);
   ROC_pfRelIso03db->Draw("ALP");
   ROC_pfRelIso04db->Draw("sameLP");
-  SetLabel("");
+
+  if(merge){
+    SetLabel( "","|#eta| < 2.5" );
+  }else{
+    if(area ==0) SetLabel( "","0 < |#eta| < 0.8" );
+    if(area ==1) SetLabel( "","0.8 < |#eta| < 1.479" );
+    if(area ==2) SetLabel( "","1.479 < |#eta| < 2.5" );
+  }
 
   TLegend *l= new TLegend(0.6,0.3,0.9,0.5);
   l->AddEntry(ROC_pfRelIso03db,"dR = 0.3","LP");
@@ -194,7 +202,11 @@ void ElectronPFIso(bool merge=true, const int area=0){
   l->SetLineColor(0);
   l->Draw();
 
-  c_dR->Print("c_iso_dR.eps");
+  if(merge){
+    c_dR->Print("c_iso_dR.eps");
+  }else{
+    c_dR->Print(Form("c_iso_dR_%i.eps",area));
+  }
 
   TCanvas * c = new TCanvas("c","c",500,500);
   Style( ROC_pfRelIso03, 1, 1);
@@ -204,18 +216,29 @@ void ElectronPFIso(bool merge=true, const int area=0){
   ROC_pfRelIso03db->Draw("sameLP");
   ROC_pfRelIso03rho->Draw("sameLP");
 
+  if(merge){
+    SetLabel( "","|#eta| < 2.5" );
+  }else{
+    if(area ==0) SetLabel( "","0 < |#eta| < 0.8" );
+    if(area ==1) SetLabel( "","0.8 < |#eta| < 1.479" );
+    if(area ==2) SetLabel( "","1.479 < |#eta| < 2.5" );
+  }
+
   TLegend *l= new TLegend(0.6,0.3,0.9,0.5);
   l->AddEntry(ROC_pfRelIso03,"CHS only","LP");
   l->AddEntry(ROC_pfRelIso03db,"+dbeta","LP");
   l->AddEntry(ROC_pfRelIso03rho,"+rho","LP");
-  SetLabel("");
 
   l->SetTextSize(0.04);
   l->SetFillColor(0);
   l->SetLineColor(0);
   l->Draw();
 
-  c->Print("c_iso_corrtype.eps");
+  if(merge){
+    c->Print("c_iso_corrtype.eps");
+  }else{
+    c->Print(Form("c_iso_corrtype_%i.eps",area));
+  }
 
   TCanvas * c_lowPU = new TCanvas("c_lowPU","c_lowPU",500,500);
   Style( ROC_pfRelIso03_lowPU, 1, 1);
@@ -224,8 +247,22 @@ void ElectronPFIso(bool merge=true, const int area=0){
   ROC_pfRelIso03_lowPU->Draw("ALP");
   ROC_pfRelIso03db_lowPU->Draw("sameLP");
   ROC_pfRelIso03rho_lowPU->Draw("sameLP");
-  SetLabel("PU < 15");
+
+  if(merge){
+    SetLabel( "PU < 15", "|#eta| < 2.5" );
+  }else{
+    if(area ==0) SetLabel( "PU < 15", "0 < |#eta| < 0.8" );
+    if(area ==1) SetLabel( "PU < 15", "0.8 < |#eta| < 1.479" );
+    if(area ==2) SetLabel( "PU < 15", "1.479 < |#eta| < 2.5" );
+  }
+
   l->Draw();
+
+  if(merge){
+    c->Print("c_iso_corrtype_lowPU.eps");
+  }else{
+    c->Print(Form("c_iso_corrtype_lowPU_%i.eps",area));
+  }
 
   TCanvas * c_highPU = new TCanvas("c_highPU","c_highPU",500,500);
   Style( ROC_pfRelIso03_highPU, 1, 1);
@@ -234,7 +271,21 @@ void ElectronPFIso(bool merge=true, const int area=0){
   ROC_pfRelIso03_highPU->Draw("ALP");
   ROC_pfRelIso03db_highPU->Draw("sameLP");
   ROC_pfRelIso03rho_highPU->Draw("sameLP");
-  SetLabel("PU #geq 15");
+
+  if(merge){
+    SetLabel( "PU #geq 15", "|#eta| < 2.5" );
+  }else{
+    if(area ==0) SetLabel( "PU #geq 15", "0 < |#eta| < 0.8" );
+    if(area ==1) SetLabel( "PU #geq 15", "0.8 < |#eta| < 1.479" );
+    if(area ==2) SetLabel( "PU #geq 15", "1.479 < |#eta| < 2.5" );
+  }
+
   l->Draw();
+
+  if(merge){
+    c->Print("c_iso_corrtype_highPU.eps");
+  }else{
+    c->Print(Form("c_iso_corrtype_highPU_%i.eps",area));
+  }
 
 }

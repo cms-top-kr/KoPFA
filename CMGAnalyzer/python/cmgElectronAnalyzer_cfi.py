@@ -13,7 +13,7 @@ ElectronAnalysis = cms.EDProducer("cmgElectronAnalyzer",
   applyPFId = cms.untracked.bool(False),
   numberOfHits    = cms.untracked.uint32(0),
   numberOfLeptons    = cms.untracked.uint32(2),
-  numberOfJets    = cms.untracked.uint32(2),
+  numberOfJets    = cms.untracked.uint32(1),
   useEventCounter = cms.bool( True ),
   filters = cms.untracked.vstring(
       'prePathCounter',

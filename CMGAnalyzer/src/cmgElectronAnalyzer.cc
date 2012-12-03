@@ -46,7 +46,7 @@ cmgElectronAnalyzer::cmgElectronAnalyzer(const edm::ParameterSet& cfg)
     if( d == 0 ) mainDirName = "Signal";
     else mainDirName = "QCD";
 
-    for(int i=0 ; i < 11 ; i++){
+    for(int i=0 ; i < 12 ; i++){
 
       TString selDirName = "";
       if(i==0) selDirName = "Preselection";
@@ -60,12 +60,15 @@ cmgElectronAnalyzer::cmgElectronAnalyzer(const edm::ParameterSet& cfg)
       if(i==8) selDirName = "IDMediumIsoPF";
       if(i==9) selDirName = "IDTightIsoPF";
       if(i==10) selDirName = "IDPF";
+      if(i==11) selDirName = "IDPFMVA";
 
-      for(int k=0 ; k <2 ; k++){
+      for(int k=0 ; k <3 ; k++){
         TString dirName = "";
-        if(k==1){
-          dirName = "Barrel";
-        }else {
+        if(k==0){
+          dirName = "Barrel1";
+        }else if(k==1){
+          dirName = "Barrel2";
+        }else{
           dirName = "Endcap";
         }
 
@@ -274,11 +277,11 @@ void cmgElectronAnalyzer::produce(edm::Event& iEvent, const edm::EventSetup& es)
     float AEff04Lep1 = 0.00;
 
     if(isRealData){
-      AEff03Lep1 = ElectronEffectiveArea::GetElectronEffectiveArea(ElectronEffectiveArea::kEleGammaAndNeutralHadronIso03, sceta1, ElectronEffectiveArea::kEleEAData2011);
+      AEff03Lep1 = ElectronEffectiveArea::GetElectronEffectiveArea(ElectronEffectiveArea::kEleGammaAndNeutralHadronIso03, sceta1, ElectronEffectiveArea::kEleEAData2012);
       AEff04Lep1 = ElectronEffectiveArea::GetElectronEffectiveArea(ElectronEffectiveArea::kEleGammaAndNeutralHadronIso04, sceta1, ElectronEffectiveArea::kEleEAData2012);
     }else{
-      AEff03Lep1 = ElectronEffectiveArea::GetElectronEffectiveArea(ElectronEffectiveArea::kEleGammaAndNeutralHadronIso03, sceta1, ElectronEffectiveArea::kEleEAFall11MC);
-      AEff04Lep1 = ElectronEffectiveArea::GetElectronEffectiveArea(ElectronEffectiveArea::kEleGammaAndNeutralHadronIso04, sceta1, ElectronEffectiveArea::kEleEAFall11MC);
+      AEff03Lep1 = ElectronEffectiveArea::GetElectronEffectiveArea(ElectronEffectiveArea::kEleGammaAndNeutralHadronIso03, sceta1, ElectronEffectiveArea::kEleEAData2012);
+      AEff04Lep1 = ElectronEffectiveArea::GetElectronEffectiveArea(ElectronEffectiveArea::kEleGammaAndNeutralHadronIso04, sceta1, ElectronEffectiveArea::kEleEAData2012);
     }
 
     double chIso02Lep1 = Lep1.chargedHadronIso(0.2);
@@ -326,7 +329,7 @@ void cmgElectronAnalyzer::produce(edm::Event& iEvent, const edm::EventSetup& es)
     //bool medium1    = PassWP(EgammaCutBasedEleId::MEDIUM,Lep1, chIso03Lep1, phIso03Lep1, nhIso03Lep1, rhoIso);
     //bool tight1     = PassWP(EgammaCutBasedEleId::TIGHT, Lep1, chIso03Lep1, phIso03Lep1, nhIso03Lep1, rhoIso);
 
-    bool passMva      = Lep1.sourcePtr()->get()->electronID("mvaTrigV0") > 0.0;
+    bool passMva      = Lep1.sourcePtr()->get()->electronID("mvaTrigV0") > 0.5;
     bool passVeto     = Lep1.getSelection("cuts_vetoNoVtx");
     bool passLoose     = Lep1.getSelection("cuts_looseNoVtx");
     bool passMedium    = Lep1.getSelection("cuts_mediumNoVtx");
@@ -335,9 +338,11 @@ void cmgElectronAnalyzer::produce(edm::Event& iEvent, const edm::EventSetup& es)
 
     bool passIso = relPfIso03rhoLep1 < 0.15 ;
 
-    bool isEB1 = fabs(sceta1) < 1.4790;
+    int isEB1 = 0;
+    if( 0.8 < fabs(sceta1) && fabs(sceta1) < 1.4790 )  isEB1 = 1;
+    if( fabs(sceta1) >= 1.4790 ) isEB1 = 2;   
 
-    for( int sel = 0 ; sel < 11 ; sel++){
+    for( int sel = 0 ; sel < 12 ; sel++){
 
       bool fill = true;
       if( sel == 1 ) fill = passMva;
@@ -350,6 +355,7 @@ void cmgElectronAnalyzer::produce(edm::Event& iEvent, const edm::EventSetup& es)
       if( sel == 8 ) fill = passMedium && passIso && passPF;
       if( sel == 9 ) fill = passTight && passIso && passPF;
       if( sel == 10 ) fill = passPF;
+      if( sel == 11 ) fill = passPF && passMva;
 
       if( fill ){
         h_mvaTrigV0[d][sel][isEB1]->Fill( mvaTrigV0Lep1 );
