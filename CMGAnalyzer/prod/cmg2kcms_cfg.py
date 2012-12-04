@@ -200,8 +200,8 @@ process.MuMu.puNVertexLabel = cms.InputTag('PUweightMuMu','npileup')
 process.MuMu.filters  =  cms.untracked.vstring( 
                                              'prePathCounter',
                                              'postPathCounter',
-                                             'nEventsFilterMuMu',
-                                             'nEventsPatHLTMuMu'
+                                             'nEventsPatHLTMuMu',
+                                             'nEventsFilterMuMu'
                                               )
 
 process.MuEl.genParticlesLabel = cms.InputTag('genParticlesPruned')
@@ -217,8 +217,8 @@ process.MuEl.puNVertexLabel = cms.InputTag('PUweightMuEl','npileup')
 process.MuEl.filters  =  cms.untracked.vstring(  
                                              'prePathCounter',
                                              'postPathCounter',
-                                             'nEventsFilterMuEl',
-                                             'nEventsPatHLTMuEl'
+                                             'nEventsPatHLTMuEl',
+                                             'nEventsFilterMuEl'
                                               )
 
 process.ElEl.genParticlesLabel = cms.InputTag('genParticlesPruned')
@@ -234,8 +234,8 @@ process.ElEl.puNVertexLabel = cms.InputTag('PUweightElEl','npileup')
 process.ElEl.filters  =  cms.untracked.vstring(  
                                              'prePathCounter',
                                              'postPathCounter',
-                                             'nEventsFilterElEl',
-                                             'nEventsPatHLTElEl'
+                                             'nEventsPatHLTElEl',
+                                             'nEventsFilterElEl'
                                               )
 ##################################################################
 
