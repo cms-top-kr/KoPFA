@@ -51,7 +51,7 @@ void acceptance(){
   const std::string cutStep = "Step_8";
   string recon = "kin";
 
-  TFile * fDen = new TFile("/afs/cern.ch/work/t/tjkim/store/GenHisto/topGenHisto_madgraph.root");
+  TFile * fDen = new TFile("/afs/cern.ch/work/t/tjkim/public/store/top/TOP11013/topGenHisto_madgraph.root");
   TH1F* full = (TH1F*) fDen->Get("topDecayGenHisto/hMtt_Full");
   TH1F* visiPtcl = (TH1F*) fDen->Get("topDecayGenHisto/hMtt_DIL_Ptcl_NoTau");
   TH1F* visiPton = (TH1F*) fDen->Get("topDecayGenHisto/hMtt_DIL_Pton_NoTau");
