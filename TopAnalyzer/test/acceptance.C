@@ -44,9 +44,9 @@ void acceptance(){
   //rdPath.push_back("/data/export/common/Top/finalHisto/v6/MuEl.root");
 
   //note for v3
-  rdPath.push_back("TOP11013_12072012/ElEl/ElEl.root");
-  rdPath.push_back("TOP11013_12072012/MuMu/MuMu.root");
-  rdPath.push_back("TOP11013_12072012/MuEl/MuEl.root");
+  rdPath.push_back("/afs/cern.ch/work/t/tjkim/public/store/top/TOP11013/TOP11013_12072012/ElEl/ElEl.root");
+  rdPath.push_back("/afs/cern.ch/work/t/tjkim/public/store/top/TOP11013/TOP11013_12072012/MuMu/MuMu.root");
+  rdPath.push_back("/afs/cern.ch/work/t/tjkim/public/store/top/TOP11013/TOP11013_12072012/MuEl/MuEl.root");
 
   const std::string cutStep = "Step_8";
   string recon = "kin";
