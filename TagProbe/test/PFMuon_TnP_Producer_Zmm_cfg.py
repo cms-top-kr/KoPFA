@@ -94,7 +94,7 @@ process.probetightIddBIso15 = cms.EDFilter("PATMuonSelector",
 	src = cms.InputTag("probetightId"),
 	cut = cms.string('userIsolation("User2Iso") < 0.15'),
 )
-process.probelooseIddBIso15sl = cms.EDFilter("PATMuonSelector",
+process.probelooseIddBIso15TrgMu17Mu8sl = cms.EDFilter("PATMuonSelector",
 	src = cms.InputTag("probelooseIddBIso15"),
 	cut = cms.string(
 		'(!triggerObjectMatchesByFilter("hltL3pfL1DoubleMu10MuOpenL1f0L2pf0L3PreFiltered8").empty())'
@@ -109,7 +109,7 @@ process.z = cms.EDProducer("CandViewShallowCloneCombiner",
 )
 process.zlooseId = process.z.clone(decay = cms.string("tag@+ probelooseId@-"),)
 process.zlooseIddBIso15 = process.z.clone(decay = cms.string("tag@+ probelooseIddBIso15@-"),)
-process.zlooseIddBIso15sl = process.z.clone(decay = cms.string("tag@+ probelooseIddBIso15sl"),)
+process.zlooseIddBIso15TrgMu17Mu8sl = process.z.clone(decay = cms.string("tag@+ probelooseIddBIso15TrgMu17Mu8sl"),)
 
 process.tnpId = cms.EDAnalyzer("TagProbeFitTreeProducer",
     tagProbePairs = cms.InputTag("z"),
@@ -151,7 +151,7 @@ process.tnplooseIdIso = process.tnpId.clone(
 		diso20 = cms.string('userIsolation("User2Iso") < 0.20'),
 	)
 )
-process.tnplooseIddBIso15TrgMu17Mu8 = process.tnpId.clone(
+process.tnplooseIddBIso15TrgMu17Mu8sl = process.tnpId.clone(
     tagProbePairs = cms.InputTag("zlooseIddBIso15"),
     flags = cms.PSet(
         softLeg = cms.string(
@@ -164,8 +164,8 @@ process.tnplooseIddBIso15TrgMu17Mu8 = process.tnpId.clone(
 		),
     ),
 )
-process.tnplooseIddBIso15TrgMu17Mu8sl = process.tnpId.clone(
-    tagProbePairs = cms.InputTag("zlooseIddBIso15sl"),
+process.tnplooseIddBIso15TrgMu17Mu8slhl = process.tnpId.clone(
+    tagProbePairs = cms.InputTag("zlooseIddBIso15TrgMu17Mu8sl"),
     flags = cms.PSet(
         p = cms.string(
 			'(!triggerObjectMatchesByFilter("hltL3fL1DoubleMu10MuOpenL1f0L2f10L3Filtered17").empty())'
@@ -185,8 +185,8 @@ process.p = cms.Path(
 	* process.probe * process.tag
 	* process.z * process.tnpId
 	* process.probelooseId * process.zlooseId * process.tnplooseIdIso
-	* process.probelooseIddBIso15 * process.zlooseIddBIso15	* process.tnplooseIddBIso15TrgMu17Mu8
-	* process.probelooseIddBIso15sl * process.zlooseIddBIso15sl	* process.tnplooseIddBIso15TrgMu17Mu8sl
+	* process.probelooseIddBIso15 * process.zlooseIddBIso15	* process.tnplooseIddBIso15TrgMu17Mu8sl
+	* process.probelooseIddBIso15TrgMu17Mu8sl * process.zlooseIddBIso15TrgMu17Mu8sl	* process.tnplooseIddBIso15TrgMu17Mu8slhl
 #	* process.tagDebug
 )
 
