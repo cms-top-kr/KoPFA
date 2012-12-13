@@ -10,10 +10,11 @@ import os,commands
 from cmg2kcms_cfg import *
 
 input = sys.argv[1]
+#mclist = ["TTbarTuneZ2","TTbarFullLepMGDecays"]
 
 mclist = ["ZJets","ZJets10To50","WJetsToLNu", "WW", "WZ", "ZZ","TTbarTuneZ2"]
-mclist += ["SingleToptW","SingleTopBartW","TTH"]
-#mclist += ["ZtauDecay","ZtauDecay10To50"]
+mclist += ["SingleToptW","SingleTopBartW","TTH","TTbarFullLepMGDecays"]
+
 rdlist = ["Run2012AMuMu","Run2012BMuMu","Run2012CMuMu"]
 rdlist += ["Run2012AElEl","Run2012BElEl","Run2012CElEl"]
 rdlist += ["Run2012AMuEl","Run2012BMuEl","Run2012CMuEl"]
@@ -31,6 +32,7 @@ samplePath["TTbarTuneZ2"]     ="KoPFA.CommonTools.Sources.CMG.V5_10_0.Summer12.p
 samplePath["SingleToptW"]     ="KoPFA.CommonTools.Sources.CMG.V5_10_0.Summer12.cmgTuple_TtW_cff"
 samplePath["SingleTopBartW"]  ="KoPFA.CommonTools.Sources.CMG.V5_10_0.Summer12.cmgTuple_TbartW_cff"
 samplePath["TTH"]              ="KoPFA.CommonTools.Sources.CMG.V5_10_0.Summer12.cmgTuple_TTH_HToBB_M125_cff"
+samplePath["TTbarFullLepMGDecays"]     ="KoPFA.CommonTools.Sources.CMG.V5_10_0.Summer12.patTuple_TTbarFullLepMGDecays_cff"
 ### DATA ####
 samplePath["Run2012AMuMu"]    ="KoPFA.CommonTools.Sources.CMG.V5_10_0.Run2012.cmgTuple_Run2012AMuMu_cff"
 samplePath["Run2012AElEl"]    ="KoPFA.CommonTools.Sources.CMG.V5_10_0.Run2012.cmgTuple_Run2012AElEl_cff"
@@ -80,7 +82,7 @@ def processSample( sample, dir):
 
     out.write(process.dumpPython())
     out.close()
-    #os.system("cmsBatch0.py 5 "+dir+'/cmg2kcms_'+sample+'_cfg.py'+" -o "+dir+"/"+sample+"/Log -r "+dir+"/"+sample+"/Res -b 'bsub -q 1nh < batchScript.sh'")
+    os.system("cmsBatch0.py 1 "+dir+'/cmg2kcms_'+sample+'_cfg.py'+" -o "+dir+"/"+sample+"/Log -r "+dir+"/"+sample+"/Res -b 'bsub -q 1nh < batchScript.sh'")
     #os.system("cmsBatch0.py 3 "+dir+'/cmg2kcms_'+sample+'_cfg.py'+" -o "+dir+"/"+sample+"/Log -r "+dir+"/"+sample+"/Res -b 'bsub -G u_zh -q 1nh < batchScript.sh'")
 
 currdir = commands.getoutput('pwd') 
