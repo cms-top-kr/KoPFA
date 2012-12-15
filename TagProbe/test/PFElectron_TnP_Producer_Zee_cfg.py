@@ -9,6 +9,7 @@ section = int(os.environ['SECTION'])
 begin = int(os.environ['BEGIN'])
 end = int(os.environ['END'])
 dataset = os.environ['DATASET']
+cmgVersion = os.environ['CMGVERSION']
 
 process = cms.Process("TagProbe")
 
@@ -22,7 +23,7 @@ process.MessageLogger.cerr.FwkReport.reportEvery = 10000
 
 ## Input and output ##
 process.source = cms.Source("PoolSource", fileNames = cms.untracked.vstring(),)
-loadDataset(process, dataset)
+loadDataset(process, dataset, cmgVersion)
 process.source.fileNames = process.source.fileNames[begin:end]
 
 process.TFileService = cms.Service("TFileService",
@@ -33,7 +34,8 @@ process.load("HLTrigger.HLTfilters.hltHighLevel_cfi")
 process.load("KoPFA.CommonTools.EventWeightProducer_cfi")
 
 process.hltHighLevel.throw = False
-process.hltHighLevel.HLTPaths = ["HLT_Ele17_CaloIdVT_CaloIsoVT_TrkIdT_TrkIsoVT_Ele8_Mass50_v*",]
+#process.hltHighLevel.HLTPaths = ["HLT_Ele17_CaloIdVT_CaloIsoVT_TrkIdT_TrkIsoVT_Ele8_Mass50_v*",]
+process.hltHighLevel.HLTPaths = ["HLT_Ele27_WP80_v*",]
 
 process.goodOfflinePrimaryVertices = cms.EDFilter("PrimaryVertexObjectFilter",
     src = cms.InputTag('offlinePrimaryVertices'),
@@ -58,15 +60,34 @@ process.patElectronsWithRelIso = cms.EDFilter("PatRelIsoElectronSelector",
     maxNumber = cms.uint32(999),
 )
 
+process.patMuonsWithRelIso = cms.EDFilter("PatRelIsoMuonSelector",
+    rho = cms.InputTag("kt6PFJets", "rho"),
+    src = cms.InputTag("patMuonsWithTrigger"),
+    cut = cms.string(
+        'abs(eta) < 2.5 && dB < 0.04 && pt > 20'
+        ' && isPFMuon && (isGlobalMuon || isTrackerMuon)'
+    ),
+    coneSize = cms.double(0.3),
+    minNumber = cms.uint32(0),
+    maxNumber = cms.uint32(999),
+)
+
+process.goodMuons = cms.EDFilter("PATMuonSelector",
+    src = cms.InputTag("patMuonsWithRelIso"),
+    cut = cms.string('userIsolation("User2Iso") < 0.15'),
+    filter = cms.bool(False),
+)
+
 process.tag = cms.EDFilter("PATElectronSelector",
     src = cms.InputTag("patElectronsWithRelIso"),
     cut = cms.string(
-        'pt > 20 '
+        'pt > 30 '
         ' && electronID("mvaTrigV0") > 0.5 '
         ' && gsfTrack.trackerExpectedHitsInner.numberOfHits <= 0'
         ' && userIsolation("User3Iso") < 0.10'
         # Require tag to matched to hard leg of HLT_Ele17_CaloIdVT_CaloIsoVT_TrkIdT_TrkIsoVT_Ele8_Mass50_v* path
-        ' && !triggerObjectMatchesByFilter("hltEle17CaloIdVTCaloIsoVTTrkIdTTrkIsoVTEle8TrackIsoFilter").empty()'
+        #' && !triggerObjectMatchesByFilter("hltEle17CaloIdVTCaloIsoVTTrkIdTTrkIsoVTEle8TrackIsoFilter").empty()'
+        ' && !triggerObjectMatchesByPath("HLT_Ele27_WP80_v*", 1, 0).empty()'
     ),
     filter = cms.bool(True),
 )
@@ -194,26 +215,81 @@ process.tnpNh0Mva00Riso15Pf = process.tnpNh0Mva05Riso15Pf.clone(tagProbePairs = 
 process.tnpNh0Mva05Riso15PfTrg = process.tnpNh.clone(
     tagProbePairs = cms.InputTag("zNh0Mva05Riso15Pf"),
     flags = cms.PSet(
-        trgPath = cms.string('!triggerObjectMatchesByPath("HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v*",1,0).empty()'),
+        #trgPath = cms.string('!triggerObjectMatchesByPath("HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v*",1,0).empty()'),
         trgHL = cms.string('!triggerObjectMatchesByFilter("hltEle17TightIdLooseIsoEle8TightIdLooseIsoTrackIsoFilter").empty()'),
         trgDZ = cms.string('!triggerObjectMatchesByFilter("hltEle17TightIdLooseIsoEle8TightIdLooseIsoTrackIsoDZ").empty()'),
+        trgSL = cms.string('!triggerObjectMatchesByFilter("hltEle17TightIdLooseIsoEle8TightIdLooseIsoTrackIsoDoubleFilter").empty()'),
+
+        trgZM = cms.string('!triggerObjectMatchesByFilter("hltEle17CaloIdVTCaloIsoVTTrkIdTTrkIsoVTEle8PMMassFilter").empty()'),
+        trgTH = cms.string('!triggerObjectMatchesByFilter("hltEle17CaloIdVTCaloIsoVTTrkIdTTrkIsoVTEle8TrackIsoFilter").empty()'),
     ),
 )
 
 process.tnpNh0Mva00Riso15PfTrg = process.tnpNh0Mva05Riso15PfTrg.clone(tagProbePairs = cms.InputTag("zNh0Mva00Riso15Pf"))
 
-process.p = cms.Path(
-    process.hltHighLevel
-  * process.goodOfflinePrimaryVertices
-  * process.PUweight
+process.jetFilter00 = cms.EDFilter("CMGCleanJetSelector",
+    doFilter = cms.bool(True),
+    src = cms.InputTag("cmgPFJetSelCHS"),
+    cut = cms.string(
+        " abs(eta) < 2.5 && pt > 30 && nConstituents > 1"
+        " && component(5).fraction < 0.99 && component(4).fraction < 0.99"
+        " && (abs(eta) >= 2.4 || component(2).fraction < 0.99 )"
+        " && (abs(eta) >= 2.4 || component(1).fraction > 0 )"
+        " && (abs(eta) >= 2.4 || component(1).number > 0 ) "
+    ),
+    overlapCands = cms.VInputTag(
+    #    cms.InputTag("goodMuons"),
+        cms.InputTag("probeNh0Mva00Riso15Pf"),
+    ),
+    overlapDeltaR = cms.double(0.5),
+    minNumber = cms.uint32(2),
+    maxNumber = cms.uint32(999),
+)
+process.jetFilter05 = process.jetFilter00.clone(
+    doFilter = cms.bool(True),
+    overlapCandLabels = cms.VInputTag(
+    #    cms.InputTag("goodMuons"),
+        cms.InputTag("probeNh0Mva05Riso15Pf"),
+    ),
+)
+
+process.p00 = cms.Path(
+    process.hltHighLevel * process.goodOfflinePrimaryVertices * process.PUweight
+  * process.patMuonsWithRelIso * process.goodMuons
   * process.patElectronsWithRelIso
-  * process.probe * process.tag * process.z * process.tnpNh
-  * process.probeNh0 * process.zNh0 * process.tnpNh0Mva
-  * process.probeNh0Mva05 * process.zNh0Mva05 * process.tnpNh0Mva05Iso
-  * process.probeNh0Mva00 * process.zNh0Mva00 * process.tnpNh0Mva00Iso
-  * process.probeNh0Mva05Riso15 * process.zNh0Mva05Riso15 * process.tnpNh0Mva05Riso15Pf
-  * process.probeNh0Mva00Riso15 * process.zNh0Mva00Riso15 * process.tnpNh0Mva00Riso15Pf
-  * process.probeNh0Mva05Riso15Pf * process.zNh0Mva05Riso15Pf * process.tnpNh0Mva05Riso15PfTrg
-  * process.probeNh0Mva00Riso15Pf * process.zNh0Mva00Riso15Pf * process.tnpNh0Mva00Riso15PfTrg
+
+  * process.tag 
+  * process.probe 
+  * process.probeNh0 
+  * process.probeNh0Mva00 
+  * process.probeNh0Mva00Riso15 
+  * process.probeNh0Mva00Riso15Pf 
+
+  * process.jetFilter00
+
+  * process.zNh0Mva00 * process.tnpNh0Mva00Iso
+  * process.zNh0Mva00Riso15 * process.tnpNh0Mva00Riso15Pf
+  * process.zNh0Mva00Riso15Pf * process.tnpNh0Mva00Riso15PfTrg
+)
+
+process.p05 = cms.Path(
+    process.hltHighLevel * process.goodOfflinePrimaryVertices * process.PUweight
+  * process.patMuonsWithRelIso * process.goodMuons
+  * process.patElectronsWithRelIso
+
+  * process.tag 
+  * process.probe 
+  * process.probeNh0 
+  * process.probeNh0Mva05 
+  * process.probeNh0Mva05Riso15 
+  * process.probeNh0Mva05Riso15Pf 
+
+  * process.jetFilter05
+
+  * process.z * process.tnpNh
+  * process.zNh0 * process.tnpNh0Mva
+  * process.zNh0Mva05 * process.tnpNh0Mva05Iso
+  * process.zNh0Mva05Riso15 * process.tnpNh0Mva05Riso15Pf
+  * process.zNh0Mva05Riso15Pf * process.tnpNh0Mva05Riso15PfTrg
 )
 
