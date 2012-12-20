@@ -70,6 +70,11 @@ class cmgEMuonIsoAnalyzer : public edm::EDProducer
   bool applyPreTrigSel_;
   bool applyPFId_;
   bool qcdMC_;
+  std::vector<std::string> bTagAlgos_;
+  std::vector<std::string> bTagNames_;
+  std::vector<double> bTagCutValues_;
+  std::vector<bool> bTagIsCutMin_;
+  std::vector<int> nbjets30_;
   unsigned int  numberOfHits_; 
   unsigned int  numberOfLeptons_; 
   unsigned int  numberOfJets_; 
@@ -110,6 +115,9 @@ class cmgEMuonIsoAnalyzer : public edm::EDProducer
   TH1F * h_nElectron[3];
   TH1F * h_met[3];
   TH1F * h_delphi[3];
+  TH1F * h_nbJet_CSVL[3];
+  TH1F * h_nbJet_CSVM[3];
+  TH1F * h_nbJet_CSVT[3];
 
   //pileup dependency
   TH2F * h2_pfRelIso02_vtx[3][5];

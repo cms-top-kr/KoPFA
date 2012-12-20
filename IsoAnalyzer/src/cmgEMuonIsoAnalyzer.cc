@@ -31,6 +31,33 @@ cmgEMuonIsoAnalyzer::cmgEMuonIsoAnalyzer(const edm::ParameterSet& config)
   filters_ = config.getUntrackedParameter<std::vector<std::string> >("filters");
   useEventCounter_ = config.getParameter<bool>("useEventCounter");
 
+  std::vector<edm::ParameterSet> bTagSets = config.getUntrackedParameter<std::vector<edm::ParameterSet> >("bTagSets");
+  for ( int i=0, n=bTagSets.size(); i<n; ++i )
+  {
+    edm::ParameterSet& bTagSet = bTagSets[i];
+    const std::string algo = bTagSet.getUntrackedParameter<std::string>("algo");
+    const std::string name = bTagSet.getUntrackedParameter<std::string>("name");
+    const double cutValue = bTagSet.getUntrackedParameter<double>("cutValue");
+    const bool isCutMin = bTagSet.getUntrackedParameter<bool>("isCutMin", true); // True : reject jets with smaller than cutValue 
+
+    std::vector<std::string>::iterator foundBtagName = std::find(bTagNames_.begin(), bTagNames_.end(), name);
+    if ( foundBtagName == bTagNames_.end() )
+    {
+      bTagAlgos_.push_back(algo);
+      bTagNames_.push_back(name);
+      bTagCutValues_.push_back(cutValue);
+      bTagIsCutMin_.push_back(isCutMin);
+      nbjets30_.push_back(-999);
+    }
+    else
+    {
+      cout << "what is this?" << endl;
+      const int index = foundBtagName - bTagNames_.begin();
+      bTagAlgos_[index] = algo;
+      bTagCutValues_[index] = cutValue;
+      bTagIsCutMin_[index] = isCutMin;
+    }
+  }
   produces<std::vector<cmg::Muon> >("isoMuon");
   produces<std::vector<cmg::Electron> >("isoElectron");
 
@@ -44,7 +71,7 @@ cmgEMuonIsoAnalyzer::cmgEMuonIsoAnalyzer(const edm::ParameterSet& config)
   h2_SIGMuonsPt = fs->make<TH2F>( "h2_SIGMuonsPt", "h2_SIGMuonsPt", 100,0,200,100, 0, 200);
   h2_ETCMuonsIso03 = fs->make<TH2F>( "h2_ETCMuonsIso03", "h2_ETCMuonsIso03", 1000,0,10,1000, 0, 10);
   h2_ETCMuonsPt = fs->make<TH2F>( "h2_ETCMuonsPt", "h2_ETCMuonsPt", 100,0,200,100, 0, 200);
- 
+
   ///////Muon loop
   for(int d=0 ; d < 3 ; d++){
     TString mainDirName = "";
@@ -132,6 +159,10 @@ cmgEMuonIsoAnalyzer::cmgEMuonIsoAnalyzer(const edm::ParameterSet& config)
     h_nElectron[d]   = dir.make<TH1F>( "h_nElectron", "h_nElectron", 10, 0, 10);
     h_delphi[d]   = dir.make<TH1F>( "h_delphi", "h_delphi", 100, 0, 3.2);
 
+    h_nbJet_CSVL[d] = dir.make<TH1F>("h_nbJet_CSVL","h_nbJet_CSVL",10,0,10);
+    h_nbJet_CSVM[d] = dir.make<TH1F>("h_nbJet_CSVM","h_nbJet_CSVM",10,0,10);
+    h_nbJet_CSVT[d] = dir.make<TH1F>("h_nbJet_CSVT","h_nbJet_CSVT",10,0,10);
+
   }
 
 }
@@ -145,6 +176,8 @@ void cmgEMuonIsoAnalyzer::produce(edm::Event& iEvent, const edm::EventSetup& es)
 {
   using namespace reco;
   using namespace isodeposit;
+
+  //typedef vector<cmg::PFJet>::const_iterator JI;
 
   //const bool isRealData = iEvent.isRealData();
 
@@ -215,6 +248,10 @@ void cmgEMuonIsoAnalyzer::produce(edm::Event& iEvent, const edm::EventSetup& es)
 
   std::auto_ptr<std::vector<cmg::PFJet> > cleanedJets(new std::vector<cmg::PFJet>());
 
+  for ( int bTagIndex=0, nBTag=nbjets30_.size(); bTagIndex<nBTag; ++bTagIndex )
+  {
+    nbjets30_[bTagIndex] = 0;
+  }
   for (unsigned int j=0 ; j < Jets->size(); j++) {
     cmg::PFJet jet = Jets->at(j);
 
@@ -226,6 +263,13 @@ void cmgEMuonIsoAnalyzer::produce(edm::Event& iEvent, const edm::EventSetup& es)
     bool overlap = false;
     bool overlapM = false;
     bool overlapE = false;
+/////////////////    
+    //double bDiscriminator = jit->bDiscriminator("combinedSecondaryVertexBJetTags");
+    for ( int bTagIndex=0, nBTagAlgo=bTagAlgos_.size(); bTagIndex<nBTagAlgo; ++bTagIndex )
+    {
+      const double bTagValue = (*Jets)[j].bDiscriminator(bTagAlgos_[bTagIndex].c_str());
+      if ( (bTagIsCutMin_[bTagIndex]) xor (bTagValue < bTagCutValues_[bTagIndex]) ) ++nbjets30_[bTagIndex];
+    }
 /////////////////    
     for (unsigned int i=0; i < triggeredMuons->size(); ++i){
       cmg::Muon muon = triggeredMuons->at(i);
@@ -281,16 +325,16 @@ void cmgEMuonIsoAnalyzer::produce(edm::Event& iEvent, const edm::EventSetup& es)
       charge = muon1.charge()*muon2.charge();
 
       double chIso03muon1 = muon1.chargedHadronIso(0.3);
-      //double puChIso03muon1 = muon1.puChargedHadronIso(0.3);
       double nhIso03muon1 = muon1.neutralHadronIso(0.3);
       double phIso03muon1 = muon1.photonIso(0.3);
+      //double puChIso03muon1 = muon1.puChargedHadronIso(0.3);
       //relPfIso03leg1 = ( chIso03muon1 + max(0.0, nhIso03muon1 + phIso03muon1 - 0.5*puChIso03muon1) )/ muon1.pt();
       relPfIso03leg1 = ( chIso03muon1 + nhIso03muon1 + phIso03muon1 )/ muon1.pt();
 
       double chIso03muon2 = muon2.chargedHadronIso(0.3);
-      //double puChIso03muon2 = muon2.puChargedHadronIso(0.3);
       double nhIso03muon2 = muon2.neutralHadronIso(0.3);
       double phIso03muon2 = muon2.photonIso(0.3);
+      //double puChIso03muon2 = muon2.puChargedHadronIso(0.3);
       //relPfIso03leg2 = ( chIso03muon2 + max(0.0, nhIso03muon2 + phIso03muon2 - 0.5*puChIso03muon2) )/ muon2.pt();
       relPfIso03leg2 = ( chIso03muon2 + nhIso03muon2 + phIso03muon2 )/ muon2.pt();
       break;
@@ -314,7 +358,7 @@ void cmgEMuonIsoAnalyzer::produce(edm::Event& iEvent, const edm::EventSetup& es)
   SIG2 = relPfIso03leg2 < 0.15;
   SIG3 = charge < 0;
   SIG4 = MET >= 30;
-  SIG5 = nJets >=2;
+  SIG5 = nJets >=2 && nbjets30_[1] >= 1;
   SIG = nME && SIG0 && SIG1 && SIG2 && SIG3 && SIG4 && SIG5;
 
   //// QCD EVENT selection ////
@@ -363,6 +407,10 @@ void cmgEMuonIsoAnalyzer::produce(edm::Event& iEvent, const edm::EventSetup& es)
     h_nMuon[d]->Fill(nMuons);
     h_nElectron[d]->Fill(nElectrons);
     h_delphi[d]->Fill(delphi);
+
+    h_nbJet_CSVL[d]->Fill(nbjets30_[0]);
+    h_nbJet_CSVM[d]->Fill(nbjets30_[1]);
+    h_nbJet_CSVT[d]->Fill(nbjets30_[2]);
   } 
 // Muon loop
 /////////////////////  for (unsigned int j=0; j < triggeredMuons->size() && eventsel ; ++j){
