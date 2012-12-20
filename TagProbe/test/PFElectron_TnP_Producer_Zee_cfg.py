@@ -5,11 +5,18 @@ def loadDataset(process, dataset, cmgVersion="V5_10_0"):
     prod, dataset = dataset.split("-")
     process.load("KoPFA.CommonTools.Sources.CMG.%s.%s.cmgTuple_%s_cff" % (cmgVersion, prod, dataset))
 
-section = int(os.environ['SECTION'])
-begin = int(os.environ['BEGIN'])
-end = int(os.environ['END'])
-dataset = os.environ['DATASET']
-cmgVersion = os.environ['CMGVERSION']
+def getEnv(varName, default):
+    import os
+    if varName in os.environ:
+        return os.environ[varName]
+    else:
+        return default
+
+section = int(getEnv('SECTION', 1))
+begin = int(getEnv('BEGIN', 0))
+end = int(getEnv('END', -1))
+dataset = getEnv('DATASET', 'Summer12-ZJets')
+cmgVersion = getEnv('CMGVERSION', 'V5_10_0')
 
 process = cms.Process("TagProbe")
 
@@ -76,6 +83,25 @@ process.goodMuons = cms.EDFilter("PATMuonSelector",
     src = cms.InputTag("patMuonsWithRelIso"),
     cut = cms.string('userIsolation("User2Iso") < 0.15'),
     filter = cms.bool(False),
+)
+
+process.goodElectrons00 = cms.EDFilter("PATElectronSelector",
+    src = cms.InputTag("patElectronsWithRelIso"),
+    cut = cms.string(
+        ' pt > 20 && gsfTrack.trackerExpectedHitsInner.numberOfHits <= 0' 
+        ' && electronID("mvaTrigV0") > 0.0'
+        ' && userIsolation("User3Iso") < 0.15'
+        ' && isPF'
+    ),
+    filter = cms.bool(False),
+)
+process.goodElectrons05 = process.goodElectrons00.clone(
+    cut = cms.string(
+        ' pt > 20 && gsfTrack.trackerExpectedHitsInner.numberOfHits <= 0' 
+        ' && electronID("mvaTrigV0") > 0.5'
+        ' && userIsolation("User3Iso") < 0.15'
+        ' && isPF'
+    ),
 )
 
 process.tag = cms.EDFilter("PATElectronSelector",
@@ -238,8 +264,8 @@ process.jetFilter00 = cms.EDFilter("CMGCleanJetSelector",
         " && (abs(eta) >= 2.4 || component(1).number > 0 ) "
     ),
     overlapCands = cms.VInputTag(
-    #    cms.InputTag("goodMuons"),
-        cms.InputTag("probeNh0Mva00Riso15Pf"),
+        cms.InputTag("goodMuons"),
+        cms.InputTag("goodElectrons00"),
     ),
     overlapDeltaR = cms.double(0.5),
     minNumber = cms.uint32(2),
@@ -248,15 +274,16 @@ process.jetFilter00 = cms.EDFilter("CMGCleanJetSelector",
 process.jetFilter05 = process.jetFilter00.clone(
     doFilter = cms.bool(True),
     overlapCandLabels = cms.VInputTag(
-    #    cms.InputTag("goodMuons"),
-        cms.InputTag("probeNh0Mva05Riso15Pf"),
+        cms.InputTag("goodMuons"),
+        cms.InputTag("goodElectrons05"),
     ),
 )
 
 process.p00 = cms.Path(
     process.hltHighLevel * process.goodOfflinePrimaryVertices * process.PUweight
   * process.patMuonsWithRelIso * process.goodMuons
-  * process.patElectronsWithRelIso
+  * process.patElectronsWithRelIso * process.goodElectrons00
+  * process.jetFilter00
 
   * process.tag 
   * process.probe 
@@ -264,8 +291,6 @@ process.p00 = cms.Path(
   * process.probeNh0Mva00 
   * process.probeNh0Mva00Riso15 
   * process.probeNh0Mva00Riso15Pf 
-
-  * process.jetFilter00
 
   * process.zNh0Mva00 * process.tnpNh0Mva00Iso
   * process.zNh0Mva00Riso15 * process.tnpNh0Mva00Riso15Pf
@@ -275,7 +300,8 @@ process.p00 = cms.Path(
 process.p05 = cms.Path(
     process.hltHighLevel * process.goodOfflinePrimaryVertices * process.PUweight
   * process.patMuonsWithRelIso * process.goodMuons
-  * process.patElectronsWithRelIso
+  * process.patElectronsWithRelIso * process.goodElectrons05
+  * process.jetFilter05
 
   * process.tag 
   * process.probe 
@@ -283,8 +309,6 @@ process.p05 = cms.Path(
   * process.probeNh0Mva05 
   * process.probeNh0Mva05Riso15 
   * process.probeNh0Mva05Riso15Pf 
-
-  * process.jetFilter05
 
   * process.z * process.tnpNh
   * process.zNh0 * process.tnpNh0Mva
