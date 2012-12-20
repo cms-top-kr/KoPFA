@@ -1,5 +1,12 @@
 import FWCore.ParameterSet.Config as cms
 
+def getEnv(varName, default):
+    import os
+    if varName in os.environ:
+        return os.environ[varName]
+    else:
+        return default
+
 process = cms.Process("TagProbe")
 process.source = cms.Source("EmptySource")
 process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(1) )
@@ -9,8 +16,8 @@ process.MessageLogger.destinations = ['cout', 'cerr']
 process.MessageLogger.cerr.FwkReport.reportEvery = 1000
 
 import os
-mode = os.environ['MODE']
-step = os.environ['STEP']
+mode = getEnv('MODE', 'MC')
+step = getEnv('STEP', 'all')
 
 from KoPFA.TagProbe.common_PDFs_cff import *
 
@@ -62,10 +69,12 @@ def tnpEffPSet(categories):
 
 def makeTnPFitter(process, suffix, categories):
     fitter = cms.EDAnalyzer("TagProbeFitTreeAnalyzer",
-        InputFileNames = cms.vstring("ntuple/dR04/tnpTree_%s.root" % mode),
+        #InputFileNames = cms.vstring("ntuple/tnpTree_%s.root" % mode),
+        InputFileNames = cms.vstring("tnpTree.root"),
         InputDirectoryName = cms.string("tnp"+suffix),
         InputTreeName = cms.string("fitter_tree"),
-        OutputFileName = cms.string("result/dR04/result_%s_%s.root" % (suffix, mode)),
+        #OutputFileName = cms.string("result/result_%s_%s.root" % (suffix, mode)),
+        OutputFileName = cms.string("result.root"),
         NumCPU = cms.uint32(1),
         SaveWorkspace = cms.bool(False),
         floatShapeParameters = cms.bool(True),
@@ -97,9 +106,13 @@ categoryMap['Nh'                 ] = ['nh0', 'nh1']
 categoryMap['Nh0Mva'             ] = ['mva00', 'mva03', 'mva05', 'mva07', 'mva09']
 categoryMap['Nh0Mva05Iso'        ] = ['iso15' , 'diso15', 'riso15',]
 categoryMap['Nh0Mva05Riso15Pf'   ] = ['pf']
-categoryMap['Nh0Mva05Riso15PfTrg'] = ['trgPath', 'trgHL', 'trgDZ']
+categoryMap['Nh0Mva05Riso15PfTrg'] = ['trgSL', 'trgHL', 'trgDZ', 'trgZM', 'trgTH',]
 categoryMap['Nh0Mva00Iso'        ] = ['iso15' , 'diso15', 'riso15',]
 categoryMap['Nh0Mva00Riso15Pf'   ] = ['pf']
-categoryMap['Nh0Mva00Riso15PfTrg'] = ['trgPath', 'trgHL', 'trgDZ']
+categoryMap['Nh0Mva00Riso15PfTrg'] = ['trgSL', 'trgHL', 'trgDZ', 'trgZM', 'trgTH',]
 
-makeTnPFitter(process, step, categoryMap[step])
+if step == 'all':
+    for i in categoryMap:
+        makeTnPFitter(process, i, categoryMap[i])
+else:
+    makeTnPFitter(process, step, categoryMap[step])

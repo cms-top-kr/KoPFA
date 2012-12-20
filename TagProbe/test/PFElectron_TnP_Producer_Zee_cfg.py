@@ -34,7 +34,8 @@ loadDataset(process, dataset, cmgVersion)
 process.source.fileNames = process.source.fileNames[begin:end]
 
 process.TFileService = cms.Service("TFileService",
-    fileName = cms.string("ntuple/unmerged/tnpTree_%s_%03d.root" % (dataset, section))
+    #fileName = cms.string("tnpTree_%s_%03d.root" % (dataset, section))
+    fileName = cms.string("tnpTree.root")
 )
 
 process.load("HLTrigger.HLTfilters.hltHighLevel_cfi")
