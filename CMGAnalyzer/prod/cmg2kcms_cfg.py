@@ -19,6 +19,7 @@ process.load("KoPFA.CMGAnalyzer.finalLeptonProducer_cfi")
 process.load("KoPFA.CMGAnalyzer.cmgElectronAnalyzer_cfi")
 process.load("KoPFA.CMGAnalyzer.cmgMuonAnalyzer_cfi")
 process.load("KoPFA.CMGAnalyzer.ZFilter_cfi")
+process.load("KoPFA.TTbar2b.ttbar2bFilter_cfi")
 from KoPFA.CommonTools.PileUpWeight_cff import *
 
 runOnMC = True
@@ -27,11 +28,19 @@ runOn2012 = True
 #Data
 #process.load("KoPFA.CommonTools.Sources.CMG.V5_10_0.Run2012.cmgTuple_Run2012CElEl_cff")
 #MC
-process.load("KoPFA.CommonTools.Sources.CMG.V5_10_0.Summer12.patTuple_TTbarTuneZ2_cff")
+#process.load("KoPFA.CommonTools.Sources.CMG.V5_10_0.Summer12.patTuple_TTbarTuneZ2_cff")
 #process.load("KoPFA.CommonTools.Sources.CMG.V5_10_0.Summer12.patTuple_TTbarFullLepMGDecays_cff")
 #process.load("KoPFA.CommonTools.Sources.CMG.V5_10_0.Summer12.cmgTuple_TTH_HToBB_M125_cff")
 #process.load("KoPFA.CommonTools.Sources.CMG.V5_10_0.Summer12.cmgTuple_TTbarTuneZ2_cff")
 #process.load("KoPFA.CommonTools.Sources.CMG.V5_10_0.Summer12.cmgTuple_ZJets_cff")
+
+process.source = cms.Source("PoolSource",
+  fileNames = cms.untracked.vstring(
+    #pickRelValInputFiles() # <-- picks automatically RelVal input files for the current release
+    #'rfio:/castor/cern.ch/user/j/jhgoh/TopAnalysis/pf2pat/MuEl/MC/20110603/DYmm20to50/patTuple_skim_1_1_ogh.root',
+    '/store/caf/user/tjkim/mc/Summer12_DR53X/TTJets_FullLeptMGDecays_8TeV-madgraph/CMG/cmgTuple.root'
+  )
+)
 
 from CMGTools.Common.Tools.applyJSON_cff import applyJSON
 json = '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions12/8TeV/Prompt/Cert_190456-203002_8TeV_PromptReco_Collisions12_JSON_v2.txt'
@@ -51,7 +60,7 @@ process.load("KoPFA.CMGAnalyzer.TtFullLepKinSolutionProducer_cfi")
 process.load("KoPFA.CMGAnalyzer.TtFullLepMaosSolutionProducer_cfi")
 
 process.BaseSequence = cms.Sequence(
-    process.nEventsPatHLT*
+    process.ttbar2bFilter*
     process.EventFilter*
     process.nEventsFilter*
  #   process.topDecayGenFilter*
@@ -72,6 +81,10 @@ process.BaseSequenceMuMu = cloneProcessingSnippet(process, process.BaseSequence,
 process.BaseSequenceMuEl = cloneProcessingSnippet(process, process.BaseSequence, 'MuEl')
 process.BaseSequenceElEl = cloneProcessingSnippet(process, process.BaseSequence, 'ElEl')
 
+process.nEventsPatHLTMuMu = process.nEventsPatHLT.clone()
+process.nEventsPatHLTMuEl = process.nEventsPatHLT.clone()
+process.nEventsPatHLTElEl = process.nEventsPatHLT.clone()
+
 process.kinSolutionTtFullLepEventMuMu = process.kinSolutionTtFullLepEvent.clone()
 process.kinSolutionTtFullLepEventMuEl = process.kinSolutionTtFullLepEvent.clone()
 process.kinSolutionTtFullLepEventElEl = process.kinSolutionTtFullLepEvent.clone()
@@ -90,8 +103,9 @@ process.JetEnergyScaleElEl = process.JetEnergyScale.clone()
 ### Ntuple producer for dilepton ###
 
 process.p = cms.Path(
-    process.hltHighLevelMuMu*
     process.BaseSequenceMuMu*
+    process.hltHighLevelMuMu*
+    process.nEventsPatHLTMuMu*
     process.ZMuMu*
     process.CMGFinalLeptonsMuMu*
     process.JetEnergyScaleMuMu*
@@ -101,8 +115,9 @@ process.p = cms.Path(
 )
 
 process.p2 = cms.Path(
-    process.hltHighLevelMuEl*
     process.BaseSequenceMuEl*
+    process.hltHighLevelMuEl*
+    process.nEventsPatHLTMuEl*
     process.ZMuEl*
     process.CMGFinalLeptonsMuEl*
     process.JetEnergyScaleMuEl*
@@ -112,8 +127,9 @@ process.p2 = cms.Path(
 )
 
 process.p3 = cms.Path(
-    process.hltHighLevelElEl*
     process.BaseSequenceElEl*
+    process.hltHighLevelElEl*
+    process.nEventsPatHLTElEl*
     process.ZElEl*
     process.CMGFinalLeptonsElEl*
     process.JetEnergyScaleElEl*
@@ -178,7 +194,6 @@ process.JetEnergyScaleMuEl.muonLabel = cms.InputTag("CMGFinalLeptonsMuEl","Muons
 
 process.JetEnergyScaleElEl.electronLabel = cms.InputTag("CMGFinalLeptonsElEl","Electrons")
 process.JetEnergyScaleElEl.muonLabel = cms.InputTag("CMGFinalLeptonsElEl","Muons")
-
 
 process.ZMuMu.muonLabel1 =  cms.InputTag('MuonsMuMu')
 process.ZMuMu.muonLabel2 =  cms.InputTag('MuonsMuMu')
