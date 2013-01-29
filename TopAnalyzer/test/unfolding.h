@@ -513,7 +513,7 @@ void FinalPlot(TH1F* h_unfold, TH1F* hgen, TH1F* accept, TH1* hTr1, TH1* hTr2, T
   Print(c_dsigma, "unfoldPlot", hName.Data(), cName.Data(), print);
 }
 
-void TOP11013Plot(TH1F* h_unfold, TH1F* hgen, TH1F* accept, TH1* hTr1, TH1* hTr2, TH1* hTr3, double lumi, TString hName, TString cName, double min, double max, bool norm=true, bool log=true, bool curve=false, bool print = false, bool printX = false, bool HBBstyle = false, bool band = false, TH1* hTr2_up ="", TH1* hTr2_dw= ""){
+void TOP11013Plot(TH1F* h_unfold, TH1F* hgen, TH1F* accept, TH1* hTr1, TH1* hTr2, TH1* hTr3, double lumi, TString hName, TString cName, double min, double max, bool norm=true, bool log=true, bool curve=false, bool print = false, bool printX = false, bool HBBstyle = false, bool band = false, TH1* hTr2_up ="", TH1* hTr2_dw= "", TH1* hNLONNLL= ""){
 
   int nbins = h_unfold->GetNbinsX();
 
@@ -532,6 +532,8 @@ void TOP11013Plot(TH1F* h_unfold, TH1F* hgen, TH1F* accept, TH1* hTr1, TH1* hTr2
   TH1F* hSigmaTruth2_up = getTruthCrossSection(hgen, hTr2_up, lumi, norm, false);
   TH1F* hSigmaTruth2_dw = getTruthCrossSection(hgen, hTr2_dw, lumi, norm, false);
 
+  TH1F* hSigmaTruth4 = hNLONNLL;
+
   TCanvas *c_dsigma = new TCanvas(Form("c_%s_dsigma_%s",hName.Data(), cName.Data()),Form("c_%s_dsigma_%s",hName.Data(), cName.Data()));
   TGaxis::SetMaxDigits(4);
   if(log) c_dsigma->SetLogy();
@@ -547,14 +549,15 @@ void TOP11013Plot(TH1F* h_unfold, TH1F* hgen, TH1F* accept, TH1* hTr1, TH1* hTr2
   //TH1F* fSigmaTruth2_up = getFitHistogram(hTr2_up, "mcatnlo");
   //TH1F* fSigmaTruth2_dw = getFitHistogram(hTr2_dw, "mcatnlo");
 
-  SetHistoStyle(fSigmaTruth, 2,kRed+1,1,0,0,0,min,max,"","");
+  SetHistoStyle(fSigmaTruth, 2,kRed,1,0,0,0,min,max,"","");
   //SetHistoStyle(fSigmaTruth2, 2,kAzure,1,0,0,0,min,max,"","");
   //SetHistoStyle(fSigmaTruth3, 2,kGreen+1,1,0,0,0,min,max,"","");
 
-  SetHistoStyle_TOP11013(htmp        , 0,0       ,1,1.2,0,20,min,max,"m^{t#bar{t}} #left[GeV#right]","#frac{1}{#sigma} #frac{d#sigma}{dm^{t#bar{t}}} #left[GeV^{-1}#right]");
-  SetHistoStyle_TOP11013(hSigmaTruth , 2,kRed+1  ,1,1.2,0,20,min,max,"m^{t#bar{t}} #left[GeV#right]","#frac{1}{#sigma} #frac{d#sigma}{dm^{t#bar{t}}} #left[GeV^{-1}#right]");
-  SetHistoStyle_TOP11013(hSigmaTruth2, 2,kBlue   ,5,1.2,0,20,min,max,"m^{t#bar{t}} #left[GeV#right]","#frac{1}{#sigma} #frac{d#sigma}{dm^{t#bar{t}}} #left[GeV^{-1}#right]");
-  SetHistoStyle_TOP11013(hSigmaTruth3, 2,kGreen+1,7,1.2,0,20,min,max,"m^{t#bar{t}} #left[GeV#right]","#frac{1}{#sigma} #frac{d#sigma}{dm^{t#bar{t}}} #left[GeV^{-1}#right]");
+  SetHistoStyle_TOP11013(htmp        , 0,0         ,1,1.2,0,20,min,max,"m^{t#bar{t}} #left[GeV#right]","#frac{1}{#sigma} #frac{d#sigma}{dm^{t#bar{t}}} #left[GeV^{-1}#right]");
+  SetHistoStyle_TOP11013(hSigmaTruth , 2,kRed    ,1,1.2,0,20,min,max,"m^{t#bar{t}} #left[GeV#right]","#frac{1}{#sigma} #frac{d#sigma}{dm^{t#bar{t}}} #left[GeV^{-1}#right]");
+  SetHistoStyle_TOP11013(hSigmaTruth2, 2,kBlue     ,5,1.2,0,20,min,max,"m^{t#bar{t}} #left[GeV#right]","#frac{1}{#sigma} #frac{d#sigma}{dm^{t#bar{t}}} #left[GeV^{-1}#right]");
+  SetHistoStyle_TOP11013(hSigmaTruth3, 2,kGreen+1  ,7,1.2,0,20,min,max,"m^{t#bar{t}} #left[GeV#right]","#frac{1}{#sigma} #frac{d#sigma}{dm^{t#bar{t}}} #left[GeV^{-1}#right]");
+  SetHistoStyle_TOP11013(hSigmaTruth4, 2,kMagenta+2,1,1.2,0,20,min,max,"m^{t#bar{t}} #left[GeV#right]","#frac{1}{#sigma} #frac{d#sigma}{dm^{t#bar{t}}} #left[GeV^{-1}#right]");
 
   htmp->Draw();
 
@@ -571,6 +574,7 @@ void TOP11013Plot(TH1F* h_unfold, TH1F* hgen, TH1F* accept, TH1* hTr1, TH1* hTr2
   //histograms
   hSigmaTruth2->Draw("same"); 
   hSigmaTruth3->Draw("same");
+  hSigmaTruth4->Draw("same");
   hSigmaTruth->Draw("same");
 
   //hTr1->Draw("hist same");
@@ -597,11 +601,17 @@ void TOP11013Plot(TH1F* h_unfold, TH1F* hgen, TH1F* accept, TH1* hTr1, TH1* hTr2
 
   TLegend *l= new TLegend();
   l->AddEntry(dsigmaDataCentered, "Data" ,"P");
-  l->AddEntry(fSigmaTruth,  "MadGraph" ,"L");
-  l->AddEntry(dsigmaTruth,  "MC@NLO"   ,"FL");
-  l->AddEntry(hSigmaTruth3, "POWHEG"   ,"L");
+  l->AddEntry(fSigmaTruth,  "MadGraph"   ,"L");
+  l->AddEntry(dsigmaTruth,  "MC@NLO"     ,"FL");
+  l->AddEntry(hSigmaTruth3, "POWHEG"     ,"L");
+  l->AddEntry(hSigmaTruth4, "NLO+NNLL"   ,"L");
   SetLegendStyle(l,true);
   l->Draw("same");
+
+  TLatex *label2= new TLatex;
+  label2->SetNDC();
+  label2->SetTextSize(0.025);
+  label2->DrawLatex(0.69,0.6,"(arXiv:1003.5827)");
 
   //print
   Print(c_dsigma, "unfoldPlot", hName.Data(), cName.Data(), print);
