@@ -394,6 +394,8 @@ class BTagWeight2012
             if( sys_ == DWLight )       func =GetSFLight("min", "CSV","L",min,max,"ABCD"); 
             else if( sys_ == UPLight )  func =GetSFLight("max", "CSV","L",min,max,"ABCD");
             else                        func =GetSFLight("mean","CSV","L",min,max,"ABCD"); 
+ 
+            sf = func.Eval(pt);
       } else if( algo_ == CSVM ){
             if(eta>=0.0 && eta <0.8 ) { min=0.0; max=0.8; }
             if(eta>0.8 && eta <1.6 )  { min=0.8; max=1.6; }
@@ -402,11 +404,15 @@ class BTagWeight2012
             if( sys_ == DWLight )       func =GetSFLight("min", "CSV","M",min,max,"ABCD");  
             else if( sys_ == UPLight )  func =GetSFLight("max", "CSV","M",min,max,"ABCD");
             else                        func =GetSFLight("mean","CSV","M",min,max,"ABCD");
+
+            sf = func.Eval(pt);
       } else if( algo_ == CSVT){
             min=0.0; max=2.4;
             if( sys_ == DWLight )       func =GetSFLight("min", "CSV","M",min,max,"ABCD");
             else if( sys_ == UPLight )  func =GetSFLight("max", "CSV","M",min,max,"ABCD");
             else                        func =GetSFLight("mean","CSV","M",min,max,"ABCD");
+
+            sf = func.Eval(pt);
       }else { 
          sf = 1.0; 
       }
