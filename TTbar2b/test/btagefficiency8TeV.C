@@ -9,7 +9,7 @@
 #include "TROOT.h"
 #include "TGraphAsymmErrors.h"
 //using namespace std;
-void btagefficiency8TeV(int ii)
+void btagefficiency(int ii)
 {
     gROOT->ProcessLine(".L tdrstyle.C");
     defaultStyle();
@@ -29,6 +29,10 @@ void btagefficiency8TeV(int ii)
     TCut bcut =  "abs(jets.flavor()) == 5";
     TCut ccut =  "abs(jets.flavor()) == 4";
     TCut lcut =  "abs(jets.flavor()) < 4";
+
+    TCut etacut1 = "abs(jets.eta()) <= 0.8";
+    TCut etacut2 = "abs(jets.eta()) > 0.8 && abs(jets.eta()) <=1.6";
+    TCut etacut3 = "abs(jets.eta()) > 1.6";
 
     TCut csvm =  "jets.bDiscriminator() > 0.679";
     TCut csvt =  "jets.bDiscriminator() > 0.898";
@@ -70,6 +74,27 @@ void btagefficiency8TeV(int ii)
     SetLegend(l);
     c_b_pt_CSVT->Print("compare_b_pt_CSVT.png");
     c_b_pt_CSVT->Print("compare_b_pt_CSVT.eps");
+ }
+ else if(ii==2)
+ {
+    TH1F* eff_l1_pt_CSVM = eff(treeElEl, treeMuMu, treeMuEl, "jets.pt()", nBinpt, binspt, precut, precut_em, lcut+etacut1, csvm, "l1_pt_CSVM","CSVM",2,"p_{T}(GeV/c)"); 
+    TH1F* eff_l2_pt_CSVM = eff(treeElEl, treeMuMu, treeMuEl, "jets.pt()", nBinpt, binspt, precut, precut_em, lcut+etacut2, csvm, "l2_pt_CSVM","CSVM",4,"p_{T}(GeV/c)");
+    TH1F* eff_l3_pt_CSVM = eff(treeElEl, treeMuMu, treeMuEl, "jets.pt()", nBinpt, binspt, precut, precut_em, lcut+etacut3, csvm, "l3_pt_CSVM","CSVM",5,"p_{T}(GeV/c)");
+
+
+    TCanvas * c_l3_pt_CSVM = new TCanvas("c_b_pt_CSVM","c_b_pt_CSVM",500,500);
+    eff_l1_pt_CSVM->Draw("e3");
+    eff_l2_pt_CSVM->Draw("e3 same");
+    eff_l3_pt_CSVM->Draw("e3 same");
+
+    TLegend *l = new TLegend(0.68,0.76,0.89,0.87);
+    l->AddEntry(eff_l1_pt_CSVM,"LF-flavor 0.8","F");
+    l->AddEntry(eff_l2_pt_CSVM,"LF-flavor 1.6","F");
+    l->AddEntry(eff_l3_pt_CSVM,"LF-flavor 2.4","F");
+    SetLegend(l);
+    c_l3_pt_CSVM->Print("compare_l3_pt_CSVM.png");
+    c_l3_pt_CSVM->Print("compare_l3_pt_CSVM.eps");
+
  }
  else if(ii==1)
  {
