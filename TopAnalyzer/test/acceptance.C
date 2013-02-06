@@ -44,14 +44,14 @@ void acceptance(){
   //rdPath.push_back("/data/export/common/Top/finalHisto/v6/MuEl.root");
 
   //note for v3
-  rdPath.push_back("/afs/cern.ch/work/t/tjkim/public/store/top/TOP11013/TOP11013_12072012/ElEl/ElEl.root");
-  rdPath.push_back("/afs/cern.ch/work/t/tjkim/public/store/top/TOP11013/TOP11013_12072012/MuMu/MuMu.root");
-  rdPath.push_back("/afs/cern.ch/work/t/tjkim/public/store/top/TOP11013/TOP11013_12072012/MuEl/MuEl.root");
+  rdPath.push_back("TOP11013_12072012/ElEl/ElEl.root");
+  rdPath.push_back("TOP11013_12072012/MuMu/MuMu.root");
+  rdPath.push_back("TOP11013_12072012/MuEl/MuEl.root");
 
   const std::string cutStep = "Step_8";
   string recon = "kin";
 
-  TFile * fDen = new TFile("/afs/cern.ch/work/t/tjkim/public/store/top/TOP11013/topGenHisto_madgraph.root");
+  TFile * fDen = new TFile("/afs/cern.ch/work/t/tjkim/store/GenHisto/topGenHisto_madgraph.root");
   TH1F* full = (TH1F*) fDen->Get("topDecayGenHisto/hMtt_Full");
   TH1F* visiPtcl = (TH1F*) fDen->Get("topDecayGenHisto/hMtt_DIL_Ptcl_NoTau");
   TH1F* visiPton = (TH1F*) fDen->Get("topDecayGenHisto/hMtt_DIL_Pton_NoTau");
