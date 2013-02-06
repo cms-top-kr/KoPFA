@@ -13,7 +13,7 @@
 //
 // Original Author:  Tae Jeong Kim,40 R-A32,+41227678602,
 //         Created:  Fri Jun  4 17:19:29 CEST 2010
-// $Id: CMGTopDILAnalyzer.h,v 1.15 2012/12/03 15:41:06 tjkim Exp $
+// $Id: CMGTopDILAnalyzer.h,v 1.16 2013/02/06 10:11:12 tjkim Exp $
 //
 //
 
@@ -86,6 +86,17 @@ using namespace std;
 using namespace reco;
 using namespace isodeposit;
 using namespace vallot;
+
+template<class T>
+struct bigger_second
+: std::binary_function<T,T,bool>
+{
+   inline bool operator()(const T& lhs, const T& rhs)
+   {
+      return lhs.second > rhs.second;
+   }
+};
+typedef std::pair<int,double> data_t;
 
 template<typename T1, typename T2>
 class CMGTopDILAnalyzer : public edm::EDFilter {
@@ -454,11 +465,11 @@ class CMGTopDILAnalyzer : public edm::EDFilter {
 
       }//pt > 30 loop
     }
+    std::vector< std::pair<int,double> > vecJetBDisc(mapJetBDiscriminator.begin(), mapJetBDiscriminator.end());
+    std::sort(vecJetBDisc.begin(), vecJetBDisc.end(), bigger_second<data_t>());
+    for(std::vector< std::pair<int,double> >::iterator it = vecJetBDisc.begin() ; it != vecJetBDisc.end(); ++it)
+        csvd_jid.push_back((*it).first);
 
-    csvd_jid.push_back(0);
-    csvd_jid.push_back(1);
-    csvd_jid.push_back(2);
-    csvd_jid.push_back(3);
 
     nJet30 = jets->size();
     std::vector<TLorentzVector *> jet30(nJet30);
