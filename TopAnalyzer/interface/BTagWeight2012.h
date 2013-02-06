@@ -440,7 +440,7 @@ class BTagWeight2012
     double eb(double pt, double eta)
     {
       double x = pt;
-      if(pt <= 450) x=450;
+      if(pt >= 450) x=450;
 
       if( algo_ == CSVM ){
 	 return 0.491297 + 0.00495907*x - (3.39749e-05)*pow(x,2) + (9.10712e-08)*pow(x,3) - (9.20205e-11)*pow(x,4);
@@ -458,7 +458,7 @@ class BTagWeight2012
     double ec(double pt, double eta)
     {
       double x = pt;
-      if(pt <= 450) x=450;
+      if(pt >= 450) x=450;
 
       if( algo_ == CSVM ){
          return 0.0135443 + 0.00372916*x - (2.86917e-05)*pow(x,2) + (8.68693e-08)*pow(x,3) - (9.04518e-11)*pow(x,4);
@@ -476,7 +476,7 @@ class BTagWeight2012
     double el(double pt, double eta)
     {
       double x = pt;
-      if(pt <= 450) x=450;
+      if(pt >= 450) x=450;
 
       if( algo_ == CSVM ){
           if( fabs(eta) < 0.8 )                         
