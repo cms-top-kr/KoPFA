@@ -37,6 +37,7 @@ public:
 
 private:
   bool applyFilter_;
+  edm::InputTag genParticlesLabel_;
   edm::InputTag genJetsLabel_;
 
   TTree* tree;
@@ -114,6 +115,7 @@ private:
 TTbar2bGenFilter::TTbar2bGenFilter(const edm::ParameterSet& pset)
 {
   applyFilter_= pset.getUntrackedParameter<bool>("applyFilter",true);
+  genParticlesLabel_= pset.getParameter<edm::InputTag>("genParticlesLabel");
   genJetsLabel_= pset.getParameter<edm::InputTag>("genJetsLabel");
 
   edm::Service<TFileService> fs;
@@ -214,7 +216,7 @@ bool TTbar2bGenFilter::filter(edm::Event& iEvent, const edm::EventSetup& eventSe
   const reco::GenParticleCollection* myGenParticles = 0;
 
   Handle<reco::GenParticleCollection> genEvt;
-  bool genPart = iEvent.getByLabel("genParticles",genEvt);
+  bool genPart = iEvent.getByLabel(genParticlesLabel_,genEvt);
   if ( genPart ) myGenParticles = &(*genEvt);
   if ( !myGenParticles ) return false;
 
