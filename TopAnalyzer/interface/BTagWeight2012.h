@@ -4,6 +4,7 @@
 #include <vector>
 #include "TLorentzVector.h"
 #include <iostream>
+#include "TF1.h"
 using namespace std;
 
 class BTagWeight2012
@@ -166,7 +167,7 @@ class BTagWeight2012
         };
         if( pt < 20 ) err = SFb_error[0]*2;
         if( pt >= 20 && pt <= 800){
-          for(int i=0; i < 14; i++){
+          for(int i=0; i < 16; i++){
             if( pt > ptmin[i] && pt <= ptmax[i] ) {
               err = SFb_error[i];
               break;
@@ -195,7 +196,7 @@ class BTagWeight2012
        };
         if( pt < 20 ) err = SFb_error[0]*2;
         if( pt >= 20 && pt <= 800){
-          for(int i=0; i < 14; i++){
+          for(int i=0; i < 16; i++){
             if( pt > ptmin[i] && pt <= ptmax[i] ) {
               err = SFb_error[i];
               break;
@@ -224,7 +225,7 @@ class BTagWeight2012
         };
         if( pt < 20 ) err = SFb_error[0]*2;
         if( pt >= 20 && pt <= 800){
-          for(int i=0; i < 14; i++){
+          for(int i=0; i < 16; i++){
             if( pt > ptmin[i] && pt <= ptmax[i] ) {
               err = SFb_error[i];
               break;
@@ -269,7 +270,7 @@ class BTagWeight2012
         };
         if( pt < 20 ) err = SFb_error[0]*2;
         if( pt >= 20 && pt <= 800){
-          for(int i=0; i < 14; i++){
+          for(int i=0; i < 16; i++){
             if( pt > ptmin[i] && pt <= ptmax[i] ) {
               err = SFb_error[i];
               break;
@@ -298,7 +299,7 @@ class BTagWeight2012
        };
         if( pt < 20 ) err = SFb_error[0]*2;
         if( pt >= 20 && pt <= 800){
-          for(int i=0; i < 14; i++){
+          for(int i=0; i < 16; i++){
             if( pt > ptmin[i] && pt <= ptmax[i] ) {
               err = SFb_error[i];
               break;
@@ -327,7 +328,7 @@ class BTagWeight2012
         };
         if( pt < 20 ) err = SFb_error[0]*2;
         if( pt >= 20 && pt <= 800){
-          for(int i=0; i < 14; i++){
+          for(int i=0; i < 16; i++){
             if( pt > ptmin[i] && pt <= ptmax[i] ) {
               err = SFb_error[i];
               break;
@@ -382,107 +383,93 @@ class BTagWeight2012
     double sfl(double pt, double eta)
     {
       double sf = 1;
-      TF1 func;
+      TF1 *func;
       double min=0, max=2.4; 
+      double x=pt;
+      if(pt > 700 && 1.5< fabs(eta) )                       x=700; 
+      else if(pt > 800 && 0< fabs(eta) && fabs(eta) <=1.5 ) x=800;
 
       if( algo_ == CSVL ){
-            if(eta>=0.0 && eta <0.5 ) { min=0.0; max=0.5; }
-            if(eta>0.5 && eta <1.0 )  { min=0.5; max=1.0; }
-            if(eta>1.0 && eta <1.5 )  { min=1.0; max=1.5; }
-            if(eta>1.5 && eta <2.4 )  { min=1.5; max=2.4; }
+            if(fabs(eta)>=0.0 && fabs(eta) <=0.5 ) { min=0.0; max=0.5; }
+            if(fabs(eta)>0.5  && fabs(eta) <=1.0 ) { min=0.5; max=1.0; }
+            if(fabs(eta)>1.0  && fabs(eta) <=1.5 ) { min=1.0; max=1.5; }
+            if(fabs(eta)>1.5  )                    { min=1.5; max=2.4; }
+
+            if( min == 1.5 && pt>700 ) x = 700;
+            else if(pt>800)            x = 800;
 
             if( sys_ == DWLight )       func =GetSFLight("min", "CSV","L",min,max,"ABCD"); 
             else if( sys_ == UPLight )  func =GetSFLight("max", "CSV","L",min,max,"ABCD");
             else                        func =GetSFLight("mean","CSV","L",min,max,"ABCD"); 
  
-            sf = func.Eval(pt);
+            sf = func->Eval(x);
       } else if( algo_ == CSVM ){
-            if(eta>=0.0 && eta <0.8 ) { min=0.0; max=0.8; }
-            if(eta>0.8 && eta <1.6 )  { min=0.8; max=1.6; }
-            if(eta>1.6 && eta <2.4 )  { min=1.6; max=2.4; }
+            if(fabs(eta)>=0.0 && fabs(eta) <=0.8 ) { min=0.0; max=0.8; }
+            if(fabs(eta)>0.8  && fabs(eta) <=1.6 ) { min=0.8; max=1.6; }
+            if(fabs(eta)>1.6  )                    { min=1.6; max=2.4; }
+
+            if( min == 1.6 && pt>700 ) x = 700;
+            else if(pt>800)            x = 800;
 
             if( sys_ == DWLight )       func =GetSFLight("min", "CSV","M",min,max,"ABCD");  
             else if( sys_ == UPLight )  func =GetSFLight("max", "CSV","M",min,max,"ABCD");
             else                        func =GetSFLight("mean","CSV","M",min,max,"ABCD");
 
-            sf = func.Eval(pt);
+            sf = func->Eval(x);
       } else if( algo_ == CSVT){
             min=0.0; max=2.4;
-            if( sys_ == DWLight )       func =GetSFLight("min", "CSV","M",min,max,"ABCD");
-            else if( sys_ == UPLight )  func =GetSFLight("max", "CSV","M",min,max,"ABCD");
-            else                        func =GetSFLight("mean","CSV","M",min,max,"ABCD");
 
-            sf = func.Eval(pt);
+            if(pt>800)            x = 800;
+
+            if( sys_ == DWLight )       func =GetSFLight("min", "CSV","T",min,max,"ABCD");
+            else if( sys_ == UPLight )  func =GetSFLight("max", "CSV","T",min,max,"ABCD");
+            else                        func =GetSFLight("mean","CSV","T",min,max,"ABCD");
+
+            sf = func->Eval(x);
       }else { 
          sf = 1.0; 
       }
+
+      if(pt > 700 && 1.5< fabs(eta) )                        sf=2*sf; 
+      else if(pt > 800 && 0<= fabs(eta) && fabs(eta) <=1.5 ) sf=2*sf;
+
       return sf;
     }
 
     // MC b-tag efficiency // need to be updated with our numbers from our signal samples
     double eb(double pt, double eta)
     {
-      if( algo_ == CSVL ){
-	    if( pt <= 450 ){
-	    	return 0.801548 + 0.00147981*pt - 1.24055e-05*(pt*pt) + 3.84141e-08*(pt*pt*pt) - 4.31462e-11*(pt*pt*pt*pt);
-	  	}
-		else{
-	    	return 0.801548 + 0.00147981*450.0 - 1.24055e-05*(450.0*450.0) + 3.84141e-08*(450.0*450.0*450.0) - 4.31462e-11*(450.0*450.0*450.0*450.0);
-		}
-	  }
-      else if( algo_ == CSVM ){
-	    if( pt <= 450 ){
-	    	return 0.331138 + 0.0101574*pt - 7.99679e-05*(pt*pt) + 2.44717e-07*(pt*pt*pt) - 2.5903e-10*(pt*pt*pt*pt);
-	  	}
-		else{
-	    	return 0.331138 + 0.0101574*450.0 - 7.99679e-05*(450.0*450.0) + 2.44717e-07*(450.0*450.0*450.0) - 2.5903e-10*(450.0*450.0*450.0*450.0);
-		}
-	  }
+      double x = pt;
+      if(pt <= 450) x=450;
+
+      if( algo_ == CSVM ){
+	 return 0.491297 + 0.00495907*x - (3.39749e-05)*pow(x,2) + (9.10712e-08)*pow(x,3) - (9.20205e-11)*pow(x,4);
+      }
       else if( algo_ == CSVT ){
-	    if( pt <= 450 ){
-	    	return 0.109639 + 0.0130669*pt - 0.000112374*(pt*pt) + 3.50834e-07*(pt*pt*pt) - 3.66859e-10*(pt*pt*pt*pt);
-	  	}
-		else{
-	    	return 0.109639 + 0.0130669*450.0 - 0.000112374*(450.0*450.0) + 3.50834e-07*(450.0*450.0*450.0) - 3.66859e-10*(450.0*450.0*450.0*450.0);
-		}
-	  }
-	  else
-	  {
+	 return 0.300256 + 0.00670841*x - ( 5.58098e-05)*pow(x,2) + (1.61114e-07)*pow(x,3) - (1.59428e-10)*pow(x,4);
+      }
+      else
+      {
          return 0;
-	  }
+      }
     }
 
     //MC c-tag efficiency
     double ec(double pt, double eta)
     {
-      if( algo_ == CSVL ){
-	  	if( pt <= 450 ){
-	    	return 0.610269 + -0.00549809*pt + 4.15105e-05*(pt*pt) + -1.28433e-07*(pt*pt*pt) + 1.32483e-10*(pt*pt*pt*pt);
-	  	}
-	  	else{
-	    	return 0.610269 + -0.00549809*450.0 + 4.15105e-05*(450.0*450.0) + -1.28433e-07*(450.0*450.0*450.0) + 1.32483e-10*(450.0*450.0*450.0*450.0);
-	  	}
-	  }
-      else if( algo_ == CSVM ){
-	  	if( pt <= 450 ){
-	    	return 0.0815163 + 0.0021852*pt + -1.41307e-05*(pt*pt) + 3.24437e-08*(pt*pt*pt) + -2.55116e-11*(pt*pt*pt*pt);
-	  	}
-	  	else{
-	    	return 0.0815163 + 0.0021852*450.0 + -1.41307e-05*(450.0*450.0) + 3.24437e-08*(450.0*450.0*450.0) + -2.55116e-11*(450.0*450.0*450.0*450.0);
-	  	}
-	  }
+      double x = pt;
+      if(pt <= 450) x=450;
+
+      if( algo_ == CSVM ){
+         return 0.0135443 + 0.00372916*x - (2.86917e-05)*pow(x,2) + (8.68693e-08)*pow(x,3) - (9.04518e-11)*pow(x,4);
+      }
       else if( algo_ == CSVT ){
-	  	if( pt <= 450 ){
-	    	return 0.0213977 + 0.00118318*pt + -1.18986e-05*(pt*pt) + 3.83806e-08*(pt*pt*pt) + -3.97903e-11*(pt*pt*pt*pt);
-	  	}
-	  	else{
-	    	return 0.0213977 + 0.00118318*450.0 + -1.18986e-05*(450.0*450.0) + 3.83806e-08*(450.0*450.0*450.0) + -3.97903e-11*(450.0*450.0*450.0*450.0);
-	  	}
-	  }
-	  else
-	  {
+         return 0.0111637 + 0.00137814*x - (1.46838e-05)*pow(x,2) + (5.16447e-08 )*pow(x,3) - (5.75329e-11)*pow(x,4);
+      }
+      else
+      {
         return 0;
-	  }
+      }
     }
 
     //MC l-tag efficiency
