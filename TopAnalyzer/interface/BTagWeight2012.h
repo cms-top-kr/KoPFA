@@ -1,5 +1,5 @@
-#ifndef BTAGWEIGHT_H
-#define BTAGWEIGHT_H
+#ifndef BTAGWEIGHT2012_H
+#define BTAGWEIGHT2012_H
 
 #include <vector>
 #include "TLorentzVector.h"
@@ -511,8 +511,8 @@ TF1* GetSFLight(TString meanminmax, TString tagger, TString TaggerStrength, Floa
   TString Atagger = tagger+TaggerStrength;
   TString sEtamin = Form("%1.1f",Etamin);
   TString sEtamax = Form("%1.1f",Etamax);
-  cout << sEtamin << endl;
-  cout << sEtamax << endl;
+  //cout << sEtamin << endl;
+  //cout << sEtamax << endl;
 
   if (DataPeriod=="ABCD") {
 
