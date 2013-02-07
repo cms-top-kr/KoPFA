@@ -442,7 +442,10 @@ class BTagWeight2012
       double x = pt;
       if(pt >= 450) x=450;
 
-      if( algo_ == CSVM ){
+      if( algo_ == CSVL ){
+	 return 0.826945+0.000236202*x - ( 2.37546e-07)*pow(x,2) - (5.74311e-09)*pow(x,3)+ (8.21268e-12)*pow(x,4);
+      }
+      else if( algo_ == CSVM ){
 	 return 0.491297 + 0.00495907*x - (3.39749e-05)*pow(x,2) + (9.10712e-08)*pow(x,3) - (9.20205e-11)*pow(x,4);
       }
       else if( algo_ == CSVT ){
@@ -460,7 +463,10 @@ class BTagWeight2012
       double x = pt;
       if(pt >= 450) x=450;
 
-      if( algo_ == CSVM ){
+      if( algo_ == CSVL ){
+         return 0.458069-0.00160997 *x + (7.64376e-06)*pow(x,2) - (1.62491e-08)*pow(x,3)+( 1.36635e-11)*pow(x,4);
+      }
+      else if( algo_ == CSVM ){
          return 0.0135443 + 0.00372916*x - (2.86917e-05)*pow(x,2) + (8.68693e-08)*pow(x,3) - (9.04518e-11)*pow(x,4);
       }
       else if( algo_ == CSVT ){
@@ -478,12 +484,22 @@ class BTagWeight2012
       double x = pt;
       if(pt >= 450) x=450;
 
-      if( algo_ == CSVM ){
-          if( fabs(eta) < 0.8 )                         
+      if( algo_ == CSVL ){
+          if( fabs(eta) <= 0.5 )
+                return 0.0205149 -0.000353737*x + (3.36215e-06)*pow(x,2) - (1.14016e-08)*pow(x,3) + (1.2962e-11)*pow(x,4);
+          else if( fabs(eta) > 0.5 && fabs(eta) <= 1.0)
+                return 0.00616534+6.41768e-05*x - (1.58695e-07)*pow(x,2) + (4.26087e-10)*pow(x,3) - ( 4.76348e-13)*pow(x,4);
+          else if( fabs(eta) > 1.0 && fabs(eta) <= 1.5)
+                return 0.000954885+ 7.19891e-05*x + (1.81898e-07)*pow(x,2) - (2.11766e-09)*pow(x,3) + (4.04684e-12)*pow(x,4);
+          else if( fabs(eta) > 1.5)
+                return 0.000954885+ 7.19891e-05*x + ( 1.81898e-07)*pow(x,2) - ( 2.11766e-09)*pow(x,3) + (4.04684e-12)*pow(x,4);
+      }
+      else if( algo_ == CSVM ){
+          if( fabs(eta) <= 0.8 )                         
                 return 0.0130716- 0.000125448*x + ( 1.28432e-06)*pow(x,2) - ( 3.92256e-09)*pow(x,3) - (4.04182e-12)*pow(x,4);
-          else if( fabs(eta) >= 0.8 && fabs(eta) < 1.6) 
+          else if( fabs(eta) > 0.8 && fabs(eta) <= 1.6) 
                 return 0.0155075- 0.000195538*x + (2.02484e-06)*pow(x,2) - (7.22242e-09)*pow(x,3) + (8.75219e-12)*pow(x,4); 
-          else if( fabs(eta) >= 1.6 )                   
+          else if( fabs(eta) > 1.6 )                   
                 return 0.0417403- 0.000740911*x + (6.16937e-06)*pow(x,2) - (1.81519e-08)*pow(x,3) + (1.84038e-11)*pow(x,4);
       }else if( algo_ == CSVT){
           return 0.00416795- 5.7709e-05*x + (3.91248e-07)*pow(x,2) - (1.24252e-09)*pow(x,3) + (1.51257e-12)*pow(x,4);
