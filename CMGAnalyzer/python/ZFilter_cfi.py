@@ -1,6 +1,7 @@
 import FWCore.ParameterSet.Config as cms
 
 ZMuMu = cms.EDFilter("CMGZmmFilter",
+  applyFilter = cms.untracked.bool(True),
   muonLabel1 =  cms.InputTag('Muons'),
   muonLabel2 =  cms.InputTag('Muons'),
   min = cms.double(12),
@@ -11,6 +12,7 @@ ZMuMu = cms.EDFilter("CMGZmmFilter",
 )
 
 ZElEl = cms.EDFilter("CMGZeeFilter",
+  applyFilter = cms.untracked.bool(True),
   muonLabel1 =  cms.InputTag('Electrons'),
   muonLabel2 =  cms.InputTag('Electrons'),
   min = cms.double(12),
@@ -21,6 +23,7 @@ ZElEl = cms.EDFilter("CMGZeeFilter",
 )
 
 ZMuEl = cms.EDFilter("CMGZmeFilter",
+  applyFilter = cms.untracked.bool(True),
   muonLabel1 =  cms.InputTag('Muons'),
   muonLabel2 =  cms.InputTag('Electrons'),
   min = cms.double(12),
