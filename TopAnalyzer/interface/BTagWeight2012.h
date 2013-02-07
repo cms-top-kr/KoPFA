@@ -490,9 +490,12 @@ class BTagWeight2012
           else if( fabs(eta) > 0.5 && fabs(eta) <= 1.0)
                 return 0.117715-0.00119443*x + (9.19537e-06)*pow(x,2) - (2.52591e-08)*pow(x,3) + (2.33342e-11)*pow(x,4);
           else if( fabs(eta) > 1.0 && fabs(eta) <= 1.5)
+          {
+                if(pt>350) x=350; 
                 return 0.241778-0.00373136*x + (2.90526e-05 )*pow(x,2) - (8.91043e-08)*pow(x,3) + (9.52333e-11)*pow(x,4);
+          }
           else if( fabs(eta) > 1.5)
-                return 0.241778-0.00373136*x + (2.90526e-05)*pow(x,2) - (8.91043e-08)*pow(x,3) + (9.52333e-11)*pow(x,4);
+                return 0.322078-0.00235443*x + (1.43813e-05)*pow(x,2) - (3.68999e-08)*pow(x,3) + (3.391e-11)*pow(x,4);
       }
       else if( algo_ == CSVM ){
           if( fabs(eta) <= 0.8 )                         
