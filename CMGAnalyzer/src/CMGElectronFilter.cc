@@ -13,7 +13,7 @@
 //
 // Original Author:  Tae Jeong Kim
 //         Created:  Mon Dec 14 01:29:35 CET 2009
-// $Id: CMGElectronFilter.cc,v 1.3 2012/11/01 09:21:00 tjkim Exp $
+// $Id: CMGElectronFilter.cc,v 1.4 2012/11/03 00:28:12 tjkim Exp $
 //
 //
 
@@ -134,10 +134,14 @@ CMGElectronFilter::filter(edm::Event& iEvent, const edm::EventSetup& iSetup)
   for (unsigned int i=0; i < electrons_->size();++i){
     cmg::Electron electron = electrons_->at(i);
 
-    bool passPre = electron.pt() > ptcut_ && fabs(electron.eta()) < etacut_ ; // && fabs(electron.sourcePtr()->get()->gsfTrack()->dxy()) < 0.04;
+    bool passPre = electron.sourcePtr()->get()->ecalDrivenMomentum().pt() > ptcut_ && fabs(electron.sourcePtr()->get()->ecalDrivenMomentum().eta()) < etacut_ ;
+    bool passdxy = fabs(electron.sourcePtr()->get()->gsfTrack()->dxy()) < 0.04;
     bool passTrig = electron.getSelection("cuts_premvaTrig"); 
+    bool passConversionVeto = electron.sourcePtr()->get()->passConversionVeto();
     bool passNhits = electron.sourcePtr()->get()->gsfTrack()->trackerExpectedHitsInner().numberOfLostHits() <= (int) numberOfHits_;
     bool passPF = electron.sourcePtr()->get()->isPF();
+    double mva = electron.mvaTrigV0();
+    bool passId = mva > mvacut_;
 
     reco::isodeposit::Direction Dir = Direction(electron.sourcePtr()->get()->superCluster()->eta(),electron.phi());
 
@@ -154,16 +158,11 @@ CMGElectronFilter::filter(edm::Event& iEvent, const edm::EventSetup& iSetup)
     double puChIso03 = electron.sourcePtr()->get()->isoDeposit(pat::PfPUChargedHadronIso)->depositAndCountWithin(0.3, vetos_ch).first;
     double nhIso03 = electron.sourcePtr()->get()->isoDeposit(pat::PfNeutralHadronIso)->depositAndCountWithin(0.3, vetos_nh).first;
     double phIso03 = electron.sourcePtr()->get()->isoDeposit(pat::PfGammaIso)->depositAndCountWithin(0.3, vetos_ph).first;
-    double relIso03 = (chIso03+nhIso03+phIso03)/electron.pt();
+    double relIso03 = (chIso03+nhIso03+phIso03-0.5*puChIso03)/electron.pt();
 
     bool passIso =  relIso03 < relIso_;
 
-    double mva = electron.mvaTrigV0();
-    bool passId = mva > mvacut_;
-
-    //cout << "relIso  = " << relIso03 << " mva = " << electron.mvaTrigV0() << endl;
-    //bool passed = passPre && passPF && passTrig && passIso && passId;
-    bool passed = passPre && passPF && passNhits && passIso && passId;
+    bool passed = passPre && passPF && passConversionVeto && passNhits && passIso && passId;
 
     if ( passed ) pos->push_back((*electrons_)[i]);
 
