@@ -2,7 +2,8 @@ import FWCore.ParameterSet.Config as cms
 
 
 topDecayGenFilter = cms.EDFilter('TopDecayGenFilter',
-  applyFilter =  cms.untracked.bool(False),
+  applyFilter =  cms.untracked.bool(True),
+  genParticlesLabel = cms.InputTag('genParticlesPruned'),
   allHadronic = cms.bool(False),
   semiLeptonic = cms.bool(False),
   semiLeptonicMuon = cms.bool(False),
