@@ -13,7 +13,7 @@
 //
 // Original Author:  Tae Jeong Kim,40 R-A32,+41227678602,
 //         Created:  Fri Jun  4 17:19:29 CEST 2010
-// $Id: CMGZFilter.h,v 1.4 2012/11/07 17:40:16 tjkim Exp $
+// $Id: CMGZFilter.h,v 1.5 2012/11/15 09:34:27 youngjo Exp $
 //
 //
 
@@ -151,7 +151,6 @@ class CMGZFilter : public edm::EDFilter {
         lepton1.setPFIsoValues04( it1.chargedHadronIso(0.4), it1.puChargedHadronIso(0.4), it1.neutralHadronIso(0.4), it1.photonIso(0.4) );
         lepton2.setPFIsoValues04( it2.chargedHadronIso(0.4), it2.puChargedHadronIso(0.4), it2.neutralHadronIso(0.4), it2.photonIso(0.4) );
 
-
         double AEff03Lep1 = 0.00;
         double AEff04Lep1 = 0.00;
 
@@ -160,24 +159,14 @@ class CMGZFilter : public edm::EDFilter {
 
         if( !it1.isMuon() ){
           double sceta1 = it1.sourcePtr()->get()->superCluster()->eta(); 
-          if(isRealData){
-            AEff03Lep1 = ElectronEffectiveArea::GetElectronEffectiveArea(ElectronEffectiveArea::kEleGammaAndNeutralHadronIso03, sceta1, ElectronEffectiveArea::kEleEAData2011);
-            AEff04Lep1 = ElectronEffectiveArea::GetElectronEffectiveArea(ElectronEffectiveArea::kEleGammaAndNeutralHadronIso04, sceta1, ElectronEffectiveArea::kEleEAData2011);
-          }else{
-            AEff03Lep1 = ElectronEffectiveArea::GetElectronEffectiveArea(ElectronEffectiveArea::kEleGammaAndNeutralHadronIso03, sceta1, ElectronEffectiveArea::kEleEAFall11MC);
-            AEff04Lep1 = ElectronEffectiveArea::GetElectronEffectiveArea(ElectronEffectiveArea::kEleGammaAndNeutralHadronIso04, sceta1, ElectronEffectiveArea::kEleEAFall11MC);
-          }
+          AEff03Lep1 = ElectronEffectiveArea::GetElectronEffectiveArea(ElectronEffectiveArea::kEleGammaAndNeutralHadronIso03, sceta1, ElectronEffectiveArea::kEleEAData2012);
+          AEff04Lep1 = ElectronEffectiveArea::GetElectronEffectiveArea(ElectronEffectiveArea::kEleGammaAndNeutralHadronIso04, sceta1, ElectronEffectiveArea::kEleEAData2012);
         }
 
-        if( !it1.isMuon() ){ 
+        if( !it2.isMuon() ){ 
           double sceta2 = it2.sourcePtr()->get()->superCluster()->eta(); 
-          if(isRealData){
-            AEff03Lep2 = ElectronEffectiveArea::GetElectronEffectiveArea(ElectronEffectiveArea::kEleGammaAndNeutralHadronIso03, sceta2, ElectronEffectiveArea::kEleEAData2011);
-            AEff04Lep2 = ElectronEffectiveArea::GetElectronEffectiveArea(ElectronEffectiveArea::kEleGammaAndNeutralHadronIso04, sceta2, ElectronEffectiveArea::kEleEAData2011);
-          }else{
-            AEff03Lep2 = ElectronEffectiveArea::GetElectronEffectiveArea(ElectronEffectiveArea::kEleGammaAndNeutralHadronIso03, sceta2, ElectronEffectiveArea::kEleEAFall11MC);
-            AEff04Lep2 = ElectronEffectiveArea::GetElectronEffectiveArea(ElectronEffectiveArea::kEleGammaAndNeutralHadronIso04, sceta2, ElectronEffectiveArea::kEleEAFall11MC);
-          }
+          AEff03Lep2 = ElectronEffectiveArea::GetElectronEffectiveArea(ElectronEffectiveArea::kEleGammaAndNeutralHadronIso03, sceta2, ElectronEffectiveArea::kEleEAData2012);
+          AEff04Lep2 = ElectronEffectiveArea::GetElectronEffectiveArea(ElectronEffectiveArea::kEleGammaAndNeutralHadronIso04, sceta2, ElectronEffectiveArea::kEleEAData2012);
         }
    
         lepton1.setRho( rhoIso );

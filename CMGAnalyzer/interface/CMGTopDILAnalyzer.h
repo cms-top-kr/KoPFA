@@ -13,7 +13,7 @@
 //
 // Original Author:  Tae Jeong Kim,40 R-A32,+41227678602,
 //         Created:  Fri Jun  4 17:19:29 CEST 2010
-// $Id: CMGTopDILAnalyzer.h,v 1.16 2013/02/06 10:11:12 tjkim Exp $
+// $Id: CMGTopDILAnalyzer.h,v 1.17 2013/02/06 10:43:41 youngjo Exp $
 //
 //
 
@@ -225,6 +225,10 @@ class CMGTopDILAnalyzer : public edm::EDFilter {
     tree->Branch("PairSign",&PairSign,"PairSign/d");
     tree->Branch("lep1_relIso03",&lep1_relIso03,"lep1_relIso03/d");
     tree->Branch("lep2_relIso03",&lep2_relIso03,"lep2_relIso03/d");
+    tree->Branch("lep1_relIso03db",&lep1_relIso03db,"lep1_relIso03db/d");
+    tree->Branch("lep2_relIso03db",&lep2_relIso03db,"lep2_relIso03db/d");
+    tree->Branch("lep1_relIso03rho",&lep1_relIso03rho,"lep1_relIso03rho/d");
+    tree->Branch("lep2_relIso03rho",&lep2_relIso03rho,"lep2_relIso03rho/d");
     tree->Branch("lep1_pt",&lep1_pt,"lep1_pt/d");
     tree->Branch("lep2_pt",&lep2_pt,"lep2_pt/d");
     tree->Branch("lep1_eta",&lep1_eta,"lep1_eta/d");
@@ -380,7 +384,11 @@ class CMGTopDILAnalyzer : public edm::EDFilter {
       ZMass = ZCand->at(0).mass();
       PairSign =  ZCand->at(0).sign();
       lep1_relIso03 =  ZCand->at(0).leg1().relIso03();
-      lep2_relIso03 = ZCand->at(0).leg2().relIso03();
+      lep2_relIso03 =  ZCand->at(0).leg2().relIso03();
+      lep1_relIso03db =  ZCand->at(0).leg1().relIso03(1);
+      lep2_relIso03db =  ZCand->at(0).leg2().relIso03(1);
+      lep1_relIso03rho =  ZCand->at(0).leg1().relIso03(2);
+      lep2_relIso03rho =  ZCand->at(0).leg2().relIso03(2);
       lep1_pt = ZCand->at(0).leg1().pt();
       lep2_pt = ZCand->at(0).leg2().pt();
       lep1_eta = ZCand->at(0).leg1().eta();
@@ -859,6 +867,10 @@ class CMGTopDILAnalyzer : public edm::EDFilter {
     isIso = -1;
     lep1_relIso03 = -999;
     lep2_relIso03 = -999;
+    lep1_relIso03db = -999;
+    lep2_relIso03db = -999;
+    lep1_relIso03rho = -999;
+    lep2_relIso03rho = -999;
     lep1_pt = -999; 
     lep2_pt = -999;
     lep1_eta = -999;
@@ -1021,6 +1033,10 @@ class CMGTopDILAnalyzer : public edm::EDFilter {
   double isIso;
   double lep1_relIso03;
   double lep2_relIso03;
+  double lep1_relIso03db;
+  double lep2_relIso03db;
+  double lep1_relIso03rho;
+  double lep2_relIso03rho;
   double lep1_pt;
   double lep2_pt;
   double lep1_eta;
