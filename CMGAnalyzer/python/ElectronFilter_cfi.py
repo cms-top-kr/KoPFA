@@ -7,4 +7,5 @@ Electrons = cms.EDFilter('CMGElectronFilter',
     etacut = cms.untracked.double(2.5),
     mvacut = cms.untracked.double(0.5),
     relIso = cms.untracked.double(999),
+    numberOfHits = cms.untracked.uint32(0),
 )

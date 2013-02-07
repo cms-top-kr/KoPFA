@@ -13,7 +13,7 @@
 //
 // Original Author:  Tae Jeong Kim
 //         Created:  Mon Dec 14 01:29:35 CET 2009
-// $Id: CMGElectronFilter.cc,v 1.4 2012/11/03 00:28:12 tjkim Exp $
+// $Id: CMGElectronFilter.cc,v 1.5 2013/02/07 16:20:18 tjkim Exp $
 //
 //
 
@@ -135,8 +135,8 @@ CMGElectronFilter::filter(edm::Event& iEvent, const edm::EventSetup& iSetup)
     cmg::Electron electron = electrons_->at(i);
 
     bool passPre = electron.sourcePtr()->get()->ecalDrivenMomentum().pt() > ptcut_ && fabs(electron.sourcePtr()->get()->ecalDrivenMomentum().eta()) < etacut_ ;
-    bool passdxy = fabs(electron.sourcePtr()->get()->gsfTrack()->dxy()) < 0.04;
-    bool passTrig = electron.getSelection("cuts_premvaTrig"); 
+    //bool passdxy = fabs(electron.sourcePtr()->get()->gsfTrack()->dxy()) < 0.04;
+    //bool passTrig = electron.getSelection("cuts_premvaTrig"); 
     bool passConversionVeto = electron.sourcePtr()->get()->passConversionVeto();
     bool passNhits = electron.sourcePtr()->get()->gsfTrack()->trackerExpectedHitsInner().numberOfLostHits() <= (int) numberOfHits_;
     bool passPF = electron.sourcePtr()->get()->isPF();
