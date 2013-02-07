@@ -13,7 +13,7 @@
 //
 // Original Author:  Tae Jeong Kim,40 R-A32,+41227678602,
 //         Created:  Fri Jun  4 17:19:29 CEST 2010
-// $Id: CMGTopDILAnalyzer.h,v 1.17 2013/02/06 10:43:41 youngjo Exp $
+// $Id: CMGTopDILAnalyzer.h,v 1.18 2013/02/07 09:53:21 tjkim Exp $
 //
 //
 
@@ -235,6 +235,8 @@ class CMGTopDILAnalyzer : public edm::EDFilter {
     tree->Branch("lep2_eta",&lep2_eta,"lep2_eta/d");
     tree->Branch("lep1_phi",&lep1_phi,"lep1_phi/d");
     tree->Branch("lep2_phi",&lep2_phi,"lep2_phi/d");
+    tree->Branch("lep1_charge",&lep1_charge,"lep1_charge/d");
+    tree->Branch("lep2_charge",&lep2_charge,"lep2_charge/d");
 
     tree->Branch("jets_secvtxmass","std::vector<double>",&jets_secvtxmass);
     tree->Branch("jets_pt","std::vector<double>",&jets_pt);
@@ -256,8 +258,15 @@ class CMGTopDILAnalyzer : public edm::EDFilter {
     //tree->Branch("ttbarMaos","std::vector<vallot::TTbarDILEvent>", &ttbarMaos);
     //tree->Branch("ttbarGen","std::vector<vallot::CMGTTbarCandidate>", &ttbarGen);
 
-    tree->Branch("kin_jid","std::vector<int>", &kin_jid);
-    tree->Branch("csvd_jid","std::vector<int>", &csvd_jid);
+    tree->Branch("kin_nu1_pt",&kin_nu1_pt,"kin_nu1_pt/d");
+    tree->Branch("kin_nu1_eta",&kin_nu1_eta,"kin_nu1_eta/d");
+    tree->Branch("kin_nu1_phi",&kin_nu1_phi,"kin_nu1_phi/d");
+    tree->Branch("kin_nu2_pt",&kin_nu2_pt,"kin_nu2_pt/d");
+    tree->Branch("kin_nu2_eta",&kin_nu2_eta,"kin_nu2_eta/d");
+    tree->Branch("kin_nu2_phi",&kin_nu2_phi,"kin_nu2_phi/d");
+
+    tree->Branch("kin_jetid","std::vector<int>", &kin_jetid);
+    tree->Branch("csvd_jetid","std::vector<int>", &csvd_jetid);
 
     //tree->Branch("maosttbarM",&maosttbarM,"maosttbarM/d");
     tree->Branch("kinttbarM",&kinttbarM,"kinttbarM/d");
@@ -395,6 +404,8 @@ class CMGTopDILAnalyzer : public edm::EDFilter {
       lep2_eta = ZCand->at(0).leg2().eta();
       lep1_phi = ZCand->at(0).leg1().phi();
       lep2_phi = ZCand->at(0).leg2().phi();
+      lep1_charge = ZCand->at(0).leg1().charge();
+      lep2_charge = ZCand->at(0).leg2().charge();
       lep1->push_back( ZCand->at(0).leg1() );
       lep2->push_back( ZCand->at(0).leg2() );
     }
@@ -476,7 +487,7 @@ class CMGTopDILAnalyzer : public edm::EDFilter {
     std::vector< std::pair<int,double> > vecJetBDisc(mapJetBDiscriminator.begin(), mapJetBDiscriminator.end());
     std::sort(vecJetBDisc.begin(), vecJetBDisc.end(), bigger_second<data_t>());
     for(std::vector< std::pair<int,double> >::iterator it = vecJetBDisc.begin() ; it != vecJetBDisc.end(); ++it)
-        csvd_jid.push_back((*it).first);
+        csvd_jetid.push_back((*it).first);
 
 
     nJet30 = jets->size();
@@ -588,10 +599,18 @@ class CMGTopDILAnalyzer : public edm::EDFilter {
         unsigned int j0 = fullLepEvt->at(cmb).jid(0);
         unsigned int j1 = fullLepEvt->at(cmb).jid(1);
   
-        kin_jid.push_back(b);
-        kin_jid.push_back(bbar);
-        kin_jid.push_back(j0);
-        kin_jid.push_back(j1);
+        kin_jetid.push_back(b);
+        kin_jetid.push_back(bbar);
+        kin_jetid.push_back(j0);
+        kin_jetid.push_back(j1);
+
+        kin_nu1_pt = fullLepEvt->at(cmb).nu1().Pt();
+        kin_nu1_eta = fullLepEvt->at(cmb).nu1().Eta();
+        kin_nu1_phi = fullLepEvt->at(cmb).nu1().Phi();
+
+        kin_nu2_pt = fullLepEvt->at(cmb).nu2().Pt();
+        kin_nu2_eta = fullLepEvt->at(cmb).nu2().Eta();
+        kin_nu2_phi = fullLepEvt->at(cmb).nu2().Phi();
 
       }
 
@@ -828,8 +847,8 @@ class CMGTopDILAnalyzer : public edm::EDFilter {
     met->clear();
     jetspt30->clear();
 
-    kin_jid.clear();
-    csvd_jid.clear();
+    kin_jetid.clear();
+    csvd_jetid.clear();
 
     for ( int bTagIndex=0, nBTag=nbjets30_.size(); bTagIndex<nBTag; ++bTagIndex )
     {
@@ -877,7 +896,9 @@ class CMGTopDILAnalyzer : public edm::EDFilter {
     lep2_eta = -999;
     lep1_phi = -999;
     lep2_phi = -999;
-
+    lep1_charge = 0.0;
+    lep2_charge = 0.0;
+ 
     kinttbarM = -999;
     maosttbarM = -999;
     genttbarM = -999;
@@ -904,6 +925,15 @@ class CMGTopDILAnalyzer : public edm::EDFilter {
     genLep2_eta = 0;
 
     ttbarGen_dileptonic = 0;
+
+    kin_nu1_pt = -999;
+    kin_nu1_eta = -999;
+    kin_nu1_phi = -999;
+
+    kin_nu2_pt = -999;
+    kin_nu2_eta = -999;
+    kin_nu2_phi = -999;
+
   }
 
   virtual bool endLuminosityBlock(edm::LuminosityBlock & lumi, const edm::EventSetup & setup){
@@ -1022,8 +1052,8 @@ class CMGTopDILAnalyzer : public edm::EDFilter {
   std::vector<math::XYZTLorentzVector>* met;
   std::vector<math::XYZTLorentzVector>* jetspt30;
 
-  std::vector<int> kin_jid;
-  std::vector<int> csvd_jid;
+  std::vector<int> kin_jetid;
+  std::vector<int> csvd_jetid;
 
   double MET;
   double ZMass;
@@ -1043,6 +1073,8 @@ class CMGTopDILAnalyzer : public edm::EDFilter {
   double lep2_eta;
   double lep1_phi;
   double lep2_phi;
+  double lep1_charge;
+  double lep2_charge;
 
   double kinttbarM;
   double maosttbarM;
@@ -1102,6 +1134,14 @@ class CMGTopDILAnalyzer : public edm::EDFilter {
   double bweight30CSVLdwlight;
   double bweight30CSVMdwlight;
   double bweight30CSVTdwlight;
+
+  double kin_nu1_pt;
+  double kin_nu1_eta;
+  double kin_nu1_phi;
+
+  double kin_nu2_pt;
+  double kin_nu2_eta;
+  double kin_nu2_phi;
 
   bool applyIso_;
   bool oppPair_;
