@@ -9,14 +9,6 @@ from KoPFA.TopAnalyzer.triggerFilterByRun_cfi import *
 from KoPFA.TopAnalyzer.topHLTfilter_cff import *
 from KoPFA.CommonTools.EventWeightProducer_cfi import *
 from KoPFA.CommonTools.JetEnergyScale_cfi import *
-from KoPFA.TopAnalyzer.topDecayGenFilter_cfi import *
-
-#scale up
-#JetEnergyScale.doJecUnc = True
-#JetEnergyScale.up = True
-#scale down
-#JetEnergyScale.doJecUnc = True
-#JetEnergyScale.up = False 
 
 VertexFilter = cms.EDFilter('VertexFilter',
     vertexLabel =  cms.InputTag('offlinePrimaryVertices'),
@@ -118,13 +110,9 @@ ElEl = cms.EDFilter('TopElElAnalyzer',
     muonLabel1 =  cms.InputTag('Electrons'),
     muonLabel2 =  cms.InputTag('Electrons'),
     dileptonLabel = cms.untracked.InputTag("ZElEl","DiLepton"),
-    metLabel =  cms.InputTag('JetEnergyScale','MET'),
-    jetLabel =  cms.InputTag('JetEnergyScale','Jets'),
+    metLabel =  cms.InputTag('JetEnergyScale','patMETsPFlow'),
+    jetLabel =  cms.InputTag('JetEnergyScale','selectedPatJetsPFlow'),
     vertexLabel = cms.untracked.InputTag('goodOfflinePrimaryVertices'),
-    puWeightLabel = cms.InputTag('PUweight','weight'),
-    puUpWeightLabel = cms.InputTag('PUweight','weightplus'),
-    puDwWeightLabel = cms.InputTag('PUweight','weightminus'),
-    puNVertexLabel = cms.InputTag('PUweight','npileup'),
     useEventCounter = cms.bool( True ),
     filters = cms.untracked.vstring(
         'nEventsTotal',
@@ -132,8 +120,6 @@ ElEl = cms.EDFilter('TopElElAnalyzer',
         'nEventsHLT',
         'nEventsFiltered',
         'nEventsPatHLT',
-        'nEventsDuplicate',
-        'nEventsTopFilter',
     ),
     relIso1 = cms.untracked.double(0.17),
     relIso2 = cms.untracked.double(0.17),
@@ -146,13 +132,9 @@ MuMu = cms.EDFilter('TopMuMuAnalyzer',
     muonLabel1 =  cms.InputTag('Muons'),
     muonLabel2 =  cms.InputTag('Muons'),
     dileptonLabel = cms.untracked.InputTag("ZMuMu","DiLepton"),
-    metLabel =  cms.InputTag('JetEnergyScale','MET'),
-    jetLabel =  cms.InputTag('JetEnergyScale','Jets'),
+    metLabel =  cms.InputTag('JetEnergyScale','patMETsPFlow'),
+    jetLabel =  cms.InputTag('JetEnergyScale','selectedPatJetsPFlow'),
     vertexLabel = cms.untracked.InputTag('goodOfflinePrimaryVertices'),
-    puWeightLabel = cms.InputTag('PUweight','weight'),
-    puUpWeightLabel = cms.InputTag('PUweight','weightplus'),
-    puDwWeightLabel = cms.InputTag('PUweight','weightminus'),
-    puNVertexLabel = cms.InputTag('PUweight','npileup'),
     useEventCounter = cms.bool( True ),
     filters = cms.untracked.vstring(
         'nEventsTotal',
@@ -160,8 +142,6 @@ MuMu = cms.EDFilter('TopMuMuAnalyzer',
         'nEventsHLT',
         'nEventsFiltered',
         'nEventsPatHLT',
-        'nEventsDuplicate',
-        'nEventsTopFilter',
     ),
     #for jet cleaning overlapping with isolated epton within 0.4
     relIso1 = cms.untracked.double(0.20),
@@ -175,13 +155,9 @@ MuEl = cms.EDFilter('TopMuElAnalyzer',
     muonLabel1 =  cms.InputTag('Muons'),
     muonLabel2 =  cms.InputTag('Electrons'),
     dileptonLabel = cms.untracked.InputTag("ZMuEl","DiLepton"),
-    metLabel =  cms.InputTag('JetEnergyScale','MET'),
-    jetLabel =  cms.InputTag('JetEnergyScale','Jets'),
+    metLabel =  cms.InputTag('JetEnergyScale','patMETsPFlow'),
+    jetLabel =  cms.InputTag('JetEnergyScale','selectedPatJetsPFlow'),
     vertexLabel = cms.untracked.InputTag('goodOfflinePrimaryVertices'),
-    puWeightLabel = cms.InputTag('PUweight','weight'),
-    puUpWeightLabel = cms.InputTag('PUweight','weightplus'),
-    puDwWeightLabel = cms.InputTag('PUweight','weightminus'),
-    puNVertexLabel = cms.InputTag('PUweight','npileup'),
     useEventCounter = cms.bool( True ),
     filters = cms.untracked.vstring(
         'nEventsTotal',
@@ -189,8 +165,6 @@ MuEl = cms.EDFilter('TopMuElAnalyzer',
         'nEventsHLT',
         'nEventsFiltered',
         'nEventsPatHLT',
-        'nEventsDuplicate',
-        'nEventsTopFilter',
     ),
     #for jet cleaning overlapping with isolated epton within 0.4
     relIso1 = cms.untracked.double(0.20),
@@ -211,8 +185,6 @@ MuJet = cms.EDFilter('TopMuJetAnalyzer',
         'nEventsHLT',
         'nEventsFiltered',
         'nEventsPatHLT',
-        'nEventsDuplicate',
-        'nEventsTopFilter',
     ),
     looseJetId = myJetId, 
     #for jet cleaning overlapping with isolated epton within 0.4
@@ -237,8 +209,6 @@ ElJet = cms.EDFilter('TopElJetAnalyzer',
         'nEventsHLT',
         'nEventsFiltered',
         'nEventsPatHLT',
-        'nEventsDuplicate',
-        'nEventsTopFilter',
     ),
     looseJetId = myJetId, 
     #for jet cleaning overlapping with isolated epton within 0.4
@@ -255,18 +225,13 @@ removeDuplicate = cms.EDFilter("RemoveDuplicate",
 )
 
 nEventsPatHLT = cms.EDProducer("EventCountProducer")
-nEventsDuplicate = cms.EDProducer("EventCountProducer")
-nEventsTopFilter = cms.EDProducer("EventCountProducer")
 
 ## std sequence to produce the ttFullLepEvent
 from TopQuarkAnalysis.TopEventProducers.sequences.ttFullLepEvtBuilder_cff import *
 
 topAnalysisSequence = cms.Sequence(
     nEventsPatHLT*
-    removeDuplicate*
-    nEventsDuplicate*
-    topDecayGenFilter*
-    nEventsTopFilter*
+    topWLeptonGenFilter*
     GenZmassFilter*
     PUweight*
     JetEnergyScale*

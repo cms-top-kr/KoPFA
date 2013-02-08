@@ -32,23 +32,6 @@ KoElectronSelector::KoElectronSelector(const edm::ParameterSet& cfg)
   produces<std::vector<pat::Electron> >("");
 
   tree = 0;
-
-  edm::Service<TFileService> fs;
-
-  TFileDirectory IDdir = fs->mkdir("ID");
-  h_mvaTrigV0[0] = IDdir.make<TH1F>( "h_mvaTrigV0", "h_mvaTrigV0", 200, -1, 1);
-  TFileDirectory IDQCDdir = fs->mkdir("ID/QCD");
-  h_mvaTrigV0[1] = IDQCDdir.make<TH1F>( "h_mvaTrigV0", "h_mvaTrigV0", 200, -1, 1);
-
-  TFileDirectory Isodir = fs->mkdir("Iso");
-  h_pfRelIso03[0] = Isodir.make<TH1F>( "h_pfRelIso03", "h_pfRelIso03", 500, 0, 5);
-  h_pfRelIso04[0] = Isodir.make<TH1F>( "h_pfRelIso04", "h_pfRelIso04", 500, 0, 5);
-  
-  TFileDirectory IsoQCDdir = fs->mkdir("Iso/QCD");
-  h_pfRelIso03[1] = IsoQCDdir.make<TH1F>( "h_pfRelIso03", "h_pfRelIso03", 500, 0, 5);
-  h_pfRelIso04[1] = IsoQCDdir.make<TH1F>( "h_pfRelIso04", "h_pfRelIso04", 500, 0, 5);
-
-
   if ( saveTree )
   {
     edm::Service<TFileService> fs;
@@ -70,9 +53,7 @@ KoElectronSelector::KoElectronSelector(const edm::ParameterSet& cfg)
     ecalIso = new std::vector<double>();
     hcalIso = new std::vector<double>();
   }
-
-  lepton = new std::vector<vallot::Lepton>();
-
+  lepton = new std::vector<Ko::Lepton>();
 }
 
 KoElectronSelector::~KoElectronSelector()
@@ -104,22 +85,14 @@ void KoElectronSelector::produce(edm::Event& iEvent, const edm::EventSetup& es)
     LUMI   = iEvent.id().luminosityBlock();
   }
 
+  IsoDeposit::AbsVetos vetos_ch;
+  IsoDeposit::AbsVetos vetos_nh;
+  IsoDeposit::AbsVetos vetos_ph;
+
   iEvent.getByLabel(electronLabel_, electrons_);
   iEvent.getByLabel(beamSpotLabel_,beamSpot_); 
 
   std::auto_ptr<std::vector<pat::Electron> > pos(new std::vector<pat::Electron>());
-
-  double mvaTrigV0Lep1 = -9;
-  double mvaTrigV0Lep2 = -9;
-  double relPfIso03Lep1 = -9;
-  double relPfIso03Lep2 = -9;
-  double relPfIso04Lep1 = -9;
-  double relPfIso04Lep2 = -9;
-  int chargeLep1 = -9;
-  int chargeLep2 = -9;
-
-  bool passEId = false;
-  bool passed = false;
 
   for (unsigned int i=0; i < electrons_->size();++i){
     pat::Electron electron = electrons_->at(i);
@@ -128,63 +101,35 @@ void KoElectronSelector::produce(edm::Event& iEvent, const edm::EventSetup& es)
       electron.setP4(electron.pfCandidateRef()->p4());
     }
 
-    const vallot::Lepton ele(electron.p4(), (int) electron.charge());
+    const Ko::Lepton ele(electron.p4(), (int) electron.charge());
     lepton->push_back(ele);
-    reco::isodeposit::Direction Dir = Direction(electron.superCluster()->eta(),electron.superCluster()->phi());
-
-    reco::isodeposit::AbsVetos noVetos;
-
+    reco::isodeposit::Direction Dir = Direction(electron.eta(),electron.phi());
     reco::isodeposit::AbsVetos vetos_ch;
     reco::isodeposit::AbsVetos vetos_nh;
-    reco::isodeposit::AbsVetos vetos_ph;
     vetos_nh.push_back(new ThresholdVeto( 0.5 ));
+    reco::isodeposit::AbsVetos vetos_ph1;
     vetos_ph.push_back(new ThresholdVeto( 0.5 ));
-
-    reco::IsoDeposit::AbsVetos vetos_ch_cone;
-    reco::IsoDeposit::AbsVetos vetos_ph_cone;
-    reco::IsoDeposit::AbsVetos vetos_nh_cone;
-
     //pf isolation setup
-    if( abs( electron.superCluster()->eta() ) > 1.479 ){
-      vetos_ch_cone.push_back(new ConeVeto( Dir, 0.015 ));
-      vetos_ph_cone.push_back(new ConeVeto( Dir, 0.08 ));
-    }
+    lepton->back().setIsoDeposit( pat::PfChargedHadronIso, electron.isoDeposit(pat::PfChargedHadronIso), vetos_ch );
+    lepton->back().setIsoDeposit( pat::PfNeutralHadronIso, electron.isoDeposit(pat::PfNeutralHadronIso), vetos_nh );
+    lepton->back().setIsoDeposit( pat::PfGammaIso, electron.isoDeposit(pat::PfGammaIso), vetos_ph );
+    bool passIso =  lepton->back().relpfIso03() < relIso_; 
 
-    lepton->back().setIsoDeposit( pat::PfChargedHadronIso, electron.isoDeposit(pat::PfChargedHadronIso), vetos_ch_cone );
-    lepton->back().setIsoDeposit( pat::PfNeutralHadronIso, electron.isoDeposit(pat::PfNeutralHadronIso), vetos_nh_cone);
-    lepton->back().setIsoDeposit( pat::PfGammaIso, electron.isoDeposit(pat::PfGammaIso), vetos_ph_cone );
-
-    bool passIso =  lepton->back().relIso03() < relIso_; 
-
+    bool passed = false;
     bool passPre = electron.pt() > ptcut_ && fabs(electron.eta()) < etacut_ && fabs(electron.gsfTrack()->dxy(beamSpot_->position())) < 0.04;
-
     const double eleMva = electron.mva();
     const int eidBit = (int)electron.electronID(eidName_);
-    const double mvaV0 = electron.electronID(eidName_); 
 
+    //new mva id for 2012
+    const bool passMVA = eidBit > mvacut_;
+    //id for 2011
+    const bool passEId = eidBitMask_ < 0 or ((eidBit & eidBitMask_) == eidBitMask_);
 
-    if(i == 0 ) {
-      mvaTrigV0Lep1 = mvaV0;
-      relPfIso03Lep1 = lepton->back().relIso03();
-      relPfIso04Lep1 = lepton->back().relIso04();
-      chargeLep1 = (int)electron.charge();
+    if(usemva_){
+      passed = passPre && passMVA && passIso;
+    } else {
+      passed = passPre && passEId && passIso;
     }
-    if(i == 1 ) {
-      mvaTrigV0Lep2 = mvaV0;
-      relPfIso03Lep2 = lepton->back().relIso03();
-      relPfIso04Lep2 = lepton->back().relIso04();
-      chargeLep2 = (int)electron.charge();
-    }
-
-    if( usemva_){
-      //new mva id for 2012
-      passEId = mvaV0 > mvacut_;
-    }else{
-      //id for 2011
-      passEId = eidBitMask_ < 0 or ((eidBit & eidBitMask_) == eidBitMask_);
-    }
-
-    passed = passPre && passEId && passIso;
 
     if ( passed ) pos->push_back((*electrons_)[i]);
 
@@ -195,7 +140,6 @@ void KoElectronSelector::produce(edm::Event& iEvent, const edm::EventSetup& es)
         id2pfmva->Fill( electron.pfCandidateRef()->mva_e_pi(), eidBit);
         pfMVA2patMVA_->Fill(eleMva, electron.pfCandidateRef()->mva_e_pi());
       }
-
 
       if(passed){
 
@@ -216,31 +160,6 @@ void KoElectronSelector::produce(edm::Event& iEvent, const edm::EventSetup& es)
 
     }
   }
-
-  if( chargeLep1 * chargeLep2 == -1){ 
-    h_mvaTrigV0[0]->Fill( mvaTrigV0Lep1 );
-    h_mvaTrigV0[0]->Fill( mvaTrigV0Lep2 );
-  }
-
-  if( chargeLep1 * chargeLep2 == 1 ){
-    h_mvaTrigV0[1]->Fill( mvaTrigV0Lep1 );
-    h_mvaTrigV0[1]->Fill( mvaTrigV0Lep2 );
-  }
-
-  if( passEId ){
-    if( chargeLep1 * chargeLep2 == -1){
-      h_pfRelIso03[0]->Fill( relPfIso03Lep1 );
-      h_pfRelIso03[0]->Fill( relPfIso03Lep2 );
-      h_pfRelIso04[0]->Fill( relPfIso04Lep1 );
-      h_pfRelIso04[0]->Fill( relPfIso04Lep2 );
-    }
-    if( chargeLep1 * chargeLep2 == 1 ){
-      h_pfRelIso03[1]->Fill( relPfIso03Lep1 );
-      h_pfRelIso03[1]->Fill( relPfIso03Lep2 );
-      h_pfRelIso04[1]->Fill( relPfIso04Lep1 );
-      h_pfRelIso04[1]->Fill( relPfIso04Lep2 );
-    }
-  } 
 
   iEvent.put(pos);
 

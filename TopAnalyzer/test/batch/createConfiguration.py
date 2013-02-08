@@ -250,20 +250,20 @@ mv vallot_*.root $OUTDIR/
             if 'TTbar' in dataset:
 				if decay in ('MuMu','ElEl','MuEl'):
 					specificCfg += """
-process.topDecayGenFilter.applyFilter = True
+process.topWLeptonGenFilter.applyFilter = True
 """
 				elif decay in ('MuJet','ElJet'):
 					specificCfg += """
-process.topDecayGenFilterForLJ.applyFilter = True
+process.topWLeptonGenFilterForLJ.applyFilter = True
 """
             if 'TTbarOthers' in dataset:
 				if decay in ('MuMu','ElEl','MuEl'):
 					specificCfg += """
-process.top%sAnalysisMCSequence.replace(process.topDecayGenFilter,~process.topDecayGenFilter)
+process.top%sAnalysisMCSequence.replace(process.topWLeptonGenFilter,~process.topWLeptonGenFilter)
 """ % self.decay
 				elif decay in ('MuJet','ElJet'):
 					specificCfg += """
-process.top%sAnalysisMCSequence.replace(process.topDecayGenFilterForLJ,~process.topDecayGenFilterForLJ)
+process.top%sAnalysisMCSequence.replace(process.topWLeptonGenFilterForLJ,~process.topWLeptonGenFilterForLJ)
 """ % self.decay
             if dataset in ('ZJets'):
                 specificCfg += """
@@ -346,7 +346,7 @@ mcSet = {}
 rdSet = {}
 
 mcSet['ElEl'] = [
-    'TTbarTuneZ2', 'TTbarOthers', 'TTbarMCATNLO', 'TTbarPOWHEG','TTbarMatchingUp','TTbarMatchingDw','TTbarScaleUp','TTbarScaleDw',
+    'TTbarTuneZ2', 'TTbarOthers',
     'SingleToptW', 'SingleTopt', 'SingleTops',
     'ZJets', 'ZJets10To50', #'DYee20to50', 'DYee10to20', 'DYmm20to50', 'DYmm10to20',
     'ZtauDecay', 'ZtauDecay10To50', #'DYtt20to50', 'DYtt10to20',
@@ -356,7 +356,7 @@ mcSet['ElEl'] = [
 ]
 
 mcSet['MuMu'] = [
-    'TTbarTuneZ2', 'TTbarOthers', 'TTbarMCATNLO', 'TTbarPOWHEG','TTbarMatchingUp','TTbarMatchingDw','TTbarScaleUp','TTbarScaleDw',
+    'TTbarTuneZ2', 'TTbarOthers',
     'SingleToptW', 'SingleTopt', 'SingleTops',
     'ZJets', 'ZJets10To50', #'DYee20to50', 'DYee10to20', 'DYmm20to50', 'DYmm10to20',
     'ZtauDecay', 'ZtauDecay10To50', #'DYtt20to50', 'DYtt10to20',
@@ -365,7 +365,7 @@ mcSet['MuMu'] = [
 ]
 
 mcSet['MuEl'] = [
-    'TTbarTuneZ2', 'TTbarOthers', 'TTbarMCATNLO', 'TTbarPOWHEG','TTbarMatchingUp','TTbarMatchingDw','TTbarScaleUp','TTbarScaleDw',
+    'TTbarTuneZ2', 'TTbarOthers',
     'SingleToptW', 'SingleTopt', 'SingleTops',
     'ZJets', 'ZJets10To50', #'DYee20to50', 'DYee10to20', 'DYmm20to50', 'DYmm10to20',
     'ZtauDecay', 'ZtauDecay10To50', #'DYtt20to50', 'DYtt10to20',
@@ -428,7 +428,7 @@ datalist = rdSet[decay]
 mcGlobalTag = "START42_V17"
 rdGlobalTag = "GR_R_42_V23"
 
-def common(jetCorrection = "L3Absolute"):
+def common():
 
   ch1 = ""
   ch2 = ""
@@ -468,13 +468,13 @@ removeTtFullLepHypGenMatch(process)
 
 setForAllTtFullLepHypotheses(process,"muons",cms.InputTag("FinalLeptons","Muons"))
 setForAllTtFullLepHypotheses(process,"electrons",cms.InputTag("FinalLeptons","Electrons"))
-setForAllTtFullLepHypotheses(process,"mets", cms.InputTag("JetEnergyScale","MET"))
-setForAllTtFullLepHypotheses(process,"jets", cms.InputTag("JetEnergyScale","Jets"))
-setForAllTtFullLepHypotheses(process,"maxNJets",-1)
+setForAllTtFullLepHypotheses(process,"mets","patMETsPFlow")
+setForAllTtFullLepHypotheses(process,"jets", cms.InputTag("JetEnergyScale","selectedPatJetsPFlow"))
+setForAllTtFullLepHypotheses(process,"maxNJets",2)
 setForAllTtFullLepHypotheses(process,"mumuChannel",True)
 setForAllTtFullLepHypotheses(process,"emuChannel",True)
 setForAllTtFullLepHypotheses(process,"eeChannel",True)
-setForAllTtFullLepHypotheses(process,"jetCorrectionLevel","%s")
+setForAllTtFullLepHypotheses(process,"jetCorrectionLevel","L3Absolute")
 
 process.ttFullLepEvent.decayChannel1 = cms.int32(%s)
 process.ttFullLepEvent.decayChannel2 = cms.int32(%s)
@@ -482,7 +482,7 @@ process.ttFullLepEvent.decayChannel2 = cms.int32(%s)
 process.load("KoPFA.CommonTools.ZFilter_cfi")
 process.load("KoPFA.CommonTools.finalLeptonProducer_cfi")
 
-""" % (jetCorrection, ch1, ch2)
+""" % (ch1, ch2)
 
   return script
 
@@ -505,9 +505,6 @@ process.load("KoPFA.CommonTools.Sources.MC.Fall11.patTuple_%s_cff")
 
 def mcpath():
   script = """
-
-process.Z%s.filterIso = cms.untracked.bool(True) 
-
 process.p = cms.Path(
     process.hltHighLevel%sMC*
     process.topAnalysisSequence*
@@ -516,7 +513,7 @@ process.p = cms.Path(
     makeTtFullLepEvent*
     process.%s
 ) 
-""" % (decay,decay,decay,decay)
+""" % (decay,decay,decay)
   return script
 
 def rdsample(src):
@@ -562,26 +559,27 @@ process.TFileService = cms.Service("TFileService",
 
 def ttbardileptonfilter():
   script = """
-process.topDecayGenFilter.applyFilter = True
+process.topWLeptonGenFilter.applyFilter = True
 """
   return script
 
 def ttbarleptonjetfilter():
   script = """
-process.topDecayGenFilterForLJ.applyFilter = True
+process.topWLeptonGenFilterForLJ.applyFilter = True
 """
   return script
 
 def ttbardileptonothersfilter():
   script = """
-process.topAnalysisSequence.replace(process.topDecayGenFilter,~process.topDecayGenFilter)
+process.topWLeptonGenFilter.applyFilter = True
+process.topAnalysisSequence.replace(process.topWLeptonGenFilter,~process.topWLeptonGenFilter)
 """ 
   return script
 
 def ttbarleptonjetothersfilter():
   script = """
-process.topDecayGenFilterForLJ.applyFilter = True
-process.top%sAnalysisMCSequence.replace(process.topDecayGenFilterForLJ,~process.topDecayGenFilterForLJ)
+process.topWLeptonGenFilterForLJ.applyFilter = True
+process.top%sAnalysisMCSequence.replace(process.topWLeptonGenFilterForLJ,~process.topWLeptonGenFilterForLJ)
 """ % decay
   return script
 
@@ -634,7 +632,7 @@ for src in mclist:
     out = open(decay+'/top'+decay+'Analyzer_'+src+'_cfg.py','w')
     out.write(common())
     out.write("process.GlobalTag.globaltag = cms.string('%s::All')\n" % mcGlobalTag)
-    out.write("process.JetEnergyScale.globalTag = cms.untracked.string('%s')\n" % mcGlobalTag)
+    out.write("process.JetEnergyScale.globalTag = cms.untracked.string('%s')" % mcGlobalTag)
     #out.write(leptonfilter())
     out.write(mcpath())
     out.write(outfile(src))
@@ -644,7 +642,7 @@ for src in mclist:
       out.write(mcsample("TTbarTuneZ2"))
     else:
       out.write(mcsample(src))
-    if src.find("TTbar") != -1 :
+    if src.find("TTbarTuneZ2") != -1:
 		if decay in ('MuMu','ElEl','MuEl'):
 			out.write(ttbardileptonfilter())
 		if decay in ('MuJet','ElJet'):
@@ -666,7 +664,7 @@ for src in datalist:
     out = open(decay+'/top'+decay+'Analyzer_'+src+'_cfg.py','w')
     out.write(common())
     out.write("process.GlobalTag.globaltag = cms.string('%s::All')\n" % rdGlobalTag)
-    out.write("process.JetEnergyScale.globalTag = cms.untracked.string('%s')\n" % rdGlobalTag)
+    out.write("process.JetEnergyScale.globalTag = cms.untracked.string('%s')" % rdGlobalTag)
     #out.write(leptonfilter())
     out.write(rdpath())
     out.write(outfile(src))

@@ -37,23 +37,17 @@ namespace vallot{
     double ecalIso() const { return ecalIso_; }
     double hcalIso() const { return hcalIso_; }
 
-    double relIso03(int type = -1) const { 
-      if( type == -1) {
-        if( isMuon_  == 1) return (chIso03_ + TMath::Max( 0.0, nhIso03_ + phIso03_ - 0.5*puChIso03_) ) / pt_;
-        else return (chIso03_ + TMath::Max( 0.0, nhIso03_ + phIso03_ - rhoIso_*AEff03_) ) / pt_;
-      }else if( type == 0 ) return (chIso03_ + nhIso03_ + phIso03_) / pt_; 
-      else if( type == 1) return (chIso03_ + TMath::Max( 0.0, nhIso03_ + phIso03_ - 0.5*puChIso03_) ) / pt_; 
-      else if( type == 2) return (chIso03_ + TMath::Max( 0.0, nhIso03_ + phIso03_ - rhoIso_*AEff03_) ) / pt_;
+    double relpfIso03(int type = 0) const { 
+      if( type == 0 ) return (chIso03_ + nhIso03_ + phIso03_) / pt_; 
+      else if( type == 1) return (chIso03_ + TMath::Max( 0.0, nhIso03_ + phIso03_ - puChIso03_) ) / pt_; 
+      else if( type == 2) return (chIso03_ + TMath::Max( 0.0, nhIso03_ + phIso03_ - puChIso03_) ) / pt_;
       else return -1.0;
     }
 
-    double relIso04(int type = -1) const { 
-      if( type == -1){
-        if( isMuon_ == 1 ) return (chIso04_ + TMath::Max( 0.0, nhIso04_ + phIso04_ - 0.5*puChIso04_) ) / pt_;
-        else return (chIso04_ + TMath::Max( 0.0, nhIso04_ + phIso04_ - rhoIso_*AEff04_) ) / pt_;
-      }else if( type == 0 ) return (chIso04_ + nhIso04_ + phIso04_) / pt_; 
-      else if( type == 1) return (chIso04_ + TMath::Max( 0.0, nhIso04_ + phIso04_ - 0.5*puChIso04_) ) / pt_;
-      else if( type == 2) return (chIso04_ + TMath::Max( 0.0, nhIso04_ + phIso04_ - rhoIso_*AEff04_) ) / pt_;
+    double relpfIso04(int type = 0) const { 
+      if( type == 0 ) return (chIso04_ + nhIso04_ + phIso04_) / pt_; 
+      else if( type == 1) return (chIso04_ + TMath::Max( 0.0, nhIso04_ + phIso04_ - puChIso04_) ) / pt_;
+      else if( type == 2) return (chIso04_ + TMath::Max( 0.0, nhIso04_ + phIso04_ - puChIso04_) ) / pt_;
       else return -1.0;
     }
 
@@ -80,22 +74,6 @@ namespace vallot{
       phIso04_ = phIso04;
     }
 
-    void setRho( double rhoIso){
-      rhoIso_ = rhoIso;
-    }
-
-    void setAEff03( double AEff03 ){
-      AEff03_ = AEff03;
-    } 
-
-    void setAEff04( double AEff04 ){
-      AEff04_ = AEff04;
-    }
-
-    void setType( int isMuon ){
-      isMuon_ = isMuon;
-    }
-
   private:
 
     int charge_;
@@ -114,12 +92,6 @@ namespace vallot{
     double trackIso_;
     double ecalIso_;
     double hcalIso_;
-
-    double AEff03_;
-    double AEff04_;
-    double rhoIso_;
-
-    int isMuon_;
 
   };
 

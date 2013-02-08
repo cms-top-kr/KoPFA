@@ -15,7 +15,14 @@
 #include <iostream>
 #include <iomanip>
 #include <map>
-#include "DXSectionParameters.h"
+
+//default
+double detBins[] = {0, 345, 400, 450, 500, 550, 600, 680, 800, 1800}; // 9 bins
+double genBins[] = {0, 345, 400, 450, 500, 550, 600, 680, 800, 1800}; // 9 bins
+
+int nDet = sizeof(detBins)/sizeof(double) - 1;
+int nGen = sizeof(genBins)/sizeof(double) - 1;
+
 #include "preUnfolding.h"
 
 void defaultStyle();
@@ -33,10 +40,9 @@ void acceptance(){
   decayMode.push_back("MuEl");
 
   //MC
-  mcPath.push_back("/afs/cern.ch/work/t/tjkim/public/store/top/ElEl/v0/vallot_TTbarTuneZ2.root");
-  mcPath.push_back("/afs/cern.ch/work/t/tjkim/public/store/top/MuMu/v0/vallot_TTbarTuneZ2.root");
-  mcPath.push_back("/afs/cern.ch/work/t/tjkim/public/store/top/MuEl/v0/vallot_TTbarTuneZ2.root");
-  
+  mcPath.push_back("$WORK/data/export/common/Top/ntuple/ElEl/MC/Fall11_v2/JES_Default/vallot_TTbarTuneZ2.root");
+  mcPath.push_back("$WORK/data/export/common/Top/ntuple/MuMu/MC/Fall11_v2/JES_Default/vallot_TTbarTuneZ2.root");
+  mcPath.push_back("$WORK/data/export/common/Top/ntuple/MuEl/MC/Fall11_v2/JES_Default/vallot_TTbarTuneZ2.root");
 
   //measured data distribution after final cut:version 6->take into account QCD
   //rdPath.push_back("/data/export/common/Top/finalHisto/v6/ElEl.root");
@@ -44,14 +50,14 @@ void acceptance(){
   //rdPath.push_back("/data/export/common/Top/finalHisto/v6/MuEl.root");
 
   //note for v3
-  rdPath.push_back("/afs/cern.ch/work/t/tjkim/public/store/top/TOP11013/TOP11013_12072012/ElEl/ElEl.root");
-  rdPath.push_back("/afs/cern.ch/work/t/tjkim/public/store/top/TOP11013/TOP11013_12072012/MuMu/MuMu.root");
-  rdPath.push_back("/afs/cern.ch/work/t/tjkim/public/store/top/TOP11013/TOP11013_12072012/MuEl/MuEl.root");
+  rdPath.push_back("$WORK/data/export/common/Top/finalHisto/2011full/v2/ElEl.root");
+  rdPath.push_back("$WORK/data/export/common/Top/finalHisto/2011full/v2/MuMu.root");
+  rdPath.push_back("$WORK/data/export/common/Top/finalHisto/2011full/v2/MuEl.root");
 
-  const std::string cutStep = "Step_8";
-  string recon = "kin";
+  const std::string cutStep = "Step_7";
+  string recon = "vsum";
 
-  TFile * fDen = new TFile("/afs/cern.ch/work/t/tjkim/public/store/top/TOP11013/topGenHisto_madgraph.root");
+  TFile * fDen = new TFile("/afs/cern.ch/work/t/tjkim/store/GenHisto/topGenHisto_madgraph.root");
   TH1F* full = (TH1F*) fDen->Get("topDecayGenHisto/hMtt_Full");
   TH1F* visiPtcl = (TH1F*) fDen->Get("topDecayGenHisto/hMtt_DIL_Ptcl_NoTau");
   TH1F* visiPton = (TH1F*) fDen->Get("topDecayGenHisto/hMtt_DIL_Pton_NoTau");

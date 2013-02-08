@@ -49,7 +49,7 @@ KoMuonSelector::KoMuonSelector(const edm::ParameterSet& cfg)
   ecalIso = new std::vector<double>();
   hcalIso = new std::vector<double>();
 
-  lepton = new std::vector<vallot::Lepton>();
+  lepton = new std::vector<Ko::Lepton>();
 }
 
 KoMuonSelector::~KoMuonSelector()
@@ -137,7 +137,7 @@ void KoMuonSelector::produce(edm::Event& iEvent, const edm::EventSetup& es)
     else if(version_==3) passed = muonIdSel.test("TOPDIL") && C2;
     else if(version_==4) passed = C2 && muonIsoSel.test("pfOptimizedRel");
 
-    const vallot::Lepton mu(muon.p4(), (int) muon.charge());
+    const Ko::Lepton mu(muon.p4(), (int) muon.charge());
     lepton->push_back(mu);
     reco::isodeposit::Direction Dir = Direction(muon.eta(),muon.phi());
     vetos_nh.push_back(new ThresholdVeto( 0.5 ));
@@ -146,7 +146,7 @@ void KoMuonSelector::produce(edm::Event& iEvent, const edm::EventSetup& es)
     lepton->back().setIsoDeposit( pat::PfChargedHadronIso, muon.isoDeposit(pat::PfChargedHadronIso), vetos_ch );
     lepton->back().setIsoDeposit( pat::PfNeutralHadronIso, muon.isoDeposit(pat::PfNeutralHadronIso), vetos_nh );
     lepton->back().setIsoDeposit( pat::PfGammaIso, muon.isoDeposit(pat::PfGammaIso), vetos_ph );
-    bool passIso =  lepton->back().relIso03() < relIso_;
+    bool passIso =  lepton->back().relpfIso03() < relIso_;
 
     passed = passed && passIso;
 

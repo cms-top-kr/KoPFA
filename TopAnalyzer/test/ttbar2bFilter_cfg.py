@@ -23,13 +23,13 @@ process.printTree = cms.EDAnalyzer("ParticleListDrawer",
                                     maxEventsToPrint  = cms.untracked.int32(95)
 )
 
-process.load("KoPFA.CommonTools.Sources.CMG.V5_10_0.Summer12.patTuple_TTbarTuneZ2_cff")
+process.load("KoPFA.TopAnalyzer.Sources.MU.MC.Summer11.patTuple_TTbarTuneZ2_cff")
 
 process.ttbar2bFilter = cms.EDFilter('TTbar2bGenFilter',
 )
 
 process.p = cms.Path(
-    process.printTree+
+#    process.printTree+
     process.ttbar2bFilter
 ) 
 

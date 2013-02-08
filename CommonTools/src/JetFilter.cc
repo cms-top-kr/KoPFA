@@ -13,7 +13,7 @@
 //
 // Original Author:  Tae Jeong Kim
 //         Created:  Mon Dec 14 01:29:35 CET 2009
-// $Id: JetFilter.cc,v 1.12 2012/06/18 14:33:43 tjkim Exp $
+// $Id: JetFilter.cc,v 1.10 2012/05/27 23:53:28 tjkim Exp $
 //
 //
 
@@ -77,7 +77,6 @@ class JetFilter : public edm::EDFilter {
       bool doJecFly_;
       bool doResJec_;
       bool isRealData_;
-      bool doJecUnc_;
       bool up_;
       bool doJERUnc_;
       double resolutionFactor_;
@@ -118,8 +117,6 @@ JetFilter::JetFilter(const edm::ParameterSet& ps)
   pfJetIdParams_ = ps.getParameter<edm::ParameterSet> ("looseJetId");
   doJecFly_ = ps.getUntrackedParameter<bool>("doJecFly", true);
   doResJec_ = ps.getUntrackedParameter<bool>("doResJec", false);
-  doJecUnc_ = ps.getUntrackedParameter<bool>("doJecUnc", false);
-  up_ = ps.getUntrackedParameter<bool>("up", true); // uncertainty up
   doJERUnc_ = ps.getUntrackedParameter<bool>("doJERUnc", false);
   resolutionFactor_ = ps.getUntrackedParameter<double>("resolutionFactor", 1.0);
   globalTag_ = ps.getUntrackedParameter<string>("globalTag","GR_R_42_V23");
@@ -130,8 +127,12 @@ JetFilter::JetFilter(const edm::ParameterSet& ps)
   outputJetLabel_ = jetLabel_.label();
   outputMETLabel_ = metLabel_.label();
 
-  produces<std::vector<pat::Jet> >("Jets");
-  produces<std::vector<pat::MET> >("MET");
+  produces<std::vector<pat::Jet> >(outputJetLabel_);
+  produces<std::vector<pat::Jet> >(outputJetLabel_+"Up");
+  produces<std::vector<pat::Jet> >(outputJetLabel_+"Dn");
+  produces<std::vector<pat::MET> >(outputMETLabel_+"");
+  produces<std::vector<pat::MET> >(outputMETLabel_+"Up");
+  produces<std::vector<pat::MET> >(outputMETLabel_+"Dn");
 
 }
 
@@ -162,7 +163,11 @@ JetFilter::filter(edm::Event& iEvent, const edm::EventSetup& iSetup)
   using namespace reco;
 
   std::auto_ptr<std::vector<pat::Jet> > corrJets(new std::vector<pat::Jet>());
+  std::auto_ptr<std::vector<pat::Jet> > corrJetsUp(new std::vector<pat::Jet>());
+  std::auto_ptr<std::vector<pat::Jet> > corrJetsDn(new std::vector<pat::Jet>());
   std::auto_ptr<std::vector<pat::MET> > corrMETs(new std::vector<pat::MET>());
+  std::auto_ptr<std::vector<pat::MET> > corrMETsUp(new std::vector<pat::MET>());
+  std::auto_ptr<std::vector<pat::MET> > corrMETsDn(new std::vector<pat::MET>());
   std::auto_ptr<std::vector<pat::Jet> > corrbJets(new std::vector<pat::Jet>());
 
   edm::Handle<pat::JetCollection> Jets;
@@ -173,6 +178,8 @@ JetFilter::filter(edm::Event& iEvent, const edm::EventSetup& iSetup)
   pat::METCollection::const_iterator met = MET->begin();
   double met_x = met->px();
   double met_y = met->py();
+  double metUp_x = met_x, metUp_y = met_y;
+  double metDn_x = met_x, metDn_y = met_y;
 
   edm::Handle<double>  rho;
   iEvent.getByLabel(rhoLabel_, rho);
@@ -213,29 +220,40 @@ JetFilter::filter(edm::Event& iEvent, const edm::EventSetup& iSetup)
 
     correctedJet.scaleEnergy( scaleF );
 
-    if(doJecUnc_){
-      jecUnc_->setJetEta(correctedJet.eta());
-      jecUnc_->setJetPt(correctedJet.pt());
-      met_x += correctedJet.px();
-      met_y += correctedJet.py();
-      double unc = jecUnc_->getUncertainty(up_);
-      double ptscaleunc = 0;
-      if(up_) ptscaleunc = 1 + unc;
-      else ptscaleunc = 1 - unc;
-      correctedJet.scaleEnergy( ptscaleunc );
-      met_x -= correctedJet.px();
-      met_y -= correctedJet.py();
-    }
+    // Do JEC uncertainty
+    pat::Jet correctedJetUp = correctedJet;
+    pat::Jet correctedJetDn = correctedJet;
+
+    jecUnc_->setJetEta(correctedJetUp.eta());
+    jecUnc_->setJetPt(correctedJetUp.pt());
+    correctedJetUp.scaleEnergy(1+jecUnc_->getUncertainty(true));
+
+    jecUnc_->setJetEta(correctedJetDn.eta());
+    jecUnc_->setJetPt(correctedJetDn.pt());
+    correctedJetDn.scaleEnergy(1-jecUnc_->getUncertainty(false));
+
+    metUp_x += correctedJet.px() - correctedJetUp.px();
+    metUp_y += correctedJet.py() - correctedJetUp.py();
+    metDn_x += correctedJet.px() - correctedJetDn.px();
+    metDn_y += correctedJet.py() - correctedJetDn.py();
 
     if(doJERUnc_){
-      double jetpx = correctedJet.px();
-      double jetpy = correctedJet.py();
+      const double jetpx = correctedJet.px();
+      const double jetpy = correctedJet.py();
+      const double jetpxUp = correctedJetUp.px();
+      const double jetpyUp = correctedJetUp.py();
+      const double jetpxDn = correctedJetDn.px();
+      const double jetpyDn = correctedJetDn.py();
       correctedJet.scaleEnergy( resolutionFactor(correctedJet)  );
-      double dpx = correctedJet.px() - jetpx;
-      double dpy = correctedJet.py() - jetpy;
-      met_x -= dpx;
-      met_y -= dpy;
-    } 
+      correctedJetUp.scaleEnergy( resolutionFactor(correctedJetUp) );
+      correctedJetDn.scaleEnergy( resolutionFactor(correctedJetDn) );
+      met_x -= correctedJet.px() - jetpx;
+      met_y -= correctedJet.py() - jetpy;
+      metUp_x  -= correctedJet.px() - jetpxUp;
+      metUp_y  -= correctedJet.py() - jetpyUp;
+      metDn_x  -= correctedJet.px() - jetpxDn;
+      metDn_y  -= correctedJet.py() - jetpyDn;
+    }
 
     //debug
     //cout << "corrected= " << correctedJet.pt() << " default= " << it->pt() << endl;
@@ -253,23 +271,33 @@ JetFilter::filter(edm::Event& iEvent, const edm::EventSetup& iSetup)
       }
     }
 
+    if ( correctedJetUp.pt() > ptcut_ ) corrJetsUp->push_back(correctedJetUp);
+    if ( correctedJetDn.pt() > ptcut_ ) corrJetsDn->push_back(correctedJetDn);
+
   }
 
+  if( corrJets->size() >= min_ ) accepted = true;
+
   pat::MET corrMET(reco::MET ( sqrt(met_x*met_x + met_y*met_y)   , reco::MET::LorentzVector(met_x,met_y,0,sqrt(met_x*met_x + met_y*met_y))  , reco::MET::Point(0,0,0)));
+
   corrMETs->push_back(corrMET);
 
   // Jets passing identification criteria are sorted by decreasing pT
   std::sort(corrJets->begin(), corrJets->end(), GreaterByPt<pat::Jet>());
   std::sort(corrbJets->begin(), corrbJets->end(), GreaterByPt<pat::Jet>());
+  std::sort(corrJetsUp->begin(), corrJetsUp->end(), GreaterByPt<pat::Jet>());
+  std::sort(corrJetsDn->begin(), corrJetsDn->end(), GreaterByPt<pat::Jet>());
 
   if( bJetFirst_ ){
     corrJets->insert( corrJets->begin(), corrbJets->begin(), corrbJets->end());
   }
 
-  if( corrJets->size() >= min_ ) accepted = true;
-
-  iEvent.put(corrJets, "Jets");
-  iEvent.put(corrMETs, "MET");
+  iEvent.put(corrJets, outputJetLabel_);
+  iEvent.put(corrJetsUp, outputJetLabel_+"Up");
+  iEvent.put(corrJetsDn, outputJetLabel_+"Dn");
+  iEvent.put(corrMETs, outputMETLabel_);
+  iEvent.put(corrMETsUp, outputMETLabel_+"Up");
+  iEvent.put(corrMETsDn, outputMETLabel_+"Dn");
 
   if( applyFilter_ ) return accepted;
   else return true;

@@ -6,7 +6,7 @@ from HLTrigger.HLTfilters.hltHighLevel_cfi import *
 #MC
 hltHighLevelMuElMC = hltHighLevel.clone()
 hltHighLevelMuElMC.TriggerResultsTag = cms.InputTag("TriggerResults","","HLT")
-hltHighLevelMuElMC.HLTPaths = cms.vstring('HLT_Mu10_Ele10_CaloIdL_v*','HLT_Mu17_Ele8_CaloIdL_v*','HLT_Mu8_Ele17_CaloIdL_v*','HLT_Mu8_Ele17_CaloIdT_CaloIsoVL_v*','HLT_Mu17_Ele8_CaloIdT_CaloIsoVL_v*')
+hltHighLevelMuElMC.HLTPaths = cms.vstring('HLT_Mu10_Ele10_CaloIdL_v*','HLT_Mu17_Ele8_CaloIdL_v*','HLT_Mu8_Ele17_CaloIdL_v*')
 hltHighLevelMuElMC.throw = cms.bool(False)
 #RD
 hltHighLevelMuElRD = hltHighLevel.clone()
@@ -19,8 +19,6 @@ hltHighLevelMuElRD.throw = cms.bool(False)
 hltHighLevelElElMC = hltHighLevel.clone()
 hltHighLevelElElMC.TriggerResultsTag = cms.InputTag("TriggerResults","","HLT")
 hltHighLevelElElMC.HLTPaths = cms.vstring(
-    'HLT_Ele17_CaloIdT_TrkIdVL_CaloIsoVL_TrkIsoVL_Ele8_CaloIdT_TrkIdVL_CaloIsoVL_TrkIsoVL_v*',
-    'HLT_Ele17_CaloIdL_CaloIsoVL_Ele8_CaloIdL_CaloIsoVL_v*',
     'HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v*',
 )
 hltHighLevelElElMC.throw = cms.bool(False)
@@ -38,7 +36,7 @@ hltHighLevelElElRD.throw = cms.bool(False)
 #MC
 hltHighLevelMuMuMC = hltHighLevel.clone()
 hltHighLevelMuMuMC.TriggerResultsTag = cms.InputTag("TriggerResults","","HLT")
-hltHighLevelMuMuMC.HLTPaths = cms.vstring('HLT_DoubleMu7_v*')
+hltHighLevelMuMuMC.HLTPaths = cms.vstring('HLT_DoubleMu6_v*')
 hltHighLevelMuMuMC.throw = cms.bool(False)
 #RD
 hltHighLevelMuMuRD = hltHighLevel.clone()

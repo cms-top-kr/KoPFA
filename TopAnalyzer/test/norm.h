@@ -1,21 +1,3 @@
-//cross section at 7TeV
-double X_DYM50_7TeV     = 3048;
-double X_DYM10To50_7TeV = 11098.83;
-double X_TTbar_7TeV     = 165.9;
-double X_WJets_7TeV     = 31314;
-double X_SingletW_7TeV  = 15.74;
-
-//cross section at 8TeV
-double X_DYM50_8TeV     = 3503.71;
-double X_DYM10To50_8TeV = 860.5; //need to be updated
-double X_TTbar_8TeV     = 225.197;
-double X_WJets_8TeV     = 36257.2;
-double X_SingletW_8TeV  = 22.2;
-
-//data lumi
-double Lumi2011 = 4982;
-double Lumi2012 = 1616;
-
 //normalization factor 
 double norm_Zmm ;
 double norm_Ztautau ;

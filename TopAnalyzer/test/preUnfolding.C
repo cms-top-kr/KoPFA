@@ -13,8 +13,14 @@
 #include "TGraph.h"
 #include "TROOT.h"
 #include <iostream>
-#include "DXSectionParameters.h"
-#include "norm.h"
+
+//default
+float detBins[] = {0, 345, 400, 450, 500, 550, 600, 680, 800, 1800}; // 9 bins
+float genBins[] = {0, 345, 400, 450, 500, 550, 600, 680, 800, 1800}; // 9 bins
+
+int nDet = sizeof(detBins)/sizeof(float) - 1;
+int nGen = sizeof(genBins)/sizeof(float) - 1;
+
 #include "preUnfolding.h"
 
 void defaultStyle();
@@ -35,9 +41,9 @@ void preUnfolding(){
   decayMode.push_back("MuMu");
 
   //response matrix
-  mcPath.push_back("/afs/cern.ch/work/t/tjkim/public/store/top/MuEl/v0/vallot_TTbarTuneZ2.root");
-  mcPath.push_back("/afs/cern.ch/work/t/tjkim/public/store/top/ElEl/v0/vallot_TTbarTuneZ2.root");
-  mcPath.push_back("/afs/cern.ch/work/t/tjkim/public/store/top/MuMu/v0/vallot_TTbarTuneZ2.root");
+  mcPath.push_back("$WORK/data/export/common/Top/ntuple/MuEl/MC/Fall11_v2/JES_Default/vallot_TTbarTuneZ2.root");
+  mcPath.push_back("$WORK/data/export/common/Top/ntuple/ElEl/MC/Fall11_v2/JES_Default/vallot_TTbarTuneZ2.root");
+  mcPath.push_back("$WORK/data/export/common/Top/ntuple/MuMu/MC/Fall11_v2/JES_Default/vallot_TTbarTuneZ2.root");
 
   //measured mc distribution after final cut
   //mePath.push_back("$WORK/data/export/common/Top/ntuple/MuEl/MC/Summer11_new/vallot_TTbarPowheg.root");
@@ -56,35 +62,26 @@ void preUnfolding(){
   //rdPath.push_back("/data/export/common/Top/finalHisto/v6/MuEl.root");
   //rdPath.push_back("/data/export/common/Top/finalHisto/v6/ElEl.root");
   //rdPath.push_back("/data/export/common/Top/finalHisto/v6/MuMu.root");
-  //rdPath.push_back("$WORK/data/export/common/Top/finalHisto/2011full/v3/MuEl.root");
-  //rdPath.push_back("$WORK/data/export/common/Top/finalHisto/2011full/v3/ElEl.root");
-  //rdPath.push_back("$WORK/data/export/common/Top/finalHisto/2011full/v3/MuMu.root");
+  rdPath.push_back("$WORK/data/export/common/Top/finalHisto/2011full/v2/MuEl.root");
+  rdPath.push_back("$WORK/data/export/common/Top/finalHisto/2011full/v2/ElEl.root");
+  rdPath.push_back("$WORK/data/export/common/Top/finalHisto/2011full/v2/MuMu.root");
 
-  rdPath.push_back("/afs/cern.ch/work/t/tjkim/public/store/top/TOP11013/TOP11013_12072012/MuEl/MuEl.root");
-  rdPath.push_back("/afs/cern.ch/work/t/tjkim/public/store/top/TOP11013/TOP11013_12072012/ElEl/ElEl.root");
-  rdPath.push_back("/afs/cern.ch/work/t/tjkim/public/store/top/TOP11013/TOP11013_12072012/MuMu/MuMu.root");
-
-  //const std::string cutStep = "Step_7";
-  const std::string cutStep = "Step_8";
-  double lumi = Lumi2011;
-  double ttbarX = X_TTbar_7TeV;
+  const std::string cutStep = "Step_7";
+  double lumi = 4982;
+  double ttbarX = 161.9;
   double powhegX = ttbarX * 0.11; //branching ratio as this is dilepton decay mode only
   bool split = false;//use full statistics if it is false
-  //string recon = "vsum";
-  string recon = "kin";
-  string variable = "kinMAlt";
+  string recon = "vsum";
 
   //response matrix
   cout << "producing repsonse matrix..." << endl;
-  //TH2F * h2ResponseM = getResponseM(mcPath, rdPath, cutStep,  "ttbar.M()", decayMode, split ,recon);
-  TH2F * h2ResponseM = getResponseM(mcPath, rdPath, cutStep,  "kinttbarM", decayMode, split ,recon);
+  TH2F * h2ResponseM = getResponseM(mcPath, rdPath, cutStep,  "ttbar.M()", decayMode, split ,recon);
   
   //after final selection
   cout << "producing reconstructed level distributions..." << endl;
-  TH1F * hData = getMeasuredHisto(rdPath, cutStep, variable, recon);  //real data
-  //TH1F * hData = getMeasuredHisto(rdPath, cutStep, "vsumMAlt", recon);  //real data
-  //TH1F * hDataPseudo = getMeasuredHistoPseudo(mcPath, rdPath, cutStep, "ttbar.M()", decayMode, lumi, ttbarX, recon+"_MadGraph"); //pseudo data
-  //TH1F * hDataPseudoWeighted = getMeasuredHistoPseudo(mcPath, rdPath, cutStep, "ttbar.M()", decayMode, lumi, ttbarX, recon+"_MadGraph_Weighted", "1.0+(genttbarM-450)*0.005"); //pseudo data
+  TH1F * hData = getMeasuredHisto(rdPath, cutStep, "vsumMAlt", recon);  //real data
+  TH1F * hDataPseudo = getMeasuredHistoPseudo(mcPath, rdPath, cutStep, "ttbar.M()", decayMode, lumi, ttbarX, recon+"_MadGraph"); //pseudo data
+  TH1F * hDataPseudoWeighted = getMeasuredHistoPseudo(mcPath, rdPath, cutStep, "ttbar.M()", decayMode, lumi, ttbarX, recon+"_MadGraph_Weighted", "1.0+(genttbarM-450)*0.005"); //pseudo data
   //TH1F * hDataPseudoPowheg = getMeasuredHistoPseudo(mePath, rdPath, cutStep, "ttbar.M()", decayMode, lumi, powhegX, recon+"_Powheg"); //pseudo data
   //TH1F * hDataPseudoPowhegPythia = getMeasuredHistoPseudo(mePath2, rdPath, cutStep, "ttbar.M()", decayMode, lumi, powhegX, recon+"_PowhegPythia"); //pseudo data
   //TH1F * hDataPseudoPowhegHerwig = getMeasuredHistoPseudo(mePath3, rdPath, cutStep, "ttbar.M()", decayMode, lumi, powhegX, recon+"_PowhegHerwig"); //pseudo data
@@ -92,7 +89,7 @@ void preUnfolding(){
   //truth level after final selection
   cout << "producing truth level plots before correcting acceptance..." << endl;
   TH1F * hGenDist = getGenDistHisto(mcPath, rdPath, cutStep, decayMode, lumi, ttbarX, split, "MadGraph");
-  //TH1F * hGenDistWeighted = getGenDistHisto(mcPath, rdPath, cutStep, decayMode, lumi, ttbarX, split, "MadGraph_Weighted", "1.0+(genttbarM-450)*0.005");
+  TH1F * hGenDistWeighted = getGenDistHisto(mcPath, rdPath, cutStep, decayMode, lumi, ttbarX, split, "MadGraph_Weighted", "1.0+(genttbarM-450)*0.005");
   //TH1F * hGenDistPowheg = getGenDistHisto(mePath, rdPath, cutStep, decayMode, lumi, powhegX, split, "Powheg");
 
   TFile* f = TFile::Open("preUnfolding.root", "recreate");
@@ -103,14 +100,14 @@ void preUnfolding(){
   hData->Write();
 
 //Different MC sample for pseudo data
-  //hDataPseudo->Write();
-  //hDataPseudoWeighted->Write();
+  hDataPseudo->Write();
+  hDataPseudoWeighted->Write();
   //hDataPseudoPowheg->Write();
   //hDataPseudoPowhegPythia->Write();
   //hDataPseudoPowhegHerwig->Write();
 
   hGenDist->Write();
-  //hGenDistWeighted->Write();
+  hGenDistWeighted->Write();
   //hGenDistPowheg->Write();
 
   f->Write();  
