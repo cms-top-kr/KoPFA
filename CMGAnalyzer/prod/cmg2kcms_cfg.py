@@ -19,10 +19,10 @@ process.load("KoPFA.CMGAnalyzer.finalLeptonProducer_cfi")
 process.load("KoPFA.CMGAnalyzer.cmgElectronAnalyzer_cfi")
 process.load("KoPFA.CMGAnalyzer.cmgMuonAnalyzer_cfi")
 process.load("KoPFA.CMGAnalyzer.ZFilter_cfi")
-process.load("KoPFA.TTbar2b.ttbar2bFilter_cfi")
+process.load("KoPFA.CMGAnalyzer.ttbar2bFilter_cfi")
 from KoPFA.CommonTools.PileUpWeight_cff import *
 
-runOnMC = True
+runOnMC = True 
 runOn2012 = True
 
 #Data
@@ -43,7 +43,7 @@ process.source = cms.Source("PoolSource",
 )
 
 from CMGTools.Common.Tools.applyJSON_cff import applyJSON
-json = '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions12/8TeV/Prompt/Cert_190456-203002_8TeV_PromptReco_Collisions12_JSON_v2.txt'
+json = 'Cert_8TeV_Run2012ABCD_Golden_JSON.txt'
 if not runOnMC:
     applyJSON(process, json )
 
