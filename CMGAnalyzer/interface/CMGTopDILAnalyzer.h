@@ -13,7 +13,7 @@
 //
 // Original Author:  Tae Jeong Kim,40 R-A32,+41227678602,
 //         Created:  Fri Jun  4 17:19:29 CEST 2010
-// $Id: CMGTopDILAnalyzer.h,v 1.19 2013/02/07 16:56:02 tjkim Exp $
+// $Id: CMGTopDILAnalyzer.h,v 1.20 2013/02/07 21:28:12 tjkim Exp $
 //
 //
 
@@ -439,21 +439,23 @@ class CMGTopDILAnalyzer : public edm::EDFilter {
 
       int jetfromtop = 0;
 
-      for (reco::GenParticleCollection::const_iterator mcIter=genParticles_->begin(); mcIter != genParticles_->end(); mcIter++ ) {
-        int genId = mcIter->pdgId();
-        const reco::GenParticle& p = *mcIter;
+      if( !isRealData){
+        for (reco::GenParticleCollection::const_iterator mcIter=genParticles_->begin(); mcIter != genParticles_->end(); mcIter++ ) {
+          int genId = mcIter->pdgId();
+          const reco::GenParticle& p = *mcIter;
 
-        if(abs(genId) != 5 ) continue;
+          if(abs(genId) != 5 ) continue;
 
-        if(isLast(p, 5) ){
-          double dRval = deltaR(jit->eta(), jit->phi(), p.eta(), p.phi());
-          if( dRval < 0.5 ) {
-            bool topdecay = isFromtop( p );
-            if( topdecay ) jetfromtop = 1; 
-            break; 
+          if(isLast(p, 5) ){
+            double dRval = deltaR(jit->eta(), jit->phi(), p.eta(), p.phi());
+            if( dRval < 0.5 ) {
+              bool topdecay = isFromtop( p );
+              if( topdecay ) jetfromtop = 1; 
+              break; 
+            }
           }
         }
-      }
+      } 
 
       int flavor = jit->partonFlavour();
 
