@@ -15,9 +15,9 @@ input = sys.argv[1]
 mclist = ["ZJets","ZJets10To50","WJetsToLNu", "WW", "WZ", "ZZ","TTbarTuneZ2"]
 mclist += ["SingleToptW","SingleTopBartW","TTH","TTbarFullLepMGDecays"]
 
-rdlist = ["Run2012AMuMu","Run2012BMuMu","Run2012CMuMu"]
-rdlist += ["Run2012AElEl","Run2012BElEl","Run2012CElEl"]
-rdlist += ["Run2012AMuEl","Run2012BMuEl","Run2012CMuEl"]
+rdlist = ["Run2012AMuMu","Run2012BMuMu","Run2012CMuMu","Run2012DMuMu"]
+rdlist += ["Run2012AElEl","Run2012BElEl","Run2012CElEl","Run2012DElEl"]
+rdlist += ["Run2012AMuEl","Run2012BMuEl","Run2012CMuEl","Run2012DMuEl"]
 
 samplePath = {}
 samplePath["ZJets"]           ="KoPFA.CommonTools.Sources.CMG.V5_10_0.Summer12.cmgTuple_ZJets_cff"
@@ -43,7 +43,9 @@ samplePath["Run2012BMuEl"]    ="KoPFA.CommonTools.Sources.CMG.V5_10_0.Run2012.cm
 samplePath["Run2012CMuMu"]    ="KoPFA.CommonTools.Sources.CMG.V5_10_0.Run2012.cmgTuple_Run2012CMuMu_cff"
 samplePath["Run2012CElEl"]    ="KoPFA.CommonTools.Sources.CMG.V5_10_0.Run2012.cmgTuple_Run2012CElEl_cff"
 samplePath["Run2012CMuEl"]    ="KoPFA.CommonTools.Sources.CMG.V5_10_0.Run2012.cmgTuple_Run2012CMuEl_cff"
-
+samplePath["Run2012DMuMu"]    ="KoPFA.CommonTools.Sources.CMG.V5_10_0.Run2012.cmgTuple_Run2012DMuMu_cff"
+samplePath["Run2012DElEl"]    ="KoPFA.CommonTools.Sources.CMG.V5_10_0.Run2012.cmgTuple_Run2012DElEl_cff"
+samplePath["Run2012DMuEl"]    ="KoPFA.CommonTools.Sources.CMG.V5_10_0.Run2012.cmgTuple_Run2012DMuEl_cff"
 
 
 def applyFilter(sample, process):
