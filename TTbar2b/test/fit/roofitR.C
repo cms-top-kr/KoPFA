@@ -1,34 +1,46 @@
 void roofitR(){
-
-  bool combine = false;
-  int nbinsch = 5;
-
-  //CSVM efficiency ratio
-  double eR = 0.47;
-
+  
   using namespace RooFit ;
 
-  TString path = "../TTBB_13Jan2013_CSVM";
-  TString fileName[3];
+  bool combine = false;
+  int nbinsch = 20;
+  const int ndecay = 3;
+  const int nobj = 2;
+
+  //CSVM efficiency ratio
+  //double eR = 0.47;
+  //CSVM efficiency ratio
+  double eR = 0.382948;
+  //double eR = 0.750311; //nJet30 >= 4
+ 
+  const int ndecay = 3;
+  const int nobj = 2;
+
+  TString path = "../TTBB_10Feb_CSVTdwlight";
+  TString fileName[ndecay];
   fileName[0] = path+"/MuMu/MuMu.root";
   fileName[1] = path+"/MuEl/MuEl.root";
   fileName[2] = path+"/ElEl/ElEl.root";
+  TString variable[nobj];
+  //variable[0] = "nbJet30_CSVT";
+  variable[0] = "addjet1_bDisCSV";
+  variable[1] = "addjet2_bDisCSV";
 
-  TH1F * hdata[3];
-  TH1F * httbb[3];
-  TH1F * httll[3];
-  TH1F * httcc[3];
-  TH1F * httothers[3];
-  TH1F * hWl[3];
-  TH1F * hVV[3];
-  TH1F * hSingleTop[3];
-  TH1F * hDYll[3];
+  TH1F * hdata[ndecay][nobj];
+  TH1F * httbb[ndecay][nobj];
+  TH1F * httll[ndecay][nobj];
+  TH1F * httcc[ndecay][nobj];
+  TH1F * httothers[ndecay][nobj];
+  TH1F * hWl[ndecay][nobj];
+  TH1F * hVV[ndecay][nobj];
+  TH1F * hSingleTop[ndecay][nobj];
+  TH1F * hDYll[ndecay][nobj];
 
   //combine background
-  TH1F * hbkg[3];
-  TH1F * hdbg[3];
+  TH1F * hbkg[ndecay][nobj];
+  TH1F * hdbg[ndecay][nobj];
 
-  int nbins = 3*nbinsch;
+  int nbins = 3*nbinsch*nobj;
   TH1F * h_ttbb = new TH1F("h_ttbb","h_ttbb", nbins , 0, nbins);
   TH1F * h_ttcc = new TH1F("h_ttcc","h_ttcc", nbins , 0, nbins);
   TH1F * h_ttll = new TH1F("h_ttll","h_ttll", nbins , 0, nbins);
@@ -36,50 +48,51 @@ void roofitR(){
   TH1F * h_dat = new TH1F("h_dat","h_dat",nbins , 0, nbins);
   TH1F * h_bkg = new TH1F("h_bkg","h_bkg",nbins , 0, nbins);
   TH1F * h_dbg = new TH1F("h_dbg","h_dbg",nbins , 0, nbins);
-
-  for(int i=0; i < 3; i++){
-
+  
+  for(int i=0; i < ndecay; i++){
     TFile * f = new TFile(fileName[i]);
-    hdata[i]      = (TH1F*) f->Get("Step_1/hData_Step_1_nbJet30_CSVM");
-    httbb[i]      = (TH1F*) f->Get("Step_1/hMCSig_TTbarbb_Step_1_nbJet30_CSVM");
-    httll[i]      = (TH1F*) f->Get("Step_1/hMC_TTbarll_Step_1_nbJet30_CSVM");
-    httcc[i]      = (TH1F*) f->Get("Step_1/hMC_TTbarcc_Step_1_nbJet30_CSVM");
-    httothers[i]  = (TH1F*) f->Get("Step_1/hMC_TTbarOthers_Step_1_nbJet30_CSVM");
-    hWl[i]        = (TH1F*) f->Get("Step_1/hMC_Wl_Step_1_nbJet30_CSVM");
-    hVV[i]        = (TH1F*) f->Get("Step_1/hMC_VV_Step_1_nbJet30_CSVM");
-    hSingleTop[i] = (TH1F*) f->Get("Step_1/hMC_SingleTop_Step_1_nbJet30_CSVM");
-    hDYll[i]      = (TH1F*) f->Get("Step_1/hMC_DYll_Step_1_nbJet30_CSVM"); 
+    for(int j=0; j < nobj ; j++){
+      hdata[i][j]      = (TH1F*) f->Get(Form("Step_5/hData_Step_5_%s", variable[j].Data()));
+      httbb[i][j]      = (TH1F*) f->Get(Form("Step_5/hMCSig_TTbarbb_Step_5_%s", variable[j].Data()));
+      httll[i][j]      = (TH1F*) f->Get(Form("Step_5/hMC_TTbarll_Step_5_%s", variable[j].Data()));
+      httcc[i][j]      = (TH1F*) f->Get(Form("Step_5/hMC_TTbarcc_Step_5_%s", variable[j].Data()));
+      httothers[i][j]  = (TH1F*) f->Get(Form("Step_5/hMC_TTbarOthers_Step_5_%s", variable[j].Data()));
+      hWl[i][j]        = (TH1F*) f->Get(Form("Step_5/hMC_Wl_Step_5_%s", variable[j].Data()));
+      hVV[i][j]        = (TH1F*) f->Get(Form("Step_5/hMC_VV_Step_5_%s", variable[j].Data()));
+      hSingleTop[i][j] = (TH1F*) f->Get(Form("Step_5/hMC_SingleTop_Step_5_%s", variable[j].Data()));
+      hDYll[i][j]      = (TH1F*) f->Get(Form("Step_5/hMC_DYll_Step_5_%s", variable[j].Data())); 
+      //MC background
+      TH1F * htmpbkg = httothers[i][j]->Clone();
+      htmpbkg->Add(hWl[i][j]);
+      htmpbkg->Add(hVV[i][j]);
+      htmpbkg->Add(hSingleTop[i][j]);
+      //htmpbkg->Add(hDYll[i][j]);
+      hbkg[i][j] = htmpbkg;
+      //data driven background
+      TH1F * htmpdbg = hDYll[i][j]->Clone();
+      hdbg[i][j] = htmpdbg;
 
-    //MC background
-    TH1F * htmpbkg = httothers[i]->Clone();
-    htmpbkg->Add(hWl[i]);
-    htmpbkg->Add(hVV[i]);
-    htmpbkg->Add(hSingleTop[i]);
-    hbkg[i] = htmpbkg;
-    //data driven background
-    TH1F * htmpdbg = hDYll[i]->Clone();
-    hdbg[i] = htmpdbg;
+      int Nbins = hdata[i][j]->GetNbinsX();
 
-    int Nbins = hdata[i]->GetNbinsX();
- 
-    for(int k = 1; k <= Nbins; k++){
-      int nb = k + i*nbinsch;
-      if( k < Nbins || combine == false){
-        h_ttbb->SetBinContent(nb, httbb[i]->GetBinContent(k) );
-        h_ttcc->SetBinContent(nb, httcc[i]->GetBinContent(k) );
-        h_ttll->SetBinContent(nb, httll[i]->GetBinContent(k) );
-        h_ttccll->SetBinContent(nb, httcc[i]->GetBinContent(k) + httll[i]->GetBinContent(k) );
-        h_dat->SetBinContent(nb, hdata[i]->GetBinContent(k) );
-        h_bkg->SetBinContent(nb, hbkg[i]->GetBinContent(k) );
-        h_dbg->SetBinContent(nb, hdbg[i]->GetBinContent(k) );
-      }else if( k == Nbins && combine == true){
-        h_ttbb->AddBinContent(nb-1, httbb[i]->GetBinContent(k) );
-        h_ttcc->AddBinContent(nb-1, httcc[i]->GetBinContent(k) );
-        h_ttll->AddBinContent(nb-1, httll[i]->GetBinContent(k) );
-        h_ttccll->AddBinContent(nb-1, httcc[i]->GetBinContent(k) + httll[i]->GetBinContent(k) );
-        h_dat->AddBinContent(nb-1, hdata[i]->GetBinContent(k) );
-        h_bkg->AddBinContent(nb-1, hbkg[i]->GetBinContent(k) );
-        h_dbg->AddBinContent(nb-1, hdbg[i]->GetBinContent(k) );
+      for(int k = 1; k <= Nbins; k++){
+        int nb = k + i*nbinsch + j*3*nbinsch;
+        if( k < Nbins || combine == false){
+          h_ttbb->SetBinContent(nb, httbb[i][j]->GetBinContent(k) );
+          h_ttcc->SetBinContent(nb, httcc[i][j]->GetBinContent(k) );
+          h_ttll->SetBinContent(nb, httll[i][j]->GetBinContent(k) );
+          h_ttccll->SetBinContent(nb, httcc[i][j]->GetBinContent(k) + httll[i][j]->GetBinContent(k) );
+          h_dat->SetBinContent(nb, hdata[i][j]->GetBinContent(k) );
+          h_bkg->SetBinContent(nb, hbkg[i][j]->GetBinContent(k) );
+          h_dbg->SetBinContent(nb, hdbg[i][j]->GetBinContent(k) );
+        }else if( k == Nbins && combine == true){
+          h_ttbb->AddBinContent(nb-1, httbb[i][j]->GetBinContent(k) );
+          h_ttcc->AddBinContent(nb-1, httcc[i][j]->GetBinContent(k) );
+          h_ttll->AddBinContent(nb-1, httll[i][j]->GetBinContent(k) );
+          h_ttccll->AddBinContent(nb-1, httcc[i][j]->GetBinContent(k) + httll[i][j]->GetBinContent(k) );
+          h_dat->AddBinContent(nb-1, hdata[i][j]->GetBinContent(k) );
+          h_bkg->AddBinContent(nb-1, hbkg[i][j]->GetBinContent(k) );
+          h_dbg->AddBinContent(nb-1, hdbg[i][j]->GetBinContent(k) );
+        }
       }
     }
 
@@ -95,8 +108,7 @@ void roofitR(){
   double rbkg    =  (nbkg)/(nttbb + nttcc + nttll + nbkg);
   cout << "ttbb= " << nttbb << " ttcc= " << nttcc << " ttll= " << nttll << " R(ttbb/ttjj)= " <<  rsig << "  nbkg= " << nbkg << " fbkg= " << rbkg << " total MC = " << nMCtotal << " data-driven bkg= " << ndbg << endl;
  
-  RooRealVar x("x","x",0,15) ;
-
+  RooRealVar x("x","x",0, nbins) ;
   RooDataHist data("data","data",x,h_dat) ; 
   RooDataHist ttbb("ttbb","ttbb",x,h_ttbb) ; 
   RooDataHist ttcc("ttcc","ttcc",x,h_ttcc) ; 
@@ -114,10 +126,13 @@ void roofitR(){
 
   RooRealVar R("R","R",0.1,0.,1.);
   RooRealVar effR("effR","acceptance ratio",eR,eR,eR);
+  //RooRealVar effR("effR","acceptance ratio",0.38,0.0,1.0);
   RooFormulaVar fsig("fsig","fraction of signal","R/effR",RooArgList(R,effR));
   RooRealVar fbkg("fbkg","fraction of background", rbkg , rbkg, rbkg) ;
-  RooRealVar nMC("nMC","number of MC events", 1000 , 500, 5000) ;
+  //RooRealVar fbkg("fbkg","fraction of background", 0.1 , 0, 1) ;
+  RooRealVar nMC("nMC","number of MC events", 1000 , 500, 20000) ;
   RooRealVar nDataBkg("nDataBkg","number of data-driven events", ndbg , ndbg, ndbg) ;
+  //RooRealVar nDataBkg("nDataBkg","number of data-driven events", 10 , 0, 1000) ;
 
   // Sum the composite signal and background 
   RooAddPdf model("model", "R*sig+(1-R)*bkg",RooArgList( histpdf_ttbb, histpdf_ttccll), RooArgList(fsig));
@@ -129,7 +144,7 @@ void roofitR(){
   TCanvas * c = new TCanvas("c","c",1);
   RooPlot* xframe = x.frame() ; 
   data.plotOn(xframe); 
-  model3.paramOn(xframe, Layout(0.6,0.9,0.9) );
+  model3.paramOn(xframe, Layout(0.65,0.9,0.9) );
   model3.plotOn(xframe);
   xframe->Draw();   
 
