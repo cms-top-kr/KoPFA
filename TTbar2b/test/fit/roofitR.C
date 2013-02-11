@@ -3,28 +3,28 @@ void roofitR(){
   using namespace RooFit ;
 
   bool combine = false;
-  int nbinsch = 20;
-  const int ndecay = 3;
-  const int nobj = 2;
+  int nbinsch = 5; //number of bins for each histograms. for example, b-jets multiplicity = 5 , b-dscriminator = 20
+  const int ndecay = 3; // mm, em, ee
+  const int nobj = 2; // 1: b-jet mulitplicity , 2 :jet1, jet2 
 
   //CSVM efficiency ratio
-  //double eR = 0.47;
+  double eR = 0.473795;
   //CSVM efficiency ratio
-  double eR = 0.382948;
+  //double eR = 0.382948;
   //double eR = 0.750311; //nJet30 >= 4
  
   const int ndecay = 3;
-  const int nobj = 2;
+  const int nobj = 1;
 
-  TString path = "../TTBB_10Feb_CSVTdwlight";
+  TString path = "../TTBB_10Feb_CSVT";
   TString fileName[ndecay];
   fileName[0] = path+"/MuMu/MuMu.root";
   fileName[1] = path+"/MuEl/MuEl.root";
   fileName[2] = path+"/ElEl/ElEl.root";
   TString variable[nobj];
-  //variable[0] = "nbJet30_CSVT";
-  variable[0] = "addjet1_bDisCSV";
-  variable[1] = "addjet2_bDisCSV";
+  variable[0] = "nbJet30_CSVT";
+  //variable[0] = "addjet1_bDisCSV";
+  //variable[1] = "addjet2_bDisCSV";
 
   TH1F * hdata[ndecay][nobj];
   TH1F * httbb[ndecay][nobj];
