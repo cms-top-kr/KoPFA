@@ -3,18 +3,15 @@ void roofitR(){
   using namespace RooFit ;
 
   bool combine = false;
-  int nbinsch = 5; //number of bins for each histograms. for example, b-jets multiplicity = 5 , b-dscriminator = 20
+  int nbinsch = 50; //number of bins for each histograms. for example, b-jets multiplicity = 5 , b-dscriminatorCSV = 20, b-discriminatorJP = 50
   const int ndecay = 3; // mm, em, ee
   const int nobj = 2; // 1: b-jet mulitplicity , 2 :jet1, jet2 
 
   //CSVM efficiency ratio
-  double eR = 0.473795;
-  //CSVM efficiency ratio
-  //double eR = 0.382948;
+  //double eR = 0.473795;
+  //CSVT efficiency ratio
+  double eR = 0.382948;
   //double eR = 0.750311; //nJet30 >= 4
- 
-  const int ndecay = 3;
-  const int nobj = 1;
 
   TString path = "../TTBB_10Feb_CSVT";
   TString fileName[ndecay];
@@ -22,9 +19,13 @@ void roofitR(){
   fileName[1] = path+"/MuEl/MuEl.root";
   fileName[2] = path+"/ElEl/ElEl.root";
   TString variable[nobj];
-  variable[0] = "nbJet30_CSVT";
+  //variable[0] = "nbJet30_CSVT";
   //variable[0] = "addjet1_bDisCSV";
   //variable[1] = "addjet2_bDisCSV";
+  variable[0] = "addjet1_bDisJP";
+  variable[1] = "addjet2_bDisJP";
+
+
 
   TH1F * hdata[ndecay][nobj];
   TH1F * httbb[ndecay][nobj];
@@ -136,8 +137,8 @@ void roofitR(){
 
   // Sum the composite signal and background 
   RooAddPdf model("model", "R*sig+(1-R)*bkg",RooArgList( histpdf_ttbb, histpdf_ttccll), RooArgList(fsig));
-  RooAddPdf model2("model2","(1-fbkg)*(R*sig+(1-R)*bkg)+fbkg*MCbkg",RooArgList(histpdf_bkg, model), fbkg) ;
-  RooAddPdf model3("model3","nMC*(1-fbkg)*(R*sig+(1-R)*bkg)+fbkg*MCbkg+ndbkg",RooArgList(model2, histpdf_dbg), RooArgList(nMC,nDataBkg)) ;
+  RooAddPdf model2("model2","(1-fbkg)*(R*sig+(1-R)*bkg)+fbkg*MC",RooArgList(histpdf_bkg, model), fbkg) ;
+  RooAddPdf model3("model3","nMC*(1-fbkg)*(R*sig+(1-R)*bkg)+fbkg*MC+ndbkg",RooArgList(model2, histpdf_dbg), RooArgList(nMC,nDataBkg)) ;
 
   RooFitResult* fitResult = model3.fitTo( data );
 
