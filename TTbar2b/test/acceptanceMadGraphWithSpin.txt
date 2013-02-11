@@ -1,0 +1,327 @@
+TTbarFullLepMGDecays
+nTT= 1.63351e+07 nTTDIL= 1.63351e+07 nTTJJ= 915075 nTTBB= 13956 
+CUT: S1
+total= 1.63351e+07 den(TTJJ)= 915075 den(TTBB)= 13956
+Ratio (nTTDIL/nTT)   = 1
+Ratio (nTTDILVIS/nTTDIL)   = 0.213643
+Ratio (nTTJJ/nTTDILVIS)   = 0.262209
+Ratio (nTTBB/nTTJJ) = 0.0152512
+Ratio (in reco nTTBB/nTTKK) = 0.0152228
+acceptance preselection (ttjj)   = 0.851594
+acceptance preselection (ttbb)   = 0.871955
+acceptance postselection (ttjj)   = 0.844326(657960/779272)
+acceptance postselection (ttbb)   = 0.823075(10016/12169)
+acceptance (ttjj)   = 0.719023
+acceptance (ttbb)   = 0.717684
+acceptance (ttcc)   = 0.710521(23995/33771)
+Ratio (Attjj/Attbb) = 1.00187
+total= 1.63351e+07 den(TTJJ)= 915075 den(TTBB)= 13956
+CUT: S2
+total= 1.63351e+07 den(TTJJ)= 915075 den(TTBB)= 13956
+Ratio (nTTDIL/nTT)   = 1
+Ratio (nTTDILVIS/nTTDIL)   = 0.213643
+Ratio (nTTJJ/nTTDILVIS)   = 0.262209
+Ratio (nTTBB/nTTJJ) = 0.0152512
+Ratio (in reco nTTBB/nTTKK) = 0.0152627
+acceptance preselection (ttjj)   = 0.851594
+acceptance preselection (ttbb)   = 0.871955
+acceptance postselection (ttjj)   = 0.749469(584040/779272)
+acceptance postselection (ttbb)   = 0.732517(8914/12169)
+acceptance (ttjj)   = 0.638243
+acceptance (ttbb)   = 0.638722
+acceptance (ttcc)   = 0.629031(21243/33771)
+Ratio (Attjj/Attbb) = 0.99925
+total= 1.63351e+07 den(TTJJ)= 915075 den(TTBB)= 13956
+CUT: S3
+total= 1.63351e+07 den(TTJJ)= 915075 den(TTBB)= 13956
+Ratio (nTTDIL/nTT)   = 1
+Ratio (nTTDILVIS/nTTDIL)   = 0.213643
+Ratio (nTTJJ/nTTDILVIS)   = 0.262209
+Ratio (nTTBB/nTTJJ) = 0.0152512
+Ratio (in reco nTTBB/nTTKK) = 0.0152351
+acceptance preselection (ttjj)   = 0.851594
+acceptance preselection (ttbb)   = 0.871955
+acceptance postselection (ttjj)   = 0.710059(553329/779272)
+acceptance postselection (ttbb)   = 0.692744(8430/12169)
+acceptance (ttjj)   = 0.604682
+acceptance (ttbb)   = 0.604041
+acceptance (ttcc)   = 0.598502(20212/33771)
+Ratio (Attjj/Attbb) = 1.00106
+total= 1.63351e+07 den(TTJJ)= 915075 den(TTBB)= 13956
+CUT: S4 (nJet30 >= 4)
+total= 1.63351e+07 den(TTJJ)= 915075 den(TTBB)= 13956
+Ratio (nTTDIL/nTT)   = 1
+Ratio (nTTDILVIS/nTTDIL)   = 0.213643
+Ratio (nTTJJ/nTTDILVIS)   = 0.262209
+Ratio (nTTBB/nTTJJ) = 0.0152512
+Ratio (in reco nTTBB/nTTKK) = 0.0203265
+acceptance preselection (ttjj)   = 0.851594
+acceptance preselection (ttbb)   = 0.871955
+acceptance postselection (ttjj)   = 0.342237(266696/779272)
+acceptance postselection (ttbb)   = 0.445476(5421/12169)
+acceptance (ttjj)   = 0.291447
+acceptance (ttbb)   = 0.388435
+acceptance (ttcc)   = 0.373575(12616/33771)
+Ratio (Attjj/Attbb) = 0.750311
+total= 1.63351e+07 den(TTJJ)= 915075 den(TTBB)= 13956
+CUT: S5 (tight CSV >= 2)
+total= 1.63351e+07 den(TTJJ)= 915075 den(TTBB)= 13956
+Ratio (nTTDIL/nTT)   = 1
+Ratio (nTTDILVIS/nTTDIL)   = 0.213643
+Ratio (nTTJJ/nTTDILVIS)   = 0.262209
+Ratio (nTTBB/nTTJJ) = 0.0152512
+Ratio (in reco nTTBB/nTTKK) = 0.0398258
+acceptance preselection (ttjj)   = 0.851594
+acceptance preselection (ttbb)   = 0.871955
+acceptance postselection (ttjj)   = 0.0848715(66138/779272)
+acceptance postselection (ttbb)   = 0.216452(2634/12169)
+acceptance (ttjj)   = 0.072276
+acceptance (ttbb)   = 0.188736
+acceptance (ttcc)   = 0.0922093(3114/33771)
+Ratio (Attjj/Attbb) = 0.382948
+total= 1.63351e+07 den(TTJJ)= 915075 den(TTBB)= 13956
+CUT: S5 (medium CSV >= 2)
+total= 1.63351e+07 den(TTJJ)= 915075 den(TTBB)= 13956
+Ratio (nTTDIL/nTT)   = 1
+Ratio (nTTDILVIS/nTTDIL)   = 0.213643
+Ratio (nTTJJ/nTTDILVIS)   = 0.262209
+Ratio (nTTBB/nTTJJ) = 0.0152512
+Ratio (in reco nTTBB/nTTKK) = 0.0321895
+acceptance preselection (ttjj)   = 0.851594
+acceptance preselection (ttbb)   = 0.871955
+acceptance postselection (ttjj)   = 0.152127(118548/779272)
+acceptance postselection (ttbb)   = 0.313584(3816/12169)
+acceptance (ttjj)   = 0.12955
+acceptance (ttbb)   = 0.273431
+acceptance (ttcc)   = 0.179118(6049/33771)
+Ratio (Attjj/Attbb) = 0.473795
+total= 1.63351e+07 den(TTJJ)= 915075 den(TTBB)= 13956
+CUT: S5 (medium CSV == 2)
+total= 1.63351e+07 den(TTJJ)= 915075 den(TTBB)= 13956
+Ratio (nTTDIL/nTT)   = 1
+Ratio (nTTDILVIS/nTTDIL)   = 0.213643
+Ratio (nTTJJ/nTTDILVIS)   = 0.262209
+Ratio (nTTBB/nTTJJ) = 0.0152512
+Ratio (in reco nTTBB/nTTKK) = 0.0183676
+acceptance preselection (ttjj)   = 0.851594
+acceptance preselection (ttbb)   = 0.871955
+acceptance postselection (ttjj)   = 0.140498(109486/779272)
+acceptance postselection (ttbb)   = 0.165256(2011/12169)
+acceptance (ttjj)   = 0.119647
+acceptance (ttbb)   = 0.144096
+acceptance (ttcc)   = 0.148174(5004/33771)
+Ratio (Attjj/Attbb) = 0.83033
+total= 1.63351e+07 den(TTJJ)= 915075 den(TTBB)= 13956
+nTT= 1.63351e+07 nTTDIL= 1.63351e+07 nTTJJ= 915075 nTTBB= 13956 
+CUT: S7_s1 (medium CSV == 2 && jet3 > 0)
+total= 1.63351e+07 den(TTJJ)= 915075 den(TTBB)= 13956
+Ratio (nTTDIL/nTT)   = 1
+Ratio (nTTDILVIS/nTTDIL)   = 0.213643
+Ratio (nTTJJ/nTTDILVIS)   = 0.262209
+Ratio (nTTBB/nTTJJ) = 0.0152512
+Ratio (in reco nTTBB/nTTKK) = 0.0382258
+acceptance preselection (ttjj)   = 0.851594
+acceptance preselection (ttbb)   = 0.871955
+acceptance postselection (ttjj)   = 0.00795614(6200/779272)
+acceptance postselection (ttbb)   = 0.0194757(237/12169)
+acceptance (ttjj)   = 0.0067754
+acceptance (ttbb)   = 0.0169819
+acceptance (ttcc)   = 0.0108969(368/33771)
+Ratio (Attjj/Attbb) = 0.398977
+total= 1.63351e+07 den(TTJJ)= 915075 den(TTBB)= 13956
+CUT: S7_s2 (medium CSV == 2 && jet4 > 0)
+total= 1.63351e+07 den(TTJJ)= 915075 den(TTBB)= 13956
+Ratio (nTTDIL/nTT)   = 1
+Ratio (nTTDILVIS/nTTDIL)   = 0.213643
+Ratio (nTTJJ/nTTDILVIS)   = 0.262209
+Ratio (nTTBB/nTTJJ) = 0.0152512
+Ratio (in reco nTTBB/nTTKK) = 0.0453497
+acceptance preselection (ttjj)   = 0.851594
+acceptance preselection (ttbb)   = 0.871955
+acceptance postselection (ttjj)   = 0.00667803(5204/779272)
+acceptance postselection (ttbb)   = 0.0193935(236/12169)
+acceptance (ttjj)   = 0.00568697
+acceptance (ttbb)   = 0.0169103
+acceptance (ttcc)   = 0.0109561(370/33771)
+Ratio (Attjj/Attbb) = 0.336302
+total= 1.63351e+07 den(TTJJ)= 915075 den(TTBB)= 13956
+CUT: S6 (medium CSV > 2)
+total= 1.63351e+07 den(TTJJ)= 915075 den(TTBB)= 13956
+Ratio (nTTDIL/nTT)   = 1
+Ratio (nTTDILVIS/nTTDIL)   = 0.213643
+Ratio (nTTJJ/nTTDILVIS)   = 0.262209
+Ratio (nTTBB/nTTJJ) = 0.0152512
+Ratio (in reco nTTBB/nTTKK) = 0.199183
+acceptance preselection (ttjj)   = 0.851594
+acceptance preselection (ttbb)   = 0.871955
+acceptance postselection (ttjj)   = 0.0116288(9062/779272)
+acceptance postselection (ttbb)   = 0.148328(1805/12169)
+acceptance (ttjj)   = 0.00990301
+acceptance (ttbb)   = 0.129335
+acceptance (ttcc)   = 0.0309437(1045/33771)
+Ratio (Attjj/Attbb) = 0.0765687
+total= 1.63351e+07 den(TTJJ)= 915075 den(TTBB)= 13956
+CUT: S8_s1 (medium CSV > 2 && jet3 > 0)
+total= 1.63351e+07 den(TTJJ)= 915075 den(TTBB)= 13956
+Ratio (nTTDIL/nTT)   = 1
+Ratio (nTTDILVIS/nTTDIL)   = 0.213643
+Ratio (nTTJJ/nTTDILVIS)   = 0.262209
+Ratio (nTTBB/nTTJJ) = 0.0152512
+Ratio (in reco nTTBB/nTTKK) = 0.227224
+acceptance preselection (ttjj)   = 0.851594
+acceptance preselection (ttbb)   = 0.871955
+acceptance postselection (ttjj)   = 0.00478909(3732/779272)
+acceptance postselection (ttbb)   = 0.0696853(848/12169)
+acceptance (ttjj)   = 0.00407835
+acceptance (ttbb)   = 0.0607624
+acceptance (ttcc)   = 0.0126144(426/33771)
+Ratio (Attjj/Attbb) = 0.0671197
+total= 1.63351e+07 den(TTJJ)= 915075 den(TTBB)= 13956
+CUT: S8_s2 (medium CSV > 2 && jet4 > 0)
+total= 1.63351e+07 den(TTJJ)= 915075 den(TTBB)= 13956
+Ratio (nTTDIL/nTT)   = 1
+Ratio (nTTDILVIS/nTTDIL)   = 0.213643
+Ratio (nTTJJ/nTTDILVIS)   = 0.262209
+Ratio (nTTBB/nTTJJ) = 0.0152512
+Ratio (in reco nTTBB/nTTKK) = 0.263441
+acceptance preselection (ttjj)   = 0.851594
+acceptance preselection (ttbb)   = 0.871955
+acceptance postselection (ttjj)   = 0.004535(3534/779272)
+acceptance postselection (ttbb)   = 0.0765059(931/12169)
+acceptance (ttjj)   = 0.00386198
+acceptance (ttbb)   = 0.0667097
+acceptance (ttcc)   = 0.0132954(449/33771)
+Ratio (Attjj/Attbb) = 0.0578923
+total= 1.63351e+07 den(TTJJ)= 915075 den(TTBB)= 13956
+CUT: S5 (tight CSV == 2)
+total= 1.63351e+07 den(TTJJ)= 915075 den(TTBB)= 13956
+Ratio (nTTDIL/nTT)   = 1
+Ratio (nTTDILVIS/nTTDIL)   = 0.213643
+Ratio (nTTJJ/nTTDILVIS)   = 0.262209
+Ratio (nTTBB/nTTJJ) = 0.0152512
+Ratio (in reco nTTBB/nTTKK) = 0.0281999
+acceptance preselection (ttjj)   = 0.851594
+acceptance preselection (ttbb)   = 0.871955
+acceptance postselection (ttjj)   = 0.0819098(63830/779272)
+acceptance postselection (ttbb)   = 0.147917(1800/12169)
+acceptance (ttjj)   = 0.0697538
+acceptance (ttbb)   = 0.128977
+acceptance (ttcc)   = 0.0867016(2928/33771)
+Ratio (Attjj/Attbb) = 0.540825
+total= 1.63351e+07 den(TTJJ)= 915075 den(TTBB)= 13956
+nTT= 1.63351e+07 nTTDIL= 1.63351e+07 nTTJJ= 915075 nTTBB= 13956 
+
+CUT: S6_s1 (tight CSV == 1 && jet3 > 0)
+total= 1.63351e+07 den(TTJJ)= 915075 den(TTBB)= 13956
+Ratio (nTTDIL/nTT)   = 1
+Ratio (nTTDILVIS/nTTDIL)   = 0.213643
+Ratio (nTTJJ/nTTDILVIS)   = 0.262209
+Ratio (nTTBB/nTTJJ) = 0.0152512
+Ratio (in reco nTTBB/nTTKK) = 0.0447919
+acceptance preselection (ttjj)   = 0.851594
+acceptance preselection (ttbb)   = 0.871955
+acceptance postselection (ttjj)   = 0.00607362(4733/779272)
+acceptance postselection (ttbb)   = 0.0174213(212/12169)
+acceptance (ttjj)   = 0.00517225
+acceptance (ttbb)   = 0.0151906
+acceptance (ttcc)   = 0.0103639(350/33771)
+Ratio (Attjj/Attbb) = 0.34049
+total= 1.63351e+07 den(TTJJ)= 915075 den(TTBB)= 13956
+CUT: S6_s2 (tight CSV == 1 && jet4 > 0)
+total= 1.63351e+07 den(TTJJ)= 915075 den(TTBB)= 13956
+Ratio (nTTDIL/nTT)   = 1
+Ratio (nTTDILVIS/nTTDIL)   = 0.213643
+Ratio (nTTJJ/nTTDILVIS)   = 0.262209
+Ratio (nTTBB/nTTJJ) = 0.0152512
+Ratio (in reco nTTBB/nTTKK) = 0.0504624
+acceptance preselection (ttjj)   = 0.851594
+acceptance preselection (ttbb)   = 0.871955
+acceptance postselection (ttjj)   = 0.0048571(3785/779272)
+acceptance postselection (ttbb)   = 0.0156956(191/12169)
+acceptance (ttjj)   = 0.00413627
+acceptance (ttbb)   = 0.0136859
+acceptance (ttcc)   = 0.0103639(350/33771)
+Ratio (Attjj/Attbb) = 0.302229
+total= 1.63351e+07 den(TTJJ)= 915075 den(TTBB)= 13956
+
+CUT: S7_s1 (tight CSV == 2 && jet3 > 0)
+total= 1.63351e+07 den(TTJJ)= 915075 den(TTBB)= 13956
+Ratio (nTTDIL/nTT)   = 1
+Ratio (nTTDILVIS/nTTDIL)   = 0.213643
+Ratio (nTTJJ/nTTDILVIS)   = 0.262209
+Ratio (nTTBB/nTTJJ) = 0.0152512
+Ratio (in reco nTTBB/nTTKK) = 0.0817444
+acceptance preselection (ttjj)   = 0.851594
+acceptance preselection (ttbb)   = 0.871955
+acceptance postselection (ttjj)   = 0.00632642(4930/779272)
+acceptance postselection (ttbb)   = 0.0331169(403/12169)
+acceptance (ttjj)   = 0.00538754
+acceptance (ttbb)   = 0.0288765
+acceptance (ttcc)   = 0.01066(360/33771)
+Ratio (Attjj/Attbb) = 0.186572
+total= 1.63351e+07 den(TTJJ)= 915075 den(TTBB)= 13956
+CUT: S7_s2 (tight CSV == 2 && jet4 > 0)
+total= 1.63351e+07 den(TTJJ)= 915075 den(TTBB)= 13956
+Ratio (nTTDIL/nTT)   = 1
+Ratio (nTTDILVIS/nTTDIL)   = 0.213643
+Ratio (nTTJJ/nTTDILVIS)   = 0.262209
+Ratio (nTTBB/nTTJJ) = 0.0152512
+Ratio (in reco nTTBB/nTTKK) = 0.10029
+acceptance preselection (ttjj)   = 0.851594
+acceptance preselection (ttbb)   = 0.871955
+acceptance postselection (ttjj)   = 0.00575794(4487/779272)
+acceptance postselection (ttbb)   = 0.0369792(450/12169)
+acceptance (ttjj)   = 0.00490342
+acceptance (ttbb)   = 0.0322442
+acceptance (ttcc)   = 0.0112523(380/33771)
+Ratio (Attjj/Attbb) = 0.152071
+total= 1.63351e+07 den(TTJJ)= 915075 den(TTBB)= 13956
+CUT: S6 (tight CSV > 2)
+total= 1.63351e+07 den(TTJJ)= 915075 den(TTBB)= 13956
+Ratio (nTTDIL/nTT)   = 1
+Ratio (nTTDILVIS/nTTDIL)   = 0.213643
+Ratio (nTTJJ/nTTDILVIS)   = 0.262209
+Ratio (nTTBB/nTTJJ) = 0.0152512
+Ratio (in reco nTTBB/nTTKK) = 0.0431799
+acceptance preselection (ttjj)   = 0.851594
+acceptance preselection (ttbb)   = 0.871955
+acceptance postselection (ttjj)   = 0.0370294(28856/779272)
+acceptance postselection (ttbb)   = 0.102391(1246/12169)
+acceptance (ttjj)   = 0.031534
+acceptance (ttbb)   = 0.0892806
+acceptance (ttcc)   = 0.0414261(1399/33771)
+Ratio (Attjj/Attbb) = 0.353201
+total= 1.63351e+07 den(TTJJ)= 915075 den(TTBB)= 13956
+CUT: S8_s1 (tight CSV > 2 && jet3 > 0)
+total= 1.63351e+07 den(TTJJ)= 915075 den(TTBB)= 13956
+Ratio (nTTDIL/nTT)   = 1
+Ratio (nTTDILVIS/nTTDIL)   = 0.213643
+Ratio (nTTJJ/nTTDILVIS)   = 0.262209
+Ratio (nTTBB/nTTJJ) = 0.0152512
+Ratio (in reco nTTBB/nTTKK) = 0.403253
+acceptance preselection (ttjj)   = 0.851594
+acceptance preselection (ttbb)   = 0.871955
+acceptance postselection (ttjj)   = 0.00149883(1168/779272)
+acceptance postselection (ttbb)   = 0.0387049(471/12169)
+acceptance (ttjj)   = 0.0012764
+acceptance (ttbb)   = 0.0337489
+acceptance (ttcc)   = 0.00275384(93/33771)
+Ratio (Attjj/Attbb) = 0.0378204
+total= 1.63351e+07 den(TTJJ)= 915075 den(TTBB)= 13956
+CUT: S8_s2 (tight CSV > 2 && jet4 > 0)
+total= 1.63351e+07 den(TTJJ)= 915075 den(TTBB)= 13956
+Ratio (nTTDIL/nTT)   = 1
+Ratio (nTTDILVIS/nTTDIL)   = 0.213643
+Ratio (nTTJJ/nTTDILVIS)   = 0.262209
+Ratio (nTTBB/nTTJJ) = 0.0152512
+Ratio (in reco nTTBB/nTTKK) = 0.434675
+acceptance preselection (ttjj)   = 0.851594
+acceptance preselection (ttbb)   = 0.871955
+acceptance postselection (ttjj)   = 0.00156171(1217/779272)
+acceptance postselection (ttbb)   = 0.0434711(529/12169)
+acceptance (ttjj)   = 0.00132995
+acceptance (ttbb)   = 0.0379048
+acceptance (ttcc)   = 0.00313879(106/33771)
+Ratio (Attjj/Attbb) = 0.0350864
+total= 1.63351e+07 den(TTJJ)= 915075 den(TTBB)= 13956
+
