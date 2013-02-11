@@ -3,7 +3,7 @@ void roofitR(){
   using namespace RooFit ;
 
   bool combine = false;
-  int nbinsch = 50; //number of bins for each histograms. for example, b-jets multiplicity = 5 , b-dscriminatorCSV = 20, b-discriminatorJP = 50
+  int nbinsch = 20; //number of bins for each histograms. for example, b-jets multiplicity = 5 , b-dscriminatorCSV = 20, b-discriminatorJP = 50
   const int ndecay = 3; // mm, em, ee
   const int nobj = 2; // 1: b-jet mulitplicity , 2 :jet1, jet2 
 
@@ -20,10 +20,10 @@ void roofitR(){
   fileName[2] = path+"/ElEl/ElEl.root";
   TString variable[nobj];
   //variable[0] = "nbJet30_CSVT";
-  //variable[0] = "addjet1_bDisCSV";
-  //variable[1] = "addjet2_bDisCSV";
-  variable[0] = "addjet1_bDisJP";
-  variable[1] = "addjet2_bDisJP";
+  variable[0] = "addjet1_bDisCSV";
+  variable[1] = "addjet2_bDisCSV";
+  //variable[0] = "addjet1_bDisJP";
+  //variable[1] = "addjet2_bDisJP";
 
 
 
@@ -144,9 +144,13 @@ void roofitR(){
 
   TCanvas * c = new TCanvas("c","c",1);
   RooPlot* xframe = x.frame() ; 
-  data.plotOn(xframe); 
+  data.plotOn(xframe);
   model3.paramOn(xframe, Layout(0.65,0.9,0.9) );
+  model3.plotOn(xframe,Components("histpdf_ttbb,histpdf_ttccll,histpdf_bkg,histpdf_dbg"),LineColor(4),FillColor(4),DrawOption("F")) ;
+  model3.plotOn(xframe,Components("histpdf_ttbb,histpdf_ttccll"),LineColor(3),FillColor(3),DrawOption("F")) ;
+  model3.plotOn(xframe,Components("histpdf_ttbb"),LineColor(2),FillColor(2),DrawOption("F")) ;
   model3.plotOn(xframe);
-  xframe->Draw();   
+  data.plotOn(xframe); 
+  xframe->Draw();
 
 }
