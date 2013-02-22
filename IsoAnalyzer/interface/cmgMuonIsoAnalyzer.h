@@ -65,6 +65,11 @@ class cmgMuonIsoAnalyzer : public edm::EDProducer
   bool useZMassWindow_;
   bool applyPFId_;
   bool qcdMC_;
+  std::vector<std::string> bTagAlgos_;
+  std::vector<std::string> bTagNames_;
+  std::vector<double> bTagCutValues_;
+  std::vector<bool> bTagIsCutMin_;
+  std::vector<int> nbjets30_;
   unsigned int  numberOfLeptons_; 
   unsigned int  numberOfJets_; 
 
@@ -81,63 +86,73 @@ class cmgMuonIsoAnalyzer : public edm::EDProducer
 
   //muon loop
   //[i][j][k] : i=QCD, j=selection, k=region
-  TH1F * h_pfRelIso02[2][5];
-  TH1F * h_pfRelIso03[2][5];
-  TH1F * h_pfRelIso04[2][5];
-  TH1F * h_pfRelIso02db[2][5];
-  TH1F * h_pfRelIso03db[2][5];
-  TH1F * h_pfRelIso03dbmod[2][5];
-  TH1F * h_pfRelIso04db[2][5];
-  TH1F * h_dR[2][5];
-  TH1F * h_pt[2][5];
-  TH1F * h_eta[2][5];
-  TH1F * h_pv[2][5];
-  TH1F * h_njet[2][5];
+  TH1F * h_pfRelIso02[3][3];
+  TH1F * h_pfRelIso03[3][3];
+  TH1F * h_pfRelIso04[3][3];
+  TH1F * h_pfRelIso02db[3][3];
+  TH1F * h_pfRelIso03db[3][3];
+  TH1F * h_pfRelIso03dbmod[3][3];
+  TH1F * h_pfRelIso04db[3][3];
+  TH1F * h_dR[3][3];
+  TH1F * h_pt[3][3];
+  TH1F * h_eta[3][3];
+  TH1F * h_pv[3][3];
+  TH1F * h_njet[3][3];
 
   //event loop
   //[i] : i=QCD
-  TH1F * h_mtW[2];
-  TH1F * h_dimass[2];
-  TH1F * h_nJet[2];
-  TH1F * h_nMuon[2];
-  TH1F * h_met[2];
-  TH1F * h_delphi[2];
+  TH1F * h_mtW[3];
+  TH1F * h_dimass[3];
+  TH1F * h_nJet[3];
+  TH1F * h_nMuon[3];
+  TH1F * h_met[3];
+  TH1F * h_delphi[3];
+  TH1F * h_nbJet_CSVL[3];
+  TH1F * h_nbJet_CSVM[3];
+  TH1F * h_nbJet_CSVT[3];
 
   //pileup dependency
-  TH2F * h2_pfRelIso02_vtx[2][5];
-  TH2F * h2_pfRelIso03_vtx[2][5];
-  TH2F * h2_pfRelIso04_vtx[2][5];
-  TH2F * h2_pfRelIso02db_vtx[2][5];
-  TH2F * h2_pfRelIso03db_vtx[2][5];
-  TH2F * h2_pfRelIso04db_vtx[2][5];
+  TH2F * h2_pfRelIso02_vtx[3][3];
+  TH2F * h2_pfRelIso03_vtx[3][3];
+  TH2F * h2_pfRelIso04_vtx[3][3];
+  TH2F * h2_pfRelIso02db_vtx[3][3];
+  TH2F * h2_pfRelIso03db_vtx[3][3];
+  TH2F * h2_pfRelIso04db_vtx[3][3];
 
   //pt dependency
-  TH2F * h2_pfRelIso02_pt[2][5];
-  TH2F * h2_pfRelIso03_pt[2][5];
-  TH2F * h2_pfRelIso04_pt[2][5];
-  TH2F * h2_pfRelIso02db_pt[2][5];
-  TH2F * h2_pfRelIso03db_pt[2][5];
-  TH2F * h2_pfRelIso04db_pt[2][5];
+  TH2F * h2_pfRelIso02_pt[3][3];
+  TH2F * h2_pfRelIso03_pt[3][3];
+  TH2F * h2_pfRelIso04_pt[3][3];
+  TH2F * h2_pfRelIso02db_pt[3][3];
+  TH2F * h2_pfRelIso03db_pt[3][3];
+  TH2F * h2_pfRelIso04db_pt[3][3];
 
   //eta dependency
-  TH2F * h2_pfRelIso02_eta[2][5];
-  TH2F * h2_pfRelIso03_eta[2][5];
-  TH2F * h2_pfRelIso04_eta[2][5];
-  TH2F * h2_pfRelIso02db_eta[2][5];
-  TH2F * h2_pfRelIso03db_eta[2][5];
-  TH2F * h2_pfRelIso04db_eta[2][5];
+  TH2F * h2_pfRelIso02_eta[3][3];
+  TH2F * h2_pfRelIso03_eta[3][3];
+  TH2F * h2_pfRelIso04_eta[3][3];
+  TH2F * h2_pfRelIso02db_eta[3][3];
+  TH2F * h2_pfRelIso03db_eta[3][3];
+  TH2F * h2_pfRelIso04db_eta[3][3];
 
   //dimass dependency
-  TH2F * h2_pfRelIso02_dimass[2][5];
-  TH2F * h2_pfRelIso03_dimass[2][5];
-  TH2F * h2_pfRelIso04_dimass[2][5];
-  TH2F * h2_pfRelIso02db_dimass[2][5];
-  TH2F * h2_pfRelIso03db_dimass[2][5];
-  TH2F * h2_pfRelIso04db_dimass[2][5];
+  TH2F * h2_pfRelIso02_dimass[3][3];
+  TH2F * h2_pfRelIso03_dimass[3][3];
+  TH2F * h2_pfRelIso04_dimass[3][3];
+  TH2F * h2_pfRelIso02db_dimass[3][3];
+  TH2F * h2_pfRelIso03db_dimass[3][3];
+  TH2F * h2_pfRelIso04db_dimass[3][3];
 
   //QCD extraction
+  TH2F * h2_SIGMuonsIso03;
+  TH2F * h2_SIGMuonsPt;
+  TH2F * h2_SIGMuonsEta;
   TH2F * h2_QCDMuonsIso03;
   TH2F * h2_QCDMuonsPt;
+  TH2F * h2_QCDMuonsEta;
+  TH2F * h2_ETCMuonsIso03;
+  TH2F * h2_ETCMuonsPt;
+  TH2F * h2_ETCMuonsEta;
   TRandom3 disc;
 
   //add run event data
