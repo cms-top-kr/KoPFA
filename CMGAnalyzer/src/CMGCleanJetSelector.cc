@@ -59,9 +59,9 @@ private:
 CMGCleanJetSelector::CMGCleanJetSelector(const edm::ParameterSet& pset)
 {
   doFilter_ = pset.getParameter<bool>("doFilter");
-  debug_ = pset.getParameter<bool>("debug");
+  debug_ = pset.getUntrackedParameter<bool>("debug",false);
 
-  const std::string cleanMethodName = pset.getParameter<std::string>("cleanMethod");
+  const std::string cleanMethodName = pset.getUntrackedParameter<std::string>("cleanMethod","subtract");
   if ( cleanMethodName == "subtract" ) cleanMethodId_ = 1;
   else if ( cleanMethodName == "subtractAndRestore" ) cleanMethodId_ = 2;
   else cleanMethodId_ = 0;
@@ -69,8 +69,8 @@ CMGCleanJetSelector::CMGCleanJetSelector(const edm::ParameterSet& pset)
   jetLabel_ = pset.getParameter<edm::InputTag>("src");
   std::string jetCut = pset.getParameter<std::string>("cut");
   isGoodJet_ = new StringCutObjectSelector<cmg::PFJet, true>(jetCut);
-  minPt_ = pset.getParameter<double>("minPt");
-  maxEta_ = pset.getParameter<double>("maxEta");
+  minPt_ = pset.getUntrackedParameter<double>("minPt", 30);
+  maxEta_ = pset.getUntrackedParameter<double>("maxEta", 2.5);
 
   overlapDeltaR_ = pset.getParameter<double>("overlapDeltaR");
   overlapCandLabels_ = pset.getParameter<std::vector<edm::InputTag> >("overlapCands");
