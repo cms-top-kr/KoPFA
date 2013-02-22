@@ -17,6 +17,8 @@ cmgMuonIsoAnalyzer::cmgMuonIsoAnalyzer(const edm::ParameterSet& config)
 {
   muonLabel_ = config.getParameter<edm::InputTag>("muonLabel");
   beamSpotLabel_ = config.getParameter<edm::InputTag>("beamSpotLabel");
+  //metLabel_ = config.getParameter<edm::InputTag>("metLabel");
+  //jetLabel_ = config.getParameter<edm::InputTag>("jetLabel");
   metLabel_ = config.getParameter<edm::InputTag>("metLabel");
   jetLabel_ = config.getParameter<edm::InputTag>("jetLabel");
   genParticlesLabel_= config.getParameter<edm::InputTag>("genParticlesLabel");
@@ -25,8 +27,37 @@ cmgMuonIsoAnalyzer::cmgMuonIsoAnalyzer(const edm::ParameterSet& config)
   applyPFId_ = config.getUntrackedParameter<bool>("applyPFId", false); 
   qcdMC_ = config.getUntrackedParameter<bool>("qcdMC", false); 
   numberOfLeptons_ = config.getUntrackedParameter<unsigned int>("numberOfLeptons",1); 
+  numberOfJets_ = config.getUntrackedParameter<unsigned int>("numberOfJets",1); 
   filters_ = config.getUntrackedParameter<std::vector<std::string> >("filters");
   useEventCounter_ = config.getParameter<bool>("useEventCounter");
+
+  std::vector<edm::ParameterSet> bTagSets = config.getUntrackedParameter<std::vector<edm::ParameterSet> >("bTagSets");
+  for ( int i=0, n=bTagSets.size(); i<n; ++i )
+  {
+    edm::ParameterSet& bTagSet = bTagSets[i];
+    const std::string algo = bTagSet.getUntrackedParameter<std::string>("algo");
+    const std::string name = bTagSet.getUntrackedParameter<std::string>("name");
+    const double cutValue = bTagSet.getUntrackedParameter<double>("cutValue");
+    const bool isCutMin = bTagSet.getUntrackedParameter<bool>("isCutMin", true); // True : reject jets with smaller than cutValue 
+
+    std::vector<std::string>::iterator foundBtagName = std::find(bTagNames_.begin(), bTagNames_.end(), name);
+    if ( foundBtagName == bTagNames_.end() )
+    {
+      bTagAlgos_.push_back(algo);
+      bTagNames_.push_back(name);
+      bTagCutValues_.push_back(cutValue);
+      bTagIsCutMin_.push_back(isCutMin);
+      nbjets30_.push_back(-999);
+    }
+    else
+    {
+      cout << "what is this?" << endl;
+      const int index = foundBtagName - bTagNames_.begin();
+      bTagAlgos_[index] = algo;
+      bTagCutValues_[index] = cutValue;
+      bTagIsCutMin_[index] = isCutMin;
+    }
+  }
 
   produces<std::vector<cmg::Muon> >("");
 
@@ -36,22 +67,37 @@ cmgMuonIsoAnalyzer::cmgMuonIsoAnalyzer(const edm::ParameterSet& config)
 
   h2_QCDMuonsIso03 = fs->make<TH2F>( "h2_QCDMuonsIso03", "h2_QCDMuonsIso03", 1000,0,10,1000, 0, 10);
   h2_QCDMuonsPt = fs->make<TH2F>( "h2_QCDMuonsPt", "h2_QCDMuonsPt", 100,0,200,100, 0, 200);
+  h2_QCDMuonsEta = fs->make<TH2F>( "h2_QCDMuonsEta", "h2_QCDMuonsEta", 60,-3.0,3.0,60, -3.0, 3.0);
+  h2_SIGMuonsIso03 = fs->make<TH2F>( "h2_SIGMuonsIso03", "h2_SIGMuonsIso03", 1000,0,10,1000, 0, 10);
+  h2_SIGMuonsPt = fs->make<TH2F>( "h2_SIGMuonsPt", "h2_SIGMuonsPt", 100,0,200,100, 0, 200);
+  h2_SIGMuonsEta = fs->make<TH2F>( "h2_SIGMuonsEta", "h2_SIGMuonsEta", 60,-3.0,3.0,60, -3.0, 3.0);
+  h2_ETCMuonsIso03 = fs->make<TH2F>( "h2_ETCMuonsIso03", "h2_ETCMuonsIso03", 1000,0,10,1000, 0, 10);
+  h2_ETCMuonsPt = fs->make<TH2F>( "h2_ETCMuonsPt", "h2_ETCMuonsPt", 100,0,200,100, 0, 200);
+  h2_ETCMuonsEta = fs->make<TH2F>( "h2_ETCMuonsEta", "h2_ETCMuonsEta", 60,-3.0,3.0,60, -3.0, 3.0);
  
   ///////Muon loop
-  for(int d=0 ; d < 2 ; d++){
+  for(int d=0 ; d < 3 ; d++){
     TString mainDirName = "";
 
-    if( d == 0 ) mainDirName = "Signal";
-    else mainDirName = "QCD";
-
-    for(int i=0 ; i < 5 ; i++){
+    if( d == 0 ) {
+       mainDirName = "Signal";
+    }else if( d == 1 ) {
+       mainDirName = "QCD";
+    }else {
+       mainDirName = "ECT";
+    }
+    for(int i=0 ; i < 3 ; i++){
 
       TString selDirName = "";
-      if(i==0) selDirName = "Preselection";
+/*      if(i==0) selDirName = "Preselection";
       if(i==1) selDirName = "IDPF";
       if(i==2) selDirName = "IDLoose";
       if(i==3) selDirName = "IDTight";
       if(i==4) selDirName = "IDTightNoVtx";
+*/
+      if(i==0) selDirName = "IDPF";
+      if(i==1) selDirName = "IDLoose";
+      if(i==2) selDirName = "IDTight";
 
         TFileDirectory dir = fs->mkdir(Form("%s/%s",mainDirName.Data(), selDirName.Data()));
 
@@ -82,12 +128,12 @@ cmgMuonIsoAnalyzer::cmgMuonIsoAnalyzer(const edm::ParameterSet& config)
         h2_pfRelIso03db_pt[d][i] = dir.make<TH2F>( "h2_pfRelIso03db_pt", "h2_pfRelIso03db_pt", 40,0,200,1000, 0, 10);
         h2_pfRelIso04db_pt[d][i] = dir.make<TH2F>( "h2_pfRelIso04db_pt", "h2_pfRelIso04db_pt", 40,0,200,1000, 0, 10);
 
-        h2_pfRelIso02_eta[d][i] = dir.make<TH2F>( "h2_pfRelIso02_eta", "h2_pfRelIso02_eta", 40,0,200,1000, 0, 10);
-        h2_pfRelIso03_eta[d][i] = dir.make<TH2F>( "h2_pfRelIso03_eta", "h2_pfRelIso03_eta", 40,0,200,1000, 0, 10);
-        h2_pfRelIso04_eta[d][i] = dir.make<TH2F>( "h2_pfRelIso04_eta", "h2_pfRelIso04_eta", 40,0,200,1000, 0, 10);
-        h2_pfRelIso02db_eta[d][i] = dir.make<TH2F>( "h2_pfRelIso02db_eta", "h2_pfRelIso02db_eta", 40,0,200,1000, 0, 10);
-        h2_pfRelIso03db_eta[d][i] = dir.make<TH2F>( "h2_pfRelIso03db_eta", "h2_pfRelIso03db_eta", 40,0,200,1000, 0, 10);
-        h2_pfRelIso04db_eta[d][i] = dir.make<TH2F>( "h2_pfRelIso04db_eta", "h2_pfRelIso04db_eta", 40,0,200,1000, 0, 10);
+        h2_pfRelIso02_eta[d][i] = dir.make<TH2F>( "h2_pfRelIso02_eta", "h2_pfRelIso02_eta", 12,-3.0,3.0,1000, 0, 10);
+        h2_pfRelIso03_eta[d][i] = dir.make<TH2F>( "h2_pfRelIso03_eta", "h2_pfRelIso03_eta", 12,-3.0,3.0,1000, 0, 10);
+        h2_pfRelIso04_eta[d][i] = dir.make<TH2F>( "h2_pfRelIso04_eta", "h2_pfRelIso04_eta", 12,-3.0,3.0,1000, 0, 10);
+        h2_pfRelIso02db_eta[d][i] = dir.make<TH2F>( "h2_pfRelIso02db_eta", "h2_pfRelIso02db_eta", 12,-3.0,3.0,1000, 0, 10);
+        h2_pfRelIso03db_eta[d][i] = dir.make<TH2F>( "h2_pfRelIso03db_eta", "h2_pfRelIso03db_eta", 12,-3.0,3.0,1000, 0, 10);
+        h2_pfRelIso04db_eta[d][i] = dir.make<TH2F>( "h2_pfRelIso04db_eta", "h2_pfRelIso04db_eta", 12,-3.0,3.0,1000, 0, 10);
 
         h2_pfRelIso02_dimass[d][i] = dir.make<TH2F>( "h2_pfRelIso02_dimass", "h2_pfRelIso02_dimass", 200,0,200,1000, 0, 10);
         h2_pfRelIso03_dimass[d][i] = dir.make<TH2F>( "h2_pfRelIso03_dimass", "h2_pfRelIso03_dimass", 200,0,200,1000, 0, 10);
@@ -99,20 +145,30 @@ cmgMuonIsoAnalyzer::cmgMuonIsoAnalyzer(const edm::ParameterSet& config)
     }
   }
   //////////////// Event loop //////////////////////
-  for(int d = 0 ; d < 2 ; d++){
+  for(int d=0 ; d < 3 ; d++){
     TString mainDirName = "";
 
-    if( d == 0 ) mainDirName = "Signal";
-    else mainDirName = "QCD";
-
+    if( d == 0 ) {
+       mainDirName = "Signal";
+    }else if( d == 1 ) {
+       mainDirName = "QCD";
+    }else {
+       mainDirName = "ECT";
+    }
     TFileDirectory dir = fs->mkdir(Form("%s",mainDirName.Data()));
 
-    h_mtW[d]    = dir.make<TH1F>( "h_mtW", "h_mtW", 200, 0, 200);
-    h_dimass[d] = dir.make<TH1F>( "h_dimass", "h_dimass", 200, 0, 200);
+//    h_mtW[d]    = dir.make<TH1F>( "h_mtW", "h_mtW", 200, 0, 200);
+//    h_dimass[d] = dir.make<TH1F>( "h_dimass", "h_dimass", 200, 0, 200);
+    h_mtW[d]    = dir.make<TH1F>( "h_mtW", "h_mtW", 40, 0, 200);
+    h_dimass[d] = dir.make<TH1F>( "h_dimass", "h_dimass", 40, 0, 200);
     h_met[d]    = dir.make<TH1F>( "h_met", "h_met", 20, 0, 200);
     h_nJet[d]   = dir.make<TH1F>( "h_nJet", "h_nJet", 10, 0, 10);
     h_nMuon[d]   = dir.make<TH1F>( "h_nMuon", "h_nMuon", 10, 0, 10);
     h_delphi[d]   = dir.make<TH1F>( "h_delphi", "h_delphi", 32, 0, 3.2);
+
+    h_nbJet_CSVL[d] = dir.make<TH1F>("h_nbJet_CSVL","h_nbJet_CSVL",10,0,10);
+    h_nbJet_CSVM[d] = dir.make<TH1F>("h_nbJet_CSVM","h_nbJet_CSVM",10,0,10);
+    h_nbJet_CSVT[d] = dir.make<TH1F>("h_nbJet_CSVT","h_nbJet_CSVT",10,0,10);
 
   }
 
@@ -186,6 +242,11 @@ void cmgMuonIsoAnalyzer::produce(edm::Event& iEvent, const edm::EventSetup& es)
  
   std::auto_ptr<std::vector<cmg::PFJet> > cleanedJets(new std::vector<cmg::PFJet>());
 
+  for ( int bTagIndex=0, nBTag=nbjets30_.size(); bTagIndex<nBTag; ++bTagIndex )
+  {
+    nbjets30_[bTagIndex] = 0;
+  }
+
   for (unsigned int j=0 ; j < Jets->size(); j++) {
     cmg::PFJet jet = Jets->at(j);
 
@@ -195,8 +256,16 @@ void cmgMuonIsoAnalyzer::produce(edm::Event& iEvent, const edm::EventSetup& es)
     if( !(jet.pt() > 30 && abs(jet.eta()) < 2.5) ) continue;
 
     bool overlap = false;
-    
-    for (unsigned int i=0; i < triggeredMuons->size(); ++i){
+/////////////////    
+    //cout << "==============================================================" << endl;
+    for ( int bTagIndex=0, nBTagAlgo=bTagAlgos_.size(); bTagIndex<nBTagAlgo; ++bTagIndex )
+    {
+      const double bTagValue = (*Jets)[j].bDiscriminator(bTagAlgos_[bTagIndex].c_str());
+      if ( (bTagIsCutMin_[bTagIndex]) xor (bTagValue < bTagCutValues_[bTagIndex]) ) ++nbjets30_[bTagIndex];
+    //cout << "nbjets30 (" << bTagIndex << ")" << nbjets30_[bTagIndex] << endl; 
+    }
+/////////////////    
+        for (unsigned int i=0; i < triggeredMuons->size(); ++i){
       cmg::Muon muon = triggeredMuons->at(i);
       double dR =  deltaR(muon.eta(), muon.phi(), jet.eta(), jet.phi());
       if( dR < 0.5 ) {
@@ -223,6 +292,7 @@ void cmgMuonIsoAnalyzer::produce(edm::Event& iEvent, const edm::EventSetup& es)
   double charge = -1.;
   double relPfIso03leg1 = -1.; 
   double relPfIso03leg2 = -1.;
+  bool SIG = false; 
   bool QCD = false; 
   cmg::Muon muon1;
   cmg::Muon muon2;
@@ -244,46 +314,84 @@ void cmgMuonIsoAnalyzer::produce(edm::Event& iEvent, const edm::EventSetup& es)
       charge = muon1.charge()*muon2.charge();
 
       double chIso03muon1 = muon1.chargedHadronIso(0.3);
-      //double puChIso03muon1 = muon1.puChargedHadronIso(0.3);
+      double puChIso03muon1 = muon1.puChargedHadronIso(0.3);
       double nhIso03muon1 = muon1.neutralHadronIso(0.3);
       double phIso03muon1 = muon1.photonIso(0.3);
-      //double relPfIso03dbmuon1 = ( chIso03muon1 + max(0.0, nhIso03muon1 + phIso03muon1 - 0.5*puChIso03muon1) )/ muon1.pt();
-      relPfIso03leg1 = ( chIso03muon1 + nhIso03muon1 + phIso03muon1 )/ muon1.pt();
+      relPfIso03leg1 = ( chIso03muon1 + max(0.0, nhIso03muon1 + phIso03muon1 - 0.5*puChIso03muon1) )/ muon1.pt();
+      //relPfIso03leg1 = ( chIso03muon1 + nhIso03muon1 + phIso03muon1 )/ muon1.pt();
 
       double chIso03muon2 = muon2.chargedHadronIso(0.3);
-      //double puChIso03muon2 = muon2.puChargedHadronIso(0.3);
+      double puChIso03muon2 = muon2.puChargedHadronIso(0.3);
       double nhIso03muon2 = muon2.neutralHadronIso(0.3);
       double phIso03muon2 = muon2.photonIso(0.3);
-      //double relPfIso03dbmuon2 = ( chIso03muon2 + max(0.0, nhIso03muon2 + phIso03muon2 - 0.5*puChIso03muon2) )/ muon2.pt();
-      relPfIso03leg2 = ( chIso03muon2 + nhIso03muon2 + phIso03muon2 )/ muon2.pt();
+      relPfIso03leg2 = ( chIso03muon2 + max(0.0, nhIso03muon2 + phIso03muon2 - 0.5*puChIso03muon2) )/ muon2.pt();
+      //relPfIso03leg2 = ( chIso03muon2 + nhIso03muon2 + phIso03muon2 )/ muon2.pt();
  
       break;
     }
   }
-      
+
+  //// SIG EVENT selection ////
+  bool SIG0 = true ;
+  bool SIG1 = true ;
+  bool SIG2 = true ;
+  bool SIG3 = true ;
+  bool SIG4 = true ;
+  bool SIG5 = true ;
+  //SIG0 = mtW >= 40 ;
+  //SIG1 = dimass > 12 && fabs(dimass-91) > 15;
+  //SIG2 = relPfIso03leg2 <= 0.15;
+  //SIG3 = charge < 0;
+  //SIG4 = MET >= 30;
+  //SIG5 = nbjets30_[0] >= 2;// 0=CSVL, 1=CSVM 
+//  SIG5 = nJets >= 2 && nbjets30_[1] >= 1;// 0=CSVL, 1=CSVM 
+  SIG5 = nJets >= 2 ;// 0=CSVL, 1=CSVM 
+
+  SIG = SIG0 && SIG1 && SIG2 && SIG3 && SIG4 && SIG5;
+
   //// QCD EVENT selection ////
   //bool QCD1 = dimass > 12 ;
   //bool QCD1 = fabs(dimass-91) > 20 ;
+  bool QCD0 = true ;
   bool QCD1 = true ;
-  bool QCD2 = relPfIso03leg2 > 0.25 ;
-  bool QCD3 = charge > 0;
-  bool QCD4 = MET < 30;
-  bool QCD5 = nJets >= 2;
+  bool QCD2 = true ;
+  bool QCD3 = true ;
+  bool QCD4 = true ;
+  bool QCD5 = true ;
+  QCD0 = dimass > 12 && fabs(dimass-91) > 15;
+  QCD1 = mtW<40 ;
+  QCD2 = relPfIso03leg2 > 0.25 ;
+  QCD3 = charge > 0;
+  QCD4 = MET < 30;
+  //QCD5 = nJets >= 0;
 
-  if(!qcdMC_){
-    QCD = QCD1 && QCD2 && QCD3 && QCD4 && QCD5 ; 
-  }else{
+  if(qcdMC_){
     QCD = true ;
-  }
-  if (QCD) {
-         h2_QCDMuonsIso03->Fill( relPfIso03leg1, relPfIso03leg2 );
-         h2_QCDMuonsPt->Fill( muon1.pt(), muon2.pt() );
+  }else{
+    QCD = QCD0 && QCD1 && QCD2 && QCD3 && QCD4 && QCD5 ; 
   }
 
-  int d = 0;
-  if(QCD ) d=1;
+  int d;
 
-  bool eventsel = triggeredMuons->size() >= numberOfLeptons_ ;
+  if(QCD ) {
+    d=1;
+    h2_QCDMuonsIso03->Fill( relPfIso03leg1, relPfIso03leg2 );
+    h2_QCDMuonsPt->Fill( muon1.pt(), muon2.pt() );  
+    h2_QCDMuonsEta->Fill( muon1.eta(), muon2.eta() );  
+  } else if(SIG ) {
+    d=0;
+    h2_SIGMuonsIso03->Fill( relPfIso03leg1, relPfIso03leg2 );
+    h2_SIGMuonsPt->Fill( muon1.pt(), muon2.pt() );  
+    h2_SIGMuonsEta->Fill( muon1.eta(), muon2.eta() );  
+  }else {
+    d=2;
+    h2_ETCMuonsIso03->Fill( relPfIso03leg1, relPfIso03leg2 );
+    h2_ETCMuonsPt->Fill( muon1.pt(), muon2.pt() );  
+    h2_ETCMuonsEta->Fill( muon1.eta(), muon2.eta() );  
+  }
+
+  bool eventsel = triggeredMuons->size() >= numberOfLeptons_ && nJets >=  (int) numberOfJets_ ;
+//  bool eventsel = triggeredMuons->size() >= numberOfLeptons_  ;
 
   if( eventsel ){
     h_mtW[d]->Fill(mtW);
@@ -294,41 +402,42 @@ void cmgMuonIsoAnalyzer::produce(edm::Event& iEvent, const edm::EventSetup& es)
     h_delphi[d]->Fill(delphi);
   } 
 // Muon loop
-/////////////////////  for (unsigned int j=0; j < triggeredMuons->size() && eventsel ; ++j){
-/////////////////////    cmg::Muon Lep1 = triggeredMuons->at(j);
-  if (eventsel){
-    double pt1  = muon1.pt();
-    double sceta1 = muon1.eta();
+//  for (unsigned int j=0; j < triggeredMuons->size() && eventsel ; ++j){
+  for (unsigned int j=0; j < 2 && eventsel ; ++j){
+    cmg::Muon Lep1 = triggeredMuons->at(j);
+//  if (eventsel ){
+    double pt1  = Lep1.pt();
+    double sceta1 = Lep1.eta();
    
-    double chIso02muon1 = muon1.chargedHadronIso(0.2);
-    double puChIso02muon1 = muon1.puChargedHadronIso(0.2);
-    double nhIso02muon1 = muon1.neutralHadronIso(0.2);
-    double phIso02muon1 = muon1.photonIso(0.2);
+    double chIso02Lep1 = Lep1.chargedHadronIso(0.2);
+    double puChIso02Lep1 = Lep1.puChargedHadronIso(0.2);
+    double nhIso02Lep1 = Lep1.neutralHadronIso(0.2);
+    double phIso02Lep1 = Lep1.photonIso(0.2);
 
-    double chIso03muon1 = muon1.chargedHadronIso(0.3);
-    double puChIso03muon1 = muon1.puChargedHadronIso(0.3);
-    double nhIso03muon1 = muon1.neutralHadronIso(0.3);
-    double phIso03muon1 = muon1.photonIso(0.3);
+    double chIso03Lep1 = Lep1.chargedHadronIso(0.3);
+    double puChIso03Lep1 = Lep1.puChargedHadronIso(0.3);
+    double nhIso03Lep1 = Lep1.neutralHadronIso(0.3);
+    double phIso03Lep1 = Lep1.photonIso(0.3);
   
-    double chIso04muon1 = muon1.chargedHadronIso(0.4);
-    double puChIso04muon1 = muon1.puChargedHadronIso(0.4);
-    double nhIso04muon1 = muon1.neutralHadronIso(0.4);
-    double phIso04muon1 = muon1.photonIso(0.4);
+    double chIso04Lep1 = Lep1.chargedHadronIso(0.4);
+    double puChIso04Lep1 = Lep1.puChargedHadronIso(0.4);
+    double nhIso04Lep1 = Lep1.neutralHadronIso(0.4);
+    double phIso04Lep1 = Lep1.photonIso(0.4);
     double sf = 0.5;
     if( fabs(sceta1) > 2.1 ) sf = 1.0; 
-    double relPfIso02muon1 = ( chIso02muon1 + nhIso02muon1 + phIso02muon1 )/ muon1.pt(); 
-    double relPfIso03muon1 = ( chIso03muon1 + nhIso03muon1 + phIso03muon1 )/ muon1.pt(); 
-    double relPfIso04muon1 = ( chIso04muon1 + nhIso04muon1 + phIso04muon1 )/ muon1.pt();
-    double relPfIso02dbmuon1 = ( chIso02muon1 + max(0.0, nhIso02muon1 + phIso02muon1 - 0.5*puChIso02muon1) )/ muon1.pt();
-    double relPfIso03dbmuon1 = ( chIso03muon1 + max(0.0, nhIso03muon1 + phIso03muon1 - 0.5*puChIso03muon1) )/ muon1.pt();
-    double relPfIso03dbmodmuon1 = ( max(0.0, chIso03muon1 + nhIso03muon1 + phIso03muon1 - sf*puChIso03muon1) )/ muon1.pt();
-    double relPfIso04dbmuon1 = ( chIso04muon1 + max(0.0, nhIso04muon1 + phIso04muon1 - 0.5*puChIso04muon1) )/ muon1.pt();
-    double dRmuon1 = 999;
+    double relPfIso02Lep1 = ( chIso02Lep1 + nhIso02Lep1 + phIso02Lep1 )/ Lep1.pt(); 
+    double relPfIso03Lep1 = ( chIso03Lep1 + nhIso03Lep1 + phIso03Lep1 )/ Lep1.pt(); 
+    double relPfIso04Lep1 = ( chIso04Lep1 + nhIso04Lep1 + phIso04Lep1 )/ Lep1.pt();
+    double relPfIso02dbLep1 = ( chIso02Lep1 + max(0.0, nhIso02Lep1 + phIso02Lep1 - 0.5*puChIso02Lep1) )/ Lep1.pt();
+    double relPfIso03dbLep1 = ( chIso03Lep1 + max(0.0, nhIso03Lep1 + phIso03Lep1 - 0.5*puChIso03Lep1) )/ Lep1.pt();
+    double relPfIso03dbmodLep1 = ( max(0.0, chIso03Lep1 + nhIso03Lep1 + phIso03Lep1 - sf*puChIso03Lep1) )/ Lep1.pt();
+    double relPfIso04dbLep1 = ( chIso04Lep1 + max(0.0, nhIso04Lep1 + phIso04Lep1 - 0.5*puChIso04Lep1) )/ Lep1.pt();
+    double dRLep1 = 999;
 
     for (unsigned jid = 0; jid < cleanedJets->size(); jid++){
       cmg::PFJet jet = cleanedJets->at(jid);
-      double dRval = deltaR(muon1.eta(), muon1.phi(), jet.eta(), jet.phi());
-      if( dRval < dRmuon1 ) dRmuon1 = dRval;
+      double dRval = deltaR(Lep1.eta(), Lep1.phi(), jet.eta(), jet.phi());
+      if( dRval < dRLep1 ) dRLep1 = dRval;
       break;//consider only leading jet
     }
 
@@ -336,61 +445,65 @@ void cmgMuonIsoAnalyzer::produce(edm::Event& iEvent, const edm::EventSetup& es)
     /////for selections //////
     //////////////////////////
 
-    bool passPF         = muon1.isPF();
-    bool passLoose      = muon1.getSelection("cuts_loosemuon");
-    bool passTight      = muon1.getSelection("cuts_tightmuonNoVtx") && muon1.dxy()<0.2 && muon1.dz()<0.5 ;
-    bool passTightNoVtx = muon1.getSelection("cuts_tightmuonNoVtx");
+    bool passPF         = Lep1.isPF();
+    bool passLoose      = Lep1.getSelection("cuts_loosemuon");
+    bool passTight      = Lep1.getSelection("cuts_tightmuonNoVtx") && Lep1.dxy()<0.2 && Lep1.dz()<0.5 ;
+    //bool passTightNoVtx = Lep1.getSelection("cuts_tightmuonNoVtx");
 
-    for( int sel = 0 ; sel < 5 ; sel++){
+    for( int sel = 0 ; sel < 3 ; sel++){
 
       bool fill = true;
-      if( sel == 1 ) fill = passPF;
+/*      if( sel == 1 ) fill = passPF;
       if( sel == 2 ) fill = passLoose;
       if( sel == 3 ) fill = passTight;
       if( sel == 4 ) fill = passTightNoVtx;
+*/
+      if( sel == 0 ) fill = passPF;
+      if( sel == 1 ) fill = passLoose;
+      if( sel == 2 ) fill = passTight;
 
       if( fill ){
-        h_pfRelIso02[d][sel]->Fill( relPfIso02muon1 );
-        h_pfRelIso03[d][sel]->Fill( relPfIso03muon1 );
-        h_pfRelIso04[d][sel]->Fill( relPfIso04muon1 );
-        h_pfRelIso02db[d][sel]->Fill( relPfIso02dbmuon1 );
-        h_pfRelIso03db[d][sel]->Fill( relPfIso03dbmuon1 );
-        h_pfRelIso03dbmod[d][sel]->Fill( relPfIso03dbmodmuon1 );
-        h_pfRelIso04db[d][sel]->Fill( relPfIso04dbmuon1 );
+        h_pfRelIso02[d][sel]->Fill( relPfIso02Lep1 );
+        h_pfRelIso03[d][sel]->Fill( relPfIso03Lep1 );
+        h_pfRelIso04[d][sel]->Fill( relPfIso04Lep1 );
+        h_pfRelIso02db[d][sel]->Fill( relPfIso02dbLep1 );
+        h_pfRelIso03db[d][sel]->Fill( relPfIso03dbLep1 );
+        h_pfRelIso03dbmod[d][sel]->Fill( relPfIso03dbmodLep1 );
+        h_pfRelIso04db[d][sel]->Fill( relPfIso04dbLep1 );
 
-        if( nJets >= 1 ) h_dR[d][sel]->Fill(dRmuon1);
+        if( nJets >= 1 ) h_dR[d][sel]->Fill(dRLep1);
         h_njet[d][sel]->Fill(nJets);
         h_pt[d][sel]->Fill(pt1);
         h_eta[d][sel]->Fill(sceta1);
         h_pv[d][sel]->Fill(nvertex);
 
-        h2_pfRelIso02_vtx[d][sel]->Fill( nvertex, relPfIso02muon1 );
-        h2_pfRelIso03_vtx[d][sel]->Fill( nvertex, relPfIso03muon1 );
-        h2_pfRelIso04_vtx[d][sel]->Fill( nvertex, relPfIso04muon1 );
-        h2_pfRelIso02db_vtx[d][sel]->Fill(nvertex, relPfIso02dbmuon1 );
-        h2_pfRelIso03db_vtx[d][sel]->Fill(nvertex, relPfIso03dbmuon1 );
-        h2_pfRelIso04db_vtx[d][sel]->Fill( nvertex, relPfIso04dbmuon1 );
+        h2_pfRelIso02_vtx[d][sel]->Fill( nvertex, relPfIso02Lep1 );
+        h2_pfRelIso03_vtx[d][sel]->Fill( nvertex, relPfIso03Lep1 );
+        h2_pfRelIso04_vtx[d][sel]->Fill( nvertex, relPfIso04Lep1 );
+        h2_pfRelIso02db_vtx[d][sel]->Fill(nvertex, relPfIso02dbLep1 );
+        h2_pfRelIso03db_vtx[d][sel]->Fill(nvertex, relPfIso03dbLep1 );
+        h2_pfRelIso04db_vtx[d][sel]->Fill( nvertex, relPfIso04dbLep1 );
 
-        h2_pfRelIso02_pt[d][sel]->Fill( muon1.pt(), relPfIso02muon1 );
-        h2_pfRelIso03_pt[d][sel]->Fill( muon1.pt(), relPfIso03muon1 );
-        h2_pfRelIso04_pt[d][sel]->Fill( muon1.pt(), relPfIso04muon1 );
-        h2_pfRelIso02db_pt[d][sel]->Fill(muon1.pt(), relPfIso02dbmuon1 );
-        h2_pfRelIso03db_pt[d][sel]->Fill(muon1.pt(), relPfIso03dbmuon1 );
-        h2_pfRelIso04db_pt[d][sel]->Fill( muon1.pt(), relPfIso04dbmuon1 );
+        h2_pfRelIso02_pt[d][sel]->Fill( Lep1.pt(), relPfIso02Lep1 );
+        h2_pfRelIso03_pt[d][sel]->Fill( Lep1.pt(), relPfIso03Lep1 );
+        h2_pfRelIso04_pt[d][sel]->Fill( Lep1.pt(), relPfIso04Lep1 );
+        h2_pfRelIso02db_pt[d][sel]->Fill(Lep1.pt(), relPfIso02dbLep1 );
+        h2_pfRelIso03db_pt[d][sel]->Fill(Lep1.pt(), relPfIso03dbLep1 );
+        h2_pfRelIso04db_pt[d][sel]->Fill( Lep1.pt(), relPfIso04dbLep1 );
 
-        h2_pfRelIso02_eta[d][sel]->Fill( muon1.eta(), relPfIso02muon1 );
-        h2_pfRelIso03_eta[d][sel]->Fill( muon1.eta(), relPfIso03muon1 );
-        h2_pfRelIso04_eta[d][sel]->Fill( muon1.eta(), relPfIso04muon1 );
-        h2_pfRelIso02db_eta[d][sel]->Fill(muon1.eta(), relPfIso02dbmuon1 );
-        h2_pfRelIso03db_eta[d][sel]->Fill(muon1.eta(), relPfIso03dbmuon1 );
-        h2_pfRelIso04db_eta[d][sel]->Fill( muon1.eta(), relPfIso04dbmuon1 );
+        h2_pfRelIso02_eta[d][sel]->Fill( Lep1.eta(), relPfIso02Lep1 );
+        h2_pfRelIso03_eta[d][sel]->Fill( Lep1.eta(), relPfIso03Lep1 );
+        h2_pfRelIso04_eta[d][sel]->Fill( Lep1.eta(), relPfIso04Lep1 );
+        h2_pfRelIso02db_eta[d][sel]->Fill(Lep1.eta(), relPfIso02dbLep1 );
+        h2_pfRelIso03db_eta[d][sel]->Fill(Lep1.eta(), relPfIso03dbLep1 );
+        h2_pfRelIso04db_eta[d][sel]->Fill( Lep1.eta(), relPfIso04dbLep1 );
 
-        h2_pfRelIso02_dimass[d][sel]->Fill( dimass, relPfIso02muon1 );
-        h2_pfRelIso03_dimass[d][sel]->Fill( dimass, relPfIso03muon1 );
-        h2_pfRelIso04_dimass[d][sel]->Fill( dimass, relPfIso04muon1 );
-        h2_pfRelIso02db_dimass[d][sel]->Fill(dimass, relPfIso02dbmuon1 );
-        h2_pfRelIso03db_dimass[d][sel]->Fill(dimass, relPfIso03dbmuon1 );
-        h2_pfRelIso04db_dimass[d][sel]->Fill( dimass, relPfIso04dbmuon1 );
+        h2_pfRelIso02_dimass[d][sel]->Fill( dimass, relPfIso02Lep1 );
+        h2_pfRelIso03_dimass[d][sel]->Fill( dimass, relPfIso03Lep1 );
+        h2_pfRelIso04_dimass[d][sel]->Fill( dimass, relPfIso04Lep1 );
+        h2_pfRelIso02db_dimass[d][sel]->Fill(dimass, relPfIso02dbLep1 );
+        h2_pfRelIso03db_dimass[d][sel]->Fill(dimass, relPfIso03dbLep1 );
+        h2_pfRelIso04db_dimass[d][sel]->Fill( dimass, relPfIso04dbLep1 );
       }
     }
     //break;
@@ -432,7 +545,8 @@ bool cmgMuonIsoAnalyzer::isFromWorZ( const reco::Candidate::LorentzVector& lepto
    
     const reco::Candidate* mother = mcIter->mother();
     while( mother != 0 ){
-      if( abs(mother->pdgId()) == 24 || abs(mother->pdgId()) == 23 ) { 
+      //if( abs(mother->pdgId()) == 24 || abs(mother->pdgId()) == 23 ) { 
+      if( abs(mother->pdgId()) == 24 || abs(mother->pdgId()) == 23 || abs(mother->pdgId()) == 15) { 
         out = true;
       }
       mother = mother->mother();
