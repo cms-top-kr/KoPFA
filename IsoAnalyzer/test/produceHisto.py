@@ -12,12 +12,15 @@ from cmgMuonIso_cfg import *
 input = sys.argv[1]
 
 #mclist = ["QCDMuon"]
-mclist = ["TTbarTuneZ2","ZJets"]
-#mclist = ["ZJets","ZJets10To50", "WW", "WZ", "ZZ","TTbarTuneZ2"]
-#mclist = ["ZJets","ZJets10To50","WJetsToLNu", "WW", "WZ", "ZZ","TTbarTuneZ2"]
-#mclist += ["SingleToptW","SingleTopBartW","TTH"]
+#mclist = ["QCDEM1","QCDEM2","QCDEM3"]
+mclist = ["TTbarTuneZ2"]
+#mclist = ["ZJets","ZJets10To50","WJetsToLNu", "WW", "WZ", "ZZ","TTbarTuneZ2","QCDMuon"]
+#mclist += ["SingleToptW","SingleTopBartW"]
 #mclist += ["ZtauDecay","ZtauDecay10To50"]
 
+#rdlist = ["Run2012AMuMu"]
+#rdlist = ["Run2012AMuEl"]
+#rdlist = ["Run2012AMuEl","Run2012BMuEl","Run2012CMuEl"]
 rdlist = ["Run2012AMuMu","Run2012BMuMu","Run2012CMuMu"]
 #rdlist += ["Run2012AElEl","Run2012BElEl","Run2012CElEl"]
 #rdlist += ["Run2012AMuEl","Run2012BMuEl","Run2012CMuEl"]
@@ -37,6 +40,9 @@ samplePath["SingleToptW"]     ="KoPFA.CommonTools.Sources.CMG.V5_10_0.Summer12.c
 samplePath["SingleTopBartW"]  ="KoPFA.CommonTools.Sources.CMG.V5_10_0.Summer12.cmgTuple_TbartW_cff"
 samplePath["TTH"]              ="KoPFA.CommonTools.Sources.CMG.V5_10_0.Summer12.cmgTuple_TTH_HToBB_M125_cff"
 samplePath["QCDMuon"]              ="KoPFA.CommonTools.Sources.CMG.V5_10_0.Summer12.cmgTuple_QCDMuon_cff"
+samplePath["QCDEM1"]              ="KoPFA.CommonTools.Sources.CMG.V5_10_0.Summer12.cmgTuple_QCDEM20To30_cff"
+samplePath["QCDEM2"]              ="KoPFA.CommonTools.Sources.CMG.V5_10_0.Summer12.cmgTuple_QCDEM30To80_cff"
+samplePath["QCDEM3"]              ="KoPFA.CommonTools.Sources.CMG.V5_10_0.Summer12.cmgTuple_QCDEM80To170_cff"
 ### DATA ####
 samplePath["Run2012AMuMu"]    ="KoPFA.CommonTools.Sources.CMG.V5_10_0.Run2012.cmgTuple_Run2012AMuMu_cff"
 samplePath["Run2012AElEl"]    ="KoPFA.CommonTools.Sources.CMG.V5_10_0.Run2012.cmgTuple_Run2012AElEl_cff"
@@ -47,8 +53,6 @@ samplePath["Run2012BMuEl"]    ="KoPFA.CommonTools.Sources.CMG.V5_10_0.Run2012.cm
 samplePath["Run2012CMuMu"]    ="KoPFA.CommonTools.Sources.CMG.V5_10_0.Run2012.cmgTuple_Run2012CMuMu_cff"
 samplePath["Run2012CElEl"]    ="KoPFA.CommonTools.Sources.CMG.V5_10_0.Run2012.cmgTuple_Run2012CElEl_cff"
 samplePath["Run2012CMuEl"]    ="KoPFA.CommonTools.Sources.CMG.V5_10_0.Run2012.cmgTuple_Run2012CMuEl_cff"
-
-
 
 def applyFilter(sample, process):
 
@@ -93,13 +97,13 @@ def processSample( sample, dir):
 currdir = commands.getoutput('pwd') 
 print currdir
 
-outdir = currdir+"/Out/"
+outdir = currdir+"/MuonOut/"
 
 #if you want to save ntuple in castor
-#outdir = "/castor/cern.ch/user/t/tjkim/ntuple/top/Out/"
+#outdir = "/castor/cern.ch/user/t/tjkim/ntuple/top/MuonOut/"
 
 #to save log information in local
-os.system("rfmkdir Out")
+os.system("rfmkdir MuonOut")
 os.system("rfmkdir "+outdir)
 
 if input == "mc":
