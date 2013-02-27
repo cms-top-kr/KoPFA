@@ -41,7 +41,7 @@ void unfoldingbasic(){
   cout << "total = " << n << endl;
 
   tree->Project("h_input","vsumttbarM","");
-  tree->Project("m","vsumttbarM:genttbarM","");
+  tree->Project("m","genttbarM:vsumttbarM","");
 
   const TH1* h_gen = m->ProjectionY();
   const TH1* h_rec = m->ProjectionX();
