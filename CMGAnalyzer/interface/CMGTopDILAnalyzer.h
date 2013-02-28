@@ -13,7 +13,7 @@
 //
 // Original Author:  Tae Jeong Kim,40 R-A32,+41227678602,
 //         Created:  Fri Jun  4 17:19:29 CEST 2010
-// $Id: CMGTopDILAnalyzer.h,v 1.20 2013/02/07 21:28:12 tjkim Exp $
+// $Id: CMGTopDILAnalyzer.h,v 1.21 2013/02/08 09:15:20 tjkim Exp $
 //
 //
 
@@ -223,6 +223,14 @@ class CMGTopDILAnalyzer : public edm::EDFilter {
     tree->Branch("ZtauDecay",&ZtauDecay,"ZtauDecay/i");
     tree->Branch("isIso",&isIso,"isIso/d");
     tree->Branch("PairSign",&PairSign,"PairSign/d");
+    tree->Branch("lep1_relIso04",&lep1_relIso04,"lep1_relIso04/d");
+    tree->Branch("lep2_relIso04",&lep2_relIso04,"lep2_relIso04/d");
+    tree->Branch("lep1_chIso03",&lep1_chIso03,"lep1_chIso03/d");
+    tree->Branch("lep2_chIso03",&lep2_chIso03,"lep2_chIso03/d");
+    tree->Branch("lep1_nhIso03",&lep1_nhIso03,"lep1_nhIso03/d");
+    tree->Branch("lep2_nhIso03",&lep2_nhIso03,"lep2_nhIso03/d");
+    tree->Branch("lep1_phIso03",&lep1_phIso03,"lep1_phIso03/d");
+    tree->Branch("lep2_phIso03",&lep2_phIso03,"lep2_phIso03/d");
     tree->Branch("lep1_relIso03",&lep1_relIso03,"lep1_relIso03/d");
     tree->Branch("lep2_relIso03",&lep2_relIso03,"lep2_relIso03/d");
     tree->Branch("lep1_relIso03db",&lep1_relIso03db,"lep1_relIso03db/d");
@@ -279,6 +287,7 @@ class CMGTopDILAnalyzer : public edm::EDFilter {
 
     //tree->Branch("maos_ttbar_mass",&maos_ttbar_mass,"maos_ttbar_mass/d");
     tree->Branch("kin_ttbar_mass",&kin_ttbar_mass,"kin_ttbar_mass/d");
+    tree->Branch("kin_ttbar_dphi",&kin_ttbar_dphi,"kin_ttbar_dphi/d");
     tree->Branch("vsumttbarM",&vsumttbarM,"vsumttbarM/d");
     tree->Branch("genttbarM",&genttbarM,"genttbarM/d");
 
@@ -401,8 +410,16 @@ class CMGTopDILAnalyzer : public edm::EDFilter {
     if( ZCand->size() > 0){
       ZMass = ZCand->at(0).mass();
       PairSign =  ZCand->at(0).sign();
+      lep1_relIso04 =  ZCand->at(0).leg1().relIso04();
+      lep2_relIso04 =  ZCand->at(0).leg2().relIso04();
       lep1_relIso03 =  ZCand->at(0).leg1().relIso03();
       lep2_relIso03 =  ZCand->at(0).leg2().relIso03();
+      lep1_chIso03 =  ZCand->at(0).leg1().chIso03();
+      lep2_chIso03 =  ZCand->at(0).leg2().chIso03(); 
+      lep1_nhIso03 =  ZCand->at(0).leg1().nhIso03();
+      lep2_nhIso03 =  ZCand->at(0).leg2().nhIso03();  
+      lep1_phIso03 =  ZCand->at(0).leg1().phIso03();
+      lep2_phIso03 =  ZCand->at(0).leg2().phIso03();  
       lep1_relIso03db =  ZCand->at(0).leg1().relIso03(1);
       lep2_relIso03db =  ZCand->at(0).leg2().relIso03(1);
       lep1_relIso03rho =  ZCand->at(0).leg1().relIso03(2);
@@ -633,6 +650,11 @@ class CMGTopDILAnalyzer : public edm::EDFilter {
         kin_topBar_phi = fullLepEvt->at(cmb).leg2().Phi();
         kin_topBar_mass = fullLepEvt->at(cmb).leg2().M();
 
+        double deltaPhi = kin_top_phi - kin_topBar_phi;
+        while( deltaPhi > M_PI ) deltaPhi -= 2*M_PI;
+        while( deltaPhi <= -M_PI) deltaPhi += 2*M_PI;
+        kin_ttbar_dphi = fabs(deltaPhi);
+ 
       }
 
 //////////
@@ -905,6 +927,14 @@ class CMGTopDILAnalyzer : public edm::EDFilter {
     ZtauDecay = 0; 
     PairSign = -999;
     isIso = -1;
+    lep1_relIso04 = -999;
+    lep2_relIso04 = -999;
+    lep1_chIso03 = -999;
+    lep2_chIso03 = -999;
+    lep1_nhIso03 = -999;
+    lep2_nhIso03 = -999;
+    lep1_phIso03 = -999;
+    lep2_phIso03 = -999;
     lep1_relIso03 = -999;
     lep2_relIso03 = -999;
     lep1_relIso03db = -999;
@@ -921,6 +951,7 @@ class CMGTopDILAnalyzer : public edm::EDFilter {
     lep2_charge = 0.0;
  
     kin_ttbar_mass = -999;
+    kin_ttbar_dphi = -999;
     maos_ttbar_mass = -999;
     genttbarM = -999;
     vsumttbarM = -999;
@@ -1092,8 +1123,16 @@ class CMGTopDILAnalyzer : public edm::EDFilter {
   int ZtauDecay;
   double PairSign;
   double isIso;
+  double lep1_relIso04;
+  double lep2_relIso04;
   double lep1_relIso03;
   double lep2_relIso03;
+  double lep1_chIso03;
+  double lep2_chIso03;
+  double lep1_nhIso03;
+  double lep2_nhIso03;
+  double lep1_phIso03;
+  double lep2_phIso03;
   double lep1_relIso03db;
   double lep2_relIso03db;
   double lep1_relIso03rho;
@@ -1108,6 +1147,7 @@ class CMGTopDILAnalyzer : public edm::EDFilter {
   double lep2_charge;
 
   double kin_ttbar_mass;
+  double kin_ttbar_dphi;
   double maos_ttbar_mass;
   double genttbarM;
   double vsumttbarM;
