@@ -30,12 +30,8 @@ class EventWeightProducer : public edm::EDProducer
  private:
 
   edm::LumiReWeighting LumiWeights_;
-  edm::LumiReWeighting LumiWeightsUP_;
-  edm::LumiReWeighting LumiWeightsDN_;
 
   std::vector<double> PileUpRD_;
-  std::vector<double> PileUpRDup_;
-  std::vector<double> PileUpRDdn_;
   std::vector<double> PileUpMC_;
 
   unsigned int npileup;
@@ -44,8 +40,8 @@ class EventWeightProducer : public edm::EDProducer
   double weightplus;
   double weightminus;
 
-  //reweight::PoissonMeanShifter PShiftUp_;
-  //reweight::PoissonMeanShifter PShiftDown_;
+  reweight::PoissonMeanShifter PShiftUp_;
+  reweight::PoissonMeanShifter PShiftDown_;
 
 };
 

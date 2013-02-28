@@ -22,7 +22,7 @@
 #include "TH1.h"
 #include "TH2.h"
 
-using namespace vallot;
+using namespace Ko;
 
 class TopDecayGenHisto : public edm::EDFilter
 {
@@ -194,7 +194,7 @@ bool TopDecayGenHisto::filter(edm::Event& iEvent, const edm::EventSetup& eventSe
         int idx = *bjet;
         mapJetToBMatched[idx] = 0; // set it to 0 again 
         const reco::GenJet& bjet = genJets->at(idx);
-        double dR = vallot::dR( *BHadron, bjet ) ;
+        double dR = Ko::dR( *BHadron, bjet ) ;
         if( dR < minDR ) { 
           selectedJet = idx;
           minDR = dR;

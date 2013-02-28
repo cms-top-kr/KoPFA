@@ -13,7 +13,7 @@
 //
 // Original Author:  Tae Jeong Kim,40 R-A32,+41227678602,
 //         Created:  Fri Jun  4 17:19:29 CEST 2010
-// $Id: ZFilter.h,v 1.5 2012/10/19 09:42:20 tjkim Exp $
+// $Id: ZFilter.h,v 1.1 2011/05/23 09:34:27 tjkim Exp $
 //
 //
 
@@ -84,8 +84,6 @@ class ZFilter : public edm::EDFilter {
  public:
   explicit ZFilter(const edm::ParameterSet& iConfig){
     //now do what ever initialization is needed
-    applyFilter_ = iConfig.getUntrackedParameter<bool>("applyFilter",true);
-    filterIso_ = iConfig.getUntrackedParameter<bool>("filterIso",false);
     muonLabel1_ = iConfig.getParameter<edm::InputTag>("muonLabel1");
     muonLabel2_ = iConfig.getParameter<edm::InputTag>("muonLabel2");
     min_ = iConfig.getParameter<double>("min");  
@@ -93,7 +91,7 @@ class ZFilter : public edm::EDFilter {
     relIso1_ = iConfig.getUntrackedParameter<double>("relIso1");
     relIso2_ = iConfig.getUntrackedParameter<double>("relIso2");
 
-    produces<std::vector<vallot::ZCandidate> >("DiLepton");
+    produces<std::vector<Ko::ZCandidate> >("DiLepton");
     produces<std::vector<T1> >("Lepton1");
     produces<std::vector<T2> >("Lepton2");
 
@@ -113,8 +111,8 @@ class ZFilter : public edm::EDFilter {
   {
     bool accept = false;
 
-    std::auto_ptr<std::vector<vallot::ZCandidate> > dilp(new std::vector<vallot::ZCandidate>());
-    std::auto_ptr<std::vector<vallot::ZCandidate> > seldilp(new std::vector<vallot::ZCandidate>());
+    std::auto_ptr<std::vector<Ko::ZCandidate> > dilp(new std::vector<Ko::ZCandidate>());
+    std::auto_ptr<std::vector<Ko::ZCandidate> > seldilp(new std::vector<Ko::ZCandidate>());
     std::auto_ptr<std::vector<T1> > lep1(new std::vector<T1>());
     std::auto_ptr<std::vector<T2> > lep2(new std::vector<T2>());
     std::auto_ptr<std::vector<T1> > sellep1(new std::vector<T1>());
@@ -125,8 +123,6 @@ class ZFilter : public edm::EDFilter {
     iEvent.getByLabel(muonLabel1_,muons1_);
     iEvent.getByLabel(muonLabel2_,muons2_);
 
-    bool isIso =  false;
-
     for(unsigned i = 0; i != muons1_->size(); i++){
       for(unsigned j = 0; j != muons2_->size(); j++){
         T1 it1 = muons1_->at(i);
@@ -135,8 +131,8 @@ class ZFilter : public edm::EDFilter {
         const bool match = MatchObjects( it1.p4(), it2.p4(), true);
         if(match) continue;
 
-        vallot::Lepton lepton1(it1.p4(), (int) it1.charge());
-        vallot::Lepton lepton2(it2.p4(), (int) it2.charge());
+        Ko::Lepton lepton1(it1.p4(), (int) it1.charge());
+        Ko::Lepton lepton2(it2.p4(), (int) it2.charge());
 
         reco::isodeposit::Direction Dir1 = Direction(it1.eta(),it1.phi());
         reco::isodeposit::Direction Dir2 = Direction(it2.eta(),it2.phi());
@@ -171,14 +167,13 @@ class ZFilter : public edm::EDFilter {
         lepton1.setIsoDeposit( trackIso1, ecalIso1, hcalIso1);
         lepton2.setIsoDeposit( trackIso2, ecalIso2, hcalIso2);
    
-        bool iso = lepton1.relIso03() < relIso1_ && lepton2.relIso03() < relIso2_;
+        bool iso = lepton1.relpfIso03() < relIso1_ && lepton2.relpfIso03() < relIso2_;
         bool opp = it1.charge() * it2.charge() < 0;
 
-        vallot::ZCandidate dimuon(lepton1, lepton2);
+        Ko::ZCandidate dimuon(lepton1, lepton2);
 
 
         if( iso && opp){
-          isIso = true;
           seldilp->push_back( dimuon );
           sellep1->push_back( (*muons1_)[i] );
           sellep2->push_back( (*muons2_)[j] );      
@@ -203,17 +198,11 @@ class ZFilter : public edm::EDFilter {
       accept = true;
     }
 
-    //only keep isolated pair when filterIso is ON:
-    if( filterIso_ && !isIso){
-      accept = false;
-    }
-
     iEvent.put(dilp,"DiLepton");
     iEvent.put(lep1,"Lepton1");
     iEvent.put(lep2,"Lepton2");
 
-    if(applyFilter_) return accept;
-    else return true;
+    return accept;
 
   }
 
@@ -236,14 +225,12 @@ class ZFilter : public edm::EDFilter {
     else        return ( dRval < 0.025 && dPtRel < 0.025 );
   }
 
-  bool applyFilter_;
-  bool filterIso_;
+
   edm::InputTag muonLabel1_;
   edm::InputTag muonLabel2_;
   double min_;
   double max_;
   double relIso1_;
   double relIso2_;
-
 };
 

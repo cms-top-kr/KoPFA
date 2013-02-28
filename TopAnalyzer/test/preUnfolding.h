@@ -106,7 +106,7 @@ TH2F* getResponseM( vector<std::string> mcPath, vector<std::string> rdPath, stri
     int entries = tree->GetEntries();
 
     TCut mcCutStr = "";
-    mcCutStr = Form("%s*(%s)", "puweight", (const char*)(cut));
+    mcCutStr = Form("%s*(%s)", "weight", (const char*)(cut));
 
     TH2F *h2Temp = new TH2F(Form("h2_response_m_%s_%s",name.Data(),decayMode[i].Data()),Form("h2_response_m_%s",var.Data()),nDet,detBins,nGen,genBins);
     if(split)

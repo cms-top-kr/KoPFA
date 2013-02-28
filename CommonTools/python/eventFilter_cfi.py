@@ -12,6 +12,5 @@ from HLTrigger.HLTfilters.hltHighLevel_cfi import *
 EventFilter = hltHighLevel.clone()
 EventFilter.TriggerResultsTag = cms.InputTag("TriggerResults","","PAT")
 EventFilter.HLTPaths = cms.vstring('primaryVertexFilterPath','HBHENoiseFilterPath','noscrapingFilterPath')
-EventFilter.andOr = cms.bool(False)
 #EventFilter.HLTPaths = cms.vstring('primaryVertexFilterPath','HBHENoiseFilterPath','noscrapingFilterPath','totalKinematicsFilterPath')
 #EventFilter.throw = cms.bool(False)

@@ -25,16 +25,6 @@ ZJets = False
 ZtauDecay = False
 runOn2012 = True
 
-#Data
-#process.load("KoPFA.CommonTools.Sources.CMG.V5_4_0.RD.Run2012.patTuple_Run2012ADoubleMu_cff")
-#MC
-process.load("KoPFA.CommonTools.Sources.CMG.V5_4_0.MC.Summer12.patTuple_TTbarTuneZ2_cff")
-
-from CMGTools.Common.Tools.applyJSON_cff import applyJSON
-json = '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions12/8TeV/Prompt/Cert_190456-194479_8TeV_PromptReco_Collisions12_JSON.txt'
-if not runOnMC:
-    applyJSON(process, json )
-
 if runOn2012 == True:
   #############2012 analysis######################################
   process.PUweight.PileUpRD   = PileUpRD2012
@@ -72,27 +62,6 @@ process.JetEnergyScale.jetLabel = cms.InputTag('selectedPatJetsCHS')
 process.JetEnergyScale.metLabel = cms.InputTag('patMETs')
 ###################################################################
 
-##### This is only for MC ##################
-if runOnMC == True:
-  process.JetEnergyScale.globalTag = cms.untracked.string('START52_V11')
-  process.JetEnergyScale.doResJec = cms.untracked.bool(False)
-
-  if ZJets == True:
-    process.GenZmassFilter.applyFilter = True
-    process.GenZmassFilter.decayMode = [11, 13]
-  if ZtauDecay == True:
-    process.GenZmassFilter.applyFilter = True
-    process.GenZmassFilter.decayMode = [15]
-  if TTbar == True:
-    process.topWLeptonGenFilter.applyFilter = True
-  if TTbarOthers == True:
-    process.topWLeptonGenFilter.applyFilter = True
-    process.p.replace(process.topDecayGenFilter,~process.topDecayGenFilter)
-    process.p2.replace(process.topDecayGenFilter,~process.topDecayGenFilter)
-    process.p3.replace(process.topDecayGenFilter,~process.topDecayGenFilter)
-
-#############################################
-
 from PhysicsTools.PatAlgos.tools.helpers import cloneProcessingSnippet
 process.BaseSequenceMuMu = cloneProcessingSnippet(process, process.BaseSequence, 'MuMu')
 process.BaseSequenceMuEl = cloneProcessingSnippet(process, process.BaseSequence, 'MuEl')
@@ -119,6 +88,35 @@ process.p3 = cms.Path(
 process.TFileService = cms.Service("TFileService",
     fileName = cms.string('vallot.root')
 )
+
+#Data
+#process.load("KoPFA.CommonTools.Sources.CMG.V5_4_0.RD.Run2012.patTuple_Run2012ADoubleMu_cff")
+#MC
+process.load("KoPFA.CommonTools.Sources.CMG.V5_4_0.MC.Summer12.patTuple_TTbarTuneZ2_cff")
+
+from CMGTools.Common.Tools.applyJSON_cff import applyJSON
+json = '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions12/8TeV/Prompt/Cert_190456-194479_8TeV_PromptReco_Collisions12_JSON.txt'
+if not runOnMC:
+    applyJSON(process, json )
+
+##### This is only for MC ##################
+if runOnMC == True:
+  process.JetEnergyScale.globalTag = cms.untracked.string('START52_V11')
+  process.JetEnergyScale.doResJec = cms.untracked.bool(False)
+
+  if ZJets == True: 
+    process.GenZmassFilter.applyFilter = True
+    process.GenZmassFilter.decayMode = [11, 13]
+  if ZtauDecay == True:
+    process.GenZmassFilter.applyFilter = True
+    process.GenZmassFilter.decayMode = [15]
+  if TTbar == True:
+    process.topWLeptonGenFilter.applyFilter = True
+  if TTbarOthers == True:
+    process.topWLeptonGenFilter.applyFilter = True
+    process.p.replace(process.topWLeptonGenFilter,~process.topWLeptonGenFilter)
+
+#############################################
 
 #############This is only for combining three channels#######################
 

@@ -2,11 +2,11 @@ void addTopVariables(TopAnalyzerLite* analyzer){
   analyzer->addMonitorPlot("ZMass", "ZMass", "Dilepton mass;Dilepton Mass (GeV/c^{2});Events/5 GeV/c^{2}", 40, 0, 250, 0.1, 1500);
   analyzer->addMonitorPlot("ZMassFinal", "ZMass", "Dilepton mass;Dilepton Mass (GeV/c^{2});Events/40 GeV/c^{2}", 5, 0, 250, 0.1, 1500);
 
-  analyzer->addMonitorPlot("nJet30log", "@jetspt30.size()", "Jet Multiplicity;Jet Multiplicity;Events", 10, 0, 10, 0.05, 20000);
+  analyzer->addMonitorPlot("nJetlog", "@jetspt30.size()", "Jet Multiplicity;Jet Multiplicity;Events", 10, 0, 10, 0.05, 20000);
   analyzer->addMonitorPlot("nVertexlog", "nvertex", "Vertex Multiplicity;Vertex Multiplicity;Events", 25, 0, 25, 0.05, 5000);
   analyzer->addMonitorPlot("nVertex", "nvertex", "Vertex Multiplicity;Vertex Multiplicity;Events", 30, 0, 30, 0, 10,false);
   analyzer->addMonitorPlot("METlog", "MET", "Missing E_{T};Missing E_{T} (GeV);Events", 18, 0, 180, 0.1, 5000);
-  analyzer->addMonitorPlot("nJet30", "@jetspt30.size()", "Jet Multiplicity;Jet Multiplicity;Events", 10, 0, 10, 0.1, 3,false);
+  analyzer->addMonitorPlot("nJet", "@jetspt30.size()", "Jet Multiplicity;Jet Multiplicity;Events", 10, 0, 10, 0.1, 3,false);
   analyzer->addMonitorPlot("MET", "MET", "Missing E_{T};Missing E_{T} (GeV);Events", 18, 0, 180, 0.1, 1.5, false);
   analyzer->addMonitorPlot("METQCD", "MET", "Missing E_{T};Missing E_{T} (GeV);Events", 18, 0, 180, 0.1, 150.0, false);
 
@@ -15,12 +15,12 @@ void addTopVariables(TopAnalyzerLite* analyzer){
   analyzer->addMonitorPlot("eta1", "eta1", "Leading #eta;#eta;Events/0.2", 35, -3.5, 3.5, 0.1, 100000);
   analyzer->addMonitorPlot("eta2", "eta1", "Second leading lepton #eta;#eta;Events/0.2", 35, -3.5, 3.5, 0.1, 100000);
 
-  analyzer->addMonitorPlot("jet1pt30", "jetspt30[0].pt()", "Leading jet p_{T};p_{T} (GeV/c);Events/10 GeV/c",27, 50, 500, 0.1, 100000);
-  analyzer->addMonitorPlot("jet2pt30", "jetspt30[1].pt()", "Second leading jet p_{T};p_{T} (GeV/c);Events/10 GeV/c",27, 50, 500, 0.1, 100000);
-  analyzer->addMonitorPlot("jet1eta30", "jetspt30[0].eta()", "Leading #eta;#eta;Events/0.2", 35, -3.5, 3.5, 0.1, 100000);
-  analyzer->addMonitorPlot("jet2eta30", "jetspt30[1].eta()", "Second leading jet #eta;#eta;Events/0.2", 35, -3.5, 3.5, 0.1, 100000);
-  analyzer->addMonitorPlot("jet1phi30", "jetspt30[0].phi()", "Leading #phi;#phi (Radian);Events/0.2 rad.", 35, -3.5, 3.5, 0.1, 100000);
-  analyzer->addMonitorPlot("jet2phi30", "jetspt30[1].phi()", "Second leading jet #phi;#phi (Radian);Events/0.2 rad.", 35, -3.5, 3.5, 0.1, 100000);
+  analyzer->addMonitorPlot("jet1pt", "jetspt30[0].pt()", "Leading jet p_{T};p_{T} (GeV/c);Events/10 GeV/c",27, 50, 500, 0.1, 100000);
+  analyzer->addMonitorPlot("jet2pt", "jetspt30[1].pt()", "Second leading jet p_{T};p_{T} (GeV/c);Events/10 GeV/c",27, 50, 500, 0.1, 100000);
+  analyzer->addMonitorPlot("jet1eta", "jetspt30[0].eta()", "Leading #eta;#eta;Events/0.2", 35, -3.5, 3.5, 0.1, 100000);
+  analyzer->addMonitorPlot("jet2eta", "jetspt30[1].eta()", "Second leading jet #eta;#eta;Events/0.2", 35, -3.5, 3.5, 0.1, 100000);
+  analyzer->addMonitorPlot("jet1phi", "jetspt30[0].phi()", "Leading #phi;#phi (Radian);Events/0.2 rad.", 35, -3.5, 3.5, 0.1, 100000);
+  analyzer->addMonitorPlot("jet2phi", "jetspt30[1].phi()", "Second leading jet #phi;#phi (Radian);Events/0.2 rad.", 35, -3.5, 3.5, 0.1, 100000);
 
   analyzer->addMonitorPlot("Iso03lep1","relIso1","relIso03lep1;relIso;Events", 40, 0, 0.4, 0.1, 20000);
   analyzer->addMonitorPlot("Iso03lep2","relIso2","relIso03lep2;relIso;Events", 40, 0, 0.4, 0.1, 20000);
@@ -52,8 +52,8 @@ void addTopVariables(TopAnalyzerLite* analyzer){
   analyzer->addMonitorPlot("maosM", "ttbar.maosM()", "ttbar invariant mass;t#bar{t} invariant mass;Events/50 GeV", 32, 200, 1800, 0.1, 0.9, false);
   analyzer->addMonitorPlot("topMass1", "ttbar.leg1().M()", "blv mass;blv mass;Events/10 GeV", 30, 0, 300, 0.1, 0.9, false);
   analyzer->addMonitorPlot("topMass2", "ttbar.leg2().M()", "blv mass;blv mass;Events/10 GeV", 30, 0, 300, 0.1, 0.9, false);
-  analyzer->addMonitorPlot("nbJet30_TCHEL", "nbjets30_TCHEL", "b-Jet Multiplicity;b-Jet Multiplicity (TCHEL);Events", 6, 0, 6, 0.1, 3,false);
-  analyzer->addMonitorPlot("nbJet30_CSVL", "nbjets30_CSVL", "b-Jet Multiplicity;b-Jet Multiplicity (CSVL);Events", 6, 0, 6, 0.1, 3,false);
-  analyzer->addMonitorPlot("nbJet30_CSVM", "nbjets30_CSVM", "b-Jet Multiplicity;b-Jet Multiplicity (CSVM);Events", 6, 0, 6, 0.1, 3,false);
-  analyzer->addMonitorPlot("nbJet30_CSVT", "nbjets30_CSVT", "b-Jet Multiplicity;b-Jet Multiplicity (CSVT);Events", 6, 0, 6, 0.1, 3,false);
+  analyzer->addMonitorPlot("nbJet_TCHEL", "nbjets_TCHEL", "b-Jet Multiplicity;b-Jet Multiplicity (TCHEL);Events", 6, 0, 6, 0.1, 3,false);
+  analyzer->addMonitorPlot("nbJet_CSVL", "nbjets_CSVL", "b-Jet Multiplicity;b-Jet Multiplicity (CSVL);Events", 6, 0, 6, 0.1, 3,false);
+  analyzer->addMonitorPlot("nbJet_CSVM", "nbjets_CSVM", "b-Jet Multiplicity;b-Jet Multiplicity (CSVM);Events", 6, 0, 6, 0.1, 3,false);
+  analyzer->addMonitorPlot("nbJet_CSVT", "nbjets_CSVT", "b-Jet Multiplicity;b-Jet Multiplicity (CSVT);Events", 6, 0, 6, 0.1, 3,false);
 }

@@ -1,16 +1,34 @@
-#!/usr/bin/env python
+#!/usr/bin/python
 
 from optparse import OptionParser
 import sys,os, pprint, re
-import CMGTools.Production.eostools as castortools
+import castortools
 
-    
+
+
+def sourceFileList( files ):
+    print '''
+import FWCore.ParameterSet.Config as cms
+
+source = cms.Source(
+"PoolSource",
+'''
+    print 'noEventSort = cms.untracked.bool(True),'
+    print 'duplicateCheckMode = cms.untracked.string("noDuplicateCheck"),'
+
+    print "fileNames = cms.untracked.vstring("
+    for file in files:
+        fileLine = "'file:%s'," % os.path.abspath(file)
+        print fileLine
+        print ")"
+        print ")"    
+
+
 parser = OptionParser()
 parser.usage = "%prog <dir> <regexp> : format a set of root files matching a regexp in a directory, as an input to the PoolSource. \n\nExample (just try!):\nsourceFileList.py /castor/cern.ch/user/c/cbern/CMSSW312/SinglePions '.*\.root'"
-parser.add_option("-c", "--check", dest="check", default=False, action='store_true',help='Check filemask if available')
+
 
 (options,args) = parser.parse_args()
-
 
 if len(args) != 2:
     parser.print_help()
@@ -19,33 +37,26 @@ if len(args) != 2:
 dir = args[0]
 regexp = args[1]
 
+castor = castortools.isCastorDir( dir )
 
-exists = castortools.fileExists( dir )
-if not exists:
-    print 'sourceFileList: directory does not exist. Exiting'
-    sys.exit(1)
+protocol = 'file:'
+if castor:
+    protocol = 'root://castorcms/'
 
+files = castortools.matchingFiles( dir, regexp,
+                                   protocol=protocol, castor=castor)
 
-files = castortools.matchingFiles( dir, regexp)
+print '''
+import FWCore.ParameterSet.Config as cms
 
-mask = "IntegrityCheck"
-file_mask = []  
-if options.check:
-    file_mask = castortools.matchingFiles(dir, '^%s_.*\.txt$' % mask)
-bad_files = {}    
-if options.check and file_mask:
-    from CMGTools.Production.edmIntegrityCheck import PublishToFileSystem
-    p = PublishToFileSystem(mask)
-    report = p.get(dir)
-    if report is not None and report:
-        dup = report.get('ValidDuplicates',{})
-        for name, status in report['Files'].iteritems():
-            if not status[0]:
-                bad_files[name] = 'MarkedBad'
-            elif dup.has_key(name):
-                bad_files[name] = 'ValidDup'
-
-
-from CMGTools.Production.sourceFileListCff import sourceFileListCff
-print sourceFileListCff( files, bad_files)
-
+source = cms.Source(
+\t"PoolSource",
+'''
+print '\tnoEventSort = cms.untracked.bool(True),'
+print '\tduplicateCheckMode = cms.untracked.string("noDuplicateCheck"),'
+print "\tfileNames = cms.untracked.vstring("
+for file in files:
+    fileLine = "\t\t'%s'," % file
+    print fileLine
+print "\t)"
+print ")"

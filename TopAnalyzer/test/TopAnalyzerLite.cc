@@ -22,14 +22,11 @@
 
 #include "TPRegexp.h"
 
-#include "TEntryList.h"
-
 #include <iostream>
 #include <fstream>
 #include <set>
 #include <algorithm>
 #include <sstream>
-#include <iomanip>
 
 using namespace std;
 
@@ -60,11 +57,12 @@ public:
                       const string xBinsStr,
                       const double ymin = 0, const double ymax = 0, const bool doLogy = true);
   void setEventWeightVar(const string eventWeightVar = "weight");
+  void setEventWeightDY(const double w1=1, const double w2=1, const double w3=1, const double w4=1, const double w5=1, const double w6=1, const double w7=1);
   void setEventWeight(const string, const double* w, const int nW);
   void setScanVariables(const string scanVariables);
 
   void applyCutSteps();
-  void applySingleCut(const TCut cut, const TString monitirPlotNamesStr, int istep = 0);
+  void applySingleCut(const TCut cut, const TString monitirPlotNamesStr);
 
   void drawEffCurve(const TCut cut, const string varexp, const string scanPoints, const string imgPrefix = "");
   void drawEffCurve(const TCut cut, const string varexp, std::vector<double>& scanPoints, const string imgPrefix = "");
@@ -131,9 +129,8 @@ private:
 
   string imageOutDir_;
 
-  void prepareEventList(const TCut &cut, int istep);
   void plot(const string name, TCut cut, MonitorPlot& monitorPlot, const double plotScale = 1.0, const double wDY = 1.0);
-  void printStat(const string& name, TCut cut, int cutStep=0);
+  void printStat(const string& name, TCut cut, double cutStep=0);
   void addMC(vector<MCSample>& mcSetup,
              const string name, const string label,
              const string fileName, const double xsec, const double nEvents,
@@ -146,7 +143,6 @@ private:
   string eventWeightVar_;
   map<string, vector<double> > wMap_; 
   map<TString, vector<Stat> > statsMap_; 
-  map<TString, vector<TEntryList *> > entryList_;
   TDirectory* baseRootDir_;
 };
 
@@ -272,62 +268,6 @@ void TopAnalyzerLite::addDataBkg(const string name, const string label,
   data.chain->Add(fileName.c_str());
 }
 
-void TopAnalyzerLite::prepareEventList(const TCut &cut, int istep)
-{
-  char entrylistname[100];
-  char puttoentrylistname[100];
-	
-  if (realDataChain_) {
-    sprintf(entrylistname, "realdata%d", istep);
-    sprintf(puttoentrylistname, ">> %s", entrylistname);
-    realDataChain_->Draw(puttoentrylistname, cut, "entrylist");
-    TEntryList *list = (TEntryList *)gDirectory->Get(entrylistname);
-    if (list==0) cout << "error!" << endl;
-    realDataChain_->SetEntryList(list);
-    entryList_["realdata"].push_back(list);
-    if( entryList_["realdata"].back() == 0 ) cout << "Error!" << endl;
-  }
-
-  for ( unsigned int i=0; i<mcSigs_.size(); ++i )
-  {
-    MCSample& mcSample = mcSigs_[i];
-    TCut finalCut = cut + mcSample.cut;
-    sprintf(entrylistname, "mcsig%d_%d", i, istep);
-    sprintf(puttoentrylistname, ">> %s", entrylistname);
-    mcSample.chain->Draw(puttoentrylistname, finalCut, "entrylist");
-    TEntryList *list = (TEntryList *)gDirectory->Get(entrylistname);
-    mcSample.chain->SetEntryList(list);
-    entryList_[Form("mcsig%d",i)].push_back(list);
-  }
-  for ( unsigned int i=0; i<mcBkgs_.size(); ++i )
-  {
-    MCSample& mcSample = mcBkgs_[i];
-    TCut finalCut = cut + mcSample.cut;
-    sprintf(entrylistname, "mcbkg%d_%d", i, istep);
-    sprintf(puttoentrylistname, ">> %s", entrylistname);
-    mcSample.chain->Draw(puttoentrylistname, finalCut, "entrylist");
-    TEntryList *list = (TEntryList *)gDirectory->Get(entrylistname);
-    mcSample.chain->SetEntryList(list);
-    entryList_[Form("mcbkg%d",i)].push_back(list);
-  }
-  for ( unsigned int i=0; i<dataBkgs_.size(); ++i )
-  {
-    DataSample& sample = dataBkgs_[i];
-    TString cutStr;
-    cutStr = cut;
-    map<string, string>::const_iterator cit;
-    for(cit=sample.replaceCuts.begin(); cit != sample.replaceCuts.end() ; cit++){
-      cutStr.ReplaceAll((*cit).first, (*cit).second);
-    }
-    sprintf(entrylistname, "databkg%d_%d", i, istep);
-    sprintf(puttoentrylistname, ">> %s", entrylistname);
-    sample.chain->Draw(puttoentrylistname, cutStr, "entrylist");
-    TEntryList *list = (TEntryList *)gDirectory->Get(entrylistname);
-    sample.chain->SetEntryList(list);
-    entryList_[Form("databkg%d",i)].push_back(list);
-  }
-}
-
 void TopAnalyzerLite::replaceDataBkgCut(const string name, const string from, const string to)
 {
   for ( unsigned int i=0; i<dataBkgs_.size(); ++i )
@@ -342,7 +282,8 @@ void TopAnalyzerLite::addRealData(const string fileName, const double lumi)
 {
   lumi_ += lumi;
   if ( fileName == "" ) return;
-if ( !realDataChain_ )
+
+  if ( !realDataChain_ )
   {
     const string chainName = subDirName_+"/tree";
     baseRootDir_->cd();
@@ -430,7 +371,6 @@ void TopAnalyzerLite::applyCutSteps()
     cut = cut && cuts_[i].cut;
     const vector<string>& monitorPlotNames = cuts_[i].monitorPlotNames;
     const double plotScale = cuts_[i].plotScale;
-    prepareEventList(cut, i);
     printStat(Form("Step_%d", i+1), cut, i);
     for ( unsigned int j = 0; j < monitorPlotNames.size(); ++ j)
     {
@@ -442,35 +382,31 @@ void TopAnalyzerLite::applyCutSteps()
     }
   }
 
-  //cout << "Final" << endl;
-  //if ( writeSummary_ ) fout_ << "Final" << endl;
-  //TCut finalCut = "";
-  //for ( unsigned int i=0; i<cuts_.size(); ++i )
-  //{
-  //  finalCut = finalCut && cuts_[i].cut;
-  //}
-  //if ( realDataChain_ )
-  //{
-    //realDataChain_->Scan(scanVariables_.c_str());
-    //cout << "Number of entries after final selection = " << entryList_["realdata"].back()->GetN() << endl;
-  //}
+  cout << "Final" << endl;
+  if ( writeSummary_ ) fout_ << "Final" << endl;
+  TCut finalCut = "";
+  for ( unsigned int i=0; i<cuts_.size(); ++i )
+  {
+    finalCut = finalCut && cuts_[i].cut;
+  }
+  if ( realDataChain_ )
+  {
+    realDataChain_->Scan(scanVariables_.c_str(), finalCut);
+    cout << "Number of entries after final selection = " << realDataChain_->GetEntries(finalCut) << endl;
+  }
 
   if ( writeSummary_ && realDataChain_ )
   {
-
-    printCutFlow();
     const string tmpFileName = imageOutDir_+"/tmp.txt";
 
     ((TTreePlayer*)(realDataChain_->GetPlayer()))->SetScanRedirect(true);
     ((TTreePlayer*)(realDataChain_->GetPlayer()))->SetScanFileName(tmpFileName.c_str());
-    //realDataChain_->Scan(scanVariables_.c_str(), finalCut);
-    realDataChain_->Scan(scanVariables_.c_str());
+    realDataChain_->Scan(scanVariables_.c_str(), finalCut);
     ((TTreePlayer*)(realDataChain_->GetPlayer()))->SetScanRedirect(false);
 
     ifstream tmpFile(tmpFileName.c_str());
     copy(istreambuf_iterator<char>(tmpFile), istreambuf_iterator<char>(), ostreambuf_iterator<char>(fout_));
-    //fout_ << "Number of entries after final selection = " << realDataChain_->GetEntries(finalCut) << endl;
-    fout_ << "Number of entries after final selection = " << entryList_["realdata"].back()->GetN() << endl;
+    fout_ << "Number of entries after final selection = " << realDataChain_->GetEntries(finalCut) << endl;
     gSystem->Exec(("rm -f "+tmpFileName).c_str());
   }
 }
@@ -495,7 +431,7 @@ void TopAnalyzerLite::plot(const string name, const TCut cut, MonitorPlot& monit
   TH1F* hData = new TH1F(dataHistName, title.c_str(), nBins, xBins);
   histograms_.Add(hData);
 
-  if ( realDataChain_ ) realDataChain_->Project(dataHistName, varexp.c_str());
+  if ( realDataChain_ ) realDataChain_->Project(dataHistName, varexp.c_str(), cut);
   hData->AddBinContent(nBins, hData->GetBinContent(nBins+1));
   hData->Sumw2();
   hData->SetMarkerStyle(20);
@@ -515,15 +451,17 @@ void TopAnalyzerLite::plot(const string name, const TCut cut, MonitorPlot& monit
   LabeledPlots stackedPlots;
   LabeledPlots sigPlots; // Keep list of signal plots if doStackSignal == false
 
+  TCut mcCutStr = "";
+  if ( eventWeightVar_.empty() ) mcCutStr = cut;
+  else mcCutStr = Form("%s*(%s)", eventWeightVar_.c_str(), (const char*)(cut));
+
   for ( unsigned int i=0; i<mcSigs_.size(); ++i )
   {
     MCSample& mcSample = mcSigs_[i];
     TString mcSigHistName = Form("hMCSig_%s_%s", mcSample.name.c_str(), name.c_str());
     TH1F* hMCSig = new TH1F(mcSigHistName, title.c_str(), nBins, xBins);
 
-    TCut mcWeightStr = Form("%s", eventWeightVar_.c_str());
-
-    mcSample.chain->Project(mcSigHistName, varexp.c_str(),mcWeightStr);
+    mcSample.chain->Project(mcSigHistName, varexp.c_str(), mcCutStr + mcSample.cut);
     hMCSig->AddBinContent(nBins, hMCSig->GetBinContent(nBins+1));
     hMCSig->Scale(lumi_*mcSample.xsec/mcSample.nEvents);
 
@@ -577,8 +515,7 @@ void TopAnalyzerLite::plot(const string name, const TCut cut, MonitorPlot& monit
     TString mcHistName = Form("hMC_%s_%s", mcSample.name.c_str(), name.c_str());
     TH1F* hMC = new TH1F(mcHistName, title.c_str(), nBins, xBins);
 
-    TCut mcWeightStr = Form("%s", eventWeightVar_.c_str());
-    mcSample.chain->Project(mcHistName, varexp.c_str(),mcWeightStr);
+    mcSample.chain->Project(mcHistName, varexp.c_str(), mcCutStr + mcSample.cut);
     hMC->AddBinContent(nBins, hMC->GetBinContent(nBins+1));
     hMC->Scale(lumi_*mcSample.xsec/mcSample.nEvents);
 
@@ -631,7 +568,14 @@ void TopAnalyzerLite::plot(const string name, const TCut cut, MonitorPlot& monit
     TString histName = Form("hDataBkg_%s_%s", sample.name.c_str(), name.c_str());
     TH1F* hBkg = new TH1F(histName, title.c_str(), nBins, xBins);
 
-    sample.chain->Project(histName, varexp.c_str());
+    TString cutStr;
+    cutStr = cut;
+    map<string, string>::const_iterator cit;
+    for(cit=sample.replaceCuts.begin(); cit != sample.replaceCuts.end() ; cit++){
+      cutStr.ReplaceAll((*cit).first, (*cit).second);
+    }
+
+    sample.chain->Project(histName, varexp.c_str(), cutStr);
     hBkg->AddBinContent(nBins, hBkg->GetBinContent(nBins+1));
     hBkg->Scale(sample.norm);
 
@@ -714,7 +658,7 @@ void TopAnalyzerLite::plot(const string name, const TCut cut, MonitorPlot& monit
     legend->AddEntry(h, label, "l");
   }
 
-  TCanvas* c = new TCanvas(Form("c_%s_%s", name.c_str(), subDirName_.c_str()), name.c_str(), 1);
+  TCanvas* c = new TCanvas(Form("c_%s", name.c_str()), name.c_str(), 1);
   if ( ymax == 0 )
   {
     const int dataMaxBin = hData->GetMaximumBin();
@@ -749,7 +693,7 @@ void TopAnalyzerLite::plot(const string name, const TCut cut, MonitorPlot& monit
   }
 }
 
-void TopAnalyzerLite::printStat(const string& name, TCut cut, int cutStep)
+void TopAnalyzerLite::printStat(const string& name, TCut cut, double cutStep)
 {
   cout << "-------------------------\n";
   cout << "   " << name << endl;
@@ -760,7 +704,7 @@ void TopAnalyzerLite::printStat(const string& name, TCut cut, int cutStep)
     fout_ << "   " << name << endl;
   }
 
-  const double nData = realDataChain_ ? entryList_["realdata"].at(cutStep)->GetN() : 0;
+  const double nData = realDataChain_ ? realDataChain_->GetEntries(cut) : 0;
 
   double nTotal = 0, nSignal = 0;
   double nTotalErr2 = 0;
@@ -774,7 +718,7 @@ void TopAnalyzerLite::printStat(const string& name, TCut cut, int cutStep)
     MCSample& mcSample = mcSigs_[i];
 
     const double norm = lumi_*mcSample.xsec/mcSample.nEvents;
-    const double nEvents = entryList_[Form("mcsig%d",i)].at(cutStep)->GetN()*norm;
+    const double nEvents = mcSample.chain->GetEntries(cut + mcSample.cut)*norm;
     const double nEventsErr2 = nEvents*norm;
 
     // Merge statistics with same labels
@@ -806,12 +750,9 @@ void TopAnalyzerLite::printStat(const string& name, TCut cut, int cutStep)
     if( it != wMap_.end() ) {
       scale = it->second[cutStep];
     }
+
     const double norm = lumi_*mcSample.xsec/mcSample.nEvents;
-    double rawN = 0;
-    if(  entryList_[Form("mcbkg%d",i)].at(cutStep) != NULL ){
-      rawN = entryList_[Form("mcbkg%d",i)].at(cutStep)->GetN();
-    } 
-    const double nEvents = rawN*norm*scale;
+    const double nEvents = mcSample.chain->GetEntries(cut + mcSample.cut)*norm*scale;
     const double nEventsErr2 = nEvents*norm;
 
     // Merge statistics with same labels
@@ -855,7 +796,7 @@ void TopAnalyzerLite::printStat(const string& name, TCut cut, int cutStep)
     }
 
     const double norm = sample.norm;
-    const double nEvents = entryList_[Form("databkg%d",i)].at(cutStep)->GetN()*norm*scale;
+    const double nEvents = sample.chain->GetEntries(cutStr)*norm*scale;
     const double nEventsErr2 = nEvents*norm;
 
     vector<Stat>::iterator matchedStatObj = stats.end();
@@ -935,7 +876,7 @@ void TopAnalyzerLite::printStat(const string& name, TCut cut, int cutStep)
   statsMap_[name] = stats;
 }
 
-void TopAnalyzerLite::applySingleCut(const TCut cut, const TString monitorPlotNamesStr, int istep)
+void TopAnalyzerLite::applySingleCut(const TCut cut, const TString monitorPlotNamesStr)
 {
   static int singleCutUniqueId = 0;
 
@@ -945,8 +886,7 @@ void TopAnalyzerLite::applySingleCut(const TCut cut, const TString monitorPlotNa
   cout << "----------------------------\n";
   cout << "Result of single cut" << endl;
   cout << "Cut = " << cut << endl;
-  prepareEventList(cut, istep);
-  printStat(Form("SingleCut_%d", singleCutUniqueId), cut, istep);
+  printStat(Form("SingleCut_%d", singleCutUniqueId), cut);
   for ( int i=0; i<nPlots; ++i )
   {
     TObject* obj = monitorPlotNames->At(i);
@@ -1036,6 +976,18 @@ void TopAnalyzerLite::setScanVariables(const string scanVariables)
 void TopAnalyzerLite::setEventWeightVar(const string eventWeightVar)
 {
   eventWeightVar_ = eventWeightVar;
+}
+
+//to be removed
+void TopAnalyzerLite::setEventWeightDY(const double w1, const double w2, const double w3, const double w4, const double w5, const double w6, const double w7)
+{
+  wMap_["Z/#gamma* #rightarrow ll"].push_back(w1);
+  wMap_["Z/#gamma* #rightarrow ll"].push_back(w2);
+  wMap_["Z/#gamma* #rightarrow ll"].push_back(w3);
+  wMap_["Z/#gamma* #rightarrow ll"].push_back(w4);
+  wMap_["Z/#gamma* #rightarrow ll"].push_back(w5);
+  wMap_["Z/#gamma* #rightarrow ll"].push_back(w6);
+  wMap_["Z/#gamma* #rightarrow ll"].push_back(w7);
 }
 
 void TopAnalyzerLite::setEventWeight(const string sample, const double *w, const int nW)
@@ -1150,10 +1102,6 @@ void TopAnalyzerLite::drawEffCurve(const TCut cut, const string varexp, std::vec
 }
 
 void TopAnalyzerLite::printCutFlow(){
- 
-  fout_ << "Cut Flow Table as a latex format" << endl;
-  fout_ << "--------------------------------------\n";
-
   map<TString, vector<Stat> >::iterator it;  
   it = statsMap_.begin();
   int nSample = it->second.size();
@@ -1173,16 +1121,15 @@ void TopAnalyzerLite::printCutFlow(){
     it = statsMap_.begin();
     const string label = Form(form.Data(), (*it).second[i].label.c_str());
 
-    fout_ << label << " " ;
+    cout << label << " = " ;
     for( int k = 0; k != (int) statsMap_.size() ; k++){
       Stat& stat = (*it).second[i];
-      fout_ << " \t&" << setprecision(4) << stat.nEvents ;
-      if( k >= (int) statsMap_.size()-1 ) fout_ << " $\\pm$ " << setprecision(4) << sqrt(stat.nEventsErr2) ;
+      cout << stat.nEvents << " +- " << sqrt(stat.nEventsErr2) << "\t";
       nTotal[Form("Step_%d", k+1) ] += stat.nEvents;
       nTotalErr2[Form("Step_%d", k+1)] += stat.nEventsErr2;
       it++;
     }
-    fout_ << "\\\\ \n" ;
+    cout << "\n" ;
   } 
 
   map<TString, double >::iterator itTotal;
@@ -1190,18 +1137,19 @@ void TopAnalyzerLite::printCutFlow(){
   itTotal= nTotal.begin();
   itTotalErr2= nTotalErr2.begin();
 
-  fout_ << Form(form.Data(), "Total MC") << " " ;
+  cout << Form(form.Data(), "Total") << " = " ;
   for( int k = 0; k != (int) statsMap_.size() ; k++){
-    fout_ << " \t&" << setprecision(4) << (*itTotal).second ;
-    if( k >= (int) statsMap_.size()-1 ) fout_ << " $\\pm$ " << setprecision(4) << sqrt( (*itTotalErr2).second ) ;
+    cout << (*itTotal).second << " +- " << sqrt( (*itTotalErr2).second ) << "\t" ;
     itTotal++;
     itTotalErr2++;
   }
-  fout_ << "\\\\\\hline \n" ;
-  fout_ << Form(form.Data(), "Data") << " " ;  
+  cout << "\n" ;
+  cout << Form(form.Data(), "Data") << " = " ;  
+  TCut cut;
   for( int k = 0; k != (int) statsMap_.size() ; k++){
-    const double nData = realDataChain_ ? entryList_["realdata"].at(k)->GetN() : 0;
-    fout_ << " \t&" << nData  ;
+    cut = cut && cuts_[k].cut;
+    const double nData = realDataChain_ ? realDataChain_->GetEntries( cut ) : 0;
+    cout << nData <<  "\t" ;
   }
-  fout_ << "\\\\\\hline\\hline \n" ;
+  cout << "\n" ;
 }

@@ -18,26 +18,16 @@ void SetLabel(double x, double y, double lumi){
   label->DrawLatex(x,y-0.05,Form("%1.1f fb^{-1} at #sqrt{s} = 7 TeV",lumi/1000));
 }
 
-void SetLegendStyle(TLegend *leg, bool dynamic=false){
-  leg->SetTextSize(0.04);
-  leg->SetFillColor(0);
-  leg->SetFillStyle(0);
-  leg->SetLineColor(0);
-  leg->SetBorderSize(0);
-  leg->SetTextAlign(12);
+void SetLegendStyle(TLegend *l, bool dynamic=false){
+  l->SetTextSize(0.04);
+  l->SetFillColor(0);
+  l->SetLineColor(0);
 
   if( dynamic ){
-    //PAS-TOP-11-013
-    //l->SetX1NDC(1.0 - gStyle->GetPadRightMargin() - gStyle->GetTickLength() - 0.25);
-    //l->SetY1NDC(1.0 - gStyle->GetPadTopMargin()   - gStyle->GetTickLength() - 0.05 - (double)l->GetNRows()*0.04);
-    //l->SetX2NDC(1.0 - gStyle->GetPadRightMargin() - gStyle->GetTickLength());
-    //l->SetY2NDC(1.0 - gStyle->GetPadTopMargin()   - gStyle->GetTickLength());
- 
-    //Paper
-    leg->SetX1NDC(1.0 - gStyle->GetPadRightMargin() - gStyle->GetTickLength() - 0.3);
-    leg->SetY1NDC(1.0 - gStyle->GetPadTopMargin()   - gStyle->GetTickLength() - 0.05 * (double)(leg->GetNRows()));
-    leg->SetX2NDC(1.03 - gStyle->GetPadRightMargin() - gStyle->GetTickLength());
-    leg->SetY2NDC(1.0 - gStyle->GetPadTopMargin()   - 0.8*gStyle->GetTickLength());
+    l->SetX1NDC(1.0 - gStyle->GetPadRightMargin() - gStyle->GetTickLength() - 0.25);
+    l->SetY1NDC(1.0 - gStyle->GetPadTopMargin()   - gStyle->GetTickLength() - 0.05 - (double)l->GetNRows()*0.04);
+    l->SetX2NDC(1.0 - gStyle->GetPadRightMargin() - gStyle->GetTickLength());
+    l->SetY2NDC(1.0 - gStyle->GetPadTopMargin()   - gStyle->GetTickLength());
   }
 }
 
@@ -186,28 +176,21 @@ void SetHistoStyle_TOP11013(TH1* h, double lwidth, double lcolor, double lstyle,
   h->SetTitle(0);
   h->GetXaxis()->SetTitle(xtitle.Data());
   h->GetYaxis()->SetTitle(ytitle.Data());
+  h->GetXaxis()->SetTitleSize(0.04);
   h->GetXaxis()->SetLabelSize(0.04);
   h->GetXaxis()->SetLabelFont(42);
   h->GetXaxis()->SetLabelOffset(0.007);
+  h->GetXaxis()->SetTitleOffset(1.25);
   h->GetXaxis()->SetTitleFont(42);
+  h->GetYaxis()->SetTitleSize(0.04);
   h->GetYaxis()->SetLabelSize(0.04);
   h->GetYaxis()->SetLabelFont(42);
   h->GetYaxis()->SetLabelOffset(0.007);
+  h->GetYaxis()->SetTitleOffset(1.6);
   h->GetYaxis()->SetTitleFont(42);
   h->GetZaxis()->SetLabelFont(42);
   h->GetZaxis()->SetLabelOffset(0.007);
   h->GetZaxis()->SetTitleFont(42);
-  
-  //PAS
-  //h->GetXaxis()->SetTitleSize(0.04);
-  //h->GetYaxis()->SetTitleSize(0.04);
-  //h->GetXaxis()->SetTitleOffset(1.25);
-  //h->GetYaxis()->SetTitleOffset(1.6);
-  //Paper
-  h->GetXaxis()->SetTitleSize(0.05);
-  h->GetYaxis()->SetTitleSize(0.05);
-  h->GetYaxis()->SetTitleOffset(1.7);
-  h->GetXaxis()->SetTitleOffset(1.);
 }
 
 void StyleSimple(TH1* h1, TH1* h2, TString& xtitle, TString& ytitle ){
@@ -313,11 +296,11 @@ void DrawCMSLabels(bool cmsprelim=true, double luminosity=0.0, double textSize=0
 
   if (cmsprelim)
     {
-      label -> AddText(Form("CMS Preliminary, %3.1f fb^{-1} at #sqrt{s} = 7 TeV",luminosity/1000));
+      label -> AddText(Form("CMS Preliminary, %3.1f fb^{-1} at #sqrt{s}=7 TeV",luminosity/1000));
     }
   else
     {
-      label -> AddText(Form("CMS, %3.1f fb^{-1} at #sqrt{s} = 7 TeV",luminosity/1000));
+      label -> AddText(Form("%2.1f fb^{-1} at #sqrt{s}=7 TeV",luminosity));
     }
 
   label->SetFillStyle(0);

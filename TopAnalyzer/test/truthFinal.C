@@ -27,8 +27,7 @@ void truthFinal(){
   TFile * f_MadGraph = new TFile("$WORK/store/GenHisto/topGenHisto_madgraph.root");
   TFile * f_POWHEG = new TFile("$WORK/store/GenHisto/topGenHisto_powheg.root");
   TFile * f_MCNLO = new TFile("$WORK/store/GenHisto/topGenHisto_mcatnlo_v2.root");
-  //TFile * f_MCNLO_old = new TFile("$WORK/data/export/common/Top/ntuple/ttbar_ntuple_cteq6m_dilepton_v20111028.root");
-  TFile * f_MCNLO_old = new TFile("$WORK/public/store/top/PDF/ttbar_ntuple_cteq6m_dilepton_v20120130_PDFonly.root");
+  TFile * f_MCNLO_old = new TFile("$WORK/data/export/common/Top/ntuple/ttbar_ntuple_cteq6m_dilepton_v20111028.root");
 
   //truth level in visible phase space
   cout << "producing truth level plots..." << endl;
@@ -47,9 +46,9 @@ void truthFinal(){
   TH1* hMCNLOFull = (TH1*) f_MCNLO->Get("topDecayGenHisto/hMtt_Full");
   TH1* hMCNLOPtcl = (TH1*) f_MCNLO->Get("topDecayGenHisto/hMtt_DIL_Ptcl_NoTau");
   TH1* hMCNLOPton = (TH1*) f_MCNLO->Get("topDecayGenHisto/hMtt_DIL_Pton_NoTau");
-  TH1* hMCNLO = (TH1*) f_MCNLO_old->Get("hTTbarM");
-  TH1* hMCNLO_Up = (TH1*) f_MCNLO_old->Get("hTTbarM_Up");
-  TH1* hMCNLO_Down = (TH1*) f_MCNLO_old->Get("hTTbarM_Down");
+  TH1* hMCNLO = (TH1*) f_MCNLO_old->Get("hVisTTbarM");
+  TH1* hMCNLO_Up = (TH1*) f_MCNLO_old->Get("hVisTTbarM_Up");
+  TH1* hMCNLO_Down = (TH1*) f_MCNLO_old->Get("hVisTTbarM_Down");
 
   TFile* f = TFile::Open("truthFinal.root", "recreate");
 

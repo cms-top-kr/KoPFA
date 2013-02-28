@@ -25,9 +25,6 @@ namespace vallot{
 
     float M() const { return M_; }
     void SetM( float M ){ M_ = M; }
-
-    float Mt2() const { return Mt2_; }
-    void SetMt2( float Mt2 ){ Mt2_ = Mt2; }
     
     float Mbb() const { return Mbb_; }
     void SetMbb( float Mbb ){ Mbb_ = Mbb; }
@@ -56,7 +53,6 @@ namespace vallot{
     float Mbb_;
     std::vector<int> jets_;
     std::vector<int> jetsnotfromtop_;
-    float Mt2_;
 
   };
 

@@ -34,9 +34,11 @@ void unfolding(int k=4){
   //gStyle->SetOptStat(0000);
   gStyle->SetOptFit(0011);
 
-  TFile * file = new TFile("/afs/cern.ch/work/t/tjkim/public/store/top/TOP11013/unfold/preUnfolding.root");
-  TFile * file_acceptance = new TFile("/afs/cern.ch/work/t/tjkim/public/store/top/TOP11013/unfold/acceptance.root");
-  TFile * file_truthFinal = new TFile("/afs/cern.ch/work/t/tjkim/public/store/top/TOP11013/unfold/truthFinal.root");
+  TFile * file = new TFile("note_v4/preUnfolding.root");
+  TFile * file_acceptance = new TFile("note_v4/acceptance.root");
+  //TFile * file_acceptance = new TFile("$WORK/data/export/common/Top/ntuple/unfolding/v1/acceptance.root");
+  //TFile * file_truthFinal = new TFile("$WORK/data/export/common/Top/ntuple/unfolding/v1/truthFinal.root");
+  TFile * file_truthFinal = new TFile("note_v4/truthFinal.root");
   //response matrix
   TH2F * h2ResponseM = (TH2F*) file->Get("h2_response_m");
   //measured distribution
@@ -64,11 +66,9 @@ void unfolding(int k=4){
   TH1 * hGenMCNLO_Ptcl = (TH1*) file_truthFinal->Get("MCNLO_Ptcl");
   TH1 * hGenMCNLO_Pton = (TH1*) file_truthFinal->Get("MCNLO_Pton");
 
-  TH1 * hGenMCNLO = (TH1*) file_truthFinal->Get("hTTbarM");
-  TH1 * hGenMCNLO_Up = (TH1*) file_truthFinal->Get("hTTbarM_Up");
-  TH1 * hGenMCNLO_Down = (TH1*) file_truthFinal->Get("hTTbarM_Down");
-
-  TH1 * hNLOMtt = (TH1*) file_truthFinal->Get("nnll");
+  TH1 * hGenMCNLO = (TH1*) file_truthFinal->Get("hVisTTbarM");
+  TH1 * hGenMCNLO_Up = (TH1*) file_truthFinal->Get("hVisTTbarM_Up");
+  TH1 * hGenMCNLO_Down = (TH1*) file_truthFinal->Get("hVisTTbarM_Down");
 
   double lumi = 4982;
   bool print = true; //save plots
@@ -93,15 +93,15 @@ void unfolding(int k=4){
   bool HBBstyle = false;
 
   //Full correction: set norm = false for absolute X
-  FinalPlot(h_unfold, hGenDistMADGRAPH, hAcceptDistFull, hGenMADGRAPH_Full, lumi, "unfold_simple_full", "dSigmadM",  0.0001, 200, false, log, bincorr, print); 
+  //FinalPlot(h_unfold, hGenDistMADGRAPH, hAcceptDistFull, hGenMADGRAPH_Full, lumi, "unfold_simple_full", "dSigmadM",  0.0001, 200, false, log, bincorr, print); 
   //Full correction normalized
   //FinalPlot(h_unfold, hGenDistMADGRAPH, hAcceptDistFull, hGenMADGRAPH_Full, hGenMCNLO_Full, hGenPOWHEG_Full, lumi, "unfold_Normalized_full", "dSigmadM",  0.000001, 0.06, norm, log, bincorr, print, printX, HBBstyle);
 
   //visible correction: set norm = false for absolute X
   //FinalPlot(h_unfold, hGenDistMADGRAPH, hAcceptDistPtcl, hGenMADGRAPH_Ptcl, hGenMCNLO, hGenPOWHEG_Ptcl, lumi, "unfold", "dSigmadM",  0.00001, 0.06, false, log, bincorr, print, printX, HBBstyle); 
-  //FinalPlot(h_unfold, hGenDistMADGRAPH, hAcceptDistPtcl, hGenMADGRAPH_Ptcl, lumi, "unfold_simple", "dSigmadM",  0.000001, 1, false, log, bincorr, print);
+  //FinalPlot(h_unfold, hGenDistMADGRAPH, hAcceptDistFull, hGenMADGRAPH_Full, lumi, "unfold_simple", "dSigmadM",  0.0001, 200, false, log, bincorr, print);
   //visible correction normalized
-  //FinalPlot(h_unfold, hGenDistMADGRAPH, hAcceptDistPtcl, hGenMADGRAPH_Ptcl, hGenMCNLO, hGenPOWHEG_Ptcl, lumi, "unfold_Normalized", "dSigmadM",  0.000001, 0.06, norm, log, bincorr, print, printX, HBBstyle); 
+  //FinalPlot(h_unfold, hGenDistMADGRAPH, hAcceptDistPtcl, hGenMADGRAPH_Ptcl, hGenMCNLO, hGenPOWHEG_Ptcl, lumi, "unfold_Normalized", "dSigmadM",  0.00001, 0.06, norm, log, bincorr, print, printX, HBBstyle); 
 
   //TGraphAsymmErrors* de = FinalPlot(h_unfold, hGenDistMADGRAPH, hAcceptDist, lumi, "unfold_Normalized_simple", "dSigmadM",  0.00001, 0.06, norm, log, bincorr, print);
   //TGraphAsymmErrors* up = FinalPlot(h_unfoldup, hGenDistMADGRAPH, hAcceptDist, lumi, "unfold_Normalized_simple_up", "dSigmadM",  0.00001, 0.06, norm, log, bincorr, print);
@@ -118,9 +118,8 @@ void unfolding(int k=4){
    //visible phase space
   //TOP11013Plot(h_unfold, hGenDistMADGRAPH, hAcceptDistPtcl, hGenMADGRAPH_Ptcl, hGenMCNLO, hGenPOWHEG_Ptcl, lumi, "unfold_Normalized_pas013", "dSigmadM",  0.00001, 0.06, norm, log, bincorr, print, false, HBBstyle, true, hGenMCNLO_Up, hGenMCNLO_Down);
   //full phase space
-  //TOP11013Plot(h_unfold, hGenDistMADGRAPH, hAcceptDistFull, hGenMADGRAPH_Full, hGenMCNLO_Full, hGenPOWHEG_Full, lumi, "unfold_Normalized_full_pas013", "dSigmadM",  0.000001, 0.06, norm, log, bincorr, print, false, HBBstyle, true, hGenMCNLO_Up, hGenMCNLO_Down);
-  TOP11013Plot(h_unfold, hGenDistMADGRAPH, hAcceptDistFull, hGenMADGRAPH_Full, hGenMCNLO, hGenPOWHEG_Full, lumi, "unfold_Normalized_full_pas013", "dSigmadM",  0.000001, 0.06, norm, log, bincorr, print, false, HBBstyle, true, hGenMCNLO_Up, hGenMCNLO_Down, hNLOMtt);
-
+  TOP11013Plot(h_unfold, hGenDistMADGRAPH, hAcceptDistFull, hGenMADGRAPH_Full, hGenMCNLO_Full, hGenPOWHEG_Full, lumi, "unfold_Normalized_full_pas013", "dSigmadM",  0.000001, 0.06, norm, log, bincorr, print, false, HBBstyle, true, hGenMCNLO_Up, hGenMCNLO_Down);
+ 
   //chi2 test
   //int n = 5;
   //for(int i=1; i <=n ;i++){
