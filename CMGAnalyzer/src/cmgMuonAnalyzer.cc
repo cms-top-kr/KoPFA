@@ -9,6 +9,8 @@
 #include "DataFormats/BeamSpot/interface/BeamSpot.h"
 #include "DataFormats/Math/interface/LorentzVector.h"
 #include "TLorentzVector.h"
+#include "TRandom3.h"
+#include <time.h>
 
 using namespace std;
 
@@ -32,7 +34,7 @@ cmgMuonAnalyzer::cmgMuonAnalyzer(const edm::ParameterSet& config)
   edm::Service<TFileService> fs;
 
   tmp = fs->make<TH1F>("EventSummary","EventSummary",filters_.size(),0,filters_.size());
-
+  ranNum = fs->make<TH1F>("Random number","Random number",2,0,2);
   ///////Muon loop
   for(int d=0 ; d < 2 ; d++){
     TString mainDirName = "";
@@ -156,6 +158,8 @@ void cmgMuonAnalyzer::produce(edm::Event& iEvent, const edm::EventSetup& es)
     //bool passPre = muon.pt() > 20 && fabs(muon.eta()) < 2.5 && fabs( muon.sourcePtr()->get()->gsfTrack()->dxy(pv.position()) ) < 0.04;
     bool passPre = muon.pt() > 20 && fabs(muon.eta()) < 2.5;
     bool passPF = muon.isPF(); 
+    bool passId = muon.sourcePtr()->get()->isPFMuon() && ( muon.sourcePtr()->get()->isGlobalMuon() ||  muon.sourcePtr()->get()->isTrackerMuon() );
+
     //bool passPF = muon.sourcePtr()->get()->isPF();
     //bool passTrig = passPre && muon.getSelection("cuts_premvaTrig"); //->get());
     ////////////////////////////////////////////////////////////////////////////////////////
@@ -167,7 +171,7 @@ void cmgMuonAnalyzer::produce(edm::Event& iEvent, const edm::EventSetup& es)
 //      if( !passTrig ) continue; 
 //    }
 //    if( applyPFId_ ){
-      if( !(passPre && passPF) ) continue;
+      if( !(passPre && passId) ) continue;
 //    }
 
     triggeredMuons->push_back((*muons_)[i]);
@@ -208,8 +212,15 @@ void cmgMuonAnalyzer::produce(edm::Event& iEvent, const edm::EventSetup& es)
     delphi = fabs(deltaPhi(leading.phi(), mi->p4().phi()));
   }
 
+  srand( time(NULL) ); //Randomize seed initialization
+  int rNumInt = rand() % 2; // Generate a random number between 0 and 1
+  ranNum->Fill(rNumInt);
+
   double dimass = 0.;
   double charge = 0;
+  int tid = -1;
+  double tagged_iso = -1.0;
+
   for( unsigned int i = 0 ; i < triggeredMuons->size() ; i++){
     for( unsigned int j = 0 ; j < triggeredMuons->size() ; j++){
       cmg::Muon muon1 = triggeredMuons->at(i);
@@ -218,15 +229,19 @@ void cmgMuonAnalyzer::produce(edm::Event& iEvent, const edm::EventSetup& es)
       if(match) continue; 
       dimass = (muon1.p4() + muon2.p4()).M();
       charge = muon1.charge()*muon2.charge();
+      if( rNumInt == 0 ) tid = i;
+      if( rNumInt == 1 ) tid = j;
+      tagged_iso = (triggeredMuons->at(tid).chargedHadronIso(0.3) + max( 0.0, triggeredMuons->at(tid).neutralHadronIso(0.3) + triggeredMuons->at(tid).photonIso(0.3) - 0.5*triggeredMuons->at(tid).puChargedHadronIso(0.3) ) ) / triggeredMuons->at(tid).pt();
       break;
     }
   }
   
+
   //// QCD EVENT selection ////
   //int nLeps = triggeredMuons->size();
   //bool QCD =  nLeps <= 1  && mtW < 20 && MET < 20 && nJets == 1 && delphi < 1.5;
-  //bool QCD =  charge > 0 && fabs(dimass-91) > 15 && mtW < 20 && MET < 30 && nJets >= 1 && delphi < 1.5;
-  bool QCD =  fabs(dimass-91) > 15 && mtW < 20 && MET < 30 && nJets >= 1 && delphi < 1.5;
+  bool QCD =  charge > 0 && fabs(dimass-91) > 15 && mtW < 40 && MET < 30 && nJets >= 2 && tagged_iso > 0.25;
+  //bool QCD =  fabs(dimass-91) > 15 && mtW < 20 && MET < 30 && nJets >= 1 && delphi < 1.5;
 
   int d = 0;
   if(QCD ) d=1;
@@ -246,10 +261,16 @@ void cmgMuonAnalyzer::produce(edm::Event& iEvent, const edm::EventSetup& es)
     cmg::Muon Lep1 = triggeredMuons->at(j);
 
     bool isMatchedLep1 = true;
-/*   
-    if( !isRealData )isMatchedLep1 = isFromWorZ(Lep1.p4(), genParticles_);
+
+    if( d == 1 ) {
+      if( j == (unsigned int) tid ) {
+        continue;
+      }
+    }   
+
+    if( !isRealData )isMatchedLep1 = isFromWorZ(Lep1.p4(), genParticles_, 13);
     if( !isMatchedLep1 ) continue;
-*/
+
     double pt1  = Lep1.pt();
 //    double sceta1 = Lep1.sourcePtr()->get()->superCluster()->eta();
 //    double sceta1 = Lep1.sourcePtr()->get()->generalTracks()->eta();
@@ -432,14 +453,14 @@ double cmgMuonAnalyzer::transverseMass( const reco::Candidate::LorentzVector& le
     return false;
 }
 */
-bool cmgMuonAnalyzer::isFromWorZ( const reco::Candidate::LorentzVector& lepton, const edm::Handle<reco::GenParticleCollection> & genParticles_ ){
+bool cmgMuonAnalyzer::isFromWorZ( const reco::Candidate::LorentzVector& lepton, const edm::Handle<reco::GenParticleCollection> & genParticles_, int id ){
 
   bool out = false;
 
   for (reco::GenParticleCollection::const_iterator mcIter=genParticles_->begin(); mcIter != genParticles_->end(); mcIter++ ) {
     int genId = mcIter->pdgId();
 
-    if( abs(genId) != 11 ) continue;
+    if( abs(genId) != (int) id ) continue;
 
     bool match = MatchObjects(lepton, mcIter->p4(), false);
 

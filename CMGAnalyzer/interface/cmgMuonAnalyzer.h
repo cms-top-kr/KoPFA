@@ -51,7 +51,7 @@ class cmgMuonAnalyzer : public edm::EDProducer
  private:
 
   double transverseMass( const reco::Candidate::LorentzVector& lepton, const reco::Candidate::LorentzVector& met);
-  bool isFromWorZ( const reco::Candidate::LorentzVector& lepton, const edm::Handle<reco::GenParticleCollection> & genParticles );
+  bool isFromWorZ( const reco::Candidate::LorentzVector& lepton, const edm::Handle<reco::GenParticleCollection> & genParticles , int id);
   bool MatchObjects( const reco::Candidate::LorentzVector& pasObj, const reco::Candidate::LorentzVector& proObj, bool exact ); 
   void endLuminosityBlock(edm::LuminosityBlock & lumi, const edm::EventSetup & setup);
 
@@ -75,6 +75,7 @@ class cmgMuonAnalyzer : public edm::EDProducer
 
   std::vector<std::string> filters_;
   TH1F * tmp;
+  TH1F * ranNum;
   bool useEventCounter_;
 
   //muon loop
