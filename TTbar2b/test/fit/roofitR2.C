@@ -1,3 +1,7 @@
+// 1,1,true : csvm weight log
+// 0,0,false : csvt unweight linear
+// void roofitR2(int ii=1, int jj=1, bool isLgY=true)
+
 double weight(double x, bool isW=false)
 {
    double ww = 0.749644+3.09749*x-9.98179*pow(x,2)+19.3428*pow(x,3)-19.6664*pow(x,4)+7.44382*pow(x,5);
@@ -25,9 +29,9 @@ double roofitR2(TString path, TString variable1, TString variable2, const int no
 
   //TString path = "./TTBB_08Feb2013_CSVMv2puweight_bweight30CSVM";
   TString fileName[ndecay];
-  fileName[0] = path+"/MuMu/MuMu.root";
-  fileName[1] = path+"/MuEl/MuEl.root";
-  fileName[2] = path+"/ElEl/ElEl.root";
+  fileName[0] = path+"/MuMu.root";
+  fileName[1] = path+"/MuEl.root";
+  fileName[2] = path+"/ElEl.root";
   TString variable[nobj];
   variable[0]=variable1;
   if(nobj==2) variable[1]=variable2;
@@ -263,7 +267,9 @@ double roofitR2(TString path, TString variable1, TString variable2, const int no
   return R.getValV();
 }
 
-void roofitR2(int ii, int jj, bool isLgY)
+// 1,1,true : csvm weight log
+// 0,0,false : csvt unweight linear
+void roofitR2(int ii=1, int jj=1, bool isLgY=true)
 {
   const int nobj1=1;  const int nobj2=2;  const int nobj3=2; 
 
@@ -283,17 +289,18 @@ void roofitR2(int ii, int jj, bool isLgY)
 
   TString ytitle="Events";
 
-  TString path11 = "./csvm/TTBB_08Feb2013_CSVMv2puweight_bweight30CSVM";
-  TString path12 = "./csvm3/TTBB_08Feb2013_CSVMv2puweight_bweight30CSVMup";
-  TString path13 = "./csvm3/TTBB_08Feb2013_CSVMv2puweight_bweight30CSVMdw";
-  TString path14 = "./csvm2/TTBB_08Feb2013_CSVMv2puweight_bweight30CSVMuplight";
-  TString path15 = "./csvm2/TTBB_08Feb2013_CSVMv2puweight_bweight30CSVMdwlight";
+  TString home_ = "/afs/cern.ch/work/y/youngjo/public/For8Tev/v20130208_V00-00-06/forFit/";
+  TString path11 = home_+"/csvm/normal";
+  TString path12 = home_+"/csvm/up";
+  TString path13 = home_+"/csvm/dw";
+  TString path14 = home_+"/csvm/lup";
+  TString path15 = home_+"/csvm/ldw";
 
-  TString path21 = "./csvt/TTBB_08Feb2013_CSVTv2puweight_bweight30CSVT";
-  TString path22 = "./csvt3/TTBB_08Feb2013_CSVTv2puweight_bweight30CSVTup";
-  TString path23 = "./csvt3/TTBB_08Feb2013_CSVTv2puweight_bweight30CSVTdw";
-  TString path24 = "./csvt2/TTBB_08Feb2013_CSVTv2puweight_bweight30CSVTuplight";
-  TString path25 = "./csvt2/TTBB_08Feb2013_CSVTv2puweight_bweight30CSVTdwlight";
+  TString path21 = home_+"/csvt/normal";
+  TString path22 = home_+"/csvt/up";
+  TString path23 = home_+"/csvt/dw";
+  TString path24 = home_+"/csvt/lup";
+  TString path25 = home_+"/csvt/ldw";
 
   if(ii ==0)
   {
