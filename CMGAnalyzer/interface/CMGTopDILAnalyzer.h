@@ -13,7 +13,7 @@
 //
 // Original Author:  Tae Jeong Kim,40 R-A32,+41227678602,
 //         Created:  Fri Jun  4 17:19:29 CEST 2010
-// $Id: CMGTopDILAnalyzer.h,v 1.21 2013/02/08 09:15:20 tjkim Exp $
+// $Id: CMGTopDILAnalyzer.h,v 1.22 2013/02/28 00:53:25 tjkim Exp $
 //
 //
 
@@ -183,7 +183,6 @@ class CMGTopDILAnalyzer : public edm::EDFilter {
       }
     }
   }
-
 
   ~CMGTopDILAnalyzer()
   {
@@ -756,6 +755,8 @@ class CMGTopDILAnalyzer : public edm::EDFilter {
 
     //ESHandle<SetupData> pSetup;
     //iSetup.get<SetupRecord>().get(pSetup);
+    double w = puweight;
+    double w2 = puweight*bweight30CSVT;
 
     if ( accept )
     {
@@ -772,8 +773,8 @@ class CMGTopDILAnalyzer : public edm::EDFilter {
         cutStepBit[3] = abs(ZMass - 91.2) > 15;
         cutStepBit[4] = MET > 30;
       }
-      cutStepBit[5] = (nJet30 >= 2);
-      cutStepBit[6] = (nJet30 >= 4);
+      cutStepBit[5] = (nJet30 >= 4);
+      cutStepBit[6] = (nbjets30_[3] >= 2);
       
       for ( int cutStep = 0; cutStep < nCutStep_; ++cutStep )
       {
@@ -792,70 +793,73 @@ class CMGTopDILAnalyzer : public edm::EDFilter {
         
         h_[cutStep].hNEvents->Fill(1);
 
-        h_[cutStep].hgenttbarM->Fill(genttbarM);
-        h_[cutStep].hnpileup->Fill(npileup);
-        h_[cutStep].hnvertex->Fill(nvertex);
-        h_[cutStep].hNLepton1->Fill(muons1_->size());
-        h_[cutStep].hNLepton2->Fill(muons2_->size());
+        h_[cutStep].hgenttbarM->Fill(genttbarM,w);
+        h_[cutStep].hnpileup->Fill(npileup,w);
+        h_[cutStep].hnvertex->Fill(nvertex,w);
+        h_[cutStep].hNLepton1->Fill(muons1_->size(),w);
+        h_[cutStep].hNLepton2->Fill(muons2_->size(),w);
         const int nJets = jetspt30->size();
-        h_[cutStep].hNJet->Fill(nJets);
+        h_[cutStep].hNJet->Fill(nJets,w);
 
-        h_[cutStep].hpt1->Fill(lep1_pt);
-        h_[cutStep].hpt2->Fill(lep2_pt);
-        h_[cutStep].heta1->Fill(lep1_eta);
-        h_[cutStep].heta2->Fill(lep2_eta);
-        h_[cutStep].hrelIso1->Fill(lep1_relIso03);
-        h_[cutStep].hrelIso2->Fill(lep2_relIso03);
+        h_[cutStep].hpt1->Fill(lep1_pt,w);
+        h_[cutStep].hpt2->Fill(lep2_pt,w);
+        h_[cutStep].heta1->Fill(lep1_eta,w);
+        h_[cutStep].heta2->Fill(lep2_eta,w);
+        h_[cutStep].hrelIso1->Fill(lep1_relIso03,w);
+        h_[cutStep].hrelIso2->Fill(lep2_relIso03,w);
 
         if ( nJets > 0 )
         {
-          h_[cutStep].hjet1pt ->Fill(jetspt30->at(0).pt() );
-          h_[cutStep].hjet1eta->Fill(jetspt30->at(0).eta());
-          h_[cutStep].hjet1phi->Fill(jetspt30->at(0).phi());
+          h_[cutStep].hjet1pt ->Fill(jetspt30->at(0).pt(),w);
+          h_[cutStep].hjet1eta->Fill(jetspt30->at(0).eta(),w);
+          h_[cutStep].hjet1phi->Fill(jetspt30->at(0).phi(),w);
         }
         if ( nJets > 1 )
         {
-          h_[cutStep].hjet2pt ->Fill(jetspt30->at(1).pt() );
-          h_[cutStep].hjet2eta->Fill(jetspt30->at(1).eta());
-          h_[cutStep].hjet2phi->Fill(jetspt30->at(1).phi());
+          h_[cutStep].hjet2pt ->Fill(jetspt30->at(1).pt(),w);
+          h_[cutStep].hjet2eta->Fill(jetspt30->at(1).eta(),w);
+          h_[cutStep].hjet2phi->Fill(jetspt30->at(1).phi(),w);
 
-          h_[cutStep].hHT->Fill(lep1_pt+lep2_pt+jetspt30->at(0).pt()+jetspt30->at(1).pt());
+          h_[cutStep].hHT->Fill(lep1_pt+lep2_pt+jetspt30->at(0).pt()+jetspt30->at(1).pt(),w);
         }
         if ( nJets > 2 )
         {
-          h_[cutStep].hjet3pt ->Fill(jetspt30->at(2).pt() );
-          h_[cutStep].hjet3eta->Fill(jetspt30->at(2).eta());
-          h_[cutStep].hjet3phi->Fill(jetspt30->at(2).phi());
+          h_[cutStep].hjet3pt ->Fill(jetspt30->at(2).pt(),w);
+          h_[cutStep].hjet3eta->Fill(jetspt30->at(2).eta(),w);
+          h_[cutStep].hjet3phi->Fill(jetspt30->at(2).phi(),w);
         }
         if ( nJets > 3 )
         {
-          h_[cutStep].hjet4pt ->Fill(jetspt30->at(3).pt() );
-          h_[cutStep].hjet4eta->Fill(jetspt30->at(3).eta());
-          h_[cutStep].hjet4phi->Fill(jetspt30->at(3).phi());
+          h_[cutStep].hjet4pt ->Fill(jetspt30->at(3).pt(),w);
+          h_[cutStep].hjet4eta->Fill(jetspt30->at(3).eta(),w);
+          h_[cutStep].hjet4phi->Fill(jetspt30->at(3).phi(),w);
+
+          h_[cutStep].hBDiscriminatorCSVJet3->Fill(jets_bDiscriminatorCSV[csvd_jetid[2]],w2);
+          h_[cutStep].hBDiscriminatorCSVJet4->Fill(jets_bDiscriminatorCSV[csvd_jetid[3]],w2);
         }
         for ( int i=0, n=nbjets30_.size(); i<n; ++i )
         {
-          h_[cutStep].hnBJets.at(i)->Fill(nbjets30_[i]);
+          h_[cutStep].hnBJets.at(i)->Fill(nbjets30_[i],w);
         }
 
-        h_[cutStep].hMET->Fill(MET);
-        h_[cutStep].hMETPhi->Fill(met->at(0).phi());
+        h_[cutStep].hMET->Fill(MET,w);
+        h_[cutStep].hMETPhi->Fill(met->at(0).phi(),w);
         if ( !pfMet->empty() )
         {
-          h_[cutStep].hSumET->Fill(pfMet->at(0).sumEt());
-          h_[cutStep].hChET->Fill(pfMet->at(0).chargedHadEt());
-          h_[cutStep].hNhET->Fill(pfMet->at(0).neutralHadEt());
-          h_[cutStep].hPhET->Fill(pfMet->at(0).photonEt());
+          h_[cutStep].hSumET->Fill(pfMet->at(0).sumEt(),w);
+          h_[cutStep].hChET->Fill(pfMet->at(0).chargedHadEt(),w);
+          h_[cutStep].hNhET->Fill(pfMet->at(0).neutralHadEt(),w);
+          h_[cutStep].hPhET->Fill(pfMet->at(0).photonEt(),w);
         }
 
-        h_[cutStep].hZMass->Fill(ZMass);
+        h_[cutStep].hZMass->Fill(ZMass,w);
 
         if ( !ttbar->empty() )
         {
-          h_[cutStep].hvsumM->Fill(ttbar->at(0).M());
-          h_[cutStep].hmaosM->Fill(ttbar->at(0).maosM());
-          h_[cutStep].htopMass1->Fill(ttbar->at(0).leg1().M());
-          h_[cutStep].htopMass2->Fill(ttbar->at(0).leg2().M());
+          h_[cutStep].hvsumM->Fill(ttbar->at(0).M(),w);
+          h_[cutStep].hmaosM->Fill(ttbar->at(0).maosM(),w);
+          h_[cutStep].htopMass1->Fill(ttbar->at(0).leg1().M(),w);
+          h_[cutStep].htopMass2->Fill(ttbar->at(0).leg2().M(),w);
         }
       }
     }
