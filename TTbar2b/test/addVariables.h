@@ -44,7 +44,7 @@ void addTopVariables(TopAnalyzerLite* analyzer){
   analyzer->addMonitorPlot("addjet1_bDisJP", "jets_bDiscriminatorJP[csvd_jetid[2]]", "b-Discriminator; b-Discriminator (JP);Events", 30, 0.0, 1.5, 0.1, 10,true);
   analyzer->addMonitorPlot("addjet2_bDisJP", "jets_bDiscriminatorJP[csvd_jetid[3]]", "b-Discriminator; b-Discriminator (JP);Events", 30, 0.0, 1.5, 0.1, 10,true);
 
-  analyzer->addMonitorPlot("addjet1_secvtxm", "jets_secvtxmass[csvd_jetid[2]]", "Secondary Vertex Mass (GeV);Events", 100, 0.0, 5.0, 0.1, 10,true);
-  analyzer->addMonitorPlot("addjet2_secvtxm", "jets_secvtxmass[csvd_jetid[3]]", "Secondary Vertex Mass (GeV);Events", 100, 0.0, 5.0, 0.1, 10,true);
+  analyzer->addMonitorPlot("addjet1_secvtxm", "jets_secvtxmass[csvd_jetid[2]]", "Secondary Vertex Mass;Secondary Vertex Mass (GeV);Events", 10, 0.0, 5.0, 0.1, 10,true);
+  analyzer->addMonitorPlot("addjet2_secvtxm", "jets_secvtxmass[csvd_jetid[3]]", "Secondary Vertex Mass;Secondary Vertex Mass (GeV);Events", 10, 0.0, 5.0, 0.1, 10,true);
 
 }
