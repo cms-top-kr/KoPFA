@@ -13,7 +13,7 @@
 //
 // Original Author:  Tae Jeong Kim,40 R-A32,+41227678602,
 //         Created:  Fri Jun  4 17:19:29 CEST 2010
-// $Id: CMGTopDILAnalyzer.h,v 1.22 2013/02/28 00:53:25 tjkim Exp $
+// $Id: CMGTopDILAnalyzer.h,v 1.23 2013/03/04 09:14:39 tjkim Exp $
 //
 //
 
@@ -74,6 +74,7 @@
 
 #include "KoPFA/TopAnalyzer/interface/BTagWeight.h"
 #include "KoPFA/TopAnalyzer/interface/BTagWeight2012.h"
+#include "KoPFA/TopAnalyzer/interface/LeptonWeight.h"
 #include "AnalysisDataFormats/TopObjects/interface/TtFullLeptonicEvent.h"
 #include "KoPFA/TopAnalyzer/interface/Histograms.h"
 #include "AnalysisDataFormats/CMGTools/interface/GenericTypes.h"
@@ -126,6 +127,7 @@ class CMGTopDILAnalyzer : public edm::EDFilter {
     //fullLepEvt2_ = iConfig.getUntrackedParameter<edm::InputTag>("fullLepEvt2");
     nstep_ = iConfig.getUntrackedParameter<unsigned int>("nstep",0);
     run2012_ = iConfig.getUntrackedParameter<bool>("run2012",true);
+    histograms_ = iConfig.getUntrackedParameter<bool>("histograms",false);
  
     std::vector<edm::ParameterSet> bTagSets = iConfig.getUntrackedParameter<std::vector<edm::ParameterSet> >("bTagSets");
     for ( int i=0, n=bTagSets.size(); i<n; ++i )
@@ -172,14 +174,27 @@ class CMGTopDILAnalyzer : public edm::EDFilter {
     jetspt30 = new std::vector<math::XYZTLorentzVector>();
 
     nCutStep_ = 7;
-    for ( int i = 0; i<nCutStep_; ++i )
-    {
-      TFileDirectory dir = fs->mkdir(Form("Step%d", i));
-      h_.push_back(Histograms(&dir));
-      for ( unsigned int j = 0; j<bTagAlgos_.size(); ++j )
-      {
-        const char* algo = bTagAlgos_[j].c_str();
-        h_[i].hnBJets.push_back(dir.make<TH1F>(Form("hnBJets_%s", algo), Form("%s B jets;Number of B jets;Events", algo), 5, 0, 5));
+    nProcess_ = 7;
+
+    if( histograms_ ){
+      for ( int k = 0; k < nProcess_; ++k){
+        for ( int i = 0; i<nCutStep_; ++i )
+        {
+          TString path = "";
+          if( k == 1 ) path = Form("TTBB/");
+          if( k == 2 ) path = Form("TTCC/");
+          if( k == 3 ) path = Form("TTLF/");
+          if( k == 4 ) path = Form("TTOther/");
+          if( k == 5 ) path = Form("TTLJ/");
+          if( k == 6 ) path = Form("QCD/");
+          TFileDirectory dir = fs->mkdir(Form("%sStep%d", path.Data(), i));
+          h_[k].push_back(Histograms(&dir));
+          for ( unsigned int j = 0; j<bTagAlgos_.size(); ++j )
+          {
+            const char* algo = bTagAlgos_[j].c_str();
+            h_[k][i].hnBJets.push_back(dir.make<TH1F>(Form("hnBJets_%s", algo), Form("%s B jets;Number of B jets;Events", algo), 5, 0, 5));
+          }
+        }
       }
     }
   }
@@ -201,20 +216,20 @@ class CMGTopDILAnalyzer : public edm::EDFilter {
     tree->Branch("puweightplus",&puweightplus, "puweightplus/d");
     tree->Branch("puweightminus",&puweightminus, "puweightminus/d");
 
-    tree->Branch("bweight30CSVL",&bweight30CSVL, "bweight30CSVL/d");
-    tree->Branch("bweight30CSVM",&bweight30CSVM, "bweight30CSVM/d");
+    //tree->Branch("bweight30CSVL",&bweight30CSVL, "bweight30CSVL/d");
+    //tree->Branch("bweight30CSVM",&bweight30CSVM, "bweight30CSVM/d");
     tree->Branch("bweight30CSVT",&bweight30CSVT, "bweight30CSVT/d");
-    tree->Branch("bweight30CSVLup",&bweight30CSVLup, "bweight30CSVLup/d");
-    tree->Branch("bweight30CSVMup",&bweight30CSVMup, "bweight30CSVMup/d");
+    //tree->Branch("bweight30CSVLup",&bweight30CSVLup, "bweight30CSVLup/d");
+    //tree->Branch("bweight30CSVMup",&bweight30CSVMup, "bweight30CSVMup/d");
     tree->Branch("bweight30CSVTup",&bweight30CSVTup, "bweight30CSVTup/d");
-    tree->Branch("bweight30CSVLdw",&bweight30CSVLdw, "bweight30CSVLdw/d");
-    tree->Branch("bweight30CSVMdw",&bweight30CSVMdw, "bweight30CSVMdw/d");
+    //tree->Branch("bweight30CSVLdw",&bweight30CSVLdw, "bweight30CSVLdw/d");
+    //tree->Branch("bweight30CSVMdw",&bweight30CSVMdw, "bweight30CSVMdw/d");
     tree->Branch("bweight30CSVTdw",&bweight30CSVTdw, "bweight30CSVTdw/d");
-    tree->Branch("bweight30CSVLuplight",&bweight30CSVLuplight, "bweight30CSVLuplight/d");
-    tree->Branch("bweight30CSVMuplight",&bweight30CSVMuplight, "bweight30CSVMuplight/d");
+    //tree->Branch("bweight30CSVLuplight",&bweight30CSVLuplight, "bweight30CSVLuplight/d");
+    //tree->Branch("bweight30CSVMuplight",&bweight30CSVMuplight, "bweight30CSVMuplight/d");
     tree->Branch("bweight30CSVTuplight",&bweight30CSVTuplight, "bweight30CSVTuplight/d");
-    tree->Branch("bweight30CSVLdwlight",&bweight30CSVLdwlight, "bweight30CSVLdwlight/d");
-    tree->Branch("bweight30CSVMdwlight",&bweight30CSVMdwlight, "bweight30CSVMdwlight/d");
+    //tree->Branch("bweight30CSVLdwlight",&bweight30CSVLdwlight, "bweight30CSVLdwlight/d");
+    //tree->Branch("bweight30CSVMdwlight",&bweight30CSVMdwlight, "bweight30CSVMdwlight/d");
     tree->Branch("bweight30CSVTdwlight",&bweight30CSVTdwlight, "bweight30CSVTdwlight/d");
 
     tree->Branch("ZMass",&ZMass,"ZMass/d");
@@ -244,6 +259,7 @@ class CMGTopDILAnalyzer : public edm::EDFilter {
     tree->Branch("lep2_phi",&lep2_phi,"lep2_phi/d");
     tree->Branch("lep1_charge",&lep1_charge,"lep1_charge/d");
     tree->Branch("lep2_charge",&lep2_charge,"lep2_charge/d");
+    tree->Branch("lepweight",&lepweight,"lepweight/d");
 
     tree->Branch("jets_secvtxmass","std::vector<double>",&jets_secvtxmass);
     tree->Branch("jets_pt","std::vector<double>",&jets_pt);
@@ -253,6 +269,7 @@ class CMGTopDILAnalyzer : public edm::EDFilter {
     tree->Branch("jets_fromtop","std::vector<int>",&jets_fromtop);
     tree->Branch("jets_bDiscriminatorJP","std::vector<double>",&jets_bDiscriminatorJP);
     tree->Branch("jets_bDiscriminatorCSV","std::vector<double>",&jets_bDiscriminatorCSV);
+    tree->Branch("jets_bDisCSVweight","std::vector<double>",&jets_bDisCSVweight);
 
     //tree->Branch("lep1","std::vector<vallot::Lepton>",&lep1);
     //tree->Branch("lep2","std::vector<vallot::Lepton>",&lep2);
@@ -264,7 +281,7 @@ class CMGTopDILAnalyzer : public edm::EDFilter {
     //tree->Branch("ttbarKin","std::vector<vallot::TTbarDILEvent>", &ttbarKin);
     //tree->Branch("ttbarMaos","std::vector<vallot::TTbarDILEvent>", &ttbarMaos);
     //tree->Branch("ttbarGen","std::vector<vallot::CMGTTbarCandidate>", &ttbarGen);
-
+/*
     tree->Branch("kin_nu_pt",&kin_nu_pt,"kin_nu_pt/d");
     tree->Branch("kin_nu_eta",&kin_nu_eta,"kin_nu_eta/d");
     tree->Branch("kin_nu_phi",&kin_nu_phi,"kin_nu_phi/d");
@@ -282,15 +299,19 @@ class CMGTopDILAnalyzer : public edm::EDFilter {
     tree->Branch("kin_topBar_mass",&kin_topBar_mass,"kin_topBar_mass/d");
 
     tree->Branch("kin_jetid","std::vector<int>", &kin_jetid);
+*/
+
     tree->Branch("csvd_jetid","std::vector<int>", &csvd_jetid);
 
     //tree->Branch("maos_ttbar_mass",&maos_ttbar_mass,"maos_ttbar_mass/d");
-    tree->Branch("kin_ttbar_mass",&kin_ttbar_mass,"kin_ttbar_mass/d");
-    tree->Branch("kin_ttbar_dphi",&kin_ttbar_dphi,"kin_ttbar_dphi/d");
-    tree->Branch("vsumttbarM",&vsumttbarM,"vsumttbarM/d");
-    tree->Branch("genttbarM",&genttbarM,"genttbarM/d");
+    //tree->Branch("kin_ttbar_mass",&kin_ttbar_mass,"kin_ttbar_mass/d");
+    //tree->Branch("kin_ttbar_dphi",&kin_ttbar_dphi,"kin_ttbar_dphi/d");
+    //tree->Branch("vsumttbarM",&vsumttbarM,"vsumttbarM/d");
+    //tree->Branch("genttbarM",&genttbarM,"genttbarM/d");
 
     tree->Branch("nJet30",&nJet30,"nJet30/i");
+    tree->Branch("nJet30Up",&nJet30Up,"nJet30Up/i");
+    tree->Branch("nJet30Dw",&nJet30Dw,"nJet30Dw/i");
     tree->Branch("nGenJet20",&nGenJet20,"nGenJet20/i");
     tree->Branch("nGenbJet20",&nGenbJet20,"nGenbJet20/i");
     tree->Branch("nGencJet20",&nGencJet20,"nGencJet20/i");
@@ -301,7 +322,11 @@ class CMGTopDILAnalyzer : public edm::EDFilter {
     tree->Branch("genLep2_eta",&genLep2_eta,"genLep2_eta/d");
    
     tree->Branch("ttbarGen_dileptonic",&ttbarGen_dileptonic,"ttbarGen_dileptonic/i"); 
-
+    tree->Branch("visible",&visible,"visible/i"); 
+    tree->Branch("ttbb",&ttbb,"ttbb/i"); 
+    tree->Branch("ttcc",&ttcc,"ttcc/i"); 
+    tree->Branch("ttLF",&ttLF,"ttLF/i"); 
+  
     for ( int i=0, n=bTagAlgos_.size(); i<n; ++i )
     {
       const std::string& name = bTagNames_[i];
@@ -309,6 +334,8 @@ class CMGTopDILAnalyzer : public edm::EDFilter {
     }
 
     tree->Branch("MET",&MET,"MET/d");
+    tree->Branch("METUp",&METUp,"METUp/d");
+    tree->Branch("METDw",&METDw,"METDw/d");
 
   } 
 
@@ -317,6 +344,7 @@ class CMGTopDILAnalyzer : public edm::EDFilter {
     const bool isRealData = iEvent.isRealData();
     bool accept = true;
     std::vector<bool> cutStepBit(nCutStep_);
+    std::vector<bool> processBit(nProcess_);
 
     clear();
 
@@ -377,6 +405,11 @@ class CMGTopDILAnalyzer : public edm::EDFilter {
     iEvent.getByLabel(metLabel_,MET_);
 
     std::vector<cmg::BaseMET>::const_iterator mi = MET_->begin();
+    MET = mi->pt();
+    double metup_x = MET_->begin()->px();
+    double metup_y = MET_->begin()->py();
+    double metdw_x = MET_->begin()->px();
+    double metdw_y = MET_->begin()->py();
 
     edm::Handle<std::vector<cmg::PFJet> > Jets;
     iEvent.getByLabel(jetLabel_, Jets);
@@ -407,6 +440,7 @@ class CMGTopDILAnalyzer : public edm::EDFilter {
     }
 
     if( ZCand->size() > 0){
+      LeptonWeight LepWeight;
       ZMass = ZCand->at(0).mass();
       PairSign =  ZCand->at(0).sign();
       lep1_relIso04 =  ZCand->at(0).leg1().relIso04();
@@ -433,6 +467,21 @@ class CMGTopDILAnalyzer : public edm::EDFilter {
       lep2_charge = ZCand->at(0).leg2().charge();
       lep1->push_back( ZCand->at(0).leg1() );
       lep2->push_back( ZCand->at(0).leg2() );
+
+      double sf1 = 1.0;
+      double sf2 = 1.0;
+      if( mode == 0 ) {
+        sf1 =  LepWeight.SF(lep1_pt, lep1_eta, LeptonWeight::Electron);
+        sf2 =  LepWeight.SF(lep2_pt, lep2_eta, LeptonWeight::Electron);
+      }else if( mode == 3){
+        sf1 =  LepWeight.SF(lep1_pt, lep1_eta, LeptonWeight::Muon);
+        sf2 =  LepWeight.SF(lep2_pt, lep2_eta, LeptonWeight::Muon);
+      }else{
+        sf1 =  LepWeight.SF(lep1_pt, lep1_eta, LeptonWeight::Muon);
+        sf2 =  LepWeight.SF(lep2_pt, lep2_eta, LeptonWeight::Electron);
+      }
+ 
+      lepweight = sf1 * sf2;
     }
 
     bool iso = lep1_relIso03 < relIso1_ && lep2_relIso03 < relIso2_;
@@ -448,9 +497,17 @@ class CMGTopDILAnalyzer : public edm::EDFilter {
 
     std::map<int,double> mapJetBDiscriminator;
 
+    double njet = 0;
+    double njetUp = 0;
+    double njetDw = 0;
+    double metup;
+    double metdw;
+
     for (JI jit = Jets->begin(); jit != Jets->end(); ++jit) {
 
       ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > corrjet;
+      ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > corrjetup;
+      ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > corrjetdw;
       corrjet.SetPxPyPzE(jit->px(),jit->py(),jit->pz(),jit->energy());
 
       int jetfromtop = 0;
@@ -477,116 +534,180 @@ class CMGTopDILAnalyzer : public edm::EDFilter {
 
       double bDiscriminator = jit->bDiscriminator("combinedSecondaryVertexBJetTags");
       double bDiscriminatorJP = jit->bDiscriminator("jetProbabilityBJetTags");
-
       float secvtxmass = jit->secvtxMass();
+      double uncert = jit->uncOnFourVectorScale();
+
+      mapJetBDiscriminator[idx] = bDiscriminator;
+
+      for ( int bTagIndex=0, nBTagAlgo=bTagAlgos_.size(); bTagIndex<nBTagAlgo; ++bTagIndex )
+      {
+        const double bTagValue = jit->bDiscriminator(bTagAlgos_[bTagIndex].c_str());
+        if ( (bTagIsCutMin_[bTagIndex]) xor (bTagValue < bTagCutValues_[bTagIndex]) ) ++nbjets30_[bTagIndex];
+      }
+      if ( bDiscriminator > bTagCutValues_[2]) bidcs.push_back(idx); //for kinematic solution
+      idx++;  
+
+      //CSV b-discriminator 
+      double bDisCSVweight = bDiscriminatorWeight(bDiscriminator, flavor );
+
+      //build vallo:Jet  : turned off
+      //vallot::Jet jet( jit->p4() );
+      //jet.setFlavor( flavor );
+      //jet.setTopdecay( jetfromtop );
+      //jet.setbDiscriminator( bDiscriminator );
+      //jet.setSecVtxMass( secvtxmass );  
+      //jets->push_back(jet);
+ 
+      jets_secvtxmass.push_back( secvtxmass );
+      jets_pt.push_back(jit->p4().pt());
+      jets_eta.push_back(jit->p4().eta());
+      jets_phi.push_back(jit->p4().phi());
+      jets_flavor.push_back(flavor);
+      jets_fromtop.push_back(jetfromtop);
+      jets_bDiscriminatorJP.push_back(bDiscriminatorJP);
+      jets_bDiscriminatorCSV.push_back(bDiscriminator); 
+      jets_bDisCSVweight.push_back( bDisCSVweight);
+    
+      corrjetup = corrjet * (1+uncert); 
+      corrjetdw = corrjet * (1-uncert); 
+ 
       if(jit->pt() > 30){
-        vallot::Jet jet( jit->p4() );
-        jet.setFlavor( flavor );
-        jet.setTopdecay( jetfromtop );
-        jet.setbDiscriminator( bDiscriminator );
-        jet.setSecVtxMass( secvtxmass );  
-        jets->push_back(jet);
-     
         jetspt30->push_back(corrjet);
-       
-        mapJetBDiscriminator[idx] = bDiscriminator;
-
-        for ( int bTagIndex=0, nBTagAlgo=bTagAlgos_.size(); bTagIndex<nBTagAlgo; ++bTagIndex )
-        {
-          const double bTagValue = jit->bDiscriminator(bTagAlgos_[bTagIndex].c_str());
-          if ( (bTagIsCutMin_[bTagIndex]) xor (bTagValue < bTagCutValues_[bTagIndex]) ) ++nbjets30_[bTagIndex];
-        }
-
-        if ( bDiscriminator > bTagCutValues_[2]) bidcs.push_back(idx); //for kinematic solution
-        idx++;  
-
-        jets_secvtxmass.push_back( secvtxmass );
-        jets_pt.push_back(jit->p4().pt());
-        jets_eta.push_back(jit->p4().eta());
-        jets_phi.push_back(jit->p4().phi());
-        jets_flavor.push_back(flavor);
-        jets_fromtop.push_back(jetfromtop);
-        jets_bDiscriminatorJP.push_back(bDiscriminatorJP);
-        jets_bDiscriminatorCSV.push_back(bDiscriminator); 
-
+        njet++;
       }//pt > 30 loop
+
+      if(corrjetup.pt() > 30){
+        njetUp++;
+        metup_x -= corrjet.px()- corrjetup.px();
+        metup_y -= corrjet.py()- corrjetup.py();
+      }//pt > 30 loop
+      if(corrjetdw.pt() > 30){
+        njetDw++;
+        metdw_x -= corrjet.px()- corrjetdw.px();
+        metdw_y -= corrjet.py()- corrjetdw.py();
+      }//pt > 30 loop
+
     }
+
+    //csvd order
     std::vector< std::pair<int,double> > vecJetBDisc(mapJetBDiscriminator.begin(), mapJetBDiscriminator.end());
     std::sort(vecJetBDisc.begin(), vecJetBDisc.end(), bigger_second<data_t>());
     for(std::vector< std::pair<int,double> >::iterator it = vecJetBDisc.begin() ; it != vecJetBDisc.end(); ++it)
         csvd_jetid.push_back((*it).first);
 
 
-    nJet30 = jets->size();
-    std::vector<TLorentzVector *> jet30(nJet30);
-    std::vector<int> jet30flavor(nJet30);
+    //JES uncertainty
+    nJet30 = njet;
+    nJet30Up = njetUp;
+    nJet30Dw = njetDw;
 
-    for (unsigned int i=0; i < nJet30; i++)
+    metup = sqrt(metup_x*metup_x + metup_y*metup_y);
+    metdw = sqrt(metdw_x*metdw_x + metdw_y*metdw_y);
+    METUp = metup;
+    METDw = metdw;    
+
+    //event selection
+    cutStepBit[0] = (ZMass > 12);
+    cutStepBit[1] = (isIso > 0);
+    cutStepBit[2] = (PairSign < 0);
+    if ( mode == 1 or mode == 2 )
     {
-      jet30[i] = new TLorentzVector( jets->at(i).px(), jets->at(i).py(), jets->at(i).pz(), jets->at(i).energy() );
-      jet30flavor[i] = jets->at(i).flavor();
+      cutStepBit[3] = true;
+      cutStepBit[4] = true;
     }
+    else
+    {
+      cutStepBit[3] = abs(ZMass - 91.2) > 15;
+      cutStepBit[4] = MET > 30;
+    }
+    cutStepBit[5] = (nJet30 >= 4);
+    cutStepBit[6] = (nbjets30_[2] >= 2);
+
+    //process selection
+    visible = nGenJet20 >= 4 && nGenbJet20 >=2 && genLep1_pt > 20 && genLep2_pt > 20 && abs( genLep1_eta ) < 2.5 && abs( genLep2_eta ) < 2.5;
+    ttbb  = !isRealData && visible && nGenbJet20 >= 4; 
+    ttcc  = !isRealData && visible && nGencJet20 >= 2 && !ttbb;
+    ttLF  = !isRealData && visible && !ttbb && !ttcc; 
+
+    processBit[0] = !isRealData && true;
+    processBit[1] = !isRealData && visible && nGenbJet20 >= 4; //ttbb
+    processBit[2] = !isRealData && visible && nGencJet20 >= 2 && !processBit[1]; //ttcc
+    processBit[3] = !isRealData && visible && !processBit[1] && !processBit[2]; //ttLF
+    processBit[4] = !isRealData && !visible; //TTOthers
+    processBit[5] = !isRealData && ttbarGen_dileptonic != 1;
+    processBit[6] = lep1_relIso03 > 0.2 && lep2_relIso03 > 0.2;
+
+// old style
+//    std::vector<TLorentzVector *> jet30(nJet30);
+//    std::vector<int> jet30flavor(nJet30);
+//    for (unsigned int i=0; i < nJet30; i++)
+//    {
+//      jet30[i] = new TLorentzVector( jets->at(i).px(), jets->at(i).py(), jets->at(i).pz(), jets->at(i).energy() );
+//      jet30flavor[i] = jets->at(i).flavor();
+//    }
+
+    bool prebtag = cutStepBit[0] && cutStepBit[1] && cutStepBit[2] && cutStepBit[3] && cutStepBit[4] && cutStepBit[5] ;
+    bool dilepton = cutStepBit[0] && cutStepBit[1] && cutStepBit[2] ;
    
-    if( !isRealData ){
+    if( !isRealData && prebtag){
       if( run2012_ == true ){
         BTagWeight2012 bTag;
 
-        bweight30CSVL = bTag.reweight( jet30, jet30flavor, nbjets30_[1], BTagWeight2012::CSVL, BTagWeight2012::NORM);
-        bweight30CSVM = bTag.reweight( jet30, jet30flavor, nbjets30_[2], BTagWeight2012::CSVM, BTagWeight2012::NORM);
-        bweight30CSVT = bTag.reweight( jet30, jet30flavor, nbjets30_[3], BTagWeight2012::CSVT, BTagWeight2012::NORM);
+        //bweight30CSVL = bTag.reweight( jets_pt, jets_eta, jets_flavor, nbjets30_[0], BTagWeight2012::CSVL, BTagWeight2012::NORM);
+        //bweight30CSVM = bTag.reweight( jets_pt, jets_eta, jets_flavor, nbjets30_[1], BTagWeight2012::CSVM, BTagWeight2012::NORM);
+        bweight30CSVT = bTag.reweight( jets_pt, jets_eta, jets_flavor, nbjets30_[2], BTagWeight2012::CSVT, BTagWeight2012::NORM);
 
-        bweight30CSVLup = bTag.reweight( jet30, jet30flavor, nbjets30_[1], BTagWeight2012::CSVL, BTagWeight2012::UP);
-        bweight30CSVMup = bTag.reweight( jet30, jet30flavor, nbjets30_[2], BTagWeight2012::CSVM, BTagWeight2012::UP);
-        bweight30CSVTup = bTag.reweight( jet30, jet30flavor, nbjets30_[3], BTagWeight2012::CSVT, BTagWeight2012::UP);
+        //bweight30CSVLup = bTag.reweight( jets_pt, jets_eta, jets_flavor, nbjets30_[0], BTagWeight2012::CSVL, BTagWeight2012::UP);
+        //bweight30CSVMup = bTag.reweight( jets_pt, jets_eta, jets_flavor, nbjets30_[1], BTagWeight2012::CSVM, BTagWeight2012::UP);
+        bweight30CSVTup = bTag.reweight( jets_pt, jets_eta, jets_flavor, nbjets30_[2], BTagWeight2012::CSVT, BTagWeight2012::UP);
 
-        bweight30CSVLdw = bTag.reweight( jet30, jet30flavor, nbjets30_[1], BTagWeight2012::CSVL, BTagWeight2012::DW);
-        bweight30CSVMdw = bTag.reweight( jet30, jet30flavor, nbjets30_[2], BTagWeight2012::CSVM, BTagWeight2012::DW);
-        bweight30CSVTdw = bTag.reweight( jet30, jet30flavor, nbjets30_[3], BTagWeight2012::CSVT, BTagWeight2012::DW);
+        //bweight30CSVLdw = bTag.reweight( jets_pt, jets_eta, jets_flavor, nbjets30_[0], BTagWeight2012::CSVL, BTagWeight2012::DW);
+        //bweight30CSVMdw = bTag.reweight( jets_pt, jets_eta, jets_flavor, nbjets30_[1], BTagWeight2012::CSVM, BTagWeight2012::DW);
+        bweight30CSVTdw = bTag.reweight( jets_pt, jets_eta, jets_flavor, nbjets30_[2], BTagWeight2012::CSVT, BTagWeight2012::DW);
 
-        bweight30CSVLuplight = bTag.reweight( jet30, jet30flavor, nbjets30_[1], BTagWeight2012::CSVL, BTagWeight2012::UPLight);
-        bweight30CSVMuplight = bTag.reweight( jet30, jet30flavor, nbjets30_[2], BTagWeight2012::CSVM, BTagWeight2012::UPLight);
-        bweight30CSVTuplight = bTag.reweight( jet30, jet30flavor, nbjets30_[3], BTagWeight2012::CSVT, BTagWeight2012::UPLight);
+        //bweight30CSVLuplight = bTag.reweight( jets_pt, jets_eta, jets_flavor, nbjets30_[0], BTagWeight2012::CSVL, BTagWeight2012::UPLight);
+        //bweight30CSVMuplight = bTag.reweight( jets_pt, jets_eta, jets_flavor, nbjets30_[1], BTagWeight2012::CSVM, BTagWeight2012::UPLight);
+        bweight30CSVTuplight = bTag.reweight( jets_pt, jets_eta, jets_flavor, nbjets30_[2], BTagWeight2012::CSVT, BTagWeight2012::UPLight);
 
-        bweight30CSVLdwlight = bTag.reweight( jet30, jet30flavor, nbjets30_[1], BTagWeight2012::CSVL, BTagWeight2012::DWLight);
-        bweight30CSVMdwlight = bTag.reweight( jet30, jet30flavor, nbjets30_[2], BTagWeight2012::CSVM, BTagWeight2012::DWLight);
-        bweight30CSVTdwlight = bTag.reweight( jet30, jet30flavor, nbjets30_[3], BTagWeight2012::CSVT, BTagWeight2012::DWLight);
+        //bweight30CSVLdwlight = bTag.reweight( jets_pt, jets_eta, jets_flavor, nbjets30_[0], BTagWeight2012::CSVL, BTagWeight2012::DWLight);
+        //bweight30CSVMdwlight = bTag.reweight( jets_pt, jets_eta, jets_flavor, nbjets30_[1], BTagWeight2012::CSVM, BTagWeight2012::DWLight);
+        bweight30CSVTdwlight = bTag.reweight( jets_pt, jets_eta, jets_flavor, nbjets30_[2], BTagWeight2012::CSVT, BTagWeight2012::DWLight);
       }else{
         BTagWeight bTag;
 
-        bweight30CSVL = bTag.reweight( jet30, jet30flavor, nbjets30_[1], BTagWeight::CSVL, BTagWeight::NORM);
-        bweight30CSVM = bTag.reweight( jet30, jet30flavor, nbjets30_[2], BTagWeight::CSVM, BTagWeight::NORM);
-        bweight30CSVT = bTag.reweight( jet30, jet30flavor, nbjets30_[3], BTagWeight::CSVT, BTagWeight::NORM);
+        //bweight30CSVL = bTag.reweight( jets_pt, jets_eta, jets_flavor, nbjets30_[0], BTagWeight::CSVL, BTagWeight::NORM);
+        //bweight30CSVM = bTag.reweight( jets_pt, jets_eta, jets_flavor, nbjets30_[1], BTagWeight::CSVM, BTagWeight::NORM);
+        bweight30CSVT = bTag.reweight( jets_pt, jets_eta, jets_flavor, nbjets30_[2], BTagWeight::CSVT, BTagWeight::NORM);
 
-        bweight30CSVLup = bTag.reweight( jet30, jet30flavor, nbjets30_[1], BTagWeight::CSVL, BTagWeight::UP);
-        bweight30CSVMup = bTag.reweight( jet30, jet30flavor, nbjets30_[2], BTagWeight::CSVM, BTagWeight::UP);
-        bweight30CSVTup = bTag.reweight( jet30, jet30flavor, nbjets30_[3], BTagWeight::CSVT, BTagWeight::UP);
+        //bweight30CSVLup = bTag.reweight( jets_pt, jets_eta, jets_flavor, nbjets30_[0], BTagWeight::CSVL, BTagWeight::UP);
+        //bweight30CSVMup = bTag.reweight( jets_pt, jets_eta, jets_flavor, nbjets30_[1], BTagWeight::CSVM, BTagWeight::UP);
+        bweight30CSVTup = bTag.reweight( jets_pt, jets_eta, jets_flavor, nbjets30_[2], BTagWeight::CSVT, BTagWeight::UP);
 
-        bweight30CSVLdw = bTag.reweight( jet30, jet30flavor, nbjets30_[1], BTagWeight::CSVL, BTagWeight::DW);
-        bweight30CSVMdw = bTag.reweight( jet30, jet30flavor, nbjets30_[2], BTagWeight::CSVM, BTagWeight::DW);
-        bweight30CSVTdw = bTag.reweight( jet30, jet30flavor, nbjets30_[3], BTagWeight::CSVT, BTagWeight::DW);
+        //bweight30CSVLdw = bTag.reweight( jets_pt, jets_eta, jets_flavor, nbjets30_[0], BTagWeight::CSVL, BTagWeight::DW);
+        //bweight30CSVMdw = bTag.reweight( jets_pt, jets_eta, jets_flavor, nbjets30_[1], BTagWeight::CSVM, BTagWeight::DW);
+        bweight30CSVTdw = bTag.reweight( jets_pt, jets_eta, jets_flavor, nbjets30_[2], BTagWeight::CSVT, BTagWeight::DW);
 
-        bweight30CSVLuplight = bTag.reweight( jet30, jet30flavor, nbjets30_[1], BTagWeight::CSVL, BTagWeight::UPLight);
-        bweight30CSVMuplight = bTag.reweight( jet30, jet30flavor, nbjets30_[2], BTagWeight::CSVM, BTagWeight::UPLight);
-        bweight30CSVTuplight = bTag.reweight( jet30, jet30flavor, nbjets30_[3], BTagWeight::CSVT, BTagWeight::UPLight);
+        //bweight30CSVLuplight = bTag.reweight( jets_pt, jets_eta, jets_flavor, nbjets30_[0], BTagWeight::CSVL, BTagWeight::UPLight);
+        //bweight30CSVMuplight = bTag.reweight( jets_pt, jets_eta, jets_flavor, nbjets30_[1], BTagWeight::CSVM, BTagWeight::UPLight);
+        bweight30CSVTuplight = bTag.reweight( jets_pt, jets_eta, jets_flavor, nbjets30_[2], BTagWeight::CSVT, BTagWeight::UPLight);
 
-        bweight30CSVLdwlight = bTag.reweight( jet30, jet30flavor, nbjets30_[1], BTagWeight::CSVL, BTagWeight::DWLight);
-        bweight30CSVMdwlight = bTag.reweight( jet30, jet30flavor, nbjets30_[2], BTagWeight::CSVM, BTagWeight::DWLight);
-        bweight30CSVTdwlight = bTag.reweight( jet30, jet30flavor, nbjets30_[3], BTagWeight::CSVT, BTagWeight::DWLight);
+        //bweight30CSVLdwlight = bTag.reweight( jets_pt, jets_eta, jets_flavor, nbjets30_[0], BTagWeight::CSVL, BTagWeight::DWLight);
+        //bweight30CSVMdwlight = bTag.reweight( jets_pt, jets_eta, jets_flavor, nbjets30_[1], BTagWeight::CSVM, BTagWeight::DWLight);
+        bweight30CSVTdwlight = bTag.reweight( jets_pt, jets_eta, jets_flavor, nbjets30_[2], BTagWeight::CSVT, BTagWeight::DWLight);
       }
     }
 
     ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > corrmet;
     corrmet.SetPxPyPzE(mi->px(),mi->py(),0,mi->pt());
-    MET = mi->pt();
     met->push_back(corrmet);
 
-    if(jetspt30->size() >= 2 && ZMass > 12){
+    if(dilepton && nJet30 >= 2){
       ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > lep1;
       ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > lep2;
       lep1.SetPxPyPzE(ZCand->at(0).leg1().px(),ZCand->at(0).leg1().py(),ZCand->at(0).leg1().pz(),ZCand->at(0).leg1().energy());
       lep2.SetPxPyPzE(ZCand->at(0).leg2().px(),ZCand->at(0).leg2().py(),ZCand->at(0).leg2().pz(),ZCand->at(0).leg2().energy());
 
-      const vallot::TTbarMass ttbarMass(lep1, lep2, jetspt30->at(0), jetspt30->at(1), met->at(0));
+      const vallot::TTbarMass ttbarMass(lep1, lep2, jetspt30->at(csvd_jetid[0]), jetspt30->at(csvd_jetid[1]), met->at(0));
       ttbar->push_back(ttbarMass);
 
       vsumttbarM = ttbarMass.M();
@@ -594,7 +715,7 @@ class CMGTopDILAnalyzer : public edm::EDFilter {
       int cmb = 0 ;
       const string hypo = "kKinSolution"; 
 
-      if( fullLepEvt->size() > 0){
+      if( fullLepEvt.isValid() && fullLepEvt->size() > 0){
         
         int btagsinhypo;
         bool foundOneTagSolution = false;
@@ -620,8 +741,8 @@ class CMGTopDILAnalyzer : public edm::EDFilter {
         kin_ttbar_mass = fullLepEvt->at(cmb).M();
         unsigned int b = fullLepEvt->at(cmb).bid(0);
         unsigned int bbar = fullLepEvt->at(cmb).bid(1);
-        jets->at(b).setRecoTopdecay("kinSolution");
-        jets->at(bbar).setRecoTopdecay("kinSolution");
+        //jets->at(b).setRecoTopdecay("kinSolution");
+        //jets->at(bbar).setRecoTopdecay("kinSolution");
         ttbarKin->push_back( fullLepEvt->at(cmb) );
         unsigned int j0 = fullLepEvt->at(cmb).jid(0);
         unsigned int j1 = fullLepEvt->at(cmb).jid(1);
@@ -694,8 +815,6 @@ class CMGTopDILAnalyzer : public edm::EDFilter {
     }
 //////////
     //gen information
-    vallot::CMGTTbarCandidate ttbarGenLevel;
-
     double genZmass = -999;
  
     if(genParticles_.isValid()){
@@ -733,7 +852,10 @@ class CMGTopDILAnalyzer : public edm::EDFilter {
       genZMass = genZmass;
     }
 
-    if( genParticles_.isValid() && genJets_.isValid() ){ // && topSample_){
+    //ttbar gen variables
+    vallot::CMGTTbarCandidate ttbarGenLevel;
+
+    if( genParticles_.isValid() && genJets_.isValid() ){ // && prebtag){ // && topSample_){
       const reco::GenParticleCollection* myGenParticles = 0;
       myGenParticles = &(*genParticles_);
       const std::vector<cmg::GenJet>* myGenJets = 0;
@@ -752,114 +874,106 @@ class CMGTopDILAnalyzer : public edm::EDFilter {
 
       ttbarGen->push_back(ttbarGenLevel);
     }
-
     //ESHandle<SetupData> pSetup;
     //iSetup.get<SetupRecord>().get(pSetup);
     double w = puweight;
-    double w2 = puweight*bweight30CSVT;
 
-    if ( accept )
+    //fill histograms
+    if ( histograms_ )
     {
-      cutStepBit[0] = (ZMass > 12);
-      cutStepBit[1] = (isIso > 0); 
-      cutStepBit[2] = (PairSign < 0);
-      if ( mode == 1 or mode == 2 )
-      {
-        cutStepBit[3] = true;
-        cutStepBit[4] = true;
-      }
-      else
-      {
-        cutStepBit[3] = abs(ZMass - 91.2) > 15;
-        cutStepBit[4] = MET > 30;
-      }
-      cutStepBit[5] = (nJet30 >= 4);
-      cutStepBit[6] = (nbjets30_[3] >= 2);
-      
-      for ( int cutStep = 0; cutStep < nCutStep_; ++cutStep )
-      {
-        h_[cutStep].hNEvents->Fill(0);
 
-        bool isPassingCutStep = true;
-        for ( int i=0; i<=cutStep; ++i )
-        {
-          if ( !cutStepBit[i] )
-          {
-            isPassingCutStep = false;
-            break;
-          }
-        }
-        if ( !isPassingCutStep ) continue;
-        
-        h_[cutStep].hNEvents->Fill(1);
+      for ( int process = 0 ; process < nProcess_; ++ process){ 
+	for ( int cutStep = 0; cutStep < nCutStep_; ++cutStep )
+	{
+	  h_[process][cutStep].hNEvents->Fill(0);
 
-        h_[cutStep].hgenttbarM->Fill(genttbarM,w);
-        h_[cutStep].hnpileup->Fill(npileup,w);
-        h_[cutStep].hnvertex->Fill(nvertex,w);
-        h_[cutStep].hNLepton1->Fill(muons1_->size(),w);
-        h_[cutStep].hNLepton2->Fill(muons2_->size(),w);
-        const int nJets = jetspt30->size();
-        h_[cutStep].hNJet->Fill(nJets,w);
+	  bool isPassingCutStep = true;
+	  for ( int i=0; i<=cutStep; ++i )
+	  {
+            if( i == 1 && process == 6) continue;//special treatmenet for QCD process
+	    if ( !cutStepBit[i] )
+	    {
+	      isPassingCutStep = false;
+	      break;
+	    }
+	  }
+	  if ( !isPassingCutStep ) continue;
+          if ( !processBit[process] ) continue;
+	  
+	  h_[process][cutStep].hNEvents->Fill(1);
 
-        h_[cutStep].hpt1->Fill(lep1_pt,w);
-        h_[cutStep].hpt2->Fill(lep2_pt,w);
-        h_[cutStep].heta1->Fill(lep1_eta,w);
-        h_[cutStep].heta2->Fill(lep2_eta,w);
-        h_[cutStep].hrelIso1->Fill(lep1_relIso03,w);
-        h_[cutStep].hrelIso2->Fill(lep2_relIso03,w);
+	  h_[process][cutStep].hgenttbarM->Fill(genttbarM,w);
+	  h_[process][cutStep].hnpileup->Fill(npileup,w);
+	  h_[process][cutStep].hnvertex->Fill(nvertex,w);
+	  h_[process][cutStep].hNLepton1->Fill(muons1_->size(),w);
+	  h_[process][cutStep].hNLepton2->Fill(muons2_->size(),w);
+	  h_[process][cutStep].hNJet->Fill(nJet30,w);
 
-        if ( nJets > 0 )
-        {
-          h_[cutStep].hjet1pt ->Fill(jetspt30->at(0).pt(),w);
-          h_[cutStep].hjet1eta->Fill(jetspt30->at(0).eta(),w);
-          h_[cutStep].hjet1phi->Fill(jetspt30->at(0).phi(),w);
-        }
-        if ( nJets > 1 )
-        {
-          h_[cutStep].hjet2pt ->Fill(jetspt30->at(1).pt(),w);
-          h_[cutStep].hjet2eta->Fill(jetspt30->at(1).eta(),w);
-          h_[cutStep].hjet2phi->Fill(jetspt30->at(1).phi(),w);
+	  h_[process][cutStep].hpt1->Fill(lep1_pt,w);
+	  h_[process][cutStep].hpt2->Fill(lep2_pt,w);
+	  h_[process][cutStep].heta1->Fill(lep1_eta,w);
+	  h_[process][cutStep].heta2->Fill(lep2_eta,w);
+	  h_[process][cutStep].hrelIso1->Fill(lep1_relIso03,w);
+	  h_[process][cutStep].hrelIso2->Fill(lep2_relIso03,w);
 
-          h_[cutStep].hHT->Fill(lep1_pt+lep2_pt+jetspt30->at(0).pt()+jetspt30->at(1).pt(),w);
-        }
-        if ( nJets > 2 )
-        {
-          h_[cutStep].hjet3pt ->Fill(jetspt30->at(2).pt(),w);
-          h_[cutStep].hjet3eta->Fill(jetspt30->at(2).eta(),w);
-          h_[cutStep].hjet3phi->Fill(jetspt30->at(2).phi(),w);
-        }
-        if ( nJets > 3 )
-        {
-          h_[cutStep].hjet4pt ->Fill(jetspt30->at(3).pt(),w);
-          h_[cutStep].hjet4eta->Fill(jetspt30->at(3).eta(),w);
-          h_[cutStep].hjet4phi->Fill(jetspt30->at(3).phi(),w);
+	  if ( nJet30 > 0 )
+	  {
+	    h_[process][cutStep].hjet1pt ->Fill(jets_pt[0],w);
+	    h_[process][cutStep].hjet1eta->Fill(jets_eta[0],w);
+	    h_[process][cutStep].hjet1phi->Fill(jets_phi[0],w);
+	  }
+	  if ( nJet30 > 1 )
+	  {
+	    h_[process][cutStep].hjet2pt ->Fill(jets_pt[1],w);
+	    h_[process][cutStep].hjet2eta->Fill(jets_eta[1],w);
+	    h_[process][cutStep].hjet2phi->Fill(jets_phi[1],w);
 
-          h_[cutStep].hBDiscriminatorCSVJet3->Fill(jets_bDiscriminatorCSV[csvd_jetid[2]],w2);
-          h_[cutStep].hBDiscriminatorCSVJet4->Fill(jets_bDiscriminatorCSV[csvd_jetid[3]],w2);
-        }
-        for ( int i=0, n=nbjets30_.size(); i<n; ++i )
-        {
-          h_[cutStep].hnBJets.at(i)->Fill(nbjets30_[i],w);
-        }
+	    h_[process][cutStep].hHT->Fill(lep1_pt+lep2_pt+jets_pt[0]+jets_pt[1],w);
+	  }
+	  if ( nJet30 > 2 )
+	  {
+	    h_[process][cutStep].hjet3pt ->Fill(jets_pt[2],w);
+	    h_[process][cutStep].hjet3eta->Fill(jets_eta[2],w);
+	    h_[process][cutStep].hjet3phi->Fill(jets_phi[2],w);
+	  }
+	  if ( nJet30 > 3 )
+	  {
+	    h_[process][cutStep].hjet4pt ->Fill(jets_pt[3],w);
+	    h_[process][cutStep].hjet4eta->Fill(jets_eta[3],w);
+	    h_[process][cutStep].hjet4phi->Fill(jets_phi[3],w);
+            //can be used for CSVT selection
+            h_[process][cutStep].hBDiscriminatorCSVJet3->Fill(jets_bDiscriminatorCSV[csvd_jetid[2]],w*bweight30CSVT*jets_bDisCSVweight[csvd_jetid[2]]);
+            h_[process][cutStep].hBDiscriminatorCSVJet4->Fill(jets_bDiscriminatorCSV[csvd_jetid[3]],w*bweight30CSVT*jets_bDisCSVweight[csvd_jetid[3]]);
+	  }
 
-        h_[cutStep].hMET->Fill(MET,w);
-        h_[cutStep].hMETPhi->Fill(met->at(0).phi(),w);
-        if ( !pfMet->empty() )
-        {
-          h_[cutStep].hSumET->Fill(pfMet->at(0).sumEt(),w);
-          h_[cutStep].hChET->Fill(pfMet->at(0).chargedHadEt(),w);
-          h_[cutStep].hNhET->Fill(pfMet->at(0).neutralHadEt(),w);
-          h_[cutStep].hPhET->Fill(pfMet->at(0).photonEt(),w);
-        }
+	  for ( int i=0, n=nbjets30_.size(); i<n; ++i )
+	  {
+            double bweight = 1.0;
+            if( i == 0 ) bweight = bweight30CSVL;
+            if( i == 1 ) bweight = bweight30CSVM;
+            if( i == 2 ) bweight = bweight30CSVT;
+	    h_[process][cutStep].hnBJets.at(i)->Fill(nbjets30_[i],w*bweight);
+	  }
 
-        h_[cutStep].hZMass->Fill(ZMass,w);
+	  h_[process][cutStep].hMET->Fill(MET,w);
+	  h_[process][cutStep].hMETPhi->Fill(met->at(0).phi(),w);
+	  if ( !pfMet->empty() )
+	  {
+	    h_[process][cutStep].hSumET->Fill(pfMet->at(0).sumEt(),w);
+	    h_[process][cutStep].hChET->Fill(pfMet->at(0).chargedHadEt(),w);
+	    h_[process][cutStep].hNhET->Fill(pfMet->at(0).neutralHadEt(),w);
+	    h_[process][cutStep].hPhET->Fill(pfMet->at(0).photonEt(),w);
+	  }
 
-        if ( !ttbar->empty() )
-        {
-          h_[cutStep].hvsumM->Fill(ttbar->at(0).M(),w);
-          h_[cutStep].hmaosM->Fill(ttbar->at(0).maosM(),w);
-          h_[cutStep].htopMass1->Fill(ttbar->at(0).leg1().M(),w);
-          h_[cutStep].htopMass2->Fill(ttbar->at(0).leg2().M(),w);
+	  h_[process][cutStep].hZMass->Fill(ZMass,w);
+
+	  if ( !ttbar->empty() )
+	  {
+	    h_[process][cutStep].hvsumM->Fill(ttbar->at(0).M(),w);
+	    h_[process][cutStep].hmaosM->Fill(ttbar->at(0).maosM(),w);
+	    h_[process][cutStep].htopMass1->Fill(ttbar->at(0).leg1().M(),w);
+	    h_[process][cutStep].htopMass2->Fill(ttbar->at(0).leg2().M(),w);
+	  }
         }
       }
     }
@@ -953,6 +1067,7 @@ class CMGTopDILAnalyzer : public edm::EDFilter {
     lep2_phi = -999;
     lep1_charge = 0.0;
     lep2_charge = 0.0;
+    lepweight = 1.0;
  
     kin_ttbar_mass = -999;
     kin_ttbar_dphi = -999;
@@ -968,8 +1083,11 @@ class CMGTopDILAnalyzer : public edm::EDFilter {
     jets_fromtop.clear();
     jets_bDiscriminatorJP.clear();
     jets_bDiscriminatorCSV.clear();
+    jets_bDisCSVweight.clear();
 
     nJet30 = 0;
+    nJet30Up = 0;
+    nJet30Dw = 0;
     nGenJet20 = 0;
     nGenbJet20 = 0;
     nGencJet20 = 0;
@@ -981,6 +1099,10 @@ class CMGTopDILAnalyzer : public edm::EDFilter {
     genLep2_eta = 0;
 
     ttbarGen_dileptonic = 0;
+    visible = 0;
+    ttbb = 0;
+    ttcc = 0;
+    ttLF = 0;
 
     kin_nu_pt = -999;
     kin_nu_eta = -999;
@@ -1069,6 +1191,11 @@ class CMGTopDILAnalyzer : public edm::EDFilter {
     return out;
   }
 
+  double bDiscriminatorWeight(double x, int flavor){
+    if( abs(flavor) == 5 || abs(flavor) == 4 ) return 1; 
+    double w = 0.749644+3.09749*x-9.98179*pow(x,2)+19.3428*pow(x,3)-19.6664*pow(x,4)+7.44382*pow(x,5);
+    return w;
+  }  
 
   typedef vector<cmg::PFJet>::const_iterator JI;
 
@@ -1122,6 +1249,8 @@ class CMGTopDILAnalyzer : public edm::EDFilter {
   std::vector<int> csvd_jetid;
 
   double MET;
+  double METUp;
+  double METDw;
   double ZMass;
   double genZMass;
   int ZtauDecay;
@@ -1149,6 +1278,7 @@ class CMGTopDILAnalyzer : public edm::EDFilter {
   double lep2_phi;
   double lep1_charge;
   double lep2_charge;
+  double lepweight;
 
   double kin_ttbar_mass;
   double kin_ttbar_dphi;
@@ -1164,8 +1294,11 @@ class CMGTopDILAnalyzer : public edm::EDFilter {
   std::vector<int> jets_fromtop;
   std::vector<double> jets_bDiscriminatorJP;
   std::vector<double> jets_bDiscriminatorCSV;
+  std::vector<double> jets_bDisCSVweight;
 
   unsigned int nJet30;
+  unsigned int nJet30Up;
+  unsigned int nJet30Dw;
   unsigned int nGenJet20;
   unsigned int nGenbJet20;
   unsigned int nGencJet20;
@@ -1177,6 +1310,10 @@ class CMGTopDILAnalyzer : public edm::EDFilter {
   double genLep2_eta;
 
   int ttbarGen_dileptonic;
+  int visible;
+  int ttbb;
+  int ttcc;
+  int ttLF;
   // ----------member data ---------------------------
 
   //add run event data
@@ -1233,9 +1370,12 @@ class CMGTopDILAnalyzer : public edm::EDFilter {
 
   unsigned int nstep_;
   bool run2012_;
+  bool histograms_;
 
   int nCutStep_;
-  std::vector<Histograms> h_;
+  int nProcess_;
+  //std::vector<Histograms> h_;
+  std::map<int, std::vector<Histograms> > h_;
 
   bool isFromtop( const reco::GenParticle& p){
     bool out = false;
