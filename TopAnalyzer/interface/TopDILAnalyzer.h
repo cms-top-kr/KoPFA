@@ -13,7 +13,7 @@
 //
 // Original Author:  Tae Jeong Kim,40 R-A32,+41227678602,
 //         Created:  Fri Jun  4 17:19:29 CEST 2010
-// $Id: TopDILAnalyzer.h,v 1.91 2012/10/19 09:46:22 tjkim Exp $
+// $Id: TopDILAnalyzer.h,v 1.92 2012/11/01 09:33:18 tjkim Exp $
 //
 //
 
@@ -490,36 +490,40 @@ class TopDILAnalyzer : public edm::EDFilter {
 
     //}
 
-    std::vector<TLorentzVector *> jet30(nJet30);
+    //std::vector<TLorentzVector *> jet30(nJet30);
+    std::vector<double> jet30pt(nJet30);
+    std::vector<double> jet30eta(nJet30);
     std::vector<int> jet30flavor(nJet30);
 
     for (unsigned int i=0; i < nJet30; i++)
     {
-      jet30[i] = new TLorentzVector( jetspt30->at(i).px(), jetspt30->at(i).py(), jetspt30->at(i).pz(), jetspt30->at(i).energy() );
+      //jet30[i] = new TLorentzVector( jetspt30->at(i).px(), jetspt30->at(i).py(), jetspt30->at(i).pz(), jetspt30->at(i).energy() );
+      jet30pt[i] = jetspt30->at(i).pt();
+      jet30eta[i] = jetspt30->at(i).eta();
       jet30flavor[i] = jetspt30flavor->at(i);
     }
    
     if( !isRealData ){
-      bweight30CSVL = bTag.reweight( jet30, jet30flavor, nbjets30_[1], BTagWeight::CSVL, BTagWeight::NORM);
-      bweight30CSVM = bTag.reweight( jet30, jet30flavor, nbjets30_[2], BTagWeight::CSVM, BTagWeight::NORM);
-      bweight30CSVT = bTag.reweight( jet30, jet30flavor, nbjets30_[3], BTagWeight::CSVT, BTagWeight::NORM);
+      bweight30CSVL = bTag.reweight( jet30pt, jet30eta, jet30flavor, nbjets30_[1], BTagWeight::CSVL, BTagWeight::NORM);
+      bweight30CSVM = bTag.reweight( jet30pt, jet30eta, jet30flavor, nbjets30_[2], BTagWeight::CSVM, BTagWeight::NORM);
+      bweight30CSVT = bTag.reweight( jet30pt, jet30eta, jet30flavor, nbjets30_[3], BTagWeight::CSVT, BTagWeight::NORM);
 
       //add adddtional erro for b : set it true
-      bweight30CSVLup = bTag.reweight( jet30, jet30flavor, nbjets30_[1], BTagWeight::CSVL, BTagWeight::UP);
-      bweight30CSVMup = bTag.reweight( jet30, jet30flavor, nbjets30_[2], BTagWeight::CSVM, BTagWeight::UP, true);
-      bweight30CSVTup = bTag.reweight( jet30, jet30flavor, nbjets30_[3], BTagWeight::CSVT, BTagWeight::UP, true);
+      bweight30CSVLup = bTag.reweight( jet30pt, jet30eta, jet30flavor, nbjets30_[1], BTagWeight::CSVL, BTagWeight::UP);
+      bweight30CSVMup = bTag.reweight( jet30pt, jet30eta, jet30flavor, nbjets30_[2], BTagWeight::CSVM, BTagWeight::UP, true);
+      bweight30CSVTup = bTag.reweight( jet30pt, jet30eta, jet30flavor, nbjets30_[3], BTagWeight::CSVT, BTagWeight::UP, true);
 
-      bweight30CSVLdw = bTag.reweight( jet30, jet30flavor, nbjets30_[1], BTagWeight::CSVL, BTagWeight::DW);
-      bweight30CSVMdw = bTag.reweight( jet30, jet30flavor, nbjets30_[2], BTagWeight::CSVM, BTagWeight::DW, true);
-      bweight30CSVTdw = bTag.reweight( jet30, jet30flavor, nbjets30_[3], BTagWeight::CSVT, BTagWeight::DW, true);
+      bweight30CSVLdw = bTag.reweight( jet30pt, jet30eta, jet30flavor, nbjets30_[1], BTagWeight::CSVL, BTagWeight::DW);
+      bweight30CSVMdw = bTag.reweight( jet30pt, jet30eta, jet30flavor, nbjets30_[2], BTagWeight::CSVM, BTagWeight::DW, true);
+      bweight30CSVTdw = bTag.reweight( jet30pt, jet30eta, jet30flavor, nbjets30_[3], BTagWeight::CSVT, BTagWeight::DW, true);
 
-      bweight30CSVLuplight = bTag.reweight( jet30, jet30flavor, nbjets30_[1], BTagWeight::CSVL, BTagWeight::UPLight);
-      bweight30CSVMuplight = bTag.reweight( jet30, jet30flavor, nbjets30_[2], BTagWeight::CSVM, BTagWeight::UPLight);
-      bweight30CSVTuplight = bTag.reweight( jet30, jet30flavor, nbjets30_[3], BTagWeight::CSVT, BTagWeight::UPLight);
+      bweight30CSVLuplight = bTag.reweight( jet30pt, jet30eta, jet30flavor, nbjets30_[1], BTagWeight::CSVL, BTagWeight::UPLight);
+      bweight30CSVMuplight = bTag.reweight( jet30pt, jet30eta, jet30flavor, nbjets30_[2], BTagWeight::CSVM, BTagWeight::UPLight);
+      bweight30CSVTuplight = bTag.reweight( jet30pt, jet30eta, jet30flavor, nbjets30_[3], BTagWeight::CSVT, BTagWeight::UPLight);
 
-      bweight30CSVLdwlight = bTag.reweight( jet30, jet30flavor, nbjets30_[1], BTagWeight::CSVL, BTagWeight::DWLight);
-      bweight30CSVMdwlight = bTag.reweight( jet30, jet30flavor, nbjets30_[2], BTagWeight::CSVM, BTagWeight::DWLight);
-      bweight30CSVTdwlight = bTag.reweight( jet30, jet30flavor, nbjets30_[3], BTagWeight::CSVT, BTagWeight::DWLight);
+      bweight30CSVLdwlight = bTag.reweight( jet30pt, jet30eta, jet30flavor, nbjets30_[1], BTagWeight::CSVL, BTagWeight::DWLight);
+      bweight30CSVMdwlight = bTag.reweight( jet30pt, jet30eta, jet30flavor, nbjets30_[2], BTagWeight::CSVM, BTagWeight::DWLight);
+      bweight30CSVTdwlight = bTag.reweight( jet30pt, jet30eta, jet30flavor, nbjets30_[3], BTagWeight::CSVT, BTagWeight::DWLight);
 
     }
 

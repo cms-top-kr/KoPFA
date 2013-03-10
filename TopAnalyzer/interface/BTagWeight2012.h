@@ -28,60 +28,76 @@ class BTagWeight2012
       UPLight
     };
 
-    double reweight(const std::vector<TLorentzVector *> &jets, const std::vector<int> &jetflavor, int ntag, AlgoType algo, SYS sys = NORM, bool addberr = false){
+    static const int nbin = 16;
+    static const int nalgo = 3;
+    static const float ptmin[nbin];
+    static const float ptmax[nbin];
+    static const double addSFb_error[nalgo][nbin];
+    static const double SFb_error[nalgo][nbin];
+
+    //double reweight(const std::vector<TLorentzVector *> &jets, const std::vector<int> &jetflavor, int ntag, AlgoType algo, SYS sys = NORM, bool addberr = false){
+    double reweight(const std::vector<double> &jetpt, const std::vector<double> &jeteta,  const std::vector<int> &jetflavor, int ntag, AlgoType algo, SYS sys = NORM, bool addberr = false){
       algo_ = algo;
       sys_ = sys;
       addberr_ = addberr;
 
-      double pmc = probmc(jets, jetflavor, ntag);
-      double pdata = probdata(jets, jetflavor, ntag);
+      double pmc = probmc(jetpt, jeteta, jetflavor, ntag);
+      double pdata = probdata(jetpt, jeteta, jetflavor, ntag);
 
-      return pdata/pmc;
+      double weight = 1;
+      if( pmc != 0 ) weight = pdata/pmc;
+      //std::cout << "njet= " << jetpt.size() << " ntag= "<< ntag << " pmc= " << pmc << " pdata= " << pdata << " weight= " << pdata/pmc << " algo= " << algo << " sys= " << sys << std::endl;
+      return weight;
+
     }
 
     //double probmc(const std::vector<TLorentzVector *> &jets, const std::vector<int> &jetflavor, int ntag, int fromi=0);
     // prepare a vector of pointers to TLorentzVector and jet flavors
     // use recursion
-    double probmc(const std::vector<TLorentzVector *> &jets, const std::vector<int> &jetflavor, int ntag, int fromi =0)
+    //double probmc(const std::vector<TLorentzVector *> &jets, const std::vector<int> &jetflavor, int ntag, int fromi =0)
+    double probmc(const std::vector<double> &jetpt, const std::vector<double> &jeteta,  const std::vector<int> &jetflavor, int ntag, int fromi =0)
     {
 	// something doesn't match
-	if (jetflavor.size() != jets.size()) return 0.0;
+        int njetsize = jetpt.size();
+	if ((int) jetflavor.size() != njetsize) return 0.0;
 	// can't have more ntags than the number of jets
-	if ((int) jets.size() < ntag) return 0.0;
-	if (fromi>= (int) jets.size()) return 1.0; // stopping condition for recursion
+	if ((int) njetsize < ntag) return 0.0;
+	if (fromi>= njetsize) return 1.0; // stopping condition for recursion
 
-	int njetsize = jets.size();
 	double probability=0.0;
 	int i = fromi;
 	//for (int i=fromi; i<njetsize; i++)
 	{
-	    double jpt = jets[i]->Pt();
-	    double jeta = jets[i]->Eta();
+	    //double jpt = jets[i]->Pt();
+	    //double jeta = jets[i]->Eta();
+            double jpt = jetpt[i];
+            double jeta = jeteta[i];
+
 	    if (njetsize-i == ntag) // the number of remaining jets equals the ntags, so they must be tagged
 	    {
-		if (jetflavor[i]==5) probability =eb(jpt, jeta)*probmc(jets, jetflavor, ntag-1, i+1);
-		else if (jetflavor[i]==4) probability =ec(jpt, jeta)*probmc(jets, jetflavor, ntag-1, i+1);
-		else probability =el(jpt, jeta)*probmc(jets, jetflavor, ntag-1, i+1);
+		if (jetflavor[i]==5) probability =eb(jpt, jeta)*probmc(jetpt, jeteta, jetflavor, ntag-1, i+1);
+		else if (jetflavor[i]==4) probability =ec(jpt, jeta)*probmc(jetpt, jeteta, jetflavor, ntag-1, i+1);
+		else probability =el(jpt, jeta)*probmc(jetpt, jeteta, jetflavor, ntag-1, i+1);
 	    }
 	    else if (ntag>0) {
 		if (jetflavor[i]==5) {
-		    probability = eb(jpt, jeta)*probmc(jets, jetflavor, ntag-1, i+1) // jet i tagged
-			+ (1.0-eb(jpt, jeta))*probmc(jets, jetflavor, ntag, i+1);  // jet i not tagged
+		    probability = eb(jpt, jeta)*probmc(jetpt, jeteta, jetflavor, ntag-1, i+1) // jet i tagged
+			+ (1.0-eb(jpt, jeta))*probmc(jetpt, jeteta, jetflavor, ntag, i+1);  // jet i not tagged
 		}
 		else if (jetflavor[i]==4) {
-		    probability = ec(jpt, jeta)*probmc(jets, jetflavor, ntag-1, i+1)
-			+ (1.0-ec(jpt, jeta))*probmc(jets, jetflavor, ntag, i+1);  // jet i not tagged
+		    probability = ec(jpt, jeta)*probmc(jetpt, jeteta, jetflavor, ntag-1, i+1)
+			+ (1.0-ec(jpt, jeta))*probmc(jetpt, jeteta, jetflavor, ntag, i+1);  // jet i not tagged
 		}
 		else {
-		    probability = el(jpt, jeta)*probmc(jets, jetflavor, ntag-1, i+1)
-			+ (1.0-el(jpt, jeta))*probmc(jets, jetflavor, ntag, i+1);  // jet i not tagged
+		    probability = el(jpt, jeta)*probmc(jetpt, jeteta, jetflavor, ntag-1, i+1)
+			+ (1.0-el(jpt, jeta))*probmc(jetpt, jeteta, jetflavor, ntag, i+1);  // jet i not tagged
 		}
 	    }
 	    else
 	    {
-		if (jetflavor[i]==5) probability = (1.0-eb(jpt, jeta))*probmc(jets, jetflavor, 0, i+1); // no tag
-		else if (jetflavor[i]==4) probability = (1.0-ec(jpt, jeta))*probmc(jets, jetflavor, 0, i+1); // no tag
-		else probability = (1.0-el(jpt, jeta))*probmc(jets, jetflavor, 0, i+1); // no tag
+		if (jetflavor[i]==5) probability = (1.0-eb(jpt, jeta))*probmc(jetpt, jeteta, jetflavor, 0, i+1); // no tag
+		else if (jetflavor[i]==4) probability = (1.0-ec(jpt, jeta))*probmc(jetpt, jeteta, jetflavor, 0, i+1); // no tag
+		else probability = (1.0-el(jpt, jeta))*probmc(jetpt, jeteta, jetflavor, 0, i+1); // no tag
 	    }
 	}
 	return probability;
@@ -92,46 +108,50 @@ class BTagWeight2012
     //double probdata(const std::vector<TLorentzVector *> &jets, const std::vector<int> &jetflavor, int ntag, int fromi=0);
     // prepare a vector of pointers to TLorentzVector and jet flavors
     // use recursion
-    double probdata(const std::vector<TLorentzVector *> &jets, const std::vector<int> &jetflavor, int ntag, int fromi=0)
+    //double probdata(const std::vector<TLorentzVector *> &jets, const std::vector<int> &jetflavor, int ntag, int fromi=0)
+    double probdata(const std::vector<double> &jetpt, const std::vector<double> &jeteta,  const std::vector<int> &jetflavor, int ntag, int fromi=0)
     {
-	// something doesn't match
-	if (jetflavor.size() != jets.size()) return 0.0;
-	// can't have more ntags than the number of jets
-	if ((int) jets.size() < ntag) return 0.0;
-	if (fromi>= (int) jets.size()) return 1.0; // stopping condition for recursion
+        // something doesn't match
+        int njetsize = jetpt.size();
+        if ((int) jetflavor.size() != njetsize) return 0.0;
+        // can't have more ntags than the number of jets
+        if ((int) njetsize < ntag) return 0.0;
+        if (fromi>= njetsize) return 1.0; // stopping condition for recursion
 
-	int njetsize = jets.size();
 	double probability=0.0;
 	int i = fromi;
 	//for (int i=fromi; i<njetsize; i++)
 	{
-	    double jpt = jets[i]->Pt();
-	    double jeta = jets[i]->Eta();
+	    //double jpt = jets[i]->Pt();
+	    //double jeta = jets[i]->Eta();
+            double jpt = jetpt[i];
+            double jeta = jeteta[i];
+
 	    if (njetsize-i == ntag) // the number of remaining jets equals the ntags, so they must be tagged
 	    {
-		if (jetflavor[i]==5) probability =sfb(jpt,jeta)*eb(jpt, jeta)*probdata(jets, jetflavor, ntag-1, i+1);
-		else if (jetflavor[i]==4) probability =sfc(jpt,jeta)*ec(jpt, jeta)*probdata(jets, jetflavor, ntag-1, i+1);
-		else probability =sfl(jpt,jeta)*el(jpt, jeta)*probdata(jets, jetflavor, ntag-1, i+1);
+		if (jetflavor[i]==5) probability =sfb(jpt,jeta)*eb(jpt, jeta)*probdata(jetpt, jeteta, jetflavor, ntag-1, i+1);
+		else if (jetflavor[i]==4) probability =sfc(jpt,jeta)*ec(jpt, jeta)*probdata(jetpt, jeteta, jetflavor, ntag-1, i+1);
+		else probability =sfl(jpt,jeta)*el(jpt, jeta)*probdata(jetpt, jeteta, jetflavor, ntag-1, i+1);
 	    }
 	    else if (ntag>0) {
 		if (jetflavor[i]==5) {
-		    probability = sfb(jpt,jeta)*eb(jpt, jeta)*probdata(jets, jetflavor, ntag-1, i+1) // jet i tagged
-			+ (1.0-sfb(jpt,jeta)*eb(jpt, jeta))*probdata(jets, jetflavor, ntag, i+1);  // jet i not tagged
+		    probability = sfb(jpt,jeta)*eb(jpt, jeta)*probdata(jetpt, jeteta, jetflavor, ntag-1, i+1) // jet i tagged
+			+ (1.0-sfb(jpt,jeta)*eb(jpt, jeta))*probdata(jetpt, jeteta, jetflavor, ntag, i+1);  // jet i not tagged
 		}
 		else if (jetflavor[i]==4) {
-		    probability = sfc(jpt,jeta)*ec(jpt, jeta)*probdata(jets, jetflavor, ntag-1, i+1)
-			+ (1.0-sfc(jpt,jeta)*ec(jpt, jeta))*probdata(jets, jetflavor, ntag, i+1);  // jet i not tagged
+		    probability = sfc(jpt,jeta)*ec(jpt, jeta)*probdata(jetpt, jeteta, jetflavor, ntag-1, i+1)
+			+ (1.0-sfc(jpt,jeta)*ec(jpt, jeta))*probdata(jetpt, jeteta, jetflavor, ntag, i+1);  // jet i not tagged
 		}
 		else {
-		    probability = sfl(jpt,jeta)*el(jpt, jeta)*probdata(jets, jetflavor, ntag-1, i+1)
-			+ (1.0-sfl(jpt,jeta)*el(jpt, jeta))*probdata(jets, jetflavor, ntag, i+1);  // jet i not tagged
+		    probability = sfl(jpt,jeta)*el(jpt, jeta)*probdata(jetpt, jeteta, jetflavor, ntag-1, i+1)
+			+ (1.0-sfl(jpt,jeta)*el(jpt, jeta))*probdata(jetpt, jeteta, jetflavor, ntag, i+1);  // jet i not tagged
 		}
 	    }
 	    else
 	    {
-		if (jetflavor[i]==5) probability = (1.0-sfb(jpt,jeta)*eb(jpt, jeta))*probdata(jets, jetflavor, 0, i+1); // no tag
-		else if (jetflavor[i]==4) probability = (1.0-sfc(jpt,jeta)*ec(jpt, jeta))*probdata(jets, jetflavor, 0, i+1); // no tag
-		else probability = (1.0-sfl(jpt,jeta)*el(jpt, jeta))*probdata(jets, jetflavor, 0, i+1); // no tag
+		if (jetflavor[i]==5) probability = (1.0-sfb(jpt,jeta)*eb(jpt, jeta))*probdata(jetpt, jeteta, jetflavor, 0, i+1); // no tag
+		else if (jetflavor[i]==4) probability = (1.0-sfc(jpt,jeta)*ec(jpt, jeta))*probdata(jetpt, jeteta, jetflavor, 0, i+1); // no tag
+		else probability = (1.0-sfl(jpt,jeta)*el(jpt, jeta))*probdata(jetpt, jeteta, jetflavor, 0, i+1); // no tag
 	    }
 	}
 	return probability;
@@ -139,101 +159,21 @@ class BTagWeight2012
 
     //additional scale factor  
     double addsfbErr(double pt, double eta){
-      float ptmin[] = {20, 30, 40, 50, 60, 70, 80, 100, 120, 160, 210, 260, 320, 400, 500, 600};
-      float ptmax[] = {30, 40, 50, 60, 70, 80,100, 120, 160, 210, 260, 320, 400, 500, 600, 800};
 
       double err = 0;
 
-      //if( addberr_ == false ) return 0;
+      if( addberr_ == false ) return 0;
 
-      if( algo_ == CSVL){
-        double SFb_error[] = {
-          0.0013555,
-          0.0212948,
-          0.0400452,
-          0.0575677,
-          0.0738389,
-          0.0888494,
-          0.109008,
-          0.131572,
-          0.156632,
-          0.176573,
-          0.178573,
-          0.164312,
-          0.140699,
-          0.145357,
-          0.145357,
-          0.145357
-        };
-        if( pt < 20 ) err = SFb_error[0]*2;
-        if( pt >= 20 && pt <= 800){
-          for(int i=0; i < 16; i++){
-            if( pt > ptmin[i] && pt <= ptmax[i] ) {
-              err = SFb_error[i];
-              break;
-            }
+      if( pt < 20 ) err = addSFb_error[algo_][0]*2;
+      if( pt >= 20 && pt <= 800){
+        for(int i=0; i < 16; i++){
+          if( pt > ptmin[i] && pt <= ptmax[i] ) {
+            err = addSFb_error[algo_][i];
+            break;
           }
         }
-        if( pt > 800 ) err = SFb_error[15]*2;
-      }else if( algo_ == CSVM){
-        double SFb_error[] = {
-          0.00459083,
-          0.040291,
-          0.0695801,
-          0.0943949,
-          0.11593,
-          0.134951,
-          0.159809,
-          0.18752,
-          0.219309,
-          0.245347,
-          0.240918,
-          0.198548,
-          0.115697,
-          0.0392487,
-          0.0392487,
-          0.0392487
-       };
-        if( pt < 20 ) err = SFb_error[0]*2;
-        if( pt >= 20 && pt <= 800){
-          for(int i=0; i < 16; i++){
-            if( pt > ptmin[i] && pt <= ptmax[i] ) {
-              err = SFb_error[i];
-              break;
-            }
-          }
-        }
-        if( pt > 800 ) err = SFb_error[15]*2;
-      }else if( algo_ == CSVT){
-        double SFb_error[] = {
-          0.0105866,
-          0.0504254,
-          0.0829665,
-          0.111272,
-          0.136965,
-          0.160964,
-          0.194891,
-          0.237452,
-          0.295638,
-          0.35886,
-          0.358541,
-          0.247565,
-          0.065534,
-          0.139139,
-          0.139139,
-          0.139139
-        };
-        if( pt < 20 ) err = SFb_error[0]*2;
-        if( pt >= 20 && pt <= 800){
-          for(int i=0; i < 16; i++){
-            if( pt > ptmin[i] && pt <= ptmax[i] ) {
-              err = SFb_error[i];
-              break;
-            }
-          }
-        }
-        if( pt > 800 ) err = SFb_error[15]*2;
       }
+      if( pt > 800 ) err = addSFb_error[algo_][15]*2;
 
       if( sys_ == UP ) return err;
       else if( sys_ == DW ) return -err;
@@ -242,101 +182,19 @@ class BTagWeight2012
 
 
     double sfbErr(double pt, double eta){
-      float ptmin[] = {20, 30, 40, 50, 60, 70, 80, 100, 120, 160, 210, 260, 320, 400, 500, 600};
-      float ptmax[] = {30, 40, 50, 60, 70, 80,100, 120, 160, 210, 260, 320, 400, 500, 600, 800};
 
       double err = 0;
 
-      //if( addberr_ == false ) return 0;
-
-      if( algo_ == CSVL){
-        double SFb_error[] = {
-           0.0484285,
-           0.0126178,
-           0.0120027,
-           0.0141137,
-           0.0145441,
-           0.0131145,
-           0.0168479,
-           0.0160836,
-           0.0126209,
-           0.0136017,
-           0.019182,
-           0.0198805,
-           0.0386531,
-           0.0392831,
-           0.0481008,
-           0.0474291
-        };
-        if( pt < 20 ) err = SFb_error[0]*2;
-        if( pt >= 20 && pt <= 800){
-          for(int i=0; i < 16; i++){
-            if( pt > ptmin[i] && pt <= ptmax[i] ) {
-              err = SFb_error[i];
-              break;
-            }
+      if( pt < 20 ) err = SFb_error[algo_][0]*2;
+      if( pt >= 20 && pt <= 800){
+        for(int i=0; i < 16; i++){
+          if( pt > ptmin[i] && pt <= ptmax[i] ) {
+            err = SFb_error[algo_][i];
+            break;
           }
         }
-        if( pt > 800 ) err = SFb_error[15]*2;
-      }else if( algo_ == CSVM){
-        double SFb_error[] = {
-          0.0554504,
-          0.0209663,
-          0.0207019,
-          0.0230073,
-          0.0208719,
-          0.0200453,
-          0.0264232,
-          0.0240102,
-          0.0229375,
-          0.0184615,
-          0.0216242,
-          0.0248119,
-          0.0465748,
-          0.0474666,
-          0.0718173,
-          0.0717567
-       };
-        if( pt < 20 ) err = SFb_error[0]*2;
-        if( pt >= 20 && pt <= 800){
-          for(int i=0; i < 16; i++){
-            if( pt > ptmin[i] && pt <= ptmax[i] ) {
-              err = SFb_error[i];
-              break;
-            }
-          }
-        }
-        if( pt > 800 ) err = SFb_error[15]*2;
-      }else if( algo_ == CSVT){
-        double SFb_error[] = {
-          0.0567059,
-          0.0266907,
-          0.0263491,
-          0.0342831,
-          0.0303327,
-          0.024608,
-          0.0333786,
-          0.0317642,
-          0.031102,
-          0.0295603,
-          0.0474663,
-          0.0503182,
-          0.0580424,
-          0.0575776,
-          0.0769779,
-          0.0898199
-        };
-        if( pt < 20 ) err = SFb_error[0]*2;
-        if( pt >= 20 && pt <= 800){
-          for(int i=0; i < 16; i++){
-            if( pt > ptmin[i] && pt <= ptmax[i] ) {
-              err = SFb_error[i];
-              break;
-            }
-          }
-        }
-        if( pt > 800 ) err = SFb_error[15]*2;
       }
+      if( pt > 800 ) err = SFb_error[algo_][15]*2;
 
       if( sys_ == UP ) return err;
       else if( sys_ == DW ) return -err;
@@ -978,6 +836,128 @@ TF1* GetSFLight(TString meanminmax, TString tagger, TString TaggerStrength, Floa
       AlgoType algo_;
       SYS sys_;
       bool addberr_;
+};
+
+const float BTagWeight2012::ptmin[BTagWeight2012::nbin] = {20, 30, 40, 50, 60, 70, 80, 100, 120, 160, 210, 260, 320, 400, 500, 600};
+const float BTagWeight2012::ptmax[BTagWeight2012::nbin] = {30, 40, 50, 60, 70, 80,100, 120, 160, 210, 260, 320, 400, 500, 600, 800};
+const double BTagWeight2012::addSFb_error[BTagWeight2012::nalgo][BTagWeight2012::nbin] = {
+  //CSVL
+  {
+          0.0013555,
+          0.0212948,
+          0.0400452,
+          0.0575677,
+          0.0738389,
+          0.0888494,
+          0.109008,
+          0.131572,
+          0.156632,
+          0.176573,
+          0.178573,
+          0.164312,
+          0.140699,
+          0.145357,
+          0.145357,
+          0.145357
+  },
+  //CSVM
+  {
+          0.00459083,
+          0.040291,
+          0.0695801,
+          0.0943949,
+          0.11593,
+          0.134951,
+          0.159809,
+          0.18752,
+          0.219309,
+          0.245347,
+          0.240918,
+          0.198548,
+          0.115697,
+          0.0392487,
+          0.0392487,
+          0.0392487
+  },
+  //CSVT
+  {
+          0.0105866,
+          0.0504254,
+          0.0829665,
+          0.111272,
+          0.136965,
+          0.160964,
+          0.194891,
+          0.237452,
+          0.295638,
+          0.35886,
+          0.358541,
+          0.247565,
+          0.065534,
+          0.139139,
+          0.139139,
+          0.139139
+  }
+};
+
+const double BTagWeight2012::SFb_error[BTagWeight2012::nalgo][BTagWeight2012::nbin] = {
+  //CSVL
+  {
+           0.0484285,
+           0.0126178,
+           0.0120027,
+           0.0141137,
+           0.0145441,
+           0.0131145,
+           0.0168479,
+           0.0160836,
+           0.0126209,
+           0.0136017,
+           0.019182,
+           0.0198805,
+           0.0386531,
+           0.0392831,
+           0.0481008,
+           0.0474291
+  },
+  //CSVM
+  {
+          0.0554504,
+          0.0209663,
+          0.0207019,
+          0.0230073,
+          0.0208719,
+          0.0200453,
+          0.0264232,
+          0.0240102,
+          0.0229375,
+          0.0184615,
+          0.0216242,
+          0.0248119,
+          0.0465748,
+          0.0474666,
+          0.0718173,
+          0.0717567
+  },
+  //CSVT
+  {
+          0.0567059,
+          0.0266907,
+          0.0263491,
+          0.0342831,
+          0.0303327,
+          0.024608,
+          0.0333786,
+          0.0317642,
+          0.031102,
+          0.0295603,
+          0.0474663,
+          0.0503182,
+          0.0580424,
+          0.0575776,
+          0.0769779,
+          0.0898199
+  }
 };
 
 #endif
