@@ -10,7 +10,6 @@ import os,commands
 from cmg2kcms_cfg import *
 
 input = sys.argv[1]
-#mclist = ["TTbarTuneZ2","TTbarFullLepMGDecays"]
 
 mclist = ["ZJets","ZJets10To50","WJetsToLNu", "WW", "WZ", "ZZ","TTbarTuneZ2"]
 mclist += ["SingleToptW","SingleTopBartW","TTH","TTbarFullLepMGDecays"]
@@ -85,7 +84,7 @@ def processSample( sample, dir):
     out.write(process.dumpPython())
     out.close()
     os.system("cmsBatch0.py 1 "+dir+'/cmg2kcms_'+sample+'_cfg.py'+" -o "+dir+"/"+sample+"/Log -r "+dir+"/"+sample+"/Res -b 'bsub -q 1nh < batchScript.sh'")
-    #os.system("cmsBatch0.py 3 "+dir+'/cmg2kcms_'+sample+'_cfg.py'+" -o "+dir+"/"+sample+"/Log -r "+dir+"/"+sample+"/Res -b 'bsub -G u_zh -q 1nh < batchScript.sh'")
+    #os.system("cmsBatch0.py 1 "+dir+'/cmg2kcms_'+sample+'_cfg.py'+" -o "+dir+"/"+sample+"/Log -r "+dir+"/"+sample+"/Res -b 'bsub -G u_zh -q 1nh < batchScript.sh'")
 
 currdir = commands.getoutput('pwd') 
 print currdir
@@ -102,13 +101,16 @@ os.system("rfmkdir "+outdir)
 if input == "mc":
   for s in mclist:
     processSample(s, outdir)
+    time.sleep(60)
 elif input == "data":
   for s in rdlist:
     processSample(s, outdir)  
+    time.sleep(60)
 elif input == "all":
   for s in mclist:
     processSample(s, outdir)
+    time.sleep(60)
   for s in rdlist:
     processSample(s, outdir)
-
+    time.sleep(60)
 
