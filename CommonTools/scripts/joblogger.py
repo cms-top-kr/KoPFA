@@ -8,6 +8,10 @@ import commands
 
 from os.path import join, getsize
 
+def sorted_ls(path):
+    mtime = lambda f: os.stat(os.path.join(path, f)).st_mtime
+    return list(sorted(os.listdir(path), key=mtime))
+
 def doWork(finalpath, action):
 
   sample = os.path.basename(finalpath)
@@ -20,12 +24,34 @@ def doWork(finalpath, action):
       filesize = 0
       if os.path.isfile( file ):
         filesize = os.path.getsize( file )
-      if filesize < 10000:
+      #another test
+      error = ""
+      jobDir = sorted_ls( finalpath+"/Log/Job_"+num[1] )
+      logDir = []
+      for jobDirList in jobDir:
+        if jobDirList.startswith("LSF"):
+          logDir.append(jobDirList)  
+      if len(logDir) > 0:
+        log = finalpath+"/Log/Job_"+num[1]+"/"+logDir[-1]+"/STDOUT"
+        for line in open(log):
+          if "Segmentation fault" in line:
+            error = "Segmentation fault"
+          if "Probable system resources exhausted" in line:
+            error = "Probable system resources exhausted"
+          if "exhausted the virtual memory available to the process" in line:
+            error = "exhausted the virtual memory available to the process"
+      else:
+        error = "No log file available"
+      ## print out
+      if filesize < 10000 or error != "":
         if action == "report":
           if filesize == 0:
-            print "Bad job number : " + num[1] + " : file was not created"
+            print "Bad job number : " + num[1] + " : file was not created"  
           else: 
-            print "Bad job number : " + num[1] + " : file size is too small. it must be corrupted." 
+            if error == "":
+              print "Bad job number : " + num[1] + " : file size is too small. it must be corrupted." 
+            else:
+              print "Bad job number : [" +logDir[-1]+"]" + num[1] + " : " + error
         if action == "submit":
           print "Submitting job : " + num[1] 
           currdir = commands.getoutput('pwd')
