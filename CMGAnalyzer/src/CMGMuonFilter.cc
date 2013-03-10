@@ -13,7 +13,7 @@
 //
 // Original Author:  Tae Jeong Kim
 //         Created:  Mon Dec 14 01:29:35 CET 2009
-// $Id: CMGMuonFilter.cc,v 1.2 2012/09/27 15:24:53 tjkim Exp $
+// $Id: CMGMuonFilter.cc,v 1.3 2012/10/30 15:50:17 tjkim Exp $
 //
 //
 
@@ -68,6 +68,7 @@ class CMGMuonFilter : public edm::EDFilter {
 
       bool applyFilter_;
       edm::InputTag muonLabel_;
+      edm::InputTag vertexLabel_;
       double ptcut_;
       double etacut_;
       double relIso_;
@@ -91,6 +92,7 @@ CMGMuonFilter::CMGMuonFilter(const edm::ParameterSet& cfg)
    //now do what ever initialization is needed
   applyFilter_=cfg.getUntrackedParameter<bool>("applyFilter",false);
   muonLabel_ = cfg.getParameter<edm::InputTag>("muonLabel");
+  vertexLabel_ =  cfg.getUntrackedParameter<edm::InputTag>("vertexLabel");
   ptcut_ = cfg.getUntrackedParameter<double>("ptcut",20);
   etacut_ = cfg.getUntrackedParameter<double>("etacut",2.5);
   relIso_ = cfg.getUntrackedParameter<double>("relIso",9999);
@@ -126,11 +128,33 @@ CMGMuonFilter::filter(edm::Event& iEvent, const edm::EventSetup& iSetup)
   iEvent.getByLabel(muonLabel_, muons_);
 
   std::auto_ptr<std::vector<cmg::Muon> > pos(new std::vector<cmg::Muon>());
+  
+  edm::Handle<reco::VertexCollection> recVtxs_;
+  iEvent.getByLabel(vertexLabel_,recVtxs_);
+
+  int nvertex = 0;
+  std::auto_ptr<std::vector<reco::Vertex> > goodOfflinePrimaryVertices(new std::vector<reco::Vertex>());
+  for(unsigned int i=0; i < recVtxs_->size();  ++i){
+    reco::Vertex v = recVtxs_->at(i);
+    if (!(v.isFake()) && (v.ndof()>4) && (fabs(v.z())<=24.0) && (v.position().Rho()<=2.0) ) {
+      goodOfflinePrimaryVertices->push_back((*recVtxs_)[i]);
+      nvertex++;
+    }
+  }
+    
+  if( nvertex == 0 ) return false;
+  reco::Vertex pv = goodOfflinePrimaryVertices->at(0);
 
   for (unsigned int i=0; i < muons_->size();++i){
     cmg::Muon muon = muons_->at(i);
 
-    bool passPre = muon.pt() > ptcut_ && fabs(muon.eta()) < etacut_ && fabs(muon.dxy()) < 0.04;
+    bool passPre = muon.pt() > ptcut_ && fabs(muon.eta()) < etacut_ && fabs(muon.dxy(pv.position())) < 0.04;
+
+    if( !passPre ) continue;
+ 
+    bool passId = muon.sourcePtr()->get()->isPFMuon() && ( muon.sourcePtr()->get()->isGlobalMuon() ||  muon.sourcePtr()->get()->isTrackerMuon() );
+    
+    if( !passId) continue;
 
     reco::isodeposit::Direction Dir = Direction(muon.eta(),muon.phi());
 
@@ -145,15 +169,13 @@ CMGMuonFilter::filter(edm::Event& iEvent, const edm::EventSetup& iSetup)
     double puChIso03 = muon.sourcePtr()->get()->isoDeposit(pat::PfPUChargedHadronIso)->depositAndCountWithin(0.3, vetos_ch).first;
     double nhIso03 = muon.sourcePtr()->get()->isoDeposit(pat::PfNeutralHadronIso)->depositAndCountWithin(0.3, vetos_nh).first;
     double phIso03 = muon.sourcePtr()->get()->isoDeposit(pat::PfGammaIso)->depositAndCountWithin(0.3, vetos_ph).first;
-    double relIso03 = (chIso03+nhIso03+phIso03)/muon.pt();
+    double relIso03 = (chIso03+max(0.0, nhIso03+phIso03 - 0.5*puChIso03))/muon.pt();
 
     bool passIso =  relIso03 < relIso_;
 
-    bool passId = muon.sourcePtr()->get()->isPFMuon() && ( muon.sourcePtr()->get()->isGlobalMuon() ||  muon.sourcePtr()->get()->isTrackerMuon() );
+    if( !passIso ) continue;
 
-    bool passed = passPre && passIso && passId;
-
-    if ( passed ) pos->push_back((*muons_)[i]);
+    pos->push_back((*muons_)[i]);
 
   }
 

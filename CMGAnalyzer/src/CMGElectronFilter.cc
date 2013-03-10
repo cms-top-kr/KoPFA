@@ -13,7 +13,7 @@
 //
 // Original Author:  Tae Jeong Kim
 //         Created:  Mon Dec 14 01:29:35 CET 2009
-// $Id: CMGElectronFilter.cc,v 1.5 2013/02/07 16:20:18 tjkim Exp $
+// $Id: CMGElectronFilter.cc,v 1.6 2013/02/07 21:28:11 tjkim Exp $
 //
 //
 
@@ -68,6 +68,7 @@ class CMGElectronFilter : public edm::EDFilter {
 
       bool applyFilter_;
       edm::InputTag electronLabel_;
+      edm::InputTag vertexLabel_;
       double ptcut_;
       double etacut_;
       double mvacut_;
@@ -93,6 +94,7 @@ CMGElectronFilter::CMGElectronFilter(const edm::ParameterSet& cfg)
    //now do what ever initialization is needed
   applyFilter_=cfg.getUntrackedParameter<bool>("applyFilter",false);
   electronLabel_ = cfg.getParameter<edm::InputTag>("electronLabel");
+  vertexLabel_ =  cfg.getUntrackedParameter<edm::InputTag>("vertexLabel");
   ptcut_ = cfg.getUntrackedParameter<double>("ptcut",20);
   etacut_ = cfg.getUntrackedParameter<double>("etacut",2.5);
   mvacut_ = cfg.getUntrackedParameter<double>("mvacut",0.0);
@@ -131,17 +133,51 @@ CMGElectronFilter::filter(edm::Event& iEvent, const edm::EventSetup& iSetup)
 
   std::auto_ptr<std::vector<cmg::Electron> > pos(new std::vector<cmg::Electron>());
 
+  edm::Handle<reco::VertexCollection> recVtxs_;
+  iEvent.getByLabel(vertexLabel_,recVtxs_);
+
+  int nvertex = 0;
+  std::auto_ptr<std::vector<reco::Vertex> > goodOfflinePrimaryVertices(new std::vector<reco::Vertex>());
+  for(unsigned int i=0; i < recVtxs_->size();  ++i){
+    reco::Vertex v = recVtxs_->at(i);
+    if (!(v.isFake()) && (v.ndof()>4) && (fabs(v.z())<=24.0) && (v.position().Rho()<=2.0) ) {
+      goodOfflinePrimaryVertices->push_back((*recVtxs_)[i]);
+      nvertex++;
+    }
+  }
+
+  if( nvertex == 0 ) return false;
+  reco::Vertex pv = goodOfflinePrimaryVertices->at(0);
+
+
   for (unsigned int i=0; i < electrons_->size();++i){
     cmg::Electron electron = electrons_->at(i);
 
     bool passPre = electron.sourcePtr()->get()->ecalDrivenMomentum().pt() > ptcut_ && fabs(electron.sourcePtr()->get()->ecalDrivenMomentum().eta()) < etacut_ ;
-    //bool passdxy = fabs(electron.sourcePtr()->get()->gsfTrack()->dxy()) < 0.04;
+
+    if( !passPre ) continue;
+
+    bool passdxy = fabs(electron.sourcePtr()->get()->gsfTrack()->dxy(pv.position())) < 0.04;
+
+    if( !passdxy ) continue;
+    
     //bool passTrig = electron.getSelection("cuts_premvaTrig"); 
     bool passConversionVeto = electron.sourcePtr()->get()->passConversionVeto();
+
+    if( !passConversionVeto ) continue;
+
     bool passNhits = electron.sourcePtr()->get()->gsfTrack()->trackerExpectedHitsInner().numberOfLostHits() <= (int) numberOfHits_;
+
+    if( !passNhits ) continue;
+
     bool passPF = electron.sourcePtr()->get()->isPF();
+
+    if( !passPF ) continue;
+
     double mva = electron.mvaTrigV0();
     bool passId = mva > mvacut_;
+
+    if( !passId ) continue;
 
     reco::isodeposit::Direction Dir = Direction(electron.sourcePtr()->get()->superCluster()->eta(),electron.phi());
 
@@ -162,9 +198,9 @@ CMGElectronFilter::filter(edm::Event& iEvent, const edm::EventSetup& iSetup)
 
     bool passIso =  relIso03 < relIso_;
 
-    bool passed = passPre && passPF && passConversionVeto && passNhits && passIso && passId;
+    if( !passIso ) continue;
 
-    if ( passed ) pos->push_back((*electrons_)[i]);
+    pos->push_back((*electrons_)[i]);
 
   }
 
