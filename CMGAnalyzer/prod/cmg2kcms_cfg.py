@@ -29,18 +29,19 @@ runOn2012 = True
 #process.load("KoPFA.CommonTools.Sources.CMG.V5_10_0.Run2012.cmgTuple_Run2012CElEl_cff")
 #MC
 #process.load("KoPFA.CommonTools.Sources.CMG.V5_10_0.Summer12.patTuple_TTbarTuneZ2_cff")
-#process.load("KoPFA.CommonTools.Sources.CMG.V5_10_0.Summer12.patTuple_TTbarFullLepMGDecays_cff")
+process.load("KoPFA.CommonTools.Sources.CMG.V5_10_0.Summer12.patTuple_TTbarFullLepMGDecays_cff")
 #process.load("KoPFA.CommonTools.Sources.CMG.V5_10_0.Summer12.cmgTuple_TTH_HToBB_M125_cff")
-#process.load("KoPFA.CommonTools.Sources.CMG.V5_10_0.Summer12.cmgTuple_TTbarTuneZ2_cff")
+#process.load("KoPFA.CommonTools.Sources.CMG.V5_13_0.Summer12.cmgTuple_TTbarTuneZ2_cff")
 #process.load("KoPFA.CommonTools.Sources.CMG.V5_10_0.Summer12.cmgTuple_ZJets_cff")
 
-process.source = cms.Source("PoolSource",
-  fileNames = cms.untracked.vstring(
+
+#process.source = cms.Source("PoolSource",
+#  fileNames = cms.untracked.vstring(
     #pickRelValInputFiles() # <-- picks automatically RelVal input files for the current release
     #'rfio:/castor/cern.ch/user/j/jhgoh/TopAnalysis/pf2pat/MuEl/MC/20110603/DYmm20to50/patTuple_skim_1_1_ogh.root',
-    '/store/caf/user/tjkim/mc/Summer12_DR53X/TTJets_FullLeptMGDecays_8TeV-madgraph/CMG/cmgTuple.root'
-  )
-)
+#    '/store/caf/user/tjkim/mc/Summer12_DR53X/TTJets_FullLeptMGDecays_8TeV-madgraph/CMG/cmgTuple.root'
+#  )
+#)
 
 from CMGTools.Common.Tools.applyJSON_cff import applyJSON
 json = 'Cert_8TeV_Run2012ABCD_Golden_JSON.txt'
@@ -52,24 +53,24 @@ if runOn2012 == True:
   process.PUweight.PileUpRD   = PileUpRD2012
   process.PUweight.PileUpRDup = PileUpRD2012UP
   process.PUweight.PileUpRDdn = PileUpRD2012DN
-  process.PUweight.PileUpMC   = Summer12
+  process.PUweight.PileUpMC   = Summer12FullSim
 
 process.nEventsFilter = cms.EDProducer("EventCountProducer")
 
 process.load("KoPFA.CMGAnalyzer.TtFullLepKinSolutionProducer_cfi")
 process.load("KoPFA.CMGAnalyzer.TtFullLepMaosSolutionProducer_cfi")
 
-process.BaseSequence = cms.Sequence(
-    process.ttbar2bFilter*
-    process.EventFilter*
-    process.nEventsFilter*
+#process.BaseSequence = cms.Sequence(
+ #   process.ttbar2bFilter*
+ #   process.EventFilter*
+ #   process.nEventsFilter*
  #   process.topDecayGenFilter*
  #   process.GenZmassFilter*
-    process.PUweight*
+ #   process.PUweight
  #   process.JetEnergyScale*
-    process.Electrons*
-    process.Muons
-)
+ #   process.Electrons*
+ #   process.Muons
+#)
 
 #############This is only for CMG patTuple########################
 process.topDecayGenFilter.genParticlesLabel = cms.InputTag("genParticlesPruned")
@@ -77,9 +78,24 @@ process.GenZmassFilter.genParticlesLabel = cms.InputTag("genParticlesPruned")
 ###################################################################
 
 from PhysicsTools.PatAlgos.tools.helpers import cloneProcessingSnippet
-process.BaseSequenceMuMu = cloneProcessingSnippet(process, process.BaseSequence, 'MuMu')
-process.BaseSequenceMuEl = cloneProcessingSnippet(process, process.BaseSequence, 'MuEl')
-process.BaseSequenceElEl = cloneProcessingSnippet(process, process.BaseSequence, 'ElEl')
+#process.BaseSequenceMuMu = cloneProcessingSnippet(process, process.BaseSequence, 'MuMu')
+#process.BaseSequenceMuEl = cloneProcessingSnippet(process, process.BaseSequence, 'MuEl')
+#process.BaseSequenceElEl = cloneProcessingSnippet(process, process.BaseSequence, 'ElEl')
+
+process.EventFilterMuMu = process.EventFilter.clone()
+process.EventFilterMuEl = process.EventFilter.clone()
+process.EventFilterElEl = process.EventFilter.clone()
+process.nEventsFilterMuMu = process.nEventsFilter.clone()
+process.nEventsFilterMuEl = process.nEventsFilter.clone()
+process.nEventsFilterElEl = process.nEventsFilter.clone()
+process.PUweightMuMu = process.EventFilter.clone()
+process.PUweightMuEl = process.EventFilter.clone()
+process.PUweightElEl = process.EventFilter.clone()
+
+process.MuonsMuMu = process.Muons.clone()
+process.MuonsMuEl = process.Muons.clone()
+process.ElectronsMuEl = process.Electrons.clone()
+process.ElectronsElEl = process.Electrons.clone()
 
 process.nEventsPatHLTMuMu = process.nEventsPatHLT.clone()
 process.nEventsPatHLTMuEl = process.nEventsPatHLT.clone()
@@ -102,39 +118,64 @@ process.JetEnergyScaleMuEl = process.JetEnergyScale.clone()
 process.JetEnergyScaleElEl = process.JetEnergyScale.clone()
 ### Ntuple producer for dilepton ###
 
+process.goodOfflinePrimaryVertices = cms.EDFilter("VertexSelector",
+   src = cms.InputTag("offlinePrimaryVertices"),
+   cut = cms.string("!isFake && ndof > 4 && abs(z) < 24 && position.Rho < 2"), # tracksSize() > 3 for the older cut
+   filter = cms.bool(True),   # otherwise it won't filter the events, just produce an empty vertex collection.
+)
+process.goodOfflinePrimaryVerticesMuMu = process.goodOfflinePrimaryVertices.clone()
+process.goodOfflinePrimaryVerticesMuEl = process.goodOfflinePrimaryVertices.clone()
+process.goodOfflinePrimaryVerticesElEl = process.goodOfflinePrimaryVertices.clone()
+
 process.p = cms.Path(
-    process.BaseSequenceMuMu*
+#    process.BaseSequenceMuMu*
     process.hltHighLevelMuMu*
     process.nEventsPatHLTMuMu*
+    process.EventFilterMuMu*
+#    process.goodOfflinePrimaryVerticesMuMu*
+    process.nEventsFilterMuMu*
+    process.MuonsMuMu*
     process.ZMuMu*
     process.CMGFinalLeptonsMuMu*
     process.JetEnergyScaleMuMu*
-    process.kinSolutionTtFullLepEventMuMu*
+#    process.kinSolutionTtFullLepEventMuMu*
 #    process.maosSolutionTtFullLepEventMuMu*
+    process.PUweightMuMu*
     process.MuMu
 )
 
 process.p2 = cms.Path(
-    process.BaseSequenceMuEl*
+#    process.BaseSequenceMuEl*
     process.hltHighLevelMuEl*
     process.nEventsPatHLTMuEl*
+    process.EventFilterMuEl*
+#    process.goodOfflinePrimaryVerticesMuEl*
+    process.nEventsFilterMuEl*
+    process.MuonsMuEl*
+    process.ElectronsMuEl*
     process.ZMuEl*
     process.CMGFinalLeptonsMuEl*
     process.JetEnergyScaleMuEl*
-    process.kinSolutionTtFullLepEventMuEl*
+#    process.kinSolutionTtFullLepEventMuEl*
 #    process.maosSolutionTtFullLepEventMuEl*
+    process.PUweightMuEl*
     process.MuEl
 )
 
 process.p3 = cms.Path(
-    process.BaseSequenceElEl*
+#    process.BaseSequenceElEl*
     process.hltHighLevelElEl*
     process.nEventsPatHLTElEl*
+    process.EventFilterElEl*
+#    process.goodOfflinePrimaryVerticesElEl*
+    process.nEventsFilterElEl*
+    process.ElectronsElEl*
     process.ZElEl*
     process.CMGFinalLeptonsElEl*
     process.JetEnergyScaleElEl*
-    process.kinSolutionTtFullLepEventElEl*
+#    process.kinSolutionTtFullLepEventElEl*
 #    process.maosSolutionTtFullLepEventElEl*
+    process.PUweightElEl*
     process.ElEl
 )
 
@@ -215,8 +256,8 @@ process.MuMu.puNVertexLabel = cms.InputTag('PUweightMuMu','npileup')
 process.MuMu.filters  =  cms.untracked.vstring( 
                                              'prePathCounter',
                                              'postPathCounter',
+                                             'nEventsPatHLTMuMu',
                                              'nEventsFilterMuMu',
-                                             'nEventsPatHLTMuMu'
                                               )
 
 process.MuEl.genParticlesLabel = cms.InputTag('genParticlesPruned')
@@ -232,8 +273,8 @@ process.MuEl.puNVertexLabel = cms.InputTag('PUweightMuEl','npileup')
 process.MuEl.filters  =  cms.untracked.vstring(  
                                              'prePathCounter',
                                              'postPathCounter',
+                                             'nEventsPatHLTMuEl',
                                              'nEventsFilterMuEl',
-                                             'nEventsPatHLTMuEl'
                                               )
 
 process.ElEl.genParticlesLabel = cms.InputTag('genParticlesPruned')
@@ -249,8 +290,8 @@ process.ElEl.puNVertexLabel = cms.InputTag('PUweightElEl','npileup')
 process.ElEl.filters  =  cms.untracked.vstring(  
                                              'prePathCounter',
                                              'postPathCounter',
+                                             'nEventsPatHLTElEl',
                                              'nEventsFilterElEl',
-                                             'nEventsPatHLTElEl'
                                               )
 ##################################################################
 
