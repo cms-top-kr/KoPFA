@@ -87,8 +87,8 @@ PatRelIsoLeptonSelector<Lepton>::PatRelIsoLeptonSelector(const edm::ParameterSet
   // Set EA target for real data as a default value
   // the module will update this value if input is MC in the event loop.
   // #ISMC_DEPENDENT_PART#
-  electronEATarget_ = ElectronEffectiveArea::kEleEAFall11MC; // FIXME : Update to Summer12 if available
-  muonEATarget_ = MuonEffectiveArea::kMuEAFall11MC; // FIXME : Update to Summer12 if available
+  electronEATarget_ = ElectronEffectiveArea::kEleEAData2012; // Use Data2012 EA
+  muonEATarget_ = MuonEffectiveArea::kMuEAData2012; // Use Data2012 EA
   // end of #ISMC_DEPENDENT_PART#
 
   produces<std::vector<Lepton> >();
@@ -105,8 +105,6 @@ bool PatRelIsoLeptonSelector<Lepton>::filter(edm::Event& event, const edm::Event
 
     // #ISMC_DEPENDENT_PART#
     electronEATarget_ = ElectronEffectiveArea::kEleEAData2012;
-    // FIXME : Due to implementation in electron EA for Run2012, cone size 0.3 is missing...
-    if ( coneSize_ == 0.3 ) electronEATarget_ = ElectronEffectiveArea::kEleEAData2011;
     muonEATarget_ = MuonEffectiveArea::kMuEAData2012;
     // end of #ISMC_DEPENDENT_PART#
   }
