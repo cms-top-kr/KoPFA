@@ -22,10 +22,20 @@
 #include "EGamma/EGammaAnalysisTools/interface/ElectronEffectiveArea.h"
 #include "Muon/MuonAnalysisTools/interface/MuonEffectiveArea.h"
 
+#include "DataFormats/TrackReco/interface/TrackFwd.h"
+#include "DataFormats/VertexReco/interface/VertexFwd.h"
+#include "DataFormats/TrackReco/interface/Track.h"
+#include "DataFormats/VertexReco/interface/Vertex.h"
+#include "DataFormats/Math/interface/Point3D.h"
+#include "RecoVertex/VertexPrimitives/interface/TransientVertex.h"
+
 
 #include <memory>
 #include <vector>
 #include <string>
+
+using namespace reco;
+
 
 template<typename Lepton>
 class PatRelIsoLeptonSelector : public edm::EDFilter
@@ -50,6 +60,8 @@ private:
 private:
   edm::InputTag rhoLabel_;
   edm::InputTag leptonLabel_;
+  edm::InputTag vertexLabel_;
+  double dz_;
   StringCutObjectSelector<Lepton, true>* select_;
   unsigned int minNumber_, maxNumber_;
 
@@ -68,6 +80,8 @@ PatRelIsoLeptonSelector<Lepton>::PatRelIsoLeptonSelector(const edm::ParameterSet
   rhoLabel_ = pset.getParameter<edm::InputTag>("rho");
   leptonLabel_ = pset.getParameter<edm::InputTag>("src");
   std::string cut = pset.getParameter<std::string>("cut");
+  vertexLabel_ =  pset.getUntrackedParameter<edm::InputTag>("vertexLabel");
+  dz_ = pset.getUntrackedParameter<double>("dz",999);
   select_ = new StringCutObjectSelector<Lepton, true>(cut);
   minNumber_ = pset.getParameter<unsigned int>("minNumber");
   maxNumber_ = pset.getParameter<unsigned int>("maxNumber");
@@ -118,11 +132,30 @@ bool PatRelIsoLeptonSelector<Lepton>::filter(edm::Event& event, const edm::Event
 
   std::auto_ptr<std::vector<Lepton> > selectedLeptons(new std::vector<Lepton>());
 
+  edm::Handle<reco::VertexCollection> recVtxs_;
+  event.getByLabel(vertexLabel_,recVtxs_);
+
+  int nvertex = 0;
+  std::auto_ptr<std::vector<reco::Vertex> > goodOfflinePrimaryVertices(new std::vector<reco::Vertex>());
+  for(unsigned int i=0; i < recVtxs_->size();  ++i){
+    reco::Vertex v = recVtxs_->at(i);
+    if (!(v.isFake()) && (v.ndof()>4) && (fabs(v.z())<=24.0) && (v.position().Rho()<=2.0) ) {
+      goodOfflinePrimaryVertices->push_back((*recVtxs_)[i]);
+      nvertex++;
+    }
+  }
+
+  if( nvertex == 0 ) return false;
+  reco::Vertex pv = goodOfflinePrimaryVertices->at(0);
+
   for ( int i=0, n=leptonHandle->size(); i<n; ++i )
   {
     const Lepton& srcLepton = leptonHandle->at(i);
     if ( !(*select_)(srcLepton) ) continue;
 
+    bool passdz = fabs(srcLepton.gsfTrack()->dz(pv.position())) < dz_;
+    if ( !passdz ) continue;
+  
     reco::IsoDeposit::AbsVetos vetos_ch, vetos_nh, vetos_ph;
     makeIsoVeto(srcLepton, vetos_ch, vetos_nh, vetos_ph);
     const double effArea = getEffectiveArea(srcLepton);
