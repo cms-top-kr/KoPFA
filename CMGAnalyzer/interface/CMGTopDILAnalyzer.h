@@ -13,7 +13,7 @@
 //
 // Original Author:  Tae Jeong Kim,40 R-A32,+41227678602,
 //         Created:  Fri Jun  4 17:19:29 CEST 2010
-// $Id: CMGTopDILAnalyzer.h,v 1.23 2013/03/04 09:14:39 tjkim Exp $
+// $Id: CMGTopDILAnalyzer.h,v 1.24 2013/03/10 21:38:24 tjkim Exp $
 //
 //
 
@@ -548,7 +548,7 @@ class CMGTopDILAnalyzer : public edm::EDFilter {
       idx++;  
 
       //CSV b-discriminator 
-      double bDisCSVweight = bDiscriminatorWeight(bDiscriminator, flavor );
+  //    double bDisCSVweight = bDiscriminatorWeight(jit->p4().pt(), bDiscriminator, flavor );
 
       //build vallo:Jet  : turned off
       //vallot::Jet jet( jit->p4() );
@@ -566,7 +566,8 @@ class CMGTopDILAnalyzer : public edm::EDFilter {
       jets_fromtop.push_back(jetfromtop);
       jets_bDiscriminatorJP.push_back(bDiscriminatorJP);
       jets_bDiscriminatorCSV.push_back(bDiscriminator); 
-      jets_bDisCSVweight.push_back( bDisCSVweight);
+//      jets_bDisCSVweight.push_back( bDisCSVweight);
+      jets_bDisCSVweight.push_back( 1.0 );
     
       corrjetup = corrjet * (1+uncert); 
       corrjetdw = corrjet * (1-uncert); 
@@ -600,6 +601,15 @@ class CMGTopDILAnalyzer : public edm::EDFilter {
     nJet30 = njet;
     nJet30Up = njetUp;
     nJet30Dw = njetDw;
+
+    if( nJet30 >= 4){
+      for(int i = 0; i < (int) nJet30 ; i++){
+        if( i  <  2 ) continue;
+        int jetid = csvd_jetid[i];
+        double bDisCSVweight = bDiscriminatorWeight(jets_pt[jetid], jets_bDiscriminatorCSV[jetid], jets_flavor[jetid], i );
+        jets_bDisCSVweight[jetid] =  bDisCSVweight ;
+      }
+    }
 
     metup = sqrt(metup_x*metup_x + metup_y*metup_y);
     metdw = sqrt(metdw_x*metdw_x + metdw_y*metdw_y);
@@ -1191,9 +1201,40 @@ class CMGTopDILAnalyzer : public edm::EDFilter {
     return out;
   }
 
-  double bDiscriminatorWeight(double x, int flavor){
-    if( abs(flavor) == 5 || abs(flavor) == 4 ) return 1; 
-    double w = 0.749644+3.09749*x-9.98179*pow(x,2)+19.3428*pow(x,3)-19.6664*pow(x,4)+7.44382*pow(x,5);
+  double bDiscriminatorWeight(double pt, double x, int flavor, int i){
+    if( fabs(flavor) == 5 ) return 1.0; 
+    //double w = 0.749644+3.09749*x-9.98179*pow(x,2)+19.3428*pow(x,3)-19.6664*pow(x,4)+7.44382*pow(x,5);
+    double w = 1.0;
+ 
+    if( x > 0.9 ) return 1.0;
+
+/* 
+    if( pt > 30 && pt < 35 ){ 
+      w = 0.602517+ 2.52834*x-1.39364*pow(x,2)-0.768595*pow(x,3)-0.558003*pow(x,4);
+    }else if( pt >= 35 && pt < 40){
+      w = 0.665936+ 2.12584*x+3.23594*pow(x,2)-11.8875*pow(x,3)+7.34131*pow(x,4);
+    }else if( pt >= 40 && pt < 60){
+      w = 0.582048+6.35219*x-21.4122*pow(x,2)+29.1063*pow(x,3)-13.7155*pow(x,4);
+    }else{
+      w = 0.710834+4.27287*x-14.9838*pow(x,2)+23.2877*pow(x,3)-12.5533*pow(x,4);
+    }
+*/
+
+/*
+    if( pt > 30 && pt < 40 ){
+      w = 0.635105+2.37211*x+0.0196008*pow(x,2)-3.98196*pow(x,3)+1.70506*pow(x,4);
+    }else if( pt >= 40 && pt < 60 ){
+      w = 0.582048+ 6.35219*x-21.4122*pow(x,2)+29.1063*pow(x,3)-13.7154*pow(x,4);
+    }else{
+      w = 0.710834+4.27287*x-14.9838*pow(x,2)+23.2877*pow(x,3)-12.5533*pow(x,4);
+    }
+*/
+    if(i == 2){
+      w = 0.626494+2.99705*x-6.23285*pow(x,2)+7.03791*pow(x,3)-3.34439*pow(x,4);
+    }else if( i > 2 ){
+      w = 0.726696+3.50276*x-4.04898*pow(x,2)+0.54504*pow(x,3)+0.606*pow(x,4);
+    }
+
     return w;
   }  
 
