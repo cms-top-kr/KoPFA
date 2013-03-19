@@ -13,7 +13,7 @@ void roofitR(){
   double eR = 0.382948;
   //double eR = 0.750311; //nJet30 >= 4
 
-  TString path = "../TTBB_10Feb_CSVT";
+  TString path = "../TTBB_18Mar_CSVT";
   TString fileName[ndecay];
   fileName[0] = path+"/MuMu/MuMu.root";
   fileName[1] = path+"/MuEl/MuEl.root";
@@ -24,8 +24,9 @@ void roofitR(){
   variable[1] = "addjet2_bDisCSV";
   //variable[0] = "addjet1_bDisJP";
   //variable[1] = "addjet2_bDisJP";
-
-
+  TString step[nobj];
+  step[0] = "Step_6";
+  step[1] = "Step_7";
 
   TH1F * hdata[ndecay][nobj];
   TH1F * httbb[ndecay][nobj];
@@ -53,15 +54,15 @@ void roofitR(){
   for(int i=0; i < ndecay; i++){
     TFile * f = new TFile(fileName[i]);
     for(int j=0; j < nobj ; j++){
-      hdata[i][j]      = (TH1F*) f->Get(Form("Step_5/hData_Step_5_%s", variable[j].Data()));
-      httbb[i][j]      = (TH1F*) f->Get(Form("Step_5/hMCSig_TTbarbb_Step_5_%s", variable[j].Data()));
-      httll[i][j]      = (TH1F*) f->Get(Form("Step_5/hMC_TTbarll_Step_5_%s", variable[j].Data()));
-      httcc[i][j]      = (TH1F*) f->Get(Form("Step_5/hMC_TTbarcc_Step_5_%s", variable[j].Data()));
-      httothers[i][j]  = (TH1F*) f->Get(Form("Step_5/hMC_TTbarOthers_Step_5_%s", variable[j].Data()));
-      hWl[i][j]        = (TH1F*) f->Get(Form("Step_5/hMC_Wl_Step_5_%s", variable[j].Data()));
-      hVV[i][j]        = (TH1F*) f->Get(Form("Step_5/hMC_VV_Step_5_%s", variable[j].Data()));
-      hSingleTop[i][j] = (TH1F*) f->Get(Form("Step_5/hMC_SingleTop_Step_5_%s", variable[j].Data()));
-      hDYll[i][j]      = (TH1F*) f->Get(Form("Step_5/hMC_DYll_Step_5_%s", variable[j].Data())); 
+      hdata[i][j]      = (TH1F*) f->Get(Form("%s/hData_%s_%s", step[j].Data(), step[j].Data(), variable[j].Data()));
+      httbb[i][j]      = (TH1F*) f->Get(Form("%s/hMCSig_TTbarbb_%s_%s", step[j].Data(), step[j].Data(), variable[j].Data()));
+      httll[i][j]      = (TH1F*) f->Get(Form("%s/hMC_TTbarll_%s_%s", step[j].Data(), step[j].Data(), variable[j].Data()));
+      httcc[i][j]      = (TH1F*) f->Get(Form("%s/hMC_TTbarcc_%s_%s", step[j].Data(), step[j].Data(), variable[j].Data()));
+      httothers[i][j]  = (TH1F*) f->Get(Form("%s/hMC_TTbarOthers_%s_%s", step[j].Data(), step[j].Data(), variable[j].Data()));
+      hWl[i][j]        = (TH1F*) f->Get(Form("%s/hMC_Wl_%s_%s", step[j].Data(), step[j].Data(), variable[j].Data()));
+      hVV[i][j]        = (TH1F*) f->Get(Form("%s/hMC_VV_%s_%s", step[j].Data(), step[j].Data(), variable[j].Data()));
+      hSingleTop[i][j] = (TH1F*) f->Get(Form("%s/hMC_SingleTop_%s_%s", step[j].Data(), step[j].Data(), variable[j].Data()));
+      hDYll[i][j]      = (TH1F*) f->Get(Form("%s/hMC_DYll_%s_%s", step[j].Data(), step[j].Data(), variable[j].Data())); 
       //MC background
       TH1F * htmpbkg = httothers[i][j]->Clone();
       htmpbkg->Add(hWl[i][j]);
