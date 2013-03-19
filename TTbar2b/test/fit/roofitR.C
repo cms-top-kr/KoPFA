@@ -1,5 +1,8 @@
 void roofitR(){
-  
+
+  gROOT->ProcessLine(".L ../tdrstyle.C");
+  defaultStyle();
+ 
   using namespace RooFit ;
 
   bool combine = false;
@@ -14,10 +17,15 @@ void roofitR(){
   //double eR = 0.750311; //nJet30 >= 4
 
   TString path = "../TTBB_18Mar_CSVT";
+  TString decay[ndecay];
+  decay[0] = "MuMu";
+  decay[1] = "MuEl";
+  decay[2] = "ElEl";
+
   TString fileName[ndecay];
-  fileName[0] = path+"/MuMu/MuMu.root";
-  fileName[1] = path+"/MuEl/MuEl.root";
-  fileName[2] = path+"/ElEl/ElEl.root";
+  fileName[0] = path+"/"+decay[0]+"/"+decay[0]+".root";
+  fileName[1] = path+"/"+decay[1]+"/"+decay[1]+".root";
+  fileName[2] = path+"/"+decay[2]+"/"+decay[2]+".root";
   TString variable[nobj];
   //variable[0] = "nbJet30_CSVT";
   variable[0] = "addjet1_bDisCSV";
@@ -63,6 +71,19 @@ void roofitR(){
       hVV[i][j]        = (TH1F*) f->Get(Form("%s/hMC_VV_%s_%s", step[j].Data(), step[j].Data(), variable[j].Data()));
       hSingleTop[i][j] = (TH1F*) f->Get(Form("%s/hMC_SingleTop_%s_%s", step[j].Data(), step[j].Data(), variable[j].Data()));
       hDYll[i][j]      = (TH1F*) f->Get(Form("%s/hMC_DYll_%s_%s", step[j].Data(), step[j].Data(), variable[j].Data())); 
+
+/*
+      hdata[i][j]->Rebin(2);
+      httbb[i][j]->Rebin(2);
+      httll[i][j]->Rebin(2);
+      httcc[i][j]->Rebin(2);
+      httothers[i][j]->Rebin(2);
+      hWl[i][j]->Rebin(2);
+      hVV[i][j]->Rebin(2);
+      hSingleTop[i][j]->Rebin(2);
+      hDYll[i][j]->Rebin(2);
+*/
+
       //MC background
       TH1F * htmpbkg = httothers[i][j]->Clone();
       htmpbkg->Add(hWl[i][j]);
@@ -106,8 +127,9 @@ void roofitR(){
   double nbkg    =  h_bkg->Integral();
   double ndbg    =  h_dbg->Integral();
   double nMCtotal = nttbb + nttll + nttcc + nbkg;
-  double rsig    =  nttbb/(nttbb + nttcc + nttll);
-  double rbkg    =  (nbkg)/(nttbb + nttcc + nttll + nbkg);
+  double nttjj     =  nttbb + nttcc + nttll;
+  double rsig    =  nttbb/nttjj;
+  double rbkg    =  (nbkg)/(nttjj + nbkg);
   cout << "ttbb= " << nttbb << " ttcc= " << nttcc << " ttll= " << nttll << " R(ttbb/ttjj)= " <<  rsig << "  nbkg= " << nbkg << " fbkg= " << rbkg << " total MC = " << nMCtotal << " data-driven bkg= " << ndbg << endl;
  
   RooRealVar x("x","x",0, nbins) ;
@@ -145,13 +167,87 @@ void roofitR(){
 
   TCanvas * c = new TCanvas("c","c",1);
   RooPlot* xframe = x.frame() ; 
-  data.plotOn(xframe);
+  data.plotOn(xframe, DataError(RooAbsData::SumW2) );
   model3.paramOn(xframe, Layout(0.65,0.9,0.9) );
   model3.plotOn(xframe,Components("histpdf_ttbb,histpdf_ttccll,histpdf_bkg,histpdf_dbg"),LineColor(4),FillColor(4),DrawOption("F")) ;
   model3.plotOn(xframe,Components("histpdf_ttbb,histpdf_ttccll"),LineColor(3),FillColor(3),DrawOption("F")) ;
   model3.plotOn(xframe,Components("histpdf_ttbb"),LineColor(2),FillColor(2),DrawOption("F")) ;
   model3.plotOn(xframe);
-  data.plotOn(xframe); 
+  data.plotOn(xframe, DataError(RooAbsData::SumW2) ) ; 
   xframe->Draw();
+  
+  double recoR = R.getVal()/eR;
+  double scaleMC = nMC.getVal()/nMCtotal;
 
+  TCanvas * c_fit = new TCanvas("c_fit","c_fit",1200,800);
+  c_fit->Divide(3,2);
+
+  for(int i = 0 ; i < 3; i++){
+    for(int j = 0 ; j < 2; j++){ 
+      //TCanvas * c_fit = new TCanvas(Form("c_fit_%s_%s",decay[i].Data(),variable[j].Data()),Form("c_fit_%s_%s",decay[i].Data(),variable[j].Data()),1);
+      //c_fit->SetLogy();
+      int num = i+1+j*3;
+      c_fit->cd(num);      
+      gPad->SetLogy();
+
+      TH1F* hist_data = hdata[i][j]->Clone();
+      TH1F* hist_ttbb = httbb[i][j]->Clone();
+      TH1F* hist_ttccll = httcc[i][j]->Clone();
+      TH1F* hist_ttll = httll[i][j]->Clone();
+      TH1F* hist_background   = hdbg[i][j]->Clone();
+      TH1F* hist_mcbackground = hbkg[i][j]->Clone();
+
+      hist_ttccll->Add(hist_ttll);
+      hist_ttbb->Scale( scaleMC*recoR*nttjj/nttbb);
+      hist_ttccll->Scale( scaleMC*(1-recoR)*nttjj/(nttll+nttcc));
+      hist_mcbackground->Scale( scaleMC );
+
+      hist_background->Add(hist_mcbackground); 
+      hist_data->Add(hist_background, -1);
+
+      hist_ttbb->SetFillColor(kBlue+2);
+      hist_ttbb->SetFillStyle(3354);
+      hist_ttccll->SetFillColor(kRed);
+      hist_background->SetFillColor(4);
+
+      hist_data->Draw();
+      hist_data->GetXaxis()->SetTitle("b-Discriminator (CSV)");
+      if( j == 0 ) hist_data->GetYaxis()->SetTitle("First Additional Jets");
+      if( j == 1 ) hist_data->GetYaxis()->SetTitle("Second Additional Jets");
+
+      THStack *MC = new THStack();
+      MC->Add(hist_ttbb);
+      MC->Add(hist_ttccll);
+      //MC->Add(h_final_background);
+
+      MC->Draw();
+      MC->SetMinimum(0.2);
+      MC->SetMaximum(1000);
+
+      MC->GetXaxis()->SetTitle("b-Discriminator (CSV)");
+      if( j == 0 ) MC->GetYaxis()->SetTitle("First Additional Jets");
+      if( j == 1 ) MC->GetYaxis()->SetTitle("Second Additional Jets");
+
+      hist_data->SetMarkerSize(1);
+      hist_data->SetMarkerStyle(20);
+      hist_data->Draw("samePE");
+
+      TLatex *label= new TLatex;
+      label->SetNDC();
+      label->SetTextSize(0.05);
+      label->DrawLatex(0.22,0.82,"CMS");
+      label->DrawLatex(0.22,0.82-0.05,"19.6 fb^{-1} at #sqrt{s} = 8 TeV");
+
+      TLegend *l = new TLegend(0.73,0.74,0.90,0.88);
+      l->AddEntry(hist_data,"Data","PL");
+      l->AddEntry(hist_ttccll,"t#bar{t} + cc/LF","F");
+      l->AddEntry(hist_ttbb,"t#bar{t} + bb","F");
+      l->SetTextSize(0.04);
+      l->SetFillColor(0);
+      l->SetLineColor(0);
+      l->Draw();
+
+
+    }
+  }
 }
