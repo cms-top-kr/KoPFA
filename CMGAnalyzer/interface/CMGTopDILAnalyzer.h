@@ -13,7 +13,7 @@
 //
 // Original Author:  Tae Jeong Kim,40 R-A32,+41227678602,
 //         Created:  Fri Jun  4 17:19:29 CEST 2010
-// $Id: CMGTopDILAnalyzer.h,v 1.24 2013/03/10 21:38:24 tjkim Exp $
+// $Id: CMGTopDILAnalyzer.h,v 1.25 2013/03/18 10:13:27 tjkim Exp $
 //
 //
 
@@ -334,6 +334,8 @@ class CMGTopDILAnalyzer : public edm::EDFilter {
     }
 
     tree->Branch("MET",&MET,"MET/d");
+    tree->Branch("metphi",&metphi,"metphi/d");
+
     tree->Branch("METUp",&METUp,"METUp/d");
     tree->Branch("METDw",&METDw,"METDw/d");
 
@@ -406,6 +408,7 @@ class CMGTopDILAnalyzer : public edm::EDFilter {
 
     std::vector<cmg::BaseMET>::const_iterator mi = MET_->begin();
     MET = mi->pt();
+    metphi = mi->phi();
     double metup_x = MET_->begin()->px();
     double metup_y = MET_->begin()->py();
     double metdw_x = MET_->begin()->px();
@@ -1132,6 +1135,7 @@ class CMGTopDILAnalyzer : public edm::EDFilter {
     kin_topBar_phi = -999;
     kin_topBar_mass = -999;
 
+    metphi = -999;
   }
 
   virtual bool endLuminosityBlock(edm::LuminosityBlock & lumi, const edm::EventSetup & setup){
@@ -1290,6 +1294,7 @@ class CMGTopDILAnalyzer : public edm::EDFilter {
   std::vector<int> csvd_jetid;
 
   double MET;
+  double metphi;
   double METUp;
   double METDw;
   double ZMass;
