@@ -5,7 +5,7 @@ void roofitR(){
  
   using namespace RooFit ;
 
-  bool combine = false;
+  bool combine = true;
   int nbinsch = 20; //number of bins for each histograms. for example, b-jets multiplicity = 5 , b-dscriminatorCSV = 20, b-discriminatorJP = 50
   const int ndecay = 3; // mm, em, ee
   const int nobj = 2; // 1: b-jet mulitplicity , 2 :jet1, jet2 
@@ -51,6 +51,7 @@ void roofitR(){
   TH1F * hdbg[ndecay][nobj];
 
   int nbins = 3*nbinsch*nobj;
+  if( combine ) nbins = nbinsch*nobj;
   TH1F * h_ttbb = new TH1F("h_ttbb","h_ttbb", nbins , 0, nbins);
   TH1F * h_ttcc = new TH1F("h_ttcc","h_ttcc", nbins , 0, nbins);
   TH1F * h_ttll = new TH1F("h_ttll","h_ttll", nbins , 0, nbins);
@@ -99,7 +100,8 @@ void roofitR(){
 
       for(int k = 1; k <= Nbins; k++){
         int nb = k + i*nbinsch + j*3*nbinsch;
-        if( k < Nbins || combine == false){
+        if(combine) nb = k + j*nbinsch;
+        if( i == 0 || combine == false){
           h_ttbb->SetBinContent(nb, httbb[i][j]->GetBinContent(k) );
           h_ttcc->SetBinContent(nb, httcc[i][j]->GetBinContent(k) );
           h_ttll->SetBinContent(nb, httll[i][j]->GetBinContent(k) );
@@ -107,14 +109,14 @@ void roofitR(){
           h_dat->SetBinContent(nb, hdata[i][j]->GetBinContent(k) );
           h_bkg->SetBinContent(nb, hbkg[i][j]->GetBinContent(k) );
           h_dbg->SetBinContent(nb, hdbg[i][j]->GetBinContent(k) );
-        }else if( k == Nbins && combine == true){
-          h_ttbb->AddBinContent(nb-1, httbb[i][j]->GetBinContent(k) );
-          h_ttcc->AddBinContent(nb-1, httcc[i][j]->GetBinContent(k) );
-          h_ttll->AddBinContent(nb-1, httll[i][j]->GetBinContent(k) );
-          h_ttccll->AddBinContent(nb-1, httcc[i][j]->GetBinContent(k) + httll[i][j]->GetBinContent(k) );
-          h_dat->AddBinContent(nb-1, hdata[i][j]->GetBinContent(k) );
-          h_bkg->AddBinContent(nb-1, hbkg[i][j]->GetBinContent(k) );
-          h_dbg->AddBinContent(nb-1, hdbg[i][j]->GetBinContent(k) );
+        }else if( i > 0 && combine == true){
+          h_ttbb->AddBinContent(nb, httbb[i][j]->GetBinContent(k) );
+          h_ttcc->AddBinContent(nb, httcc[i][j]->GetBinContent(k) );
+          h_ttll->AddBinContent(nb, httll[i][j]->GetBinContent(k) );
+          h_ttccll->AddBinContent(nb, httcc[i][j]->GetBinContent(k) + httll[i][j]->GetBinContent(k) );
+          h_dat->AddBinContent(nb, hdata[i][j]->GetBinContent(k) );
+          h_bkg->AddBinContent(nb, hbkg[i][j]->GetBinContent(k) );
+          h_dbg->AddBinContent(nb, hdbg[i][j]->GetBinContent(k) );
         }
       }
     }
@@ -179,8 +181,34 @@ void roofitR(){
   double recoR = R.getVal()/eR;
   double scaleMC = nMC.getVal()/nMCtotal;
 
+  TH1F* h_combined_data[2];
+  TH1F* h_combined_ttbb[2];
+  TH1F* h_combined_ttcc[2];
+  TH1F* h_combined_ttll[2];
+  TH1F* h_combined_dbg[2];
+  TH1F* h_combined_bkg[2];
+
+  for(int j = 0 ; j < 2 ; j++){
+
+    h_combined_ttbb[j] = new TH1F(Form("h_combined_%s_ttbb", variable[j].Data()),Form("h_combined_%s_ttbb", variable[j].Data()), nbinsch , 0, 1);
+    h_combined_ttll[j] = new TH1F(Form("h_combined_%s_ttll", variable[j].Data()),Form("h_combined_%s_ttll", variable[j].Data()), nbinsch , 0, 1);
+    h_combined_ttcc[j] = new TH1F(Form("h_combined_%s_ttcc", variable[j].Data()),Form("h_combined_%s_ttcc", variable[j].Data()), nbinsch , 0, 1);
+    h_combined_data[j] = new TH1F(Form("h_combined_%s_data", variable[j].Data()),Form("h_combined_%s_data", variable[j].Data()),nbinsch , 0, 1);
+    h_combined_dbg[j] = new TH1F(Form("h_combined_%s_dbg", variable[j].Data()),Form("h_combined_%s_dbg", variable[j].Data()),nbinsch , 0, 1);
+    h_combined_bkg[j] = new TH1F(Form("h_combined_%s_bkg", variable[j].Data()),Form("h_combined_%s_bkg", variable[j].Data()),nbinsch , 0, 1);
+
+    for(int i = 0 ; i < 3; i++){
+      h_combined_data[j]->Add(hdata[i][j]);
+      h_combined_ttbb[j]->Add(httbb[i][j]);
+      h_combined_ttcc[j]->Add(httcc[i][j]);
+      h_combined_ttll[j]->Add(httll[i][j]);
+      h_combined_dbg[j]->Add(hdbg[i][j]);
+      h_combined_bkg[j]->Add(hbkg[i][j]);
+    }
+  }
+
   TCanvas * c_fit = new TCanvas("c_fit","c_fit",1200,800);
-  c_fit->Divide(3,2);
+  c_fit->Divide(3,2); 
 
   for(int i = 0 ; i < 3; i++){
     for(int j = 0 ; j < 2; j++){ 
@@ -222,7 +250,8 @@ void roofitR(){
 
       MC->Draw();
       MC->SetMinimum(0.2);
-      MC->SetMaximum(1000);
+      //MC->SetMaximum(1000);
+      MC->SetMaximum(1800);
 
       MC->GetXaxis()->SetTitle("b-Discriminator (CSV)");
       if( j == 0 ) MC->GetYaxis()->SetTitle("First Additional Jets");
@@ -250,4 +279,76 @@ void roofitR(){
 
     }
   }
+
+  TCanvas * c_fit_combined = new TCanvas("c_fit_combined","c_fit_combined",1200,600);
+  c_fit_combined->Divide(2,1);    
+
+  for(int j = 0 ; j < 2; j++){
+    int num = 1+j;
+    c_fit_combined->cd(num);      
+    gPad->SetLogy();
+  
+    TH1F* hist_combined_data = h_combined_data[j]->Clone();
+    TH1F* hist_combined_ttbb = h_combined_ttbb[j]->Clone();
+    TH1F* hist_combined_ttccll = h_combined_ttcc[j]->Clone();
+    TH1F* hist_combined_ttll = h_combined_ttll[j]->Clone();
+    TH1F* hist_combined_background   = h_combined_dbg[j]->Clone();
+    TH1F* hist_combined_mcbackground = h_combined_bkg[j]->Clone();
+  
+    hist_combined_ttccll->Add(hist_combined_ttll);
+    hist_combined_ttbb->Scale( scaleMC*recoR*nttjj/nttbb);
+    hist_combined_ttccll->Scale( scaleMC*(1-recoR)*nttjj/(nttll+nttcc));
+    hist_combined_mcbackground->Scale( scaleMC );
+  
+    hist_combined_background->Add(hist_combined_mcbackground);
+    hist_combined_data->Add(hist_combined_background, -1);
+
+    hist_combined_ttbb->SetFillColor(kBlue+2);
+    hist_combined_ttbb->SetFillStyle(3354);
+    hist_combined_ttccll->SetFillColor(kRed);
+    hist_combined_background->SetFillColor(4);
+    
+    hist_combined_data->Draw();
+    hist_combined_data->GetXaxis()->SetTitle("b-Discriminator (CSV)");
+    if( j == 0 ) hist_combined_data->GetYaxis()->SetTitle("First Additional Jets");
+    if( j == 1 ) hist_combined_data->GetYaxis()->SetTitle("Second Additional Jets");
+
+    THStack *MC = new THStack();
+    MC->Add(hist_combined_ttbb);
+    MC->Add(hist_combined_ttccll);
+    //MC->Add(h_final_background);
+    
+    MC->Draw();
+    MC->SetMinimum(0.2);
+    //MC->SetMaximum(1000);
+    MC->SetMaximum(1800);
+  
+    MC->GetXaxis()->SetTitle("b-Discriminator (CSV)");
+    if( j == 0 ) MC->GetYaxis()->SetTitle("First Additional Jets");
+    if( j == 1 ) MC->GetYaxis()->SetTitle("Second Additional Jets");
+
+    hist_combined_data->SetMarkerSize(1);
+    hist_combined_data->SetMarkerStyle(20);
+    hist_combined_data->Draw("samePE");
+
+    TLatex *label= new TLatex;
+    label->SetNDC();
+    label->SetTextSize(0.05);
+    label->DrawLatex(0.22,0.82,"CMS");
+    label->DrawLatex(0.22,0.82-0.05,"19.6 fb^{-1} at #sqrt{s} = 8 TeV");
+
+    TLegend *l = new TLegend(0.73,0.74,0.90,0.88);
+    l->AddEntry(hist_combined_data,"Data","PL");
+    l->AddEntry(hist_combined_ttccll,"t#bar{t} + cc/LF","F");
+    l->AddEntry(hist_combined_ttbb,"t#bar{t} + bb","F");
+    l->SetTextSize(0.04);
+    l->SetFillColor(0);
+    l->SetLineColor(0);
+    l->Draw();
+
+  }
+ 
+  c_fit->Print("c_final_fit.eps");
+  c_fit_combined->Print("c_final_fit_combined.eps");
+
 }
