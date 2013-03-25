@@ -53,7 +53,7 @@ if runOn2012 == True:
   process.PUweight.PileUpRD   = PileUpRD2012
   process.PUweight.PileUpRDup = PileUpRD2012UP
   process.PUweight.PileUpRDdn = PileUpRD2012DN
-  process.PUweight.PileUpMC   = Summer12FullSim
+  process.PUweight.PileUpMC   = Summer12
 
 process.nEventsFilter = cms.EDProducer("EventCountProducer")
 
