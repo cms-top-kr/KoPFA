@@ -1,0 +1,58 @@
+<lcgdict>
+
+  <class name="vallot::ZCandidate"/>
+  <class name="std::vector<vallot::ZCandidate>"/>
+  <class name="edm::Wrapper<vallot::ZCandidate>"/>
+  <class name="edm::Wrapper<std::vector<vallot::ZCandidate> >"/>
+  <class name="edm::Ptr<vallot::ZCandidate>"/>
+
+  <class name="vallot::Lepton"/>
+  <class name="std::vector<vallot::Lepton>"/>
+  <class name="edm::Wrapper<vallot::Lepton>"/>
+  <class name="edm::Wrapper<std::vector<vallot::Lepton> >"/>
+  <class name="edm::Ptr<vallot::Lepton>"/>
+
+  <class name="vallot::Jet"/>
+  <class name="std::vector<vallot::Jet>"/>
+  <class name="edm::Wrapper<vallot::Jet>"/>
+  <class name="edm::Wrapper<std::vector<vallot::Jet> >"/>
+  <class name="edm::Ptr<vallot::Jet>"/>
+
+  <class name="vallot::METCandidate"/>
+  <class name="std::vector<vallot::METCandidate>"/>
+  <class name="edm::Wrapper<vallot::METCandidate>"/>
+  <class name="edm::Wrapper<std::vector<vallot::METCandidate> >"/>
+  <class name="edm::Ptr<vallot::METCandidate>"/>
+
+  <class name="vallot::TTbarGenEvent" />
+  <class name="std::vector<vallot::TTbarGenEvent>" />
+  <class name="edm::Wrapper<vallot::TTbarGenEvent>"/>
+  <class name="edm::Wrapper<std::vector<vallot::TTbarGenEvent> >"/>
+  <class name="edm::Ptr<vallot::TTbarGenEvent>"/>
+
+  <class name="vallot::TTbarMass" />
+  <class name="std::vector<vallot::TTbarMass>" />
+  <class name="edm::Wrapper<vallot::TTbarMass>"/>
+  <class name="edm::Wrapper<std::vector<vallot::TTbarMass> >"/>
+  <class name="edm::Ptr<vallot::TTbarMass>"/>
+
+  <class name="vallot::TTbarDILEvent" />
+  <class name="std::vector<vallot::TTbarDILEvent>" />
+  <class name="edm::Wrapper<vallot::TTbarDILEvent>"/>
+  <class name="edm::Wrapper<std::vector<vallot::TTbarDILEvent> >"/>
+  <class name="edm::Ptr<vallot::TTbarDILEvent>"/>
+
+  <class name="vallot::TTbarCandidate" />
+  <class name="std::vector<vallot::TTbarCandidate>" />
+  <class name="edm::Wrapper<vallot::TTbarCandidate>"/>
+  <class name="edm::Wrapper<std::vector<vallot::TTbarCandidate> >"/>
+  <class name="edm::Ptr<vallot::TTbarCandidate>"/>
+
+  <class name="vallot::H2WWMass" />
+  <class name="std::vector<vallot::H2WWMass>" />
+  <class name="edm::Wrapper<vallot::H2WWMass>"/>
+  <class name="edm::Wrapper<std::vector<vallot::H2WWMass> >"/>
+  <class name="edm::Ptr<vallot::H2WWMass>"/>
+
+</lcgdict>
+
