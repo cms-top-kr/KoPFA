@@ -1,16 +1,16 @@
 void QCDestimation(){
 
-  TFile *fQCD_ee = new TFile("TOPTTBB_QCD_2j1b_fixiso_25/ElEl/ElEl.root");
-  TFile *fQCD_mm = new TFile("TOPTTBB_QCD_2j1b_fixiso_25/MuMu/MuMu.root");
-  TFile *fQCD_em = new TFile("TOPTTBB_QCD_2j1b_fixiso_25/MuEl/MuEl.root");
+  TFile *fQCD_ee = new TFile("TOPTTBB_8TeV_QCD_2j1b_fixiso_15/ElEl/ElEl.root");
+  TFile *fQCD_mm = new TFile("TOPTTBB_8TeV_QCD_2j1b_fixiso_15/MuMu/MuMu.root");
+  TFile *fQCD_em = new TFile("TOPTTBB_8TeV_QCD_2j1b_fixiso_15/MuEl/MuEl.root");
 
-  TFile *fQCD_iso_ee = new TFile("TOPTTBB_QCD_iso_2j1b_fixiso_25/ElEl/ElEl.root");
-  TFile *fQCD_iso_mm = new TFile("TOPTTBB_QCD_iso_2j1b_fixiso_25/MuMu/MuMu.root");
-  TFile *fQCD_iso_em = new TFile("TOPTTBB_QCD_iso_2j1b_fixiso_25/MuEl/MuEl.root");
+  TFile *fQCD_iso_ee = new TFile("TOPTTBB_8TeV_QCD_iso_2j1b_fixiso_15/ElEl/ElEl.root");
+  TFile *fQCD_iso_mm = new TFile("TOPTTBB_8TeV_QCD_iso_2j1b_fixiso_15/MuMu/MuMu.root");
+  TFile *fQCD_iso_em = new TFile("TOPTTBB_8TeV_QCD_iso_2j1b_fixiso_15/MuEl/MuEl.root");
 
-  TFile *fQCD_noiso_ee = new TFile("TOPTTBB_QCD_noiso_2j1b_fixiso_25/ElEl/ElEl.root");
-  TFile *fQCD_noiso_mm = new TFile("TOPTTBB_QCD_noiso_2j1b_fixiso_25/MuMu/MuMu.root");
-  TFile *fQCD_noiso_em = new TFile("TOPTTBB_QCD_noiso_2j1b_fixiso_25/MuEl/MuEl.root");
+  TFile *fQCD_noiso_ee = new TFile("TOPTTBB_8TeV_QCD_noiso_2j1b_fixiso_15/ElEl/ElEl.root");
+  TFile *fQCD_noiso_mm = new TFile("TOPTTBB_8TeV_QCD_noiso_2j1b_fixiso_15/MuMu/MuMu.root");
+  TFile *fQCD_noiso_em = new TFile("TOPTTBB_8TeV_QCD_noiso_2j1b_fixiso_15/MuEl/MuEl.root");
 
   for(int i=2; i <= 5 ; i++){
 
