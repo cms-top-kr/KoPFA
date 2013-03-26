@@ -11,40 +11,59 @@ from cmg2kcms_cfg import *
 
 input = sys.argv[1]
 
-mclist = ["ZJets","ZJets10To50","WJetsToLNu", "WW", "WZ", "ZZ","TTbarTuneZ2"]
+#mclist = ["ZJets","ZJets10To50","WJetsToLNu", "WW", "WZ", "ZZ","TTbarTuneZ2"]
+mclist = ["WJetsToLNu", "WW", "WZ", "ZZ","TTbarTuneZ2"]
 mclist += ["SingleToptW","SingleTopBartW","TTH","TTbarFullLepMGDecays"]
 
-rdlist = ["Run2012AMuMu","Run2012BMuMu","Run2012CMuMu","Run2012DMuMu"]
-rdlist += ["Run2012AElEl","Run2012BElEl","Run2012CElEl","Run2012DElEl"]
-rdlist += ["Run2012AMuEl","Run2012BMuEl","Run2012CMuEl","Run2012DMuEl"]
+rdlist = ["Run2012Av1_MuMu","Run2012Av2_MuMu","Run2012B_MuMu","Run2012Cv1_MuMu","Run2012Cv2_MuMu","Run2012Cv3_MuMu","Run2012Dv1_MuMu"]
+rdlist += ["Run2012Av1_MuEl","Run2012Av2_MuEl","Run2012B_MuEl","Run2012Cv1_MuEl","Run2012Cv2_MuEl","Run2012Cv3_MuEl","Run2012Dv1_MuEl"]
+rdlist += ["Run2012Av1_ElEl","Run2012Av2_ElEl","Run2012B_ElEl","Run2012Cv1_ElEl","Run2012Cv2_ElEl","Run2012Cv3_ElEl","Run2012Dv1_ElEl"]
 
 samplePath = {}
-samplePath["ZJets"]           ="KoPFA.CommonTools.Sources.CMG.V5_10_0.Summer12.cmgTuple_ZJets_cff"
-samplePath["ZJets10To50"]     ="KoPFA.CommonTools.Sources.CMG.V5_10_0.Summer12.cmgTuple_ZJets10To50_cff"
-#samplePath["ZtauDecay"]       ="KoPFA.CommonTools.Sources.CMG.V5_10_0.Summer12.cmgTuple_ZJets_cff"
-#samplePath["ZtauDecay10To50"] ="KoPFA.CommonTools.Sources.CMG.V5_10_0.Summer12.cmgTuple_ZJets10To50_cff"
-samplePath["WJetsToLNu"]      ="KoPFA.CommonTools.Sources.CMG.V5_10_0.Summer12.cmgTuple_WJets_cff"
-samplePath["WW"]              ="KoPFA.CommonTools.Sources.CMG.V5_10_0.Summer12.cmgTuple_WW_cff"
-samplePath["WZ"]              ="KoPFA.CommonTools.Sources.CMG.V5_10_0.Summer12.cmgTuple_WZ_cff"
-samplePath["ZZ"]              ="KoPFA.CommonTools.Sources.CMG.V5_10_0.Summer12.cmgTuple_ZZ_cff"
-samplePath["TTbarTuneZ2"]     ="KoPFA.CommonTools.Sources.CMG.V5_10_0.Summer12.patTuple_TTbarTuneZ2_cff"
-samplePath["SingleToptW"]     ="KoPFA.CommonTools.Sources.CMG.V5_10_0.Summer12.cmgTuple_TtW_cff"
-samplePath["SingleTopBartW"]  ="KoPFA.CommonTools.Sources.CMG.V5_10_0.Summer12.cmgTuple_TbartW_cff"
-samplePath["TTH"]              ="KoPFA.CommonTools.Sources.CMG.V5_10_0.Summer12.cmgTuple_TTH_HToBB_M125_cff"
-samplePath["TTbarFullLepMGDecays"]     ="KoPFA.CommonTools.Sources.CMG.V5_10_0.Summer12.patTuple_TTbarFullLepMGDecays_cff"
+samplePath["ZJets"]           ="KoPFA.CommonTools.Sources.CMG.V5_13_0.Summer12.cmgTuple_ZJets_cff"
+samplePath["ZJets10To50"]     ="KoPFA.CommonTools.Sources.CMG.V5_13_0.Summer12.cmgTuple_ZJets10To50_cff"
+#samplePath["ZtauDecay"]       ="KoPFA.CommonTools.Sources.CMG.V5_13_0.Summer12.cmgTuple_ZJets_cff"
+#samplePath["ZtauDecay10To50"] ="KoPFA.CommonTools.Sources.CMG.V5_13_0.Summer12.cmgTuple_ZJets10To50_cff"
+samplePath["WJetsToLNu"]      ="KoPFA.CommonTools.Sources.CMG.V5_13_0.Summer12.cmgTuple_WJets_cff"
+samplePath["WW"]              ="KoPFA.CommonTools.Sources.CMG.V5_13_0.Summer12.cmgTuple_WW_cff"
+samplePath["WZ"]              ="KoPFA.CommonTools.Sources.CMG.V5_13_0.Summer12.cmgTuple_WZ_cff"
+samplePath["ZZ"]              ="KoPFA.CommonTools.Sources.CMG.V5_13_0.Summer12.cmgTuple_ZZ_cff"
+samplePath["TTbarTuneZ2"]     ="KoPFA.CommonTools.Sources.CMG.V5_13_0.Summer12.patTuple_TTbarTuneZ2_cff"
+samplePath["SingleToptW"]     ="KoPFA.CommonTools.Sources.CMG.V5_13_0.Summer12.cmgTuple_TtW_cff"
+samplePath["SingleTopBartW"]  ="KoPFA.CommonTools.Sources.CMG.V5_13_0.Summer12.cmgTuple_TbartW_cff"
+samplePath["TTH"]              ="KoPFA.CommonTools.Sources.CMG.V5_13_0.Summer12.cmgTuple_TTH_HToBB_M125_cff"
+samplePath["TTbarFullLepMGDecays"]     ="KoPFA.CommonTools.Sources.CMG.V5_13_0.Summer12.patTuple_TTbarFullLepMGDecays_cff"
 ### DATA ####
-samplePath["Run2012AMuMu"]    ="KoPFA.CommonTools.Sources.CMG.V5_10_0.Run2012.cmgTuple_Run2012AMuMu_cff"
-samplePath["Run2012AElEl"]    ="KoPFA.CommonTools.Sources.CMG.V5_10_0.Run2012.cmgTuple_Run2012AElEl_cff"
-samplePath["Run2012AMuEl"]    ="KoPFA.CommonTools.Sources.CMG.V5_10_0.Run2012.cmgTuple_Run2012AMuEl_cff"
-samplePath["Run2012BMuMu"]    ="KoPFA.CommonTools.Sources.CMG.V5_10_0.Run2012.cmgTuple_Run2012BMuMu_cff"
-samplePath["Run2012BElEl"]    ="KoPFA.CommonTools.Sources.CMG.V5_10_0.Run2012.cmgTuple_Run2012BElEl_cff"
-samplePath["Run2012BMuEl"]    ="KoPFA.CommonTools.Sources.CMG.V5_10_0.Run2012.cmgTuple_Run2012BMuEl_cff"
-samplePath["Run2012CMuMu"]    ="KoPFA.CommonTools.Sources.CMG.V5_10_0.Run2012.cmgTuple_Run2012CMuMu_cff"
-samplePath["Run2012CElEl"]    ="KoPFA.CommonTools.Sources.CMG.V5_10_0.Run2012.cmgTuple_Run2012CElEl_cff"
-samplePath["Run2012CMuEl"]    ="KoPFA.CommonTools.Sources.CMG.V5_10_0.Run2012.cmgTuple_Run2012CMuEl_cff"
-samplePath["Run2012DMuMu"]    ="KoPFA.CommonTools.Sources.CMG.V5_10_0.Run2012.cmgTuple_Run2012DMuMu_cff"
-samplePath["Run2012DElEl"]    ="KoPFA.CommonTools.Sources.CMG.V5_10_0.Run2012.cmgTuple_Run2012DElEl_cff"
-samplePath["Run2012DMuEl"]    ="KoPFA.CommonTools.Sources.CMG.V5_10_0.Run2012.cmgTuple_Run2012DMuEl_cff"
+samplePath["Run2012Av1_MuMu"]    ="KoPFA.CommonTools.Sources.CMG.V5_13_0.Run2012.cmgTuple_Run2012Av1_MuMu_cff"
+samplePath["Run2012Av1_ElEl"]    ="KoPFA.CommonTools.Sources.CMG.V5_13_0.Run2012.cmgTuple_Run2012Av1_ElEl_cff"
+samplePath["Run2012Av1_MuEl"]    ="KoPFA.CommonTools.Sources.CMG.V5_13_0.Run2012.cmgTuple_Run2012Av1_MuEl_cff"
+samplePath["Run2012Av2_MuMu"]    ="KoPFA.CommonTools.Sources.CMG.V5_13_0.Run2012.cmgTuple_Run2012Av2_MuMu_cff"
+samplePath["Run2012Av2_ElEl"]    ="KoPFA.CommonTools.Sources.CMG.V5_13_0.Run2012.cmgTuple_Run2012Av2_ElEl_cff"
+samplePath["Run2012Av2_MuEl"]    ="KoPFA.CommonTools.Sources.CMG.V5_13_0.Run2012.cmgTuple_Run2012Av2_MuEl_cff"
+
+samplePath["Run2012B_MuMu"]    ="KoPFA.CommonTools.Sources.CMG.V5_13_0.Run2012.cmgTuple_Run2012B_MuMu_cff"
+samplePath["Run2012B_ElEl"]    ="KoPFA.CommonTools.Sources.CMG.V5_13_0.Run2012.cmgTuple_Run2012B_ElEl_cff"
+samplePath["Run2012B_MuEl"]    ="KoPFA.CommonTools.Sources.CMG.V5_13_0.Run2012.cmgTuple_Run2012B_MuEl_cff"
+
+samplePath["Run2012Cv1_MuMu"]    ="KoPFA.CommonTools.Sources.CMG.V5_13_0.Run2012.cmgTuple_Run2012Cv1_MuMu_cff"
+samplePath["Run2012Cv1_ElEl"]    ="KoPFA.CommonTools.Sources.CMG.V5_13_0.Run2012.cmgTuple_Run2012Cv1_ElEl_cff"
+samplePath["Run2012Cv1_MuEl"]    ="KoPFA.CommonTools.Sources.CMG.V5_13_0.Run2012.cmgTuple_Run2012Cv1_MuEl_cff"
+
+samplePath["Run2012Cv2_MuMu"]    ="KoPFA.CommonTools.Sources.CMG.V5_13_0.Run2012.cmgTuple_Run2012Cv2_MuMu_cff"
+samplePath["Run2012Cv2_ElEl"]    ="KoPFA.CommonTools.Sources.CMG.V5_13_0.Run2012.cmgTuple_Run2012Cv2_ElEl_cff"
+samplePath["Run2012Cv2_MuEl"]    ="KoPFA.CommonTools.Sources.CMG.V5_13_0.Run2012.cmgTuple_Run2012Cv2_MuEl_cff"
+
+samplePath["Run2012Cv3_MuMu"]    ="KoPFA.CommonTools.Sources.CMG.V5_13_0.Run2012.cmgTuple_Run2012Cv3_MuMu_cff"
+samplePath["Run2012Cv3_ElEl"]    ="KoPFA.CommonTools.Sources.CMG.V5_13_0.Run2012.cmgTuple_Run2012Cv3_ElEl_cff"
+samplePath["Run2012Cv3_MuEl"]    ="KoPFA.CommonTools.Sources.CMG.V5_13_0.Run2012.cmgTuple_Run2012Cv3_MuEl_cff"
+
+samplePath["Run2012Dv1_MuMu"]    ="KoPFA.CommonTools.Sources.CMG.V5_13_0.Run2012.cmgTuple_Run2012Dv1_MuMu_cff"
+samplePath["Run2012Dv1_ElEl"]    ="KoPFA.CommonTools.Sources.CMG.V5_13_0.Run2012.cmgTuple_Run2012Dv1_ElEl_cff"
+samplePath["Run2012Dv1_MuEl"]    ="KoPFA.CommonTools.Sources.CMG.V5_13_0.Run2012.cmgTuple_Run2012Dv1_MuEl_cff"
+
+samplePath["Run2012Dv2_MuMu"]    ="KoPFA.CommonTools.Sources.CMG.V5_13_0.Run2012.cmgTuple_Run2012Dv2_MuMu_cff"
+samplePath["Run2012Dv2_ElEl"]    ="KoPFA.CommonTools.Sources.CMG.V5_13_0.Run2012.cmgTuple_Run2012Dv2_ElEl_cff"
+samplePath["Run2012Dv2_MuEl"]    ="KoPFA.CommonTools.Sources.CMG.V5_13_0.Run2012.cmgTuple_Run2012Dv2_MuEl_cff"
 
 
 def applyFilter(sample, process):
