@@ -13,7 +13,7 @@
 //
 // Original Author:  Tae Jeong Kim,40 R-A32,+41227678602,
 //         Created:  Fri Jun  4 17:19:29 CEST 2010
-// $Id: CMGTopDILAnalyzer.h,v 1.25 2013/03/18 10:13:27 tjkim Exp $
+// $Id: CMGTopDILAnalyzer.h,v 1.26 2013/03/20 13:08:35 youngjo Exp $
 //
 //
 
@@ -662,7 +662,7 @@ class CMGTopDILAnalyzer : public edm::EDFilter {
     bool prebtag = cutStepBit[0] && cutStepBit[1] && cutStepBit[2] && cutStepBit[3] && cutStepBit[4] && cutStepBit[5] ;
     bool dilepton = cutStepBit[0] && cutStepBit[1] && cutStepBit[2] ;
    
-    if( !isRealData && prebtag){
+    if( !isRealData && dilepton && nJet30 >= 2){
       if( run2012_ == true ){
         BTagWeight2012 bTag;
 
