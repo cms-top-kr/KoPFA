@@ -47,6 +47,8 @@ public:
   bool filter(edm::Event& event, const edm::EventSetup& eventSetup);
 
 private:
+  double computeDz(const pat::Electron& electron, const reco::Vertex& pv);
+  double computeDz(const pat::Muon& muon, const reco::Vertex& pv);
   void makeIsoVeto(const pat::Electron& electron, reco::IsoDeposit::AbsVetos& vetos_ch, reco::IsoDeposit::AbsVetos& vetos_nh, reco::IsoDeposit::AbsVetos& vetos_ph);
   void makeIsoVeto(const pat::Muon& muon, reco::IsoDeposit::AbsVetos& vetos_ch, reco::IsoDeposit::AbsVetos& vetos_nh, reco::IsoDeposit::AbsVetos& vetos_ph);
   double getEffectiveArea(const pat::Electron& electron);
@@ -152,9 +154,8 @@ bool PatRelIsoLeptonSelector<Lepton>::filter(edm::Event& event, const edm::Event
   {
     const Lepton& srcLepton = leptonHandle->at(i);
     if ( !(*select_)(srcLepton) ) continue;
-
-    bool passdz = fabs(srcLepton.gsfTrack()->dz(pv.position())) < dz_;
-    if ( !passdz ) continue;
+    const double dz = computeDz(srcLepton, pv);
+    if ( dz > dz_ ) continue;
   
     reco::IsoDeposit::AbsVetos vetos_ch, vetos_nh, vetos_ph;
     makeIsoVeto(srcLepton, vetos_ch, vetos_nh, vetos_ph);
@@ -175,6 +176,8 @@ bool PatRelIsoLeptonSelector<Lepton>::filter(edm::Event& event, const edm::Event
     lepton.setUserIso(relIso, 0);
     lepton.setUserIso(relIsoDbeta, 1);
     lepton.setUserIso(relIsoRho, 2);
+
+    lepton.addUserFloat("dz", dz);
 
     selectedLeptons->push_back(lepton);
   }
@@ -217,6 +220,17 @@ double PatRelIsoLeptonSelector<Lepton>::getEffectiveArea(const pat::Muon& muon)
   return MuonEffectiveArea::GetMuonEffectiveArea(muonEAType_, muon.eta(), muonEATarget_);
 }
 
+template<typename Lepton>
+double PatRelIsoLeptonSelector<Lepton>::computeDz(const pat::Electron& electron, const reco::Vertex& pv)
+{
+  return abs(electron.gsfTrack()->dz(pv.position()));
+}
+
+template<typename Lepton>
+double PatRelIsoLeptonSelector<Lepton>::computeDz(const pat::Muon& muon, const reco::Vertex& pv)
+{
+  return abs(muon.globalTrack()->dz(pv.position()));
+}
 
 #include "FWCore/Framework/interface/MakerMacros.h"
 
