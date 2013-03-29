@@ -60,15 +60,15 @@ basicPDFs = cms.PSet(
         ),
         bwResCBTurnOn = cms.vstring(
             "BreitWigner::bw(mass, m0[91.2], width[2.9,0.5,5])",
-            "RooCBShape::resPass(mass, peakPass[0,-3,3], sigmaPass[2,0.01,10], alphaPass[0.5,0,3], nPass[5,1,10])",
-            "RooCBShape::resFail(mass, peakFail[0,-3,3], sigmaFail[2,0.01,10], alphaFail[0.5,0,3], nFail[5,1,10])",
+            "RooCBShape::resPass(mass, peakPass[0,-3,3], sigmaPass[2,0.01,10], alphaPass[0.5,0,3], nPass[2,1,5])",
+            "RooCBShape::resFail(mass, peakFail[0,-3,3], sigmaFail[2,0.01,10], alphaFail[0.5,0,3], nFail[2,1,5])",
             "FCONV::signalPass(mass, bw, resPass)",
             "FCONV::signalFail(mass, bw, resFail)",
-            "Exponential::bkgModelPass(mass, p0Pass[0,-5e-1,0])",
-            "Exponential::bkgModelFail(mass, p0Fail[0,-5e-1,0])",
+            "Exponential::bkgModelPass(mass, p0Pass[0,-1,0])",
+            "Exponential::bkgModelFail(mass, p0Fail[0,-1,0])",
             "turnOn[50,50,100]",
-            "EXPR::bkgTurnOnPass('TMath::Erf((mass-turnOn)/bkgResPass)/2+0.5', mass, turnOn, bkgResPass[50,5,50])",
-            "EXPR::bkgTurnOnFail('TMath::Erf((mass-turnOn)/bkgResPass)/2+0.5', mass, turnOn, bkgResPass)"
+            "EXPR::bkgTurnOnPass('TMath::Erf((mass-turnOn)/bkgRes)/2+0.5', mass, turnOn, bkgRes[50,5,50])",
+            "EXPR::bkgTurnOnFail('TMath::Erf((mass-turnOn)/bkgRes)/2+0.5', mass, turnOn, bkgRes)",
             #"EXPR::bkgTurnOnFail('TMath::Erf((mass-turnOn)/bkgResFail)/2+0.5', mass, turnOn, bkgResFail[50,5,50])"
             "PROD::backgroundPass(bkgModelPass, bkgTurnOnPass)",
             "PROD::backgroundFail(bkgModelFail, bkgTurnOnFail)",
