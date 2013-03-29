@@ -1,8 +1,0 @@
-rfrmMany.py /castor/cern.ch/user/t/tjkim/ntuple/pileupstudy/RD/pileup1 '.*\.root' 
-rfrmMany.py /castor/cern.ch/user/t/tjkim/ntuple/pileupstudy/RD/pileup2 '.*\.root' 
-rfrmMany.py /castor/cern.ch/user/t/tjkim/ntuple/pileupstudy/RD/pileup3 '.*\.root' 
-rfrmMany.py /castor/cern.ch/user/t/tjkim/ntuple/pileupstudy/RD/pileup4 '.*\.root' 
-rfrmMany.py /castor/cern.ch/user/t/tjkim/ntuple/pileupstudy/RD/nopileup1 '.*\.root' 
-rfrmMany.py /castor/cern.ch/user/t/tjkim/ntuple/pileupstudy/RD/nopileup2 '.*\.root' 
-rfrmMany.py /castor/cern.ch/user/t/tjkim/ntuple/pileupstudy/RD/nopileup3 '.*\.root' 
-rfrmMany.py /castor/cern.ch/user/t/tjkim/ntuple/pileupstudy/RD/nopileup4 '.*\.root' 
