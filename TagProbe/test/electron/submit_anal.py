@@ -9,33 +9,38 @@ datasets = [
     'RD',
 ]
 
-categoryMap = {}
-categoryMap['Nh'                ] = ['nh0', 'nh1', 'allIdIso09', 'allIdIso05', 'allIdIso00',]
-categoryMap['Nh0Mva'            ] = ['mvam01', 'mva00', 'mva03', 'mva05', 'mva07', 'mva09']
-categoryMap['Nh0Mva05Iso'       ] = ['iso15' , 'diso15', 'riso15',]
-categoryMap['Nh0Mva05Riso15Pf'  ] = ['pf']
+categoryMap = {
+    'Nh'                :['nh0', 'nh1', 'allIdIso09', 'allIdIso05', 'allIdIso00',],
+    'Nh0Mva'            :['mvam01', 'mva00', 'mva03', 'mva05', 'mva07', 'mva09'],
+    'Nh0Mva05Iso'       :['iso15' , 'diso15', 'riso15',],
+    'Nh0Mva05Riso15Pf'  :['pf'],
 
-categoryMap['Nh0Mva05Riso15PfCharge'] = ['chargeConsistency']
-categoryMap['Nh0Mva00Iso'       ] = ['iso15' , 'diso15', 'riso15',]
-categoryMap['Nh0Mva00Riso15Pf'  ] = ['pf']
+    'Nh0Mva05Riso15PfCharge':['chargeConsistency'],
+    'Nh0Mva00Iso'       :['iso15' , 'diso15', 'riso15',],
+    'Nh0Mva00Riso15Pf'  :['pf'],
 
-categoryMap['Nh0Mva05Riso15PfHL'] = ['TS', 'HL']
-categoryMap['Nh0Mva05Riso15PfSL'] = ['SL']
-categoryMap['Nh0Mva05Riso15PfDZ'] = ['DZ']
+    'Nh0Mva05Riso15PfHL':['TS', 'HL'],
+    'Nh0Mva05Riso15PfSL':['SL'],
+    'Nh0Mva05Riso15PfDZ':['DZ'],
 
-categoryMap['Nh0Mva00Riso15PfHL'] = ['TS', 'HL']
-categoryMap['Nh0Mva00Riso15PfSL'] = ['SL']
-categoryMap['Nh0Mva00Riso15PfDZ'] = ['DZ']
+    'Nh0Mva00Riso15PfHL':['TS', 'HL'],
+    'Nh0Mva00Riso15PfSL':['SL'],
+    'Nh0Mva00Riso15PfDZ':['DZ'],
 
-categoryMap['Nh0Mva09Riso15PfHL'] = ['TS', 'HL']
-categoryMap['Nh0Mva09Riso15PfSL'] = ['SL']
-categoryMap['Nh0Mva09Riso15PfDZ'] = ['DZ']
+    'Nh0Mva09Riso15PfHL':['TS', 'HL'],
+    'Nh0Mva09Riso15PfSL':['SL'],
+    'Nh0Mva09Riso15PfDZ':['DZ'],
 
-categoryMap['S'] = ['idIso']
-categoryMap['STrg'] = ['TS']
+    'S'   :['idIso'],
+    'STrg':['TS'],
+}
 
-submitLog = open("log/submit.log", "w")
-finishLog = open("log/finish.log", "w")
+## Prepare run environment
+if not os.path.exists("result/unmerged"): os.makedirs("result/unmerged")
+if not os.path.exists("log/anal"): os.makedirs("log/anal")
+os.system("echo > log/anal_finish.log")
+os.system("echo > log/anal_error.log")
+submitLog = open("log/anal_submit.log", "w")
 
 runscript = open("run_anal.sh", "w")
 runscript.write("""#!/bin/bash
@@ -51,19 +56,18 @@ cmsRun anal_cfg.py
 RETVAL=$?
 
 if [ $RETVAL == 0 ]; then
-    echo run_anal $MODE $STEP $CATEGORY >> log/finish.log
+    echo run_anal $MODE $STEP $CATEGORY >> log/anal_finish.log
 else
-    echo run_anal $MODE $STEP $CATEGORY >> log/error.log
+    echo run_anal $MODE $STEP $CATEGORY >> log/anal_error.log
 fi
 
 exit $RETVAL
 """ % os.environ["PWD"])
 os.system("chmod +x %s/run_anal.sh" % os.environ["PWD"])
 
+## Submit jobs
 for dataset in datasets:
     for step in categoryMap.keys():
         for category in categoryMap[step]:
-            #print 'bsub -q 8nh -oo log/fit_%s_%s_%s.log run_anal.sh %s %s %s' % (dataset, step, category, dataset, step, category)
-            #print 'bsub -q 8nh -oo log/fit_%s_%s_%s.log run_anal.sh %s %s %s' % (dataset, step, category, dataset, step, category)
-            os.system('echo bsub -q 8nh -oo log/fit_%s_%s_%s.log run_anal.sh %s %s %s' % (dataset, step, category, dataset, step, category))
+            os.system('bsub -q 8nh -oo log/anal/%s_%s_%s.log run_anal.sh %s %s %s' % (dataset, step, category, dataset, step, category))
             print>>submitLog, dataset, step, category

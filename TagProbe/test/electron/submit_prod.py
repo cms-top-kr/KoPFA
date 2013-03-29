@@ -6,14 +6,21 @@ maxFiles = 200
 triggerMode = "SingleElectron"
 samples = [
     "ZJets-Summer12", 
-    "%s-Run2012A" % triggerMode, "%s-Run2012B" % triggerMode, 
-    "%s-Run2012C" % triggerMode, "%s-Run2012D" % triggerMode,
+    "%s-Run2012A" % triggerMode, 
+    "%s-Run2012B" % triggerMode, 
+    "%s-Run2012C" % triggerMode, 
+    "%s-Run2012D" % triggerMode,
 ]
 sourceBase = "/afs/cern.ch/user/j/jhgoh/public/sources/CMG/V5_13_0"
 
 ## Prepare run environment
 if not os.path.exists("ntuple/unmerged"): os.makedirs("ntuple/unmerged")
-runscript = open("_run_prod.sh", "w")
+if not os.path.exists("log/prod"): os.makedirs("log/prod")
+os.system("echo > log/prod_finish.log")
+os.system("echo > log/prod_error.log")
+submitLog = open("log/prod_submit.log", "w")
+
+runscript = open("run_prod.sh", "w")
 runscript.write("""#!/bin/bash
 
 cd %s
@@ -30,13 +37,14 @@ cmsRun prod_cfg.py
 RETVAL=$?
 
 if [ $RETVAL == 0 ]; then
-    echo run_prod $MODE $STEP $CATEGORY >> log/finish.log
+    echo run_prod $MODE $STEP $CATEGORY >> log/prod_finish.log
 else
-    echo run_prod $MODE $STEP $CATEGORY >> log/error.log
+    echo run_prod $MODE $STEP $CATEGORY >> log/prod_error.log
 fi
 
-exit $RETVAL""" % os.environ["PWD"])
-os.system("chmod +x _run_prod.sh")
+exit $RETVAL
+""" % os.environ["PWD"])
+os.system("chmod +x %s/run_prod.sh" % os.environ["PWD"])
 
 ## Submit jobs
 for sample in samples:
@@ -60,5 +68,6 @@ for sample in samples:
 
       if end > nFiles+1: end = nFiles
 
-      os.system("echo bsub -oo log/prod/%s_%s_%3d.log -q 8nh run_prod.sh %s %d %d %d %s" % (sample, triggerMode, section, sample, section, begin, end, triggerMode))
+      os.system("bsub -oo log/prod/%s_%s_%3d.log -q 8nh run_prod.sh %s %d %d %d %s" % (sample, triggerMode, section, sample, section, begin, end, triggerMode))
+      print>>submitLog, sample, section, begin, end, triggerMode
 
