@@ -229,7 +229,7 @@ double PatRelIsoLeptonSelector<Lepton>::computeDz(const pat::Electron& electron,
 template<typename Lepton>
 double PatRelIsoLeptonSelector<Lepton>::computeDz(const pat::Muon& muon, const reco::Vertex& pv)
 {
-  return abs(muon.globalTrack()->dz(pv.position()));
+  return abs(muon.innerTrack()->dz(pv.position()));
 }
 
 #include "FWCore/Framework/interface/MakerMacros.h"
