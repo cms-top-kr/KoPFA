@@ -68,6 +68,6 @@ for sample in samples:
 
       if end > nFiles+1: end = nFiles
 
-      os.system("bsub -oo log/prod/%s_%s_%3d.log -q 8nh run_prod.sh %s %d %d %d %s" % (sample, triggerMode, section, sample, section, begin, end, triggerMode))
+      os.system("bsub -oo log/prod/%s_%s_%03d.log -q 8nh run_prod.sh %s %d %d %d %s" % (sample, triggerMode, section, sample, section, begin, end, triggerMode))
       print>>submitLog, sample, section, begin, end, triggerMode
 
