@@ -44,6 +44,7 @@ fi
 
 exit $RETVAL
 """ % os.environ["PWD"])
+runscript.close()
 os.system("chmod +x %s/run_prod.sh" % os.environ["PWD"])
 
 ## Submit jobs
@@ -60,7 +61,7 @@ for sample in samples:
     nSection = nFiles/maxFiles
     if nFiles == nSection*maxFiles: nSection -= 1
 
-    print "Submitting jobs for %s, spliting by %d sections" % (sample, nFiles)
+    print "Submitting jobs for %s, spliting %d files by %d sections" % (sample, nFiles, nSection)
 
     for section in range(nSection):
       begin = section*maxFiles

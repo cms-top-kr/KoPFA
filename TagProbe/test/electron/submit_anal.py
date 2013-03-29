@@ -63,6 +63,7 @@ fi
 
 exit $RETVAL
 """ % os.environ["PWD"])
+runscript.close()
 os.system("chmod +x %s/run_anal.sh" % os.environ["PWD"])
 
 ## Submit jobs
