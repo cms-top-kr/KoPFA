@@ -13,7 +13,7 @@
 //
 // Original Author:  Tae Jeong Kim,40 R-A32,+41227678602,
 //         Created:  Fri Jun  4 17:19:29 CEST 2010
-// $Id: CMGTopDILAnalyzer.h,v 1.27 2013/03/26 09:29:03 tjkim Exp $
+// $Id: CMGTopDILAnalyzer.h,v 1.28 2013/03/31 14:12:43 youngjo Exp $
 //
 //
 
@@ -714,23 +714,23 @@ class CMGTopDILAnalyzer : public edm::EDFilter {
         //bweight30CSVTdwlight = bTag.reweight( jets_pt, jets_eta, jets_flavor, nbjets30_[2], BTagWeight2012::CSVT, BTagWeight2012::DWLight);
 
         //bweight30JPL = bTag.reweight( jets_pt, jets_eta, jets_flavor, nbjets30_[3], BTagWeight2012::JPL, BTagWeight2012::NORM);
-        bweight30JPM = bTag.reweight( jets_pt, jets_eta, jets_flavor, nbjets30_[4], BTagWeight2012::JPM, BTagWeight2012::NORM);
+        //bweight30JPM = bTag.reweight( jets_pt, jets_eta, jets_flavor, nbjets30_[4], BTagWeight2012::JPM, BTagWeight2012::NORM);
         bweight30JPT = bTag.reweight( jets_pt, jets_eta, jets_flavor, nbjets30_[5], BTagWeight2012::JPT, BTagWeight2012::NORM);
 
         //bweight30JPLup = bTag.reweight( jets_pt, jets_eta, jets_flavor, nbjets30_[3], BTagWeight2012::JPL, BTagWeight2012::UP);
-        bweight30JPMup = bTag.reweight( jets_pt, jets_eta, jets_flavor, nbjets30_[4], BTagWeight2012::JPM, BTagWeight2012::UP);
+        //bweight30JPMup = bTag.reweight( jets_pt, jets_eta, jets_flavor, nbjets30_[4], BTagWeight2012::JPM, BTagWeight2012::UP);
         bweight30JPTup = bTag.reweight( jets_pt, jets_eta, jets_flavor, nbjets30_[5], BTagWeight2012::JPT, BTagWeight2012::UP);
 
         //bweight30JPLdw = bTag.reweight( jets_pt, jets_eta, jets_flavor, nbjets30_[3], BTagWeight2012::JPL, BTagWeight2012::DW);
-        bweight30JPMdw = bTag.reweight( jets_pt, jets_eta, jets_flavor, nbjets30_[4], BTagWeight2012::JPM, BTagWeight2012::DW);
+        //bweight30JPMdw = bTag.reweight( jets_pt, jets_eta, jets_flavor, nbjets30_[4], BTagWeight2012::JPM, BTagWeight2012::DW);
         bweight30JPTdw = bTag.reweight( jets_pt, jets_eta, jets_flavor, nbjets30_[5], BTagWeight2012::JPT, BTagWeight2012::DW);
  
         //bweight30JPLuplight = bTag.reweight( jets_pt, jets_eta, jets_flavor, nbjets30_[3], BTagWeight2012::JPL, BTagWeight2012::UPLight);
-        bweight30JPMuplight = bTag.reweight( jets_pt, jets_eta, jets_flavor, nbjets30_[4], BTagWeight2012::JPM, BTagWeight2012::UPLight);
+        //bweight30JPMuplight = bTag.reweight( jets_pt, jets_eta, jets_flavor, nbjets30_[4], BTagWeight2012::JPM, BTagWeight2012::UPLight);
         bweight30JPTuplight = bTag.reweight( jets_pt, jets_eta, jets_flavor, nbjets30_[5], BTagWeight2012::JPT, BTagWeight2012::UPLight);
 
         //bweight30JPLdwlight = bTag.reweight( jets_pt, jets_eta, jets_flavor, nbjets30_[3], BTagWeight2012::JPL, BTagWeight2012::DWLight);
-        bweight30JPMdwlight = bTag.reweight( jets_pt, jets_eta, jets_flavor, nbjets30_[4], BTagWeight2012::JPM, BTagWeight2012::DWLight);
+        //bweight30JPMdwlight = bTag.reweight( jets_pt, jets_eta, jets_flavor, nbjets30_[4], BTagWeight2012::JPM, BTagWeight2012::DWLight);
         bweight30JPTdwlight = bTag.reweight( jets_pt, jets_eta, jets_flavor, nbjets30_[5], BTagWeight2012::JPT, BTagWeight2012::DWLight);
 
       }else{
