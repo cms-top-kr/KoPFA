@@ -17,7 +17,10 @@ class BTagWeight2012
     enum AlgoType {
       CSVL,
       CSVM,
-      CSVT
+      CSVT,
+      JPL,
+      JPM,
+      JPT 
     };
 
     enum SYS {
@@ -29,7 +32,7 @@ class BTagWeight2012
     };
 
     static const int nbin = 16;
-    static const int nalgo = 3;
+    static const int nalgo = 6;
     static const float ptmin[nbin];
     static const float ptmax[nbin];
     static const double addSFb_error[nalgo][nbin];
@@ -215,6 +218,12 @@ class BTagWeight2012
          sf =  0.726981*((1.+(0.253238*x))/(1.+(0.188389*x)))         + sfbErr(pt,eta) + addsfbErr(pt,eta);
       } else if( algo_ == CSVT ){
          sf = 0.869965*((1.+(0.0335062*x))/(1.+(0.0304598*x)))        + sfbErr(pt,eta) + addsfbErr(pt,eta);
+      } else if( algo_ == JPL ){
+         sf = 0.977721*((1.+(-1.02685e-06*x))/(1.+(-2.56586e-07*x)))  + sfbErr(pt,eta) + addsfbErr(pt,eta);
+      } else if( algo_ == JPM ){
+         sf = 0.87887*((1.+(0.0393348*x))/(1.+(0.0354499*x)))         + sfbErr(pt,eta) + addsfbErr(pt,eta);
+      } else if( algo_ == JPT ){
+         sf = 0.802097*((1.+(0.013219*x))/(1.+(0.0107842*x)))         + sfbErr(pt,eta) + addsfbErr(pt,eta);
       } else  sf =  1.0; 
       return sf;
     }
@@ -233,6 +242,12 @@ class BTagWeight2012
         sf = 0.726981*((1.+(0.253238*x))/(1.+(0.188389*x)))         + 2*sfbErr(pt,eta);
       } else if( algo_ == CSVT ){
         sf = 0.869965*((1.+(0.0335062*x))/(1.+(0.0304598*x)))       + 2*sfbErr(pt,eta);
+      } else if( algo_ == JPL ){
+         sf = 0.977721*((1.+(-1.02685e-06*x))/(1.+(-2.56586e-07*x)))  + 2*sfbErr(pt,eta);
+      } else if( algo_ == JPM ){
+         sf = 0.87887*((1.+(0.0393348*x))/(1.+(0.0354499*x)))         + 2*sfbErr(pt,eta);
+      } else if( algo_ == JPT ){
+         sf = 0.802097*((1.+(0.013219*x))/(1.+(0.0107842*x)))         + 2*sfbErr(pt,eta);
       } else  sf =  1.0;
       return sf;
     }
@@ -284,6 +299,43 @@ class BTagWeight2012
             else                        func =GetSFLight("mean","CSV","T",min,max,"ABCD");
 
             sf = func->Eval(x);
+      } else if( algo_ == JPL ){
+            if(fabs(eta)>=0.0 && fabs(eta) <=0.5 ) { min=0.0; max=0.5; }
+            if(fabs(eta)>0.5  && fabs(eta) <=1.0 ) { min=0.5; max=1.0; }
+            if(fabs(eta)>1.0  && fabs(eta) <=1.5 ) { min=1.0; max=1.5; }
+            if(fabs(eta)>1.5  )                    { min=1.5; max=2.4; }
+
+            if( min == 1.5 && pt>700 ) x = 700;
+            else if(pt>800)            x = 800;
+
+            if( sys_ == DWLight )       func =GetSFLight("min", "JP","L",min,max,"ABCD"); 
+            else if( sys_ == UPLight )  func =GetSFLight("max", "JP","L",min,max,"ABCD");
+            else                        func =GetSFLight("mean","JP","L",min,max,"ABCD"); 
+ 
+            sf = func->Eval(x);
+      } else if( algo_ == JPM ){
+            if(fabs(eta)>=0.0 && fabs(eta) <=0.8 ) { min=0.0; max=0.8; }
+            if(fabs(eta)>0.8  && fabs(eta) <=1.6 ) { min=0.8; max=1.6; }
+            if(fabs(eta)>1.6  )                    { min=1.6; max=2.4; }
+
+            if( min == 1.6 && pt>700 ) x = 700;
+            else if(pt>800)            x = 800;
+
+            if( sys_ == DWLight )       func =GetSFLight("min", "JP","M",min,max,"ABCD");  
+            else if( sys_ == UPLight )  func =GetSFLight("max", "JP","M",min,max,"ABCD");
+            else                        func =GetSFLight("mean","JP","M",min,max,"ABCD");
+
+            sf = func->Eval(x);
+      } else if( algo_ == JPT){
+            min=0.0; max=2.4;
+
+            if(pt>800)            x = 800;
+
+            if( sys_ == DWLight )       func =GetSFLight("min", "JP","T",min,max,"ABCD");
+            else if( sys_ == UPLight )  func =GetSFLight("max", "JP","T",min,max,"ABCD");
+            else                        func =GetSFLight("mean","JP","T",min,max,"ABCD");
+
+            sf = func->Eval(x);
       }else { 
          sf = 1.0; 
       }
@@ -306,6 +358,15 @@ class BTagWeight2012
       else if( algo_ == CSVT ){
 	 return 0.300256 + 0.00670841*x - ( 5.58098e-05)*pow(x,2) + (1.61114e-07)*pow(x,3) - (1.59428e-10)*pow(x,4);
       }
+      else if( algo_ == JPL ){
+         return 0.603982 +  0.00593039*x-4.75712e-05*pow(x,2)+1.51971e-07*pow(x,3)-1.72231e-10*pow(x,4);
+      }
+      else if( algo_ == JPM ){
+         return 0.292921 +  0.00888774*x-6.96231e-05*pow(x,2)+2.14774e-07*pow(x,3)-2.35523e-10*pow(x,4); 
+      }
+      else if( algo_ == JPT ){
+         return 0.0614554 + 0.00989396*x-7.59841e-05*pow(x,2)+2.27511e-07*pow(x,3)-2.40461e-10*pow(x,4); 
+      }
       else
       {
          return 0;
@@ -324,6 +385,15 @@ class BTagWeight2012
       else if( algo_ == CSVT ){
          return 0.0111637 + 0.00137814*x - (1.46838e-05)*pow(x,2) + (5.16447e-08 )*pow(x,3) - (5.75329e-11)*pow(x,4);
       }
+      else if( algo_ == JPL ){
+         return 0.205469 + 0.00378257*x-2.75037e-05*pow(x,2)+7.72587e-08*pow(x,3)-7.06732e-11*pow(x,4); 
+      } 
+      else if( algo_ == JPM ){
+         return 0.037048 + 0.00227715*x-1.85302e-05*pow(x,2)+5.78658e-08*pow(x,3)-5.99526e-11*pow(x,4); 
+      } 
+      else if( algo_ == JPT ){
+         return 0.00622736 + 0.000747324*x-5.34253e-06*pow(x,2)+1.41222e-08*pow(x,3)-1.2206e-11*pow(x,4);
+      }
       else
       {
         return 0;
@@ -333,24 +403,27 @@ class BTagWeight2012
     //MC l-tag efficiency
     double el(double pt, double eta)
     {
+      double x = pt;
+      if(pt <= 450) x=450;
+
       if( algo_ == CSVL ){
         if( pt <= 670 ){
-          if( fabs(eta) < 0.5) return 242534*(((1+(0.0182863*pt))+(4.50105e-05*(pt*pt)))/(1+(108569*pt)));
+          if( fabs(eta) < 0.5) return                          242534*(((1+(0.0182863*pt))+(4.50105e-05*(pt*pt)))/(1+(108569*pt)));
           else if( fabs(eta) >= 0.5 && fabs(eta) < 1.0) return 129.938*(((1+(0.0197657*pt))+(4.73472e-05*(pt*pt)))/(1+(55.2415*pt)));
           else if( fabs(eta) >= 1.0 && fabs(eta) < 1.5) return 592.214*(((1+(0.00671207*pt))+(6.46109e-05*(pt*pt)))/(1+(134.318*pt)));
           else if( fabs(eta) >= 1.5 && fabs(eta) < 2.4) return 93329*(((1+(0.0219705*pt))+(3.76566e-05*(pt*pt)))/(1+(18245.1*pt)));
-          else return 93329*(((1+(0.0219705*pt))+(3.76566e-05*(pt*pt)))/(1+(18245.1*pt)));
+          else return                                          93329*(((1+(0.0219705*pt))+(3.76566e-05*(pt*pt)))/(1+(18245.1*pt)));
         }else {
-          return 18168.8*(((1+(0.020356*670.0))+(2.73475e-05*(670.0*670.0)))/(1+(5239.42*670.0)));
+          return                                               18168.8*(((1+(0.020356*670.0))+(2.73475e-05*(670.0*670.0)))/(1+(5239.42*670.0)));
         }
       }else if( algo_ == CSVM ){
         if( pt <= 670){
-          if( fabs(eta) < 0.8 ) return (0.00967751+(2.54564e-05*pt))+(-6.92256e-10*(pt*pt));
+          if( fabs(eta) < 0.8 ) return                         (0.00967751+(2.54564e-05*pt))+(-6.92256e-10*(pt*pt));
           else if( fabs(eta) >= 0.8 && fabs(eta) < 1.6) return (0.00974141+(5.09503e-05*pt))+(2.0641e-08*(pt*pt));
           else if( fabs(eta) >= 1.6 && fabs(eta) < 2.4) return (0.013595+(0.000104538*pt))+(-1.36087e-08*(pt*pt));
-          else return (0.013595+(0.000104538*pt))+(-1.36087e-08*(pt*pt));
+          else return                                          (0.013595+(0.000104538*pt))+(-1.36087e-08*(pt*pt));
         }else {
-          return (0.0113428+(5.18983e-05*670.0))+(-2.59881e-08*(670.0*670.0));
+          return                                               (0.0113428+(5.18983e-05*670.0))+(-2.59881e-08*(670.0*670.0));
         }
       }else if( algo_ == CSVT){
         if( pt <= 670 ){
@@ -358,6 +431,17 @@ class BTagWeight2012
         }else {
           return 0.00315116*(((1+(-0.00769281*670.0))+(2.58066e-05*(670.0*670.0)))+(-2.02149e-08*(670.0*(670.0*670.0))));
         }
+      }else if( algo_ == JPL ){
+          if( fabs(eta) < 0.5) return                          0.0569628 + 0.000244068*x+6.00355e-07*pow(x,2)-6.55512e-09*pow(x,3)+1.10899e-11*pow(x,4); 
+          else if( fabs(eta) >= 0.5 && fabs(eta) < 1.0) return 0.0605528 + 0.000449032*x-1.71575e-06*pow(x,2)+4.17029e-09*pow(x,3)-4.43713e-12*pow(x,4); 
+          else if( fabs(eta) >= 1.0 && fabs(eta) < 1.5) return 0.0509243 + 0.000609117*x-3.11671e-06*pow(x,2)+6.90967e-09*pow(x,3)-3.6652e-12*pow(x,4);
+          else if( fabs(eta) >= 1.5 )                   return 0.0378447+ 0.000968621*x-7.69016e-06*pow(x,2)+3.00485e-08*pow(x,3)-3.82942e-11*pow(x,4);
+      }else if( algo_ == JPM ){
+          if( fabs(eta) < 0.8 ) return                         0.0107595-7.88544e-05*x+1.11219e-06*pow(x,2)-3.92981e-09*pow(x,3)+ 4.54102e-12*pow(x,4);
+          else if( fabs(eta) >= 0.8 && fabs(eta) < 1.6) return 0.015151-0.000183428*x+1.60685e-06*pow(x,2)-4.97918e-09*pow(x,3)+5.29543e-12*pow(x,4);
+          else if( fabs(eta) >= 1.6 )                   return 0.00994318 -0.000108582*x+9.5121e-07*pow(x,2)-1.93087e-09*pow(x,3)+7.01527e-13*pow(x,4);
+      }else if( algo_ == JPT){
+          return 0.00195467-4.84053e-05*x+5.12481e-07*pow(x,2)-1.76104e-09*pow(x,3)+2.0542e-12*pow(x,4);
       }else {
         return 0;
       }
@@ -897,6 +981,60 @@ const double BTagWeight2012::addSFb_error[BTagWeight2012::nalgo][BTagWeight2012:
           0.139139,
           0.139139,
           0.139139
+  },
+  { // JPL
+          0.0944602,
+          0.0800161,
+          0.0692133,
+          0.0612341,
+          0.0555137,
+          0.0516461,
+          0.0486745,
+          0.0488678,
+          0.0554401,
+          0.0720018,
+          0.085608,
+          0.074101,
+          -0.0169027,
+          -0.314305,
+          -0.314305,
+          -0.314305,
+  },
+  { // JPM
+          0.0819336,
+          0.0943159,
+          0.102145,
+          0.107561,
+          0.111475,
+          0.114329,
+          0.117069,
+          0.118242,
+          0.114578,
+          0.0940826,
+          0.0464492,
+          -0.0281446,
+          -0.143014,
+          -0.571985,
+          -0.571985,
+          -0.571985,
+  },
+  { // JPT
+          0.134693,
+          0.119969,
+          0.109016,
+          0.100533,
+          0.0937919,
+          0.088359,
+          0.082101,
+          0.0765238,
+          0.0728476,
+          0.0751305,
+          0.0803324,
+          0.0663617,
+          -0.0545463,
+          -0.786167,    
+          -0.786167,    
+          -0.786167,    
   }
 };
 
@@ -957,6 +1095,63 @@ const double BTagWeight2012::SFb_error[BTagWeight2012::nalgo][BTagWeight2012::nb
           0.0575776,
           0.0769779,
           0.0898199
+  },
+  //JPL
+  {
+ 0.0456879,
+ 0.0229755,
+ 0.0229115,
+ 0.0219184,
+ 0.0222935,
+ 0.0189195,
+ 0.0237255,
+ 0.0236069,
+ 0.0159177,
+ 0.0196792,
+ 0.0168556,
+ 0.0168882,
+ 0.0348084,
+ 0.0355933,
+ 0.0476836,
+ 0.0500367
+  },
+   //JPM
+  {
+ 0.0584144,
+ 0.0304763,
+ 0.0311788,
+ 0.0339226,
+ 0.0343223,
+ 0.0303401,
+ 0.0329372,
+ 0.0339472,
+ 0.0368516,
+ 0.0319189,
+ 0.0354756,
+ 0.0347098,
+ 0.0408868,
+ 0.0415471,
+ 0.0567743,
+ 0.0605397
+  },
+   //JPT
+  {
+ 0.0673183,
+ 0.0368276,
+ 0.037958,
+ 0.0418136,
+ 0.0463115,
+ 0.0409334,
+ 0.0436405,
+ 0.0419725,
+ 0.0451182,
+ 0.0394386,
+ 0.0423327,
+ 0.0393015,
+ 0.0499883,
+ 0.0509444,
+ 0.0780023,
+ 0.0856582
   }
 };
 
