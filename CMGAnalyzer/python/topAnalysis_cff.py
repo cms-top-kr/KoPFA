@@ -58,6 +58,24 @@ bTagSets = cms.untracked.VPSet(
         cutValue = cms.untracked.double(0.898),
         isCutMin = cms.untracked.bool(True),
     ),
+    cms.untracked.PSet(
+        algo = cms.untracked.string("jetProbabilityBJetTags"),
+        name = cms.untracked.string("JPL"),
+        cutValue = cms.untracked.double(0.275),
+        isCutMin = cms.untracked.bool(True),
+    ),
+    cms.untracked.PSet(
+        algo = cms.untracked.string("jetProbabilityBJetTags"),
+        name = cms.untracked.string("JPM"),
+        cutValue = cms.untracked.double(0.545),
+        isCutMin = cms.untracked.bool(True),
+    ),
+    cms.untracked.PSet(
+        algo = cms.untracked.string("jetProbabilityBJetTags"),
+        name = cms.untracked.string("JPT"),
+        cutValue = cms.untracked.double(0.790),
+        isCutMin = cms.untracked.bool(True),
+    ),
 #    cms.untracked.PSet(
 #        algo = cms.untracked.string("simpleSecondaryVertexHighEffBJetTags"),
 #        name = cms.untracked.string("SSVHEM"),
