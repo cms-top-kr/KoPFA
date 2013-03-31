@@ -435,11 +435,11 @@ class BTagWeight2012
           if( fabs(eta) < 0.5) return                          0.0569628 + 0.000244068*x+6.00355e-07*pow(x,2)-6.55512e-09*pow(x,3)+1.10899e-11*pow(x,4); 
           else if( fabs(eta) >= 0.5 && fabs(eta) < 1.0) return 0.0605528 + 0.000449032*x-1.71575e-06*pow(x,2)+4.17029e-09*pow(x,3)-4.43713e-12*pow(x,4); 
           else if( fabs(eta) >= 1.0 && fabs(eta) < 1.5) return 0.0509243 + 0.000609117*x-3.11671e-06*pow(x,2)+6.90967e-09*pow(x,3)-3.6652e-12*pow(x,4);
-          else if( fabs(eta) >= 1.5 )                   return 0.0378447+ 0.000968621*x-7.69016e-06*pow(x,2)+3.00485e-08*pow(x,3)-3.82942e-11*pow(x,4);
+          else                                          return 0.0378447+ 0.000968621*x-7.69016e-06*pow(x,2)+3.00485e-08*pow(x,3)-3.82942e-11*pow(x,4);
       }else if( algo_ == JPM ){
           if( fabs(eta) < 0.8 ) return                         0.0107595-7.88544e-05*x+1.11219e-06*pow(x,2)-3.92981e-09*pow(x,3)+ 4.54102e-12*pow(x,4);
           else if( fabs(eta) >= 0.8 && fabs(eta) < 1.6) return 0.015151-0.000183428*x+1.60685e-06*pow(x,2)-4.97918e-09*pow(x,3)+5.29543e-12*pow(x,4);
-          else if( fabs(eta) >= 1.6 )                   return 0.00994318 -0.000108582*x+9.5121e-07*pow(x,2)-1.93087e-09*pow(x,3)+7.01527e-13*pow(x,4);
+          else                                          return 0.00994318 -0.000108582*x+9.5121e-07*pow(x,2)-1.93087e-09*pow(x,3)+7.01527e-13*pow(x,4);
       }else if( algo_ == JPT){
           return 0.00195467-4.84053e-05*x+5.12481e-07*pow(x,2)-1.76104e-09*pow(x,3)+2.0542e-12*pow(x,4);
       }else {
