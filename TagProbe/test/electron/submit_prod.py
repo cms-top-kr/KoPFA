@@ -37,9 +37,9 @@ cmsRun prod_cfg.py
 RETVAL=$?
 
 if [ $RETVAL == 0 ]; then
-    echo run_prod $DATASET $SECTION $TRIGGERMODE >> log/prod_finish.log
+    echo run_prod $DATASET $SECTION $BEGIN $END $TRIGGERMODE >> log/prod_finish.log
 else
-    echo run_prod $DATASET $SECTION $TRIGGERMODE >> log/prod_error.log
+    echo run_prod $DATASET $SECTION $BEGIN $END $TRIGGERMODE >> log/prod_error.log
 fi
 
 exit $RETVAL
