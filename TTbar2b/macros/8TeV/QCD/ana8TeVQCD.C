@@ -41,7 +41,7 @@ void ana(string decayMode, string imageOutDir = "test", TCut isoCut)
   gSystem->Load("libDataFormatsPatCandidates.so");
 
   gSystem->Load("libPhysicsToolsRooStatsCms.so");
-  gSystem->CompileMacro("TopAnalyzerLite.cc", "k");
+  gSystem->CompileMacro("$CMSSW_BASE/src/KoPFA/CommonTools/scripts/TopAnalyzerLite.cc", "k");
 
   TopAnalyzerLite* analyzer = new TopAnalyzerLite(decayMode, imageOutDir);
 
@@ -82,7 +82,7 @@ void ana(string decayMode, string imageOutDir = "test", TCut isoCut)
   //addMonitorPlot
   //analyzer->addMonitorPlot("nbJet", "@bjets.size()", "b-Jet Multiplicity;b-Jet Multiplicity;Events", 5, 0, 5, 0.1, 3,false);
   //use common histogram names for top analysis
-  gROOT->ProcessLine(".L addVariables.h");
+  gROOT->ProcessLine(".L ../addVariables.h");
   addTopVariables(analyzer); //add Top analysis related variables for plotting
 
   //analyzer->setScanVariables("RUN:LUMI:EVENT:ZMass:@jetspt30.size():MET");
