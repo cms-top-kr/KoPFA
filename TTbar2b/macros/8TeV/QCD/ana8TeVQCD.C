@@ -41,7 +41,7 @@ void ana(string decayMode, string imageOutDir = "test", TCut isoCut)
   gSystem->Load("libDataFormatsPatCandidates.so");
 
   gSystem->Load("libPhysicsToolsRooStatsCms.so");
-  gSystem->CompileMacro("$CMSSW_BASE/src/KoPFA/CommonTools/scripts/TopAnalyzerLite.cc", "k");
+  gSystem->CompileMacro("$CMSSW_BASE/src/KoPFA/CommonTools/macros/TopAnalyzerLite.cc", "k");
 
   TopAnalyzerLite* analyzer = new TopAnalyzerLite(decayMode, imageOutDir);
 
