@@ -1,0 +1,31 @@
+For isolation cone size 0.3 and isolation cut value < 0.15 for both muon and electron
+
+Step_2
+ee decay--------------------------------
+fQCD= 2.64717
+isoEff= 0.248291
+sf= 0.657269
+mm decay--------------------------------
+fQCD= 1.13135
+isoEff= 0.0248755
+sf= 0.0281428
+em decay--------------------------------
+fQCD= 1.51207
+isoEff= 0.042012
+sf= 0.0635251
+
+For isolation cone size 0.4 and isolation cut value < 0.20 for both muon and electron
+
+Step_2
+ee decay--------------------------------
+fQCD= 2.68874
+isoEff= 0.25277
+sf= 0.679633
+mm decay--------------------------------
+fQCD= 1.13887
+isoEff= 0.0269048
+sf= 0.030641
+em decay--------------------------------
+fQCD= 1.52099
+isoEff= 0.04352
+sf= 0.0661937
