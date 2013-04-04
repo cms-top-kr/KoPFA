@@ -1,22 +1,6 @@
 import FWCore.ParameterSet.Config as cms
 import os
 
-def loadDataset(dataset):
-    files = []
-    for line in open("/afs/cern.ch/user/j/jhgoh/public/sources/CMG/V5_13_0/%s.txt" % dataset).readlines():
-        line = line.strip()
-        if '.root' not in line: continue
-        if line[0] == '#': continue
-
-        files.append(line)
-    return files
-
-section = int(os.environ['SECTION'])
-begin = int(os.environ['BEGIN'])
-end = int(os.environ['END'])
-dataset = os.environ['DATASET']
-triggerMode = os.environ['TRIGGERMODE']
-
 process = cms.Process("TagProbe")
 
 ## Include ##
@@ -29,19 +13,10 @@ process.MessageLogger.cerr.FwkReport.reportEvery = 10000
 
 ## Input and output ##
 process.source = cms.Source("PoolSource", fileNames = cms.untracked.vstring(),)
-process.source.fileNames = loadDataset(dataset)[begin:end]
-print dataset, section
-print process.source.fileNames[0]
-print process.source.fileNames[-1]
-
-if 'Run' in dataset:
-    from CMGTools.Common.Tools.applyJSON_cff import *
-    json = '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions12/8TeV/Prompt/Cert_190456-208686_8TeV_PromptReco_Collisions12_JSON.txt'
-    applyJSON(process, json)
+process.source.fileNames = ['/store/cmst3/user/cmgtools/CMG//SingleElectron/Run2012D-PromptReco-v1/AOD/PAT_CMG_V5_12_0/cmgTuple_1.root',]
 
 process.TFileService = cms.Service("TFileService",
-    fileName = cms.string("ntuple/unmerged/ntuple_%s_%03d.root" % (dataset, section))
-    #fileName = cms.string("tnpTree-TTJets-dR05s.root"),
+    fileName = cms.string("ntuple.root"),
 )
 
 process.load("HLTrigger.HLTfilters.hltHighLevel_cfi")
@@ -377,14 +352,6 @@ process.goodJets = cms.EDFilter("CMGCleanJetSelector",
     maxNumber = cms.uint32(999),
 )
 
-if triggerMode == 'DoubleElectron':
-    process.hltHighLevel.HLTPaths = ["HLT_Ele17_CaloIdVT_CaloIsoVT_TrkIdT_TrkIsoVT_Ele8_Mass50_v*",]
-    # Require tag to matched to hard leg of HLT_Ele17_CaloIdVT_CaloIsoVT_TrkIdT_TrkIsoVT_Ele8_Mass50_v* path
-    process.tag.cut = process.tag.cut.value() + ' && !triggerObjectMatchesByFilter("hltEle17CaloIdVTCaloIsoVTTrkIdTTrkIsoVTEle8TrackIsoFilter").empty()'
-else:
-    process.hltHighLevel.HLTPaths = ["HLT_Ele27_WP80_v*",]
-    process.tag.cut = process.tag.cut.value() + ' && !triggerObjectMatchesByPath("HLT_Ele27_WP80_v*", 1, 0).empty()'
-
 process.p00 = cms.Path(
     process.hltHighLevel * process.goodOfflinePrimaryVertices * process.PUweight
   * process.patMuonsWithRelIso * process.goodMuons
@@ -495,3 +462,42 @@ process.pB2G = cms.Path(
   * process.zS * process.tnpS
   * process.zSTrg * process.tnpSTrg
 )
+
+def loadDataset(dataset):
+    files = []
+    for line in open("/afs/cern.ch/user/j/jhgoh/public/sources/CMG/V5_13_0/%s.txt" % dataset).readlines():
+        line = line.strip()
+        if '.root' not in line: continue
+        if line[0] == '#': continue
+
+        files.append(line)
+    return files
+
+if 'DATASET' in os.environ:
+    section = int(os.environ['SECTION'])
+    begin = int(os.environ['BEGIN'])
+    end = int(os.environ['END'])
+    dataset = os.environ['DATASET']
+    triggerMode = os.environ['TRIGGERMODE']
+
+    process.source.fileNames = loadDataset(dataset)[begin:end]
+    print dataset, section
+    print process.source.fileNames[0]
+    print process.source.fileNames[-1]
+
+    process.TFileService.fileName = cms.string("ntuple/unmerged/ntuple_%s_%03d.root" % (dataset, section))
+
+    if 'Run' in dataset:
+        from CMGTools.Common.Tools.applyJSON_cff import *
+        json = '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions12/8TeV/Prompt/Cert_190456-208686_8TeV_PromptReco_Collisions12_JSON.txt'
+        applyJSON(process, json)
+
+    if triggerMode == 'DoubleElectron':
+        process.hltHighLevel.HLTPaths = ["HLT_Ele17_CaloIdVT_CaloIsoVT_TrkIdT_TrkIsoVT_Ele8_Mass50_v*",]
+        # Require tag to matched to hard leg of HLT_Ele17_CaloIdVT_CaloIsoVT_TrkIdT_TrkIsoVT_Ele8_Mass50_v* path
+        process.tag.cut = process.tag.cut.value() + ' && !triggerObjectMatchesByFilter("hltEle17CaloIdVTCaloIsoVTTrkIdTTrkIsoVTEle8TrackIsoFilter").empty()'
+    else:
+        process.hltHighLevel.HLTPaths = ["HLT_Ele27_WP80_v*",]
+        process.tag.cut = process.tag.cut.value() + ' && !triggerObjectMatchesByPath("HLT_Ele27_WP80_v*", 1, 0).empty()'
+
+
