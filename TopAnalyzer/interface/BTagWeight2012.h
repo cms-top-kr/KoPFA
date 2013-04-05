@@ -410,7 +410,7 @@ class BTagWeight2012
           if( fabs(eta) < 0.5) return                          0.145097-0.00210096 *x + (1.62428e-05)*pow(x,2) - (4.64838e-08)*pow(x,3) + (4.49925e-11)*pow(x,4); 
           else if( fabs(eta) >= 0.5 && fabs(eta) < 1.0) return 0.117715-0.00119443*x + (9.19537e-06)*pow(x,2) - (2.52591e-08)*pow(x,3) + (2.33342e-11)*pow(x,4); 
           else if( fabs(eta) >= 1.0 && fabs(eta) < 1.5) return 0.241778-0.00373136*x + (2.90526e-05 )*pow(x,2) - (8.91043e-08)*pow(x,3) + (9.52333e-11)*pow(x,4); 
-          else                                          return 0.322078-0.00235443*x + (1.43813e-05)*pow(x,2) - (3.68999e-08)*pow(x,3) + (3.391e-11)*pow(x,4)
+          else                                          return 0.322078-0.00235443*x + (1.43813e-05)*pow(x,2) - (3.68999e-08)*pow(x,3) + (3.391e-11)*pow(x,4);
       }else if( algo_ == CSVM ){
           if( fabs(eta) < 0.8 ) return                         0.0130716- 0.000125448*x +(1.28432e-06)*pow(x,2) - (3.92256e-09)*pow(x,3) - (4.04182e-12)*pow(x,4); 
           else if( fabs(eta) >= 0.8 && fabs(eta) < 1.6) return 0.0155075- 0.000195538*x +(2.02484e-06)*pow(x,2) - (7.22242e-09)*pow(x,3) + (8.75219e-12)*pow(x,4);
