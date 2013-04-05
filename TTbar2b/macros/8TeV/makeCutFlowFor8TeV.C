@@ -5,24 +5,24 @@
 TFile* fEE, * fME, * fMM;
 TString outDirName = ".";
 
-const int nBkg = 7;
+const int nBkg = 8;
 const char* bkgNames[] = {//"hMCSig_TTbarbb",
  "hMC_TTbarcc","hMC_TTbarll","hMC_TTbarOthers","hMC_Wl", "hMC_VV", "hMC_SingleTop", "hMC_DYll"
-//,"hDataBkg_QCD"
+,"hDataBkg_QCD"
 };
 const char* bkgLabels[] = {//"$t\\bar{t}+bb$",
   "$t\\bar{t}+cc$", "$t\\bar{t}+LF$","$t\\bar{t}~ others$","$W \\rightarrow l\\nu$", "Dibosons", "Single top", "$Z/\\gamma* \\rightarrow ll$"
-//,"QCD"
+,"QCD"
 };
 const Color_t color_sig = kBlue+2;
 const int style_sig = 1001;
 const Color_t color[] = {//kRed+3,
     kOrange+2,kRed,kRed-7,kGreen-3,kGray+4,kMagenta,kAzure-2
-//,kYellow
+,kYellow
 };
 const int     style[] = {//1001,
 1001,  1001,  1001,    1001,   1001,    1001,    1001
-//,   1001
+,   1001
 };
 
 const int nSig = 1;
