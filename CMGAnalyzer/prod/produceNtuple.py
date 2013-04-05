@@ -11,9 +11,10 @@ from cmg2kcms_cfg import *
 
 input = sys.argv[1]
 
-#mclist = ["ZJets","ZJets10To50","WJetsToLNu", "WW", "WZ", "ZZ","TTbarTuneZ2"]
-mclist = ["WJetsToLNu", "WW", "WZ", "ZZ","TTbarTuneZ2"]
-mclist += ["SingleToptW","SingleTopBartW","TTH","TTbarFullLepMGDecays"]
+#mclist = ["TTbarFullLepMGDecays"]
+mclist = ["ZJets","ZJets10To50","WJetsToLNu", "WW", "WZ", "ZZ","TTbarTuneZ2"]
+#mclist = ["WJetsToLNu", "WW", "WZ", "ZZ","TTbarTuneZ2"]
+mclist += ["SingleToptW","SingleTopBartW","TTH","TTbarPowheg","TTbarMcatnlo","TTbarFullLepMGDecays"]
 
 rdlist = ["Run2012Av1_MuMu","Run2012Av2_MuMu","Run2012B_MuMu","Run2012Cv1_MuMu","Run2012Cv2_MuMu","Run2012Cv3_MuMu","Run2012Dv1_MuMu"]
 rdlist += ["Run2012Av1_MuEl","Run2012Av2_MuEl","Run2012B_MuEl","Run2012Cv1_MuEl","Run2012Cv2_MuEl","Run2012Cv3_MuEl","Run2012Dv1_MuEl"]
@@ -33,6 +34,10 @@ samplePath["SingleToptW"]     ="KoPFA.CommonTools.Sources.CMG.V5_13_0.Summer12.c
 samplePath["SingleTopBartW"]  ="KoPFA.CommonTools.Sources.CMG.V5_13_0.Summer12.cmgTuple_TbartW_cff"
 samplePath["TTH"]              ="KoPFA.CommonTools.Sources.CMG.V5_13_0.Summer12.cmgTuple_TTH_HToBB_M125_cff"
 samplePath["TTbarFullLepMGDecays"]     ="KoPFA.CommonTools.Sources.CMG.V5_13_0.Summer12.patTuple_TTbarFullLepMGDecays_cff"
+
+samplePath["TTbarPowheg"]     ="KoPFA.CommonTools.Sources.CMG.V5_13_0.Summer12.patTuple_TTbarMcatnlo_cff"
+samplePath["TTbarMcatnlo"]     ="KoPFA.CommonTools.Sources.CMG.V5_13_0.Summer12.patTuple_TTbarPowheg_cff"
+
 ### DATA ####
 samplePath["Run2012Av1_MuMu"]    ="KoPFA.CommonTools.Sources.CMG.V5_13_0.Run2012.cmgTuple_Run2012Av1_MuMu_cff"
 samplePath["Run2012Av1_ElEl"]    ="KoPFA.CommonTools.Sources.CMG.V5_13_0.Run2012.cmgTuple_Run2012Av1_ElEl_cff"
