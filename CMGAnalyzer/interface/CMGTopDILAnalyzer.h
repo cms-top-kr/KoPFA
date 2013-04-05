@@ -13,7 +13,7 @@
 //
 // Original Author:  Tae Jeong Kim,40 R-A32,+41227678602,
 //         Created:  Fri Jun  4 17:19:29 CEST 2010
-// $Id: CMGTopDILAnalyzer.h,v 1.28 2013/03/31 14:12:43 youngjo Exp $
+// $Id: CMGTopDILAnalyzer.h,v 1.29 2013/03/31 14:52:47 youngjo Exp $
 //
 //
 
@@ -1303,10 +1303,17 @@ class CMGTopDILAnalyzer : public edm::EDFilter {
       w = 0.710834+4.27287*x-14.9838*pow(x,2)+23.2877*pow(x,3)-12.5533*pow(x,4);
     }
 */
+/* Used until Mar27
     if(i == 2){
       w = 0.626494+2.99705*x-6.23285*pow(x,2)+7.03791*pow(x,3)-3.34439*pow(x,4);
     }else if( i > 2 ){
       w = 0.726696+3.50276*x-4.04898*pow(x,2)+0.54504*pow(x,3)+0.606*pow(x,4);
+    }
+*/
+    if(i == 2){
+      w = 0.627903+3.03597*x-6.44154*pow(x,2)+7.32543*pow(x,3)-3.58111*pow(x,4);
+    }else if( i > 2 ){
+      w = 0.722822+3.71973*x-5.90078*pow(x,2)+3.82351*pow(x,3)-1.53488*pow(x,4);
     }
 
     return w;
