@@ -2,6 +2,58 @@
 #include <iomanip>
 #include "tdrstyle.C"
 
+////////////////
+ const char* ZMass[2] =  	    {"ZMass", 	   "Dilepton mass;Dilepton Mass (GeV/c^{2}};Events/5 GeV/c^{2}" };
+ const char* ZMassFinal[2] =    {"ZMassFinal",   "Dilepton mass;Dilepton Mass (GeV/c^{2}};Events/40 GeV/c^{2}"};
+                 
+ const char* nJetlog[2] =  	    {"nJetlog", 	   "Jet Multiplicity;Jet Multiplicity;Events"      };
+ const char* nVertexlog[2] =    {"nVertexlog",   "Vertex Multiplicity;Vertex Multiplicity;Events"};
+ const char* nVertex[2] =  	    {"nVertex", 	   "Vertex Multiplicity;Vertex Multiplicity;Events"};
+ const char* METlog[2] =  	    {"METlog", 	   "Missing E_{T};Missing E_{T} (GeV};Events"      };
+ const char* nJet[2] =  	    {"nJet", 	   "Jet Multiplicity;Jet Multiplicity;Events"      };
+ const char* MET[2] =  	    {"MET", 	   "Missing E_{T};Missing E_{T} (GeV};Events"      };
+ const char* METQCD[2] =  	    {"METQCD", 	   "Missing E_{T};Missing E_{T} (GeV};Events"      };
+                 
+ const char* pt1[2] =  	    {"pt1", 	   "Leading lepton p_{T};p_{T} (GeV/c};Events/5 GeV/c"           };
+ const char* pt2[2] =  	    {"pt2", 	   "Second leading lepton p_{T};p_{T} (GeV/c};Events/5 GeV/c"    };
+ const char* eta1[2] =  	    {"eta1", 	   "Leading #eta;#eta;Events/0.2"                                };
+ const char* eta2[2] =  	    {"eta2", 	   "Second leading lepton #eta;#eta;Events/0.2"                  };
+                 
+ const char* jet1pt30[2] =       {"jet1pt30", 	 	 "Leading jet p_{T};p_{T} (GeV/c};Events/10 GeV/c"       };
+ const char* jet1eta30[2] =      {"jet1eta30",   	 "Leading #eta;#eta;Events/0.2"                          };
+ const char* jet1phi30[2] =      {"jet1phi30",   	 "Leading #phi;#phi (Radian};Events/0.2 rad."            };
+                 
+ const char* jet2pt30[2] =       {"jet2pt30", 	 	 "Second leading jet p_{T};p_{T} (GeV/c};Events/10 GeV/c"};
+ const char* jet2eta30[2] =      {"jet2eta30",   	 "Second leading jet #eta;#eta;Events/0.2"               };
+ const char* jet2phi30[2] =      {"jet2phi30",   	 "Second leading jet #phi;#phi (Radian};Events/0.2 rad." };
+                 
+ const char* jet3pt30[2] =       {"jet3pt30", 	 	 "Third jet p_{T};p_{T} (GeV/c};Events/10 GeV/c"  };
+ const char* jet3eta30[2] =      {"jet3eta30",   	 "Third jet #eta;#eta;Events/0.2"                 };
+ const char* jet3phi30[2] =      {"jet3phi30",   	 "Third jet #phi;#phi (Radian};Events/0.2 rad."   };
+                 
+ const char* jet4pt30[2] =       {"jet4pt30", 	 	 "Fourth jet p_{T};p_{T} (GeV/c};Events/10 GeV/c" };
+ const char* jet4eta30[2] =      {"jet4eta30", 	 "Fourth jet #eta;#eta;Events/0.2"                };
+ const char* jet4phi30[2] =      {"jet4phi30", 	 "Fourth jet #phi;#phi (Radian};Events/0.2 rad."  };
+                 
+ const char* Iso03lep1[2] =      {"Iso03lep1", 	 "relIso03lep1;relIso;Events"};
+ const char* Iso03lep2[2] =      {"Iso03lep2", 	 "relIso03lep2;relIso;Events"};
+                 
+ const char* nbJet30_CSVL[2] =   {"nbJet30_CSVL", 	 "b-Jet Multiplicity;b-Jet Multiplicity (CSVL};Events"};
+ const char* nbJet30_CSVM[2] =   {"nbJet30_CSVM", 	 "b-Jet Multiplicity;b-Jet Multiplicity (CSVM};Events"};
+ const char* nbJet30_CSVT[2] =   {"nbJet30_CSVT", 	 "b-Jet Multiplicity;b-Jet Multiplicity (CSVT};Events"};
+ const char* nbJet30_JPM[2] =    {"nbJet30_JPM", 	 "b-Jet Multiplicity;b-Jet Multiplicity (JPM};Events"};
+ const char* nbJet30_JPT[2] =    {"nbJet30_JPT", 	 "b-Jet Multiplicity;b-Jet Multiplicity (JPT};Events"};
+                 
+ const char* addjet1_bDisCSV[2] = {"addjet1_bDisCSV", 	 "b-Discriminator; b-Discriminator (CSV};Events/0.1"};
+ const char* addjet2_bDisCSV[2] = {"addjet2_bDisCSV", 	 "b-Discriminator; b-Discriminator (CSV};Events/0.1"};
+                 
+ const char* addjet1_bDisJP[2] = {"addjet1_bDisJP", 	 "b-Discriminator; b-Discriminator (JP};Events"};
+ const char* addjet2_bDisJP[2] = {"addjet2_bDisJP", 	 "b-Discriminator; b-Discriminator (JP};Events"};
+                 
+ const char* addjet1_secvtxm[2] = {"addjet1_secvtxm", 	 "Secondary Vertex Mass;Secondary Vertex Mass (GeV};Events"};
+ const char* addjet2_secvtxm[2] = {"addjet2_secvtxm", 	 "Secondary Vertex Mass;Secondary Vertex Mass (GeV};Events"};
+//////////////////
+
 TFile* fEE, * fME, * fMM;
 TString outDirName = ".";
     
@@ -30,16 +82,19 @@ const char* sigNames[] = {"hMCSig_TTbarbb"};//"hMCSig_TTbarH125"};
 const char* sigLabels[] = {"t#bar{t}+bb"};//"t#bar{t}+H"};
 bool stackSig = true;
 
-void cutStepPlots(const char* cutStep, const char* histName, const char* histTitle,
+void cutStepPlots(const char* cutStep, const char* histNameTitle[2],
                   double minY, double maxY, bool doLogY);
+
+//void cutStepPlots(const char* cutStep, const char* histName, const char* histTitle,
+//                  double minY, double maxY, bool doLogY);
 TLegend* buildLegend();
 TPaveText* getHeader(double lumi, TString channelName = "");
 
-void makePlotsFor8TeV(TString noteNumber = "TTBB_26Mar_CSVT_Plots")
+void makePlotsFor8TeV(TString noteNumber = "TTBB_CSVT_Plots")
 {
   setTDRStyle();
 
-  TString path = "TTBB_26Mar_CSVT"; 
+  TString path = "TTBB_CSVT"; 
 
   fEE = TFile::Open(path+"/ElEl/ElEl.root");
   fME = TFile::Open(path+"/MuEl/MuEl.root");
@@ -51,35 +106,36 @@ void makePlotsFor8TeV(TString noteNumber = "TTBB_26Mar_CSVT_Plots")
   gSystem->Exec("mkdir "+outDirName);
 /////////////
 
-  cutStepPlot2l();
-  cutStepPlot2();
+
+  plot(1,ZMass); plot(1,nJet); plot(1,pt1); plot(1,pt2); plot(1,eta1); plot(1,eta2); plot(1,Iso03lep1); plot(1,Iso03lep2); plot(1,nVertex); plot(1,MET);
+  plot(2,ZMass); plot(2,nJet); plot(2,pt1); plot(2,pt2); plot(2,eta1); plot(2,eta2); plot(2,Iso03lep1); plot(2,Iso03lep2); plot(2,nVertex); plot(2,MET);
+  plot(3,ZMass); plot(3,nJet); plot(3,pt1); plot(3,pt2); plot(3,eta1); plot(3,eta2); plot(3,Iso03lep1); plot(3,Iso03lep2); plot(3,nVertex); plot(3,MET);
+  plot(4,nJet); //plot(4,nbJet30_CSVM); 
+  plot(4,nbJet30_CSVT); plot(4,ZMass); plot(4,MET); plot(4,nVertex); plot(4,jet1pt30); plot(4,jet2pt30); plot(4,jet3pt30); plot(4,jet4pt30); plot(4,jet1eta30); plot(4,jet2eta30); plot(4,jet3eta30); plot(4,jet4eta30); plot(4,jet1phi30); plot(4,jet2phi30); plot(4,jet3phi30); plot(4,jet4phi30); plot(4,jet4phi30);
+
+  plot(5,nJet); plot(5,addjet1_bDisCSV); plot(5,addjet2_bDisCSV); //plot(5,bJet30_CSVM); 
+  plot(5,nbJet30_CSVT); plot(5,ZMass); plot(5,MET); plot(5,nVertex); plot(5,jet1pt30); plot(5,jet2pt30); plot(5,jet3pt30); plot(5,jet4pt30); plot(5,jet1eta30); plot(5,jet2eta30); plot(5,jet3eta30); plot(5,jet4eta30); plot(5,jet1phi30); plot(5,jet2phi30); plot(5,jet3phi30); plot(5,jet4phi30); plot(5,jet4phi30); plot(5,addjet1_bDisJP); plot(5,addjet2_bDisJP);
+
+
+
+
 }
-void cutStepPlot2l()
+/*
+    S1("ZMass,nJet,pt1,pt2,eta1,eta2,Iso03lep1,Iso03lep2,nVertex,MET");
+    S2("ZMass,nJet,pt1,pt2,eta1,eta2,Iso03lep1,Iso03lep2,nVertex,MET");
+    S3("ZMass,nJet,pt1,pt2,eta1,eta2,Iso03lep1,Iso03lep2,nVertex,MET");
+    S4("nJet,nbJet30_CSVM,nbJet30_CSVT,ZMass,MET,nVertex,jet1pt30,jet2pt30,jet3pt30,jet4pt30,jet1eta30,jet2eta30,jet3eta30,jet4eta30,jet1phi30,jet2phi30,jet3phi30,jet4phi30,jet4phi30");
+    S5("nJet,addjet1_bDisCSV,addjet2_bDisCSV,bJet30_CSVM,nbJet30_CSVT,ZMass,MET,nVertex,jet1pt30,jet2pt30,jet3pt30,jet4pt30,jet1eta30,jet2eta30,jet3eta30,jet4eta30,jet1phi30,jet2phi30,jet3phi30,jet4phi30,jet4phi30,addjet1_bDisJP,addjet2_bDisJP");
+
+  analyzer->addCutStep(cut, "addjet1_bDisCSV", 0.5, "jets_bDisCSVweight[csvd_jetid[2]]");
+  analyzer->addCutStep(cut, "addjet2_bDisCSV", 0.5, "jets_bDisCSVweight[csvd_jetid[3]]");
+*/
+void plot(int S, const char* histNameTitle[2])
 {
-      cutStepPlots("Step_4", "nbJet30_CSVT", "b-Jet Multiplicity (CSVT)", 0.01,   2000, false);
-
-      cutStepPlots("Step_5", "nbJet30_CSVT", "b-Jet Multiplicity (CSVT)", 0.01,   2000, false); 
-
-      cutStepPlots("Step_5", "nbJet30_CSVT", "b-Jet Multiplicity (CSVT)", 0.01,   2000, false);
-      cutStepPlots("Step_5", "addjet1_bDisCSV", "b-Discriminator (CSV)", 0.01,   2000, false);
-      cutStepPlots("Step_5", "addjet2_bDisCSV", "b-Discriminator (CSV)", 0.01,   2000, false);
-//////////////
+      TString cutStep = Form("Step_%d",S); 
+      cutStepPlots(cutStep.Data(), histNameTitle, 0.01,   2000, false);
+      cutStepPlots(cutStep.Data(), histNameTitle, 0.01,   2000, true);
 }
-
-
-void cutStepPlot2()
-{
-
-      cutStepPlots("Step_4", "nbJet30_CSVT", "b-Jet Multiplicity (CSVT)", 0.01,   2000, true);
-
-      cutStepPlots("Step_5", "nbJet30_CSVT", "b-Jet Multiplicity (CSVT)", 0.01,   2000, true);
-
-      cutStepPlots("Step_5", "nbJet30_CSVT", "b-Jet Multiplicity (CSVT)", 0.01,   2000, true);
-      cutStepPlots("Step_5", "addjet1_bDisCSV", "b-Discriminator (CSV)", 0.01,   2000, true);
-      cutStepPlots("Step_5", "addjet2_bDisCSV", "b-Discriminator (CSV)", 0.01,   2000, true);
-//////////////
-}
-
 
 void rescalePlots(TString cutStep, TString bkgName, TString histNamesStr, double mumuScale, double elelScale, double muelScale)
 {
@@ -102,9 +158,14 @@ void rescalePlots(TString cutStep, TString bkgName, TString histNamesStr, double
 }
 
 // Function to draw EE, ME, MM channel and all channel merged plot
-void cutStepPlots(const char* cutStep, const char* histName, const char* histTitle,
+void cutStepPlots(const char* cutStep, const char* histNameTitle[2],
                   double minY, double maxY, bool doLogY)
 {
+ const char* histName = histNameTitle[0];
+ const char* histTitle = histNameTitle[1];
+
+  //cout << histName << " : " << histTitle << endl;
+
   TH1F* hDataEE = (TH1F*)fEE->Get(Form("%s/hData_%s_%s", cutStep, cutStep, histName));
   TH1F* hDataME = (TH1F*)fME->Get(Form("%s/hData_%s_%s", cutStep, cutStep, histName));
   TH1F* hDataMM = (TH1F*)fMM->Get(Form("%s/hData_%s_%s", cutStep, cutStep, histName));
@@ -112,6 +173,7 @@ void cutStepPlots(const char* cutStep, const char* histName, const char* histTit
   if ( !hDataEE ) { cout << Form("%s/hData_%s_%s", cutStep, cutStep, histName) << " for EE " << "\n"; return; }
   if ( !hDataME ) { cout << Form("%s/hData_%s_%s", cutStep, cutStep, histName) << " for ME " << "\n"; return; }
   if ( !hDataMM ) { cout << Form("%s/hData_%s_%s", cutStep, cutStep, histName) << " for MM " << "\n"; return; }
+
 
   TH1F* hDataLL = (TH1F*)hDataEE->Clone(Form("hData_%s_%s", cutStep, histName));
   hDataLL->Reset();
@@ -243,10 +305,10 @@ void cutStepPlots(const char* cutStep, const char* histName, const char* histTit
 
   if(doLogY)
   {
-    hDataEE->SetMaximum(YmaxEE*100);
-    hDataME->SetMaximum(YmaxME*100);
-    hDataMM->SetMaximum(YmaxMM*100);
-    hDataLL->SetMaximum(YmaxLL*100);
+    hDataEE->SetMaximum(YmaxEE*10000);
+    hDataME->SetMaximum(YmaxME*10000);
+    hDataMM->SetMaximum(YmaxMM*10000);
+    hDataLL->SetMaximum(YmaxLL*10000);
   }
   else
   {
