@@ -35,8 +35,8 @@ samplePath["SingleTopBartW"]  ="KoPFA.CommonTools.Sources.CMG.V5_13_0.Summer12.c
 samplePath["TTH"]              ="KoPFA.CommonTools.Sources.CMG.V5_13_0.Summer12.cmgTuple_TTH_HToBB_M125_cff"
 samplePath["TTbarFullLepMGDecays"]     ="KoPFA.CommonTools.Sources.CMG.V5_13_0.Summer12.patTuple_TTbarFullLepMGDecays_cff"
 
-samplePath["TTbarPowheg"]     ="KoPFA.CommonTools.Sources.CMG.V5_13_0.Summer12.patTuple_TTbarMcatnlo_cff"
-samplePath["TTbarMcatnlo"]     ="KoPFA.CommonTools.Sources.CMG.V5_13_0.Summer12.patTuple_TTbarPowheg_cff"
+samplePath["TTbarMcatnlo"]     ="KoPFA.CommonTools.Sources.CMG.V5_13_0.Summer12.patTuple_TTbarMcatnlo_cff"
+samplePath["TTbarPowheg"]     ="KoPFA.CommonTools.Sources.CMG.V5_13_0.Summer12.patTuple_TTbarPowheg_cff"
 
 ### DATA ####
 samplePath["Run2012Av1_MuMu"]    ="KoPFA.CommonTools.Sources.CMG.V5_13_0.Run2012.cmgTuple_Run2012Av1_MuMu_cff"
