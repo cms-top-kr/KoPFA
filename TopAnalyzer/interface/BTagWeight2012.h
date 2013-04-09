@@ -17,7 +17,10 @@ class BTagWeight2012
     enum AlgoType {
       CSVL,
       CSVM,
-      CSVT
+      CSVT,
+      JPL,
+      JPM,
+      JPT 
     };
 
     enum SYS {
@@ -29,7 +32,7 @@ class BTagWeight2012
     };
 
     static const int nbin = 16;
-    static const int nalgo = 3;
+    static const int nalgo = 6;
     static const float ptmin[nbin];
     static const float ptmax[nbin];
     static const double addSFb_error[nalgo][nbin];
@@ -215,6 +218,12 @@ class BTagWeight2012
          sf =  0.726981*((1.+(0.253238*x))/(1.+(0.188389*x)))         + sfbErr(pt,eta) + addsfbErr(pt,eta);
       } else if( algo_ == CSVT ){
          sf = 0.869965*((1.+(0.0335062*x))/(1.+(0.0304598*x)))        + sfbErr(pt,eta) + addsfbErr(pt,eta);
+      } else if( algo_ == JPL ){
+         sf = 0.977721*((1.+(-1.02685e-06*x))/(1.+(-2.56586e-07*x)))  + sfbErr(pt,eta) + addsfbErr(pt,eta);
+      } else if( algo_ == JPM ){
+         sf = 0.87887*((1.+(0.0393348*x))/(1.+(0.0354499*x)))         + sfbErr(pt,eta) + addsfbErr(pt,eta);
+      } else if( algo_ == JPT ){
+         sf = 0.802097*((1.+(0.013219*x))/(1.+(0.0107842*x)))         + sfbErr(pt,eta) + addsfbErr(pt,eta);
       } else  sf =  1.0; 
       return sf;
     }
@@ -233,6 +242,12 @@ class BTagWeight2012
         sf = 0.726981*((1.+(0.253238*x))/(1.+(0.188389*x)))         + 2*sfbErr(pt,eta);
       } else if( algo_ == CSVT ){
         sf = 0.869965*((1.+(0.0335062*x))/(1.+(0.0304598*x)))       + 2*sfbErr(pt,eta);
+      } else if( algo_ == JPL ){
+         sf = 0.977721*((1.+(-1.02685e-06*x))/(1.+(-2.56586e-07*x)))  + 2*sfbErr(pt,eta);
+      } else if( algo_ == JPM ){
+         sf = 0.87887*((1.+(0.0393348*x))/(1.+(0.0354499*x)))         + 2*sfbErr(pt,eta);
+      } else if( algo_ == JPT ){
+         sf = 0.802097*((1.+(0.013219*x))/(1.+(0.0107842*x)))         + 2*sfbErr(pt,eta);
       } else  sf =  1.0;
       return sf;
     }
@@ -241,49 +256,118 @@ class BTagWeight2012
     double sfl(double pt, double eta)
     {
       double sf = 1;
-      TF1 *func;
-      double min=0, max=2.4; 
+      //TF1 *func;
+      //double min=0, max=2.4; 
       double x=pt;
-      if(pt > 700 && 1.5< fabs(eta) )                       x=700; 
-      else if(pt > 800 && 0< fabs(eta) && fabs(eta) <=1.5 ) x=800;
+      if(pt > 700 && 1.5< fabs(eta) )   x=700; 
+      else if(pt > 800 )                x=800;
+      if(pt<20) x=20;
 
       if( algo_ == CSVL ){
-            if(fabs(eta)>=0.0 && fabs(eta) <=0.5 ) { min=0.0; max=0.5; }
-            if(fabs(eta)>0.5  && fabs(eta) <=1.0 ) { min=0.5; max=1.0; }
-            if(fabs(eta)>1.0  && fabs(eta) <=1.5 ) { min=1.0; max=1.5; }
-            if(fabs(eta)>1.5  )                    { min=1.5; max=2.4; }
+            if(fabs(eta)>=0.0 && fabs(eta) <=0.5 ) 
+            {
+              if( sys_ == DWLight )        sf = ((0.973773+(0.00103049*x))+(-2.2277e-06*(x*x)))+(1.37208e-09*(x*(x*x)));
+              else if( sys_ == UPLight )   sf = ((1.12424+(0.00201136*x))+(-4.64021e-06*(x*x)))+(2.97219e-09*(x*(x*x)));
+              else                         sf = ((1.04901+(0.00152181*x))+(-3.43568e-06*(x*x)))+(2.17219e-09*(x*(x*x)));
+            }
+            if(fabs(eta)>0.5  && fabs(eta) <=1.0 ) 
+            {
+              if( sys_ == DWLight )        sf = ((0.921518+(0.00129098*x))+(-2.86488e-06*(x*x)))+(1.86022e-09*(x*(x*x))); 
+              else if( sys_ == UPLight )   sf = ((1.06231+(0.00215815*x))+(-4.9844e-06*(x*x)))+(3.27623e-09*(x*(x*x)));
+              else                         sf = ((0.991915+(0.00172552*x))+(-3.92652e-06*(x*x)))+(2.56816e-09*(x*(x*x)));
+            }
+            if(fabs(eta)>1.0  && fabs(eta) <=1.5 )
+            {
+              if( sys_ == DWLight )        sf = ((0.895419+(0.00153387*x))+(-3.48409e-06*(x*x)))+(2.30899e-09*(x*(x*x))); 
+              else if( sys_ == UPLight )   sf = ((1.02883+(0.00231985*x))+(-5.57924e-06*(x*x)))+(3.81235e-09*(x*(x*x)));
+              else                         sf = ((0.962127+(0.00192796*x))+(-4.53385e-06*(x*x)))+(3.0605e-09*(x*(x*x)));
+            }
+            if(fabs(eta)>1.5  )
+            {
+              if( sys_ == DWLight )        sf = ((0.983607+(0.000196747*x))+(-3.98327e-07*(x*x)))+(2.95764e-10*(x*(x*x))); 
+              else if( sys_ == UPLight )   sf = ((1.1388+(0.000468418*x))+(-1.36341e-06*(x*x)))+(1.19256e-09*(x*(x*x)));
+              else                         sf = ((1.06121+(0.000332747*x))+(-8.81201e-07*(x*x)))+(7.43896e-10*(x*(x*x)));
+            }
 
-            if( min == 1.5 && pt>700 ) x = 700;
-            else if(pt>800)            x = 800;
-
-            if( sys_ == DWLight )       func =GetSFLight("min", "CSV","L",min,max,"ABCD"); 
-            else if( sys_ == UPLight )  func =GetSFLight("max", "CSV","L",min,max,"ABCD");
-            else                        func =GetSFLight("mean","CSV","L",min,max,"ABCD"); 
- 
-            sf = func->Eval(x);
       } else if( algo_ == CSVM ){
-            if(fabs(eta)>=0.0 && fabs(eta) <=0.8 ) { min=0.0; max=0.8; }
-            if(fabs(eta)>0.8  && fabs(eta) <=1.6 ) { min=0.8; max=1.6; }
-            if(fabs(eta)>1.6  )                    { min=1.6; max=2.4; }
+            if(fabs(eta)>=0.0 && fabs(eta) <=0.8 ) 
+            {
+              if( sys_ == DWLight )        sf = ((0.972746+(0.00104424*x))+(-2.36081e-06*(x*x)))+(1.53438e-09*(x*(x*x)));
+              else if( sys_ == UPLight )   sf = ((1.15201+(0.00292575*x))+(-7.41497e-06*(x*x)))+(5.0512e-09*(x*(x*x)));
+              else                         sf = ((1.06238+(0.00198635*x))+(-4.89082e-06*(x*x)))+(3.29312e-09*(x*(x*x)));
+            }
+            if(fabs(eta)>0.8  && fabs(eta) <=1.6 ) 
+            {
+              if( sys_ == DWLight )        sf = ((0.9836+(0.000649761*x))+(-1.59773e-06*(x*x)))+(1.14324e-09*(x*(x*x)));
+              else if( sys_ == UPLight )   sf = ((1.17735+(0.00156533*x))+(-4.32257e-06*(x*x)))+(3.18197e-09*(x*(x*x)));
+              else                         sf = ((1.08048+(0.00110831*x))+(-2.96189e-06*(x*x)))+(2.16266e-09*(x*(x*x)));
+            }
+            if(fabs(eta)>1.6  )                    
+            {
+              if( sys_ == DWLight )        sf = ((1.00616+(0.000358884*x))+(-1.23768e-06*(x*x)))+(6.86678e-10*(x*(x*x)));
+              else if( sys_ == UPLight )   sf = ((1.17671+(0.0010147*x))+(-3.66269e-06*(x*x)))+(2.88425e-09*(x*(x*x)));
+              else                         sf = ((1.09145+(0.000687171*x))+(-2.45054e-06*(x*x)))+(1.7844e-09*(x*(x*x)));
+            }
 
-            if( min == 1.6 && pt>700 ) x = 700;
-            else if(pt>800)            x = 800;
-
-            if( sys_ == DWLight )       func =GetSFLight("min", "CSV","M",min,max,"ABCD");  
-            else if( sys_ == UPLight )  func =GetSFLight("max", "CSV","M",min,max,"ABCD");
-            else                        func =GetSFLight("mean","CSV","M",min,max,"ABCD");
-
-            sf = func->Eval(x);
       } else if( algo_ == CSVT){
-            min=0.0; max=2.4;
-
             if(pt>800)            x = 800;
 
-            if( sys_ == DWLight )       func =GetSFLight("min", "CSV","T",min,max,"ABCD");
-            else if( sys_ == UPLight )  func =GetSFLight("max", "CSV","T",min,max,"ABCD");
-            else                        func =GetSFLight("mean","CSV","T",min,max,"ABCD");
+            if( sys_ == DWLight )       sf = ((0.953587+(0.00124872*x))+(-3.97277e-06*(x*x)))+(3.23466e-09*(x*(x*x)));
+            else if( sys_ == UPLight )  sf = ((1.08119+(0.00441909*x))+(-1.18764e-05*(x*x)))+(8.71372e-09*(x*(x*x)));
+            else                        sf = ((1.01739+(0.00283619*x))+(-7.93013e-06*(x*x)))+(5.97491e-09*(x*(x*x)));
 
-            sf = func->Eval(x);
+      } else if( algo_ == JPL ){
+            if(fabs(eta)>=0.0 && fabs(eta) <=0.5 ) 
+            {
+              if( sys_ == DWLight )        sf = ((0.918762+(0.000749113*x))+(-1.48511e-06*(x*x)))+(8.78559e-10*(x*(x*x)));
+              else if( sys_ == UPLight )   sf = ((1.19358+(0.00122182*x))+(-2.62078e-06*(x*x)))+(1.62951e-09*(x*(x*x)));
+              else                         sf = ((1.05617+(0.000986016*x))+(-2.05398e-06*(x*x)))+(1.25408e-09*(x*(x*x)));
+            }
+            if(fabs(eta)>0.5  && fabs(eta) <=1.0 ) 
+            {
+              if( sys_ == DWLight )        sf = ((0.893017+(0.000369124*x))+(-8.68577e-07*(x*x)))+(5.79006e-10*(x*(x*x))); 
+              else if( sys_ == UPLight )   sf = ((1.16466+(0.000573985*x))+(-1.43899e-06*(x*x)))+(9.88387e-10*(x*(x*x)));
+              else                         sf = ((1.02884+(0.000471854*x))+(-1.15441e-06*(x*x)))+(7.83716e-10*(x*(x*x)));
+            }
+            if(fabs(eta)>1.0  && fabs(eta) <=1.5 )
+            {
+              if( sys_ == DWLight )        sf = ((0.89415+(0.000712877*x))+(-1.57703e-06*(x*x)))+(1.02034e-09*(x*(x*x))); 
+              else if( sys_ == UPLight )   sf = ((1.15511+(0.00110197*x))+(-2.56374e-06*(x*x)))+(1.72152e-09*(x*(x*x)));
+              else                         sf = ((1.02463+(0.000907924*x))+(-2.07133e-06*(x*x)))+(1.37083e-09*(x*(x*x)));
+            }
+            if(fabs(eta)>1.5  )
+            {
+              if( sys_ == DWLight )        sf = ((0.918611+(0.000781707*x))+(-1.8923e-06*(x*x)))+(1.312e-09*(x*(x*x))); 
+              else if( sys_ == UPLight )   sf = ((1.1891+(0.00112006*x))+(-2.81586e-06*(x*x)))+(2.01249e-09*(x*(x*x)));
+              else                         sf = ((1.05387+(0.000951237*x))+(-2.35437e-06*(x*x)))+(1.66123e-09*(x*(x*x)));
+            }
+
+      } else if( algo_ == JPM ){
+            if(fabs(eta)>=0.0 && fabs(eta) <=0.8 ) 
+            {
+              if( sys_ == DWLight )        sf = ((0.813164+(0.00127951*x))+(-2.74274e-06*(x*x)))+(1.78799e-09*(x*(x*x)));
+              else if( sys_ == UPLight )   sf = ((1.14766+(0.00253327*x))+(-6.24447e-06*(x*x)))+(4.26468e-09*(x*(x*x)));
+              else                         sf = ((0.980407+(0.00190765*x))+(-4.49633e-06*(x*x)))+(3.02664e-09*(x*(x*x)));
+            }
+            if(fabs(eta)>0.8  && fabs(eta) <=1.6 ) 
+            {
+              if( sys_ == DWLight )        sf = ((0.860873+(0.00110031*x))+(-2.48023e-06*(x*x)))+(1.73776e-09*(x*(x*x)));
+              else if( sys_ == UPLight )   sf = ((1.17479+(0.00257252*x))+(-6.81377e-06*(x*x)))+(4.94891e-09*(x*(x*x)));
+              else                         sf = ((1.01783+(0.00183763*x))+(-4.64972e-06*(x*x)))+(3.34342e-09*(x*(x*x)));
+            }
+            if(fabs(eta)>1.6  )                    
+            {
+              if( sys_ == DWLight )        sf = ((0.740983+(0.00302736*x))+(-8.12284e-06*(x*x)))+(6.281e-09*(x*(x*x)));
+              else if( sys_ == UPLight )   sf = ((0.992297+(0.00490671*x))+(-1.41403e-05*(x*x)))+(1.14097e-08*(x*(x*x)));
+              else                         sf = ((0.866685+(0.00396887*x))+(-1.11342e-05*(x*x)))+(8.84085e-09*(x*(x*x)));
+            }
+
+      } else if( algo_ == JPT){
+            if(pt>800)            x = 800;
+
+            if( sys_ == DWLight )       sf = ((0.666092+(0.00262465*x))+(-6.5345e-06*(x*x)))+(4.73926e-09*(x*(x*x)));
+            else if( sys_ == UPLight )  sf = ((1.12648+(0.00394995*x))+(-1.0981e-05*(x*x)))+(8.19134e-09*(x*(x*x)));
+            else                        sf = ((0.89627+(0.00328988*x))+(-8.76392e-06*(x*x)))+(6.4662e-09*(x*(x*x)));
       }else { 
          sf = 1.0; 
       }
@@ -306,6 +390,15 @@ class BTagWeight2012
       else if( algo_ == CSVT ){
 	 return 0.300256 + 0.00670841*x - ( 5.58098e-05)*pow(x,2) + (1.61114e-07)*pow(x,3) - (1.59428e-10)*pow(x,4);
       }
+      else if( algo_ == JPL ){
+         return 0.603982 +  0.00593039*x-4.75712e-05*pow(x,2)+1.51971e-07*pow(x,3)-1.72231e-10*pow(x,4);
+      }
+      else if( algo_ == JPM ){
+         return 0.292921 +  0.00888774*x-6.96231e-05*pow(x,2)+2.14774e-07*pow(x,3)-2.35523e-10*pow(x,4); 
+      }
+      else if( algo_ == JPT ){
+         return 0.0614554 + 0.00989396*x-7.59841e-05*pow(x,2)+2.27511e-07*pow(x,3)-2.40461e-10*pow(x,4); 
+      }
       else
       {
          return 0;
@@ -324,6 +417,15 @@ class BTagWeight2012
       else if( algo_ == CSVT ){
          return 0.0111637 + 0.00137814*x - (1.46838e-05)*pow(x,2) + (5.16447e-08 )*pow(x,3) - (5.75329e-11)*pow(x,4);
       }
+      else if( algo_ == JPL ){
+         return 0.205469 + 0.00378257*x-2.75037e-05*pow(x,2)+7.72587e-08*pow(x,3)-7.06732e-11*pow(x,4); 
+      } 
+      else if( algo_ == JPM ){
+         return 0.037048 + 0.00227715*x-1.85302e-05*pow(x,2)+5.78658e-08*pow(x,3)-5.99526e-11*pow(x,4); 
+      } 
+      else if( algo_ == JPT ){
+         return 0.00622736 + 0.000747324*x-5.34253e-06*pow(x,2)+1.41222e-08*pow(x,3)-1.2206e-11*pow(x,4);
+      }
       else
       {
         return 0;
@@ -333,31 +435,31 @@ class BTagWeight2012
     //MC l-tag efficiency
     double el(double pt, double eta)
     {
+      double x = pt;
+      if(pt <= 450) x=450;
+
       if( algo_ == CSVL ){
-        if( pt <= 670 ){
-          if( fabs(eta) < 0.5) return 242534*(((1+(0.0182863*pt))+(4.50105e-05*(pt*pt)))/(1+(108569*pt)));
-          else if( fabs(eta) >= 0.5 && fabs(eta) < 1.0) return 129.938*(((1+(0.0197657*pt))+(4.73472e-05*(pt*pt)))/(1+(55.2415*pt)));
-          else if( fabs(eta) >= 1.0 && fabs(eta) < 1.5) return 592.214*(((1+(0.00671207*pt))+(6.46109e-05*(pt*pt)))/(1+(134.318*pt)));
-          else if( fabs(eta) >= 1.5 && fabs(eta) < 2.4) return 93329*(((1+(0.0219705*pt))+(3.76566e-05*(pt*pt)))/(1+(18245.1*pt)));
-          else return 93329*(((1+(0.0219705*pt))+(3.76566e-05*(pt*pt)))/(1+(18245.1*pt)));
-        }else {
-          return 18168.8*(((1+(0.020356*670.0))+(2.73475e-05*(670.0*670.0)))/(1+(5239.42*670.0)));
-        }
+          if( fabs(eta) < 0.5) return                          0.145097-0.00210096 *x + (1.62428e-05)*pow(x,2) - (4.64838e-08)*pow(x,3) + (4.49925e-11)*pow(x,4); 
+          else if( fabs(eta) >= 0.5 && fabs(eta) < 1.0) return 0.117715-0.00119443*x + (9.19537e-06)*pow(x,2) - (2.52591e-08)*pow(x,3) + (2.33342e-11)*pow(x,4); 
+          else if( fabs(eta) >= 1.0 && fabs(eta) < 1.5) return 0.241778-0.00373136*x + (2.90526e-05 )*pow(x,2) - (8.91043e-08)*pow(x,3) + (9.52333e-11)*pow(x,4); 
+          else                                          return 0.322078-0.00235443*x + (1.43813e-05)*pow(x,2) - (3.68999e-08)*pow(x,3) + (3.391e-11)*pow(x,4);
       }else if( algo_ == CSVM ){
-        if( pt <= 670){
-          if( fabs(eta) < 0.8 ) return (0.00967751+(2.54564e-05*pt))+(-6.92256e-10*(pt*pt));
-          else if( fabs(eta) >= 0.8 && fabs(eta) < 1.6) return (0.00974141+(5.09503e-05*pt))+(2.0641e-08*(pt*pt));
-          else if( fabs(eta) >= 1.6 && fabs(eta) < 2.4) return (0.013595+(0.000104538*pt))+(-1.36087e-08*(pt*pt));
-          else return (0.013595+(0.000104538*pt))+(-1.36087e-08*(pt*pt));
-        }else {
-          return (0.0113428+(5.18983e-05*670.0))+(-2.59881e-08*(670.0*670.0));
-        }
+          if( fabs(eta) < 0.8 ) return                         0.0130716- 0.000125448*x +(1.28432e-06)*pow(x,2) - (3.92256e-09)*pow(x,3) - (4.04182e-12)*pow(x,4); 
+          else if( fabs(eta) >= 0.8 && fabs(eta) < 1.6) return 0.0155075- 0.000195538*x +(2.02484e-06)*pow(x,2) - (7.22242e-09)*pow(x,3) + (8.75219e-12)*pow(x,4);
+          else return                                          0.0417403- 0.000740911*x +(6.16937e-06)*pow(x,2) - (1.81519e-08)*pow(x,3) + (1.84038e-11)*pow(x,4);
       }else if( algo_ == CSVT){
-        if( pt <= 670 ){
-          return 0.00315116*(((1+(-0.00769281*pt))+(2.58066e-05*(pt*pt)))+(-2.02149e-08*(pt*(pt*pt))));
-        }else {
-          return 0.00315116*(((1+(-0.00769281*670.0))+(2.58066e-05*(670.0*670.0)))+(-2.02149e-08*(670.0*(670.0*670.0))));
-        }
+          return 0.00416795- 5.7709e-05*x + (3.91248e-07)*pow(x,2) - (1.24252e-09)*pow(x,3) + (1.51257e-12)*pow(x,4);
+      }else if( algo_ == JPL ){
+          if( fabs(eta) < 0.5) return                          0.0569628 + 0.000244068*x+6.00355e-07*pow(x,2)-6.55512e-09*pow(x,3)+1.10899e-11*pow(x,4); 
+          else if( fabs(eta) >= 0.5 && fabs(eta) < 1.0) return 0.0605528 + 0.000449032*x-1.71575e-06*pow(x,2)+4.17029e-09*pow(x,3)-4.43713e-12*pow(x,4); 
+          else if( fabs(eta) >= 1.0 && fabs(eta) < 1.5) return 0.0509243 + 0.000609117*x-3.11671e-06*pow(x,2)+6.90967e-09*pow(x,3)-3.6652e-12*pow(x,4);
+          else                                          return 0.0378447+ 0.000968621*x-7.69016e-06*pow(x,2)+3.00485e-08*pow(x,3)-3.82942e-11*pow(x,4);
+      }else if( algo_ == JPM ){
+          if( fabs(eta) < 0.8 ) return                         0.0107595-7.88544e-05*x+1.11219e-06*pow(x,2)-3.92981e-09*pow(x,3)+ 4.54102e-12*pow(x,4);
+          else if( fabs(eta) >= 0.8 && fabs(eta) < 1.6) return 0.015151-0.000183428*x+1.60685e-06*pow(x,2)-4.97918e-09*pow(x,3)+5.29543e-12*pow(x,4);
+          else                                          return 0.00994318 -0.000108582*x+9.5121e-07*pow(x,2)-1.93087e-09*pow(x,3)+7.01527e-13*pow(x,4);
+      }else if( algo_ == JPT){
+          return 0.00195467-4.84053e-05*x+5.12481e-07*pow(x,2)-1.76104e-09*pow(x,3)+2.0542e-12*pow(x,4);
       }else {
         return 0;
       }
@@ -897,6 +999,60 @@ const double BTagWeight2012::addSFb_error[BTagWeight2012::nalgo][BTagWeight2012:
           0.139139,
           0.139139,
           0.139139
+  },
+  { // JPL
+          0.0944602,
+          0.0800161,
+          0.0692133,
+          0.0612341,
+          0.0555137,
+          0.0516461,
+          0.0486745,
+          0.0488678,
+          0.0554401,
+          0.0720018,
+          0.085608,
+          0.074101,
+          -0.0169027,
+          -0.314305,
+          -0.314305,
+          -0.314305,
+  },
+  { // JPM
+          0.0819336,
+          0.0943159,
+          0.102145,
+          0.107561,
+          0.111475,
+          0.114329,
+          0.117069,
+          0.118242,
+          0.114578,
+          0.0940826,
+          0.0464492,
+          -0.0281446,
+          -0.143014,
+          -0.571985,
+          -0.571985,
+          -0.571985,
+  },
+  { // JPT
+          0.134693,
+          0.119969,
+          0.109016,
+          0.100533,
+          0.0937919,
+          0.088359,
+          0.082101,
+          0.0765238,
+          0.0728476,
+          0.0751305,
+          0.0803324,
+          0.0663617,
+          -0.0545463,
+          -0.786167,    
+          -0.786167,    
+          -0.786167,    
   }
 };
 
@@ -957,6 +1113,63 @@ const double BTagWeight2012::SFb_error[BTagWeight2012::nalgo][BTagWeight2012::nb
           0.0575776,
           0.0769779,
           0.0898199
+  },
+  //JPL
+  {
+ 0.0456879,
+ 0.0229755,
+ 0.0229115,
+ 0.0219184,
+ 0.0222935,
+ 0.0189195,
+ 0.0237255,
+ 0.0236069,
+ 0.0159177,
+ 0.0196792,
+ 0.0168556,
+ 0.0168882,
+ 0.0348084,
+ 0.0355933,
+ 0.0476836,
+ 0.0500367
+  },
+   //JPM
+  {
+ 0.0584144,
+ 0.0304763,
+ 0.0311788,
+ 0.0339226,
+ 0.0343223,
+ 0.0303401,
+ 0.0329372,
+ 0.0339472,
+ 0.0368516,
+ 0.0319189,
+ 0.0354756,
+ 0.0347098,
+ 0.0408868,
+ 0.0415471,
+ 0.0567743,
+ 0.0605397
+  },
+   //JPT
+  {
+ 0.0673183,
+ 0.0368276,
+ 0.037958,
+ 0.0418136,
+ 0.0463115,
+ 0.0409334,
+ 0.0436405,
+ 0.0419725,
+ 0.0451182,
+ 0.0394386,
+ 0.0423327,
+ 0.0393015,
+ 0.0499883,
+ 0.0509444,
+ 0.0780023,
+ 0.0856582
   }
 };
 
