@@ -256,86 +256,118 @@ class BTagWeight2012
     double sfl(double pt, double eta)
     {
       double sf = 1;
-      TF1 *func;
-      double min=0, max=2.4; 
+      //TF1 *func;
+      //double min=0, max=2.4; 
       double x=pt;
-      if(pt > 700 && 1.5< fabs(eta) )                       x=700; 
-      else if(pt > 800 && 0< fabs(eta) && fabs(eta) <=1.5 ) x=800;
+      if(pt > 700 && 1.5< fabs(eta) )   x=700; 
+      else if(pt > 800 )                x=800;
+      if(pt<20) x=20;
 
       if( algo_ == CSVL ){
-            if(fabs(eta)>=0.0 && fabs(eta) <=0.5 ) { min=0.0; max=0.5; }
-            if(fabs(eta)>0.5  && fabs(eta) <=1.0 ) { min=0.5; max=1.0; }
-            if(fabs(eta)>1.0  && fabs(eta) <=1.5 ) { min=1.0; max=1.5; }
-            if(fabs(eta)>1.5  )                    { min=1.5; max=2.4; }
+            if(fabs(eta)>=0.0 && fabs(eta) <=0.5 ) 
+            {
+              if( sys_ == DWLight )        sf = ((0.973773+(0.00103049*x))+(-2.2277e-06*(x*x)))+(1.37208e-09*(x*(x*x)));
+              else if( sys_ == UPLight )   sf = ((1.12424+(0.00201136*x))+(-4.64021e-06*(x*x)))+(2.97219e-09*(x*(x*x)));
+              else                         sf = ((1.04901+(0.00152181*x))+(-3.43568e-06*(x*x)))+(2.17219e-09*(x*(x*x)));
+            }
+            if(fabs(eta)>0.5  && fabs(eta) <=1.0 ) 
+            {
+              if( sys_ == DWLight )        sf = ((0.921518+(0.00129098*x))+(-2.86488e-06*(x*x)))+(1.86022e-09*(x*(x*x))); 
+              else if( sys_ == UPLight )   sf = ((1.06231+(0.00215815*x))+(-4.9844e-06*(x*x)))+(3.27623e-09*(x*(x*x)));
+              else                         sf = ((0.991915+(0.00172552*x))+(-3.92652e-06*(x*x)))+(2.56816e-09*(x*(x*x)));
+            }
+            if(fabs(eta)>1.0  && fabs(eta) <=1.5 )
+            {
+              if( sys_ == DWLight )        sf = ((0.895419+(0.00153387*x))+(-3.48409e-06*(x*x)))+(2.30899e-09*(x*(x*x))); 
+              else if( sys_ == UPLight )   sf = ((1.02883+(0.00231985*x))+(-5.57924e-06*(x*x)))+(3.81235e-09*(x*(x*x)));
+              else                         sf = ((0.962127+(0.00192796*x))+(-4.53385e-06*(x*x)))+(3.0605e-09*(x*(x*x)));
+            }
+            if(fabs(eta)>1.5  )
+            {
+              if( sys_ == DWLight )        sf = ((0.983607+(0.000196747*x))+(-3.98327e-07*(x*x)))+(2.95764e-10*(x*(x*x))); 
+              else if( sys_ == UPLight )   sf = ((1.1388+(0.000468418*x))+(-1.36341e-06*(x*x)))+(1.19256e-09*(x*(x*x)));
+              else                         sf = ((1.06121+(0.000332747*x))+(-8.81201e-07*(x*x)))+(7.43896e-10*(x*(x*x)));
+            }
 
-            if( min == 1.5 && pt>700 ) x = 700;
-            else if(pt>800)            x = 800;
-
-            if( sys_ == DWLight )       func =GetSFLight("min", "CSV","L",min,max,"ABCD"); 
-            else if( sys_ == UPLight )  func =GetSFLight("max", "CSV","L",min,max,"ABCD");
-            else                        func =GetSFLight("mean","CSV","L",min,max,"ABCD"); 
- 
-            sf = func->Eval(x);
       } else if( algo_ == CSVM ){
-            if(fabs(eta)>=0.0 && fabs(eta) <=0.8 ) { min=0.0; max=0.8; }
-            if(fabs(eta)>0.8  && fabs(eta) <=1.6 ) { min=0.8; max=1.6; }
-            if(fabs(eta)>1.6  )                    { min=1.6; max=2.4; }
+            if(fabs(eta)>=0.0 && fabs(eta) <=0.8 ) 
+            {
+              if( sys_ == DWLight )        sf = ((0.972746+(0.00104424*x))+(-2.36081e-06*(x*x)))+(1.53438e-09*(x*(x*x)));
+              else if( sys_ == UPLight )   sf = ((1.15201+(0.00292575*x))+(-7.41497e-06*(x*x)))+(5.0512e-09*(x*(x*x)));
+              else                         sf = ((1.06238+(0.00198635*x))+(-4.89082e-06*(x*x)))+(3.29312e-09*(x*(x*x)));
+            }
+            if(fabs(eta)>0.8  && fabs(eta) <=1.6 ) 
+            {
+              if( sys_ == DWLight )        sf = ((0.9836+(0.000649761*x))+(-1.59773e-06*(x*x)))+(1.14324e-09*(x*(x*x)));
+              else if( sys_ == UPLight )   sf = ((1.17735+(0.00156533*x))+(-4.32257e-06*(x*x)))+(3.18197e-09*(x*(x*x)));
+              else                         sf = ((1.08048+(0.00110831*x))+(-2.96189e-06*(x*x)))+(2.16266e-09*(x*(x*x)));
+            }
+            if(fabs(eta)>1.6  )                    
+            {
+              if( sys_ == DWLight )        sf = ((1.00616+(0.000358884*x))+(-1.23768e-06*(x*x)))+(6.86678e-10*(x*(x*x)));
+              else if( sys_ == UPLight )   sf = ((1.17671+(0.0010147*x))+(-3.66269e-06*(x*x)))+(2.88425e-09*(x*(x*x)));
+              else                         sf = ((1.09145+(0.000687171*x))+(-2.45054e-06*(x*x)))+(1.7844e-09*(x*(x*x)));
+            }
 
-            if( min == 1.6 && pt>700 ) x = 700;
-            else if(pt>800)            x = 800;
-
-            if( sys_ == DWLight )       func =GetSFLight("min", "CSV","M",min,max,"ABCD");  
-            else if( sys_ == UPLight )  func =GetSFLight("max", "CSV","M",min,max,"ABCD");
-            else                        func =GetSFLight("mean","CSV","M",min,max,"ABCD");
-
-            sf = func->Eval(x);
       } else if( algo_ == CSVT){
-            min=0.0; max=2.4;
-
             if(pt>800)            x = 800;
 
-            if( sys_ == DWLight )       func =GetSFLight("min", "CSV","T",min,max,"ABCD");
-            else if( sys_ == UPLight )  func =GetSFLight("max", "CSV","T",min,max,"ABCD");
-            else                        func =GetSFLight("mean","CSV","T",min,max,"ABCD");
+            if( sys_ == DWLight )       sf = ((0.953587+(0.00124872*x))+(-3.97277e-06*(x*x)))+(3.23466e-09*(x*(x*x)));
+            else if( sys_ == UPLight )  sf = ((1.08119+(0.00441909*x))+(-1.18764e-05*(x*x)))+(8.71372e-09*(x*(x*x)));
+            else                        sf = ((1.01739+(0.00283619*x))+(-7.93013e-06*(x*x)))+(5.97491e-09*(x*(x*x)));
 
-            sf = func->Eval(x);
       } else if( algo_ == JPL ){
-            if(fabs(eta)>=0.0 && fabs(eta) <=0.5 ) { min=0.0; max=0.5; }
-            if(fabs(eta)>0.5  && fabs(eta) <=1.0 ) { min=0.5; max=1.0; }
-            if(fabs(eta)>1.0  && fabs(eta) <=1.5 ) { min=1.0; max=1.5; }
-            if(fabs(eta)>1.5  )                    { min=1.5; max=2.4; }
+            if(fabs(eta)>=0.0 && fabs(eta) <=0.5 ) 
+            {
+              if( sys_ == DWLight )        sf = ((0.918762+(0.000749113*x))+(-1.48511e-06*(x*x)))+(8.78559e-10*(x*(x*x)));
+              else if( sys_ == UPLight )   sf = ((1.19358+(0.00122182*x))+(-2.62078e-06*(x*x)))+(1.62951e-09*(x*(x*x)));
+              else                         sf = ((1.05617+(0.000986016*x))+(-2.05398e-06*(x*x)))+(1.25408e-09*(x*(x*x)));
+            }
+            if(fabs(eta)>0.5  && fabs(eta) <=1.0 ) 
+            {
+              if( sys_ == DWLight )        sf = ((0.893017+(0.000369124*x))+(-8.68577e-07*(x*x)))+(5.79006e-10*(x*(x*x))); 
+              else if( sys_ == UPLight )   sf = ((1.16466+(0.000573985*x))+(-1.43899e-06*(x*x)))+(9.88387e-10*(x*(x*x)));
+              else                         sf = ((1.02884+(0.000471854*x))+(-1.15441e-06*(x*x)))+(7.83716e-10*(x*(x*x)));
+            }
+            if(fabs(eta)>1.0  && fabs(eta) <=1.5 )
+            {
+              if( sys_ == DWLight )        sf = ((0.89415+(0.000712877*x))+(-1.57703e-06*(x*x)))+(1.02034e-09*(x*(x*x))); 
+              else if( sys_ == UPLight )   sf = ((1.15511+(0.00110197*x))+(-2.56374e-06*(x*x)))+(1.72152e-09*(x*(x*x)));
+              else                         sf = ((1.02463+(0.000907924*x))+(-2.07133e-06*(x*x)))+(1.37083e-09*(x*(x*x)));
+            }
+            if(fabs(eta)>1.5  )
+            {
+              if( sys_ == DWLight )        sf = ((0.918611+(0.000781707*x))+(-1.8923e-06*(x*x)))+(1.312e-09*(x*(x*x))); 
+              else if( sys_ == UPLight )   sf = ((1.1891+(0.00112006*x))+(-2.81586e-06*(x*x)))+(2.01249e-09*(x*(x*x)));
+              else                         sf = ((1.05387+(0.000951237*x))+(-2.35437e-06*(x*x)))+(1.66123e-09*(x*(x*x)));
+            }
 
-            if( min == 1.5 && pt>700 ) x = 700;
-            else if(pt>800)            x = 800;
-
-            if( sys_ == DWLight )       func =GetSFLight("min", "JP","L",min,max,"ABCD"); 
-            else if( sys_ == UPLight )  func =GetSFLight("max", "JP","L",min,max,"ABCD");
-            else                        func =GetSFLight("mean","JP","L",min,max,"ABCD"); 
- 
-            sf = func->Eval(x);
       } else if( algo_ == JPM ){
-            if(fabs(eta)>=0.0 && fabs(eta) <=0.8 ) { min=0.0; max=0.8; }
-            if(fabs(eta)>0.8  && fabs(eta) <=1.6 ) { min=0.8; max=1.6; }
-            if(fabs(eta)>1.6  )                    { min=1.6; max=2.4; }
+            if(fabs(eta)>=0.0 && fabs(eta) <=0.8 ) 
+            {
+              if( sys_ == DWLight )        sf = ((0.813164+(0.00127951*x))+(-2.74274e-06*(x*x)))+(1.78799e-09*(x*(x*x)));
+              else if( sys_ == UPLight )   sf = ((1.14766+(0.00253327*x))+(-6.24447e-06*(x*x)))+(4.26468e-09*(x*(x*x)));
+              else                         sf = ((0.980407+(0.00190765*x))+(-4.49633e-06*(x*x)))+(3.02664e-09*(x*(x*x)));
+            }
+            if(fabs(eta)>0.8  && fabs(eta) <=1.6 ) 
+            {
+              if( sys_ == DWLight )        sf = ((0.860873+(0.00110031*x))+(-2.48023e-06*(x*x)))+(1.73776e-09*(x*(x*x)));
+              else if( sys_ == UPLight )   sf = ((1.17479+(0.00257252*x))+(-6.81377e-06*(x*x)))+(4.94891e-09*(x*(x*x)));
+              else                         sf = ((1.01783+(0.00183763*x))+(-4.64972e-06*(x*x)))+(3.34342e-09*(x*(x*x)));
+            }
+            if(fabs(eta)>1.6  )                    
+            {
+              if( sys_ == DWLight )        sf = ((0.740983+(0.00302736*x))+(-8.12284e-06*(x*x)))+(6.281e-09*(x*(x*x)));
+              else if( sys_ == UPLight )   sf = ((0.992297+(0.00490671*x))+(-1.41403e-05*(x*x)))+(1.14097e-08*(x*(x*x)));
+              else                         sf = ((0.866685+(0.00396887*x))+(-1.11342e-05*(x*x)))+(8.84085e-09*(x*(x*x)));
+            }
 
-            if( min == 1.6 && pt>700 ) x = 700;
-            else if(pt>800)            x = 800;
-
-            if( sys_ == DWLight )       func =GetSFLight("min", "JP","M",min,max,"ABCD");  
-            else if( sys_ == UPLight )  func =GetSFLight("max", "JP","M",min,max,"ABCD");
-            else                        func =GetSFLight("mean","JP","M",min,max,"ABCD");
-
-            sf = func->Eval(x);
       } else if( algo_ == JPT){
-            min=0.0; max=2.4;
-
             if(pt>800)            x = 800;
 
-            if( sys_ == DWLight )       func =GetSFLight("min", "JP","T",min,max,"ABCD");
-            else if( sys_ == UPLight )  func =GetSFLight("max", "JP","T",min,max,"ABCD");
-            else                        func =GetSFLight("mean","JP","T",min,max,"ABCD");
-
-            sf = func->Eval(x);
+            if( sys_ == DWLight )       sf = ((0.666092+(0.00262465*x))+(-6.5345e-06*(x*x)))+(4.73926e-09*(x*(x*x)));
+            else if( sys_ == UPLight )  sf = ((1.12648+(0.00394995*x))+(-1.0981e-05*(x*x)))+(8.19134e-09*(x*(x*x)));
+            else                        sf = ((0.89627+(0.00328988*x))+(-8.76392e-06*(x*x)))+(6.4662e-09*(x*(x*x)));
       }else { 
          sf = 1.0; 
       }
