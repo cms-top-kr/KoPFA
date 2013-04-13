@@ -104,6 +104,9 @@ void makePlotsFor8TeV(TString noteNumber = "TTBB_CSVT_Plots")
 
   outDirName += "/"+noteNumber;
   gSystem->Exec("mkdir "+outDirName);
+
+  gSystem->Exec("mkdir "+outDirName+"/linear");
+  gSystem->Exec("mkdir "+outDirName+"/log");
 /////////////
 
 
