@@ -67,10 +67,10 @@ const char* bkgLabels[] = {//"t#bar{t}+bb",
 ,"QCD"
 };
 const Color_t color_sig = kBlue+2;
-const int style_sig = 1001;
+const int style_sig = 3354;
 const Color_t color[] = {//kRed+3,
     kOrange+2,kRed,kRed-7,kGreen-3,kGray+4,kMagenta,kAzure-2
-//,kYellow
+,kYellow
 };
 const int     style[] = {//1001,
 1001,  1001,  1001,    1001,   1001,    1001,    1001
@@ -110,11 +110,11 @@ void makePlotsFor8TeV(TString noteNumber = "TTBB_CSVT_Plots")
   plot(1,ZMass); plot(1,nJet); plot(1,pt1); plot(1,pt2); plot(1,eta1); plot(1,eta2); plot(1,Iso03lep1); plot(1,Iso03lep2); plot(1,nVertex); plot(1,MET);
   plot(2,ZMass); plot(2,nJet); plot(2,pt1); plot(2,pt2); plot(2,eta1); plot(2,eta2); plot(2,Iso03lep1); plot(2,Iso03lep2); plot(2,nVertex); plot(2,MET);
   plot(3,ZMass); plot(3,nJet); plot(3,pt1); plot(3,pt2); plot(3,eta1); plot(3,eta2); plot(3,Iso03lep1); plot(3,Iso03lep2); plot(3,nVertex); plot(3,MET);
-  plot(4,nJet); //plot(4,nbJet30_CSVM); 
-  plot(4,nbJet30_CSVT); plot(4,ZMass); plot(4,MET); plot(4,nVertex); plot(4,jet1pt30); plot(4,jet2pt30); plot(4,jet3pt30); plot(4,jet4pt30); plot(4,jet1eta30); plot(4,jet2eta30); plot(4,jet3eta30); plot(4,jet4eta30); plot(4,jet1phi30); plot(4,jet2phi30); plot(4,jet3phi30); plot(4,jet4phi30); plot(4,jet4phi30);
+//  plot(4,nJet); //plot(4,nbJet30_CSVM); 
+//  plot(4,nbJet30_CSVT); plot(4,ZMass); plot(4,MET); plot(4,nVertex); plot(4,jet1pt30); plot(4,jet2pt30); plot(4,jet3pt30); plot(4,jet4pt30); plot(4,jet1eta30); plot(4,jet2eta30); plot(4,jet3eta30); plot(4,jet4eta30); plot(4,jet1phi30); plot(4,jet2phi30); plot(4,jet3phi30); plot(4,jet4phi30); plot(4,jet4phi30);
 
-  plot(5,nJet); plot(5,addjet1_bDisCSV); plot(5,addjet2_bDisCSV); //plot(5,bJet30_CSVM); 
-  plot(5,nbJet30_CSVT); plot(5,ZMass); plot(5,MET); plot(5,nVertex); plot(5,jet1pt30); plot(5,jet2pt30); plot(5,jet3pt30); plot(5,jet4pt30); plot(5,jet1eta30); plot(5,jet2eta30); plot(5,jet3eta30); plot(5,jet4eta30); plot(5,jet1phi30); plot(5,jet2phi30); plot(5,jet3phi30); plot(5,jet4phi30); plot(5,jet4phi30); plot(5,addjet1_bDisJP); plot(5,addjet2_bDisJP);
+//  plot(5,nJet); plot(5,addjet1_bDisCSV); plot(5,addjet2_bDisCSV); //plot(5,bJet30_CSVM); 
+//  plot(5,nbJet30_CSVT); plot(5,ZMass); plot(5,MET); plot(5,nVertex); plot(5,jet1pt30); plot(5,jet2pt30); plot(5,jet3pt30); plot(5,jet4pt30); plot(5,jet1eta30); plot(5,jet2eta30); plot(5,jet3eta30); plot(5,jet4eta30); plot(5,jet1phi30); plot(5,jet2phi30); plot(5,jet3phi30); plot(5,jet4phi30); plot(5,jet4phi30); plot(5,addjet1_bDisJP); plot(5,addjet2_bDisJP);
 
 
 
@@ -331,15 +331,15 @@ void cutStepPlots(const char* cutStep, const char* histNameTitle[2],
 
   if(doLogY)
   {
-    cEE->Print(Form("%s/l_cEE_%s_%s.eps", outDirName.Data(), cutStep, histName));
-    cEE->Print(Form("%s/l_cEE_%s_%s.pdf", outDirName.Data(), cutStep, histName));
-    cEE->Print(Form("%s/l_cEE_%s_%s.png", outDirName.Data(), cutStep, histName));
+    cEE->Print(Form("%s/log/cEE_%s_%s.eps", outDirName.Data(), cutStep, histName));
+    cEE->Print(Form("%s/log/cEE_%s_%s.pdf", outDirName.Data(), cutStep, histName));
+    cEE->Print(Form("%s/log/cEE_%s_%s.png", outDirName.Data(), cutStep, histName));
   }
   else
   {
-    cEE->Print(Form("%s/cEE_%s_%s.eps", outDirName.Data(), cutStep, histName));
-    cEE->Print(Form("%s/cEE_%s_%s.pdf", outDirName.Data(), cutStep, histName));
-    cEE->Print(Form("%s/cEE_%s_%s.png", outDirName.Data(), cutStep, histName));
+    cEE->Print(Form("%s/linear/cEE_%s_%s.eps", outDirName.Data(), cutStep, histName));
+    cEE->Print(Form("%s/linear/cEE_%s_%s.pdf", outDirName.Data(), cutStep, histName));
+    cEE->Print(Form("%s/linear/cEE_%s_%s.png", outDirName.Data(), cutStep, histName));
   }
 
   TCanvas* cME = new TCanvas(TString("cME_")+cutStep+"_"+histName, TString("cME_")+cutStep+"_"+histName, 1);
@@ -354,15 +354,15 @@ void cutStepPlots(const char* cutStep, const char* histNameTitle[2],
 
   if(doLogY)
   {
-    cME->Print(Form("%s/l_cME_%s_%s.eps", outDirName.Data(), cutStep, histName));
-    cME->Print(Form("%s/l_cME_%s_%s.pdf", outDirName.Data(), cutStep, histName));
-    cME->Print(Form("%s/l_cME_%s_%s.png", outDirName.Data(), cutStep, histName));
+    cME->Print(Form("%s/log/cME_%s_%s.eps", outDirName.Data(), cutStep, histName));
+    cME->Print(Form("%s/log/cME_%s_%s.pdf", outDirName.Data(), cutStep, histName));
+    cME->Print(Form("%s/log/cME_%s_%s.png", outDirName.Data(), cutStep, histName));
   }
   else
   {
-    cME->Print(Form("%s/cME_%s_%s.eps", outDirName.Data(), cutStep, histName));
-    cME->Print(Form("%s/cME_%s_%s.pdf", outDirName.Data(), cutStep, histName));
-    cME->Print(Form("%s/cME_%s_%s.png", outDirName.Data(), cutStep, histName));
+    cME->Print(Form("%s/linear/cME_%s_%s.eps", outDirName.Data(), cutStep, histName));
+    cME->Print(Form("%s/linear/cME_%s_%s.pdf", outDirName.Data(), cutStep, histName));
+    cME->Print(Form("%s/linear/cME_%s_%s.png", outDirName.Data(), cutStep, histName));
   }
 
 
@@ -378,15 +378,15 @@ void cutStepPlots(const char* cutStep, const char* histNameTitle[2],
 
   if(doLogY)
   {
-    cMM->Print(Form("%s/l_cMM_%s_%s.eps", outDirName.Data(), cutStep, histName));
-    cMM->Print(Form("%s/l_cMM_%s_%s.pdf", outDirName.Data(), cutStep, histName));
-    cMM->Print(Form("%s/l_cMM_%s_%s.png", outDirName.Data(), cutStep, histName));
+    cMM->Print(Form("%s/log/cMM_%s_%s.eps", outDirName.Data(), cutStep, histName));
+    cMM->Print(Form("%s/log/cMM_%s_%s.pdf", outDirName.Data(), cutStep, histName));
+    cMM->Print(Form("%s/log/cMM_%s_%s.png", outDirName.Data(), cutStep, histName));
   }
   else
   {
-    cMM->Print(Form("%s/cMM_%s_%s.eps", outDirName.Data(), cutStep, histName));
-    cMM->Print(Form("%s/cMM_%s_%s.pdf", outDirName.Data(), cutStep, histName));
-    cMM->Print(Form("%s/cMM_%s_%s.png", outDirName.Data(), cutStep, histName));
+    cMM->Print(Form("%s/linear/cMM_%s_%s.eps", outDirName.Data(), cutStep, histName));
+    cMM->Print(Form("%s/linear/cMM_%s_%s.pdf", outDirName.Data(), cutStep, histName));
+    cMM->Print(Form("%s/linear/cMM_%s_%s.png", outDirName.Data(), cutStep, histName));
   } 
 
   TCanvas* cLL = new TCanvas(TString("cLL_")+cutStep+"_"+histName, TString("cLL_")+cutStep+"_"+histName, 1);
@@ -401,15 +401,15 @@ void cutStepPlots(const char* cutStep, const char* histNameTitle[2],
 
   if(doLogY)
   {
-    cLL->Print(Form("%s/l_cLL_%s_%s.eps", outDirName.Data(), cutStep, histName));
-    cLL->Print(Form("%s/l_cLL_%s_%s.pdf", outDirName.Data(), cutStep, histName));
-    cLL->Print(Form("%s/l_cLL_%s_%s.png", outDirName.Data(), cutStep, histName));
+    cLL->Print(Form("%s/log/cLL_%s_%s.eps", outDirName.Data(), cutStep, histName));
+    cLL->Print(Form("%s/log/cLL_%s_%s.pdf", outDirName.Data(), cutStep, histName));
+    cLL->Print(Form("%s/log/cLL_%s_%s.png", outDirName.Data(), cutStep, histName));
   } 
   else
   {
-    cLL->Print(Form("%s/cLL_%s_%s.eps", outDirName.Data(), cutStep, histName));
-    cLL->Print(Form("%s/cLL_%s_%s.pdf", outDirName.Data(), cutStep, histName));
-    cLL->Print(Form("%s/cLL_%s_%s.png", outDirName.Data(), cutStep, histName));
+    cLL->Print(Form("%s/linear/cLL_%s_%s.eps", outDirName.Data(), cutStep, histName));
+    cLL->Print(Form("%s/linear/cLL_%s_%s.pdf", outDirName.Data(), cutStep, histName));
+    cLL->Print(Form("%s/linear/cLL_%s_%s.png", outDirName.Data(), cutStep, histName));
   }
 }
 
