@@ -22,8 +22,8 @@ void ana(string decayMode = "ElEl", string imageOutDir = "", TString weight = ""
   gSystem->CompileMacro("$CMSSW_BASE/src/KoPFA/CommonTools/macros/TopAnalyzerLite.cc", "k");
   TopAnalyzerLite* analyzer = new TopAnalyzerLite(decayMode, imageOutDir);
 
-  const std::string mcPath = "/afs/cern.ch/work/y/youngjo/public/For8Tev/v20130327_V00-00-08/";
-  const std::string rdPath = "/afs/cern.ch/work/y/youngjo/public/For8Tev/v20130327_V00-00-08/";
+  const std::string mcPath = "/afs/cern.ch/work/y/youngjo/public/For8Tev/v20130406_V00-00-08fixed/";
+  const std::string rdPath = "/afs/cern.ch/work/y/youngjo/public/For8Tev/v20130406_V00-00-08fixed/";
 
   gROOT->ProcessLine(".L $CMSSW_BASE/src/KoPFA/CommonTools/macros/tdrstyle.C");
   defaultStyle();
@@ -70,35 +70,35 @@ void ana(string decayMode = "ElEl", string imageOutDir = "", TString weight = ""
   addTopVariables(analyzer); //add Top analysis related variables for plotting
 
   //Step1 -----------------------------------------------------------------------
-  analyzer->addCutStep("ZMass > 12 && lep1_relIso03 < 0.15 && lep2_relIso03 < 0.15 && PairSign < 0", "ZMass");
+  analyzer->addCutStep("ZMass > 12 && lep1_relIso03 < 0.15 && lep2_relIso03 < 0.15 && PairSign < 0", "ZMass,nJet,pt1,pt2,eta1,eta2,Iso03lep1,Iso03lep2,nVertex,MET");
 
   //Step2 ------------------------------------------------------------------------------------
   if ( decayMode == "MuEl")
   {
-    analyzer->addCutStep("", "MET", 0.5);
+    analyzer->addCutStep("", "ZMass,nJet,pt1,pt2,eta1,eta2,Iso03lep1,Iso03lep2,nVertex,MET", 0.5);
   }else{
-    analyzer->addCutStep("abs(ZMass - 91.2) > 15", "MET", 0.5);
+    analyzer->addCutStep("abs(ZMass - 91.2) > 15", "ZMass,nJet,pt1,pt2,eta1,eta2,Iso03lep1,Iso03lep2,nVertex,MET", 0.5);
   }
 
    //Step3 ---------------------------------------------------------------------------------------------
   if ( decayMode == "MuEl")
   {
-    analyzer->addCutStep("", "nJetlog", 0.5);
+    analyzer->addCutStep("", "ZMass,nJet,pt1,pt2,eta1,eta2,Iso03lep1,Iso03lep2,nVertex,MET", 0.5);
   }else{
-    analyzer->addCutStep("MET > 30", "nJetlog", 0.5);
+    analyzer->addCutStep("MET > 30", "ZMass,nJet,pt1,pt2,eta1,eta2,Iso03lep1,Iso03lep2,nVertex,MET", 0.5);
   }
 
   //Step4 ----------------------------------------------------------------------------------------
-  analyzer->addCutStep("nJet30 >= 4", "nbJet30_CSVM,nbJet30_CSVT", 0.1);
+  analyzer->addCutStep("nJet30 >= 4", "nJet,nbJet30_JPM,nbJet30_CSVT,ZMass,MET,nVertex,jet1pt30,jet2pt30,jet3pt30,jet4pt30,jet1eta30,jet2eta30,jet3eta30,jet4eta30,jet1phi30,jet2phi30,jet3phi30,jet4phi30,jet4phi30", 0.1);
 
   //Step5
-  analyzer->addCutStep(cut, "addjet1_bDisCSV,addjet2_bDisCSV", 0.5);
+  analyzer->addCutStep(cut, "nJet,addjet1_bDisCSV,addjet2_bDisCSV,bJet30_CSVM,nbJet30_CSVT,ZMass,MET,nVertex,jet1pt30,jet2pt30,jet3pt30,jet4pt30,jet1eta30,jet2eta30,jet3eta30,jet4eta30,jet1phi30,jet2phi30,jet3phi30,jet4phi30,jet4phi30,addjet1_bDisJP,addjet2_bDisJP", 0.5);
 
   //Step6
-  analyzer->addCutStep(cut, "addjet1_bDisCSV", 0.5, "jets_bDisCSVweight[csvd_jetid[2]]");
+  analyzer->addCutStep(cut, "addjet1_bDisJP", 0.5, "jets_bDisJPweight[jpd_jetid[2]]");
 
-  //Step7
-  analyzer->addCutStep(cut, "addjet2_bDisCSV", 0.5, "jets_bDisCSVweight[csvd_jetid[3]]");
+//Step7
+  analyzer->addCutStep(cut, "addjet2_bDisJP", 0.5, "jets_bDisJPweight[jpd_jetid[3]]");
 
   //QCD invert isolation for base shape
   analyzer->replaceDataBkgCut("QCD", "ZMass > 12 && lep1_relIso03 < 0.15 && lep2_relIso03 < 0.15 && PairSign < 0", "ZMass > 12 && lep1_relIso03 > 0.15 && lep2_relIso03 > 0.15 && PairSign < 0");
@@ -113,8 +113,8 @@ void ana(string decayMode = "ElEl", string imageOutDir = "", TString weight = ""
 
   //TTBB
   //Full 2012
-  const double wDYmm[] = {1.0,1.0,1.0,1.265,1.253,1.253,1.253};
-  const double wDYee[] = {1.0,1.0,1.0,1.215,1.247,1.247,1.247};
+  const double wDYmm[] = {1.0,  1.02685,1.30272,1.28784,  1.73553,1.73553,1.73553};
+  const double wDYee[] = {1.0,  1.0505 ,1.34471,1.36888,  1.87588,1.87588,1.87588};
 
   //TTBB
   //Full 2012
