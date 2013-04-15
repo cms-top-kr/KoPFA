@@ -11,8 +11,8 @@ const char* bkgNames[] = {//"hMCSig_TTbarbb",
 ,"hDataBkg_QCD"
 };
 const char* bkgLabels[] = {//"$t\\bar{t}+bb$",
-  "$t\\bar{t}+cc$", "$t\\bar{t}+LF$","$t\\bar{t}~ others$","$W \\rightarrow l\\nu$", "Dibosons", "Single top", "$Z/\\gamma* \\rightarrow ll$"
-,"QCD"
+  "$t\\bar{t}+c\\bar{c}$", "$t\\bar{t}+LF$","$t\\bar{t}~ others$","$W \\rightarrow l\\nu$", "Dibosons", "Single top", "$Z/\\gamma* \\rightarrow ll$"
+,"multijet"
 };
 const Color_t color_sig = kBlue+2;
 const int style_sig = 1001;
@@ -27,7 +27,7 @@ const int     style[] = {//1001,
 
 const int nSig = 1;
 const char* sigNames[] = {"hMCSig_TTbarbb"};//"hMCSig_TTbarH125"};
-const char* sigLabels[] = {"$t\\bar{t}+bb$"};//"$t\\bar{t}+H$"};
+const char* sigLabels[] = {"$t\\bar{t}+b\\bar{b}$"};//"$t\\bar{t}+H$"};
 bool stackSig = false;
 
 void cutStepPlots(const char* cutStep, const char* histName, const char* histTitle,
@@ -35,11 +35,11 @@ void cutStepPlots(const char* cutStep, const char* histName, const char* histTit
 TLegend* buildLegend();
 TPaveText* getHeader(double lumi, TString channelName = "");
 
-void makeCutFlowFor8TeV(TString noteNumber = "TTBB_26Mar_CSVT_Plots")
+void makeCutFlowFor8TeV(TString noteNumber = "TTBB_CSVT_Plots")
 {
   setTDRStyle();
 
-  TString path = "TTBB_26Mar_CSVT"; 
+  TString path = "/afs/cern.ch/work/y/youngjo/public/For8Tev/v20130406_V00-00-08fixed/ANA/TTBB_CSVT"; 
 
   fEE = TFile::Open(path+"/ElEl/ElEl.root");
   fME = TFile::Open(path+"/MuEl/MuEl.root");
@@ -47,13 +47,15 @@ void makeCutFlowFor8TeV(TString noteNumber = "TTBB_26Mar_CSVT_Plots")
 
   if ( !fEE || !fME || !fMM ) return;
 
-  outDirName += "/"+noteNumber;
-  gSystem->Exec("mkdir "+outDirName);
+  //outDirName += "/"+noteNumber;
+  //gSystem->Exec("mkdir "+outDirName);
 
 
   printCutFlow(path,"MuMu", "nJet,nJet,nJet,nJet,nJet");
   printCutFlow(path,"ElEl", "nJet,nJet,nJet,nJet,nJet");
   printCutFlow(path,"MuEl", "nJet,nJet,nJet,nJet,nJet");
+
+  printCutFlow(path,"all", "nJet,nJet,nJet,nJet,nJet");
 
 }
 
@@ -126,7 +128,7 @@ void printCutFlow(TString path, TString decayMode, TString histNamesStr)
   cout << "\t\\\\ \n";
   cout << "\\hline\n";
 //\n----------------------------------------------------------------------------------------\n";
-  cout << Form(labelForm.Data(), "Bkg total");
+/*  cout << Form(labelForm.Data(), "Bkg total");
   for ( int i=0; i<histNames->GetEntries(); ++i )
   {
     if( nBkgTotal[i] > 1000) cout << fixed << setprecision(0) << "\t&\t" << nBkgTotal[i];
@@ -134,14 +136,14 @@ void printCutFlow(TString path, TString decayMode, TString histNamesStr)
   }
   cout << "\t\\\\ \n";
   cout << "\\hline \n";
-
-/*  cout << Form(labelForm.Data(), "MC total");
+*/
+  cout << Form(labelForm.Data(), "MC total");
   for ( int i=0; i<histNames->GetEntries(); ++i )
   {
     if( nMCTotal[i] > 1000) cout << fixed << setprecision(0) << "\t&\t" << nMCTotal[i];
     else cout << fixed << setprecision(2) << "\t&\t" << nMCTotal[i];
-  }*/
-//  cout << "\n/hline\n";
+  }
+  cout << "\n/hline\n";
 //  cout << "\n----------------------------------------------------------------------------------------\n";
 
   cout << Form(labelForm.Data(), "Data");
@@ -158,15 +160,15 @@ void printCutFlow(TString path, TString decayMode, TString histNamesStr)
 
     cout << fixed << setprecision(0) << "\t&\t" << hData->Integral();
   }
-  cout << "\t\\\\ \n";
+  cout << "\t\\\\ \n \\hline \n";
 
-  cout << Form(labelForm.Data(), "$S/\sqrt{S+B}$");
+  cout << Form(labelForm.Data(), "$S/\\sqrt{S+B}$");
   for ( int i=0; i<histNames->GetEntries(); ++i )
   {
      cout << fixed << setprecision(2) << "\t&\t" << (nMCTotal[i]-nBkgTotal[i])/sqrt(nMCTotal[i]);
   }
   cout << "\t\\\\ \n";
-  cout << "\\hline \n";
+//  cout << "\\hline \n";
 
 
   cout << "\\hline\\hline\n";

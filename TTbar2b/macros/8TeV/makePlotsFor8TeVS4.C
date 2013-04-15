@@ -99,7 +99,7 @@ void makePlotsFor8TeVS4(TString noteNumber = "TTBB_CSVT_Plots")
 {
   setTDRStyle();
 
-  TString path = "TTBB_CSVT"; 
+  TString path = "/afs/cern.ch/work/y/youngjo/public/For8Tev/v20130406_V00-00-08fixed/ANA/TTBB_CSVT"; 
 
   fEE = TFile::Open(path+"/ElEl/ElEl.root");
   fME = TFile::Open(path+"/MuEl/MuEl.root");

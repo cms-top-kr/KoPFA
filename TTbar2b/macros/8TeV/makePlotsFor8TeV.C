@@ -64,7 +64,7 @@ const char* bkgNames[] = {//"hMCSig_TTbarbb",
 };
 const char* bkgLabels[] = {//"t#bar{t}+bb",
   "t#bar{t}+cc", "t#bar{t}+LF","t#bar{t} others","W #rightarrow l#nu", "Dibosons", "Single top", "Z/#gamma* #rightarrow ll"
-,"QCD"
+,"multijet"
 };
 const Color_t color_sig = kBlue+2;
 const int style_sig = 3354;
@@ -94,7 +94,7 @@ void makePlotsFor8TeV(TString noteNumber = "TTBB_CSVT_Plots")
 {
   setTDRStyle();
 
-  TString path = "TTBB_CSVT"; 
+  TString path = "/afs/cern.ch/work/y/youngjo/public/For8Tev/v20130406_V00-00-08fixed/ANA/TTBB_CSVT"; 
 
   fEE = TFile::Open(path+"/ElEl/ElEl.root");
   fME = TFile::Open(path+"/MuEl/MuEl.root");
@@ -104,6 +104,9 @@ void makePlotsFor8TeV(TString noteNumber = "TTBB_CSVT_Plots")
 
   outDirName += "/"+noteNumber;
   gSystem->Exec("mkdir "+outDirName);
+
+  gSystem->Exec("mkdir "+outDirName+"/linear");
+  gSystem->Exec("mkdir "+outDirName+"/log");
 /////////////
 
 
