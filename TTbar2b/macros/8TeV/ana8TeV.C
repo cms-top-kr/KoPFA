@@ -48,11 +48,11 @@ void ana(string decayMode = "ElEl", string imageOutDir = "", TString weight = ""
   //analyzer->addMCBkg("TTbarll", "t#bar{t} + ll", mcPath+"/vallot_TTbarTuneZ2.root", 234, kRed, visible && !sigcut && !ttcc);
   //analyzer->addMCBkg("TTbarOthers", "t#bar{t} others", mcPath+"/vallot_TTbarTuneZ2.root", 234, kRed-7, !visible);
 
-  analyzer->addMCBkg("Wl", "W #rightarrow l#nu", mcPath+"/vallot_WJetsToLNu.root", 36257, kGreen-3); 
+  analyzer->addMCBkg("Wl", "W #rightarrow l#nu", mcPath+"/vallot_WJetsToLNu.root", 37509, kGreen-3); 
 
-  analyzer->addMCBkg("VV", "Dibosons", mcPath+"/vallot_ZZ.root", 7.7 , kGray+4);
+  analyzer->addMCBkg("VV", "Dibosons", mcPath+"/vallot_ZZ.root", 8.059 , kGray+4);
   analyzer->addMCBkg("WW", "Dibosons", mcPath+"/vallot_WW.root", 54.8, kGray+4);
-  analyzer->addMCBkg("WZ", "Dibosons", mcPath+"/vallot_WZ.root", 32.3, kGray+4);
+  analyzer->addMCBkg("WZ", "Dibosons", mcPath+"/vallot_WZ.root", 33.21, kGray+4);
 
   analyzer->addMCBkg("SingleTop", "Single top", mcPath+"/vallot_SingleToptW.root", 11.1, kMagenta);
   analyzer->addMCBkg("SingleTopBar", "Single top", mcPath+"/vallot_SingleTopBartW.root", 11.1, kMagenta);
@@ -95,10 +95,10 @@ void ana(string decayMode = "ElEl", string imageOutDir = "", TString weight = ""
   analyzer->addCutStep(cut, "nJet,addjet1_bDisCSV,addjet2_bDisCSV,bJet30_CSVM,nbJet30_CSVT,ZMass,MET,nVertex,jet1pt30,jet2pt30,jet3pt30,jet4pt30,jet1eta30,jet2eta30,jet3eta30,jet4eta30,jet1phi30,jet2phi30,jet3phi30,jet4phi30,jet4phi30,addjet1_bDisJP,addjet2_bDisJP", 0.5);
 
   //Step6
-  analyzer->addCutStep(cut, "addjet1_bDisJP", 0.5, "jets_bDisJPweight[jpd_jetid[2]]");
+  analyzer->addCutStep(cut, "addjet1_bDisCSV", 0.5, "jets_bDisCSVweight[csvd_jetid[2]]");
 
 //Step7
-  analyzer->addCutStep(cut, "addjet2_bDisJP", 0.5, "jets_bDisJPweight[jpd_jetid[3]]");
+  analyzer->addCutStep(cut, "addjet2_bDisCSV", 0.5, "jets_bDisCSVweight[csvd_jetid[3]]");
 
   //QCD invert isolation for base shape
   analyzer->replaceDataBkgCut("QCD", "ZMass > 12 && lep1_relIso03 < 0.15 && lep2_relIso03 < 0.15 && PairSign < 0", "ZMass > 12 && lep1_relIso03 > 0.15 && lep2_relIso03 > 0.15 && PairSign < 0");
