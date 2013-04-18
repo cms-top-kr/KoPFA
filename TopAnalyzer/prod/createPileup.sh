@@ -1,1 +1,0 @@
-pileupCalc.py -i Cert_160404-180252_7TeV_2011Full_Golden_JSON.txt --inputLumiJSON pileup_2011_JSON_pixelLumi.txt --calcMode true --minBiasXsec 68000 --maxPileupBin 50 --numPileupBins 50  MyDataPileupHistogram.root
