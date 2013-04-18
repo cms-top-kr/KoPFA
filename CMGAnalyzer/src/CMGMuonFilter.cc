@@ -13,7 +13,7 @@
 //
 // Original Author:  Tae Jeong Kim
 //         Created:  Mon Dec 14 01:29:35 CET 2009
-// $Id: CMGMuonFilter.cc,v 1.3 2012/10/30 15:50:17 tjkim Exp $
+// $Id: CMGMuonFilter.cc,v 1.4 2013/03/10 21:39:18 tjkim Exp $
 //
 //
 
@@ -152,8 +152,8 @@ CMGMuonFilter::filter(edm::Event& iEvent, const edm::EventSetup& iSetup)
 
     if( !passPre ) continue;
  
-    bool passId = muon.sourcePtr()->get()->isPFMuon() && ( muon.sourcePtr()->get()->isGlobalMuon() ||  muon.sourcePtr()->get()->isTrackerMuon() );
-    
+//    bool passId = muon.sourcePtr()->get()->isPFMuon() && ( muon.sourcePtr()->get()->isGlobalMuon() ||  muon.sourcePtr()->get()->isTrackerMuon() );
+    bool passId = muon.isPF() && ( muon.isGlobal() ||  muon.isTracker() );    
     if( !passId) continue;
 
     reco::isodeposit::Direction Dir = Direction(muon.eta(),muon.phi());
