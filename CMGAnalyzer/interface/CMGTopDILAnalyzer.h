@@ -13,7 +13,7 @@
 //
 // Original Author:  Tae Jeong Kim,40 R-A32,+41227678602,
 //         Created:  Fri Jun  4 17:19:29 CEST 2010
-// $Id: CMGTopDILAnalyzer.h,v 1.29 2013/03/31 14:52:47 youngjo Exp $
+// $Id: CMGTopDILAnalyzer.h,v 1.30 2013/04/05 11:06:22 tjkim Exp $
 //
 //
 
@@ -217,40 +217,42 @@ class CMGTopDILAnalyzer : public edm::EDFilter {
     tree->Branch("puweightminus",&puweightminus, "puweightminus/d");
 
     //tree->Branch("bweight30CSVL",&bweight30CSVL, "bweight30CSVL/d");
-    //tree->Branch("bweight30CSVM",&bweight30CSVM, "bweight30CSVM/d");
-    //tree->Branch("bweight30CSVT",&bweight30CSVT, "bweight30CSVT/d");
+    tree->Branch("bweight30CSVM",&bweight30CSVM, "bweight30CSVM/d");
+    tree->Branch("bweight30CSVT",&bweight30CSVT, "bweight30CSVT/d");
     //tree->Branch("bweight30CSVLup",&bweight30CSVLup, "bweight30CSVLup/d");
-    //tree->Branch("bweight30CSVMup",&bweight30CSVMup, "bweight30CSVMup/d");
-    //tree->Branch("bweight30CSVTup",&bweight30CSVTup, "bweight30CSVTup/d");
+    tree->Branch("bweight30CSVMup",&bweight30CSVMup, "bweight30CSVMup/d");
+    tree->Branch("bweight30CSVTup",&bweight30CSVTup, "bweight30CSVTup/d");
     //tree->Branch("bweight30CSVLdw",&bweight30CSVLdw, "bweight30CSVLdw/d");
-    //tree->Branch("bweight30CSVMdw",&bweight30CSVMdw, "bweight30CSVMdw/d");
-    //tree->Branch("bweight30CSVTdw",&bweight30CSVTdw, "bweight30CSVTdw/d");
+    tree->Branch("bweight30CSVMdw",&bweight30CSVMdw, "bweight30CSVMdw/d");
+    tree->Branch("bweight30CSVTdw",&bweight30CSVTdw, "bweight30CSVTdw/d");
     //tree->Branch("bweight30CSVLuplight",&bweight30CSVLuplight, "bweight30CSVLuplight/d");
-    //tree->Branch("bweight30CSVMuplight",&bweight30CSVMuplight, "bweight30CSVMuplight/d");
-    //tree->Branch("bweight30CSVTuplight",&bweight30CSVTuplight, "bweight30CSVTuplight/d");
+    tree->Branch("bweight30CSVMuplight",&bweight30CSVMuplight, "bweight30CSVMuplight/d");
+    tree->Branch("bweight30CSVTuplight",&bweight30CSVTuplight, "bweight30CSVTuplight/d");
     //tree->Branch("bweight30CSVLdwlight",&bweight30CSVLdwlight, "bweight30CSVLdwlight/d");
-    //tree->Branch("bweight30CSVMdwlight",&bweight30CSVMdwlight, "bweight30CSVMdwlight/d");
-    //tree->Branch("bweight30CSVTdwlight",&bweight30CSVTdwlight, "bweight30CSVTdwlight/d");
+    tree->Branch("bweight30CSVMdwlight",&bweight30CSVMdwlight, "bweight30CSVMdwlight/d");
+    tree->Branch("bweight30CSVTdwlight",&bweight30CSVTdwlight, "bweight30CSVTdwlight/d");
 
 
     //tree->Branch("bweight30JPL",&bweight30JPL, "bweight30JPL/d");
-    tree->Branch("bweight30JPM",&bweight30JPM, "bweight30JPM/d");
-    tree->Branch("bweight30JPT",&bweight30JPT, "bweight30JPT/d");
+    //tree->Branch("bweight30JPM",&bweight30JPM, "bweight30JPM/d");
+    //tree->Branch("bweight30JPT",&bweight30JPT, "bweight30JPT/d");
 
-    tree->Branch("bweight30JPMup",&bweight30JPMup, "bweight30JPMup/d");
-    tree->Branch("bweight30JPTup",&bweight30JPTup, "bweight30JPTup/d");
+    //tree->Branch("bweight30JPMup",&bweight30JPMup, "bweight30JPMup/d");
+    //tree->Branch("bweight30JPTup",&bweight30JPTup, "bweight30JPTup/d");
 
-    tree->Branch("bweight30JPMdw",&bweight30JPMdw, "bweight30JPMdw/d");
-    tree->Branch("bweight30JPTdw",&bweight30JPTdw, "bweight30JPTdw/d");
+    //tree->Branch("bweight30JPMdw",&bweight30JPMdw, "bweight30JPMdw/d");
+    //tree->Branch("bweight30JPTdw",&bweight30JPTdw, "bweight30JPTdw/d");
 
-    tree->Branch("bweight30JPMuplight",&bweight30JPMuplight, "bweight30JPMuplight/d");
-    tree->Branch("bweight30JPTuplight",&bweight30JPTuplight, "bweight30JPTuplight/d");
+    //tree->Branch("bweight30JPMuplight",&bweight30JPMuplight, "bweight30JPMuplight/d");
+    //tree->Branch("bweight30JPTuplight",&bweight30JPTuplight, "bweight30JPTuplight/d");
 
-    tree->Branch("bweight30JPMdwlight",&bweight30JPMdwlight, "bweight30JPMdwlight/d");
-    tree->Branch("bweight30JPTdwlight",&bweight30JPTdwlight, "bweight30JPTdwlight/d");
+    //tree->Branch("bweight30JPMdwlight",&bweight30JPMdwlight, "bweight30JPMdwlight/d");
+    //tree->Branch("bweight30JPTdwlight",&bweight30JPTdwlight, "bweight30JPTdwlight/d");
 
 
     tree->Branch("ZMass",&ZMass,"ZMass/d");
+    tree->Branch("ZPt",&ZPt,"ZPt/d");
+    tree->Branch("ZEta",&ZEta,"ZEta/d");
     tree->Branch("genZMass",&genZMass,"ZMass/d");
     tree->Branch("ZtauDecay",&ZtauDecay,"ZtauDecay/i");
     tree->Branch("isIso",&isIso,"isIso/d");
@@ -334,6 +336,10 @@ class CMGTopDILAnalyzer : public edm::EDFilter {
     tree->Branch("nGenJet20",&nGenJet20,"nGenJet20/i");
     tree->Branch("nGenbJet20",&nGenbJet20,"nGenbJet20/i");
     tree->Branch("nGencJet20",&nGencJet20,"nGencJet20/i");
+
+    tree->Branch("nGenJet30",&nGenJet30,"nGenJet30/i");
+    tree->Branch("nGenbJet30",&nGenbJet30,"nGenbJet30/i");
+    tree->Branch("nGencJet30",&nGencJet30,"nGencJet30/i");
 
     tree->Branch("genLep1_pt",&genLep1_pt,"genLep1_pt/d");
     tree->Branch("genLep2_pt",&genLep2_pt,"genLep2_pt/d");
@@ -464,6 +470,8 @@ class CMGTopDILAnalyzer : public edm::EDFilter {
     if( ZCand->size() > 0){
       LeptonWeight LepWeight;
       ZMass = ZCand->at(0).mass();
+      ZPt = ZCand->at(0).pt();
+      ZEta = ZCand->at(0).eta();
       PairSign =  ZCand->at(0).sign();
       lep1_relIso04 =  ZCand->at(0).leg1().relIso04();
       lep2_relIso04 =  ZCand->at(0).leg2().relIso04();
@@ -694,66 +702,66 @@ class CMGTopDILAnalyzer : public edm::EDFilter {
         BTagWeight2012 bTag;
 
         //bweight30CSVL = bTag.reweight( jets_pt, jets_eta, jets_flavor, nbjets30_[0], BTagWeight2012::CSVL, BTagWeight2012::NORM);
-        //bweight30CSVM = bTag.reweight( jets_pt, jets_eta, jets_flavor, nbjets30_[1], BTagWeight2012::CSVM, BTagWeight2012::NORM);
-        //bweight30CSVT = bTag.reweight( jets_pt, jets_eta, jets_flavor, nbjets30_[2], BTagWeight2012::CSVT, BTagWeight2012::NORM);
+        bweight30CSVM = bTag.reweight( jets_pt, jets_eta, jets_flavor, nbjets30_[1], BTagWeight2012::CSVM, BTagWeight2012::NORM);
+        bweight30CSVT = bTag.reweight( jets_pt, jets_eta, jets_flavor, nbjets30_[2], BTagWeight2012::CSVT, BTagWeight2012::NORM);
 
         //bweight30CSVLup = bTag.reweight( jets_pt, jets_eta, jets_flavor, nbjets30_[0], BTagWeight2012::CSVL, BTagWeight2012::UP);
-        //bweight30CSVMup = bTag.reweight( jets_pt, jets_eta, jets_flavor, nbjets30_[1], BTagWeight2012::CSVM, BTagWeight2012::UP);
-        //bweight30CSVTup = bTag.reweight( jets_pt, jets_eta, jets_flavor, nbjets30_[2], BTagWeight2012::CSVT, BTagWeight2012::UP);
+        bweight30CSVMup = bTag.reweight( jets_pt, jets_eta, jets_flavor, nbjets30_[1], BTagWeight2012::CSVM, BTagWeight2012::UP);
+        bweight30CSVTup = bTag.reweight( jets_pt, jets_eta, jets_flavor, nbjets30_[2], BTagWeight2012::CSVT, BTagWeight2012::UP);
 
         //bweight30CSVLdw = bTag.reweight( jets_pt, jets_eta, jets_flavor, nbjets30_[0], BTagWeight2012::CSVL, BTagWeight2012::DW);
-        //bweight30CSVMdw = bTag.reweight( jets_pt, jets_eta, jets_flavor, nbjets30_[1], BTagWeight2012::CSVM, BTagWeight2012::DW);
-        //bweight30CSVTdw = bTag.reweight( jets_pt, jets_eta, jets_flavor, nbjets30_[2], BTagWeight2012::CSVT, BTagWeight2012::DW);
+        bweight30CSVMdw = bTag.reweight( jets_pt, jets_eta, jets_flavor, nbjets30_[1], BTagWeight2012::CSVM, BTagWeight2012::DW);
+        bweight30CSVTdw = bTag.reweight( jets_pt, jets_eta, jets_flavor, nbjets30_[2], BTagWeight2012::CSVT, BTagWeight2012::DW);
 
         //bweight30CSVLuplight = bTag.reweight( jets_pt, jets_eta, jets_flavor, nbjets30_[0], BTagWeight2012::CSVL, BTagWeight2012::UPLight);
-        //bweight30CSVMuplight = bTag.reweight( jets_pt, jets_eta, jets_flavor, nbjets30_[1], BTagWeight2012::CSVM, BTagWeight2012::UPLight);
-        //bweight30CSVTuplight = bTag.reweight( jets_pt, jets_eta, jets_flavor, nbjets30_[2], BTagWeight2012::CSVT, BTagWeight2012::UPLight);
+        bweight30CSVMuplight = bTag.reweight( jets_pt, jets_eta, jets_flavor, nbjets30_[1], BTagWeight2012::CSVM, BTagWeight2012::UPLight);
+        bweight30CSVTuplight = bTag.reweight( jets_pt, jets_eta, jets_flavor, nbjets30_[2], BTagWeight2012::CSVT, BTagWeight2012::UPLight);
 
         //bweight30CSVLdwlight = bTag.reweight( jets_pt, jets_eta, jets_flavor, nbjets30_[0], BTagWeight2012::CSVL, BTagWeight2012::DWLight);
-        //bweight30CSVMdwlight = bTag.reweight( jets_pt, jets_eta, jets_flavor, nbjets30_[1], BTagWeight2012::CSVM, BTagWeight2012::DWLight);
-        //bweight30CSVTdwlight = bTag.reweight( jets_pt, jets_eta, jets_flavor, nbjets30_[2], BTagWeight2012::CSVT, BTagWeight2012::DWLight);
+        bweight30CSVMdwlight = bTag.reweight( jets_pt, jets_eta, jets_flavor, nbjets30_[1], BTagWeight2012::CSVM, BTagWeight2012::DWLight);
+        bweight30CSVTdwlight = bTag.reweight( jets_pt, jets_eta, jets_flavor, nbjets30_[2], BTagWeight2012::CSVT, BTagWeight2012::DWLight);
 
         //bweight30JPL = bTag.reweight( jets_pt, jets_eta, jets_flavor, nbjets30_[3], BTagWeight2012::JPL, BTagWeight2012::NORM);
         //bweight30JPM = bTag.reweight( jets_pt, jets_eta, jets_flavor, nbjets30_[4], BTagWeight2012::JPM, BTagWeight2012::NORM);
-        bweight30JPT = bTag.reweight( jets_pt, jets_eta, jets_flavor, nbjets30_[5], BTagWeight2012::JPT, BTagWeight2012::NORM);
+        //bweight30JPT = bTag.reweight( jets_pt, jets_eta, jets_flavor, nbjets30_[5], BTagWeight2012::JPT, BTagWeight2012::NORM);
 
         //bweight30JPLup = bTag.reweight( jets_pt, jets_eta, jets_flavor, nbjets30_[3], BTagWeight2012::JPL, BTagWeight2012::UP);
         //bweight30JPMup = bTag.reweight( jets_pt, jets_eta, jets_flavor, nbjets30_[4], BTagWeight2012::JPM, BTagWeight2012::UP);
-        bweight30JPTup = bTag.reweight( jets_pt, jets_eta, jets_flavor, nbjets30_[5], BTagWeight2012::JPT, BTagWeight2012::UP);
+        //bweight30JPTup = bTag.reweight( jets_pt, jets_eta, jets_flavor, nbjets30_[5], BTagWeight2012::JPT, BTagWeight2012::UP);
 
         //bweight30JPLdw = bTag.reweight( jets_pt, jets_eta, jets_flavor, nbjets30_[3], BTagWeight2012::JPL, BTagWeight2012::DW);
         //bweight30JPMdw = bTag.reweight( jets_pt, jets_eta, jets_flavor, nbjets30_[4], BTagWeight2012::JPM, BTagWeight2012::DW);
-        bweight30JPTdw = bTag.reweight( jets_pt, jets_eta, jets_flavor, nbjets30_[5], BTagWeight2012::JPT, BTagWeight2012::DW);
+        //bweight30JPTdw = bTag.reweight( jets_pt, jets_eta, jets_flavor, nbjets30_[5], BTagWeight2012::JPT, BTagWeight2012::DW);
  
         //bweight30JPLuplight = bTag.reweight( jets_pt, jets_eta, jets_flavor, nbjets30_[3], BTagWeight2012::JPL, BTagWeight2012::UPLight);
         //bweight30JPMuplight = bTag.reweight( jets_pt, jets_eta, jets_flavor, nbjets30_[4], BTagWeight2012::JPM, BTagWeight2012::UPLight);
-        bweight30JPTuplight = bTag.reweight( jets_pt, jets_eta, jets_flavor, nbjets30_[5], BTagWeight2012::JPT, BTagWeight2012::UPLight);
+        //bweight30JPTuplight = bTag.reweight( jets_pt, jets_eta, jets_flavor, nbjets30_[5], BTagWeight2012::JPT, BTagWeight2012::UPLight);
 
         //bweight30JPLdwlight = bTag.reweight( jets_pt, jets_eta, jets_flavor, nbjets30_[3], BTagWeight2012::JPL, BTagWeight2012::DWLight);
         //bweight30JPMdwlight = bTag.reweight( jets_pt, jets_eta, jets_flavor, nbjets30_[4], BTagWeight2012::JPM, BTagWeight2012::DWLight);
-        bweight30JPTdwlight = bTag.reweight( jets_pt, jets_eta, jets_flavor, nbjets30_[5], BTagWeight2012::JPT, BTagWeight2012::DWLight);
+        //bweight30JPTdwlight = bTag.reweight( jets_pt, jets_eta, jets_flavor, nbjets30_[5], BTagWeight2012::JPT, BTagWeight2012::DWLight);
 
       }else{
         BTagWeight bTag;
 
         //bweight30CSVL = bTag.reweight( jets_pt, jets_eta, jets_flavor, nbjets30_[0], BTagWeight::CSVL, BTagWeight::NORM);
-        //bweight30CSVM = bTag.reweight( jets_pt, jets_eta, jets_flavor, nbjets30_[1], BTagWeight::CSVM, BTagWeight::NORM);
+        bweight30CSVM = bTag.reweight( jets_pt, jets_eta, jets_flavor, nbjets30_[1], BTagWeight::CSVM, BTagWeight::NORM);
         bweight30CSVT = bTag.reweight( jets_pt, jets_eta, jets_flavor, nbjets30_[2], BTagWeight::CSVT, BTagWeight::NORM);
 
         //bweight30CSVLup = bTag.reweight( jets_pt, jets_eta, jets_flavor, nbjets30_[0], BTagWeight::CSVL, BTagWeight::UP);
-        //bweight30CSVMup = bTag.reweight( jets_pt, jets_eta, jets_flavor, nbjets30_[1], BTagWeight::CSVM, BTagWeight::UP);
+        bweight30CSVMup = bTag.reweight( jets_pt, jets_eta, jets_flavor, nbjets30_[1], BTagWeight::CSVM, BTagWeight::UP);
         bweight30CSVTup = bTag.reweight( jets_pt, jets_eta, jets_flavor, nbjets30_[2], BTagWeight::CSVT, BTagWeight::UP);
 
         //bweight30CSVLdw = bTag.reweight( jets_pt, jets_eta, jets_flavor, nbjets30_[0], BTagWeight::CSVL, BTagWeight::DW);
-        //bweight30CSVMdw = bTag.reweight( jets_pt, jets_eta, jets_flavor, nbjets30_[1], BTagWeight::CSVM, BTagWeight::DW);
+        bweight30CSVMdw = bTag.reweight( jets_pt, jets_eta, jets_flavor, nbjets30_[1], BTagWeight::CSVM, BTagWeight::DW);
         bweight30CSVTdw = bTag.reweight( jets_pt, jets_eta, jets_flavor, nbjets30_[2], BTagWeight::CSVT, BTagWeight::DW);
 
         //bweight30CSVLuplight = bTag.reweight( jets_pt, jets_eta, jets_flavor, nbjets30_[0], BTagWeight::CSVL, BTagWeight::UPLight);
-        //bweight30CSVMuplight = bTag.reweight( jets_pt, jets_eta, jets_flavor, nbjets30_[1], BTagWeight::CSVM, BTagWeight::UPLight);
+        bweight30CSVMuplight = bTag.reweight( jets_pt, jets_eta, jets_flavor, nbjets30_[1], BTagWeight::CSVM, BTagWeight::UPLight);
         bweight30CSVTuplight = bTag.reweight( jets_pt, jets_eta, jets_flavor, nbjets30_[2], BTagWeight::CSVT, BTagWeight::UPLight);
 
         //bweight30CSVLdwlight = bTag.reweight( jets_pt, jets_eta, jets_flavor, nbjets30_[0], BTagWeight::CSVL, BTagWeight::DWLight);
-        //bweight30CSVMdwlight = bTag.reweight( jets_pt, jets_eta, jets_flavor, nbjets30_[1], BTagWeight::CSVM, BTagWeight::DWLight);
+        bweight30CSVMdwlight = bTag.reweight( jets_pt, jets_eta, jets_flavor, nbjets30_[1], BTagWeight::CSVM, BTagWeight::DWLight);
         bweight30CSVTdwlight = bTag.reweight( jets_pt, jets_eta, jets_flavor, nbjets30_[2], BTagWeight::CSVT, BTagWeight::DWLight);
 
       }
@@ -928,6 +936,11 @@ class CMGTopDILAnalyzer : public edm::EDFilter {
       nGenJet20 = ttbarGenLevel.NJets20();
       nGenbJet20 = ttbarGenLevel.NbJets20();
       nGencJet20 = ttbarGenLevel.NcJets20();
+
+      nGenJet30 = ttbarGenLevel.NJets30();
+      nGenbJet30 = ttbarGenLevel.NbJets30();
+      nGencJet30 = ttbarGenLevel.NcJets30();
+
       genLep1_pt = ttbarGenLevel.lepton1().pt();
       genLep2_pt = ttbarGenLevel.lepton2().pt();
       genLep1_eta = ttbarGenLevel.lepton1().eta();
@@ -1124,6 +1137,8 @@ class CMGTopDILAnalyzer : public edm::EDFilter {
     bweight30JPTdwlight = 1.0;
 
     ZMass = -999; 
+    ZPt = -999; 
+    ZEta = -999; 
     genZMass = -999; 
     ZtauDecay = 0; 
     PairSign = -999;
@@ -1174,6 +1189,9 @@ class CMGTopDILAnalyzer : public edm::EDFilter {
     nGenJet20 = 0;
     nGenbJet20 = 0;
     nGencJet20 = 0;
+    nGenJet30 = 0;
+    nGenbJet30 = 0;
+    nGencJet30 = 0;
 
     genLep1_pt = 0;
     genLep2_pt = 0;
@@ -1376,6 +1394,8 @@ class CMGTopDILAnalyzer : public edm::EDFilter {
   double METUp;
   double METDw;
   double ZMass;
+  double ZPt;
+  double ZEta;
   double genZMass;
   int ZtauDecay;
   double PairSign;
@@ -1426,6 +1446,10 @@ class CMGTopDILAnalyzer : public edm::EDFilter {
   unsigned int nGenJet20;
   unsigned int nGenbJet20;
   unsigned int nGencJet20;
+
+  unsigned int nGenJet30;
+  unsigned int nGenbJet30;
+  unsigned int nGencJet30;
 
   double genLep1_pt;
   double genLep2_pt;
