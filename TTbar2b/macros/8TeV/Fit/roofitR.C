@@ -5,6 +5,10 @@ void roofitR(){
  
   using namespace RooFit ;
 
+  double XBins[] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
+                    21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40};
+  int nX = sizeof(XBins)/sizeof(double) - 1;
+
   bool combine = true;
   int nbinsch = 20; //number of bins for each histograms. for example, b-jets multiplicity = 5 , b-dscriminatorCSV = 20, b-discriminatorJP = 50
   const int ndecay = 3; // mm, em, ee
@@ -133,7 +137,15 @@ void roofitR(){
   double rsig    =  nttbb/nttjj;
   double rbkg    =  (nbkg)/(nttjj + nbkg);
   cout << "ttbb= " << nttbb << " ttcc= " << nttcc << " ttll= " << nttll << " R(ttbb/ttjj)= " <<  rsig << "  nbkg= " << nbkg << " fbkg= " << rbkg << " total MC = " << nMCtotal << " data-driven bkg= " << ndbg << endl;
- 
+
+  h_dat = (TH1F*) h_dat->Rebin(nX, "h_dat", XBins);
+  h_ttbb = (TH1F*) h_ttbb->Rebin(nX, "h_ttbb", XBins);
+  h_ttcc = (TH1F*) h_ttcc->Rebin(nX, "h_ttcc", XBins);
+  h_ttll = (TH1F*) h_ttll->Rebin(nX, "h_ttll", XBins);
+  h_ttccll = (TH1F*) h_ttccll->Rebin(nX, "h_ttccll", XBins);
+  h_bkg = (TH1F*) h_bkg->Rebin(nX, "h_bkg", XBins);
+  h_dbg = (TH1F*) h_dbg->Rebin(nX, "h_dbg", XBins);
+
   RooRealVar x("x","x",0, nbins) ;
   RooDataHist data("data","data",x,h_dat) ; 
   RooDataHist ttbb("ttbb","ttbb",x,h_ttbb) ; 
@@ -165,7 +177,19 @@ void roofitR(){
   RooAddPdf model2("model2","(1-fbkg)*(R*sig+(1-R)*bkg)+fbkg*MC",RooArgList(histpdf_bkg, model), fbkg) ;
   RooAddPdf model3("model3","nMC*(1-fbkg)*(R*sig+(1-R)*bkg)+fbkg*MC+ndbkg",RooArgList(model2, histpdf_dbg), RooArgList(nMC,nDataBkg)) ;
 
+  // model3.fitTo(data);
+  //RooAbsReal* nll = model3.createNLL(data);
+  //RooFitResult* fitResult = model3.fitTo( data, RooFit::Minos(), RooFit::Save());
+
   RooFitResult* fitResult = model3.fitTo( data );
+  if(nll){
+    RooPlot* nllFrame = R->frame();
+    nll->plotOn(nllFrame);
+    TCanvas* cc = new TCanvas("cc", "cc", 500, 500);
+    nllFrame->Draw();
+  }
+
+  //RooFitResult* fitResult = model3.fitTo( data );
 
   TCanvas * c = new TCanvas("c","c",1);
   RooPlot* xframe = x.frame() ; 
