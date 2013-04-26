@@ -52,7 +52,7 @@ public:
 
   void addRealData(const string fileName, const double lumi);
 
-  void addCutStep(const TCut cut, const TString monitorPlotNamesStr, const double plotScale = 1.0, const string weight = "1");
+  void addCutStep(const TCut cut, const TString & monitorPlotNamesStr, const double plotScale = 1.0, const string weight = "1", const TString& cutName = "");
   void addMonitorPlot(const string name, const string varexp, const string title,
                       const int nBins, const double xmin, const double xmax,
                       const double ymin = 0, const double ymax = 0, const bool doLogy = true);
@@ -112,6 +112,7 @@ private:
     vector<string> monitorPlotNames;
     double plotScale;
     string weight;
+    TString cutName;
   };
 
   struct Stat
@@ -353,7 +354,7 @@ if ( !realDataChain_ )
   realDataChain_->Add(fileName.c_str());
 }
 
-void TopAnalyzerLite::addCutStep(const TCut cut, TString monitorPlotNamesStr, const double plotScale, const string weight)
+void TopAnalyzerLite::addCutStep(const TCut cut, const TString & monitorPlotNamesStr, const double plotScale, const string weight, const TString& cutName)
 {
   TObjArray* monitorPlotNames = monitorPlotNamesStr.Tokenize(",");
   const int nPlots = monitorPlotNames->GetSize();
@@ -368,8 +369,11 @@ void TopAnalyzerLite::addCutStep(const TCut cut, TString monitorPlotNamesStr, co
   
     plotNames.push_back(plotName);
   }
-
-  CutStep cutStep = {cut, plotNames, plotScale, weight};
+ 
+  int nstep = (int)cuts_.size()+1; 
+  TString dirName = cutName;
+  if( cutName == "" ) dirName = Form("Step_%d", nstep); 
+  CutStep cutStep = {cut, plotNames, plotScale, weight, dirName};
   cuts_.push_back(cutStep);
 }
 
@@ -432,15 +436,16 @@ void TopAnalyzerLite::applyCutSteps()
     const vector<string>& monitorPlotNames = cuts_[i].monitorPlotNames;
     const double plotScale = cuts_[i].plotScale;
     const string w = cuts_[i].weight;
+    TString cname = cuts_[i].cutName;
     prepareEventList(cut, i);
-    printStat(Form("Step_%d", i+1), cut, i);
+    printStat(Form("%s", cname.Data() ), cut, i);
     for ( unsigned int j = 0; j < monitorPlotNames.size(); ++ j)
     {
       const string& plotName = monitorPlotNames[j];
 
       if ( monitorPlots_.find(plotName) == monitorPlots_.end() ) continue;
       MonitorPlot& monitorPlot = monitorPlots_[plotName];
-      plot(Form("Step_%d_%s", i+1, plotName.c_str()), cut, monitorPlot, lumi_*plotScale, i, w);
+      plot(Form("%s_%s", cname.Data(), plotName.c_str()), cut, monitorPlot, lumi_*plotScale, i, w);
     }
   }
 
@@ -993,38 +998,31 @@ void TopAnalyzerLite::saveHistograms(TString fileName)
   }
 
   TCut cut;
+  TObjArray histograms = getHistograms();
   for ( unsigned int i=0; i<cuts_.size(); ++i )
   {
-    TDirectory* dir = f->mkdir(Form("Step_%d", i+1));
+    TString dirName = cuts_[i].cutName;
+    TDirectory* dir = f->GetDirectory(dirName);
+    if ( !dir ) dir = f->mkdir(dirName);
     dir->cd();
 
     cut += cuts_[i].cut;
     TNamed cutStr("cut", cut);
     cutStr.Write();
-  }
 
-  TPRegexp stepPattern("Step_[0-9]+");
-  TObjArray histograms = getHistograms();
-  for ( int i=0; i<histograms.GetSize(); ++i )
-  {
-    TH1F* h = (TH1F*)histograms.At(i);
-    if ( !h ) continue;
-    TString hName = h->GetName();
-    TString dirName = hName(stepPattern);
-
-    if ( dirName == "" )
-    {
-      f->cd();
-    }
-    else
-    {
-      TDirectory* dir = f->GetDirectory(dirName);
-      if ( !dir ) dir = f->mkdir(dirName);
-      dir->cd();
+    //need to fix : avoid loop  
+    //we can make histograms with vector so that only relevant histograms can be taken
+    for ( int j=0; j<histograms.GetSize(); ++j ){
+      TH1F* h = (TH1F*)histograms.At(j);
+      if ( !h ) continue;
+      TString hName = h->GetName();
+      if( hName.Contains( dirName.Data() )) {
+        h->Write();
+      }
     }
 
-    h->Write();
   }
+
   f->Write();
   f->Close();
 }
