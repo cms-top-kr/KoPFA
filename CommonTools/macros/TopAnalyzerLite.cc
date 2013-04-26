@@ -36,7 +36,7 @@ using namespace std;
 class TopAnalyzerLite
 {
 public:
-  TopAnalyzerLite(const string subDirName = "", const string imageOutDir = "");
+  TopAnalyzerLite(const string subDirName = "", const string imageOutDir = "", bool createplots = true);
   ~TopAnalyzerLite();
 
   void addMCSig(const string mcSampleName, const string mcSampleLabel,
@@ -52,7 +52,7 @@ public:
 
   void addRealData(const string fileName, const double lumi);
 
-  void addCutStep(const TCut cut, const TString & monitorPlotNamesStr, const double plotScale = 1.0, const string weight = "1", const TString& cutName = "");
+  void addCutStep(const TCut cut, const TString & monitorPlotNamesStr, const double plotScale = 1.0, const string weight = "1", const TString& cutName = "", const TString& postfix = "");
   void addMonitorPlot(const string name, const string varexp, const string title,
                       const int nBins, const double xmin, const double xmax,
                       const double ymin = 0, const double ymax = 0, const bool doLogy = true);
@@ -113,6 +113,7 @@ private:
     double plotScale;
     string weight;
     TString cutName;
+    TString postfix;
   };
 
   struct Stat
@@ -150,9 +151,11 @@ private:
   map<TString, vector<Stat> > statsMap_; 
   map<TString, vector<TEntryList *> > entryList_;
   TDirectory* baseRootDir_;
+
+  bool createplots_;
 };
 
-TopAnalyzerLite::TopAnalyzerLite(const string subDirName, const string imageOutDir)
+TopAnalyzerLite::TopAnalyzerLite(const string subDirName, const string imageOutDir, bool createplots)
 {
   subDirName_ = subDirName;
   lumi_ = 0;
@@ -172,6 +175,7 @@ TopAnalyzerLite::TopAnalyzerLite(const string subDirName, const string imageOutD
   scanVariables_ = "RUN:LUMI:EVENT:ZMass:nJet30:MET";
   eventWeightVar_ = "";
 
+  createplots_ = createplots;
 }
 
 TopAnalyzerLite::~TopAnalyzerLite()
@@ -354,7 +358,7 @@ if ( !realDataChain_ )
   realDataChain_->Add(fileName.c_str());
 }
 
-void TopAnalyzerLite::addCutStep(const TCut cut, const TString & monitorPlotNamesStr, const double plotScale, const string weight, const TString& cutName)
+void TopAnalyzerLite::addCutStep(const TCut cut, const TString & monitorPlotNamesStr, const double plotScale, const string weight, const TString& cutName, const TString& postfix)
 {
   TObjArray* monitorPlotNames = monitorPlotNamesStr.Tokenize(",");
   const int nPlots = monitorPlotNames->GetSize();
@@ -373,7 +377,7 @@ void TopAnalyzerLite::addCutStep(const TCut cut, const TString & monitorPlotName
   int nstep = (int)cuts_.size()+1; 
   TString dirName = cutName;
   if( cutName == "" ) dirName = Form("Step_%d", nstep); 
-  CutStep cutStep = {cut, plotNames, plotScale, weight, dirName};
+  CutStep cutStep = {cut, plotNames, plotScale, weight, dirName, postfix};
   cuts_.push_back(cutStep);
 }
 
@@ -432,11 +436,13 @@ void TopAnalyzerLite::applyCutSteps()
   TCut cut = "";
   for ( unsigned int i=0; i<cuts_.size(); ++i )
   {
-    cut = cut && cuts_[i].cut;
+    //cut = cut && cuts_[i].cut;
+    cut = cuts_[i].cut;
     const vector<string>& monitorPlotNames = cuts_[i].monitorPlotNames;
     const double plotScale = cuts_[i].plotScale;
     const string w = cuts_[i].weight;
     TString cname = cuts_[i].cutName;
+    TString postfix = cuts_[i].postfix;
     prepareEventList(cut, i);
     printStat(Form("%s", cname.Data() ), cut, i);
     for ( unsigned int j = 0; j < monitorPlotNames.size(); ++ j)
@@ -445,7 +451,7 @@ void TopAnalyzerLite::applyCutSteps()
 
       if ( monitorPlots_.find(plotName) == monitorPlots_.end() ) continue;
       MonitorPlot& monitorPlot = monitorPlots_[plotName];
-      plot(Form("%s_%s", cname.Data(), plotName.c_str()), cut, monitorPlot, lumi_*plotScale, i, w);
+      plot(Form("%s_%s%s", cname.Data(), plotName.c_str(), postfix.Data() ), cut, monitorPlot, lumi_*plotScale, i, w);
     }
   }
 
@@ -747,7 +753,7 @@ void TopAnalyzerLite::plot(const string name, const TCut cut, MonitorPlot& monit
 
   legend->Draw();
 
-  if ( imageOutDir_ != "" )
+  if ( createplots_ && imageOutDir_ != "" )
   {
     c->Print((imageOutDir_+"/"+c->GetName()+".png").c_str());
     c->Print((imageOutDir_+"/"+c->GetName()+".eps").c_str());
@@ -999,16 +1005,27 @@ void TopAnalyzerLite::saveHistograms(TString fileName)
 
   TCut cut;
   TObjArray histograms = getHistograms();
+
+  vector<TString> dirNames;
   for ( unsigned int i=0; i<cuts_.size(); ++i )
   {
     TString dirName = cuts_[i].cutName;
     TDirectory* dir = f->GetDirectory(dirName);
-    if ( !dir ) dir = f->mkdir(dirName);
-    dir->cd();
+    if ( !dir ) {
+      dir = f->mkdir(dirName);
+      dir->cd();
+      cut = cuts_[i].cut;
+      TNamed cutStr("cut", cut);
+      cutStr.Write();
+      dirNames.push_back(dirName);
+    }
+  }
 
-    cut += cuts_[i].cut;
-    TNamed cutStr("cut", cut);
-    cutStr.Write();
+  for ( unsigned int i=0; i<dirNames.size(); ++i )
+  {
+    TString dirName = dirNames[i];
+    TDirectory* dir = f->GetDirectory(dirName);
+    dir->cd();
 
     //need to fix : avoid loop  
     //we can make histograms with vector so that only relevant histograms can be taken
@@ -1020,7 +1037,6 @@ void TopAnalyzerLite::saveHistograms(TString fileName)
         h->Write();
       }
     }
-
   }
 
   f->Write();
