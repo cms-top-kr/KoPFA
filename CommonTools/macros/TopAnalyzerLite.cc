@@ -60,7 +60,7 @@ public:
                       const string xBinsStr,
                       const double ymin = 0, const double ymax = 0, const bool doLogy = true);
   void setEventWeightVar(const string eventWeightVar = "weight");
-  void setEventWeight(const string, const double* w, const int nW);
+  void setEventWeight(const string sample, const TString & step, const double & w);
   void setScanVariables(const string scanVariables);
 
   void applyCutSteps();
@@ -135,7 +135,7 @@ private:
   string imageOutDir_;
 
   void prepareEventList(const TCut &cut, int istep);
-  void plot(const string name, TCut cut, MonitorPlot& monitorPlot, const double plotScale = 1.0, const double wDY = 1.0, const string weight = "1");
+  void plot(const string name, TCut cut, MonitorPlot& monitorPlot, const double plotScale = 1.0, const double custStep = 1, const string weight = "1");
   void printStat(const string& name, TCut cut, int cutStep=0);
   void addMC(vector<MCSample>& mcSetup,
              const string name, const string label,
@@ -147,7 +147,8 @@ private:
   bool writeSummary_;
   string scanVariables_;
   string eventWeightVar_;
-  map<string, vector<double> > wMap_; 
+  //map<string, vector<double> > wMap_; 
+  map<string, map<TString, double> > wMap_; 
   map<TString, vector<Stat> > statsMap_; 
   map<TString, vector<TEntryList *> > entryList_;
   TDirectory* baseRootDir_;
@@ -436,8 +437,8 @@ void TopAnalyzerLite::applyCutSteps()
   TCut cut = "";
   for ( unsigned int i=0; i<cuts_.size(); ++i )
   {
-    //cut = cut && cuts_[i].cut;
-    cut = cuts_[i].cut;
+    cut = cut && cuts_[i].cut;
+    //cut = cuts_[i].cut;
     const vector<string>& monitorPlotNames = cuts_[i].monitorPlotNames;
     const double plotScale = cuts_[i].plotScale;
     const string w = cuts_[i].weight;
@@ -595,10 +596,12 @@ void TopAnalyzerLite::plot(const string name, const TCut cut, MonitorPlot& monit
     hMC->Scale(lumi_*mcSample.xsec/mcSample.nEvents);
 
     //scale MC
-    map<string, vector<double> >::iterator it;
+    //map<string, vector<double> >::iterator it;
+    map<string, map<TString, double> >::iterator it;
     it = wMap_.find(mcSample.name);
     if( it != wMap_.end() ) {
-      hMC->Scale(it->second[cutStep]);
+      //hMC->Scale(it->second[cutStep]);
+      hMC->Scale(it->second[cuts_[cutStep].cutName]);
     }
 
     hMC->SetFillColor(mcSample.color);
@@ -648,10 +651,11 @@ void TopAnalyzerLite::plot(const string name, const TCut cut, MonitorPlot& monit
     hBkg->Scale(sample.norm);
 
     //scale MC
-    map<string, vector<double> >::iterator it;
+    //map<string, vector<double> >::iterator it;
+    map<string, map<TString, double> >::iterator it;
     it = wMap_.find(sample.name);
     if( it != wMap_.end() ) {
-      hBkg->Scale(it->second[cutStep]);
+      hBkg->Scale(it->second[cuts_[cutStep].cutName]);
     }
 
     hBkg->SetFillColor(sample.color);
@@ -813,10 +817,11 @@ void TopAnalyzerLite::printStat(const string& name, TCut cut, int cutStep)
 
     //scale MC
     double scale = 1;
-    map<string, vector<double> >::iterator it;
+    //map<string, vector<double> >::iterator it;
+    map<string, map<TString, double> >::iterator it;
     it = wMap_.find(mcSample.name);
     if( it != wMap_.end() ) {
-      scale = it->second[cutStep];
+      scale = it->second[cuts_[cutStep].cutName];
     }
     const double norm = lumi_*mcSample.xsec/mcSample.nEvents;
     double rawN = 0;
@@ -860,10 +865,11 @@ void TopAnalyzerLite::printStat(const string& name, TCut cut, int cutStep)
 
     //scale MC
     double scale = 1;
-    map<string, vector<double> >::iterator it;
+    //map<string, vector<double> >::iterator it;
+    map<string, map<TString, double> >::iterator it;
     it = wMap_.find(sample.name);
     if( it != wMap_.end() ) {
-      scale = it->second[cutStep];
+      scale = it->second[cuts_[cutStep].cutName];
     }
 
     const double norm = sample.norm;
@@ -1014,7 +1020,7 @@ void TopAnalyzerLite::saveHistograms(TString fileName)
     if ( !dir ) {
       dir = f->mkdir(dirName);
       dir->cd();
-      cut = cuts_[i].cut;
+      cut += cuts_[i].cut;
       TNamed cutStr("cut", cut);
       cutStr.Write();
       dirNames.push_back(dirName);
@@ -1053,12 +1059,9 @@ void TopAnalyzerLite::setEventWeightVar(const string eventWeightVar)
   eventWeightVar_ = eventWeightVar;
 }
 
-void TopAnalyzerLite::setEventWeight(const string sample, const double *w, const int nW)
+void TopAnalyzerLite::setEventWeight(const string sample, const TString& step, const double & w)
 {
-  assert( nW == (int) cuts_.size() );
-  for(int i=0 ; i <(int) cuts_.size(); i++){ 
-    wMap_[sample.c_str()].push_back(w[i]);
-  }
+  wMap_[sample.c_str()][step] = w;
 }
 
 void TopAnalyzerLite::drawEffCurve(const TCut cut, const string varexp, const string scanPoints, const std::string imgPrefix)
