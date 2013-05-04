@@ -21,6 +21,7 @@ void ana8TeVCSVWeight(){
   ana("ElEl","TTBB_27Apr2013_CSVWeight/ElEl");
   ana("MuMu","TTBB_27Apr2013_CSVWeight/MuMu");
   //ana("MuEl","TTBB_27Apr2013_CSVWeight/MuEl");
+  gSystem->Exec("hadd -f TTBB_27Apr2013_CSVWeight/merged.root TTBB_27Apr2013_CSVWeight/*/*.root");
 }
 
 
@@ -44,14 +45,18 @@ void ana(string decayMode = "ElEl", string imageOutDir = "")
   TCut ttcc = "nGencJet20 >= 2";
   TCut dilepton = "ttbarGen_dileptonic == 1";
 
-  analyzer->addMCSig("TTbarbb", "t#bar{t} + bb", mcPath+"/vallot_TTbarFullLepMGDecays.root", 26, kBlue+2, true, visible && sigcut);
-  analyzer->addMCBkg("TTbarcc", "t#bar{t} + cc", mcPath+"/vallot_TTbarFullLepMGDecays.root", 26, kRed+2, visible && !sigcut && ttcc );
-  analyzer->addMCBkg("TTbarll", "t#bar{t} + ll", mcPath+"/vallot_TTbarFullLepMGDecays.root", 26, kRed, visible && !sigcut && !ttcc);
+  TCut hf = "abs(jets_flavor[csvd_jetid[0]]) == 5 || abs(jets_flavor[csvd_jetid[1]]) == 5"; 
+  TCut cf = "abs(jets_flavor[csvd_jetid[0]]) == 4 || abs(jets_flavor[csvd_jetid[1]]) == 4"; 
 
-  analyzer->addMCBkg("TTbarOthers", "t#bar{t} others", mcPath+"/vallot_TTbarFullLepMGDecays.root", 26, kRed-7, !visible);
-  analyzer->addMCBkg("TTbarNonvis", "t#bar{t} others", mcPath+"/vallot_TTbarTuneZ2.root", 234, kRed-7, !dilepton);
+  //analyzer->addMCSig("TTbarbb", "t#bar{t} + bb", mcPath+"/vallot_TTbarFullLepMGDecays.root", 26, kBlue+2, true, visible && sigcut);
+  //analyzer->addMCBkg("TTbarcc", "t#bar{t} + cc", mcPath+"/vallot_TTbarFullLepMGDecays.root", 26, kRed+2, visible && !sigcut && ttcc );
+  //analyzer->addMCBkg("TTbarll", "t#bar{t} + ll", mcPath+"/vallot_TTbarFullLepMGDecays.root", 26, kRed, visible && !sigcut && !ttcc);
+
+  //analyzer->addMCBkg("TTbarOthers", "t#bar{t} others", mcPath+"/vallot_TTbarFullLepMGDecays.root", 26, kRed-7, !visible);
+  //analyzer->addMCBkg("TTbarNonvis", "t#bar{t} others", mcPath+"/vallot_TTbarTuneZ2.root", 234, kRed-7, !dilepton);
 
   //when you use inclusive sample
+  analyzer->addMCSig("TTbar", "t#bar{t}", mcPath+"/vallot_TTbarTuneZ2.root", 234, kRed+2, true);
   //analyzer->addMCSig("TTbarbb", "t#bar{t} + bb", mcPath+"/vallot_TTbarTuneZ2.root", 234, kRed+2, true, visible && sigcut);
   //analyzer->addMCBkg("TTbarcc", "t#bar{t} + cc", mcPath+"/vallot_TTbarTuneZ2.root", 234, kRed+1, visible && !sigcut && ttcc );
   //analyzer->addMCBkg("TTbarll", "t#bar{t} + ll", mcPath+"/vallot_TTbarTuneZ2.root", 234, kRed, visible && !sigcut && !ttcc);
@@ -65,8 +70,11 @@ void ana(string decayMode = "ElEl", string imageOutDir = "")
 
   analyzer->addMCBkg("SingleTop", "Single top", mcPath+"/vallot_SingleToptW.root", 11.1, kMagenta);
   analyzer->addMCBkg("SingleTopBar", "Single top", mcPath+"/vallot_SingleTopBartW.root", 11.1, kMagenta);
-  analyzer->addMCBkg("DYll", "Z/#gamma* #rightarrow ll", mcPath+"/vallot_ZJets.root", 3503, kAzure-2);
-  analyzer->addMCBkg("DYll10To50", "Z/#gamma* #rightarrow ll", mcPath+"/vallot_ZJets10To50.root", 860.5, kAzure-2);
+  analyzer->addMCBkg("DYb", "Z/#gamma* + b", mcPath+"/vallot_ZJets.root", 3503, kAzure+7, hf);
+  analyzer->addMCBkg("DYc", "Z/#gamma* + c", mcPath+"/vallot_ZJets.root", 3503, kAzure, !hf + cf);
+  analyzer->addMCBkg("DYLF", "Z/#gamma* + LF", mcPath+"/vallot_ZJets.root", 3503, kAzure-2, !hf + !cf);
+  //analyzer->addMCBkg("DYll", "Z/#gamma* #rightarrow ll", mcPath+"/vallot_ZJets.root", 3503, kAzure-2);
+  //analyzer->addMCBkg("DYll10To50", "Z/#gamma* #rightarrow ll", mcPath+"/vallot_ZJets10To50.root", 860.5, kAzure-2);
 
   analyzer->addDataBkg("QCD", "QCD", rdPath+"/vallot_Run2012"+decayMode+".root", 1.0, kYellow);
 
@@ -76,9 +84,11 @@ void ana(string decayMode = "ElEl", string imageOutDir = "")
   gROOT->ProcessLine(".L addVariables.h");
   addTopVariables(analyzer); //add Top analysis related variables for plotting
 
-  TCut ZSel = "ZMass > 12 && lep1_relIso03 < 0.15 && lep2_relIso03 < 0.15 && PairSign < 0 && abs(ZMass-91) < 15 && MET < 30 && nJet30 >= 2 && nbjets30_CSVT == 0";
+  TCut ZSel = "ZMass > 12 && lep1_relIso03 < 0.15 && lep2_relIso03 < 0.15 && PairSign < 0 && abs(ZMass-91) < 15 && MET < 30 && nJet30 >= 2";
+  TCut Notag = "nbjets30_CSVT == 0";
 
-  analyzer->addCutStep(ZSel, "jet1_bDisCSV,jet2_bDisCSV,jet1pt_bDisCSV,jet2pt_bDisCSV", 0.5, "bweight30CSVT", "Step_5");
+  analyzer->addCutStep(ZSel, "jet1_bDisCSV,jet2_bDisCSV,jet1pt_bDisCSV,jet2pt_bDisCSV,jet1_bDis,jet2_bDis", 0.5, "bweight30CSVT", "ZSel");
+  analyzer->addCutStep(Notag, "jet1_bDisCSV,jet2_bDisCSV,jet1pt_bDisCSV,jet2pt_bDisCSV,jet1_bDis,jet2_bDis", 0.5, "bweight30CSVT", "NoTag");
 
   //QCD invert isolation for base shape
   analyzer->replaceDataBkgCut("QCD", "ZMass > 12 && lep1_relIso03 < 0.15 && lep2_relIso03 < 0.15 && PairSign < 0", "ZMass > 12 && lep1_relIso03 > 0.15 && lep2_relIso03 > 0.15 && PairSign < 0");
