@@ -18,8 +18,6 @@ namespace vallot{
       leg1_ = leg1;
       leg2_ = leg2;
       mass_ = (leg1_+leg2_).M(); 
-      pt_ = (leg1_+leg2_).Pt();
-      eta_ = (leg1_+leg2_).Eta();
       sign_ = leg1.charge()*leg2.charge();
     }
 
@@ -27,8 +25,6 @@ namespace vallot{
       lv1_= leg1 ;
       lv2_= leg2 ;
       mass_ = (leg1_+leg2_).M();
-      pt_ = (leg1_+leg2_).Pt();
-      eta_ = (leg1_+leg2_).Eta();
       sign_ = sign;
     }
 
@@ -38,8 +34,6 @@ namespace vallot{
     const reco::Candidate::LorentzVector& lv2() const { return lv2_;}
 
     float mass() const { return mass_; }
-    float pt() const { return pt_; }
-    float eta() const { return eta_; }
     float sign() const { return sign_; }
     float deltaR() const; 
     float deltaPhi() const;
@@ -51,8 +45,6 @@ namespace vallot{
     reco::Candidate::LorentzVector lv2_;
 
     float mass_;
-    float pt_;
-    float eta_;
     float sign_;
   };
 

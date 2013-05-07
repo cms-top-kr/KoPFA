@@ -8,10 +8,6 @@ import commands
 
 from os.path import join, getsize
 
-def sorted_ls(path):
-    mtime = lambda f: os.stat(os.path.join(path, f)).st_mtime
-    return list(sorted(os.listdir(path), key=mtime))
-
 def doWork(finalpath, action):
 
   sample = os.path.basename(finalpath)
@@ -24,34 +20,12 @@ def doWork(finalpath, action):
       filesize = 0
       if os.path.isfile( file ):
         filesize = os.path.getsize( file )
-      #another test
-      error = ""
-      jobDir = sorted_ls( finalpath+"/Log/Job_"+num[1] )
-      logDir = []
-      for jobDirList in jobDir:
-        if jobDirList.startswith("LSF"):
-          logDir.append(jobDirList)  
-      if len(logDir) > 0:
-        log = finalpath+"/Log/Job_"+num[1]+"/"+logDir[-1]+"/STDOUT"
-        for line in open(log):
-          if "Segmentation fault" in line:
-            error = "Segmentation fault"
-          if "Probable system resources exhausted" in line:
-            error = "Probable system resources exhausted"
-          if "exhausted the virtual memory available to the process" in line:
-            error = "exhausted the virtual memory available to the process"
-      else:
-        error = "No log file available"
-      ## print out
-      if filesize < 10000 or error != "":
+      if filesize < 10000:
         if action == "report":
           if filesize == 0:
-            print "Bad job number : " + num[1] + " : file was not created"  
+            print "Bad job number : " + num[1] + " : file was not created"
           else: 
-            if error == "":
-              print "Bad job number : " + num[1] + " : file size is too small. it must be corrupted." 
-            else:
-              print "Bad job number : [" +logDir[-1]+"]" + num[1] + " : " + error
+            print "Bad job number : " + num[1] + " : file size is too small. it must be corrupted." 
         if action == "submit":
           print "Submitting job : " + num[1] 
           currdir = commands.getoutput('pwd')
@@ -66,35 +40,8 @@ def doWork(finalpath, action):
     if os.path.isfile( destinationfile ):
       print destinationfile + " exists."
     else:
-      filelist = os.listdir(finalpath+"/Res")
-      filelist.sort()
-      nlist =  len(filelist)
+      os.system("hadd -f "+destinationfile+" "+finalpath+"/Res/vallot_*.root")
 
-      if nlist > 500 :
-        #make list of 500 files
-        n = 1 
-        list = [] 
-        tmp = ""
-        for f in filelist:
-          tmp += finalpath+"/Res/"+f+" "
-          k = n%500
-          if k == 0 or n == nlist:
-            list.append(tmp)
-            tmp = ""
-          n += 1 
-        ## merge 500 files first to tmp file.
-        j = 0 
-        nmerge = len(list)
-        print "Will creat "+str(nmerge)+" tmpfile.root files"
-        for l in list:
-          tmpfile = pathdir+"/tmp_"+sample+"_"+str(j)+".root"
-          os.system("hadd -f "+tmpfile+" "+l)
-          j += 1
-
-        os.system("hadd -f "+destinationfile+" "+pathdir+"/tmp_"+sample+"*.root")
-        os.system("rm -rf "+pathdir+"/tmp_"+sample+"*.root")
-      else:
-        os.system("hadd -f "+destinationfile+" "+finalpath+"/Res/vallot_*.root")
     x = raw_input("Remove directory %s (y/n)?" % (finalpath))
     if x == "y":
       os.system("rm -rf "+finalpath+"/Log")

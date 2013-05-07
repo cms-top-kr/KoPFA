@@ -13,7 +13,7 @@
 //
 // Original Author:  Tae Jeong Kim,40 R-A32,+41227678602,
 //         Created:  Fri Jun  4 17:19:29 CEST 2010
-// $Id: TopDILAnalyzer.h,v 1.92 2012/11/01 09:33:18 tjkim Exp $
+// $Id: TopDILAnalyzer.h,v 1.89 2012/09/06 12:50:23 tjkim Exp $
 //
 //
 
@@ -138,12 +138,12 @@ class TopDILAnalyzer : public edm::EDFilter {
     //TFileDirectory btagdir = fs->mkdir(Form("btagEff", i));
     
 
-    Z = new std::vector<vallot::ZCandidate>();
-    lepton1 = new std::vector<vallot::Lepton>();
-    lepton2 = new std::vector<vallot::Lepton>();
-    pfMet = new std::vector<vallot::METCandidate>();
-    ttbar = new std::vector<vallot::TTbarMass>();
-    ttbarGen = new std::vector<vallot::TTbarCandidate>();
+    Z = new std::vector<Ko::ZCandidate>();
+    lepton1 = new std::vector<Ko::Lepton>();
+    lepton2 = new std::vector<Ko::Lepton>();
+    pfMet = new std::vector<Ko::METCandidate>();
+    ttbar = new std::vector<Ko::TTbarMass>();
+    ttbarGen = new std::vector<Ko::TTbarCandidate>();
     met = new std::vector<math::XYZTLorentzVector>();
     jetspt30 = new std::vector<math::XYZTLorentzVector>();
     jetspt30flavor = new std::vector<int>();
@@ -237,11 +237,11 @@ class TopDILAnalyzer : public edm::EDFilter {
     tree->Branch("phi1",&phi1,"phi1/d");
     tree->Branch("phi2",&phi2,"phi2/d");
 
-    //tree->Branch("pfMet","std::vector<vallot::METCandidate>", &pfMet);
+    //tree->Branch("pfMet","std::vector<Ko::METCandidate>", &pfMet);
     tree->Branch("met","std::vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >", &met);
 
-    tree->Branch("ttbar","std::vector<vallot::TTbarMass>", &ttbar);
-    tree->Branch("ttbarGen","std::vector<vallot::TTbarCandidate>", &ttbarGen);
+    tree->Branch("ttbar","std::vector<Ko::TTbarMass>", &ttbar);
+    tree->Branch("ttbarGen","std::vector<Ko::TTbarCandidate>", &ttbarGen);
     tree->Branch("kinttbarM",&kinttbarM,"kinttbarM/d");
     tree->Branch("kinttbarMCSVM",&kinttbarMCSVM,"kinttbarMCSVM/d");
     tree->Branch("kinttbarMCSVT",&kinttbarMCSVT,"kinttbarMCSVT/d");
@@ -351,7 +351,7 @@ class TopDILAnalyzer : public edm::EDFilter {
     edm::Handle<reco::GenJetCollection> genJets_;
     iEvent.getByLabel(genJetsLabel_,genJets_);
 
-    edm::Handle<vector<vallot::ZCandidate> > ZCand;
+    edm::Handle<vector<Ko::ZCandidate> > ZCand;
     iEvent.getByLabel(dileptonLabel_, ZCand);
 
     int mode = 0;
@@ -373,8 +373,8 @@ class TopDILAnalyzer : public edm::EDFilter {
     if( ZCand->size() > 0){
       ZMass = ZCand->at(0).mass();
       PairSign =  ZCand->at(0).sign();
-      relIso1 =  ZCand->at(0).leg1().relIso03();
-      relIso2 = ZCand->at(0).leg2().relIso03();
+      relIso1 =  ZCand->at(0).leg1().relpfIso03();
+      relIso2 = ZCand->at(0).leg2().relpfIso03();
       pt1 = ZCand->at(0).leg1().pt();
       pt2 = ZCand->at(0).leg2().pt();
       eta1 = ZCand->at(0).leg1().eta();
@@ -490,40 +490,36 @@ class TopDILAnalyzer : public edm::EDFilter {
 
     //}
 
-    //std::vector<TLorentzVector *> jet30(nJet30);
-    std::vector<double> jet30pt(nJet30);
-    std::vector<double> jet30eta(nJet30);
+    std::vector<TLorentzVector *> jet30(nJet30);
     std::vector<int> jet30flavor(nJet30);
 
     for (unsigned int i=0; i < nJet30; i++)
     {
-      //jet30[i] = new TLorentzVector( jetspt30->at(i).px(), jetspt30->at(i).py(), jetspt30->at(i).pz(), jetspt30->at(i).energy() );
-      jet30pt[i] = jetspt30->at(i).pt();
-      jet30eta[i] = jetspt30->at(i).eta();
+      jet30[i] = new TLorentzVector( jetspt30->at(i).px(), jetspt30->at(i).py(), jetspt30->at(i).pz(), jetspt30->at(i).energy() );
       jet30flavor[i] = jetspt30flavor->at(i);
     }
    
     if( !isRealData ){
-      bweight30CSVL = bTag.reweight( jet30pt, jet30eta, jet30flavor, nbjets30_[1], BTagWeight::CSVL, BTagWeight::NORM);
-      bweight30CSVM = bTag.reweight( jet30pt, jet30eta, jet30flavor, nbjets30_[2], BTagWeight::CSVM, BTagWeight::NORM);
-      bweight30CSVT = bTag.reweight( jet30pt, jet30eta, jet30flavor, nbjets30_[3], BTagWeight::CSVT, BTagWeight::NORM);
+      bweight30CSVL = bTag.reweight( jet30, jet30flavor, nbjets30_[1], BTagWeight::CSVL, BTagWeight::NORM);
+      bweight30CSVM = bTag.reweight( jet30, jet30flavor, nbjets30_[2], BTagWeight::CSVM, BTagWeight::NORM);
+      bweight30CSVT = bTag.reweight( jet30, jet30flavor, nbjets30_[3], BTagWeight::CSVT, BTagWeight::NORM);
 
       //add adddtional erro for b : set it true
-      bweight30CSVLup = bTag.reweight( jet30pt, jet30eta, jet30flavor, nbjets30_[1], BTagWeight::CSVL, BTagWeight::UP);
-      bweight30CSVMup = bTag.reweight( jet30pt, jet30eta, jet30flavor, nbjets30_[2], BTagWeight::CSVM, BTagWeight::UP, true);
-      bweight30CSVTup = bTag.reweight( jet30pt, jet30eta, jet30flavor, nbjets30_[3], BTagWeight::CSVT, BTagWeight::UP, true);
+      bweight30CSVLup = bTag.reweight( jet30, jet30flavor, nbjets30_[1], BTagWeight::CSVL, BTagWeight::UP);
+      bweight30CSVMup = bTag.reweight( jet30, jet30flavor, nbjets30_[2], BTagWeight::CSVM, BTagWeight::UP, true);
+      bweight30CSVTup = bTag.reweight( jet30, jet30flavor, nbjets30_[3], BTagWeight::CSVT, BTagWeight::UP, true);
 
-      bweight30CSVLdw = bTag.reweight( jet30pt, jet30eta, jet30flavor, nbjets30_[1], BTagWeight::CSVL, BTagWeight::DW);
-      bweight30CSVMdw = bTag.reweight( jet30pt, jet30eta, jet30flavor, nbjets30_[2], BTagWeight::CSVM, BTagWeight::DW, true);
-      bweight30CSVTdw = bTag.reweight( jet30pt, jet30eta, jet30flavor, nbjets30_[3], BTagWeight::CSVT, BTagWeight::DW, true);
+      bweight30CSVLdw = bTag.reweight( jet30, jet30flavor, nbjets30_[1], BTagWeight::CSVL, BTagWeight::DW);
+      bweight30CSVMdw = bTag.reweight( jet30, jet30flavor, nbjets30_[2], BTagWeight::CSVM, BTagWeight::DW, true);
+      bweight30CSVTdw = bTag.reweight( jet30, jet30flavor, nbjets30_[3], BTagWeight::CSVT, BTagWeight::DW, true);
 
-      bweight30CSVLuplight = bTag.reweight( jet30pt, jet30eta, jet30flavor, nbjets30_[1], BTagWeight::CSVL, BTagWeight::UPLight);
-      bweight30CSVMuplight = bTag.reweight( jet30pt, jet30eta, jet30flavor, nbjets30_[2], BTagWeight::CSVM, BTagWeight::UPLight);
-      bweight30CSVTuplight = bTag.reweight( jet30pt, jet30eta, jet30flavor, nbjets30_[3], BTagWeight::CSVT, BTagWeight::UPLight);
+      bweight30CSVLuplight = bTag.reweight( jet30, jet30flavor, nbjets30_[1], BTagWeight::CSVL, BTagWeight::UPLight);
+      bweight30CSVMuplight = bTag.reweight( jet30, jet30flavor, nbjets30_[2], BTagWeight::CSVM, BTagWeight::UPLight);
+      bweight30CSVTuplight = bTag.reweight( jet30, jet30flavor, nbjets30_[3], BTagWeight::CSVT, BTagWeight::UPLight);
 
-      bweight30CSVLdwlight = bTag.reweight( jet30pt, jet30eta, jet30flavor, nbjets30_[1], BTagWeight::CSVL, BTagWeight::DWLight);
-      bweight30CSVMdwlight = bTag.reweight( jet30pt, jet30eta, jet30flavor, nbjets30_[2], BTagWeight::CSVM, BTagWeight::DWLight);
-      bweight30CSVTdwlight = bTag.reweight( jet30pt, jet30eta, jet30flavor, nbjets30_[3], BTagWeight::CSVT, BTagWeight::DWLight);
+      bweight30CSVLdwlight = bTag.reweight( jet30, jet30flavor, nbjets30_[1], BTagWeight::CSVL, BTagWeight::DWLight);
+      bweight30CSVMdwlight = bTag.reweight( jet30, jet30flavor, nbjets30_[2], BTagWeight::CSVM, BTagWeight::DWLight);
+      bweight30CSVTdwlight = bTag.reweight( jet30, jet30flavor, nbjets30_[3], BTagWeight::CSVT, BTagWeight::DWLight);
 
     }
 
@@ -533,7 +529,7 @@ class TopDILAnalyzer : public edm::EDFilter {
     met->push_back(corrmet);
 
     if(metStudy_){
-      const vallot::METCandidate pfmet(MET, mi->sumEt(), mi->NeutralEMFraction(),mi->NeutralHadEtFraction(),mi->ChargedHadEtFraction(),mi->ChargedEMEtFraction(),mi->MuonEtFraction() );
+      const Ko::METCandidate pfmet(MET, mi->sumEt(), mi->NeutralEMFraction(),mi->NeutralHadEtFraction(),mi->ChargedHadEtFraction(),mi->ChargedEMEtFraction(),mi->MuonEtFraction() );
       pfMet->push_back(pfmet);
     }
 
@@ -543,7 +539,7 @@ class TopDILAnalyzer : public edm::EDFilter {
       lep1.SetPxPyPzE(ZCand->at(0).leg1().px(),ZCand->at(0).leg1().py(),ZCand->at(0).leg1().pz(),ZCand->at(0).leg1().energy());
       lep2.SetPxPyPzE(ZCand->at(0).leg2().px(),ZCand->at(0).leg2().py(),ZCand->at(0).leg2().pz(),ZCand->at(0).leg2().energy());
 
-      const vallot::TTbarMass ttbarMass(lep1, lep2, jetspt30->at(0), jetspt30->at(1), met->at(0));
+      const Ko::TTbarMass ttbarMass(lep1, lep2, jetspt30->at(0), jetspt30->at(1), met->at(0));
       ttbar->push_back(ttbarMass);
 
       const string hypo = "kKinSolution";
@@ -599,7 +595,7 @@ class TopDILAnalyzer : public edm::EDFilter {
     nbjets30_CSVMT = ntopb + nextb;
 
     //gen information
-    vallot::TTbarCandidate ttbarGenLevel;
+    Ko::TTbarCandidate ttbarGenLevel;
 
     double genZmass = -999;
  
@@ -1017,12 +1013,12 @@ class TopDILAnalyzer : public edm::EDFilter {
 
   TH1F * tmp;
 
-  std::vector<vallot::ZCandidate>* Z;
-  std::vector<vallot::Lepton>* lepton1;
-  std::vector<vallot::Lepton>* lepton2;
-  std::vector<vallot::METCandidate>* pfMet;
-  std::vector<vallot::TTbarMass>* ttbar;
-  std::vector<vallot::TTbarCandidate>* ttbarGen;
+  std::vector<Ko::ZCandidate>* Z;
+  std::vector<Ko::Lepton>* lepton1;
+  std::vector<Ko::Lepton>* lepton2;
+  std::vector<Ko::METCandidate>* pfMet;
+  std::vector<Ko::TTbarMass>* ttbar;
+  std::vector<Ko::TTbarCandidate>* ttbarGen;
   std::vector<math::XYZTLorentzVector>* met;
   std::vector<math::XYZTLorentzVector>* jetspt30;
   std::vector<int>* jetspt30flavor;

@@ -68,8 +68,6 @@ void unfolding(int k=4){
   TH1 * hGenMCNLO_Up = (TH1*) file_truthFinal->Get("hTTbarM_Up");
   TH1 * hGenMCNLO_Down = (TH1*) file_truthFinal->Get("hTTbarM_Down");
 
-  TH1 * hNLOMtt = (TH1*) file_truthFinal->Get("nnll");
-
   double lumi = 4982;
   bool print = true; //save plots
   bool printX = true; //print cross section
@@ -119,8 +117,8 @@ void unfolding(int k=4){
   //TOP11013Plot(h_unfold, hGenDistMADGRAPH, hAcceptDistPtcl, hGenMADGRAPH_Ptcl, hGenMCNLO, hGenPOWHEG_Ptcl, lumi, "unfold_Normalized_pas013", "dSigmadM",  0.00001, 0.06, norm, log, bincorr, print, false, HBBstyle, true, hGenMCNLO_Up, hGenMCNLO_Down);
   //full phase space
   //TOP11013Plot(h_unfold, hGenDistMADGRAPH, hAcceptDistFull, hGenMADGRAPH_Full, hGenMCNLO_Full, hGenPOWHEG_Full, lumi, "unfold_Normalized_full_pas013", "dSigmadM",  0.000001, 0.06, norm, log, bincorr, print, false, HBBstyle, true, hGenMCNLO_Up, hGenMCNLO_Down);
-  TOP11013Plot(h_unfold, hGenDistMADGRAPH, hAcceptDistFull, hGenMADGRAPH_Full, hGenMCNLO, hGenPOWHEG_Full, lumi, "unfold_Normalized_full_pas013", "dSigmadM",  0.000001, 0.06, norm, log, bincorr, print, false, HBBstyle, true, hGenMCNLO_Up, hGenMCNLO_Down, hNLOMtt);
-
+  TOP11013Plot(h_unfold, hGenDistMADGRAPH, hAcceptDistFull, hGenMADGRAPH_Full, hGenMCNLO, hGenPOWHEG_Full, lumi, "unfold_Normalized_full_pas013", "dSigmadM",  0.000001, 0.06, norm, log, bincorr, print, false, HBBstyle, true, hGenMCNLO_Up, hGenMCNLO_Down);
+ 
   //chi2 test
   //int n = 5;
   //for(int i=1; i <=n ;i++){

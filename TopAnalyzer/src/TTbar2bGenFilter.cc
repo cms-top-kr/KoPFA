@@ -37,7 +37,6 @@ public:
 
 private:
   bool applyFilter_;
-  edm::InputTag genParticlesLabel_;
   edm::InputTag genJetsLabel_;
 
   TTree* tree;
@@ -108,14 +107,13 @@ private:
   TH1F* h_nEvents_inclusive;
   TH1F* h_nEvents_parton_inclusive;
 
-  std::vector<vallot::TTbarCandidate>* ttbarGen;
+  std::vector<Ko::TTbarCandidate>* ttbarGen;
 
 };
 
 TTbar2bGenFilter::TTbar2bGenFilter(const edm::ParameterSet& pset)
 {
   applyFilter_= pset.getUntrackedParameter<bool>("applyFilter",true);
-  genParticlesLabel_= pset.getParameter<edm::InputTag>("genParticlesLabel");
   genJetsLabel_= pset.getParameter<edm::InputTag>("genJetsLabel");
 
   edm::Service<TFileService> fs;
@@ -185,11 +183,11 @@ TTbar2bGenFilter::TTbar2bGenFilter(const edm::ParameterSet& pset)
   h_nEvents_inclusive = fs->make<TH1F>( "h_nEvents_inclusive"  , "h_nEvents", 6,  0, 6 );
   h_nEvents_parton_inclusive = fs->make<TH1F>( "h_nEvents_parton_inclusive"  , "h_nEvents_parton", 6,  0, 6 );
 
-  ttbarGen = new std::vector<vallot::TTbarCandidate>();
+  ttbarGen = new std::vector<Ko::TTbarCandidate>();
 }
 
 void TTbar2bGenFilter::beginJob(){
-  tree->Branch("ttbarGen","std::vector<vallot::TTbarCandidate>", &ttbarGen);
+  tree->Branch("ttbarGen","std::vector<Ko::TTbarCandidate>", &ttbarGen);
 }
 
 bool TTbar2bGenFilter::filter(edm::Event& iEvent, const edm::EventSetup& eventSetup)
@@ -216,7 +214,7 @@ bool TTbar2bGenFilter::filter(edm::Event& iEvent, const edm::EventSetup& eventSe
   const reco::GenParticleCollection* myGenParticles = 0;
 
   Handle<reco::GenParticleCollection> genEvt;
-  bool genPart = iEvent.getByLabel(genParticlesLabel_,genEvt);
+  bool genPart = iEvent.getByLabel("genParticles",genEvt);
   if ( genPart ) myGenParticles = &(*genEvt);
   if ( !myGenParticles ) return false;
 
@@ -259,7 +257,7 @@ bool TTbar2bGenFilter::filter(edm::Event& iEvent, const edm::EventSetup& eventSe
   b_multiplicity->Fill(nb);
 
   //gen information
-  vallot::TTbarCandidate ttbarGenLevel;
+  Ko::TTbarCandidate ttbarGenLevel;
 
   if(genJets_.isValid()){
     const reco::GenJetCollection* myGenJets = 0;

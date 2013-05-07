@@ -48,8 +48,6 @@ struct Histograms
     hjet4phi = dir->make<TH1F>("hjet4phi", "Fourth   jet #phi;#phi (Radian);Events/0.2 Radian", 35, -3.5, 3.5);
 
     // B tagging variables
-    hBDiscriminatorCSVJet3 = dir->make<TH1F>("hBDiscriminatorCSVJet3","hBDiscriminatorCSVJet3; b-Discriminator (CSV); Events/0.05" ,20, 0, 1);
-    hBDiscriminatorCSVJet4 = dir->make<TH1F>("hBDiscriminatorCSVJet4","hBDiscriminatorCSVJet4; b-Discriminator (CSV); Events/0.05" ,20, 0, 1);   
 
     // MET/SumET variables
     hMET = dir->make<TH1F>("hMET", "Missing E_{T};Transverse missing momentum (GeV/c);Events/1 GeV/c", 200, 0, 200);
@@ -92,8 +90,6 @@ struct Histograms
   H hjet4pt, hjet4eta, hjet4phi;
 
   std::vector<H> hnBJets;
-  H hBDiscriminatorCSVJet3;
-  H hBDiscriminatorCSVJet4;
 
   H hMET, hMETPhi;
   H hSumET, hChET, hNhET, hPhET;

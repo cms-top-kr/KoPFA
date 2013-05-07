@@ -60,9 +60,9 @@ void preUnfolding(){
   //rdPath.push_back("$WORK/data/export/common/Top/finalHisto/2011full/v3/ElEl.root");
   //rdPath.push_back("$WORK/data/export/common/Top/finalHisto/2011full/v3/MuMu.root");
 
-  rdPath.push_back("/afs/cern.ch/work/t/tjkim/public/store/top/TOP11013/TOP11013_12072012/MuEl/MuEl.root");
-  rdPath.push_back("/afs/cern.ch/work/t/tjkim/public/store/top/TOP11013/TOP11013_12072012/ElEl/ElEl.root");
-  rdPath.push_back("/afs/cern.ch/work/t/tjkim/public/store/top/TOP11013/TOP11013_12072012/MuMu/MuMu.root");
+  rdPath.push_back("TOP11013_12072012/MuEl/MuEl.root");
+  rdPath.push_back("TOP11013_12072012/ElEl/ElEl.root");
+  rdPath.push_back("TOP11013_12072012/MuMu/MuMu.root");
 
   //const std::string cutStep = "Step_7";
   const std::string cutStep = "Step_8";

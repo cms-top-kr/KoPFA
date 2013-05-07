@@ -27,7 +27,6 @@ public:
 
 private:
   bool applyFilter_;
-  edm::InputTag genParticlesLabel_;
   bool allHadronic_;
   bool semiLeptonic_;
   bool semiLeptonicMuon_;
@@ -46,7 +45,7 @@ private:
 TopDecayGenFilter::TopDecayGenFilter(const edm::ParameterSet& pset)
 {
   applyFilter_= pset.getUntrackedParameter<bool>("applyFilter",false);
-  genParticlesLabel_= pset.getParameter<edm::InputTag>("genParticlesLabel"); 
+  
   allHadronic_ = pset.getParameter<bool>("allHadronic"),
   semiLeptonic_ = pset.getParameter<bool>("semiLeptonic"),
   semiLeptonicMuon_ = pset.getParameter<bool>("semiLeptonicMuon"),
@@ -81,7 +80,7 @@ bool TopDecayGenFilter::filter(edm::Event& iEvent, const edm::EventSetup& eventS
   const reco::GenParticleCollection* myGenParticles = 0;
 
   Handle<reco::GenParticleCollection> genEvt;
-  bool genPart = iEvent.getByLabel(genParticlesLabel_,genEvt);
+  bool genPart = iEvent.getByLabel("genParticles",genEvt);
   if ( genPart ) myGenParticles = &(*genEvt);
   if ( !myGenParticles ) return false;
 

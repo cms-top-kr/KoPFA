@@ -87,7 +87,7 @@ class KoElectronSelector : public edm::EDProducer
   std::vector<double>* ecalIso;
   std::vector<double>* hcalIso;
 
-  std::vector<vallot::Lepton>* lepton;
+  std::vector<Ko::Lepton>* lepton;
 };
 
 

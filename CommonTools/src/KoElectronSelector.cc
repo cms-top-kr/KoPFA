@@ -71,7 +71,7 @@ KoElectronSelector::KoElectronSelector(const edm::ParameterSet& cfg)
     hcalIso = new std::vector<double>();
   }
 
-  lepton = new std::vector<vallot::Lepton>();
+  lepton = new std::vector<Ko::Lepton>();
 
 }
 
@@ -128,7 +128,7 @@ void KoElectronSelector::produce(edm::Event& iEvent, const edm::EventSetup& es)
       electron.setP4(electron.pfCandidateRef()->p4());
     }
 
-    const vallot::Lepton ele(electron.p4(), (int) electron.charge());
+    const Ko::Lepton ele(electron.p4(), (int) electron.charge());
     lepton->push_back(ele);
     reco::isodeposit::Direction Dir = Direction(electron.superCluster()->eta(),electron.superCluster()->phi());
 
@@ -154,7 +154,7 @@ void KoElectronSelector::produce(edm::Event& iEvent, const edm::EventSetup& es)
     lepton->back().setIsoDeposit( pat::PfNeutralHadronIso, electron.isoDeposit(pat::PfNeutralHadronIso), vetos_nh_cone);
     lepton->back().setIsoDeposit( pat::PfGammaIso, electron.isoDeposit(pat::PfGammaIso), vetos_ph_cone );
 
-    bool passIso =  lepton->back().relIso03() < relIso_; 
+    bool passIso =  lepton->back().relpfIso03() < relIso_; 
 
     bool passPre = electron.pt() > ptcut_ && fabs(electron.eta()) < etacut_ && fabs(electron.gsfTrack()->dxy(beamSpot_->position())) < 0.04;
 
@@ -165,14 +165,14 @@ void KoElectronSelector::produce(edm::Event& iEvent, const edm::EventSetup& es)
 
     if(i == 0 ) {
       mvaTrigV0Lep1 = mvaV0;
-      relPfIso03Lep1 = lepton->back().relIso03();
-      relPfIso04Lep1 = lepton->back().relIso04();
+      relPfIso03Lep1 = lepton->back().relpfIso03();
+      relPfIso04Lep1 = lepton->back().relpfIso04();
       chargeLep1 = (int)electron.charge();
     }
     if(i == 1 ) {
       mvaTrigV0Lep2 = mvaV0;
-      relPfIso03Lep2 = lepton->back().relIso03();
-      relPfIso04Lep2 = lepton->back().relIso04();
+      relPfIso03Lep2 = lepton->back().relpfIso03();
+      relPfIso04Lep2 = lepton->back().relpfIso04();
       chargeLep2 = (int)electron.charge();
     }
 

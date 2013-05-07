@@ -513,7 +513,7 @@ void FinalPlot(TH1F* h_unfold, TH1F* hgen, TH1F* accept, TH1* hTr1, TH1* hTr2, T
   Print(c_dsigma, "unfoldPlot", hName.Data(), cName.Data(), print);
 }
 
-void TOP11013Plot(TH1F* h_unfold, TH1F* hgen, TH1F* accept, TH1* hTr1, TH1* hTr2, TH1* hTr3, double lumi, TString hName, TString cName, double min, double max, bool norm=true, bool log=true, bool curve=false, bool print = false, bool printX = false, bool HBBstyle = false, bool band = false, TH1* hTr2_up ="", TH1* hTr2_dw= "", TH1* hNLONNLL= ""){
+void TOP11013Plot(TH1F* h_unfold, TH1F* hgen, TH1F* accept, TH1* hTr1, TH1* hTr2, TH1* hTr3, double lumi, TString hName, TString cName, double min, double max, bool norm=true, bool log=true, bool curve=false, bool print = false, bool printX = false, bool HBBstyle = false, bool band = false, TH1* hTr2_up ="", TH1* hTr2_dw= ""){
 
   int nbins = h_unfold->GetNbinsX();
 
@@ -532,32 +532,26 @@ void TOP11013Plot(TH1F* h_unfold, TH1F* hgen, TH1F* accept, TH1* hTr1, TH1* hTr2
   TH1F* hSigmaTruth2_up = getTruthCrossSection(hgen, hTr2_up, lumi, norm, false);
   TH1F* hSigmaTruth2_dw = getTruthCrossSection(hgen, hTr2_dw, lumi, norm, false);
 
-  TH1F* hSigmaTruth4 = hNLONNLL;
-
   TCanvas *c_dsigma = new TCanvas(Form("c_%s_dsigma_%s",hName.Data(), cName.Data()),Form("c_%s_dsigma_%s",hName.Data(), cName.Data()));
   TGaxis::SetMaxDigits(4);
   if(log) c_dsigma->SetLogy();
 
-  //htmp->Draw();
-  //hTr1->Draw("same");
-
   TH1F* fSigmaTruth = getFitHistogram(hTr1, "madgraph");
   //TH1F* fSigmaTruth2 = getFitHistogram(hTr2, "mcatnlo");
   //TH1F* fSigmaTruth3 = getFitHistogram(hTr3, "powheg");
-  
+
   //for the band curve
   //TH1F* fSigmaTruth2_up = getFitHistogram(hTr2_up, "mcatnlo");
   //TH1F* fSigmaTruth2_dw = getFitHistogram(hTr2_dw, "mcatnlo");
 
-  SetHistoStyle(fSigmaTruth, 2,kRed,1,0,0,0,min,max,"","");
+  SetHistoStyle(fSigmaTruth, 2,kRed+1,1,0,0,0,min,max,"","");
   //SetHistoStyle(fSigmaTruth2, 2,kAzure,1,0,0,0,min,max,"","");
   //SetHistoStyle(fSigmaTruth3, 2,kGreen+1,1,0,0,0,min,max,"","");
 
-  SetHistoStyle_TOP11013(htmp        , 0,0         ,1,1.2,0,20,min,max,"m^{t#bar{t}} #left[GeV#right]","#frac{1}{#sigma} #frac{d#sigma}{dm^{t#bar{t}}} #left[GeV^{-1}#right]");
-  SetHistoStyle_TOP11013(hSigmaTruth , 2,kRed    ,1,1.2,0,20,min,max,"m^{t#bar{t}} #left[GeV#right]","#frac{1}{#sigma} #frac{d#sigma}{dm^{t#bar{t}}} #left[GeV^{-1}#right]");
-  SetHistoStyle_TOP11013(hSigmaTruth2, 2,kBlue     ,5,1.2,0,20,min,max,"m^{t#bar{t}} #left[GeV#right]","#frac{1}{#sigma} #frac{d#sigma}{dm^{t#bar{t}}} #left[GeV^{-1}#right]");
-  SetHistoStyle_TOP11013(hSigmaTruth3, 2,kGreen+1  ,7,1.2,0,20,min,max,"m^{t#bar{t}} #left[GeV#right]","#frac{1}{#sigma} #frac{d#sigma}{dm^{t#bar{t}}} #left[GeV^{-1}#right]");
-  SetHistoStyle_TOP11013(hSigmaTruth4, 2,kMagenta+2,1,1.2,0,20,min,max,"m^{t#bar{t}} #left[GeV#right]","#frac{1}{#sigma} #frac{d#sigma}{dm^{t#bar{t}}} #left[GeV^{-1}#right]");
+  SetHistoStyle_TOP11013(htmp        , 0,0       ,1,1.2,0,20,min,max,"m^{t#bar{t}} #left[GeV#right]","#frac{1}{#sigma} #frac{d#sigma}{dm^{t#bar{t}}} #left[GeV^{-1}#right]");
+  SetHistoStyle_TOP11013(hSigmaTruth , 2,kRed+1  ,1,1.2,0,20,min,max,"m^{t#bar{t}} #left[GeV#right]","#frac{1}{#sigma} #frac{d#sigma}{dm^{t#bar{t}}} #left[GeV^{-1}#right]");
+  SetHistoStyle_TOP11013(hSigmaTruth2, 2,kBlue   ,5,1.2,0,20,min,max,"m^{t#bar{t}} #left[GeV#right]","#frac{1}{#sigma} #frac{d#sigma}{dm^{t#bar{t}}} #left[GeV^{-1}#right]");
+  SetHistoStyle_TOP11013(hSigmaTruth3, 2,kGreen+1,7,1.2,0,20,min,max,"m^{t#bar{t}} #left[GeV#right]","#frac{1}{#sigma} #frac{d#sigma}{dm^{t#bar{t}}} #left[GeV^{-1}#right]");
 
   htmp->Draw();
 
@@ -567,31 +561,22 @@ void TOP11013Plot(TH1F* h_unfold, TH1F* hgen, TH1F* accept, TH1* hTr1, TH1* hTr2
   dsigmaTruth->SetLineStyle(5);
   dsigmaTruth->SetLineColor(kBlue);
   dsigmaTruth->SetFillColor(kGray);
-  //dsigmaTruth->SetFillStyle(3001);
   dsigmaTruth->Draw("2e"); //histogram
   //dsigmaTruth->Draw("e3"); //curve
 
   //histograms
   hSigmaTruth2->Draw("same"); 
   hSigmaTruth3->Draw("same");
-  hSigmaTruth4->Draw("same");
   hSigmaTruth->Draw("same");
 
-  //hTr1->Draw("hist same");
-  //hTr1->SetLineWidth(0.4);
   //curve 
-  fSigmaTruth->Smooth();
   fSigmaTruth->Draw("hist c same"); //madgraph only
   //fSigmaTruth2->Draw("hist c same");
   //fSigmaTruth3->Draw("hist c same");
-  
-  htmp->Draw("AXIS SAME");
  
   TGraphAsymmErrors* dsigmaDataCentered = BinCenterCorrection(dsigmaData, hSigmaTruth, fSigmaTruth);
   TGraphAsymmErrors* dsigmaDataCenteredOnlyWithStats = BinCenterCorrection(dsigmaDataOnlyWithStat, hSigmaTruth, fSigmaTruth);
-  dsigmaDataCentered->SetMarkerSize(1.2);
   dsigmaDataCentered->Draw("ZPsame");
-  dsigmaDataCenteredOnlyWithStats->SetMarkerSize(1.2);
   dsigmaDataCenteredOnlyWithStats->Draw("||");
   //dsigmaData->Draw("ZPsame");
 
@@ -600,18 +585,12 @@ void TOP11013Plot(TH1F* h_unfold, TH1F* hgen, TH1F* accept, TH1* hTr1, TH1* hTr2
   DrawDecayChLabel("Dilepton Combined");
 
   TLegend *l= new TLegend();
-  l->AddEntry(dsigmaDataCentered, "Data" ,"P");
-  l->AddEntry(fSigmaTruth,  "MadGraph"   ,"L");
-  l->AddEntry(dsigmaTruth,  "MC@NLO"     ,"FL");
-  l->AddEntry(hSigmaTruth3, "POWHEG"     ,"L");
-  l->AddEntry(hSigmaTruth4, "NLO+NNLL"   ,"L");
+  l->AddEntry(dsigmaData, "Data" ,"P");
+  l->AddEntry(fSigmaTruth,  "MadGraph" ,"L");
+  l->AddEntry(dsigmaTruth,  "MC@NLO"   ,"FL");
+  l->AddEntry(hSigmaTruth3, "POWHEG"   ,"L");
   SetLegendStyle(l,true);
   l->Draw("same");
-
-  TLatex *label2= new TLatex;
-  label2->SetNDC();
-  label2->SetTextSize(0.025);
-  label2->DrawLatex(0.69,0.6,"(arXiv:1003.5827)");
 
   //print
   Print(c_dsigma, "unfoldPlot", hName.Data(), cName.Data(), print);
@@ -680,13 +659,9 @@ TH1* getMeasuredCrossSection( TH1F* h_unfold, TH1F* accept, double lumi, bool no
            << sigma*1000 << " $\\pm$ " << sigmaErr*1000  
            << " \\\\" <<  endl;
       }else{
-        //this is for top11013
-        double relErr = sigmaErr/sigma;
-        double relSystErr = sigmaSystErr/sigma;
-        double reltotalErr = totalE/sigma;
         cout << "$" << bincenter-width/2 << "-" << bincenter+width/2 << "$   ~&~ "
            << setprecision (4) << unfolded << " $\\pm$ " << abserr << " ~&~ "
-           << sigma*1000 << " $\\pm$ " << sigmaErr*1000 << "(" << relErr << ")" << "(stat.) $\\pm$ " << sigmaSystErr*1000 << "(" << relSystErr << ")" << "(syst.) $\\pm$ " << totalE*1000 << "(" << reltotalErr << ")" << "(total)"
+           << sigma*1000 << " $\\pm$ " << sigmaErr*1000 << "(stat.) $\\pm$ " << sigmaSystErr*1000 << "(syst.) $\\pm$ " << totalE*1000 << "(total)"
            << " \\\\" <<  endl;
       }
     }
@@ -1004,29 +979,27 @@ TH1F * getFitHistogram(TH1* h, string model){
   }
   else if(model=="madgraph"){
     //tail:
-    fitLowEdge=430.0;
-    fitHighEdge=950.0;
+    fitLowEdge=425.0;
+    fitHighEdge=1700.0;
     def="[0]*exp([1]*x)+[2]";
     a= 164748.0;  
-    //b=-0.00810181; 
-    b=-0.00780181; 
+    b=-0.00810181; 
     c= 3.59495;   
     // start:
     fitLowEdgeB=345.;
-    fitHighEdgeB=430.;
+    fitHighEdgeB=425.;
     defB="[3]*TMath::GammaDist(x,[0],[1],[2])";
     aB=1.50;
     bB=345.;
     cB=79.3;
     dB=1010990;
     //end of tail:
-    fitLowEdgeC=950.0;
-    fitHighEdgeC=1750.0;
-    defC="[0]*exp([1]*x)+[2]";
-    aC= 54699.0;  
+    //fitLowEdgeC=830.0;
+    //fitHighEdgeC=1600.0;
+    //defC="[0]*exp([1]*x)+[2]";
+    //aC= 54699.0;  
     //bC=-0.0068;
-    bC=-0.00685;
-    cC= 0.979;
+    //cC= 0.979;
   }
   else if(model=="powheg"){
     fitLowEdge=440.;
@@ -1053,37 +1026,37 @@ TH1F * getFitHistogram(TH1* h, string model){
   }
 
   TF1* function=new TF1("function",def,fitLowEdge,fitHighEdge);
-  //function->SetParLimits(0, 0.0, 0.1442);
-  //function->SetParLimits(1, -0.01, 0.00);
-  //function->SetParLimits(2, 0.0, 0.0000036);
+  function->SetParLimits(0, 0.0, 0.1442);
+  function->SetParLimits(1, -0.01, 0.00);
+  function->SetParLimits(2, 0.0, 0.0000036);
 
   //FIXME: it does not work
-  function->SetParameter(0,a);
-  function->SetParameter(1,b);
-  function->SetParLimits(1,1.2*b,0.8*b);
-  function->SetParameter(2,c);
+  //function->SetParameter(0,a);
+  //function->SetParLimits(1,0.85*b,1.15*b);
+  //function->SetParameter(2,c);
 
   TF1* functionB=new TF1("functionB",defB,fitLowEdgeB, fitHighEdgeB);
   functionB->SetParameter(0,aB);
-  //functionB->SetParLimits(0,0.99*aB,1.01*aB);
   functionB->SetParameter(1,bB);
-  if(bB<0.) functionB->SetParLimits(1,1.2*bB,0.8*bB);
-  if(bB>0.) functionB->SetParLimits(1,0.8*bB,1.2*bB);
+  if(bB<0.) functionB->SetParLimits(1,1.15*bB,0.85*bB);
+  if(bB>0.) functionB->SetParLimits(1,0.85*bB,1.15*bB);
   functionB->SetParameter(2,cB);
-  //functionB->SetParLimits(2,0.8*cB,1.2*cB);
 
   TF1* functionC=new TF1("functionC",defC, fitLowEdgeC, fitHighEdgeC);
   functionC->SetParameter(0,aC);
   functionC->SetParameter(1,bC);
-  functionC->SetParLimits(1,0.8*bC,1.2*bC);
+  functionC->SetParLimits(1,0.85*bC,1.15*bC);
   functionC->SetParameter(2,cC);
 
   tmp->Fit(function,"R","same", fitLowEdge, fitHighEdge);
   result->Add(function);
   tmp->Fit(functionB,"R+","same", fitLowEdgeB, fitHighEdgeB);
   result->Add(functionB);
-  tmp->Fit(functionC,"R+","same", fitLowEdgeC, fitHighEdgeC);
-  result->Add(functionC);
+
+  if( model != "madgraph" ){
+    tmp->Fit(functionC,"R+","same", fitLowEdgeC, fitHighEdgeC);
+    result->Add(functionC);
+  }
 
   return result;
 }
