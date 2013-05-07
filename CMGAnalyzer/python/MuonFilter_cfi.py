@@ -5,7 +5,7 @@ Muons = cms.EDFilter('CMGMuonFilter',
     muonLabel  = cms.InputTag("cmgMuonSel"),
     vertexLabel = cms.untracked.InputTag('offlinePrimaryVertices'),
     ptcut = cms.untracked.double(20),
-    etacut = cms.untracked.double(2.5),
+    etacut = cms.untracked.double(2.4),
     relIso = cms.untracked.double(999),
 )
 
