@@ -36,7 +36,7 @@ using namespace std;
 class TopAnalyzerLite
 {
 public:
-  TopAnalyzerLite(const string subDirName = "", const string imageOutDir = "", bool createplots = true);
+  TopAnalyzerLite(const string subDirName = "", const string imageOutDir = "", bool createplots = true, bool printstats = true);
   ~TopAnalyzerLite();
 
   void addMCSig(const string mcSampleName, const string mcSampleLabel,
@@ -154,9 +154,10 @@ private:
   TDirectory* baseRootDir_;
 
   bool createplots_;
+  bool printstats_;
 };
 
-TopAnalyzerLite::TopAnalyzerLite(const string subDirName, const string imageOutDir, bool createplots)
+TopAnalyzerLite::TopAnalyzerLite(const string subDirName, const string imageOutDir, bool createplots, bool printstats)
 {
   subDirName_ = subDirName;
   lumi_ = 0;
@@ -177,6 +178,7 @@ TopAnalyzerLite::TopAnalyzerLite(const string subDirName, const string imageOutD
   eventWeightVar_ = "";
 
   createplots_ = createplots;
+  printstats_  = printstats;
 }
 
 TopAnalyzerLite::~TopAnalyzerLite()
@@ -437,15 +439,15 @@ void TopAnalyzerLite::applyCutSteps()
   TCut cut = "";
   for ( unsigned int i=0; i<cuts_.size(); ++i )
   {
-    cut = cut && cuts_[i].cut;
-    //cut = cuts_[i].cut;
+    if( printstats_ ) cut = cuts_[i].cut;
+    else cut = cut && cuts_[i].cut;
     const vector<string>& monitorPlotNames = cuts_[i].monitorPlotNames;
     const double plotScale = cuts_[i].plotScale;
     const string w = cuts_[i].weight;
     TString cname = cuts_[i].cutName;
     TString postfix = cuts_[i].postfix;
-    prepareEventList(cut, i);
-    printStat(Form("%s", cname.Data() ), cut, i);
+    if( printstats_ ) prepareEventList(cut, i);
+    if( printstats_ ) printStat(Form("%s", cname.Data() ), cut, i);
     for ( unsigned int j = 0; j < monitorPlotNames.size(); ++ j)
     {
       const string& plotName = monitorPlotNames[j];
@@ -963,8 +965,8 @@ void TopAnalyzerLite::applySingleCut(const TCut cut, const TString monitorPlotNa
   cout << "----------------------------\n";
   cout << "Result of single cut" << endl;
   cout << "Cut = " << cut << endl;
-  prepareEventList(cut, istep);
-  printStat(Form("SingleCut_%d", singleCutUniqueId), cut, istep);
+  if( printstats_ ) prepareEventList(cut, istep);
+  if( printstats_ ) printStat(Form("SingleCut_%d", singleCutUniqueId), cut, istep);
   for ( int i=0; i<nPlots; ++i )
   {
     TObject* obj = monitorPlotNames->At(i);
@@ -1020,7 +1022,8 @@ void TopAnalyzerLite::saveHistograms(TString fileName)
     if ( !dir ) {
       dir = f->mkdir(dirName);
       dir->cd();
-      cut += cuts_[i].cut;
+      if(printstats_) cut = cuts_[i].cut; 
+      else cut += cuts_[i].cut;
       TNamed cutStr("cut", cut);
       cutStr.Write();
       dirNames.push_back(dirName);
