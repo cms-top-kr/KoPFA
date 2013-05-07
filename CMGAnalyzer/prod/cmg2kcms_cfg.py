@@ -20,6 +20,7 @@ process.load("KoPFA.CMGAnalyzer.cmgElectronAnalyzer_cfi")
 process.load("KoPFA.CMGAnalyzer.cmgMuonAnalyzer_cfi")
 process.load("KoPFA.CMGAnalyzer.ZFilter_cfi")
 process.load("KoPFA.CMGAnalyzer.ttbar2bFilter_cfi")
+process.load("KoPFA.CMGAnalyzer.topHLTfilter_cf")
 from KoPFA.CommonTools.PileUpWeight_cff import *
 
 runOnMC = True 
