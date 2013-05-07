@@ -4,20 +4,13 @@
 TFile* f;
 TString outDirName = ".";
 
-const int nBkg = 9;
-const char* bkgNames[]  = {"hMCSig_TTbarbb", "hMC_TTbarcc", "hMC_TTbarll","hMC_TTbarOthers", "hMC_Wl",             "hMC_VV",   "hMC_SingleTop", "hMC_DYll", "hDataBkg_QCD"};
-const char* bkgLabels[] = {"t#bar{t}+bb",    "t#bar{t}+cc", "t#bar{t}+ll","t#bar{t} others", "W #rightarrow l#nu", "Dibosons", "Single top",    "Z/#gamma* #rightarrow ll", "QCD" };
-const Color_t color[]   = { kBlue+2,         kOrange+2,      kRed,        kRed-7,            kGreen-3,              kGray+4,    kMagenta,       kAzure-2                   ,kYellow };
-const int     style[]   = { 3354,            1001,           1001,        1001,              1001,                  1001,       1001,           1001,                      1001 };
+const int nBkg = 8;
+const char* bkgNames[]  = {"hMCSig_TTbar", "hMC_Wl",             "hMC_VV",   "hMC_SingleTop", "hMC_DYb",       "hMC_DYc", "hMC_DYLF", "hDataBkg_QCD"};
+const char* bkgLabels[] = {"t#bar{t}",     "W #rightarrow l#nu", "Dibosons", "Single top",    "Z/#gamma* + b", "Z/#gamma* + c", "Z/#gamma* +LF", "QCD" };
+const Color_t color[]   = { kRed+2,       kGreen-3,              kGray+4,    kMagenta,       kAzure+7,        kAzure,        kAzure-2                   ,kYellow };
+const int     style[]   = { 1001,          1001,                  1001,       1001,           1001,            1001,          1001,          1001 };
 int nExclude = 1;
 const char* Exclude[] = { "hDataBkg_QCD" }
-
-const int nSig = 1;
-const char* sigNames[] = {"hMCSig_TTbarbb"};
-const char* sigLabels[] = {"t#bar{t}+bb"};
-const Color_t color_sig[] = {kBlue+2};
-const int style_sig[] = {3354};
-bool stackSig = true;
 
 void cutStepPlots(const char* cutStep, const char* histName, const char* histTitle,
                   double minY, double maxY, bool doLogY);
@@ -37,10 +30,10 @@ void makePlotsCSVWeight(TString noteNumber = "TTBB_27Apr2013_CSVWeight/v1")
   outDirName += "/"+noteNumber;
   gSystem->Exec("mkdir "+outDirName);
 
-  cutStepPlots("Step_5", "jet1_bDisCSV", "b-Discriminator (CSV)", "Events/0.05", "b-Discriminator (CSV)", "LL", 0.1, 500000, false);
-  cutStepPlots("Step_5", "jet2_bDisCSV", "b-Discriminator (CSV)", "Events/0.05", "b-Discriminator (CSV)", "LL", 0.1, 700000, false);
-  cutStepPlots("Step_5", "jet1_bDisCSV", "b-Discriminator (CSV)", "Events/0.05", "b-Discriminator (CSV)", "LL", 0.1, 400000000, true, "log");
-  cutStepPlots("Step_5", "jet2_bDisCSV", "b-Discriminator (CSV)", "Events/0.05", "b-Discriminator (CSV)", "LL", 0.1, 70000000, true, "log");
+  cutStepPlots("ZSel", "jet1_bDisCSV", "b-Discriminator (CSV)", "Events/0.05", "b-Discriminator (CSV)", "LL", 1, 500000, false);
+  cutStepPlots("ZSel", "jet2_bDisCSV", "b-Discriminator (CSV)", "Events/0.05", "b-Discriminator (CSV)", "LL", 1, 700000, false);
+  cutStepPlots("ZSel", "jet1_bDisCSV", "b-Discriminator (CSV)", "Events/0.05", "b-Discriminator (CSV)", "LL", 1, 400000000, true, "log");
+  cutStepPlots("ZSel", "jet2_bDisCSV", "b-Discriminator (CSV)", "Events/0.05", "b-Discriminator (CSV)", "LL", 1, 70000000, true, "log");
 
 }
 
