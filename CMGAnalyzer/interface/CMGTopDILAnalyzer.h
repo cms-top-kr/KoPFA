@@ -13,7 +13,7 @@
 //
 // Original Author:  Tae Jeong Kim,40 R-A32,+41227678602,
 //         Created:  Fri Jun  4 17:19:29 CEST 2010
-// $Id: CMGTopDILAnalyzer.h,v 1.30 2013/04/05 11:06:22 tjkim Exp $
+// $Id: CMGTopDILAnalyzer.h,v 1.31 2013/04/20 21:19:55 tjkim Exp $
 //
 //
 
@@ -290,6 +290,8 @@ class CMGTopDILAnalyzer : public edm::EDFilter {
     tree->Branch("jets_bDiscriminatorJP","std::vector<double>",&jets_bDiscriminatorJP);
     tree->Branch("jets_bDiscriminatorCSV","std::vector<double>",&jets_bDiscriminatorCSV);
     tree->Branch("jets_bDisCSVweight","std::vector<double>",&jets_bDisCSVweight);
+    tree->Branch("jets_bDisCSVweightall","std::vector<double>",&jets_bDisCSVweightall);
+    tree->Branch("jets_ptweight","std::vector<double>",&jets_ptweight);
 
     //tree->Branch("lep1","std::vector<vallot::Lepton>",&lep1);
     //tree->Branch("lep2","std::vector<vallot::Lepton>",&lep2);
@@ -600,6 +602,8 @@ class CMGTopDILAnalyzer : public edm::EDFilter {
       jets_bDiscriminatorCSV.push_back(bDiscriminator); 
 //      jets_bDisCSVweight.push_back( bDisCSVweight);
       jets_bDisCSVweight.push_back( 1.0 );
+      jets_bDisCSVweightall.push_back( 1.0 );
+      jets_ptweight.push_back( 1.0 );
     
       corrjetup = corrjet * (1+uncert); 
       corrjetdw = corrjet * (1-uncert); 
@@ -644,8 +648,12 @@ class CMGTopDILAnalyzer : public edm::EDFilter {
       for(int i = 0; i < (int) nJet30 ; i++){
         if( i  <  2 ) continue;
         int jetid = csvd_jetid[i];
-        double bDisCSVweight = bDiscriminatorWeight(jets_pt[jetid], jets_bDiscriminatorCSV[jetid], jets_flavor[jetid], i );
+        double bDisCSVweight = bDiscriminatorWeight(jets_pt[jetid], jets_bDiscriminatorCSV[jetid], jets_flavor[jetid], i , false );
+        double bDisCSVweightall = bDiscriminatorWeight(jets_pt[jetid], jets_bDiscriminatorCSV[jetid], jets_flavor[jetid], i, true );
+        double ptweight = PTWeight(jets_pt[jetid], jets_flavor[jetid], i );
         jets_bDisCSVweight[jetid] =  bDisCSVweight ;
+        jets_bDisCSVweightall[jetid] =  bDisCSVweightall ;
+        jets_ptweight[jetid] =  ptweight ;
       }
     }
 
@@ -1182,6 +1190,8 @@ class CMGTopDILAnalyzer : public edm::EDFilter {
     jets_bDiscriminatorJP.clear();
     jets_bDiscriminatorCSV.clear();
     jets_bDisCSVweight.clear();
+    jets_bDisCSVweightall.clear();
+    jets_ptweight.clear();
 
     nJet30 = 0;
     nJet30Up = 0;
@@ -1293,46 +1303,29 @@ class CMGTopDILAnalyzer : public edm::EDFilter {
     return out;
   }
 
-  double bDiscriminatorWeight(double pt, double x, int flavor, int i){
-    if( fabs(flavor) == 5 ) return 1.0; 
-    //double w = 0.749644+3.09749*x-9.98179*pow(x,2)+19.3428*pow(x,3)-19.6664*pow(x,4)+7.44382*pow(x,5);
+  double PTWeight(double pt, int flavor, int i){
+    double w = 1.0;
+    if( i == 2 ){
+      w = 1.07059 - 0.0012197*pt + 5.10046e-07*pow(pt,2) + 2.12404e-09*pow(pt,3);  
+    }else if( i > 2){
+      w = 1.02154 + 4.66542e-05*pt -5.23393e-06*pow(pt,2) + 8.56852e-09*pow(pt,3);
+    }
+    return w;
+  }
+
+  double bDiscriminatorWeight(double pt, double x, int flavor, int i, bool all){
+
+    if( all == false && fabs(flavor) == 5 ) return 1.0; 
+    if( all == false && x > 0.9 ) return 1.0;
+
     double w = 1.0;
  
-    if( x > 0.9 ) return 1.0;
-
-/* 
-    if( pt > 30 && pt < 35 ){ 
-      w = 0.602517+ 2.52834*x-1.39364*pow(x,2)-0.768595*pow(x,3)-0.558003*pow(x,4);
-    }else if( pt >= 35 && pt < 40){
-      w = 0.665936+ 2.12584*x+3.23594*pow(x,2)-11.8875*pow(x,3)+7.34131*pow(x,4);
-    }else if( pt >= 40 && pt < 60){
-      w = 0.582048+6.35219*x-21.4122*pow(x,2)+29.1063*pow(x,3)-13.7155*pow(x,4);
-    }else{
-      w = 0.710834+4.27287*x-14.9838*pow(x,2)+23.2877*pow(x,3)-12.5533*pow(x,4);
-    }
-*/
-
-/*
-    if( pt > 30 && pt < 40 ){
-      w = 0.635105+2.37211*x+0.0196008*pow(x,2)-3.98196*pow(x,3)+1.70506*pow(x,4);
-    }else if( pt >= 40 && pt < 60 ){
-      w = 0.582048+ 6.35219*x-21.4122*pow(x,2)+29.1063*pow(x,3)-13.7154*pow(x,4);
-    }else{
-      w = 0.710834+4.27287*x-14.9838*pow(x,2)+23.2877*pow(x,3)-12.5533*pow(x,4);
-    }
-*/
-/* Used until Mar27
     if(i == 2){
-      w = 0.626494+2.99705*x-6.23285*pow(x,2)+7.03791*pow(x,3)-3.34439*pow(x,4);
+      w = 0.625022+2.75887*x-4.44845*pow(x,2)+3.46847*pow(x,3)-1.38906*pow(x,4);
     }else if( i > 2 ){
-      w = 0.726696+3.50276*x-4.04898*pow(x,2)+0.54504*pow(x,3)+0.606*pow(x,4);
+      w = 0.691663+4.51816*x-9.47984*pow(x,2)+9.28541*pow(x,3)-4.34451*pow(x,4);
     }
-*/
-    if(i == 2){
-      w = 0.627903+3.03597*x-6.44154*pow(x,2)+7.32543*pow(x,3)-3.58111*pow(x,4);
-    }else if( i > 2 ){
-      w = 0.722822+3.71973*x-5.90078*pow(x,2)+3.82351*pow(x,3)-1.53488*pow(x,4);
-    }
+
 
     return w;
   }  
@@ -1439,6 +1432,8 @@ class CMGTopDILAnalyzer : public edm::EDFilter {
   std::vector<double> jets_bDiscriminatorJP;
   std::vector<double> jets_bDiscriminatorCSV;
   std::vector<double> jets_bDisCSVweight;
+  std::vector<double> jets_bDisCSVweightall;
+  std::vector<double> jets_ptweight;
 
   unsigned int nJet30;
   unsigned int nJet30Up;
