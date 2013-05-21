@@ -446,7 +446,7 @@ void TopAnalyzerLite::applyCutSteps()
     const string w = cuts_[i].weight;
     TString cname = cuts_[i].cutName;
     TString postfix = cuts_[i].postfix;
-    if( printstats_ ) prepareEventList(cut, i);
+    prepareEventList(cut, i);
     if( printstats_ ) printStat(Form("%s", cname.Data() ), cut, i);
     for ( unsigned int j = 0; j < monitorPlotNames.size(); ++ j)
     {
@@ -965,7 +965,7 @@ void TopAnalyzerLite::applySingleCut(const TCut cut, const TString monitorPlotNa
   cout << "----------------------------\n";
   cout << "Result of single cut" << endl;
   cout << "Cut = " << cut << endl;
-  if( printstats_ ) prepareEventList(cut, istep);
+  prepareEventList(cut, istep);
   if( printstats_ ) printStat(Form("SingleCut_%d", singleCutUniqueId), cut, istep);
   for ( int i=0; i<nPlots; ++i )
   {
