@@ -439,8 +439,8 @@ void TopAnalyzerLite::applyCutSteps()
   TCut cut = "";
   for ( unsigned int i=0; i<cuts_.size(); ++i )
   {
-    if( printstats_ ) cut = cuts_[i].cut;
-    else cut = cut && cuts_[i].cut;
+    if( printstats_ ) cut = cut && cuts_[i].cut;
+    else cut = cuts_[i].cut;
     const vector<string>& monitorPlotNames = cuts_[i].monitorPlotNames;
     const double plotScale = cuts_[i].plotScale;
     const string w = cuts_[i].weight;
@@ -471,7 +471,7 @@ void TopAnalyzerLite::applyCutSteps()
     //cout << "Number of entries after final selection = " << entryList_["realdata"].back()->GetN() << endl;
   //}
 
-  if ( writeSummary_ && realDataChain_ )
+  if ( writeSummary_ && realDataChain_ && printstats_ )
   {
 
     printCutFlow();
@@ -1022,8 +1022,8 @@ void TopAnalyzerLite::saveHistograms(TString fileName)
     if ( !dir ) {
       dir = f->mkdir(dirName);
       dir->cd();
-      if(printstats_) cut = cuts_[i].cut; 
-      else cut += cuts_[i].cut;
+      if(printstats_) cut += cuts_[i].cut; 
+      else cut = cuts_[i].cut;
       TNamed cutStr("cut", cut);
       cutStr.Write();
       dirNames.push_back(dirName);
