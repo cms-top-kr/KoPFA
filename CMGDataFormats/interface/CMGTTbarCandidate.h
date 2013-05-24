@@ -24,6 +24,9 @@ namespace vallot{
     typedef std::vector<math::XYZTLorentzVector> LorentzVectors;
 
     // status 3
+    const math::XYZTLorentzVector topquark1() const { return tops_[0]; }
+    const math::XYZTLorentzVector topquark2() const { return tops_[1]; }
+
     const math::XYZTLorentzVector bquarks1() const { return bquarks_[0]; }
     const math::XYZTLorentzVector bquarks2() const { return bquarks_[1]; }
     const math::XYZTLorentzVector bquarks3() const { return bquarks_[2]; }
@@ -168,6 +171,7 @@ namespace vallot{
     double deltaR( const reco::Candidate &pasObj, const reco::Candidate &proObj );
 
 
+    LorentzVectors tops_;
     LorentzVectors bquarks_;
     LorentzVectors leptons_;
     LorentzVectors nus_;

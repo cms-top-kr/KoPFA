@@ -12,6 +12,9 @@ void CMGTTbarCandidate::building( const std::vector<cmg::GenJet>* genJets, const
 
   math::XYZTLorentzVector null(0,0,0,0); 
 
+  tops_.push_back(null);
+  tops_.push_back(null);
+
   bquarks_.push_back(null);
   bquarks_.push_back(null);
   bquarks_.push_back(null);
@@ -37,6 +40,8 @@ void CMGTTbarCandidate::building( const std::vector<cmg::GenJet>* genJets, const
   std::vector<math::XYZTLorentzVector> bquarksfromtop;
   std::vector<math::XYZTLorentzVector> bquarks;
   std::vector<math::XYZTLorentzVector> cquarks;
+
+  std::vector<math::XYZTLorentzVector> topquarks;
 
   mass_ = 0;
   //debug
@@ -74,6 +79,7 @@ void CMGTTbarCandidate::building( const std::vector<cmg::GenJet>* genJets, const
     if(isLast != true) continue;
     //debug
     //cout << "ntop = " << ntop << endl;
+    topquarks.push_back( p.p4() );  
  
     ttbarGen += p.p4();
     if( ntop == 1 ) {
@@ -192,6 +198,10 @@ void CMGTTbarCandidate::building( const std::vector<cmg::GenJet>* genJets, const
     }
     ++ntop;
   }
+
+  //assign top quark four-momentum
+  tops_[0] = topquarks[0];
+  tops_[1] = topquarks[1];
 
   allHadronic_ = false;
   semiLeptonic_ = false;
