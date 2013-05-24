@@ -13,7 +13,7 @@
 //
 // Original Author:  Tae Jeong Kim,40 R-A32,+41227678602,
 //         Created:  Fri Jun  4 17:19:29 CEST 2010
-// $Id: CMGTopDILAnalyzer.h,v 1.32 2013/05/07 13:07:13 tjkim Exp $
+// $Id: CMGTopDILAnalyzer.h,v 1.33 2013/05/07 15:40:51 tjkim Exp $
 //
 //
 
@@ -211,6 +211,8 @@ class CMGTopDILAnalyzer : public edm::EDFilter {
     tree->Branch("LUMI",&LUMI,"LUMI/i");
     tree->Branch("npileup",&npileup,"npileup/i");
     tree->Branch("nvertex",&nvertex,"nvertex/i");
+
+    tree->Branch("topweight",&topweight, "topweight/d");
 
     tree->Branch("puweight",&puweight, "puweight/d");
     tree->Branch("puweightplus",&puweightplus, "puweightplus/d");
@@ -955,6 +957,7 @@ class CMGTopDILAnalyzer : public edm::EDFilter {
       genLep2_eta = ttbarGenLevel.lepton2().eta();
       ttbarGen_dileptonic = ttbarGenLevel.diLeptonic();
 
+      topweight = sqrt( exp(0.156-0.00137*ttbarGenLevel.topquark1().pt() ) * exp(0.156-0.00137*ttbarGenLevel.topquark2().pt()) ); 
       ttbarGen->push_back(ttbarGenLevel);
     }
     //ESHandle<SetupData> pSetup;
@@ -1099,6 +1102,8 @@ class CMGTopDILAnalyzer : public edm::EDFilter {
     {
       nbjets30_[bTagIndex] = -999;
     }
+
+    topweight = 1.0;
 
     puweight = 1.0;
     puweightplus = 1.0;
@@ -1473,6 +1478,8 @@ class CMGTopDILAnalyzer : public edm::EDFilter {
   unsigned int LUMI;
   unsigned int npileup;
   unsigned int nvertex;
+
+  double topweight;
 
   double puweight;
   double puweightplus;
