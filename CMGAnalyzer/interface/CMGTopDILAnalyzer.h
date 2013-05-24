@@ -13,7 +13,7 @@
 //
 // Original Author:  Tae Jeong Kim,40 R-A32,+41227678602,
 //         Created:  Fri Jun  4 17:19:29 CEST 2010
-// $Id: CMGTopDILAnalyzer.h,v 1.33 2013/05/07 15:40:51 tjkim Exp $
+// $Id: CMGTopDILAnalyzer.h,v 1.34 2013/05/24 08:32:35 tjkim Exp $
 //
 //
 
@@ -78,6 +78,7 @@
 #include "AnalysisDataFormats/TopObjects/interface/TtFullLeptonicEvent.h"
 #include "KoPFA/TopAnalyzer/interface/Histograms.h"
 #include "AnalysisDataFormats/CMGTools/interface/GenericTypes.h"
+#include "KoPFA/CommonTools/interface/CSVWeight.h"
 
 //
 // class declaration
@@ -283,6 +284,11 @@ class CMGTopDILAnalyzer : public edm::EDFilter {
     tree->Branch("lep2_charge",&lep2_charge,"lep2_charge/d");
     tree->Branch("lepweight",&lepweight,"lepweight/d");
 
+    tree->Branch("csvweight",&csvweight,"csvweight/d");
+
+    tree->Branch("csvweightLFup",&csvweightLFup,"csvweightLFup/d");
+    tree->Branch("csvweightLFdw",&csvweightLFdw,"csvweightLFdw/d");
+
     tree->Branch("jets_secvtxmass","std::vector<double>",&jets_secvtxmass);
     tree->Branch("jets_pt","std::vector<double>",&jets_pt);
     tree->Branch("jets_eta","std::vector<double>",&jets_eta);
@@ -367,6 +373,9 @@ class CMGTopDILAnalyzer : public edm::EDFilter {
 
     tree->Branch("METUp",&METUp,"METUp/d");
     tree->Branch("METDw",&METDw,"METDw/d");
+
+    csvWgt = new CSVWeight(); 
+    csvWgt->SetUpCSVreweighting();
 
   } 
 
@@ -537,6 +546,14 @@ class CMGTopDILAnalyzer : public edm::EDFilter {
     double njetDw = 0;
     double metup;
     double metdw;
+
+    if( !isRealData)
+    {
+         csvweight=csvWgt->GetCSVweight(Jets,sysType::NA);
+         csvweightLFup=csvWgt->GetCSVweight(Jets,sysType::CSVLFup);
+         csvweightLFdw=csvWgt->GetCSVweight(Jets,sysType::CSVLFdown);
+         //cout << "csvweight : " << csvweight << endl;
+    }
 
     for (JI jit = Jets->begin(); jit != Jets->end(); ++jit) {
 
@@ -1179,6 +1196,10 @@ class CMGTopDILAnalyzer : public edm::EDFilter {
     lep1_charge = 0.0;
     lep2_charge = 0.0;
     lepweight = 1.0;
+
+    csvweight = 1.0;
+    csvweightLFup = 1.0;
+    csvweightLFdw = 1.0;
  
     kin_ttbar_mass = -999;
     kin_ttbar_dphi = -999;
@@ -1430,6 +1451,10 @@ class CMGTopDILAnalyzer : public edm::EDFilter {
   double lep2_charge;
   double lepweight;
 
+  double csvweight;
+  double csvweightLFup;
+  double csvweightLFdw;
+
   double kin_ttbar_mass;
   double kin_ttbar_dphi;
   double maos_ttbar_mass;
@@ -1549,6 +1574,8 @@ class CMGTopDILAnalyzer : public edm::EDFilter {
   unsigned int nstep_;
   bool run2012_;
   bool histograms_;
+
+  CSVWeight *csvWgt;
 
   int nCutStep_;
   int nProcess_;
