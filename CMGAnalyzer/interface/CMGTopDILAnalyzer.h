@@ -13,7 +13,7 @@
 //
 // Original Author:  Tae Jeong Kim,40 R-A32,+41227678602,
 //         Created:  Fri Jun  4 17:19:29 CEST 2010
-// $Id: CMGTopDILAnalyzer.h,v 1.34 2013/05/24 08:32:35 tjkim Exp $
+// $Id: CMGTopDILAnalyzer.h,v 1.35 2013/05/24 10:10:17 youngjo Exp $
 //
 //
 
@@ -974,7 +974,9 @@ class CMGTopDILAnalyzer : public edm::EDFilter {
       genLep2_eta = ttbarGenLevel.lepton2().eta();
       ttbarGen_dileptonic = ttbarGenLevel.diLeptonic();
 
-      topweight = sqrt( exp(0.156-0.00137*ttbarGenLevel.topquark1().pt() ) * exp(0.156-0.00137*ttbarGenLevel.topquark2().pt()) ); 
+      if(ttbarGenLevel.is2tops())
+             topweight = sqrt( exp(0.156-0.00137*ttbarGenLevel.topquark1().pt() ) * exp(0.156-0.00137*ttbarGenLevel.topquark2().pt()) ); 
+      else topweight = 1.0;
       ttbarGen->push_back(ttbarGenLevel);
     }
     //ESHandle<SetupData> pSetup;

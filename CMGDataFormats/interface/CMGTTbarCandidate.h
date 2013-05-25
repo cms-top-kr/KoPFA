@@ -154,6 +154,8 @@ namespace vallot{
     int NJets25() const { return NJets25_ ;}
     int NJets30() const { return NJets30_ ;}
 
+    int is2tops() const { return is2tops_; }
+
   private:
 
     std::vector<const reco::Candidate *> getAncestors(const reco::Candidate &c);
@@ -170,6 +172,7 @@ namespace vallot{
     const reco::Candidate* getLast( const reco::Candidate& p );
     double deltaR( const reco::Candidate &pasObj, const reco::Candidate &proObj );
 
+    bool is2tops_;
 
     LorentzVectors tops_;
     LorentzVectors bquarks_;

@@ -203,7 +203,9 @@ void CMGTTbarCandidate::building( const std::vector<cmg::GenJet>* genJets, const
   if(topquarks.size()>1){
      tops_[0] = topquarks[0];
      tops_[1] = topquarks[1];
-  }
+     is2tops_=true;
+  } else is2tops_ =false;
+
  
   allHadronic_ = false;
   semiLeptonic_ = false;
