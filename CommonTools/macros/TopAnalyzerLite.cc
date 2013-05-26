@@ -440,8 +440,7 @@ void TopAnalyzerLite::applyCutSteps()
   TCut cut = "";
   for ( unsigned int i=0; i<cuts_.size(); ++i )
   {
-    if( printstats_ ) cut = cut && cuts_[i].cut;
-    else cut = cuts_[i].cut;
+    cut = cut && cuts_[i].cut;
     const vector<string>& monitorPlotNames = cuts_[i].monitorPlotNames;
     const double plotScale = cuts_[i].plotScale;
     const string w = cuts_[i].weight;
@@ -1026,10 +1025,11 @@ void TopAnalyzerLite::saveHistograms(TString fileName)
     if ( !dir ) {
       dir = f->mkdir(dirName);
       dir->cd();
-      if(printstats_) cut += cuts_[i].cut; 
-      else cut = cuts_[i].cut;
+      cut += cuts_[i].cut; 
       TNamed cutStr("cut", cut);
       cutStr.Write();
+      TNamed subCutStr("subCut", cuts_[i].subCut);
+      subCutStr.Write();
       dirNames.push_back(dirName);
     }
   }
