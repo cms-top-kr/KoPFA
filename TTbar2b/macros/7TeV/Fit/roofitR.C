@@ -3,14 +3,15 @@ void roofitR(){
   gROOT->ProcessLine(".L $CMSSW_BASE/src/KoPFA/CommonTools/macros/tdrstyle.C");
   defaultStyle();
 
-  double XBins[] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18,  20,
-                    21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 38, 40};
-  int nX = sizeof(XBins)/sizeof(double) - 1;
+  int nX = 40;
+  //double XBins[] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14,  16,  18,  20,
+  //                  21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36,  38,  40};
+  //int nX = sizeof(XBins)/sizeof(double) - 1;
  
   using namespace RooFit ;
 
   bool combine = true;
-  int nbinsch = 20; //number of bins for each histograms. for example, b-jets multiplicity = 5 , b-dscriminatorCSV = 20, b-discriminatorJP = 50
+  int nbinsch[2] ={ 19, 14} ; //number of bins for each histograms. for example, b-jets multiplicity = 5 , b-dscriminatorCSV = 20, b-discriminatorJP = 50
   const int ndecay = 3; // mm, em, ee
   const int nobj = 2; // 1: b-jet mulitplicity , 2 :jet1, jet2 
 
@@ -20,7 +21,8 @@ void roofitR(){
   double eR = 0.382948;
   //double eR = 0.750311; //nJet30 >= 4
 
-  TString path = "/afs/cern.ch/work/b/bhlee/public/store/top/ntuple/7TeV/v3_20130412_V00-00-08/TTBB_12Apr2013_CSVTv2puweight_bweight30CSVT";
+  //TString path = "/afs/cern.ch/work/b/bhlee/public/store/top/ntuple/7TeV/v3_20130412_V00-00-08/TTBB_12Apr2013_CSVTv2puweight_bweight30CSVT";
+  TString path = "../TTBB_27Apr2013";
   TString decay[ndecay];
   decay[0] = "MuMu";
   decay[1] = "MuEl";
@@ -31,14 +33,11 @@ void roofitR(){
   fileName[1] = path+"/"+decay[1]+"/"+decay[1]+".root";
   fileName[2] = path+"/"+decay[2]+"/"+decay[2]+".root";
   TString variable[nobj];
-  //variable[0] = "nbJet30_CSVT";
-  variable[0] = "jet30bDiscriminator1b";
-  variable[1] = "jet30bDiscriminator2b";
-  //variable[0] = "addjet1_bDisJP";
-  //variable[1] = "addjet2_bDisJP";
+  variable[0] = "addjet1_bDisCSV_rebin";
+  variable[1] = "addjet2_bDisCSV_rebin";
   TString step[nobj];
-  step[0] = "Step_6";
-  step[1] = "Step_7";
+  step[0] = "Step_5";
+  step[1] = "Step_5";
 
   TH1F * hdata[ndecay][nobj];
   TH1F * httbb[ndecay][nobj];
@@ -54,8 +53,8 @@ void roofitR(){
   TH1F * hbkg[ndecay][nobj];
   TH1F * hdbg[ndecay][nobj];
 
-  int nbins = 3*nbinsch*nobj;
-  if( combine ) nbins = nbinsch*nobj;
+  int nbins = 3*(nbinsch[0] + nbinsch[1]);
+  if( combine ) nbins = (nbinsch[0]+nbinsch[1])*nobj;
   TH1F * h_ttbb = new TH1F("h_ttbb","h_ttbb", nbins , 0, nbins);
   TH1F * h_ttcc = new TH1F("h_ttcc","h_ttcc", nbins , 0, nbins);
   TH1F * h_ttll = new TH1F("h_ttll","h_ttll", nbins , 0, nbins);
@@ -103,8 +102,8 @@ void roofitR(){
       int Nbins = hdata[i][j]->GetNbinsX();
 
       for(int k = 1; k <= Nbins; k++){
-        int nb = k + i*nbinsch + j*3*nbinsch;
-        if(combine) nb = k + j*nbinsch;
+        int nb = k + i*nbinsch[j] + j*3*nbinsch[0];
+        if(combine) nb = k + j*nbinsch[0];
         if( i == 0 || combine == false){
           h_ttbb->SetBinContent(nb, httbb[i][j]->GetBinContent(k) );
           h_ttcc->SetBinContent(nb, httcc[i][j]->GetBinContent(k) );
@@ -138,6 +137,7 @@ void roofitR(){
   double rbkg    =  (nbkg)/(nttjj + nbkg);
   cout << "ttbb= " << nttbb << " ttcc= " << nttcc << " ttll= " << nttll << " R(ttbb/ttjj)= " <<  rsig << "  nbkg= " << nbkg << " fbkg= " << rbkg << " total MC = " << nMCtotal << " data-driven bkg= " << ndbg << endl;
 
+  /*
   h_dat = (TH1F*) h_dat->Rebin(nX, "h_dat", XBins);
   h_ttbb = (TH1F*) h_ttbb->Rebin(nX, "h_ttbb", XBins);
   h_ttcc = (TH1F*) h_ttcc->Rebin(nX, "h_ttcc", XBins);
@@ -145,6 +145,7 @@ void roofitR(){
   h_ttccll = (TH1F*) h_ttccll->Rebin(nX, "h_ttccll", XBins);
   h_bkg = (TH1F*) h_bkg->Rebin(nX, "h_bkg", XBins);
   h_dbg = (TH1F*) h_dbg->Rebin(nX, "h_dbg", XBins);
+  */
 
   RooRealVar x("x","x",0, nbins) ;
   RooDataHist data("data","data",x,h_dat) ; 
@@ -212,14 +213,23 @@ void roofitR(){
 
   for(int j = 0 ; j < 2 ; j++){
 
-    h_combined_ttbb[j] = new TH1F(Form("h_combined_%s_ttbb", variable[j].Data()),Form("h_combined_%s_ttbb", variable[j].Data()), nbinsch , 0, 1);
-    h_combined_ttll[j] = new TH1F(Form("h_combined_%s_ttll", variable[j].Data()),Form("h_combined_%s_ttll", variable[j].Data()), nbinsch , 0, 1);
-    h_combined_ttcc[j] = new TH1F(Form("h_combined_%s_ttcc", variable[j].Data()),Form("h_combined_%s_ttcc", variable[j].Data()), nbinsch , 0, 1);
-    h_combined_data[j] = new TH1F(Form("h_combined_%s_data", variable[j].Data()),Form("h_combined_%s_data", variable[j].Data()),nbinsch , 0, 1);
-    h_combined_dbg[j] = new TH1F(Form("h_combined_%s_dbg", variable[j].Data()),Form("h_combined_%s_dbg", variable[j].Data()),nbinsch , 0, 1);
-    h_combined_bkg[j] = new TH1F(Form("h_combined_%s_bkg", variable[j].Data()),Form("h_combined_%s_bkg", variable[j].Data()),nbinsch , 0, 1);
+/*
+    h_combined_ttbb[j] = new TH1F(Form("h_combined_%s_ttbb", variable[j].Data()),Form("h_combined_%s_ttbb", variable[j].Data()), nbinsch[j] , 0, 1);
+    h_combined_ttll[j] = new TH1F(Form("h_combined_%s_ttll", variable[j].Data()),Form("h_combined_%s_ttll", variable[j].Data()), nbinsch[j] , 0, 1);
+    h_combined_ttcc[j] = new TH1F(Form("h_combined_%s_ttcc", variable[j].Data()),Form("h_combined_%s_ttcc", variable[j].Data()), nbinsch[j] , 0, 1);
+    h_combined_data[j] = new TH1F(Form("h_combined_%s_data", variable[j].Data()),Form("h_combined_%s_data", variable[j].Data()),nbinsch[j] , 0, 1);
+    h_combined_dbg[j] = new TH1F(Form("h_combined_%s_dbg", variable[j].Data()),Form("h_combined_%s_dbg", variable[j].Data()),nbinsch[j] , 0, 1);
+    h_combined_bkg[j] = new TH1F(Form("h_combined_%s_bkg", variable[j].Data()),Form("h_combined_%s_bkg", variable[j].Data()),nbinsch[j] , 0, 1);
+*/
 
-    for(int i = 0 ; i < 3; i++){
+    h_combined_data[j] = (TH1F*) hdata[0][j]->Clone();
+    h_combined_ttbb[j] = (TH1F*) httbb[0][j]->Clone();
+    h_combined_ttcc[j] = (TH1F*) httcc[0][j]->Clone();
+    h_combined_ttll[j] = (TH1F*) httll[0][j]->Clone();
+    h_combined_dbg[j] = (TH1F*) hdbg[0][j]->Clone();
+    h_combined_bkg[j] = (TH1F*) hbkg[0][j]->Clone();
+
+    for(int i = 1 ; i < 3; i++){
       h_combined_data[j]->Add(hdata[i][j]);
       h_combined_ttbb[j]->Add(httbb[i][j]);
       h_combined_ttcc[j]->Add(httcc[i][j]);
@@ -359,7 +369,7 @@ void roofitR(){
     label->SetNDC();
     label->SetTextSize(0.05);
     label->DrawLatex(0.22,0.82,"CMS");
-    label->DrawLatex(0.22,0.82-0.05,"19.6 fb^{-1} at #sqrt{s} = 8 TeV");
+    label->DrawLatex(0.22,0.82-0.05,"5.0 fb^{-1} at #sqrt{s} = 7 TeV");
 
     TLegend *l = new TLegend(0.73,0.74,0.90,0.88);
     l->AddEntry(hist_combined_data,"Data","PL");
