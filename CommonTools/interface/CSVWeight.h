@@ -109,7 +109,7 @@ void SetUpCSVreweighting(){
 }
 
 
-double GetCSVweight(edm::Handle<std::vector<cmg::PFJet> >& iJets, const sysType::sysType iSysType){
+double GetCSVweight(edm::Handle<std::vector<cmg::PFJet> >& iJets, const sysType::sysType iSysType, const bool & lightonly = false){
   //if (isData) return 1.0;
 
   //CheckSetUp();
@@ -162,7 +162,7 @@ double GetCSVweight(edm::Handle<std::vector<cmg::PFJet> >& iJets, const sysType:
 
     if (iPt < 0 || iEta < 0) std::cout << "Error, couldn't find Pt, Eta bins for this b-flavor jet, jetPt = " << jetPt << ", jetAbsEta = " << jetAbsEta << std::endl;
 
-    if (abs(flavor) == 5 || abs(flavor) == 4){
+    if ( lightonly == false && (abs(flavor) == 5 || abs(flavor) == 4) ){
       int useCSVBin = (csv>=0.) ? h_csv_wgt_hf[iSysHF][iPt]->FindBin(csv) : 1;
       double iCSVWgtHF = h_csv_wgt_hf[iSysHF][iPt]->GetBinContent(useCSVBin);
       if( iCSVWgtHF!=0 ) csvWgthf *= iCSVWgtHF;
