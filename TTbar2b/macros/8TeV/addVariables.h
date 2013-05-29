@@ -47,6 +47,8 @@ void addTopVariables(TopAnalyzerLite* analyzer){
   analyzer->addMonitorPlot("jet2_bDisCSV", "jets_bDiscriminatorCSV[csvd_jetid[1]]","b-Discriminator; b-Discriminator (CSV);Events/0.1", 20, 0.0, 1.0, 0.1,10,true);
   analyzer->addMonitorPlot("jet1pt_bDisCSV", "jets_pt[csvd_jetid[0]]", "Leading jet p_{T};p_{T} (GeV/c);Events/10 GeV/c",48, 20, 500, 0.1, 100000);
   analyzer->addMonitorPlot("jet2pt_bDisCSV", "jets_pt[csvd_jetid[1]]", "Second leading jet p_{T};p_{T} (GeV/c);Events/10 GeV/c",48, 20, 500, 0.1, 100000);
+  analyzer->addMonitorPlot("jet1eta_bDisCSV", "jets_eta[csvd_jetid[0]]", "Leading jet #eta;#eta;Events/0.2", 35, -3.5, 3.5, 0.1, 100000);
+  analyzer->addMonitorPlot("jet2eta_bDisCSV", "jets_eta[csvd_jetid[1]]", "Second leading jet #eta;#eta;Events/0.2", 35, -3.5, 3.5, 0.1, 100000);
 
   analyzer->addMonitorPlot("addjet1_bDisCSV", "jets_bDiscriminatorCSV[csvd_jetid[2]]","b-Discriminator; b-Discriminator (CSV);Events/0.1", 20, 0.0, 1.0, 0.1,10,true);
   analyzer->addMonitorPlot("addjet2_bDisCSV", "jets_bDiscriminatorCSV[csvd_jetid[3]]","b-Discriminator; b-Discriminator (CSV);Events/0.1", 20, 0.0, 1.0, 0.1,10,true);
