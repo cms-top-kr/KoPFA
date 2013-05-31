@@ -185,6 +185,44 @@ double GetCSVweight(edm::Handle<std::vector<cmg::PFJet> >& iJets, const sysType:
 
   return csvWgtTotal;
 }
+double CSVshape(double csv, int flavor, double up=0, double dw=0 ){
+   double weight = 1;//, up=0, dw=0;
+
+   if( abs(flavor) == 5 || abs(flavor) == 4){
+
+       if(0.00<= csv && csv < 0.04 )     weight= 0.46 + up* 0.66  - dw*0.7  ;
+       if(0.04<= csv && csv < 0.08 )     weight= 0.57 + up* 0.62  - dw*0.39 ;
+       if(0.08<= csv && csv < 0.12 )     weight= 0.53 + up* 0.43  - dw*0.4  ;
+       if(0.12<= csv && csv < 0.16 )     weight= 1.28 + up* 0.28  - dw*0.25 ;
+       if(0.16<= csv && csv < 0.20 )     weight= 1.16 + up* 0.38  - dw*0.38 ;
+       if(0.20<= csv && csv <0.244 )     weight= 1.06 + up* 0.25  - dw*0.24 ;
+       if(0.244<= csv && csv<0.28  )     weight= 1.77 + up* 0.39  - dw*0.45 ;
+       if(0.28<= csv && csv < 0.32 )     weight= 1.2  + up* 0.25  - dw*0.19 ;
+       if(0.32<= csv && csv < 0.36 )     weight= 1.34 + up* 0.27  - dw*0.23 ;
+       if(0.36<= csv && csv < 0.40 )     weight= 0.9  + up* 0.24  - dw*0.35 ;
+       if(0.40<= csv && csv < 0.44 )     weight= 1.48 + up* 0.27  - dw*0.33 ;
+       if(0.44<= csv && csv < 0.48 )     weight= 1.11 + up* 0.17  - dw*0.17 ;
+       if(0.48<= csv && csv < 0.52 )     weight= 1.42 + up* 0.35  - dw*0.2  ;
+       if(0.52<= csv && csv < 0.56 )     weight= 1.25 + up* 0.23  - dw*0.18 ;
+       if(0.56<= csv && csv < 0.60 )     weight= 1.27 + up* 0.28  - dw*0.22 ;
+       if(0.60<= csv && csv < 0.64 )     weight= 1.12 + up* 0.19  - dw*0.23 ;
+       if(0.64<= csv && csv < 0.679)     weight= 1.16 + up* 0.2   - dw*0.17 ;
+       if(0.679<= csv && csv < 0.72)     weight= 1.04 + up* 0.24  - dw*0.17 ;
+       if(0.72<= csv && csv < 0.76 )     weight= 1.27 + up* 0.16  - dw*0.2  ;
+       if(0.76<= csv && csv < 0.80 )     weight= 0.99 + up* 0.11  - dw*0.11 ;
+       if(0.80<= csv && csv < 0.84 )     weight= 0.98 + up* 0.15  - dw*0.14 ;
+       if(0.84<= csv && csv < 0.898)     weight= 0.91 + up* 0.08  - dw*0.06 ;
+       if(0.898<= csv && csv < 0.92)     weight= 0.99 + up* 0.08  - dw*0.06 ;
+       if(0.92<= csv && csv < 0.96 )     weight= 1.03 + up* 0.04  - dw*0.04 ;
+       if(0.96<= csv && csv < 1.00 )     weight= 0.97 + up* 0.02  - dw*0.02 ;
+
+   }
+
+   return weight;
+
+
+}
+
   private:
         // CSV reweighting
        TH1D* h_csv_wgt_hf[9][5];
