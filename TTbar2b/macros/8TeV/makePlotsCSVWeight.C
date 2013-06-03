@@ -30,6 +30,10 @@ void makePlotsCSVWeight(TString noteNumber = "TTBB_03June2013_CSVWeight/v1")
   outDirName += "/"+noteNumber;
   gSystem->Exec("mkdir "+outDirName);
 
+  cutStepPlots("ZSel", "ZMass", "M_{ll} Invariant Mass (GeV)", "Events", "M_{ll} Invariant Mass (GeV)", "LL", 1, 700000, false);
+  cutStepPlots("ZSel", "ZMass", "M_{ll} Invariant Mass (GeV)", "Events", "M_{ll} Invariant Mass (GeV)", "LL", 1, 70000000, true, "log");
+
+
   cutStepPlots("ZSel", "jet1_bDisCSV", "b-Discriminator (CSV)", "Events/0.05", "b-Discriminator (CSV)", "LL", 1, 500000, false);
   cutStepPlots("ZSel", "jet2_bDisCSV", "b-Discriminator (CSV)", "Events/0.05", "b-Discriminator (CSV)", "LL", 1, 700000, false);
   cutStepPlots("ZSel", "jet1_bDisCSV", "b-Discriminator (CSV)", "Events/0.05", "b-Discriminator (CSV)", "LL", 1, 400000000, true, "log");
@@ -54,11 +58,8 @@ void makePlotsCSVWeight(TString noteNumber = "TTBB_03June2013_CSVWeight/v1")
   cutStepPlots("ZSel", "jet1_bDisCSV_40_50", "b-Discriminator (CSV)", "Events/0.05", "b-Discriminator (CSV)", "LL", 1, 400000000, true, "log");
   cutStepPlots("ZSel", "jet2_bDisCSV_40_50", "b-Discriminator (CSV)", "Events/0.05", "b-Discriminator (CSV)", "LL", 1, 70000000, true, "log");
 
-  cutStepPlots("ZSel", "jet1_bDisCSV_50_70", "b-Discriminator (CSV)", "Events/0.05", "b-Discriminator (CSV)", "LL", 1, 400000000, true, "log");
-  cutStepPlots("ZSel", "jet2_bDisCSV_50_70", "b-Discriminator (CSV)", "Events/0.05", "b-Discriminator (CSV)", "LL", 1, 70000000, true, "log");
-
-  cutStepPlots("ZSel", "jet1_bDisCSV_70", "b-Discriminator (CSV)", "Events/0.05", "b-Discriminator (CSV)", "LL", 1, 400000000, true, "log");
-  cutStepPlots("ZSel", "jet2_bDisCSV_70", "b-Discriminator (CSV)", "Events/0.05", "b-Discriminator (CSV)", "LL", 1, 70000000, true, "log");
+  cutStepPlots("ZSel", "jet1_bDisCSV_50", "b-Discriminator (CSV)", "Events/0.05", "b-Discriminator (CSV)", "LL", 1, 400000000, true, "log");
+  cutStepPlots("ZSel", "jet2_bDisCSV_50", "b-Discriminator (CSV)", "Events/0.05", "b-Discriminator (CSV)", "LL", 1, 70000000, true, "log");
 
 
 }
