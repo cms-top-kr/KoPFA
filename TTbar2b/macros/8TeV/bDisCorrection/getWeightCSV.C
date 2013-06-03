@@ -15,8 +15,8 @@ void getWeightCSV(){
 
   //to calculate normalization factor
   TH1F * h_data = getDataSub(f_Jet1, "ZMass", 0);
-  TH1F * h_data_up_bflavor = getDataSub(f_Jet1, "ZMass", 0.0, 1.0, 0.0);
-  TH1F * h_data_dw_bflavor = getDataSub(f_Jet1, "ZMass", 0.0, 0.0, 1.0);
+  TH1F * h_data_up_bflavor = getDataSub(f_Jet1, "ZMass", 0.0, 2.0, 0.0);
+  TH1F * h_data_dw_bflavor = getDataSub(f_Jet1, "ZMass", 0.0, 0.0, 2.0);
   TH1F * h_mc   = getMC(f_Jet1, "ZMass"); 
 
   double ndata = h_data->Integral(); 
@@ -121,8 +121,8 @@ TH1F * getMC(TFile *f, const TString & variable ){
 void plot(TFile *f, const TString & variable, const TString & name, int nX, double XBins[], double ndata, double nmc, double ndata_up_bflavor, double ndata_dw_bflavor ){
   
   TH1F * h_Data = getDataSub(f, variable, 0);
-  TH1F * h_Data_Up_bFlavor = getDataSub(f, variable, 0.0, 1.0, 0.0);
-  TH1F * h_Data_Dw_bFlavor = getDataSub(f, variable, 0.0, 0.0, 1.0);
+  TH1F * h_Data_Up_bFlavor = getDataSub(f, variable, 0.0, 2.0, 0.0);
+  TH1F * h_Data_Dw_bFlavor = getDataSub(f, variable, 0.0, 0.0, 2.0);
   TH1F * h_MC   = getMC(f, variable);
 
   //rebin
