@@ -15,8 +15,8 @@ void getWeightCSV(){
 
   //to calculate normalization factor
   TH1F * h_data = getDataSub(f_Jet1, "ZMass", 0);
-  TH1F * h_data_up_bflavor = getDataSub(f_Jet1, "ZMass", 0, true, false);
-  TH1F * h_data_dw_bflavor = getDataSub(f_Jet1, "ZMass", 0, false, true);
+  TH1F * h_data_up_bflavor = getDataSub(f_Jet1, "ZMass", 0.0, 1.0, 0.0);
+  TH1F * h_data_dw_bflavor = getDataSub(f_Jet1, "ZMass", 0.0, 0.0, 1.0);
   TH1F * h_mc   = getMC(f_Jet1, "ZMass"); 
 
   double ndata = h_data->Integral(); 
@@ -77,7 +77,7 @@ void getWeightCSV(){
 
 }
 
-TH1F * getDataSub(TFile *f, const TString & variable, double bflavorweight, bool up = false, bool dw = false ){
+TH1F * getDataSub(TFile *f, const TString & variable, double bflavorweight, double up = 0.0, double dw = 0.0 ){
   TH1F * h_DataSub       = (TH1F * ) f->Get(Form("ZSel/hDataSub_ZSel_%s", variable.Data()));
   TH1F * h_MCSig_TTbar = (TH1F * ) f->Get(Form("ZSel/hMCSig_TTbar_ZSel_%s", variable.Data()));
   TH1F * h_MC_DYb    = (TH1F * ) f->Get(Form("ZSel/hMC_DYb_ZSel_%s", variable.Data()));
@@ -121,8 +121,8 @@ TH1F * getMC(TFile *f, const TString & variable ){
 void plot(TFile *f, const TString & variable, const TString & name, int nX, double XBins[], double ndata, double nmc, double ndata_up_bflavor, double ndata_dw_bflavor ){
   
   TH1F * h_Data = getDataSub(f, variable, 0);
-  TH1F * h_Data_Up_bFlavor = getDataSub(f, variable, 0, true, false);
-  TH1F * h_Data_Dw_bFlavor = getDataSub(f, variable, 0, false, true);
+  TH1F * h_Data_Up_bFlavor = getDataSub(f, variable, 0.0, 1.0, 0.0);
+  TH1F * h_Data_Dw_bFlavor = getDataSub(f, variable, 0.0, 0.0, 1.0);
   TH1F * h_MC   = getMC(f, variable);
 
   //rebin
