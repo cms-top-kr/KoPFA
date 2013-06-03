@@ -28,7 +28,7 @@ void getWeightCSV(){
 /*
   plot(f, "jet1_bDisCSV","csv_first",   nX, XBins,  ndata,nmc,ndata_up_bflavor,ndata_dw_bflavor);
   plot(f, "jet2_bDisCSV","csv_second", nX2, XBins2, ndata,nmc,ndata_up_bflavor,ndata_dw_bflavor);
-*/
+
   //pt 30-35
   plot(f, "jet1_bDisCSV_30_35","csv_first_30_35",   nX, XBins,  ndata,nmc,ndata_up_bflavor,ndata_dw_bflavor);
   plot(f, "jet2_bDisCSV_30_35","csv_second_30_35", nX2, XBins2, ndata,nmc,ndata_up_bflavor,ndata_dw_bflavor);
@@ -44,6 +44,34 @@ void getWeightCSV(){
   //pt 50
   plot(f, "jet1_bDisCSV_50","csv_first_50",   nX, XBins,  ndata,nmc,ndata_up_bflavor,ndata_dw_bflavor);
   plot(f, "jet2_bDisCSV_50","csv_second_50", nX2, XBins2, ndata,nmc,ndata_up_bflavor,ndata_dw_bflavor);
+*/
+  //center
+  //pt 30-35
+  plot(f, "jet1_bDisCSV_30_35_center","csv_first_30_35_center",   nX, XBins,  ndata,nmc,ndata_up_bflavor,ndata_dw_bflavor);
+  plot(f, "jet2_bDisCSV_30_35_center","csv_second_30_35_center", nX2, XBins2, ndata,nmc,ndata_up_bflavor,ndata_dw_bflavor);
+  //pt 35-40
+  plot(f, "jet1_bDisCSV_35_40_center","csv_first_35_40_center",   nX, XBins,  ndata,nmc,ndata_up_bflavor,ndata_dw_bflavor);
+  plot(f, "jet2_bDisCSV_35_40_center","csv_second_35_40_center", nX2, XBins2, ndata,nmc,ndata_up_bflavor,ndata_dw_bflavor);
+  //pt 40-50
+  plot(f, "jet1_bDisCSV_40_50_center","csv_first_40_50_center",   nX, XBins,  ndata,nmc,ndata_up_bflavor,ndata_dw_bflavor);
+  plot(f, "jet2_bDisCSV_40_50_center","csv_second_40_50_center", nX2, XBins2, ndata,nmc,ndata_up_bflavor,ndata_dw_bflavor);
+  //pt 50
+  plot(f, "jet1_bDisCSV_50_center","csv_first_50_center",   nX, XBins,  ndata,nmc,ndata_up_bflavor,ndata_dw_bflavor);
+  plot(f, "jet2_bDisCSV_50_center","csv_second_50_center", nX2, XBins2, ndata,nmc,ndata_up_bflavor,ndata_dw_bflavor);
+
+  //forward
+  //pt 30-35
+  plot(f, "jet1_bDisCSV_30_35_forward","csv_first_30_35_forward",   nX, XBins,  ndata,nmc,ndata_up_bflavor,ndata_dw_bflavor);
+  plot(f, "jet2_bDisCSV_30_35_forward","csv_second_30_35_forward", nX2, XBins2, ndata,nmc,ndata_up_bflavor,ndata_dw_bflavor);
+  //pt 35-40
+  plot(f, "jet1_bDisCSV_35_40_forward","csv_first_35_40_forward",   nX, XBins,  ndata,nmc,ndata_up_bflavor,ndata_dw_bflavor);
+  plot(f, "jet2_bDisCSV_35_40_forward","csv_second_35_40_forward", nX2, XBins2, ndata,nmc,ndata_up_bflavor,ndata_dw_bflavor);
+  //pt 40-50
+  plot(f, "jet1_bDisCSV_40_50_forward","csv_first_40_50_forward",   nX, XBins,  ndata,nmc,ndata_up_bflavor,ndata_dw_bflavor);
+  plot(f, "jet2_bDisCSV_40_50_forward","csv_second_40_50_forward", nX2, XBins2, ndata,nmc,ndata_up_bflavor,ndata_dw_bflavor);
+  //pt 50
+  plot(f, "jet1_bDisCSV_50_forward","csv_first_50_forward",   nX, XBins,  ndata,nmc,ndata_up_bflavor,ndata_dw_bflavor);
+  plot(f, "jet2_bDisCSV_50_forward","csv_second_50_forward", nX2, XBins2, ndata,nmc,ndata_up_bflavor,ndata_dw_bflavor);
 
 }
 
