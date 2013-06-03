@@ -18,14 +18,23 @@ void ana8TeVCSVWeight(){
 
   gSystem->CompileMacro("$CMSSW_BASE/src/KoPFA/CommonTools/macros/TopAnalyzerLite.cc", "k");
 
-  ana("ElEl","TTBB_03June2013_CSVWeight/ElEl");
-  ana("MuMu","TTBB_03June2013_CSVWeight/MuMu");
-  //ana("MuEl","TTBB_27Apr2013_CSVWeight/MuEl");
-  gSystem->Exec("hadd -f TTBB_03June2013_CSVWeight/merged.root TTBB_03June2013_CSVWeight/*/*.root");
+  TCut hf1 = "abs(jets_flavor[csvd_jetid[0]]) == 5";
+  TCut cf1 = "abs(jets_flavor[csvd_jetid[0]]) == 4";
+  TCut hf2 = "abs(jets_flavor[csvd_jetid[1]]) == 5";
+  TCut cf2 = "abs(jets_flavor[csvd_jetid[1]]) == 4";
+
+  ana("ElEl","TTBB_03June2013_CSVWeight_Jet1/ElEl", "jet1_bDisCSV", hf1, cf1);
+  ana("MuMu","TTBB_03June2013_CSVWeight_Jet1/MuMu", "jet1_bDisCSV", hf1, cf1);
+  gSystem->Exec("hadd -f TTBB_03June2013_CSVWeight_Jet1/merged.root TTBB_03June2013_CSVWeight_Jet1/*/*.root");
+
+  ana("ElEl","TTBB_03June2013_CSVWeight_Jet2/ElEl", "jet2_bDisCSV", hf2, cf2);
+  ana("MuMu","TTBB_03June2013_CSVWeight_Jet2/MuMu", "jet2_bDisCSV", hf2, cf2);
+  gSystem->Exec("hadd -f TTBB_03June2013_CSVWeight_Jet2/merged.root TTBB_03June2013_CSVWeight_Jet2/*/*.root");
+
 }
 
 
-void ana(string decayMode = "ElEl", string imageOutDir = "")
+void ana(string decayMode = "ElEl", string imageOutDir = "", string variable, TCut hf, TCut cf)
 {
 
   //gSystem->CompileMacro("$CMSSW_BASE/src/KoPFA/CommonTools/macros/TopAnalyzerLite.cc", "k");
@@ -45,9 +54,6 @@ void ana(string decayMode = "ElEl", string imageOutDir = "")
   TCut sigcut = "nGenbJet20 >= 4";
   TCut ttcc = "nGencJet20 >= 2";
   TCut dilepton = "ttbarGen_dileptonic == 1";
-
-  TCut hf = "abs(jets_flavor[csvd_jetid[0]]) == 5 || abs(jets_flavor[csvd_jetid[1]]) == 5"; 
-  TCut cf = "abs(jets_flavor[csvd_jetid[0]]) == 4 || abs(jets_flavor[csvd_jetid[1]]) == 4"; 
 
   //analyzer->addMCSig("TTbarbb", "t#bar{t} + bb", mcPath+"/vallot_TTbarFullLepMGDecays.root", 26, kBlue+2, true, visible && sigcut);
   //analyzer->addMCBkg("TTbarcc", "t#bar{t} + cc", mcPath+"/vallot_TTbarFullLepMGDecays.root", 26, kRed+2, visible && !sigcut && ttcc );
@@ -114,34 +120,35 @@ void ana(string decayMode = "ElEl", string imageOutDir = "")
   TCut jet2_40_50_forward = "jets_pt[csvd_jetid[1]] > 40 && jets_pt[csvd_jetid[1]] <= 50 && abs(jets_eta[csvd_jetid[1]]) >= 1.1";
   TCut jet2_50_forward    = "jets_pt[csvd_jetid[1]] > 50 && abs(jets_eta[csvd_jetid[1]]) >= 1.1";
 
-  analyzer->addCutStep(ZSel, "jet1_bDisCSV,jet2_bDisCSV,jet1pt_bDisCSV,jet2pt_bDisCSV,jet1eta_bDisCSV,jet2eta_bDisCSV,jet1_bDis,jet2_bDis,ZMass", 0.5, "bweight30CSVT", "ZSel");
+  if( variable == "jet1_bDisCSV"){
 
-  analyzer->addCutStep(ZSel, "jet1_bDisCSV", 0.5, "bweight30CSVT", "ZSel","_30_35",jet1_30_35);
-  analyzer->addCutStep(ZSel, "jet1_bDisCSV", 0.5, "bweight30CSVT", "ZSel","_35_40",jet1_35_40);
-  analyzer->addCutStep(ZSel, "jet1_bDisCSV", 0.5, "bweight30CSVT", "ZSel","_40_50",jet1_40_50);
-  analyzer->addCutStep(ZSel, "jet1_bDisCSV", 0.5, "bweight30CSVT", "ZSel","_50",jet1_50);
-  analyzer->addCutStep(ZSel, "jet2_bDisCSV", 0.5, "bweight30CSVT", "ZSel","_30_35",jet2_30_35);
-  analyzer->addCutStep(ZSel, "jet2_bDisCSV", 0.5, "bweight30CSVT", "ZSel","_35_40",jet2_35_40);
-  analyzer->addCutStep(ZSel, "jet2_bDisCSV", 0.5, "bweight30CSVT", "ZSel","_40_50",jet2_40_50);
-  analyzer->addCutStep(ZSel, "jet2_bDisCSV", 0.5, "bweight30CSVT", "ZSel","_50",jet2_50);
+    analyzer->addCutStep(ZSel, "jet1_bDisCSV,ZMass", 0.5, "bweight30CSVT", "ZSel");
 
-  analyzer->addCutStep(ZSel, "jet1_bDisCSV", 0.5, "bweight30CSVT", "ZSel","_30_35_center",jet1_30_35_center);
-  analyzer->addCutStep(ZSel, "jet1_bDisCSV", 0.5, "bweight30CSVT", "ZSel","_35_40_center",jet1_35_40_center);
-  analyzer->addCutStep(ZSel, "jet1_bDisCSV", 0.5, "bweight30CSVT", "ZSel","_40_50_center",jet1_40_50_center);
-  analyzer->addCutStep(ZSel, "jet1_bDisCSV", 0.5, "bweight30CSVT", "ZSel","_50_center",jet1_50_center);
-  analyzer->addCutStep(ZSel, "jet2_bDisCSV", 0.5, "bweight30CSVT", "ZSel","_30_35_center",jet2_30_35_center);
-  analyzer->addCutStep(ZSel, "jet2_bDisCSV", 0.5, "bweight30CSVT", "ZSel","_35_40_center",jet2_35_40_center);
-  analyzer->addCutStep(ZSel, "jet2_bDisCSV", 0.5, "bweight30CSVT", "ZSel","_40_50_center",jet2_40_50_center);
-  analyzer->addCutStep(ZSel, "jet2_bDisCSV", 0.5, "bweight30CSVT", "ZSel","_50_center",jet2_50_center);
+    analyzer->addCutStep(ZSel, "jet1_bDisCSV", 0.5, "bweight30CSVT", "ZSel","_30_35_center",jet1_30_35_center);
+    analyzer->addCutStep(ZSel, "jet1_bDisCSV", 0.5, "bweight30CSVT", "ZSel","_35_40_center",jet1_35_40_center);
+    analyzer->addCutStep(ZSel, "jet1_bDisCSV", 0.5, "bweight30CSVT", "ZSel","_40_50_center",jet1_40_50_center);
+    analyzer->addCutStep(ZSel, "jet1_bDisCSV", 0.5, "bweight30CSVT", "ZSel","_50_center",jet1_50_center);
 
-  analyzer->addCutStep(ZSel, "jet1_bDisCSV", 0.5, "bweight30CSVT", "ZSel","_30_35_forward",jet1_30_35_forward);
-  analyzer->addCutStep(ZSel, "jet1_bDisCSV", 0.5, "bweight30CSVT", "ZSel","_35_40_forward",jet1_35_40_forward);
-  analyzer->addCutStep(ZSel, "jet1_bDisCSV", 0.5, "bweight30CSVT", "ZSel","_40_50_forward",jet1_40_50_forward);
-  analyzer->addCutStep(ZSel, "jet1_bDisCSV", 0.5, "bweight30CSVT", "ZSel","_50_forward",jet1_50_forward);
-  analyzer->addCutStep(ZSel, "jet2_bDisCSV", 0.5, "bweight30CSVT", "ZSel","_30_35_forward",jet2_30_35_forward);
-  analyzer->addCutStep(ZSel, "jet2_bDisCSV", 0.5, "bweight30CSVT", "ZSel","_35_40_forward",jet2_35_40_forward);
-  analyzer->addCutStep(ZSel, "jet2_bDisCSV", 0.5, "bweight30CSVT", "ZSel","_40_50_forward",jet2_40_50_forward);
-  analyzer->addCutStep(ZSel, "jet2_bDisCSV", 0.5, "bweight30CSVT", "ZSel","_50_forward",jet2_50_forward);
+    analyzer->addCutStep(ZSel, "jet1_bDisCSV", 0.5, "bweight30CSVT", "ZSel","_30_35_forward",jet1_30_35_forward);
+    analyzer->addCutStep(ZSel, "jet1_bDisCSV", 0.5, "bweight30CSVT", "ZSel","_35_40_forward",jet1_35_40_forward);
+    analyzer->addCutStep(ZSel, "jet1_bDisCSV", 0.5, "bweight30CSVT", "ZSel","_40_50_forward",jet1_40_50_forward);
+    analyzer->addCutStep(ZSel, "jet1_bDisCSV", 0.5, "bweight30CSVT", "ZSel","_50_forward",jet1_50_forward);
+
+  }else if( variable == "jet2_bDisCSV"){
+
+    analyzer->addCutStep(ZSel, "jet2_bDisCSV,ZMass", 0.5, "bweight30CSVT", "ZSel");
+
+    analyzer->addCutStep(ZSel, "jet2_bDisCSV", 0.5, "bweight30CSVT", "ZSel","_30_35_center",jet2_30_35_center);
+    analyzer->addCutStep(ZSel, "jet2_bDisCSV", 0.5, "bweight30CSVT", "ZSel","_35_40_center",jet2_35_40_center);
+    analyzer->addCutStep(ZSel, "jet2_bDisCSV", 0.5, "bweight30CSVT", "ZSel","_40_50_center",jet2_40_50_center);
+    analyzer->addCutStep(ZSel, "jet2_bDisCSV", 0.5, "bweight30CSVT", "ZSel","_50_center",jet2_50_center);
+
+    analyzer->addCutStep(ZSel, "jet2_bDisCSV", 0.5, "bweight30CSVT", "ZSel","_30_35_forward",jet2_30_35_forward);
+    analyzer->addCutStep(ZSel, "jet2_bDisCSV", 0.5, "bweight30CSVT", "ZSel","_35_40_forward",jet2_35_40_forward);
+    analyzer->addCutStep(ZSel, "jet2_bDisCSV", 0.5, "bweight30CSVT", "ZSel","_40_50_forward",jet2_40_50_forward);
+    analyzer->addCutStep(ZSel, "jet2_bDisCSV", 0.5, "bweight30CSVT", "ZSel","_50_forward",jet2_50_forward);
+
+  }
 
   //QCD invert isolation for base shape
   analyzer->replaceDataBkgCut("QCD", "ZMass > 12 && lep1_relIso03 < 0.15 && lep2_relIso03 < 0.15 && PairSign < 0", "ZMass > 12 && lep1_relIso03 > 0.15 && lep2_relIso03 > 0.15 && PairSign < 0");
