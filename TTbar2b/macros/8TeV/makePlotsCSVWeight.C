@@ -17,13 +17,13 @@ void cutStepPlots(const char* cutStep, const char* histName, const char* histTit
 TLegend* buildLegend(double y);
 TPaveText* getHeader(double lumi, TString channelName = "");
 
-void makePlotsCSVWeight(TString noteNumber = "TTBB_27Apr2013_CSVWeight/v1")
+void makePlotsCSVWeight(TString noteNumber = "TTBB_03June2013_CSVWeight/v1")
 {
 
   gROOT->ProcessLine(".L $CMSSW_BASE/src/KoPFA/CommonTools/macros/tdrstyle.C");
   defaultStyle();
 
-  TString path = "TTBB_27Apr2013_CSVWeight";
+  TString path = "TTBB_03June2013_CSVWeight";
 
   f = TFile::Open(path+"/merged.root");
 
@@ -34,6 +34,32 @@ void makePlotsCSVWeight(TString noteNumber = "TTBB_27Apr2013_CSVWeight/v1")
   cutStepPlots("ZSel", "jet2_bDisCSV", "b-Discriminator (CSV)", "Events/0.05", "b-Discriminator (CSV)", "LL", 1, 700000, false);
   cutStepPlots("ZSel", "jet1_bDisCSV", "b-Discriminator (CSV)", "Events/0.05", "b-Discriminator (CSV)", "LL", 1, 400000000, true, "log");
   cutStepPlots("ZSel", "jet2_bDisCSV", "b-Discriminator (CSV)", "Events/0.05", "b-Discriminator (CSV)", "LL", 1, 70000000, true, "log");
+
+  cutStepPlots("ZSel", "jet1pt_bDisCSV", "First Additional Jet p_{T} (GeV)", "Events/10 GeV", "First Additional Jet p_{T} (GeV)", "LL", 1, 700000, false);
+  cutStepPlots("ZSel", "jet2pt_bDisCSV", "Second Additional Jet p_{T} (GeV)", "Events/10 GeV", "Second Additional Jet p_{T} (GeV)", "LL", 1, 700000, false);
+  cutStepPlots("ZSel", "jet1pt_bDisCSV", "First Additional Jet p_{T} (GeV)", "Events/10 GeV", "First Additional Jet p_{T} (GeV)", "LL", 1, 400000000, true, "log");
+  cutStepPlots("ZSel", "jet2pt_bDisCSV", "Second Additional Jet p_{T} (GeV)", "Events/10 GeV", "Second Additional Jet p_{T} (GeV)", "LL", 1, 40000000, true, "log");
+
+  cutStepPlots("ZSel", "jet1eta_bDisCSV", "First Additional Jet #eta", "Events", "First Additional Jet #eta", "LL", 1, 700000, false);
+  cutStepPlots("ZSel", "jet2eta_bDisCSV", "Second Additional Jet #eta", "Events", "Second Additional Jet #eta", "LL", 1, 700000, false);
+  cutStepPlots("ZSel", "jet1eta_bDisCSV", "First Additional Jet #eta", "Events", "First Additional Jet #eta", "LL", 1, 400000000, true, "log");
+  cutStepPlots("ZSel", "jet2eta_bDisCSV", "Second Additional Jet #eta", "Events", "Second Additional Jet #eta", "LL", 1, 40000000, true, "log");
+
+  cutStepPlots("ZSel", "jet1_bDisCSV_30_35", "b-Discriminator (CSV)", "Events/0.05", "b-Discriminator (CSV)", "LL", 1, 400000000, true, "log");
+  cutStepPlots("ZSel", "jet2_bDisCSV_30_35", "b-Discriminator (CSV)", "Events/0.05", "b-Discriminator (CSV)", "LL", 1, 70000000, true, "log");
+
+  cutStepPlots("ZSel", "jet1_bDisCSV_35_40", "b-Discriminator (CSV)", "Events/0.05", "b-Discriminator (CSV)", "LL", 1, 400000000, true, "log");
+  cutStepPlots("ZSel", "jet2_bDisCSV_35_40", "b-Discriminator (CSV)", "Events/0.05", "b-Discriminator (CSV)", "LL", 1, 70000000, true, "log");
+
+  cutStepPlots("ZSel", "jet1_bDisCSV_40_50", "b-Discriminator (CSV)", "Events/0.05", "b-Discriminator (CSV)", "LL", 1, 400000000, true, "log");
+  cutStepPlots("ZSel", "jet2_bDisCSV_40_50", "b-Discriminator (CSV)", "Events/0.05", "b-Discriminator (CSV)", "LL", 1, 70000000, true, "log");
+
+  cutStepPlots("ZSel", "jet1_bDisCSV_50_70", "b-Discriminator (CSV)", "Events/0.05", "b-Discriminator (CSV)", "LL", 1, 400000000, true, "log");
+  cutStepPlots("ZSel", "jet2_bDisCSV_50_70", "b-Discriminator (CSV)", "Events/0.05", "b-Discriminator (CSV)", "LL", 1, 70000000, true, "log");
+
+  cutStepPlots("ZSel", "jet1_bDisCSV_70", "b-Discriminator (CSV)", "Events/0.05", "b-Discriminator (CSV)", "LL", 1, 400000000, true, "log");
+  cutStepPlots("ZSel", "jet2_bDisCSV_70", "b-Discriminator (CSV)", "Events/0.05", "b-Discriminator (CSV)", "LL", 1, 70000000, true, "log");
+
 
 }
 

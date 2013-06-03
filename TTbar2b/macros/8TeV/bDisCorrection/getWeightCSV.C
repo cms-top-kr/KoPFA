@@ -3,63 +3,76 @@ void getWeightCSV(){
   gROOT->ProcessLine(".L $CMSSW_BASE/src/KoPFA/CommonTools/macros/tdrstyle.C");
   defaultStyle();
 
-  TString path = "../TTBB_27Apr2013_CSVWeight";
+  TString path = "../TTBB_03June2013_CSVWeight";
   TFile * f = new TFile(path+"/merged.root");
 
-  double XBins[] = {0.0, 0.05,  0.1, 0.15,  0.2, 0.25, 0.3,0.35, 0.4, 0.5, 0.6, 0.7, 0.8, 1.0};//8 bins
+  double XBins[] = {0.0, 0.05, 0.1, 0.15, 0.2, 0.25, 0.3, 0.35, 0.4, 0.45, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0};//8 bins
   int nX = sizeof(XBins)/sizeof(double) - 1;
 
-  double XBins2[] = {0.0, 0.05,  0.1, 0.15, 0.2, 0.25, 0.3, 0.35, 0.4, 0.5, 0.6, 0.8, 1.0};//8 bins
+  double XBins2[] = {0.0, 0.05, 0.1, 0.15, 0.2, 0.25, 0.3, 0.35, 0.4, 0.45, 0.5, 1.0 };//8 bins
   int nX2 = sizeof(XBins2)/sizeof(double) - 1;
 
   plot(f, "jet1_bDisCSV","csv_first", nX, XBins);
   plot(f, "jet2_bDisCSV","csv_second", nX2, XBins2);
 
-  //plot(f, "jet1_bDis","ptorder_first", nX, XBins);
-  //plot(f, "jet2_bDis","ptorder_second", nX2, XBins2);
-
 }
 
 void plot(TFile *f, const TString & variable, const TString & name, int nX, double XBins[] ){
 
-  TH1F * h_DataSub       = (TH1F * ) f->Get(Form("NoTag/hDataSub_NoTag_%s", variable.Data()));
-  TH1F * h_MCSig_TTbar = (TH1F * ) f->Get(Form("NoTag/hMCSig_TTbar_NoTag_%s", variable.Data()));
-  //TH1F * h_MCSig_TTbarbb = (TH1F * ) f->Get(Form("NoTag/hMCSig_TTbarbb_NoTag_%s", variable.Data()));
-  //TH1F * h_MC_TTbarcc    = (TH1F * ) f->Get(Form("NoTag/hMC_TTbarcc_NoTag_%s", variable.Data()));
-  //TH1F * h_MC_TTbarll    = (TH1F * ) f->Get(Form("NoTag/hMC_TTbarll_NoTag_%s", variable.Data()));
-  //TH1F * h_MC_TTbarOthers    = (TH1F * ) f->Get(Form("NoTag/hMC_TTbarOthers_NoTag_%s", variable.Data()));
-  //TH1F * h_MC_DYll    = (TH1F * ) f->Get(Form("NoTag/hMC_DYll_NoTag_%s", variable.Data()));
-  TH1F * h_MC_DYb    = (TH1F * ) f->Get(Form("NoTag/hMC_DYb_NoTag_%s", variable.Data()));
-  TH1F * h_MC_DYc    = (TH1F * ) f->Get(Form("NoTag/hMC_DYc_NoTag_%s", variable.Data()));
-  TH1F * h_MC_DYLF    = (TH1F * ) f->Get(Form("NoTag/hMC_DYLF_NoTag_%s", variable.Data()));
-
-  TH1F * h_MC_DYb_sys = h_MC_DYb->Clone();
-  h_MC_DYb_sys->Scale(0.2);  
+  TH1F * h_DataSub       = (TH1F * ) f->Get(Form("ZSel/hDataSub_ZSel_%s", variable.Data()));
+  TH1F * h_MCSig_TTbar = (TH1F * ) f->Get(Form("ZSel/hMCSig_TTbar_ZSel_%s", variable.Data()));
+  TH1F * h_MC_DYb    = (TH1F * ) f->Get(Form("ZSel/hMC_DYb_ZSel_%s", variable.Data()));
+  TH1F * h_MC_DYc    = (TH1F * ) f->Get(Form("ZSel/hMC_DYc_ZSel_%s", variable.Data()));
+  TH1F * h_MC_DYLF    = (TH1F * ) f->Get(Form("ZSel/hMC_DYLF_ZSel_%s", variable.Data()));
 
   //remove Z+b process 
   TH1F * h_Data = h_DataSub->Clone();
-  h_Data->Add(h_MCSig_TTbar, -1);  
+  TH1F * h_MC = h_MC_DYLF->Clone();
+
+  h_Data->Add(h_MCSig_TTbar, -1);
   h_Data->Add(h_MC_DYLF);
   h_Data->Add(h_MC_DYc);
   //h_Data->Add(h_MC_DYb);
-  TH1F * h_DataUp = h_Data->Clone();
-  TH1F * h_DataDw = h_Data->Clone();
-  h_DataUp->Add(h_MC_DYb_sys,1);
-  h_DataDw->Add(h_MC_DYb_sys,-1);
-  TH1F * h_MC = h_MC_DYLF->Clone();
   h_MC->Add(h_MC_DYc);
   //h_MC->Add(h_MC_DYb);
 
+  //systematic uncertainty due to b-flavor
+  TH1F * h_Data_Up_bFlavor = h_DataSub->Clone();
+  TH1F * h_Data_Dw_bFlavor = h_DataSub->Clone();
+  TH1F * h_MC_Up_bFlavor = h_MC_DYLF->Clone();
+  TH1F * h_MC_Dw_bFlavor = h_MC_DYLF->Clone();
+  h_Data_Up_bFlavor->Add(h_MCSig_TTbar, -1);
+  h_Data_Up_bFlavor->Add(h_MC_DYLF);
+  h_Data_Up_bFlavor->Add(h_MC_DYc);
+  h_Data_Up_bFlavor->Add(h_MC_DYb, 0.05);
+  h_MC_Up_bFlavor->Add(h_MC_DYc);
+  h_MC_Up_bFlavor->Add(h_MC_DYb, 0.05);
+
+  h_Data_Dw_bFlavor->Add(h_MCSig_TTbar, -1);
+  h_Data_Dw_bFlavor->Add(h_MC_DYLF);
+  h_Data_Dw_bFlavor->Add(h_MC_DYc);
+  h_Data_Dw_bFlavor->Add(h_MC_DYb, -0.05);
+  h_MC_Dw_bFlavor->Add(h_MC_DYc);
+  h_MC_Dw_bFlavor->Add(h_MC_DYb, -0.05);
+
+  //rebin
   h_MC = (TH1F*) h_MC->Rebin(nX, "h_MC", XBins);
+  h_MC_Up_bFlavor = (TH1F*) h_MC->Rebin(nX, "h_MC_Up_bFlavor", XBins);
+  h_MC_Dw_bFlavor = (TH1F*) h_MC->Rebin(nX, "h_MC_Dw_bFlavor", XBins);
   h_Data = (TH1F*) h_Data->Rebin(nX, "h_Data", XBins);
-  h_DataUp = (TH1F*) h_DataUp->Rebin(nX, "h_DataUp", XBins);
-  h_DataDw = (TH1F*) h_DataDw->Rebin(nX, "h_DataDw", XBins);
- 
-  TCanvas * c = new TCanvas(Form("c_norm_%s", name.Data()) , Form("c_norm_%s", name.Data()) ,1);
+  h_Data_Up_bFlavor = (TH1F*) h_Data_Up_bFlavor->Rebin(nX, "h_Data_Up_bFlavor", XBins);
+  h_Data_Dw_bFlavor = (TH1F*) h_Data_Dw_bFlavor->Rebin(nX, "h_Data_Dw_bFlavor", XBins);
+
+  //normalization
   h_MC->Scale(1.0/h_MC->Integral());
+  h_MC_Up_bFlavor->Scale(1.0/h_MC_Up_bFlavor->Integral());
+  h_MC_Dw_bFlavor->Scale(1.0/h_MC_Dw_bFlavor->Integral());
   h_Data->Scale(1.0/h_Data->Integral());
-  h_DataUp->Scale(1.0/h_DataUp->Integral());
-  h_DataDw->Scale(1.0/h_DataDw->Integral());
+  h_Data_Up_bFlavor->Scale(1.0/h_Data_Up_bFlavor->Integral());
+  h_Data_Dw_bFlavor->Scale(1.0/h_Data_Dw_bFlavor->Integral());
+
+  //draw control plots
+  TCanvas * c = new TCanvas(Form("c_norm_%s", name.Data()) , Form("c_norm_%s", name.Data()) ,1);
   h_MC->SetTitle(""); 
   h_MC->GetYaxis()->SetTitle("Normalized Entries"); 
   h_MC->Draw();
@@ -80,6 +93,7 @@ void plot(TFile *f, const TString & variable, const TString & name, int nX, doub
 
   c->Print(Form("c_norm_%s.eps",name.Data()));
 
+  //draw SF plots
   TCanvas * c_csv_SF = new TCanvas(Form("c_%s_SF", name.Data()),Form("c_%s_SF", name.Data()),1);
 
   TH1F * h_SF = h_MC->Clone();
@@ -87,9 +101,6 @@ void plot(TFile *f, const TString & variable, const TString & name, int nX, doub
   h_SF->Sumw2();
   h_SF->Divide(h_Data, h_MC);
 
-  TF1* functioncsv = new TF1("functioncsv", "pol4");
-  functioncsv->SetLineColor(2);
-  h_SF->Fit(functioncsv);
   h_SF->SetMinimum(0.4);
   h_SF->SetMaximum(2.0);
   h_SF->GetXaxis()->SetTitle("b-Discriminator (CSV)");
@@ -101,31 +112,45 @@ void plot(TFile *f, const TString & variable, const TString & name, int nX, doub
   h_SF->SetFillColor(0);
   h_SF->SetTitle("");
   h_SF->Draw("HIST");
-  TH1F* functioncsv_err = (TH1F*) h_SF->Clone();
-  (TVirtualFitter::GetFitter())->GetConfidenceIntervals(functioncsv_err,0.68);
-  functioncsv_err->SetFillColor(2);
-  functioncsv_err->SetFillStyle(3001);
-  functioncsv_err->SetStats(0);
-  functioncsv_err->Draw("e3 same");
 
-  TH1F * h_SFUp = h_MC->Clone();
-  TH1F * h_SFDw = h_MC->Clone();
-  h_SFUp->Reset();
-  h_SFDw->Reset();
-  h_SFUp->Sumw2();
-  h_SFDw->Sumw2();
-  h_SFUp->Divide(h_DataUp, h_MC);
-  h_SFDw->Divide(h_DataDw, h_MC);
+  //TF1* functioncsv = new TF1("functioncsv", "pol4");
+  //functioncsv->SetLineColor(2);
+  //h_SF->Fit(functioncsv);
+  //TH1F* functioncsv_err = (TH1F*) h_SF->Clone();
+  //(TVirtualFitter::GetFitter())->GetConfidenceIntervals(functioncsv_err,0.68);
+  //functioncsv_err->SetFillColor(2);
+  //functioncsv_err->SetFillStyle(3001);
+  //functioncsv_err->SetStats(0);
+  //functioncsv_err->Draw("e3 same");
 
-  TF1* functioncsvUp = new TF1("functioncsvUp", "pol4");
-  functioncsvUp->SetLineColor(4);
-  h_SFUp->Fit(functioncsvUp,"N");
-  functioncsvUp->Draw("same");
+  TH1F * h_SF_Up_bFlavor = h_MC->Clone();
+  TH1F * h_SF_Dw_bFlavor = h_MC->Clone();
+  h_SF_Up_bFlavor->Reset();
+  h_SF_Dw_bFlavor->Reset();
+  h_SF_Up_bFlavor->Sumw2();
+  h_SF_Dw_bFlavor->Sumw2();
+  h_SF_Up_bFlavor->Divide(h_Data_Up_bFlavor, h_MC_Up_bFlavor);
+  h_SF_Dw_bFlavor->Divide(h_Data_Dw_bFlavor, h_MC_Dw_bFlavor);
+  h_SF_Up_bFlavor->SetLineStyle(2);
+  h_SF_Dw_bFlavor->SetLineStyle(2);
+  h_SF_Up_bFlavor->SetLineWidth(1);
+  h_SF_Dw_bFlavor->SetLineWidth(1);
+  h_SF_Up_bFlavor->SetLineColor(2);
+  h_SF_Dw_bFlavor->SetLineColor(2);
+  h_SF_Up_bFlavor->SetFillColor(0);
+  h_SF_Dw_bFlavor->SetFillColor(0);
+  h_SF_Up_bFlavor->Draw("HISTsame");
+  h_SF_Dw_bFlavor->Draw("HISTsame");
 
-  TF1* functioncsvDw = new TF1("functioncsvDw", "pol4");
-  functioncsvDw->SetLineColor(4);
-  h_SFDw->Fit(functioncsvDw,"N");
-  functioncsvDw->Draw("same");
+  //TF1* functioncsv_Up_bFlavor = new TF1("functioncsv_Up_bFlavor", "pol4");
+  //functioncsv_Up_bFlavor->SetLineColor(4);
+  //h_SF_Up_bFlavor->Fit(functioncsv_Up_bFlavor,"N", 0, 0.9);
+  //functioncsv_Up_bFlavor->Draw("same");
+
+  //TF1* functioncsv_Dw_bFlavor = new TF1("functioncsv_Dw_bFlavor", "pol4");
+  //functioncsv_Dw_bFlavor->SetLineColor(4);
+  //h_SF_Dw_bFlavor->Fit(functioncsv_Dw_bFlavor,"N", 0, 0.9);
+  //functioncsv_Dw_bFlavor->Draw("same");
 
   TLatex *label= new TLatex;
   label->SetNDC();
@@ -133,6 +158,5 @@ void plot(TFile *f, const TString & variable, const TString & name, int nX, doub
   label->DrawLatex(0.2,0.8,"8 TeV");
 
   c_csv_SF->Print(Form("c_%s_SF.eps", name.Data()));
-  
 
 }

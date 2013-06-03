@@ -18,10 +18,10 @@ void ana8TeVCSVWeight(){
 
   gSystem->CompileMacro("$CMSSW_BASE/src/KoPFA/CommonTools/macros/TopAnalyzerLite.cc", "k");
 
-  ana("ElEl","TTBB_27Apr2013_CSVWeight/ElEl");
-  ana("MuMu","TTBB_27Apr2013_CSVWeight/MuMu");
+  ana("ElEl","TTBB_06June2013_CSVWeight/ElEl");
+  ana("MuMu","TTBB_06June2013_CSVWeight/MuMu");
   //ana("MuEl","TTBB_27Apr2013_CSVWeight/MuEl");
-  gSystem->Exec("hadd -f TTBB_27Apr2013_CSVWeight/merged.root TTBB_27Apr2013_CSVWeight/*/*.root");
+  gSystem->Exec("hadd -f TTBB_06June2013_CSVWeight/merged.root TTBB_06June2013_CSVWeight/*/*.root");
 }
 
 
@@ -29,8 +29,9 @@ void ana(string decayMode = "ElEl", string imageOutDir = "")
 {
 
   //gSystem->CompileMacro("$CMSSW_BASE/src/KoPFA/CommonTools/macros/TopAnalyzerLite.cc", "k");
-  bool createplots = true;
-  TopAnalyzerLite* analyzer = new TopAnalyzerLite(decayMode, imageOutDir, createplots);
+  bool createplots = false;
+  bool printstats = false;
+  TopAnalyzerLite* analyzer = new TopAnalyzerLite(decayMode, imageOutDir, createplots, printstats);
 
   const std::string mcPath = "/afs/cern.ch/work/y/youngjo/public/For8Tev/v20130406_V00-00-08fixed/";
   const std::string rdPath = "/afs/cern.ch/work/y/youngjo/public/For8Tev/v20130406_V00-00-08fixed/";
@@ -85,10 +86,28 @@ void ana(string decayMode = "ElEl", string imageOutDir = "")
   addTopVariables(analyzer); //add Top analysis related variables for plotting
 
   TCut ZSel = "ZMass > 12 && lep1_relIso03 < 0.15 && lep2_relIso03 < 0.15 && PairSign < 0 && abs(ZMass-91) < 15 && MET < 30 && nJet30 >= 2";
-  TCut Notag = "nbjets30_CSVT == 0";
+  TCut jet1_30_35 = "jets_pt[csvd_jetid[0]] > 30 && jets_pt[csvd_jetid[0]] <= 35";
+  TCut jet1_35_40 = "jets_pt[csvd_jetid[0]] > 35 && jets_pt[csvd_jetid[0]] <= 40";
+  TCut jet1_40_50 = "jets_pt[csvd_jetid[0]] > 40 && jets_pt[csvd_jetid[0]] <= 50";
+  TCut jet1_50_70 = "jets_pt[csvd_jetid[0]] > 50 && jets_pt[csvd_jetid[0]] <= 70";
+  TCut jet1_70    = "jets_pt[csvd_jetid[0]] > 70";
+  TCut jet2_30_35 = "jets_pt[csvd_jetid[1]] > 30 && jets_pt[csvd_jetid[1]] <= 35";
+  TCut jet2_35_40 = "jets_pt[csvd_jetid[1]] > 35 && jets_pt[csvd_jetid[1]] <= 40";
+  TCut jet2_40_50 = "jets_pt[csvd_jetid[1]] > 40 && jets_pt[csvd_jetid[1]] <= 50";
+  TCut jet2_50_70 = "jets_pt[csvd_jetid[1]] > 50 && jets_pt[csvd_jetid[1]] <= 70";
+  TCut jet2_70    = "jets_pt[csvd_jetid[1]] > 70";
 
-  analyzer->addCutStep(ZSel, "jet1_bDisCSV,jet2_bDisCSV,jet1pt_bDisCSV,jet2pt_bDisCSV,jet1_bDis,jet2_bDis", 0.5, "bweight30CSVT", "ZSel");
-  analyzer->addCutStep(Notag, "jet1_bDisCSV,jet2_bDisCSV,jet1pt_bDisCSV,jet2pt_bDisCSV,jet1_bDis,jet2_bDis", 0.5, "bweight30CSVT", "NoTag");
+  analyzer->addCutStep(ZSel, "jet1_bDisCSV,jet2_bDisCSV,jet1pt_bDisCSV,jet2pt_bDisCSV,jet1eta_bDisCSV,jet2eta_bDisCSV,jet1_bDis,jet2_bDis", 0.5, "bweight30CSVT", "ZSel");
+  analyzer->addCutStep(ZSel, "jet1_bDisCSV", 0.5, "bweight30CSVT", "ZSel","_30_35",jet1_30_35);
+  analyzer->addCutStep(ZSel, "jet1_bDisCSV", 0.5, "bweight30CSVT", "ZSel","_35_40",jet1_35_40);
+  analyzer->addCutStep(ZSel, "jet1_bDisCSV", 0.5, "bweight30CSVT", "ZSel","_40_50",jet1_40_50);
+  analyzer->addCutStep(ZSel, "jet1_bDisCSV", 0.5, "bweight30CSVT", "ZSel","_50_70",jet1_50_70);
+  analyzer->addCutStep(ZSel, "jet1_bDisCSV", 0.5, "bweight30CSVT", "ZSel","_70"   ,jet1_70);
+  analyzer->addCutStep(ZSel, "jet2_bDisCSV", 0.5, "bweight30CSVT", "ZSel","_30_35",jet2_30_35);
+  analyzer->addCutStep(ZSel, "jet2_bDisCSV", 0.5, "bweight30CSVT", "ZSel","_35_40",jet2_35_40);
+  analyzer->addCutStep(ZSel, "jet2_bDisCSV", 0.5, "bweight30CSVT", "ZSel","_40_50",jet2_40_50);
+  analyzer->addCutStep(ZSel, "jet2_bDisCSV", 0.5, "bweight30CSVT", "ZSel","_50_70",jet2_50_70);
+  analyzer->addCutStep(ZSel, "jet2_bDisCSV", 0.5, "bweight30CSVT", "ZSel","_70"   ,jet2_70);
 
   //QCD invert isolation for base shape
   analyzer->replaceDataBkgCut("QCD", "ZMass > 12 && lep1_relIso03 < 0.15 && lep2_relIso03 < 0.15 && PairSign < 0", "ZMass > 12 && lep1_relIso03 > 0.15 && lep2_relIso03 > 0.15 && PairSign < 0");
@@ -113,6 +132,6 @@ void ana(string decayMode = "ElEl", string imageOutDir = "")
 
   analyzer->applyCutSteps();
   analyzer->saveHistograms();
-  analyzer->printCutFlow();
+  //analyzer->printCutFlow();
 }
 
