@@ -13,7 +13,7 @@
 //
 // Original Author:  Tae Jeong Kim,40 R-A32,+41227678602,
 //         Created:  Fri Jun  4 17:19:29 CEST 2010
-// $Id: CMGTopDILAnalyzer.h,v 1.36 2013/05/25 13:38:27 youngjo Exp $
+// $Id: CMGTopDILAnalyzer.h,v 1.37 2013/05/30 08:56:38 youngjo Exp $
 //
 //
 
@@ -285,7 +285,7 @@ class CMGTopDILAnalyzer : public edm::EDFilter {
     tree->Branch("lepweight",&lepweight,"lepweight/d");
 
     tree->Branch("csvweight",&csvweight,"csvweight/d");
-    tree->Branch("csvweightLFonly",&csvweightLFonly,"csvweightLFonly/d");
+    //tree->Branch("csvweightLFonly",&csvweightLFonly,"csvweightLFonly/d");
 
     tree->Branch("csvweightLFup",&csvweightLFup,"csvweightLFup/d");
     tree->Branch("csvweightLFdw",&csvweightLFdw,"csvweightLFdw/d");
@@ -551,7 +551,7 @@ class CMGTopDILAnalyzer : public edm::EDFilter {
     if( !isRealData)
     {
          csvweight=csvWgt->GetCSVweight(Jets,sysType::NA);
-         csvweightLFonly=csvWgt->GetCSVweight(Jets,sysType::NA,true);
+         //csvweightLFonly=csvWgt->GetCSVweight(Jets,sysType::NA,true);
          csvweightLFup=csvWgt->GetCSVweight(Jets,sysType::CSVLFup);
          csvweightLFdw=csvWgt->GetCSVweight(Jets,sysType::CSVLFdown);
          //cout << "csvweight : " << csvweight << endl;
@@ -669,7 +669,9 @@ class CMGTopDILAnalyzer : public edm::EDFilter {
       for(int i = 0; i < (int) nJet30 ; i++){
         if( i  <  2 ) continue;
         int jetid = csvd_jetid[i];
-        double bDisCSVweight = bDiscriminatorWeight(jets_pt[jetid], jets_bDiscriminatorCSV[jetid], jets_flavor[jetid], i , false );
+        //double bDisCSVweight = bDiscriminatorWeight(jets_pt[jetid], jets_bDiscriminatorCSV[jetid], jets_flavor[jetid], i , false );
+        double bDisCSVweight = 1;
+        if(i<4) bDisCSVweight =csvWgt->CSVshape(jets_bDiscriminatorCSV[jetid], jets_pt[jetid], jets_eta[jetid],jets_flavor[jetid], i,0,0);
         double bDisCSVweightall = bDiscriminatorWeight(jets_pt[jetid], jets_bDiscriminatorCSV[jetid], jets_flavor[jetid], i, true );
         double ptweight = PTWeight(jets_pt[jetid], jets_flavor[jetid], i );
         jets_bDisCSVweight[jetid] =  bDisCSVweight ;
@@ -1202,7 +1204,7 @@ class CMGTopDILAnalyzer : public edm::EDFilter {
     lepweight = 1.0;
 
     csvweight = 1.0;
-    csvweightLFonly = 1.0;
+    //csvweightLFonly = 1.0;
     csvweightLFup = 1.0;
     csvweightLFdw = 1.0;
  
@@ -1457,7 +1459,7 @@ class CMGTopDILAnalyzer : public edm::EDFilter {
   double lepweight;
 
   double csvweight;
-  double csvweightLFonly;
+//  double csvweightLFonly;
   double csvweightLFup;
   double csvweightLFdw;
 

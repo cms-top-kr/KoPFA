@@ -55,7 +55,46 @@ void SetUpCSVreweighting(){
   f_CSVwgt_HF = new TFile ((string(getenv("CMSSW_BASE")) + "/src/KoPFA/CommonTools/data/csv_rwt_hf_IT.root").c_str());
   f_CSVwgt_LF = new TFile ((string(getenv("CMSSW_BASE")) + "/src/KoPFA/CommonTools/data/csv_rwt_lf_IT.root").c_str());
 
+  f_ttbb_csv = new TFile ((string(getenv("CMSSW_BASE")) + "/src/KoPFA/CommonTools/data/ttbb_csv.root").c_str());
+  TString ttbb_csv_first_C[4] = {"csv_first_30_35_center" ,
+                                 "csv_first_35_40_center" ,
+                                 "csv_first_40_50_center" ,
+                                 "csv_first_50_center"};
+  TString ttbb_csv_first_F[4] = {"csv_first_30_35_forward",
+                                 "csv_first_35_40_forward",
+                                 "csv_first_40_50_forward",
+                                 "csv_first_50_forward"};  
+  TString ttbb_csv_second_C[4] ={"csv_second_30_35_center" ,
+                                 "csv_second_35_40_center" ,
+                                 "csv_second_40_50_center" ,
+                                 "csv_second_50_center"};
+ TString ttbb_csv_second_F[4] = {"csv_second_30_35_forward",
+                                 "csv_second_35_40_forward",
+                                 "csv_second_40_50_forward",
+                                 "csv_second_50_forward"};   
 
+//    for( int iEta=0; iEta<2; iEta++ ) 
+    for( int iPt=0; iPt<4; iPt++ ) 
+    {
+      h_ttbb_csv_LF_SF[0][0][iPt] = (TH1F*)f_ttbb_csv->Get( Form("%s",ttbb_csv_first_C[iPt].Data() ) );
+      h_ttbb_csv_LF_SF[1][0][iPt] = (TH1F*)f_ttbb_csv->Get( Form("%s",ttbb_csv_second_C[iPt].Data() ) );
+      h_ttbb_csv_LF_SF[0][1][iPt] = (TH1F*)f_ttbb_csv->Get( Form("%s",ttbb_csv_first_F[iPt].Data() ) );
+      h_ttbb_csv_LF_SF[1][1][iPt] = (TH1F*)f_ttbb_csv->Get( Form("%s",ttbb_csv_second_F[iPt].Data() ) );
+
+      h_ttbb_csv_LF_SFup[0][0][iPt] = (TH1F*)f_ttbb_csv->Get( Form("%s_Up_bFlavor",ttbb_csv_first_C[iPt].Data() ) );
+      h_ttbb_csv_LF_SFup[1][0][iPt] = (TH1F*)f_ttbb_csv->Get( Form("%s_Up_bFlavor",ttbb_csv_second_C[iPt].Data() ) );
+      h_ttbb_csv_LF_SFup[0][1][iPt] = (TH1F*)f_ttbb_csv->Get( Form("%s_Up_bFlavor",ttbb_csv_first_F[iPt].Data() ) );
+      h_ttbb_csv_LF_SFup[1][1][iPt] = (TH1F*)f_ttbb_csv->Get( Form("%s_Up_bFlavor",ttbb_csv_second_F[iPt].Data() ) );
+
+      h_ttbb_csv_LF_SFdw[0][0][iPt] = (TH1F*)f_ttbb_csv->Get( Form("%s_Dw_bFlavor",ttbb_csv_first_C[iPt].Data() ) );
+      h_ttbb_csv_LF_SFdw[1][0][iPt] = (TH1F*)f_ttbb_csv->Get( Form("%s_Dw_bFlavor",ttbb_csv_second_C[iPt].Data() ) );
+      h_ttbb_csv_LF_SFdw[0][1][iPt] = (TH1F*)f_ttbb_csv->Get( Form("%s_Dw_bFlavor",ttbb_csv_first_F[iPt].Data() ) );
+      h_ttbb_csv_LF_SFdw[1][1][iPt] = (TH1F*)f_ttbb_csv->Get( Form("%s_Dw_bFlavor",ttbb_csv_second_F[iPt].Data() ) );
+
+
+    }
+
+///////////////////////
   // CSV reweighting
   for( int iSys=0; iSys<9; iSys++ ){
     TString syst_csv_suffix_hf = "final";
@@ -185,11 +224,13 @@ double GetCSVweight(edm::Handle<std::vector<cmg::PFJet> >& iJets, const sysType:
 
   return csvWgtTotal;
 }
-double CSVshape(double csv, int flavor, double up=0, double dw=0 ){
+
+double CSVshape(double csv, double pt, double eta, int flavor, int JetN, double up=0, double dw=0 ){
    double weight = 1;//, up=0, dw=0;
 
-   if( abs(flavor) == 5 || abs(flavor) == 4){
+   if( abs(flavor) == 5 ){
 
+       // https://indico.cern.ch/getFile.py/access?contribId=3&sessionId=1&resId=1&materialId=slides&confId=252874 
        if(0.00<= csv && csv < 0.04 )     weight= 0.46 + up* 0.66  - dw*0.7  ;
        if(0.04<= csv && csv < 0.08 )     weight= 0.57 + up* 0.62  - dw*0.39 ;
        if(0.08<= csv && csv < 0.12 )     weight= 0.53 + up* 0.43  - dw*0.4  ;
@@ -217,6 +258,40 @@ double CSVshape(double csv, int flavor, double up=0, double dw=0 ){
        if(0.96<= csv && csv < 1.00 )     weight= 0.97 + up* 0.02  - dw*0.02 ;
 
    }
+   else {
+       //for additional jet of light flavor in TTBB
+       int iPt = -1; int iEta = -1;
+       if (pt >=30 && pt<35) iPt = 0;
+       else if (pt >=35 && pt<40) iPt = 1;
+       else if (pt >=40 && pt<50) iPt = 2;
+       else if (pt >=50) iPt = 3;
+       
+       if(fabs(eta) < 1.1) iEta = 0;
+       else                iEta = 1;
+       
+       if(iPt>-1)
+       { 
+         int JetN_ = JetN%2; 
+         if(up==0 && dw==0)
+         {
+            int useCSVBin = h_ttbb_csv_LF_SF[JetN_][iEta][iPt]->FindBin(csv);
+            double iCSVWgt = h_ttbb_csv_LF_SF[JetN_][iEta][iPt]->GetBinContent(useCSVBin);
+            if( iCSVWgt!=0 ) weight =iCSVWgt;
+         }
+         else if(up==0)
+         {
+            int useCSVBin = h_ttbb_csv_LF_SFdw[JetN_][iEta][iPt]->FindBin(csv);
+            double iCSVWgt = h_ttbb_csv_LF_SFdw[JetN_][iEta][iPt]->GetBinContent(useCSVBin);
+            if( iCSVWgt!=0 ) weight =iCSVWgt;
+         }
+         else if(dw==0)
+         {
+            int useCSVBin = h_ttbb_csv_LF_SFup[JetN_][iEta][iPt]->FindBin(csv);
+            double iCSVWgt = h_ttbb_csv_LF_SFup[JetN_][iEta][iPt]->GetBinContent(useCSVBin);
+            if( iCSVWgt!=0 ) weight =iCSVWgt;
+         }
+       }
+   }
 
    return weight;
 
@@ -229,6 +304,10 @@ double CSVshape(double csv, int flavor, double up=0, double dw=0 ){
        TH1D* h_csv_wgt_lf[9][3][3];
        TFile* f_CSVwgt_HF;
        TFile* f_CSVwgt_LF;
+       TH1F* h_ttbb_csv_LF_SF[2][2][4];
+       TH1F* h_ttbb_csv_LF_SFup[2][2][4];
+       TH1F* h_ttbb_csv_LF_SFdw[2][2][4];
+       TFile* f_ttbb_csv; 
 };
 #endif
 
