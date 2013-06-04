@@ -13,7 +13,7 @@
 //
 // Original Author:  Tae Jeong Kim,40 R-A32,+41227678602,
 //         Created:  Fri Jun  4 17:19:29 CEST 2010
-// $Id: CMGTopDILAnalyzer.h,v 1.37 2013/05/30 08:56:38 youngjo Exp $
+// $Id: CMGTopDILAnalyzer.h,v 1.38 2013/06/04 10:47:29 youngjo Exp $
 //
 //
 
@@ -299,7 +299,7 @@ class CMGTopDILAnalyzer : public edm::EDFilter {
     tree->Branch("jets_bDiscriminatorJP","std::vector<double>",&jets_bDiscriminatorJP);
     tree->Branch("jets_bDiscriminatorCSV","std::vector<double>",&jets_bDiscriminatorCSV);
     tree->Branch("jets_bDisCSVweight","std::vector<double>",&jets_bDisCSVweight);
-    tree->Branch("jets_bDisCSVweightall","std::vector<double>",&jets_bDisCSVweightall);
+//    tree->Branch("jets_bDisCSVweightall","std::vector<double>",&jets_bDisCSVweightall);
     tree->Branch("jets_ptweight","std::vector<double>",&jets_ptweight);
 
     //tree->Branch("lep1","std::vector<vallot::Lepton>",&lep1);
@@ -623,7 +623,7 @@ class CMGTopDILAnalyzer : public edm::EDFilter {
       jets_bDiscriminatorCSV.push_back(bDiscriminator); 
 //      jets_bDisCSVweight.push_back( bDisCSVweight);
       jets_bDisCSVweight.push_back( 1.0 );
-      jets_bDisCSVweightall.push_back( 1.0 );
+//      jets_bDisCSVweightall.push_back( 1.0 );
       jets_ptweight.push_back( 1.0 );
     
       corrjetup = corrjet * (1+uncert); 
@@ -667,15 +667,17 @@ class CMGTopDILAnalyzer : public edm::EDFilter {
 
     if( nJet30 >= 4){
       for(int i = 0; i < (int) nJet30 ; i++){
-        if( i  <  2 ) continue;
+
         int jetid = csvd_jetid[i];
-        //double bDisCSVweight = bDiscriminatorWeight(jets_pt[jetid], jets_bDiscriminatorCSV[jetid], jets_flavor[jetid], i , false );
         double bDisCSVweight = 1;
         if(i<4) bDisCSVweight =csvWgt->CSVshape(jets_bDiscriminatorCSV[jetid], jets_pt[jetid], jets_eta[jetid],jets_flavor[jetid], i,0,0);
-        double bDisCSVweightall = bDiscriminatorWeight(jets_pt[jetid], jets_bDiscriminatorCSV[jetid], jets_flavor[jetid], i, true );
-        double ptweight = PTWeight(jets_pt[jetid], jets_flavor[jetid], i );
         jets_bDisCSVweight[jetid] =  bDisCSVweight ;
-        jets_bDisCSVweightall[jetid] =  bDisCSVweightall ;
+
+        if( i  <  2 ) continue;
+        //double bDisCSVweight = bDiscriminatorWeight(jets_pt[jetid], jets_bDiscriminatorCSV[jetid], jets_flavor[jetid], i , false );
+        //double bDisCSVweightall = bDiscriminatorWeight(jets_pt[jetid], jets_bDiscriminatorCSV[jetid], jets_flavor[jetid], i, true );
+        double ptweight = PTWeight(jets_pt[jetid], jets_flavor[jetid], i );
+        //jets_bDisCSVweightall[jetid] =  bDisCSVweightall ;
         jets_ptweight[jetid] =  ptweight ;
       }
     }
@@ -1223,7 +1225,7 @@ class CMGTopDILAnalyzer : public edm::EDFilter {
     jets_bDiscriminatorJP.clear();
     jets_bDiscriminatorCSV.clear();
     jets_bDisCSVweight.clear();
-    jets_bDisCSVweightall.clear();
+    //jets_bDisCSVweightall.clear();
     jets_ptweight.clear();
 
     nJet30 = 0;
@@ -1478,7 +1480,7 @@ class CMGTopDILAnalyzer : public edm::EDFilter {
   std::vector<double> jets_bDiscriminatorJP;
   std::vector<double> jets_bDiscriminatorCSV;
   std::vector<double> jets_bDisCSVweight;
-  std::vector<double> jets_bDisCSVweightall;
+//  std::vector<double> jets_bDisCSVweightall;
   std::vector<double> jets_ptweight;
 
   unsigned int nJet30;
