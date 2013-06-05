@@ -11,7 +11,7 @@ void roofitR(){
   using namespace RooFit ;
 
   bool combine = true;
-  int nbinsch[2] ={ 20, 16} ; //number of bins for each histograms. for example, b-jets multiplicity = 5 , b-dscriminatorCSV = 20, b-discriminatorJP = 50
+  int nbinsch[2];
   const int ndecay = 3; // mm, em, ee
   const int nobj = 2; // 1: b-jet mulitplicity , 2 :jet1, jet2 
 
@@ -22,7 +22,7 @@ void roofitR(){
   //double eR = 0.750311; //nJet30 >= 4
 
   //TString path = "/afs/cern.ch/work/b/bhlee/public/store/top/ntuple/7TeV/v3_20130412_V00-00-08/TTBB_12Apr2013_CSVTv2puweight_bweight30CSVT";
-  TString path = "../TTBB_11May2013";
+  TString path = "../TTBB_29May2013_FinalPlots";
   TString decay[ndecay];
   decay[0] = "MuMu";
   decay[1] = "MuEl";
@@ -33,8 +33,9 @@ void roofitR(){
   fileName[1] = path+"/"+decay[1]+"/"+decay[1]+".root";
   fileName[2] = path+"/"+decay[2]+"/"+decay[2]+".root";
   TString variable[nobj];
-  variable[0] = "addjet1_bDisCSV_rebin";
-  variable[1] = "addjet2_bDisCSV_rebin";
+  //variable[0] = "nbJet30_CSVT_tthweight";
+  variable[0] = "addjet1_bDisCSV_rebin2";
+  variable[1] = "addjet2_bDisCSV_rebin2";
   TString step[nobj];
   step[0] = "Step_5";
   step[1] = "Step_5";
@@ -53,8 +54,15 @@ void roofitR(){
   TH1F * hbkg[ndecay][nobj];
   TH1F * hdbg[ndecay][nobj];
 
-  int nbins = 3*(nbinsch[0] + nbinsch[1]);
-  if( combine ) nbins = (nbinsch[0]+nbinsch[1])*nobj;
+  int nbins = 0;
+  for(int j = 0 ; j < nobj ; j++){
+    TFile * ftmp = new TFile(fileName[0]);
+    TH1F * htmp = (TH1F*) ftmp->Get(Form("%s/hData_%s_%s", step[j].Data(), step[j].Data(), variable[j].Data()));
+    nbinsch[j] = htmp->GetNbinsX();
+    nbins = nbins + nbinsch[j];
+  }
+  if(combine == false) nbins =3*nbins;
+
   TH1F * h_ttbb = new TH1F("h_ttbb","h_ttbb", nbins , 0, nbins);
   TH1F * h_ttcc = new TH1F("h_ttcc","h_ttcc", nbins , 0, nbins);
   TH1F * h_ttll = new TH1F("h_ttll","h_ttll", nbins , 0, nbins);
@@ -75,7 +83,6 @@ void roofitR(){
       hVV[i][j]        = (TH1F*) f->Get(Form("%s/hMC_VV_%s_%s", step[j].Data(), step[j].Data(), variable[j].Data()));
       hSingleTop[i][j] = (TH1F*) f->Get(Form("%s/hMC_SingleTop_%s_%s", step[j].Data(), step[j].Data(), variable[j].Data()));
       hDYll[i][j]      = (TH1F*) f->Get(Form("%s/hMC_DYll_%s_%s", step[j].Data(), step[j].Data(), variable[j].Data())); 
-
 /*
       hdata[i][j]->Rebin(2);
       httbb[i][j]->Rebin(2);
@@ -87,7 +94,6 @@ void roofitR(){
       hSingleTop[i][j]->Rebin(2);
       hDYll[i][j]->Rebin(2);
 */
-
       //MC background
       TH1F * htmpbkg = httothers[i][j]->Clone();
       htmpbkg->Add(hWl[i][j]);
@@ -211,7 +217,7 @@ void roofitR(){
   TH1F* h_combined_dbg[2];
   TH1F* h_combined_bkg[2];
 
-  for(int j = 0 ; j < 2 ; j++){
+  for(int j = 0 ; j < nobj ; j++){
 
 /*
     h_combined_ttbb[j] = new TH1F(Form("h_combined_%s_ttbb", variable[j].Data()),Form("h_combined_%s_ttbb", variable[j].Data()), nbinsch[j] , 0, 1);
@@ -317,7 +323,7 @@ void roofitR(){
   TCanvas * c_fit_combined = new TCanvas("c_fit_combined","c_fit_combined",1200,600);
   c_fit_combined->Divide(2,1);    
 
-  for(int j = 0 ; j < 2; j++){
+  for(int j = 0 ; j < nobj ; j++){
     int num = 1+j;
     c_fit_combined->cd(num);      
     gPad->SetLogy();
@@ -382,6 +388,7 @@ void roofitR(){
 
   }
  
-  c_fit->Print("c_final_fit.eps");
+  //c_fit->Print("c_final_fit.eps");
+  c_fit_combined->Print("c_final_fit_combined.eps");
 
 }
