@@ -13,7 +13,7 @@
 //
 // Original Author:  Tae Jeong Kim
 //         Created:  Mon Dec 14 01:29:35 CET 2009
-// $Id: CMGJetFilter.cc,v 1.5 2012/11/07 08:42:17 youngjo Exp $
+// $Id: CMGJetFilter.cc,v 1.6 2012/11/15 09:35:29 youngjo Exp $
 //
 //
 
@@ -367,7 +367,7 @@ CMGJetFilter::endJob() {
 bool CMGJetFilter::checkPFJetId(const cmg::PFJet * jet){
     //Loose PF Jet id 
     ///https://twiki.cern.ch/twiki/bin/viewauth/CMS/JetID
-    if(jet->component(5).fraction() < 0.99
+    if( (jet->component(5).fraction() + jet->component(6).fraction()) < 0.99
        &&jet->component(4).fraction() < 0.99
        &&jet->nConstituents() > 1
        &&(jet->component(1).fraction() > 0 || abs(jet->eta()) > 2.4)
