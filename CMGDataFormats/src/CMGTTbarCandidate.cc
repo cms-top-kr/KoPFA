@@ -9,7 +9,6 @@ using namespace reco;
 using namespace vallot;
 
 void CMGTTbarCandidate::building( const std::vector<cmg::GenJet>* genJets, const reco::GenParticleCollection* genParticles  ){
-
   math::XYZTLorentzVector null(0,0,0,0); 
 
   tops_.push_back(null);
@@ -305,6 +304,9 @@ void CMGTTbarCandidate::building( const std::vector<cmg::GenJet>* genJets, const
   bJets_.push_back(null);
   bJets_.push_back(null);
 
+  addbJets_.push_back(null);
+  addbJets_.push_back(null);
+
   std::map<int, vector<const reco::Candidate*> > mapJetToBHadrons;
   std::map<int, int> mapJetToBMatched;
   std::map<const reco::Candidate*, vector<int> > mapBHadronToJets;
@@ -315,7 +317,7 @@ void CMGTTbarCandidate::building( const std::vector<cmg::GenJet>* genJets, const
 
   std::vector<math::XYZTLorentzVector> bJets;
   std::vector<math::XYZTLorentzVector> bJetsBHad;
-  std::vector<math::XYZTLorentzVector> nobJetsBHad;
+  std::vector<math::XYZTLorentzVector> addbJetsBHad;
   std::vector<math::XYZTLorentzVector> bJetsfromnotop;
   std::vector<math::XYZTLorentzVector> cJets;
   std::vector<math::XYZTLorentzVector> cJetsCHad;
@@ -323,11 +325,10 @@ void CMGTTbarCandidate::building( const std::vector<cmg::GenJet>* genJets, const
   int idx = 0;
 
   NJets_ = 0;
-  NJets30_ = 0;
-  NJets25_ = 0;
-  NJets20_ = 0;
-  NJets15_ = 0;
   NJets10_ = 0;
+  NJets20_ = 0;
+  NJets30_ = 0;
+  NJets40_ = 0;
 
   for (std::vector<cmg::GenJet>::const_iterator genJet=genJets->begin();genJet!=genJets->end();++genJet, ++idx){
     const reco::Candidate& gJet = *genJet;
@@ -362,14 +363,13 @@ void CMGTTbarCandidate::building( const std::vector<cmg::GenJet>* genJets, const
     if( minDR2c < 0.5 ) cJets.push_back(gJet.p4());
 
     NJets_++;
+    if( gJet.pt() > 40 && fabs(gJet.eta()) < 2.5 ) NJets40_++;
     if( gJet.pt() > 30 && fabs(gJet.eta()) < 2.5 ) NJets30_++;
-    if( gJet.pt() > 25 && fabs(gJet.eta()) < 2.5 ) NJets25_++;
     if( gJet.pt() > 20 && fabs(gJet.eta()) < 2.5 ) NJets20_++;
-    if( gJet.pt() > 15 && fabs(gJet.eta()) < 2.5 ) NJets15_++;
     if( gJet.pt() > 10 && fabs(gJet.eta()) < 2.5 ) NJets10_++;
 
     bool isPAT = genJet->sourcePtr()->isAvailable(); 
-
+    bool istopdecay = false;
     if( isPAT ){
       std::vector <const reco::GenParticle*> mcparts = (*(genJet->sourcePtr()))->getGenConstituents();
       for (unsigned i = 0; i < mcparts.size (); i++) {
@@ -377,6 +377,8 @@ void CMGTTbarCandidate::building( const std::vector<cmg::GenJet>* genJets, const
         int PDG = std::abs( mcpart->pdgId());
         bool isB = decayFromBHadron(*mcpart);
         if(isB){
+           //bool topdecay = isFromtop(*mcpart);
+           //if( topdecay ) istopdecay = true;
            const reco::Candidate* lastB = lastBHadron(*mcpart);
            vector<const reco::Candidate*>::iterator it = find ( mapJetToBHadrons[idx].begin(), mapJetToBHadrons[idx].begin(), lastB );
            if( it == mapJetToBHadrons[idx].end() ){
@@ -397,7 +399,6 @@ void CMGTTbarCandidate::building( const std::vector<cmg::GenJet>* genJets, const
         }
       }
     }
-
   }
 
 
@@ -453,17 +454,30 @@ void CMGTTbarCandidate::building( const std::vector<cmg::GenJet>* genJets, const
     const reco::Candidate& genJet = genJets->at(idx);
     // is It unique b-jet?  
     if( mapJetToBMatched[idx]  == 0 ) continue;
+
+    double minDR = 999;
+    for(unsigned int i=0 ; i < bquarksfromtop.size() ; i++){
+      double dR = reco::deltaR(genJet.eta(), genJet.phi(), bquarksfromtop[i].eta(), bquarksfromtop[i].phi());
+      if( dR < minDR ) minDR = dR;
+    }
+
     bJetsBHad.push_back( genJet.p4() );
+    if( minDR < 0.5) continue;
+    addbJetsBHad.push_back( genJet.p4() );
   }
 
   std::sort(bJetsBHad.begin(), bJetsBHad.end(), GreaterByPt<reco::Candidate::LorentzVector>());
+  std::sort(addbJetsBHad.begin(), addbJetsBHad.end(), GreaterByPt<reco::Candidate::LorentzVector>());
 
   NbJetsBHad_ = 0;
   NbJets10BHad_ = 0;
-  NbJets15BHad_ = 0;
   NbJets20BHad_ = 0;
-  NbJets25BHad_ = 0;
   NbJets30BHad_ = 0;
+  NbJets40BHad_ = 0;
+
+  NaddbJetsBHad_ = 0;
+  NaddbJets20BHad_ = 0;
+  NaddbJets40BHad_ = 0;
 
   for( unsigned int i = 0 ; i < bJetsBHad.size() ; i++){
     if( i < 4 ){
@@ -471,10 +485,18 @@ void CMGTTbarCandidate::building( const std::vector<cmg::GenJet>* genJets, const
     }
     NbJetsBHad_++;
     if( bJetsBHad[i].pt() > 10 && fabs(bJetsBHad[i].eta()) < 2.5) NbJets10BHad_++;
-    if( bJetsBHad[i].pt() > 15 && fabs(bJetsBHad[i].eta()) < 2.5) NbJets15BHad_++;
     if( bJetsBHad[i].pt() > 20 && fabs(bJetsBHad[i].eta()) < 2.5) NbJets20BHad_++;
-    if( bJetsBHad[i].pt() > 25 && fabs(bJetsBHad[i].eta()) < 2.5) NbJets25BHad_++;
     if( bJetsBHad[i].pt() > 30 && fabs(bJetsBHad[i].eta()) < 2.5) NbJets30BHad_++;
+    if( bJetsBHad[i].pt() > 40 && fabs(bJetsBHad[i].eta()) < 2.5) NbJets40BHad_++;
+  }
+
+  for( unsigned int i = 0 ; i < addbJetsBHad.size() ; i++){
+    if( i < 2 ){
+      addbJets_[i] = addbJetsBHad[i];
+    }
+    NaddbJetsBHad_++;
+    if( addbJetsBHad[i].pt() > 20 && fabs(addbJetsBHad[i].eta()) < 2.5) NaddbJets20BHad_++;
+    if( addbJetsBHad[i].pt() > 40 && fabs(addbJetsBHad[i].eta()) < 2.5) NaddbJets40BHad_++;
   }
 
   for( std::map<int, vector<const reco::Candidate*> >::iterator it = mapJetToCHadrons.begin() ; it != mapJetToCHadrons.end(); it++){
@@ -491,60 +513,54 @@ void CMGTTbarCandidate::building( const std::vector<cmg::GenJet>* genJets, const
 
   NcJetsCHad_ = 0;
   NcJets10CHad_ = 0;
-  NcJets15CHad_ = 0;
   NcJets20CHad_ = 0;
-  NcJets25CHad_ = 0;
   NcJets30CHad_ = 0;
+  NcJets40CHad_ = 0;
 
   for( unsigned int i = 0 ; i < cJetsCHad.size() ; i++){
     NcJetsCHad_++;
     if( cJetsCHad[i].pt() > 10 && fabs(cJetsCHad[i].eta()) < 2.5) NcJets10CHad_++;
-    if( cJetsCHad[i].pt() > 15 && fabs(cJetsCHad[i].eta()) < 2.5) NcJets15CHad_++;
     if( cJetsCHad[i].pt() > 20 && fabs(cJetsCHad[i].eta()) < 2.5) NcJets20CHad_++;
-    if( cJetsCHad[i].pt() > 25 && fabs(cJetsCHad[i].eta()) < 2.5) NcJets25CHad_++;
     if( cJetsCHad[i].pt() > 30 && fabs(cJetsCHad[i].eta()) < 2.5) NcJets30CHad_++;
+    if( cJetsCHad[i].pt() > 40 && fabs(cJetsCHad[i].eta()) < 2.5) NcJets40CHad_++;
   }
 
   NbJets_ = 0;
   NbJets10_ = 0;
-  NbJets15_ = 0;
   NbJets20_ = 0;
-  NbJets25_ = 0;
   NbJets30_ = 0;
+  NbJets40_ = 0;
 
   for( unsigned int i = 0 ; i < bJets.size() ; i++){
     NbJets_++;
     if( bJets[i].pt() > 10 && fabs(bJets[i].eta()) < 2.5) NbJets10_++;
-    if( bJets[i].pt() > 15 && fabs(bJets[i].eta()) < 2.5) NbJets15_++;
     if( bJets[i].pt() > 20 && fabs(bJets[i].eta()) < 2.5) NbJets20_++;
-    if( bJets[i].pt() > 25 && fabs(bJets[i].eta()) < 2.5) NbJets25_++;
     if( bJets[i].pt() > 30 && fabs(bJets[i].eta()) < 2.5) NbJets30_++;
+    if( bJets[i].pt() > 40 && fabs(bJets[i].eta()) < 2.5) NbJets40_++;
   }
 
   NbJetsNoTop_ = 0;
-  NbJets15NoTop_ = 0;
   NbJets20NoTop_ = 0;
+  NbJets40NoTop_ = 0;
 
   for( unsigned int i = 0 ; i < bJetsfromnotop.size() ; i++){
     NbJetsNoTop_++;
-    if( bJetsfromnotop[i].pt() > 15 && fabs(bJetsfromnotop[i].eta()) < 2.5) NbJets15NoTop_++;
     if( bJetsfromnotop[i].pt() > 20 && fabs(bJetsfromnotop[i].eta()) < 2.5) NbJets20NoTop_++;
+    if( bJetsfromnotop[i].pt() > 40 && fabs(bJetsfromnotop[i].eta()) < 2.5) NbJets40NoTop_++;
   }
 
   NcJets_ = 0;
   NcJets10_ = 0;
-  NcJets15_ = 0;
   NcJets20_ = 0;
-  NcJets25_ = 0;
   NcJets30_ = 0;
+  NcJets40_ = 0;
 
   for( unsigned int i = 0 ; i < cJets.size() ; i++){
     NcJets_++;
     if( cJets[i].pt() > 10 && fabs(cJets[i].eta()) < 2.5) NcJets10_++;
-    if( cJets[i].pt() > 15 && fabs(cJets[i].eta()) < 2.5) NcJets15_++;
     if( cJets[i].pt() > 20 && fabs(cJets[i].eta()) < 2.5) NcJets20_++;
-    if( cJets[i].pt() > 25 && fabs(cJets[i].eta()) < 2.5) NcJets25_++;
     if( cJets[i].pt() > 30 && fabs(cJets[i].eta()) < 2.5) NcJets30_++;
+    if( cJets[i].pt() > 40 && fabs(cJets[i].eta()) < 2.5) NcJets40_++;
   }
 
 }

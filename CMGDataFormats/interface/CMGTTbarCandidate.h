@@ -43,7 +43,10 @@ namespace vallot{
     const math::XYZTLorentzVector bJets2() const { return bJets_[1]; }
     const math::XYZTLorentzVector bJets3() const { return bJets_[2]; }
     const math::XYZTLorentzVector bJets4() const { return bJets_[3]; }
-   
+  
+    const math::XYZTLorentzVector addbJets1() const { return addbJets_[0]; }
+    const math::XYZTLorentzVector addbJets2() const { return addbJets_[1]; }
+ 
     void building( const std::vector<cmg::GenJet>* genJets, const reco::GenParticleCollection* genParticles );
 
     double mass() const { return mass_; }
@@ -115,6 +118,23 @@ namespace vallot{
       if( i == 0 ) return NbJets30BHad_;
       else return NbJets30_ ;
     }
+    int NbJets40(int i=0) const {
+      if( i == 0 ) return NbJets40BHad_;
+      else return NbJets40_ ;
+    }
+    
+    int NaddbJets(int i=0) const { 
+      if( i == 0 ) return NaddbJetsBHad_;
+      else return NbJetsNoTop_; 
+    }
+    int NaddbJets20(int i=0) const { 
+      if( i == 0 ) return NaddbJets20BHad_; 
+      else return NbJets20NoTop_;
+    }
+    int NaddbJets40(int i=0) const { 
+      if( i == 0 ) return NaddbJets40BHad_; 
+      else return NbJets40NoTop_;
+    }
 
     int NcJets(int i=0) const {
       if( i == 0 ) return NcJetsCHad_;
@@ -140,6 +160,10 @@ namespace vallot{
       if( i == 0 ) return NcJets30CHad_;
       else return NcJets30_ ;
     }
+    int NcJets40(int i=0) const {
+      if( i == 0 ) return NcJets40CHad_;
+      else return NcJets40_ ;
+    }
 
     int NbJetsNoTop() const { return NbJetsNoTop_ ; }
     int NbJets15NoTop() const { return NbJets15NoTop_ ; }
@@ -153,6 +177,7 @@ namespace vallot{
     int NJets20() const { return NJets20_ ;}
     int NJets25() const { return NJets25_ ;}
     int NJets30() const { return NJets30_ ;}
+    int NJets40() const { return NJets40_ ;}
 
     int is2tops() const { return is2tops_; }
 
@@ -180,6 +205,7 @@ namespace vallot{
     LorentzVectors nus_;
     LorentzVectors taunus_;
     LorentzVectors bJets_;
+    LorentzVectors addbJets_;
 
     double mass_;
 
@@ -207,6 +233,7 @@ namespace vallot{
     int NbJets20_;
     int NbJets25_;
     int NbJets30_;
+    int NbJets40_;
 
     int NbJetsBHad_;
     int NbJets10BHad_;
@@ -214,6 +241,11 @@ namespace vallot{
     int NbJets20BHad_;
     int NbJets25BHad_;
     int NbJets30BHad_;
+    int NbJets40BHad_;
+
+    int NaddbJetsBHad_;
+    int NaddbJets20BHad_;
+    int NaddbJets40BHad_;
 
     int NbJetsNoTop_;
     int NbJets10NoTop_;
@@ -221,6 +253,7 @@ namespace vallot{
     int NbJets20NoTop_;
     int NbJets25NoTop_;
     int NbJets30NoTop_;
+    int NbJets40NoTop_;
 
     int NcJets_;
     int NcJets10_;
@@ -228,6 +261,7 @@ namespace vallot{
     int NcJets20_;
     int NcJets25_;
     int NcJets30_;
+    int NcJets40_;
 
     int NcJetsCHad_;
     int NcJets10CHad_;
@@ -235,6 +269,7 @@ namespace vallot{
     int NcJets20CHad_;
     int NcJets25CHad_;
     int NcJets30CHad_;
+    int NcJets40CHad_;
 
     int NbQuarks_;
     int NbQuarksNoTop_;
@@ -249,6 +284,7 @@ namespace vallot{
     int NJets20_;
     int NJets25_;
     int NJets30_;
+    int NJets40_;
 
   };
 
