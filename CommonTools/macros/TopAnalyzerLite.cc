@@ -425,13 +425,15 @@ void TopAnalyzerLite::applyCutSteps()
   for ( unsigned int i=0; i<mcSigs_.size(); ++i )
   {
     MCSample& mcSample = mcSigs_[i];
-    cout << " * " << mcSample.name << "\t" << mcSample.xsec << " /pb (" << mcSample.nEvents << ")\n";
+    double effL = mcSample.nEvents/mcSample.xsec;
+    cout << " * " << mcSample.name << "\t" << mcSample.xsec << " /pb (" << effL << " pb, " << mcSample.nEvents << ")\n";
     if ( writeSummary_ ) fout_ << " * " << mcSample.name << "\t" << mcSample.xsec << " /pb (" << mcSample.nEvents << ")\n";
   }
   for ( unsigned int i=0; i<mcBkgs_.size(); ++i )
   {
     MCSample& mcSample = mcBkgs_[i];
-    cout << " * " << mcSample.name << "\t" << mcSample.xsec << " /pb (" << mcSample.nEvents << ")\n";
+    double effL = mcSample.nEvents/mcSample.xsec;
+    cout << " * " << mcSample.name << "\t" << mcSample.xsec << " /pb (" << effL << " pb, " << mcSample.nEvents << ")\n";
     if ( writeSummary_ ) fout_ << " * " << mcSample.name << "\t" << mcSample.xsec << " /pb (" << mcSample.nEvents << ")\n";
   }
   cout << "--------------------------------------\n";
@@ -511,7 +513,9 @@ void TopAnalyzerLite::plot(const string name, const TCut cut, MonitorPlot& monit
   TH1F* hData = new TH1F(dataHistName, title.c_str(), nBins, xBins);
   histograms_.Add(hData);
 
+  cout << "debug 1: " << endl;
   if ( realDataChain_ ) realDataChain_->Project(dataHistName, varexp.c_str(), cut);
+  cout << "debug 2: " << endl;
   hData->AddBinContent(nBins, hData->GetBinContent(nBins+1));
   hData->Sumw2();
   hData->SetMarkerStyle(20);
