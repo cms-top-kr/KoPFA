@@ -18,10 +18,10 @@ void ana8TeVFinal(){
 
   gSystem->CompileMacro("$CMSSW_BASE/src/KoPFA/CommonTools/macros/TopAnalyzerLite.cc", "k");
 
-  ana("ElEl","TTBB_12June2013_FinalPlots/ElEl");
-  ana("MuMu","TTBB_12June2013_FinalPlots/MuMu");
-  ana("MuEl","TTBB_12June2013_FinalPlots/MuEl");
-  gSystem->Exec("hadd -f TTBB_12June2013_FinalPlots/LL.root TTBB_12June2013_FinalPlots/*/*.root");
+  ana("ElEl","TTBB_12June2013_FinalPlots_40GeV/ElEl");
+  ana("MuMu","TTBB_12June2013_FinalPlots_40GeV/MuMu");
+  ana("MuEl","TTBB_12June2013_FinalPlots_40GeV/MuEl");
+  gSystem->Exec("hadd -f TTBB_12June2013_FinalPlots_40GeV/LL.root TTBB_12June2013_FinalPlots_40GeV/*/*.root");
 }
 
 
@@ -33,17 +33,22 @@ void ana(string decayMode = "ElEl", string imageOutDir = "")
   bool printstats = false;
   TopAnalyzerLite* analyzer = new TopAnalyzerLite(decayMode, imageOutDir, createplots, printstats);
 
-  const std::string mcPath = "/afs/cern.ch/work/y/youngjo/public/For8Tev/v20130610_jetid";
-  const std::string rdPath = "/afs/cern.ch/work/y/youngjo/public/For8Tev/v20130610_jetid";
+  const std::string mcPath = "/afs/cern.ch/work/y/youngjo/public/For8Tev/v20130612_genjet";
+  const std::string rdPath = "/afs/cern.ch/work/y/youngjo/public/For8Tev/v20130612_genjet";
 
   gROOT->ProcessLine(".L $CMSSW_BASE/src/KoPFA/CommonTools/macros/tdrstyle.C");
   defaultStyle();
 
   analyzer->addRealData(rdPath+"/vallot_Run2012"+decayMode+".root", 19619);
 
-  TCut visible = "nGenJet20 >= 4 && nGenbJet20 >=2 && genLep1_pt > 20 && genLep2_pt > 20 && abs( genLep1_eta ) < 2.4 && abs( genLep2_eta ) < 2.4" ;
-  TCut sigcut = "nGenbJet20 >= 4";
-  TCut ttcc = "nGencJet20 >= 2";
+  //TCut visible = "nGenJet20 >= 4 && nGenbJet20 >=2 && genLep1_pt > 20 && genLep2_pt > 20 && abs( genLep1_eta ) < 2.4 && abs( genLep2_eta ) < 2.4" ;
+  //TCut sigcut = "nGenbJet20 >= 4";
+  //TCut ttcc = "nGencJet20 >= 2";
+
+  TCut visible = "nGenJet40 >= 4 && nGenbJet40 >=2 && genLep1_pt > 20 && genLep2_pt > 20 && abs( genLep1_eta ) < 2.4 && abs( genLep2_eta ) < 2.4" ;
+  TCut sigcut = "nGenbJet40 >= 4";
+  TCut ttcc = "nGencJet40 >= 2";
+
   TCut dilepton = "ttbarGen_dileptonic == 1";
 
   analyzer->addMCSig("TTbarbb", "t#bar{t} + bb", mcPath+"/vallot_TTbarFullLepMGDecays.root", 26, kBlue+2, true, visible && sigcut);
@@ -86,7 +91,8 @@ void ana(string decayMode = "ElEl", string imageOutDir = "")
     S2 = "abs(ZMass - 91.2) > 15";
     S3 = "MET > 30";
   }
-  TCut S4 = "nJet30 >= 4";
+  //TCut S4 = "nJet30 >= 4";
+  TCut S4 = "nJet50 >= 4";
   TCut CSVM = "nbjets30_CSVM >= 2";
   TCut S5 = "nbjets30_CSVT >= 2";
 
@@ -100,16 +106,16 @@ void ana(string decayMode = "ElEl", string imageOutDir = "")
   analyzer->addCutStep(S4, "", 0.5, "1", "Step_4");
   //Step5 --------------------------------------------------------------------------
   //no weight at all
-  analyzer->addCutStep(S5, "addjet1_bDisCSV_rebin,addjet2_bDisCSV_rebin,addjet1_bDisCSV_rebin2,addjet2_bDisCSV_rebin2,nbJet30_CSVT", 0.5, "1", "Step_5","_noweight");
+  //analyzer->addCutStep(S5, "addjet1_bDisCSV_rebin,addjet2_bDisCSV_rebin,addjet1_bDisCSV_rebin2,addjet2_bDisCSV_rebin2,nbJet30_CSVT", 0.5, "1", "Step_5","_noweight");
   //b-POG weight
-  analyzer->addCutStep(S5, "addjet1_bDisCSV_rebin,addjet2_bDisCSV_rebin,addjet1_bDisCSV_rebin2,addjet2_bDisCSV_rebin2,nbJet30_CSVT", 0.5, "bweight30CSVT", "Step_5","_bCSVTweight");
+  //analyzer->addCutStep(S5, "addjet1_bDisCSV_rebin,addjet2_bDisCSV_rebin,addjet1_bDisCSV_rebin2,addjet2_bDisCSV_rebin2,nbJet30_CSVT", 0.5, "bweight30CSVT", "Step_5","_bCSVTweight");
   //tth-weight
-  analyzer->addCutStep(S5, "addjet1_bDisCSV_rebin,addjet2_bDisCSV_rebin,addjet1_bDisCSV_rebin2,addjet2_bDisCSV_rebin2,nbJet30_CSVT", 0.5, "csvweight", "Step_5","_tthweight");
+  analyzer->addCutStep(S5, "addjet1_bDisCSV_rebin2,addjet2_bDisCSV_rebin2,nbJet30_CSVT", 0.5, "csvweight", "Step_5","_tthweight");
   //tth-weight+b-POG
-  analyzer->addCutStep(S5, "addjet1_bDisCSV_rebin,addjet2_bDisCSV_rebin,addjet1_bDisCSV_rebin2,addjet2_bDisCSV_rebin2,nbJet30_CSVT", 0.5, "bweight30CSVT*csvweight", "Step_5","_tthbPOGweight");
+  //analyzer->addCutStep(S5, "addjet1_bDisCSV_rebin,addjet2_bDisCSV_rebin,addjet1_bDisCSV_rebin2,addjet2_bDisCSV_rebin2,nbJet30_CSVT", 0.5, "bweight30CSVT*csvweight", "Step_5","_tthbPOGweight");
   //ttbb-weight
-  analyzer->addCutStep(S5, "addjet1_bDisCSV_rebin,addjet1_bDisCSV_rebin2,nbJet30_CSVT", 0.5, "jets_bDisCSVweight[csvd_jetid[2]]*bweight30CSVT", "Step_5","_ttbbweight");
-  analyzer->addCutStep(S5, "addjet2_bDisCSV_rebin,addjet2_bDisCSV_rebin2", 0.5, "jets_bDisCSVweight[csvd_jetid[3]]*bweight30CSVT", "Step_5","_ttbbweight");
+  analyzer->addCutStep(S5, "addjet1_bDisCSV_rebin2,nbJet30_CSVT", 0.5, "jets_bDisCSVweight[csvd_jetid[2]]*bweight30CSVT", "Step_5","_ttbbweight");
+  analyzer->addCutStep(S5, "addjet2_bDisCSV_rebin2", 0.5, "jets_bDisCSVweight[csvd_jetid[3]]*bweight30CSVT", "Step_5","_ttbbweight");
 
   //QCD invert isolation for base shape
   analyzer->replaceDataBkgCut("QCD", "ZMass > 12 && lep1_relIso03 < 0.15 && lep2_relIso03 < 0.15 && PairSign < 0", "ZMass > 12 && lep1_relIso03 > 0.15 && lep2_relIso03 > 0.15 && PairSign < 0");
@@ -154,7 +160,7 @@ void ana(string decayMode = "ElEl", string imageOutDir = "")
     analyzer->setEventWeight("DYll", "Step_2", 1.02685);
     analyzer->setEventWeight("DYll", "Step_3", 1.30272);
     analyzer->setEventWeight("DYll", "Step_4", 1.28784);
-    analyzer->setEventWeight("DYll", "Step_5", 1.173553);
+    analyzer->setEventWeight("DYll", "Step_5", 1.73553);
  
     analyzer->setEventWeight("DYll10To50", "Step_1", 1.0);
     analyzer->setEventWeight("DYll10To50", "Step_2", 1.02685);
