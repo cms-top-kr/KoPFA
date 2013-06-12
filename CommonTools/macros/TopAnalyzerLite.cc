@@ -426,14 +426,14 @@ void TopAnalyzerLite::applyCutSteps()
   {
     MCSample& mcSample = mcSigs_[i];
     double effL = mcSample.nEvents/mcSample.xsec;
-    cout << " * " << mcSample.name << "\t" << mcSample.xsec << " /pb (" << effL << " pb, " << mcSample.nEvents << ")\n";
+    cout << " * " << mcSample.name << "\t" << mcSample.xsec << " pb (" << effL << " /pb, " << mcSample.nEvents << ")\n";
     if ( writeSummary_ ) fout_ << " * " << mcSample.name << "\t" << mcSample.xsec << " /pb (" << mcSample.nEvents << ")\n";
   }
   for ( unsigned int i=0; i<mcBkgs_.size(); ++i )
   {
     MCSample& mcSample = mcBkgs_[i];
     double effL = mcSample.nEvents/mcSample.xsec;
-    cout << " * " << mcSample.name << "\t" << mcSample.xsec << " /pb (" << effL << " pb, " << mcSample.nEvents << ")\n";
+    cout << " * " << mcSample.name << "\t" << mcSample.xsec << " pb (" << effL << " /pb, " << mcSample.nEvents << ")\n";
     if ( writeSummary_ ) fout_ << " * " << mcSample.name << "\t" << mcSample.xsec << " /pb (" << mcSample.nEvents << ")\n";
   }
   cout << "--------------------------------------\n";
