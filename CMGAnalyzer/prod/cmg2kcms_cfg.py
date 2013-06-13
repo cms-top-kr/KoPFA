@@ -20,7 +20,7 @@ process.load("KoPFA.CMGAnalyzer.cmgElectronAnalyzer_cfi")
 process.load("KoPFA.CMGAnalyzer.cmgMuonAnalyzer_cfi")
 process.load("KoPFA.CMGAnalyzer.ZFilter_cfi")
 process.load("KoPFA.CMGAnalyzer.ttbar2bFilter_cfi")
-process.load("KoPFA.CMGAnalyzer.topHLTfilter_cf")
+process.load("KoPFA.CMGAnalyzer.topHLTfilter_cff")
 from KoPFA.CommonTools.PileUpWeight_cff import *
 
 runOnMC = True 
@@ -30,7 +30,7 @@ runOn2012 = True
 #process.load("KoPFA.CommonTools.Sources.CMG.V5_10_0.Run2012.cmgTuple_Run2012CElEl_cff")
 #MC
 #process.load("KoPFA.CommonTools.Sources.CMG.V5_10_0.Summer12.patTuple_TTbarTuneZ2_cff")
-process.load("KoPFA.CommonTools.Sources.CMG.V5_10_0.Summer12.patTuple_TTbarFullLepMGDecays_cff")
+process.load("KoPFA.CommonTools.Sources.CMG.V5_13_0.Summer12.patTuple_TTbarFullLepMGDecays_cff")
 #process.load("KoPFA.CommonTools.Sources.CMG.V5_10_0.Summer12.cmgTuple_TTH_HToBB_M125_cff")
 #process.load("KoPFA.CommonTools.Sources.CMG.V5_13_0.Summer12.cmgTuple_TTbarTuneZ2_cff")
 #process.load("KoPFA.CommonTools.Sources.CMG.V5_10_0.Summer12.cmgTuple_ZJets_cff")
@@ -130,6 +130,7 @@ process.goodOfflinePrimaryVerticesElEl = process.goodOfflinePrimaryVertices.clon
 
 process.p = cms.Path(
 #    process.BaseSequenceMuMu*
+#    process.ttbar2bFilter*
     process.hltHighLevelMuMu*
     process.nEventsPatHLTMuMu*
     process.EventFilterMuMu*
