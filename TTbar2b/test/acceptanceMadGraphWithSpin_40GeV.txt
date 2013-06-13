@@ -1,0 +1,100 @@
+
+Processing acceptanceR.C...
+TTbarFullLepMGDecays
+nTT= 1.19679e+07 nTTDIL= 1.19679e+07 nTTJJ= 159553 nTTBB= 2067 
+CUT: S1
+total= 1.19679e+07 den(TTJJ)= 159553 den(TTBB)= 2067
+Ratio (nTTDIL/nTT)   = 1
+Ratio (nTTDILVIS/nTTDIL)   = 0.140291
+Ratio (nTTJJ/nTTDILVIS)   = 0.0950296
+Ratio (nTTBB/nTTJJ) = 0.0129549
+Ratio (in reco nTTBB/nTTJJ) = 0.0128518
+acceptance preselection (ttjj)   = 0.837239
+acceptance preselection (ttbb)   = 0.88776
+acceptance postselection (ttjj)   = 0.834696(111502/133584)
+acceptance postselection (ttbb)   = 0.780926(1433/1835)
+acceptance (ttjj)   = 0.69884(111502/159553)
+acceptance (ttbb)   = 0.693275(1433/2067)
+acceptance (ttcc)   = 0.694816(3324/4784)
+Ratio (Attjj/Attbb) = 1.00803
+total= 1.19679e+07 den(TTJJ)= 159553 den(TTBB)= 2067
+CUT: S2
+total= 1.19679e+07 den(TTJJ)= 159553 den(TTBB)= 2067
+Ratio (nTTDIL/nTT)   = 1
+Ratio (nTTDILVIS/nTTDIL)   = 0.140291
+Ratio (nTTJJ/nTTDILVIS)   = 0.0950296
+Ratio (nTTBB/nTTJJ) = 0.0129549
+Ratio (in reco nTTBB/nTTJJ) = 0.0129035
+acceptance preselection (ttjj)   = 0.837239
+acceptance preselection (ttbb)   = 0.88776
+acceptance postselection (ttjj)   = 0.741429(99043/133584)
+acceptance postselection (ttbb)   = 0.696458(1278/1835)
+acceptance (ttjj)   = 0.620753(99043/159553)
+acceptance (ttbb)   = 0.618287(1278/2067)
+acceptance (ttcc)   = 0.620401(2968/4784)
+Ratio (Attjj/Attbb) = 1.00399
+total= 1.19679e+07 den(TTJJ)= 159553 den(TTBB)= 2067
+CUT: S3
+total= 1.19679e+07 den(TTJJ)= 159553 den(TTBB)= 2067
+Ratio (nTTDIL/nTT)   = 1
+Ratio (nTTDILVIS/nTTDIL)   = 0.140291
+Ratio (nTTJJ/nTTDILVIS)   = 0.0950296
+Ratio (nTTBB/nTTJJ) = 0.0129549
+Ratio (in reco nTTBB/nTTJJ) = 0.0129962
+acceptance preselection (ttjj)   = 0.837239
+acceptance preselection (ttbb)   = 0.88776
+acceptance postselection (ttjj)   = 0.705608(94258/133584)
+acceptance postselection (ttbb)   = 0.667575(1225/1835)
+acceptance (ttjj)   = 0.590763(94258/159553)
+acceptance (ttbb)   = 0.592646(1225/2067)
+acceptance (ttcc)   = 0.58842(2815/4784)
+Ratio (Attjj/Attbb) = 0.996822
+total= 1.19679e+07 den(TTJJ)= 159553 den(TTBB)= 2067
+CUT: S4
+total= 1.19679e+07 den(TTJJ)= 159553 den(TTBB)= 2067
+Ratio (nTTDIL/nTT)   = 1
+Ratio (nTTDILVIS/nTTDIL)   = 0.140291
+Ratio (nTTJJ/nTTDILVIS)   = 0.0950296
+Ratio (nTTBB/nTTJJ) = 0.0129549
+Ratio (in reco nTTBB/nTTJJ) = 0.0146957
+acceptance preselection (ttjj)   = 0.837239
+acceptance preselection (ttbb)   = 0.88776
+acceptance postselection (ttjj)   = 0.34588(46204/133584)
+acceptance postselection (ttbb)   = 0.370027(679/1835)
+acceptance (ttjj)   = 0.289584(46204/159553)
+acceptance (ttbb)   = 0.328495(679/2067)
+acceptance (ttcc)   = 0.345736(1654/4784)
+Ratio (Attjj/Attbb) = 0.881547
+total= 1.19679e+07 den(TTJJ)= 159553 den(TTBB)= 2067
+CUT: S5M (CSVM >= 2)
+total= 1.19679e+07 den(TTJJ)= 159553 den(TTBB)= 2067
+Ratio (nTTDIL/nTT)   = 1
+Ratio (nTTDILVIS/nTTDIL)   = 0.140291
+Ratio (nTTJJ/nTTDILVIS)   = 0.0950296
+Ratio (nTTBB/nTTJJ) = 0.0129549
+Ratio (in reco nTTBB/nTTJJ) = 0.0231089
+acceptance preselection (ttjj)   = 0.837239
+acceptance preselection (ttbb)   = 0.88776
+acceptance postselection (ttjj)   = 0.176548(23584/133584)
+acceptance postselection (ttbb)   = 0.297003(545/1835)
+acceptance (ttjj)   = 0.147813(23584/159553)
+acceptance (ttbb)   = 0.263667(545/2067)
+acceptance (ttcc)   = 0.186246(891/4784)
+Ratio (Attjj/Attbb) = 0.560604
+total= 1.19679e+07 den(TTJJ)= 159553 den(TTBB)= 2067
+CUT: S5 (CSVT >= 2)
+total= 1.19679e+07 den(TTJJ)= 159553 den(TTBB)= 2067
+Ratio (nTTDIL/nTT)   = 1
+Ratio (nTTDILVIS/nTTDIL)   = 0.140291
+Ratio (nTTJJ/nTTDILVIS)   = 0.0950296
+Ratio (nTTBB/nTTJJ) = 0.0129549
+Ratio (in reco nTTBB/nTTJJ) = 0.0292087
+acceptance preselection (ttjj)   = 0.837239
+acceptance preselection (ttbb)   = 0.88776
+acceptance postselection (ttjj)   = 0.098672(13181/133584)
+acceptance postselection (ttbb)   = 0.209809(385/1835)
+acceptance (ttjj)   = 0.082612(13181/159553)
+acceptance (ttbb)   = 0.18626(385/2067)
+acceptance (ttcc)   = 0.0948997(454/4784)
+Ratio (Attjj/Attbb) = 0.44353
+total= 1.19679e+07 den(TTJJ)= 159553 den(TTBB)= 2067
