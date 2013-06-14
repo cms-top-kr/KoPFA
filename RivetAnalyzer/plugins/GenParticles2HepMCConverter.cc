@@ -31,13 +31,22 @@ public:
   void produce(edm::Event& event, const edm::EventSetup& eventSetup);
 
 private:
-  template<typename TIter, typename T>
-  int findIndex(TIter begin, TIter end, T obj);
-
   edm::InputTag genParticlesLabel_;
   edm::InputTag genRunInfoLabel_;
   edm::InputTag genEventInfoLabel_;
 //  edm::ESHandle<ParticleDataTable> pTable_;
+
+private:
+  inline HepMC::FourVector FourVector(const reco::Candidate::Point point)
+  {
+    return HepMC::FourVector(point.x(), point.y(), point.z(), point.r());
+  };
+
+  inline HepMC::FourVector FourVector(const reco::Candidate::LorentzVector lvec)
+  {
+    return HepMC::FourVector(lvec.px(), lvec.py(), lvec.pz(), lvec.e());
+  };
+
 
 };
 
@@ -64,16 +73,6 @@ void GenParticles2HepMCConverter::beginRun(edm::Run& run, const edm::EventSetup&
   //eventSetup.getData(pTable_);
 }
 
-template<typename TIter, typename T>
-int GenParticles2HepMCConverter::findIndex(TIter begin, TIter end, T obj)
-{
-  for ( TIter p = begin; p != end; ++p )
-  {
-    if ( &(*p) == obj ) return p-begin;
-  }
-  return -1;
-}
-
 void GenParticles2HepMCConverter::produce(edm::Event& event, const edm::EventSetup& eventSetup)
 {
   edm::Handle<reco::CandidateView> genParticlesHandle;
@@ -93,87 +92,54 @@ void GenParticles2HepMCConverter::produce(edm::Event& event, const edm::EventSet
   hepmc_event->set_alphaQED(genEventInfoHandle->alphaQED());
   hepmc_event->set_alphaQCD(genEventInfoHandle->alphaQCD());
 
-  //std::vector<HepMC::GenParticle*> hepmc_particles;
+  // Prepare list of HepMC::GenParticles
   std::map<const reco::Candidate*, HepMC::GenParticle*> genCandToHepMCMap;
-  //std::map<HepMC::GenParticle*, reco::Candidate*> hepmcToGenCandMap;
+  std::vector<HepMC::GenParticle*> hepmc_particles;
   for ( unsigned int i=0, n=genParticlesHandle->size(); i<n; ++i )
   {
     const reco::Candidate* p = &genParticlesHandle->at(i);
-    const math::XYZTLorentzVector& pLVec = p->p4();
-
-    HepMC::FourVector hepmc_p4(pLVec.px(), pLVec.py(), pLVec.pz(), pLVec.e());
-    HepMC::GenParticle* hepmc_particle = new HepMC::GenParticle(hepmc_p4, p->pdgId(), p->status());
+    HepMC::GenParticle* hepmc_particle = new HepMC::GenParticle(FourVector(p->p4()), p->pdgId(), p->status());
     hepmc_particle->set_generated_mass(p->mass());
-
-    //hepmc_particles.push_back(hepmc_particle);
+    hepmc_particles.push_back(hepmc_particle);
     genCandToHepMCMap[p] = hepmc_particle;
-    //hepmcToGenCandMap[hepmc_particle] = p;
   }
 
-  // Loop once more to associate particles to vertices
-  typedef std::map<HepMC::GenParticle*, HepMC::GenVertex*> ParticleToVertexMap;
+  // Put incident beam particles to null vertex
+  hepmc_particles[0]->set_status(4);
+  hepmc_particles[1]->set_status(4);
+  hepmc_event->set_beam_particles(hepmc_particles[0], hepmc_particles[1]);
+  HepMC::GenVertex* firstVertex = new HepMC::GenVertex(FourVector(genParticlesHandle->at(0).vertex()));
+  firstVertex->add_particle_out(hepmc_particles[0]);
+  firstVertex->add_particle_out(hepmc_particles[1]);
+  hepmc_event->add_vertex(firstVertex);
+
+  // Prepare vertex list
+  typedef std::map<const reco::Candidate*, HepMC::GenVertex*> ParticleToVertexMap;
   ParticleToVertexMap particleToVertexMap;
-  // Special care for incident beam particles - associate to the null vertex
-  HepMC::GenVertex* firstVertex = 0;
-  //for ( unsigned int i=0, n=genParticlesHandle->size(); i<n; ++i )
-  for ( unsigned int i=0, n=2; i<n; ++i )
-  {
-    const reco::Candidate* p = &genParticlesHandle->at(i);
-    if ( p->numberOfMothers() != 0 ) continue;
-
-    if ( !firstVertex )
-    {
-      const reco::Candidate::Point& vertexPos = p->vertex();
-      HepMC::FourVector hepmc_vertexPos(vertexPos.x(), vertexPos.y(), vertexPos.z(), vertexPos.r());
-      firstVertex = new HepMC::GenVertex(hepmc_vertexPos);
-      hepmc_event->add_vertex(firstVertex);
-    }
-
-    HepMC::GenParticle* hepmc_particle = genCandToHepMCMap[p];
-    firstVertex->add_particle_out(hepmc_particle);
-    particleToVertexMap[hepmc_particle] = firstVertex;
-  }
-
+  particleToVertexMap[&genParticlesHandle->at(0)] = firstVertex;
   for ( unsigned int i=2, n=genParticlesHandle->size(); i<n; ++i )
   {
     const reco::Candidate* p = &genParticlesHandle->at(i);
-    //if ( p->numberOfMothers() == 0 ) continue;
+    const reco::Candidate* elder = p->mother(0)->daughter(0);
 
-    HepMC::GenVertex* hepmc_vertex = 0;
-    HepMC::GenParticle* hepmc_particle = genCandToHepMCMap[p];
-
-    ParticleToVertexMap::const_iterator particleToVertex = particleToVertexMap.find(hepmc_particle);
-    if ( particleToVertex == particleToVertexMap.end() )
+    HepMC::GenVertex* vertex = 0;
+    if ( particleToVertexMap.find(elder) == particleToVertexMap.end() ) //p == elder )
     {
-      // This particle is not associated to any vertex. Create new one
-      const reco::Candidate::Point& vertexPos = p->vertex();
-      HepMC::FourVector hepmc_vertexPos(vertexPos.x(), vertexPos.y(), vertexPos.z(), vertexPos.r());
-      hepmc_vertex = new HepMC::GenVertex(hepmc_vertexPos);
-      hepmc_event->add_vertex(hepmc_vertex);
+      vertex = new HepMC::GenVertex(FourVector(elder->vertex()));
+      hepmc_event->add_vertex(vertex);
+      particleToVertexMap[elder] = vertex;
+      for ( unsigned int j=0, m=elder->numberOfMothers(); j<m; ++j )
+      {
+        const reco::Candidate* mother = elder->mother(j);
+        vertex->add_particle_in(genCandToHepMCMap[mother]);
+      }
     }
     else
     {
-      hepmc_vertex = particleToVertex->second;
+      vertex = particleToVertexMap[elder];
     }
 
-    // Associate mother (incoming) particles
-    for ( int j=0, m=p->numberOfMothers(); j<m; ++j )
-    {
-      const reco::Candidate* mother = p->mother(j);
-      HepMC::GenParticle* hepmc_mother = genCandToHepMCMap[mother];
-      hepmc_vertex->add_particle_in(hepmc_mother);
-
-      // Associate sister (outgoing) particles, including itself
-      for ( int k=0, l=mother->numberOfDaughters(); k<l; ++k )
-      {
-        const reco::Candidate* sister = mother->daughter(k);
-        HepMC::GenParticle* hepmc_sister = genCandToHepMCMap[sister];
-        if ( particleToVertexMap.find(hepmc_sister) != particleToVertexMap.end() ) continue;
-
-        particleToVertexMap[hepmc_sister] = hepmc_vertex;
-        hepmc_vertex->add_particle_out(hepmc_sister);
-      }
-    }
+    vertex->add_particle_out(hepmc_particles[i]);
   }
 
   std::auto_ptr<edm::HepMCProduct> hepmc_product(new edm::HepMCProduct(hepmc_event));
