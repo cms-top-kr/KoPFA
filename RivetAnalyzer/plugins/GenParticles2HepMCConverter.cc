@@ -141,7 +141,8 @@ void GenParticles2HepMCConverter::produce(edm::Event& event, const edm::EventSet
     vertex->add_particle_out(hepmc_particles[i]);
   }
 
-  std::auto_ptr<edm::HepMCProduct> hepmc_product(new edm::HepMCProduct(hepmc_event));
+  std::auto_ptr<edm::HepMCProduct> hepmc_product(new edm::HepMCProduct());
+  hepmc_product->addHepMCData(hepmc_event);
   event.put(hepmc_product);
 
 }
