@@ -164,8 +164,8 @@ public:
       vetoEvent;
     }
     FourMomentum dilepton_momentum = lepton_momentum[0]+lepton_momentum[1];
-    if ( decayMode != DECAYMODE_EM and 
-         ( dilepton_momentum.mass() < 12 or abs(dilepton_momentum.mass()-91.2) < 15 ) ) {
+    if ( dilepton_momentum.mass() < 12 or 
+        ( decayMode != DECAYMODE_EM and abs(dilepton_momentum.mass()-91.2) < 15 ) ) {
       MSG_DEBUG("Event failed dilepton mass cut, m(l+l-) = " << dilepton_momentum.mass());
       vetoEvent;
     }
