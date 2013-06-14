@@ -19,7 +19,6 @@
 
 #include <iostream>
 #include <map>
-using namespace std;
 
 class GenParticles2HepMCConverter : public edm::EDProducer
 {
