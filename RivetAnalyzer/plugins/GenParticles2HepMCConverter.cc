@@ -119,6 +119,15 @@ void GenParticles2HepMCConverter::produce(edm::Event& event, const edm::EventSet
   for ( unsigned int i=2, n=genParticlesHandle->size(); i<n; ++i )
   {
     const reco::Candidate* p = &genParticlesHandle->at(i);
+    if ( p->numberOfMothers() == 0 )
+    {
+      std::cout << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n";
+      std::cout << "Skipping orphan particle \n";
+      std::cout << "  Event " << event.id().event() << " Index = " << i << '\n';
+      std::cout << "  pdgId = " << p->pdgId() << " nDaughter = " << p->numberOfDaughters() << "\n";
+      std::cout << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n";
+      continue;
+    }
     const reco::Candidate* elder = p->mother(0)->daughter(0);
 
     HepMC::GenVertex* vertex = 0;
