@@ -3,6 +3,7 @@
 #include "Rivet/Projections/ChargedLeptons.hh"
 #include "Rivet/Projections/FastJets.hh"
 #include "Rivet/Projections/IdentifiedFinalState.hh"
+#include "Rivet/Projections/LeptonClusters.hh"
 #include "Rivet/AnalysisLoader.hh"
 #include "Rivet/Projections/MissingMomentum.hh"
 #include "Rivet/Tools/ParticleIdUtils.hh"
@@ -35,14 +36,20 @@ public:
 
   void init() {
     // Leptons
-    IdentifiedFinalState muons(-2.4, 2.4, 20*GeV);
-    muons.acceptIdPair(MUON);
+    FinalState fsForDressup;
+    std::vector<std::pair<double, double> > etaForDressup;
+    etaForDressup.push_back(std::make_pair(-2.5, 2.5));
+
+    IdentifiedFinalState allMuons(-2.4, 2.4);//, 20*GeV);
+    allMuons.acceptIdPair(MUON);
+    LeptonClusters muons(fsForDressup, allMuons, 0.1, true, true, etaForDressup, 20*GeV);
     addProjection(muons, "muons");
-    IdentifiedFinalState electrons(-2.4, 2.4, 20*GeV);
-    electrons.acceptIdPair(ELECTRON);        
+    IdentifiedFinalState allElectrons(-2.4, 2.4);//, 20*GeV);
+    allElectrons.acceptIdPair(ELECTRON);        
+    LeptonClusters electrons(fsForDressup, allElectrons, 0.1, true, true, etaForDressup, 20*GeV);
     addProjection(electrons, "electrons");
 
-    addProjection(ChargedLeptons(FinalState(-2.4, 2.4, 20*GeV)), "leptons");
+    //addProjection(ChargedLeptons(FinalState(-2.4, 2.4, 20*GeV)), "leptons");
 
     // Neutrinos
     IdentifiedFinalState neutrinos(-5.0, 5.0, 0*GeV);
@@ -122,8 +129,8 @@ public:
     _h_event_cutStep->fill(CUTSTEP_ALL, weight);
 
     // Retrieve leptons and check lepton multiplicity
-    const ParticleVector electrons = applyProjection<IdentifiedFinalState>(event, "electrons").particlesByPt();
-    const ParticleVector muons     = applyProjection<IdentifiedFinalState>(event, "muons"    ).particlesByPt();
+    const ParticleVector electrons = applyProjection<LeptonClusters>(event, "electrons").particlesByPt();
+    const ParticleVector muons     = applyProjection<LeptonClusters>(event, "muons"    ).particlesByPt();
     DECAYMODE decayMode = DECAYMODE_NONE;
     if ( electrons.size() == 2 and muons.size() == 0 ) decayMode = DECAYMODE_EE;
     else if ( electrons.size() == 0 and muons.size() == 2 ) decayMode = DECAYMODE_MM;
@@ -205,6 +212,7 @@ public:
     Jets bjets;
     foreach ( const Jet& jet, cleanJets ) {
       if ( !jet.containsBottom() ) continue; // FIXME : this bjet definition is inconsistent with pseudo-top
+      //if ( !jet.containsParticleId(GRAVITON) ) continue; // FIXME : A placeholder to find ghost b hadrons as stable GRAVITON
       bjets.push_back(jet);
     }
     if ( bjets.size() < 2 ) {
