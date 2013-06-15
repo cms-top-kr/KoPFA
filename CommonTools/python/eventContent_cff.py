@@ -19,9 +19,8 @@ pf2patEventContent +=[
         'keep double_kt6PFJets*_rho_*',
 #        'keep *_pfJets*_*_*',
         'keep *_addPileupInfo_*_*',
-        'keep recoGenJets_ak5GenJets_*_*',
-        'keep recoGenJets_ak5GenJetsNoNu_*_*',
-        'keep *_genMetTrue_*_*',
+        'keep *_ak5GenJets*_*_*',
+        'keep *_genMet*_*_*',
         'drop recoGenJets_selectedPatJets*_genJets_PAT',
         'drop recoPFCandidates_selectedPatJetsPFlow_pfCandidates_PAT',
 ]

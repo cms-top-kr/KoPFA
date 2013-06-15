@@ -3,6 +3,7 @@
 #include "KoPFA/DataFormats/interface/ZCandidate.h"
 #include "KoPFA/DataFormats/interface/Lepton.h"
 #include "KoPFA/DataFormats/interface/METCandidate.h"
+#include "KoPFA/DataFormats/interface/TTbarEvent.h"
 #include "KoPFA/DataFormats/interface/TTbarGenEvent.h"
 #include "KoPFA/DataFormats/interface/TTbarMass.h"
 #include "KoPFA/DataFormats/interface/TTbarCandidate.h"
@@ -30,6 +31,12 @@ namespace {
     std::vector<Ko::METCandidate> dummyMETCandidateCollection;
     edm::Wrapper<std::vector<Ko::METCandidate> > dummyMETCandidateCollectionWrapper;
     edm::Ptr<Ko::METCandidate> dummyMETCandidatePtr;
+
+    Ko::TTbarEvent dummyTTbarEvent;
+    edm::Wrapper<Ko::TTbarEvent> dummyTTbarEventWrapper;
+    std::vector<Ko::TTbarEvent> dummyTTbarEventCollection;
+    edm::Wrapper<std::vector<Ko::TTbarEvent> > dummyTTbarEventCollectionWrapper;
+    edm::Ptr<Ko::TTbarEvent> dummyTTbarEventPtr;
 
     Ko::TTbarGenEvent dummyTTbarGenEvent;
     edm::Wrapper<Ko::TTbarGenEvent> dummyTTbarGenEventWrapper;

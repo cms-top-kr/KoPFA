@@ -5,6 +5,13 @@
 <use   name="DataFormats/Common"/>
 <use   name="rivet"/>
 <use   name="gsl"/>
+  <use   name="DataFormats/HepMCCandidate"/>
+  <use   name="SimDataFormats/GeneratorProducts"/>
+  <use   name="SimGeneral/HepPDTRecord"/>
+  <use   name="SimDataFormats/Track"/>
+  <use   name="PhysicsTools/HepMCCandAlgos"/>
+  <use   name="PhysicsTools/JetMCUtils"/>
+
 <library   file="*.cc" name="GeneratorInterfaceRivetInterface_plugins">
   <flags   EDM_PLUGIN="1"/>
 </library>
