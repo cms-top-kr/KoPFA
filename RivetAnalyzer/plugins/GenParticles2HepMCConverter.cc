@@ -36,14 +36,15 @@ private:
 //  edm::ESHandle<ParticleDataTable> pTable_;
 
 private:
-  inline HepMC::FourVector FourVector(const reco::Candidate::Point point)
+  inline HepMC::FourVector FourVector(const reco::Candidate::Point& point)
   {
     return HepMC::FourVector(point.x(), point.y(), point.z(), point.r());
   };
 
-  inline HepMC::FourVector FourVector(const reco::Candidate::LorentzVector lvec)
+  inline HepMC::FourVector FourVector(const reco::Candidate::LorentzVector& lvec)
   {
-    return HepMC::FourVector(lvec.px(), lvec.py(), lvec.pz(), lvec.e());
+    // Avoid negative mass problem by adding small constant in energy term
+    return HepMC::FourVector(lvec.px(), lvec.py(), lvec.pz(), lvec.e()+1e-8);
   };
 
 
