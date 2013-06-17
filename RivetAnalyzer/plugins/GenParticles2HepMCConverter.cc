@@ -20,6 +20,8 @@
 #include <iostream>
 #include <map>
 
+using namespace std;
+
 class GenParticles2HepMCConverter : public edm::EDProducer
 {
 public:
@@ -44,7 +46,7 @@ private:
   inline HepMC::FourVector FourVector(const reco::Candidate::LorentzVector& lvec)
   {
     // Avoid negative mass, set minimum m^2 = 0
-    return HepMC::FourVector(lvec.px(), lvec.py(), lvec.pz(), std::sqrt(lvec.mag2() + std::max(0., lvec.mass2())));
+    return HepMC::FourVector(lvec.px(), lvec.py(), lvec.pz(), std::hypot(lvec.P(), std::max(0., lvec.mass())));
   };
 
 
