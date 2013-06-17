@@ -43,8 +43,8 @@ private:
 
   inline HepMC::FourVector FourVector(const reco::Candidate::LorentzVector& lvec)
   {
-    // Avoid negative mass problem by adding small constant in energy term
-    return HepMC::FourVector(lvec.px(), lvec.py(), lvec.pz(), lvec.e()+1e-8);
+    // Avoid negative mass, set minimum m^2 = 0
+    return HepMC::FourVector(lvec.px(), lvec.py(), lvec.pz(), std::sqrt(lvec.mag2() + std::max(0., lvec.mass2())));
   };
 
 
