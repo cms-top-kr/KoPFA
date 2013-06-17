@@ -171,9 +171,9 @@ public:
       vetoEvent;
     }
     FourMomentum dilepton_momentum = lepton_momentum[0]+lepton_momentum[1];
-    if ( dilepton_momentum.mass() < 12 or 
-        ( decayMode != DECAYMODE_EM and abs(dilepton_momentum.mass()-91.2) < 15 ) ) {
-      MSG_DEBUG("Event failed dilepton mass cut, m(l+l-) = " << dilepton_momentum.mass());
+    const double dilepton_mass = std::sqrt(std::max(0., dilepton_momentum.mass2()));
+    if ( dilepton_mass < 12 or ( decayMode != DECAYMODE_EM and abs(dilepton_mass-91.2) < 15 ) ) {
+      MSG_DEBUG("Event failed dilepton mass cut, m(l+l-) = " << dilepton_mass);
       vetoEvent;
     }
     _h_event_cutStep->fill(CUTSTEP_DILEPTON, weight);
@@ -231,9 +231,12 @@ public:
       const FourMomentum w11 = lepton_momentum[1]+neutrinos[1].momentum();
       const FourMomentum w01 = lepton_momentum[0]+neutrinos[1].momentum();
       const FourMomentum w10 = lepton_momentum[1]+neutrinos[0].momentum();
+      const double w00_mass = std::sqrt(std::min(0., w00.mass2()));
+      const double w11_mass = std::sqrt(std::min(0., w11.mass2()));
+      const double w01_mass = std::sqrt(std::min(0., w01.mass2()));
+      const double w10_mass = std::sqrt(std::min(0., w10.mass2()));
 
-      if ( abs(w00.mass()-80.4)+abs(w11.mass()-80.4) < 
-           abs(w01.mass()-80.4)+abs(w10.mass()-80.4) ) {
+      if ( abs(w00_mass-80.4)+abs(w11_mass-80.4) < abs(w01_mass-80.4)+abs(w10_mass-80.4) ) {
         wCands_momentum[0] = w00;
         wCands_momentum[1] = w11;
         neutrinoIndex[0] = 0;
@@ -259,10 +262,12 @@ public:
       double massRes = 1e9;
       for ( int i=0, n=bjets.size(); i<n; ++i ) {
         const FourMomentum tmpTPair1 = wCands_momentum[0]+bjets[i].momentum();
+        const double tmpTPair1_mass = std::sqrt(std::min(0., tmpTPair1.mass2()));
         for ( int j=0; j<n; ++j ) {
           if ( i == j ) continue;
           const FourMomentum tmpTPair2 = wCands_momentum[1]+bjets[j].momentum();
-          const double tmpMassRes = abs(tmpTPair1.mass()-172.9) + abs(tmpTPair2.mass()-172.9);
+          const double tmpTPair2_mass = std::sqrt(std::min(0., tmpTPair2.mass2()));
+          const double tmpMassRes = abs(tmpTPair1_mass-172.9) + abs(tmpTPair2_mass-172.9);
           if ( tmpMassRes > massRes ) continue;
 
           massRes = tmpMassRes;
@@ -289,7 +294,7 @@ public:
     _h_lepton2_eta->fill(lepton_momentum[1].eta(), weight);
 
     _h_dilepton_pT->fill(dilepton_momentum.pT(), weight);
-    _h_dilepton_mass->fill(dilepton_momentum.mass(), weight);
+    _h_dilepton_mass->fill(dilepton_mass, weight);
 
     _h_bjet1_pT->fill(bjets[0].momentum().pT(), weight);
     _h_bjet1_eta->fill(bjets[0].momentum().eta(), weight);
