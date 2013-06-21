@@ -104,6 +104,7 @@ private:
   TH1F* h_multiplicity_GenJets30DILVISTTCC;
 
   TH1F* h_nEvents;
+  TH1F* h_nEvents_40GeV;
   TH1F* h_nEvents_parton;
 
   TH1F* h_nEvents_inclusive;
@@ -183,6 +184,7 @@ CMGTTbar2bGenFilter::CMGTTbar2bGenFilter(const edm::ParameterSet& pset)
   h_multiplicity_GenJets30DILVISTTCC  = fs->make<TH1F>( "h_multiplicity_GenJets30DILVISTTCC"  , "Multiplicity", 12,  0, 12 );
 
   h_nEvents = fs->make<TH1F>( "h_nEvents"  , "h_nEvents", 6,  0, 6 );
+  h_nEvents_40GeV = fs->make<TH1F>( "h_nEvents_40GeV"  , "h_nEvents_40GeV", 6,  0, 6 );
   h_nEvents_parton = fs->make<TH1F>( "h_nEvents_parton"  , "h_nEvents_parton", 6,  0, 6 );
 
   h_nEvents_inclusive = fs->make<TH1F>( "h_nEvents_inclusive"  , "h_nEvents", 6,  0, 6 );
@@ -280,6 +282,12 @@ bool CMGTTbar2bGenFilter::filter(edm::Event& iEvent, const edm::EventSetup& even
     bool ttbb = ttbarGenLevel.NbJets20() >= 4;
     bool ttcc = ttbarGenLevel.NcJets20() >= 2;
 
+    bool vis_40GeV = ttbarGenLevel.lepton1().pt() > 20 && abs(ttbarGenLevel.lepton1().eta()) < 2.4 && ttbarGenLevel.lepton2().pt() > 20 && abs(ttbarGenLevel.lepton2().eta()) < 2.4 && ttbarGenLevel.NbJets40() >= 2;
+    bool nbjets2_40GeV = ttbarGenLevel.NbJets40() >= 2;
+    bool njets4_40GeV = ttbarGenLevel.NJets40() >= 4;
+    bool ttbb_40GeV = ttbarGenLevel.NbJets40() >= 4;
+    bool ttcc_40GeV = ttbarGenLevel.NcJets40() >= 2;
+
     bool nbpartons2 = ttbarGenLevel.NbQuarks20() >= 2;
     bool vis_parton = ttbarGenLevel.lepton1().pt() > 20 && abs(ttbarGenLevel.lepton1().eta()) < 2.4 && ttbarGenLevel.lepton2().pt() > 20 && abs(ttbarGenLevel.lepton2().eta()) < 2.4 && ttbarGenLevel.NbQuarks20() >= 2;
     bool ttbb_parton = ttbarGenLevel.NbQuarks20() >= 4;
@@ -300,6 +308,13 @@ bool CMGTTbar2bGenFilter::filter(edm::Event& iEvent, const edm::EventSetup& even
     if( dil && vis && njets4 && ttbb  ) h_nEvents->Fill(4);
     if( dil && vis && njets4 && !ttbb && ttcc  ) h_nEvents->Fill(5);
 
+    h_nEvents_40GeV->Fill(0);
+    if( dil ) h_nEvents_40GeV->Fill(1);
+    if( dil && vis_40GeV ) h_nEvents_40GeV->Fill(2);
+    if( dil && vis_40GeV && njets4_40GeV  ) h_nEvents_40GeV->Fill(3);
+    if( dil && vis_40GeV && njets4_40GeV && ttbb_40GeV  ) h_nEvents_40GeV->Fill(4);
+    if( dil && vis_40GeV && njets4_40GeV && !ttbb_40GeV && ttcc_40GeV  ) h_nEvents_40GeV->Fill(5);
+ 
     if( njets4 && nbjets2 ) h_nEvents_inclusive->Fill(0);
     if( njets4 && nbjets2 && ttbb  ) h_nEvents_inclusive->Fill(1);
     if( dil && nbjets2 && njets4  ) h_nEvents_inclusive->Fill(2);
