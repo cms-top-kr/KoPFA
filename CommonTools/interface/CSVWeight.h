@@ -26,7 +26,7 @@
 
 typedef vector<cmg::PFJet>::const_iterator JI;
 
-namespace sysType{ enum sysType{ NA, JERup, JERdown, JESup, JESdown, hfSFup, hfSFdown, lfSFdown, lfSFup, TESup, TESdown, CSVLFup, CSVLFdown, CSVHFup, CSVHFdown, CSVHFStats1up, CSVHFStats1down, CSVLFStats1up, CSVLFStats1down, CSVHFStats2up, CSVHFStats2down, CSVLFStats2up, CSVLFStats2down }; }
+namespace sysType{ enum sysType{ NA, JERup, JERdown, JESup, JESdown, hfSFup, hfSFdown, lfSFdown, lfSFup, TESup, TESdown, CSVLFup, CSVLFdown, CSVHFup, CSVHFdown, CSVHFStats1up, CSVHFStats1down, CSVLFStats1up, CSVLFStats1down, CSVHFStats2up, CSVHFStats2down, CSVLFStats2up, CSVLFStats2down, CSVup, CSVdown }; }
 
 using namespace std;
 
@@ -164,6 +164,8 @@ double GetCSVweight(edm::Handle<std::vector<cmg::PFJet> >& iJets, const sysType:
   case sysType::CSVHFStats1down: iSysHF=6; break;
   case sysType::CSVHFStats2up:     iSysHF=7; break;
   case sysType::CSVHFStats2down: iSysHF=8; break;
+  case sysType::CSVup:         iSysHF=4; break;
+  case sysType::CSVdown:       iSysHF=3; break;
   default : iSysHF = 0; break;
   }
 
@@ -177,6 +179,8 @@ double GetCSVweight(edm::Handle<std::vector<cmg::PFJet> >& iJets, const sysType:
   case sysType::CSVLFStats1down: iSysLF=6; break;
   case sysType::CSVLFStats2up:     iSysLF=7; break;
   case sysType::CSVLFStats2down: iSysLF=8; break;
+  case sysType::CSVup:         iSysLF=4; break;
+  case sysType::CSVdown:       iSysLF=3; break;
   default : iSysLF = 0; break;
   }
 

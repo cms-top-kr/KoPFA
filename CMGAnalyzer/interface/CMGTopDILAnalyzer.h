@@ -13,7 +13,7 @@
 //
 // Original Author:  Tae Jeong Kim,40 R-A32,+41227678602,
 //         Created:  Fri Jun  4 17:19:29 CEST 2010
-// $Id: CMGTopDILAnalyzer.h,v 1.41 2013/06/11 11:19:49 tjkim Exp $
+// $Id: CMGTopDILAnalyzer.h,v 1.42 2013/06/12 21:05:00 youngjo Exp $
 //
 //
 
@@ -291,6 +291,10 @@ class CMGTopDILAnalyzer : public edm::EDFilter {
     tree->Branch("csvweightLFdw",&csvweightLFdw,"csvweightLFdw/d");
     tree->Branch("csvweightHFup",&csvweightHFup,"csvweightHFup/d");
     tree->Branch("csvweightHFdw",&csvweightHFdw,"csvweightHFdw/d");
+    tree->Branch("csvweightup",&csvweightup,"csvweightup/d");
+    tree->Branch("csvweightdw",&csvweightdw,"csvweightdw/d");
+
+
 
     tree->Branch("jets_secvtxmass","std::vector<double>",&jets_secvtxmass);
     tree->Branch("jets_pt","std::vector<double>",&jets_pt);
@@ -567,6 +571,9 @@ class CMGTopDILAnalyzer : public edm::EDFilter {
          csvweightLFdw=csvWgt->GetCSVweight(Jets,sysType::CSVLFdown);
          csvweightHFup=csvWgt->GetCSVweight(Jets,sysType::CSVHFup);
          csvweightHFdw=csvWgt->GetCSVweight(Jets,sysType::CSVHFdown);
+         csvweightup=csvWgt->GetCSVweight(Jets,sysType::CSVup);
+         csvweightdw=csvWgt->GetCSVweight(Jets,sysType::CSVdown);
+ 
  
          //cout << "csvweight : " << csvweight << endl;
     }
@@ -1241,6 +1248,8 @@ class CMGTopDILAnalyzer : public edm::EDFilter {
     csvweightLFdw = 1.0;
     csvweightHFup = 1.0;
     csvweightHFdw = 1.0;
+    csvweightup = 1.0;
+    csvweightdw = 1.0;
  
     kin_ttbar_mass = -999;
     kin_ttbar_dphi = -999;
@@ -1503,6 +1512,8 @@ class CMGTopDILAnalyzer : public edm::EDFilter {
   double csvweightLFdw;
   double csvweightHFup;
   double csvweightHFdw;
+  double csvweightup;
+  double csvweightdw;
 
   double kin_ttbar_mass;
   double kin_ttbar_dphi;
