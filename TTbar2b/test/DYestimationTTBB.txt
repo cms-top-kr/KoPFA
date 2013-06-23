@@ -1,64 +1,62 @@
-Loading FW Lite setup.
-Loading FW Lite setup.
 
 Processing DYestimation.C...
 Step_2
 mm decay--------------------------------
-R= 0.0963508 k= 1.22679
-Data in= 1.7078e+06
-Bkg in= 4472
-Prediction = 163282
-Estimation = 164283
-scale= 1.00613
+R= 0.0997527 k= 1.41966
+Data in= 8.17094e+06
+Bkg in= 21079
+Prediction = 793292
+Estimation = 813581
+scale= 1.02558
 ee decay--------------------------------
-R= 0.0945396 k= 0.815134
-Data in= 1.39318e+06
-Bkg in= 4472
-Prediction = 130208
-Estimation = 131538
-scale= 1.01022
+R= 0.0949424 k= 0.704393
+Data in= 5.75555e+06
+Bkg in= 21079
+Prediction = 518269
+Estimation = 545741
+scale= 1.05301
 Step_3
 mm decay--------------------------------
-R= 0.110373 k= 1.22679
-Data in= 111340
-Bkg in= 2951
-Prediction = 8874.04
-Estimation = 12089.1
-scale= 1.3623
+R= 0.103946 k= 1.41966
+Data in= 1.9522e+06
+Bkg in= 15642
+Prediction = 154848
+Estimation = 201770
+scale= 1.30302
 ee decay--------------------------------
-R= 0.10645 k= 0.815134
-Data in= 90757
-Bkg in= 2951
-Prediction = 6761.08
-Estimation = 9533.07
-scale= 1.40999
+R= 0.0990281 k= 0.704393
+Data in= 1.42736e+06
+Bkg in= 15642
+Prediction = 104589
+Estimation = 140803
+scale= 1.34625
 Step_4
 mm decay--------------------------------
-R= 0.14984 k= 1.22679
-Data in= 9704
-Bkg in= 1715
-Prediction = 1053.52
-Estimation = 1296.42
-scale= 1.23056
+R= 0.15443 k= 1.41966
+Data in= 99624
+Bkg in= 8581
+Prediction = 11239.2
+Estimation = 14444.3
+scale= 1.28517
 ee decay--------------------------------
-R= 0.135759 k= 0.815134
-Data in= 7797
-Bkg in= 1715
-Prediction = 726.689
-Estimation = 963.619
-scale= 1.32604
+R= 0.141471 k= 0.704393
+Data in= 73557
+Bkg in= 8581
+Prediction = 7291.02
+Estimation = 9978.65
+scale= 1.36862
 Step_5
 mm decay--------------------------------
-R= 0.117275 k= 1.22679
-Data in= 1804
-Bkg in= 1393
-Prediction = 98.6946
-Estimation = 111.357
-scale= 1.1283
+R= 0.13637 k= 1.41966
+Data in= 14897
+Bkg in= 6656
+Prediction = 1004.48
+Estimation = 1387.21
+scale= 1.38102
 ee decay--------------------------------
-R= 0.148446 k= 0.815134
-Data in= 1570
-Bkg in= 1393
-Prediction = 101.961
-Estimation = 148.781
-scale= 1.4592
+R= 0.131248 k= 0.704393
+Data in= 10673
+Bkg in= 6656
+Prediction = 679.378
+Estimation = 1093.13
+scale= 1.60902
