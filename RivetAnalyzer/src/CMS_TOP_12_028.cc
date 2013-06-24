@@ -16,7 +16,7 @@
 //   - https://rivet.hepforge.org/trac/wiki/CodingStyleGuide
 //   - http://en.wikipedia.org/wiki/Indent_style#Variant:_1TBS
 
-#define DEBUGROOT
+//#define DEBUGROOT
 
 #ifdef DEBUGROOT
 #include <TFile.h>
@@ -329,7 +329,7 @@ hB_n_->Fill(nbjetsB, weight);
         lbCands_momentum[1] = lepton_momentum[1]+bjets[bjetIndex[1]].momentum();
       }
     }
-    if ( tCands_momentum[0].pT() > tCands_momentum[1].pT() ) {
+    if ( tCands_momentum[0].pT() < tCands_momentum[1].pT() ) {
       std::swap(tCands_momentum[0], tCands_momentum[1]);
       //std::swap(lbCands_momentum[0], lbCands_momentum[1]);
     }
@@ -373,6 +373,33 @@ hB_n_->Fill(nbjetsB, weight);
   }
 
   void finalize() {
+    normalize(_h_lepton1_pT);
+    normalize(_h_lepton1_eta);
+    normalize(_h_lepton2_pT);
+    normalize(_h_lepton2_eta);
+
+    normalize(_h_dilepton_pT);
+    normalize(_h_dilepton_mass);
+
+    normalize(_h_bjet1_pT);
+    normalize(_h_bjet1_eta);
+    normalize(_h_bjet2_pT);
+    normalize(_h_bjet2_eta);
+
+    normalize(_h_leptonJet_mass);
+
+    normalize(_h_top1_pT);
+    normalize(_h_top1_rapidity);
+    normalize(_h_top2_pT);
+    normalize(_h_top2_rapidity);
+
+    normalize(_h_top_pT);
+    normalize(_h_top_rapidity);
+
+    normalize(_h_ttbar_pT);
+    normalize(_h_ttbar_mass);
+    normalize(_h_ttbar_rapidity);
+
     
 #ifdef DEBUGROOT
 f_->cd();
