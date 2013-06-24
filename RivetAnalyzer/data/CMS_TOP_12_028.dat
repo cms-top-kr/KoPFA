@@ -79,7 +79,7 @@ YLabel=$1/\sigma d\sigma/dp_T^{\ell\ell} (1/GeV/c)$
 PolyMarker=*
 ErrorBars=1
 ## Area: 1.000000e+00
-## Num bins: 8
+## Num bins: 7
 # xlow   xhigh     val     errminus  errplus
        0      10      0.0018573   0.0001734718
       10      20      0.0046394   0.0003108398
@@ -97,7 +97,7 @@ YLabel=$1/\sigma d\sigma/dm^{\ell\ell} (1/GeV/c^2)$
 PolyMarker=*
 ErrorBars=1
 ## Area: 1.000000e+00
-## Num bins: 8
+## Num bins: 5
 ## xlow   xhigh     val     errminus  errplus
       12      50      0.0041155   0.0002255294
       50      76      0.0074509    0.000273448
@@ -113,7 +113,7 @@ YLabel=$1/\sigma d\sigma/dp_T^{b~{Lead.b-jet}} (1/GeV/c)$
 PolyMarker=*
 ErrorBars=1
 ## Area: 1.000000e+00
-## Num bins: 8
+## Num bins: 6
 ## xlow   xhigh     val     errminus  errplus
       20      85      0.0067246   0.0002488102
       85     120      0.0089079   0.0005923754
@@ -130,7 +130,7 @@ YLabel=$1/\sigma d\sigma/dp_T^{b~{NLead.b-jet}} (1/GeV/c)$
 PolyMarker=*
 ErrorBars=1
 ## Area: 1.000000e+00
-## Num bins: 8
+## Num bins: 5
 ## xlow   xhigh     val     errminus  errplus
       20      85       0.012932   0.0004034784
       85     140      0.0023772   0.0001954058
@@ -184,7 +184,7 @@ YLabel=$1/\sigma d\sigma/dm^{\ell b } (1/GeV/c^2)$
 PolyMarker=*
 ErrorBars=1
 ## Area: 1.000000e+00
-## Num bins: 8
+## Num bins: 4
 ## xlow   xhigh     val     errminus  errplus
        0      70      0.0025999   0.0002113719
       70     116      0.0077298   0.0004954802
@@ -199,7 +199,7 @@ YLabel=$1/\sigma d\sigma/dp_T^{t~{Lead.t}} (1/GeV/c)$
 PolyMarker=*
 ErrorBars=1
 ## Area: 1.000000e+00
-## Num bins: 8
+## Num bins: 5
 ## xlow   xhigh     val     errminus  errplus
        0      80      0.0036055   0.0003392776
       80     130      0.0064135   0.0002668016
@@ -215,7 +215,7 @@ YLabel=$1/\sigma d\sigma/dp_T^{t~{NLead.t}} (1/GeV/c)$
 PolyMarker=*
 ErrorBars=1
 ## Area: 1.000000e+00
-## Num bins: 8
+## Num bins: 5
 ## xlow   xhigh     val     errminus  errplus
        0      80      0.0066235   0.0002768623
       80     130      0.0051209   0.0004275951
