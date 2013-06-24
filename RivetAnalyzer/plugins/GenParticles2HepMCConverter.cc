@@ -2,6 +2,8 @@
 #include "FWCore/Framework/interface/EDProducer.h"
 
 #include "FWCore/Framework/interface/Event.h"
+#include "FWCore/Framework/interface/EventSetup.h"
+#include "FWCore/Framework/interface/ESHandle.h"
 #include "FWCore/Framework/interface/Run.h"
 #include "FWCore/Framework/interface/MakerMacros.h"
 
@@ -12,10 +14,11 @@
 #include "DataFormats/Candidate/interface/CandidateFwd.h"
 #include "DataFormats/HepMCCandidate/interface/GenParticleFwd.h"
 #include "DataFormats/HepMCCandidate/interface/GenParticle.h"
+//#include "SimDataFormats/GeneratorProducts/interface/LHEEventProduct.h"
 #include "SimDataFormats/GeneratorProducts/interface/HepMCProduct.h"
 #include "SimDataFormats/GeneratorProducts/interface/GenRunInfoProduct.h"
 #include "SimDataFormats/GeneratorProducts/interface/GenEventInfoProduct.h"
-//#include "SimGeneral/HepPDTRecord/interface/ParticleDataTable.h"
+#include "SimGeneral/HepPDTRecord/interface/ParticleDataTable.h"
 
 #include <iostream>
 #include <map>
@@ -32,10 +35,11 @@ public:
   void produce(edm::Event& event, const edm::EventSetup& eventSetup);
 
 private:
+//  edm::InputTag lheEventLabel_;
   edm::InputTag genParticlesLabel_;
-  edm::InputTag genRunInfoLabel_;
+//  edm::InputTag genRunInfoLabel_;
   edm::InputTag genEventInfoLabel_;
-//  edm::ESHandle<ParticleDataTable> pTable_;
+  edm::ESHandle<ParticleDataTable> pTable_;
 
 private:
   inline HepMC::FourVector FourVector(const reco::Candidate::Point& point)
@@ -54,8 +58,9 @@ private:
 
 GenParticles2HepMCConverter::GenParticles2HepMCConverter(const edm::ParameterSet& pset)
 {
+//  lheEventLabel_ = pset.getParameter<edm::InputTag>("lheEvent");
   genParticlesLabel_ = pset.getParameter<edm::InputTag>("genParticles");
-  genRunInfoLabel_ = pset.getParameter<edm::InputTag>("genRunInfo");
+  //genRunInfoLabel_ = pset.getParameter<edm::InputTag>("genRunInfo");
   genEventInfoLabel_ = pset.getParameter<edm::InputTag>("genEventInfo");
 
   produces<edm::HepMCProduct>();
@@ -72,27 +77,43 @@ void GenParticles2HepMCConverter::beginRun(edm::Run& run, const edm::EventSetup&
   // const double xsecNLO = genRunInfoHandle->externalXSecNLO().value();
   // const double xsecNLOErr = genRunInfoHandle->externalXSecNLO().error();
   
-  //eventSetup.getData(pTable_);
+  eventSetup.getData(pTable_);
 }
 
 void GenParticles2HepMCConverter::produce(edm::Event& event, const edm::EventSetup& eventSetup)
 {
+//  edm::Handle<LHEEventProduct> lheEventHandle;
+//  event.getByLabel(lheEventLabel_, lheEventHandle);
+
   edm::Handle<reco::CandidateView> genParticlesHandle;
   event.getByLabel(genParticlesLabel_, genParticlesHandle);
 
   edm::Handle<GenEventInfoProduct> genEventInfoHandle;
   event.getByLabel(genEventInfoLabel_, genEventInfoHandle);
 
-  //const int id1 = pdfInfo.id1;
-  //const int id2 = pdfInfo.id2;
-  //const float x1 = pdfInfo.x1, x2 = pdfInfo.x2;
-  //const float scalePDF = pdfInfo.scalePDF;
-  //const float pdf1 = pdfInfo.pdf1, pdf2 = pdfInfo.pdf2;
   HepMC::GenEvent* hepmc_event = new HepMC::GenEvent();
+  hepmc_event->set_event_number(event.id().event());
   hepmc_event->set_signal_process_id(genEventInfoHandle->signalProcessID());
   hepmc_event->set_event_scale(genEventInfoHandle->qScale());
   hepmc_event->set_alphaQED(genEventInfoHandle->alphaQED());
   hepmc_event->set_alphaQCD(genEventInfoHandle->alphaQCD());
+
+  // Set PDF
+  const gen::PdfInfo* pdf = genEventInfoHandle->pdf();
+  const int pdf_id1 = pdf->id.first, pdf_id2 = pdf->id.second;
+  const double pdf_x1 = pdf->x.first, pdf_x2 = pdf->x.second;
+  const double pdf_scalePDF = pdf->scalePDF;
+  const double pdf_xPDF1 = pdf->xPDF.first, pdf_xPDF2 = pdf->xPDF.second;
+  HepMC::PdfInfo hepmc_pdfInfo(pdf_id1, pdf_id2, pdf_x1, pdf_x2, pdf_scalePDF, pdf_xPDF1, pdf_xPDF2);
+  hepmc_event->set_pdf_info(hepmc_pdfInfo);
+
+  // Load LHE
+//  const lhef::HEPEUP& lheEvent = lheEventHandle->hepeup();
+//  std::vector<int> lhe_meIndex; // Particle indices with preserved mass, status=2
+//  for ( int i=0, n=lheEvent.ISTUP.size(); i<n; ++i )
+//  {
+//    if ( lheEvent.ISTUP[i] == 2 ) lhe_meIndex.push_back(i);
+//  }
 
   // Prepare list of HepMC::GenParticles
   std::map<const reco::Candidate*, HepMC::GenParticle*> genCandToHepMCMap;
@@ -101,7 +122,24 @@ void GenParticles2HepMCConverter::produce(edm::Event& event, const edm::EventSet
   {
     const reco::Candidate* p = &genParticlesHandle->at(i);
     HepMC::GenParticle* hepmc_particle = new HepMC::GenParticle(FourVector(p->p4()), p->pdgId(), p->status());
-    hepmc_particle->set_generated_mass(p->mass());
+
+    // Assign particle's generated mass from the standard particle data table
+    double particleMass = pTable_->particle(p->pdgId())->mass();
+//    // Re-assign generated mass from LHE, find particle among the LHE
+//    for ( unsigned int j=0, m=lhe_meIndex.size(); j<m; ++j )
+//    {
+//      const unsigned int lheIndex = lhe_meIndex[j];
+//      if ( p->pdgId() != lheEvent.IDUP[lheIndex] ) continue;
+//
+//      const lhef::HEPEUP::FiveVector& vp = lheEvent.PUP[lheIndex];
+//      if ( std::abs(vp[0] - p->px()) > 1e-7 or std::abs(vp[1] - p->py()) > 1e-7 ) continue;
+//      if ( std::abs(vp[2] - p->pz()) > 1e-7 or std::abs(vp[3] - p->energy()) > 1e-7 ) continue;
+//
+//      particleMass = vp[4];
+//      break;
+//    }
+    hepmc_particle->set_generated_mass(particleMass);
+
     hepmc_particles.push_back(hepmc_particle);
     genCandToHepMCMap[p] = hepmc_particle;
   }
@@ -134,7 +172,7 @@ void GenParticles2HepMCConverter::produce(edm::Event& event, const edm::EventSet
     const reco::Candidate* elder = p->mother(0)->daughter(0);
 
     HepMC::GenVertex* vertex = 0;
-    if ( particleToVertexMap.find(elder) == particleToVertexMap.end() ) //p == elder )
+    if ( particleToVertexMap.find(elder) == particleToVertexMap.end() )
     {
       vertex = new HepMC::GenVertex(FourVector(elder->vertex()));
       hepmc_event->add_vertex(vertex);
