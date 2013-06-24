@@ -8,11 +8,11 @@ ErrorBars=1
 ## Area: 1.000000e+00
 ## Num bins: 5
 ## xlow   xhigh     val     errminus  errplus
- 20   40    0.0070883    5.73
- 40   70    0.014727     1.77
- 70  120    0.0064934    2.16
-120  180    0.001207     5.4
-180  400    8.9386e-05   12.4
+      20      40      0.0070883   0.0004061596
+      40      70       0.014727   0.0002606679
+      70     120      0.0064934   0.0001402574
+     120     180       0.001207     6.5178e-05
+     180     400     8.9386e-05   1.108386e-05
 # END HISTOGRAM
 
 # BEGIN HISTOGRAM /REF/CMS_TOP_12_028/lepton2_pT
@@ -25,11 +25,11 @@ ErrorBars=1
 ## Area: 1.000000e+00
 ## Num bins: 5
 ## xlow   xhigh     val     errminus  errplus
- 20   40    0.029866    2.79
- 40   70    0.010879    3.39
- 70  120    0.001332    4.79
-120  180    0.00014033  11.7
-180  400    5.1421e-06  33.4
+      20      40       0.029866   0.0008332614
+      40      70       0.010879   0.0003687981
+      70     120       0.001332    6.38028e-05
+     120     180     0.00014033   1.641861e-05
+     180     400     5.1421e-06   1.717461e-06
 # END HISTOGRAM
 
 # BEGIN HISTOGRAM /REF/CMS_TOP_12_028/lepton1_eta
@@ -42,14 +42,14 @@ ErrorBars=1
 ## Area: 1.000000e+00
 ## Num bins: 8
 ## xlow   xhigh     val     errminus  errplus
--2.4  -1.8    0.067878  8.22
--1.8  -1.2    0.15696   4.21
--1.2  -0.6    0.27244   2.63
--0.6   0.0    0.33901   2.57
- 0.0   0.6    0.33945   2.62
- 0.6   1.2    0.27      2.49
- 1.2   1.8    0.15362   4.25
- 1.8   2.4    0.066479  7.67
+    -2.4    -1.8       0.067878    0.005579572
+    -1.8    -1.2        0.15696    0.006608016
+    -1.2    -0.6        0.27244    0.007165172
+    -0.6       0        0.33901    0.008712557
+       0     0.6        0.33945     0.00889359
+     0.6     1.2           0.27       0.006723
+     1.2     1.8        0.15362     0.00652885
+     1.8     2.4       0.066479    0.005098939
 # END HISTOGRAM
 
 # BEGIN HISTOGRAM /REF/CMS_TOP_12_028/lepton2_eta
@@ -62,237 +62,250 @@ ErrorBars=1
 ## Area: 1.000000e+00
 ## Num bins: 8
 ## xlow   xhigh     val     errminus  errplus
--2.4  -1.8    0.084893   6.79
--1.8  -1.2    0.17447    4.87
--1.2  -0.6    0.26696    4.35
--0.6   0.0    0.31887    3.32
- 0.0   0.6    0.31449    3.42
- 0.6   1.2    0.263      4.25
- 1.2   1.8    0.16168    5.17
- 1.8   2.4    0.082807   7.03
+    -2.4    -1.8       0.084893    0.005764235
+    -1.8    -1.2        0.17447    0.008496689
+    -1.2    -0.6        0.26696     0.01161276
+    -0.6       0        0.31887     0.01058648
+       0     0.6        0.31449     0.01075556
+     0.6     1.2          0.263      0.0111775
+     1.2     1.8        0.16168    0.008358856
+     1.8     2.4       0.082807    0.005821332
 # END HISTOGRAM
 
 # BEGIN HISTOGRAM /REF/CMS_TOP_12_028/dilepton_pT
 AidaPath=/REF/CMS_TOP_12_028/dilepton_pT
+XLabel=Dilepton transverse momentum (GeV/c)
 YLabel=$1/\sigma d\sigma/dp_T^{\ell\ell} (1/GeV/c)$
 PolyMarker=*
 ErrorBars=1
 ## Area: 1.000000e+00
 ## Num bins: 8
-## xlow   xhigh     val     errminus  errplus
-  0   10    0.0018573   9.34
- 10   20    0.0046394   6.7
- 20   40    0.0076727   4.39
- 40   60    0.010597    3.8
- 60  100    0.0097948   2.75
-100  150    0.0029783   5.81
-150  400    0.00012116  9.38
+# xlow   xhigh     val     errminus  errplus
+       0      10      0.0018573   0.0001734718
+      10      20      0.0046394   0.0003108398
+      20      40      0.0076727   0.0003368315
+      40      60       0.010597    0.000402686
+      60     100      0.0097948    0.000269357
+     100     150      0.0029783   0.0001730392
+     150     400     0.00012116   1.136481e-05
 # END HISTOGRAM
 
 # BEGIN HISTOGRAM /REF/CMS_TOP_12_028/dilepton_mass
 AidaPath=/REF/CMS_TOP_12_028/dilepton_mass
-YLabel=$1/\sigma d\sigma/dp_T^{\ell\ell} (1/GeV/c^2)$
+XLabel=Dilepton invariant mass $(GeV/c^2)$
+YLabel=$1/\sigma d\sigma/dm^{\ell\ell} (1/GeV/c^2)$
 PolyMarker=*
 ErrorBars=1
 ## Area: 1.000000e+00
 ## Num bins: 8
 ## xlow   xhigh     val     errminus  errplus
- 12   50    0.0041155  5.48
- 50   76    0.0074509  3.67
- 76  106    0.007318   3.67
-106  200    0.0034355  2.79
-200  400    0.000448   4.29
+      12      50      0.0041155   0.0002255294
+      50      76      0.0074509    0.000273448
+      76     106       0.007318   0.0002685706
+     106     200      0.0034355   9.585045e-05
+     200     400       0.000448    1.92192e-05
 # END HISTOGRAM
 
 # BEGIN HISTOGRAM /REF/CMS_TOP_12_028/bjet1_pT
 AidaPath=/REF/CMS_TOP_12_028/bjet1_pT
+XLabel=Leading b jet transverse momentum $p_T$ (GeV/c)
 YLabel=$1/\sigma d\sigma/dp_T^{b~{Lead.b-jet}} (1/GeV/c)$
 PolyMarker=*
 ErrorBars=1
 ## Area: 1.000000e+00
 ## Num bins: 8
 ## xlow   xhigh     val     errminus  errplus
- 20   85    0.0067246   3.7
- 85  120    0.0089079   6.65
-120  180    0.0030391   6.12
-180  240    0.00064355  12.6
-240  300    0.00018584  20.2
-300  400    4.7082e-05  30
+      20      85      0.0067246   0.0002488102
+      85     120      0.0089079   0.0005923754
+     120     180      0.0030391   0.0001859929
+     180     240     0.00064355    8.10873e-05
+     240     300     0.00018584   3.753968e-05
+     300     400     4.7082e-05    1.41246e-05
 # END HISTOGRAM
 
 # BEGIN HISTOGRAM /REF/CMS_TOP_12_028/bjet2_pT
 AidaPath=/REF/CMS_TOP_12_028/bjet2_pT
+XLabel=Next leading b jet transverse momentum $p_T$ (GeV/c)
 YLabel=$1/\sigma d\sigma/dp_T^{b~{NLead.b-jet}} (1/GeV/c)$
 PolyMarker=*
 ErrorBars=1
 ## Area: 1.000000e+00
 ## Num bins: 8
 ## xlow   xhigh     val     errminus  errplus
- 20   85    0.012932    3.12
- 85  140    0.0023772   8.22
-140  200    0.00035049  15.6
-200  270    5.4588e-05  25
-270  400    1.4568e-06  166
+      20      85       0.012932   0.0004034784
+      85     140      0.0023772   0.0001954058
+     140     200     0.00035049   5.467644e-05
+     200     270     5.4588e-05     1.3647e-05
+     270     400     1.4568e-06   2.418288e-06
 # END HISTOGRAM
 
 # BEGIN HISTOGRAM /REF/CMS_TOP_12_028/bjet1_eta
 AidaPath=/REF/CMS_TOP_12_028/bjet1_eta
+XLabel=Leading b jet pseudorapidity
 YLabel=$1/\sigma d\sigma/d\eta^{Lead.b-jet}$
 PolyMarker=*
 ErrorBars=1
 ## Area: 1.000000e+00
 ## Num bins: 8
 ## xlow   xhigh     val     errminus  errplus
--2.4  -1.8    0.069071  10.3
--1.8  -1.2    0.16234   7.71
--1.2  -0.6    0.25271   6.25
--0.6   0.0    0.32576   5.35
- 0.0   0.6    0.31866   5.51
- 0.6   1.2    0.27509   6.08
- 1.2   1.8    0.15529   7.95
- 1.8   2.4    0.071251  10.5
+    -2.4    -1.8       0.069071    0.007114313
+    -1.8    -1.2        0.16234     0.01251641
+    -1.2    -0.6        0.25271     0.01579437
+    -0.6       0        0.32576     0.01742816
+       0     0.6        0.31866     0.01755817
+     0.6     1.2        0.27509     0.01672547
+     1.2     1.8        0.15529     0.01234556
+     1.8     2.4       0.071251    0.007481355
 # END HISTOGRAM
 
 # BEGIN HISTOGRAM /REF/CMS_TOP_12_028/bjet2_eta
 AidaPath=/REF/CMS_TOP_12_028/bjet2_eta
+XLabel=Next leading b jet pseudorapidity
 YLabel=$1/\sigma d\sigma/d\eta^{NLead.b-jet}$
 PolyMarker=*
 ErrorBars=1
 ## Area: 1.000000e+00
 ## Num bins: 8
 ## xlow   xhigh     val     errminus  errplus
--2.4  -1.8    0.09643    11.7
--1.8  -1.2    0.17996    7
--1.2  -0.6    0.25863    7.7
--0.6   0.0    0.30038    6.71
- 0.0   0.6    0.29542    6.58
- 0.6   1.2    0.24523    7.74
- 1.2   1.8    0.17046    7.25
- 1.8   2.4    0.090055   12.1
+    -2.4    -1.8        0.09643     0.01128231
+    -1.8    -1.2        0.17996      0.0125972
+    -1.2    -0.6        0.25863     0.01991451
+    -0.6       0        0.30038      0.0201555
+       0     0.6        0.29542     0.01943864
+     0.6     1.2        0.24523      0.0189808
+     1.2     1.8        0.17046     0.01235835
+     1.8     2.4       0.090055     0.01089665
 # END HISTOGRAM
 
 # BEGIN HISTOGRAM /REF/CMS_TOP_12_028/leptonJet_mass
 AidaPath=/REF/CMS_TOP_12_028/leptonJet_mass
+XLabel=Lepton+b jet system invariant mass $(GeV/c^2)$
 YLabel=$1/\sigma d\sigma/dm^{\ell b } (1/GeV/c^2)$
 PolyMarker=*
 ErrorBars=1
 ## Area: 1.000000e+00
 ## Num bins: 8
 ## xlow   xhigh     val     errminus  errplus
-  0   70    0.0025999   8.13
- 70  116    0.0077298   6.41
-116  150    0.0069203   6.06
-150  400    0.00084816  12
+       0      70      0.0025999   0.0002113719
+      70     116      0.0077298   0.0004954802
+     116     150      0.0069203   0.0004193702
+     150     400     0.00084816   0.0001017792
 # END HISTOGRAM
 
 # BEGIN HISTOGRAM /REF/CMS_TOP_12_028/top1_pT
 AidaPath=/REF/CMS_TOP_12_028/top1_pT
+XLabel=Leading top quark transverse momentum p_T (GeV/c)
 YLabel=$1/\sigma d\sigma/dp_T^{t~{Lead.t}} (1/GeV/c)$
 PolyMarker=*
 ErrorBars=1
 ## Area: 1.000000e+00
 ## Num bins: 8
 ## xlow   xhigh     val     errminus  errplus
-  0   80    0.0036055  9.41
- 80  130    0.0064135  4.16
-130  200    0.0037494  5.09
-200  300    0.0011372  4.83
-300  400    0.0002357  8
+       0      80      0.0036055   0.0003392776
+      80     130      0.0064135   0.0002668016
+     130     200      0.0037494   0.0001908445
+     200     300      0.0011372   5.492676e-05
+     300     400      0.0002357     1.8856e-05
 # END HISTOGRAM
 
 # BEGIN HISTOGRAM /REF/CMS_TOP_12_028/top2_pT
 AidaPath=/REF/CMS_TOP_12_028/top2_pT
+XLabel=Next leading top quark transverse momentum (GeV/c)
 YLabel=$1/\sigma d\sigma/dp_T^{t~{NLead.t}} (1/GeV/c)$
 PolyMarker=*
 ErrorBars=1
 ## Area: 1.000000e+00
 ## Num bins: 8
 ## xlow   xhigh     val     errminus  errplus
-  0   80    0.0066235   4.18
- 80  130    0.0051209   8.35
-130  200    0.0023295   6.17
-200  300    0.00055461  6.44
-300  400    8.9711e-05  16.8
+       0      80      0.0066235   0.0002768623
+      80     130      0.0051209   0.0004275951
+     130     200      0.0023295   0.0001437302
+     200     300     0.00055461   3.571688e-05
+     300     400     8.9711e-05   1.507145e-05
 # END HISTOGRAM
 
 # BEGIN HISTOGRAM /REF/CMS_TOP_12_028/top1_rapidity
 AidaPath=/REF/CMS_TOP_12_028/top1_rapidity
+XLabel=Leading top quark rapidity
 YLabel=$1/\sigma d\sigma/dy^{t~{Lead.t}}$
 PolyMarker=*
 ErrorBars=1
 ## Area: 1.000000e+00
 ## Num bins: 8
 ## xlow   xhigh     val     errminus  errplus
--2.5  -1.3    0.10256    9.45
--1.3  -0.8    0.23164    9.21
--0.8  -0.4    0.29354    7.56
--0.4   0.0    0.34103    7.18
- 0.0   0.4    0.37193    6.67
- 0.4   0.8    0.31892    7.99
- 0.8   1.3    0.22941    8.77
- 1.3   2.5    0.093123   9.03
+    -2.5    -1.3        0.10256     0.00969192
+    -1.3    -0.8        0.23164     0.02133404
+    -0.8    -0.4        0.29354     0.02219162
+    -0.4       0        0.34103     0.02448595
+       0     0.4        0.37193     0.02480773
+     0.4     0.8        0.31892     0.02548171
+     0.8     1.3        0.22941     0.02011926
+     1.3     2.5       0.093123    0.008409007
 # END HISTOGRAM
 
 # BEGIN HISTOGRAM /REF/CMS_TOP_12_028/top2_rapidity
 AidaPath=/REF/CMS_TOP_12_028/top2_rapidity
+XLabel=Next leading top quark rapidity
 YLabel=$1/\sigma d\sigma/dy^{t~{NLead.t}}$
 PolyMarker=*
 ErrorBars=1
 ## Area: 1.000000e+00
 ## Num bins: 8
 ## xlow   xhigh     val     errminus  errplus
--2.5  -1.3    0.094962   12.4
--1.3  -0.8    0.23608    9.12
--0.8  -0.4    0.32306    8.69
--0.4   0.0    0.34589    9.8
- 0.0   0.4    0.32113    10
- 0.4   0.8    0.31396    9.01
- 0.8   1.3    0.24095    9.94
- 1.3   2.5    0.096228   12
+    -2.5    -1.3       0.094962     0.01177529
+    -1.3    -0.8        0.23608      0.0215305
+    -0.8    -0.4        0.32306     0.02807391
+    -0.4       0        0.34589     0.03389722
+       0     0.4        0.32113       0.032113
+     0.4     0.8        0.31396      0.0282878
+     0.8     1.3        0.24095     0.02395043
+     1.3     2.5       0.096228     0.01154736
 # END HISTOGRAM
 
 # BEGIN HISTOGRAM /REF/CMS_TOP_12_028/ttbar_pT
 AidaPath=/REF/CMS_TOP_12_028/ttbar_pT
+XLabel=$\ttbar transverse momentum p_T (GeV/c)$
 YLabel=$1/\sigma d\sigma/dp_T^{\ttbar} (1/GeV/c)$
 PolyMarker=*
 ErrorBars=1
 ## Area: 1.000000e+00
 ## Num bins: 4
 ## xlow   xhigh     val     errminus  errplus
-  0   20  0.013562     10.4
- 20   60  0.0099043    5.93
- 60  120  0.0034783    4.49
-120  300  0.00060439   6.82
+       0      20       0.013562    0.001410448
+      20      60      0.0099043    0.000587325
+      60     120      0.0034783   0.0001561757
+     120     300     0.00060439    4.12194e-05
 # END HISTOGRAM
 
 # BEGIN HISTOGRAM /REF/CMS_TOP_12_028/ttbar_rapidity
 AidaPath=/REF/CMS_TOP_12_028/ttbar_rapidity
+XLabel=$\ttbar rapidity$
 YLabel=$1/\sigma d\sigma/dy^{\ttbar}$
 PolyMarker=*
 ErrorBars=1
 ## Area: 1.000000e+00
 ## Num bins: 6
 ## xlow   xhigh     val     errminus  errplus
--2.5  -1.5    0.044379   15.5
--1.5  -0.7    0.21903    5.73
--0.7   0.0    0.39409    4.13
- 0.0   0.7    0.40311    3.95
- 0.7   1.5    0.20841    5.69
- 1.5   2.5    0.04116    14
+    -2.5    -1.5       0.044379    0.006878745
+    -1.5    -0.7        0.21903     0.01255042
+    -0.7       0        0.39409     0.01627592
+       0     0.7        0.40311     0.01592285
+     0.7     1.5        0.20841     0.01185853
+     1.5     2.5        0.04116      0.0057624
 # END HISTOGRAM
 
 # BEGIN HISTOGRAM /REF/CMS_TOP_12_028/ttbar_mass
 AidaPath=/REF/CMS_TOP_12_028/ttbar_mass
-XLabel=
+XLabel=$\ttbar invariant mass (GeV/c^{2})$
 YLabel=$1/\sigma d\sigma/dm^{\ttbar} (1/GeV/c^{2})$
 PolyMarker=*
 ErrorBars=1
 ## Area: 1.000000e+00
 ## Num bins: 5
 ## xlow   xhigh     val     errminus  errplus
-345  400    0.0049598   10.3
-400  475    0.0043264   5.79
-475  550    0.00238     8.52
-550  700    0.0010142   8.07
-700  1e+03  0.00022235  8.77
+     345     400      0.0049598   0.0005108594
+     400     475      0.0043264   0.0002504986
+     475     550        0.00238    0.000202776
+     550     700      0.0010142   8.184594e-05
+     700    1000     0.00022235   1.950009e-05
 # END HISTOGRAM
