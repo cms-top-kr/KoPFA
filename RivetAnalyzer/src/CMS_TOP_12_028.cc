@@ -16,6 +16,15 @@
 //   - https://rivet.hepforge.org/trac/wiki/CodingStyleGuide
 //   - http://en.wikipedia.org/wiki/Indent_style#Variant:_1TBS
 
+#define DEBUGROOT
+
+#ifdef DEBUGROOT
+#include <TFile.h>
+#include <TH1F.h>
+#endif
+
+using namespace std;
+
 namespace Rivet {
 
 class CMS_TOP_12_028 : public Analysis {
@@ -32,6 +41,14 @@ public:
 
 public:
   CMS_TOP_12_028() : Analysis("CMS_TOP_12_028") {
+#ifdef DEBUGROOT
+f_ = new TFile("debug.root", "RECREATE");
+hA_n_ = new TH1F("hA_n", "Rivet default;B jet multiplicity", 10, 0, 10);
+hB_n_ = new TH1F("hB_n", "Reclustering;B jet multiplicity", 10, 0, 10);
+hT_n_ = new TH1F("hT_n", "Total stable B;Stable b multiplicity", 10, 0, 10);
+hA_pt_ = new TH1F("hA_pt", "Rivet default;Transverse momentum p_{T} (GeV/c)", 50, 0, 100);
+hB_pt_ = new TH1F("hB_pt", "Reclustering;Transverse momentum p_{T} (GeV/c)", 50, 0, 100);
+#endif
   }
 
   void init() {
@@ -40,16 +57,30 @@ public:
     std::vector<std::pair<double, double> > etaForDressup;
     etaForDressup.push_back(std::make_pair(-2.5, 2.5));
 
-    IdentifiedFinalState allMuons(-2.4, 2.4);//, 20*GeV);
+    IdentifiedFinalState allMuons(-2.4, 2.4);
     allMuons.acceptIdPair(MUON);
     LeptonClusters muons(fsForDressup, allMuons, 0.1, true, true, etaForDressup, 20*GeV);
     addProjection(muons, "muons");
-    IdentifiedFinalState allElectrons(-2.4, 2.4);//, 20*GeV);
+    IdentifiedFinalState allElectrons(-2.4, 2.4);
     allElectrons.acceptIdPair(ELECTRON);        
     LeptonClusters electrons(fsForDressup, allElectrons, 0.1, true, true, etaForDressup, 20*GeV);
     addProjection(electrons, "electrons");
+/*
+    IdentifiedFinalState muons(-2.4, 2.4, 20*GeV);
+    muons.acceptIdPair(MUON);
+    addProjection(muons, "muons");
+
+    IdentifiedFinalState electrons(-2.4, 2.4, 20*GeV);
+    electrons.acceptIdPair(ELECTRON);
+    addProjection(electrons, "electrons");
+*/
 
     //addProjection(ChargedLeptons(FinalState(-2.4, 2.4, 20*GeV)), "leptons");
+#ifdef DEBUGROOT
+IdentifiedFinalState stableBHadrons(-2.4, 2.4);
+stableBHadrons.acceptId(7);
+addProjection(stableBHadrons, "stableBHadrons");
+#endif
 
     // Neutrinos
     IdentifiedFinalState neutrinos(-5.0, 5.0, 0*GeV);
@@ -84,20 +115,20 @@ public:
 
     bins.clear(); bins += 0, 10, 20, 40, 60, 100, 150, 400;
     _h_dilepton_pT = bookHistogram1D("dilepton_pT", bins);
-    bins.clear(); bins += 10, 50, 75, 105, 200, 400;
+    bins.clear(); bins += 12, 50, 76, 106, 200, 400;
     _h_dilepton_mass = bookHistogram1D("dilepton_mass", bins);
   
-    bins.clear(); bins += 30, 85, 120, 180, 240, 300, 400;
+    bins.clear(); bins += 20, 85, 120, 180, 240, 300, 400;
     _h_bjet1_pT = bookHistogram1D("bjet1_pT", bins);
     bins.clear(); bins += -2.4, -1.8, -1.2, -0.6, 0, 0.6, 1.2, 1.8, 2.4;
     _h_bjet1_eta = bookHistogram1D("bjet1_eta", bins);
 
-    bins.clear(); bins += 30, 85, 140, 200, 270, 400;
+    bins.clear(); bins += 20, 85, 140, 200, 270, 400;
     _h_bjet2_pT = bookHistogram1D("bjet2_pT", bins);
     bins.clear(); bins += -2.4, -1.8, -1.2, -0.6, 0, 0.6, 1.2, 1.8, 2.4;
     _h_bjet2_eta = bookHistogram1D("bjet2_eta", bins);
 
-    bins.clear(); bins += 0, 70, 115, 150, 400;
+    bins.clear(); bins += 0, 70, 116, 150, 400;
     _h_leptonJet_mass = bookHistogram1D("leptonJet_mass", bins);
 
     bins.clear(); bins += 0, 80, 130, 200, 300, 400;
@@ -117,7 +148,7 @@ public:
 
     bins.clear(); bins += 0, 20, 60, 120, 300;
     _h_ttbar_pT = bookHistogram1D("ttbar_pT", bins);
-    bins.clear(); bins += 172.5*2,400,500,650,800,1100,1600;
+    bins.clear(); bins += 345,400,475,550,700,1000;
     _h_ttbar_mass = bookHistogram1D("ttbar_mass", bins);
     bins.clear(); bins += -2.5,-1.5,-0.7,0,0.7,1.5,2.5;
     _h_ttbar_rapidity = bookHistogram1D("ttbar_rapidity", bins);
@@ -129,6 +160,8 @@ public:
     _h_event_cutStep->fill(CUTSTEP_ALL, weight);
 
     // Retrieve leptons and check lepton multiplicity
+    //const ParticleVector electrons = applyProjection<IdentifiedFinalState>(event, "electrons").particlesByPt();
+    //const ParticleVector muons     = applyProjection<IdentifiedFinalState>(event, "muons"    ).particlesByPt();
     const ParticleVector electrons = applyProjection<LeptonClusters>(event, "electrons").particlesByPt();
     const ParticleVector muons     = applyProjection<LeptonClusters>(event, "muons"    ).particlesByPt();
     DECAYMODE decayMode = DECAYMODE_NONE;
@@ -179,9 +212,10 @@ public:
     _h_event_cutStep->fill(CUTSTEP_DILEPTON, weight);
 
     // Retrieve Jets and do jet cleaning
-    const Jets jets = applyProjection<FastJets>(event, "jets").jetsByPt();
+    const Jets jets = applyProjection<FastJets>(event, "jets").jetsByPt(30*GeV);
     Jets cleanJets;
     foreach ( const Jet& jet, jets ) {
+      if ( std::abs(jet.eta()) > 2.4 ) continue;
       if ( deltaR(jet.momentum(), lepton_momentum[0]) < 0.2 ) continue;
       if ( deltaR(jet.momentum(), lepton_momentum[1]) < 0.2 ) continue;
 
@@ -208,13 +242,26 @@ public:
     }
     _h_event_cutStep->fill(CUTSTEP_MET, weight);
 
+#ifdef DEBUGROOT
+hT_n_->Fill(applyProjection<IdentifiedFinalState>(event, "stableBHadrons").size(), weight);
+int nbjetsA = 0, nbjetsB = 0;
+#endif
+
     // Select b-jets from jet collection
     Jets bjets;
     foreach ( const Jet& jet, cleanJets ) {
-      if ( !jet.containsBottom() ) continue; // FIXME : this bjet definition is inconsistent with pseudo-top
-      //if ( !jet.containsParticleId(GRAVITON) ) continue; // FIXME : A placeholder to find ghost b hadrons as stable GRAVITON
+#ifdef DEBUGROOT
+if ( jet.containsBottom() ) { hA_pt_->Fill(jet.momentum().perp(), weight); ++nbjetsA; }
+if ( jet.containsParticleId(7) ) { hB_pt_->Fill(jet.momentum().perp(), weight); ++nbjetsB; }
+#endif
+      //if ( !jet.containsBottom() ) continue; // FIXME : this bjet definition is inconsistent with pseudo-top
+      if ( !jet.containsParticleId(7) ) continue; // Find phantom b hadrons as stable bprime
       bjets.push_back(jet);
     }
+#ifdef DEBUGROOT
+hA_n_->Fill(nbjetsA, weight);
+hB_n_->Fill(nbjetsB, weight);
+#endif
     if ( bjets.size() < 2 ) {
       MSG_DEBUG("Event failed b-tagging cut, nBJet = " << bjets.size());
       vetoEvent;
@@ -327,9 +374,24 @@ public:
 
   void finalize() {
     
+#ifdef DEBUGROOT
+f_->cd();
+hT_n_->Write();
+hA_n_->Write();
+hB_n_->Write();
+hA_pt_->Write();
+hB_pt_->Write();
+f_->Write();
+f_->Close();
+#endif
   }
 
 private:
+#ifdef DEBUGROOT
+TFile* f_;
+TH1F* hT_n_, * hA_n_, * hB_n_;
+TH1F* hA_pt_, * hB_pt_;
+#endif
   // Histogram for Event filter counting
   AIDA::IHistogram1D* _h_event_cutStep;
 
