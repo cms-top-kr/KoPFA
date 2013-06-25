@@ -59,6 +59,7 @@ void GhostBHadronProducer::produce(edm::Event& event, const edm::EventSetup& eve
   // Copy GenParticles and ghost B hadrons to output collection
   const double scale = 1e-20;
   std::map<const reco::Candidate*, int> particleIndexMap;
+  std::vector<int> srcParticleIndices;
   const int nParticles = genParticlesHandle->size();
   for ( int i=0, nOutGenParticle=0; i<nParticles; ++i )
   {
@@ -70,22 +71,10 @@ void GhostBHadronProducer::produce(edm::Event& event, const edm::EventSetup& eve
     p.clearDaughters();
     p.resetMothers(ref.id());
     p.resetDaughters(ref.id());
-    for ( int j=0, m=pSrc.numberOfMothers(); j<m; ++j )
-    {
-      const reco::Candidate* mother = pSrc.mother(j);
-      if ( particleIndexMap.find(mother) == particleIndexMap.end() )
-      {
-        cout << "Particle index is corrupted\n";
-        continue;
-      }
-      const int motherIndex = particleIndexMap[mother];
-      p.addMother(reco::GenParticleRef(ref, motherIndex));
-      reco::GenParticle& outMother = outGenParticles->at(motherIndex);
-      outMother.addDaughter(reco::GenParticleRef(ref, nOutGenParticle));
-    }
 
     outGenParticleIndices->push_back(nOutGenParticle);
     outGenParticles->push_back(p);
+    srcParticleIndices.push_back(i);
 
     ++nOutGenParticle;
 
@@ -105,8 +94,30 @@ void GhostBHadronProducer::produce(edm::Event& event, const edm::EventSetup& eve
       b.clearDaughters();
       outGenParticleIndices->push_back(nOutGenParticle);
       outGenParticles->push_back(b);
+      srcParticleIndices.push_back(i);
 
       ++nOutGenParticle;
+    }
+  }
+
+  // Make connection between candidate
+  for ( int i=0, n=outGenParticles->size(); i<n; ++i )
+  {
+    reco::GenParticle& p = outGenParticles->at(i);
+
+    const reco::GenParticle& pSrc = genParticlesHandle->at(srcParticleIndices[i]);
+    for ( int j=0, m=pSrc.numberOfMothers(); j<m; ++j )
+    {
+      const reco::Candidate* mother = pSrc.mother(j);
+      if ( particleIndexMap.find(mother) == particleIndexMap.end() )
+      {
+        cout << "Particle index is corrupted\n";
+        continue;
+      }
+      const unsigned int motherIndex = particleIndexMap[mother];
+      p.addMother(reco::GenParticleRef(ref, motherIndex));
+      reco::GenParticle& outMother = outGenParticles->at(motherIndex);
+      outMother.addDaughter(reco::GenParticleRef(ref, i));
     }
   }
 
