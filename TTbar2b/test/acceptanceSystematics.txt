@@ -513,8 +513,8 @@ Summary S5 for efficiency ratio (ttjj/ttbb) :
 
 dilepton with SC = 0.3888
 inclusive sampe  = 0.3646 
-powheg           = 0.3935 (2%)
-mcatnlo          = 0.3345 (-14%)
+powheg           = 0.3935 (8% with respect to inclusive one)
+mcatnlo          = 0.3345 (-8% with respect to inclusive one)
 
 matching up      = 0.3591 (-1.5%)
 matching down    = 0.3641 (-0.2%)
