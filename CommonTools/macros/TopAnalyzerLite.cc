@@ -513,9 +513,7 @@ void TopAnalyzerLite::plot(const string name, const TCut cut, MonitorPlot& monit
   TH1F* hData = new TH1F(dataHistName, title.c_str(), nBins, xBins);
   histograms_.Add(hData);
 
-  cout << "debug 1: " << endl;
   if ( realDataChain_ ) realDataChain_->Project(dataHistName, varexp.c_str(), cut);
-  cout << "debug 2: " << endl;
   hData->AddBinContent(nBins, hData->GetBinContent(nBins+1));
   hData->Sumw2();
   hData->SetMarkerStyle(20);
