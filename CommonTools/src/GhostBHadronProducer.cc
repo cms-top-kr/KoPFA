@@ -34,6 +34,7 @@ private:
 private:
   edm::InputTag srcLabel_;
   int userPdgId_;
+  bool doPartonLevel_;
 
 };
 
@@ -41,6 +42,7 @@ GhostBHadronProducer::GhostBHadronProducer(const edm::ParameterSet& pset)
 {
   srcLabel_ = pset.getParameter<edm::InputTag>("src");
   userPdgId_ = pset.getUntrackedParameter<int>("userPdgId", 0);
+  doPartonLevel_ = pset.getUntrackedParameter<bool>("doPartonLevel", false);
 
   produces<reco::GenParticleCollection>();
   produces<std::vector<int> >().setBranchAlias( pset.getParameter<std::string>("@module_label") + "BarCodes" );
@@ -143,6 +145,8 @@ bool GhostBHadronProducer::isBHadron(const reco::Candidate* p)
 
 bool GhostBHadronProducer::isBHadron(const unsigned int absPdgId)
 {
+  if ( doPartonLevel_ and absPdgId == 5 ) return true; // select b quarks if "doPartonLevel" is set
+
   if ( absPdgId <= 100 ) return false; // Fundamental particles and MC internals
   if ( absPdgId >= 1000000000 ) return false; // Nuclears, +-10LZZZAAAI
 
