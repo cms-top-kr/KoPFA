@@ -192,6 +192,22 @@ ErrorBars=1
      150     400     0.00084816   0.0001017792
 # END HISTOGRAM
 
+# BEGIN HISTOGRAM /REF/AN_12_384/top_pT
+AidaPath=/REF/AN-12_384/top_pT
+XLabel=top quark transverse momentum p_T (GeV/c)
+YLabel=$1/\sigma d\sigma/dp_T^{t} (1/GeV/c)$
+PolyMarker=*
+ErrorBars=1
+## Area: 1.000000e+00
+## Num bins: 5
+## xlow   xhigh     val     errminus  errplus
+       0      80      0.0040343    7.221397e-05
+      80     130      0.006355     8.57925e-05
+     130     200      0.0038846    3.7253314e-05
+     200     300      0.00078079   1.0696823e-05
+     300     400      7.901e-05    1.398477e-06
+# END HISTOGRAM
+
 # BEGIN HISTOGRAM /REF/CMS_TOP_12_028/top1_pT
 AidaPath=/REF/CMS_TOP_12_028/top1_pT
 XLabel=Leading top quark transverse momentum p_T (GeV/c)
@@ -222,6 +238,25 @@ ErrorBars=1
      130     200      0.0023295   0.0001437302
      200     300     0.00055461   3.571688e-05
      300     400     8.9711e-05   1.507145e-05
+# END HISTOGRAM
+
+# BEGIN HISTOGRAM /REF/AN_12_384/top_rapidity
+AidaPath=/REF/AN-12_384/top_rapidity
+XLabel=Top quark rapidity
+YLabel=$1/\sigma d\sigma/dy^{t}$
+PolyMarker=*
+ErrorBars=1
+## Area: 1.000000e+00
+## Num bins: 8
+## xlow   xhigh     val     errminus  errplus
+    -2.5    -1.3     0.099083   0.018528521
+    -1.3    -0.8       0.4186     0.0374647
+    -0.8    -0.4       0.3244    0.02218896
+    -0.4       0     0.090656   0.015502176
+       0     0.4      0.11024    0.01719744
+     0.4     0.8      0.35113   0.024192857
+     0.8     1.3      0.41192   0.034683664
+     1.3     2.5     0.095906   0.016112208
 # END HISTOGRAM
 
 # BEGIN HISTOGRAM /REF/CMS_TOP_12_028/top1_rapidity
@@ -284,14 +319,16 @@ YLabel=$1/\sigma d\sigma/dy^{\ttbar}$
 PolyMarker=*
 ErrorBars=1
 ## Area: 1.000000e+00
-## Num bins: 6
+## Num bins: 8
 ## xlow   xhigh     val     errminus  errplus
-    -2.5    -1.5       0.044379    0.006878745
-    -1.5    -0.7        0.21903     0.01255042
-    -0.7       0        0.39409     0.01627592
-       0     0.7        0.40311     0.01592285
-     0.7     1.5        0.20841     0.01185853
-     1.5     2.5        0.04116      0.0057624
+    -2.5    -1.3       0.099083   0.018528521
+    -1.3    -0.8         0.4186     0.0374647
+    -0.8    -0.4         0.3244    0.02218896
+    -0.4     0.0       0.090656   0.015502176
+     0.0     0.4        0.11024    0.01719744
+     0.4     0.8        0.35113   0.024192857
+     0.8     1.3        0.41192   0.034683664
+     1.3     2.5       0.095906   0.016112208
 # END HISTOGRAM
 
 # BEGIN HISTOGRAM /REF/CMS_TOP_12_028/ttbar_mass
@@ -308,4 +345,54 @@ ErrorBars=1
      475     550        0.00238    0.000202776
      550     700      0.0010142   8.184594e-05
      700    1000     0.00022235   1.950009e-05
+# END HISTOGRAM
+
+# BEGIN HISTOGRAM /REF/AN_12_384/ttbar_pT
+AidaPath=/REF/AN_12_384/ttbar_pT
+XLabel=$\ttbar transverse momentum p_T (GeV/c)$
+YLabel=$1/\sigma d\sigma/dp_T^{\ttbar} (1/GeV/c)$
+PolyMarker=*
+ErrorBars=1
+## Area: 1.000000e+00
+## Num bins: 4
+## xlow   xhigh     val     errminus  errplus
+       0      20    0.0073048 0.00031629784
+      20      60     0.013055 0.00012467525
+      60     120    0.0042846   4.49883e-05
+     120     300   0.00039778  5.409808e-06
+# END HISTOGRAM
+
+# BEGIN HISTOGRAM /REF/AN_12_384/ttbar_rapidity
+AidaPath=/REF/AN_12_384/ttbar_rapidity
+XLabel=$\ttbar rapidity$
+YLabel=$1/\sigma d\sigma/dy^{\ttbar}$
+PolyMarker=*
+ErrorBars=1
+## Area: 1.000000e+00
+## Num bins: 6
+## xlow   xhigh     val     errminus  errplus
+    -2.5    -1.5     0.012838  0.0004005456
+    -1.5    -0.7      0.22583   0.003929442
+    -0.7     0.0      0.44668   0.006298188
+     0.0     0.7      0.43509   0.006047751
+     0.7     1.5      0.22109   0.003824857
+     1.5     2.5     0.011978  0.0003425708
+# END HISTOGRAM
+
+# BEGIN HISTOGRAM /REF/AN_12_384/ttbar_mass
+AidaPath=/REF/AN_12_384/ttbar_mass
+XLabel=$\ttbar invariant mass (GeV/c^{2})$
+YLabel=$1/\sigma d\sigma/dm^{\ttbar} (1/GeV/c^{2})$
+PolyMarker=*
+ErrorBars=1
+## Area: 1.000000e+00
+## Num bins: 7
+## xlow   xhigh     val     errminus  errplus
+     340     400    0.0039082 0.00016297194
+     400     470     0.004476   0.000176802
+     470     550    0.0026997  7.532163e-05
+     550     650    0.0014477  2.562429e-05
+     700     800   0.00043575  9.978675e-06
+     800    1100   4.8133e-05 1.4728698e-06
+    1100    1600   1.3202e-06  4.633902e-08
 # END HISTOGRAM
