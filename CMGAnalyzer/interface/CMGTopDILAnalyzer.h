@@ -13,7 +13,7 @@
 //
 // Original Author:  Tae Jeong Kim,40 R-A32,+41227678602,
 //         Created:  Fri Jun  4 17:19:29 CEST 2010
-// $Id: CMGTopDILAnalyzer.h,v 1.42 2013/06/12 21:05:00 youngjo Exp $
+// $Id: CMGTopDILAnalyzer.h,v 1.43 2013/06/22 05:37:42 youngjo Exp $
 //
 //
 
@@ -350,17 +350,16 @@ class CMGTopDILAnalyzer : public edm::EDFilter {
     //tree->Branch("genttbarM",&genttbarM,"genttbarM/d");
 
     tree->Branch("nJet30",&nJet30,"nJet30/i");
-    tree->Branch("nJet30Up",&nJet30Up,"nJet30Up/i");
-    tree->Branch("nJet30Dw",&nJet30Dw,"nJet30Dw/i");
+    tree->Branch("nJet40",&nJet40,"nJet40/i");
     tree->Branch("nJet50",&nJet50,"nJet50/i");
-    tree->Branch("nJet50Up",&nJet50Up,"nJet50Up/i");
-    tree->Branch("nJet50Dw",&nJet50Dw,"nJet50Dw/i");
 
     tree->Branch("nGenJet20",&nGenJet20,"nGenJet20/i");
     tree->Branch("nGenbJet20",&nGenbJet20,"nGenbJet20/i");
+    tree->Branch("nGenaddbJet20",&nGenaddbJet20,"nGenaddbJet20/i");
     tree->Branch("nGencJet20",&nGencJet20,"nGencJet20/i");
     tree->Branch("nGenJet40",&nGenJet40,"nGenJet40/i");
     tree->Branch("nGenbJet40",&nGenbJet40,"nGenbJet40/i");
+    tree->Branch("nGenaddbJet40",&nGenaddbJet40,"nGenaddbJet40/i");
     tree->Branch("nGencJet40",&nGencJet40,"nGencJet40/i");
 
     tree->Branch("genLep1_pt",&genLep1_pt,"genLep1_pt/d");
@@ -382,9 +381,6 @@ class CMGTopDILAnalyzer : public edm::EDFilter {
 
     tree->Branch("MET",&MET,"MET/d");
     tree->Branch("metphi",&metphi,"metphi/d");
-
-    tree->Branch("METUp",&METUp,"METUp/d");
-    tree->Branch("METDw",&METDw,"METDw/d");
 
     csvWgt = new CSVWeight(); 
     csvWgt->SetUpCSVreweighting();
@@ -459,10 +455,6 @@ class CMGTopDILAnalyzer : public edm::EDFilter {
     std::vector<cmg::BaseMET>::const_iterator mi = MET_->begin();
     MET = mi->pt();
     metphi = mi->phi();
-    double metup_x = MET_->begin()->px();
-    double metup_y = MET_->begin()->py();
-    double metdw_x = MET_->begin()->px();
-    double metdw_y = MET_->begin()->py();
 
     edm::Handle<std::vector<cmg::PFJet> > Jets;
     iEvent.getByLabel(jetLabel_, Jets);
@@ -554,15 +546,9 @@ class CMGTopDILAnalyzer : public edm::EDFilter {
     std::map<int,double> mapJetBDiscriminatorJP;
 
     double njet30 = 0;
-    double njetUp30 = 0;
-    double njetDw30 = 0;
+    double njet40 = 0;
     double njet50 = 0;
-    double njetUp50 = 0;
-    double njetDw50 = 0;
 
-    double metup;
-    double metdw;
- 
     if( !isRealData)
     {
          csvweight=csvWgt->GetCSVweight(Jets,sysType::NA);
@@ -610,7 +596,6 @@ class CMGTopDILAnalyzer : public edm::EDFilter {
       double bDiscriminator = jit->bDiscriminator("combinedSecondaryVertexBJetTags");
       double bDiscriminatorJP = jit->bDiscriminator("jetProbabilityBJetTags");
       float secvtxmass = jit->secvtxMass();
-      double uncert = jit->uncOnFourVectorScale();
 
       mapJetBDiscriminator[idx] = bDiscriminator;
       mapJetBDiscriminatorJP[idx] = bDiscriminatorJP;
@@ -649,27 +634,10 @@ class CMGTopDILAnalyzer : public edm::EDFilter {
 //      jets_bDisCSVweightall.push_back( 1.0 );
       jets_ptweight.push_back( 1.0 );
     
-      corrjetup = corrjet * (1+uncert); 
-      corrjetdw = corrjet * (1-uncert); 
- 
-      if(jit->pt() > 30){
-        jetspt30->push_back(corrjet);
-        njet30++;
-        if(jit->pt() > 50) njet50++;
-      }//pt > 30 loop
-
-      if(corrjetup.pt() > 30){
-        njetUp30++;
-        if( corrjetup.pt() > 50 ) njetUp50++;
-        metup_x -= corrjet.px()- corrjetup.px();
-        metup_y -= corrjet.py()- corrjetup.py();
-      }//pt > 30 loop
-      if(corrjetdw.pt() > 30){
-        njetDw30++;
-        if( corrjetdw.pt() > 50 ) njetDw50++;
-        metdw_x -= corrjet.px()- corrjetdw.px();
-        metdw_y -= corrjet.py()- corrjetdw.py();
-      }//pt > 30 loop
+      jetspt30->push_back(corrjet);
+      if(jit->pt() > 30) njet30++;
+      if(jit->pt() > 50) njet50++;
+      if(jit->pt() > 40) njet40++;
 
     }
 
@@ -688,12 +656,8 @@ class CMGTopDILAnalyzer : public edm::EDFilter {
 
     //JES uncertainty
     nJet30 = njet30;
-    nJet30Up = njetUp30;
-    nJet30Dw = njetDw30;
-
+    nJet40 = njet40;
     nJet50 = njet50;
-    nJet50Up = njetUp50;
-    nJet50Dw = njetDw50;
 
     if( nJet30 >= 4){
       for(int i = 0; i < (int) nJet30 ; i++){
@@ -718,11 +682,6 @@ class CMGTopDILAnalyzer : public edm::EDFilter {
         jets_ptweight[jetid] =  ptweight ;
       }
     }
-
-    metup = sqrt(metup_x*metup_x + metup_y*metup_y);
-    metdw = sqrt(metdw_x*metdw_x + metdw_y*metdw_y);
-    METUp = metup;
-    METDw = metdw;    
 
     //event selection
     cutStepBit[0] = (ZMass > 12);
@@ -1005,10 +964,12 @@ class CMGTopDILAnalyzer : public edm::EDFilter {
       genttbarM = ttbarGenLevel.mass();
       nGenJet20 = ttbarGenLevel.NJets20();
       nGenbJet20 = ttbarGenLevel.NbJets20();
+      nGenaddbJet20 = ttbarGenLevel.NaddbJets20();
       nGencJet20 = ttbarGenLevel.NcJets20();
 
       nGenJet40 = ttbarGenLevel.NJets40();
       nGenbJet40 = ttbarGenLevel.NbJets40();
+      nGenaddbJet40 = ttbarGenLevel.NaddbJets40();
       nGencJet40 = ttbarGenLevel.NcJets40();
 
       genLep1_pt = ttbarGenLevel.lepton1().pt();
@@ -1272,16 +1233,15 @@ class CMGTopDILAnalyzer : public edm::EDFilter {
     jets_ptweight.clear();
 
     nJet30 = 0;
-    nJet30Up = 0;
-    nJet30Dw = 0;
+    nJet40 = 0;
     nJet50 = 0;
-    nJet50Up = 0;
-    nJet50Dw = 0;
     nGenJet20 = 0;
     nGenbJet20 = 0;
+    nGenaddbJet20 = 0;
     nGencJet20 = 0;
     nGenJet40 = 0;
     nGenbJet40 = 0;
+    nGenaddbJet40 = 0;
     nGencJet40 = 0;
 
     genLep1_pt = 0;
@@ -1473,8 +1433,6 @@ class CMGTopDILAnalyzer : public edm::EDFilter {
 
   double MET;
   double metphi;
-  double METUp;
-  double METDw;
   double ZMass;
   double ZPt;
   double ZEta;
@@ -1536,17 +1494,16 @@ class CMGTopDILAnalyzer : public edm::EDFilter {
   std::vector<double> jets_ptweight;
 
   unsigned int nJet30;
-  unsigned int nJet30Up;
-  unsigned int nJet30Dw;
+  unsigned int nJet40;
   unsigned int nJet50;
-  unsigned int nJet50Up;
-  unsigned int nJet50Dw;  
 
   unsigned int nGenJet20;
   unsigned int nGenbJet20;
+  unsigned int nGenaddbJet20;
   unsigned int nGencJet20;
   unsigned int nGenJet40;
   unsigned int nGenbJet40;
+  unsigned int nGenaddbJet40;
   unsigned int nGencJet40;
 
   double genLep1_pt;
