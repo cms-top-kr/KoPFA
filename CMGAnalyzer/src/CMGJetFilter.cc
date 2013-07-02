@@ -13,7 +13,7 @@
 //
 // Original Author:  Tae Jeong Kim
 //         Created:  Mon Dec 14 01:29:35 CET 2009
-// $Id: CMGJetFilter.cc,v 1.6 2012/11/15 09:35:29 youngjo Exp $
+// $Id: CMGJetFilter.cc,v 1.7 2013/06/09 14:14:47 tjkim Exp $
 //
 //
 
@@ -98,7 +98,8 @@ class CMGJetFilter : public edm::EDFilter {
       JetCorrectionUncertainty *jecUnc_;
 
       edm::ParameterSet pfJetIdParams_;
-
+ 
+      string debug_;
 };
 
 //
@@ -168,7 +169,12 @@ bool
 CMGJetFilter::filter(edm::Event& iEvent, const edm::EventSetup& iSetup)
 {
 
+  debug_ = " ";
   isRealData_ = iEvent.isRealData();
+
+  int EVENT  = iEvent.id().event();
+  int RUN    = iEvent.id().run();
+  int LUMI   = iEvent.id().luminosityBlock();
 
   bool accepted = false;
   using namespace edm;
@@ -203,7 +209,7 @@ CMGJetFilter::filter(edm::Event& iEvent, const edm::EventSetup& iSetup)
   //const int nv = recVtxs_->size();
 
   PFJetIDSelectionFunctor looseJetIdSelector_(pfJetIdParams_);
-
+  int njet = 0;
   for (JI it = Jets->begin(); it != Jets->end(); ++it) {
     cmg::PFJet correctedJet = *it;
 
@@ -213,10 +219,14 @@ CMGJetFilter::filter(edm::Event& iEvent, const edm::EventSetup& iSetup)
     //bool passId = looseJetIdSelector_( *it, looseJetIdSel);
 
     // it is identical : checkPFJetId and using the cut string
-    bool passId  = checkPFJetId( &correctedJet);
-    //bool passId = it->getSelection("cuts_looseJetId");
+    bool passId = false;
+    bool passLooseId = false;
 
-    if(!passId) continue;
+    passId  = checkPFJetId( &correctedJet);
+    passLooseId = it->getSelection("cuts_looseJetId");
+
+    //reco::Candidate::LorentzVector uncorrJet = it->sourcePtr()->get()->correctedP4(0);
+    //cout << "jet uncorrected pt = " << uncorrJet.pt() << endl;
 
     bool overlap = false;
     
@@ -236,6 +246,10 @@ CMGJetFilter::filter(edm::Event& iEvent, const edm::EventSetup& iSetup)
         break;
       }
     }
+
+    //cout << "jet pt = " << it->pt() << " eta = " << it->eta() << " pass= " << passId << " looseJetId= " << passLooseId << " overlap= " << overlap << endl;
+
+    if(!passId) continue;
     if(overlap) continue;
 
 
@@ -286,8 +300,9 @@ CMGJetFilter::filter(edm::Event& iEvent, const edm::EventSetup& iSetup)
 
     //debug
     //cout << "corrected= " << correctedJet.pt() << " default= " << it->pt() << endl;
-
+    //cout << "pt cut = " << ptcut_ << endl;
     if ( correctedJet.pt() > ptcut_ ) {
+      njet++;
       if( bJetFirst_ ){
         double bTagValue = correctedJet.bDiscriminator(bTagAlgo_.c_str());
         if( bTagValue > bTagValue_ ) {
@@ -314,6 +329,20 @@ CMGJetFilter::filter(edm::Event& iEvent, const edm::EventSetup& iSetup)
   }
 
   if( corrJets->size() >= min_ ) accepted = true;
+
+  if( corrJets->size() > 10 ) { 
+    string debug_output = "=================================================== DEBUG ======================================================";
+    string e = Form("%i",EVENT);
+    string r = Form("%i",RUN);
+    string l = Form("%i",LUMI);
+    string njetsbefore = Form("%i",njet);
+    string njetsafter  = Form("%i",(int)corrJets->size());
+    debug_output += "EVENT : " + e + " RUN : " + r + " LUMI : " + l + "\n";
+    debug_output += "Number of jets before ID = " + njetsbefore + " Number of jets after ID = " + njetsafter + "\n";
+    debug_output += debug_;
+    cout << debug_output;
+    cout << "DEBUG : END" << endl;
+  }
 
   iEvent.put(corrJets, "Jets");
   iEvent.put(corrMETs, "MET");
@@ -367,14 +396,55 @@ CMGJetFilter::endJob() {
 bool CMGJetFilter::checkPFJetId(const cmg::PFJet * jet){
     //Loose PF Jet id 
     ///https://twiki.cern.ch/twiki/bin/viewauth/CMS/JetID
+    //debug
+    bool out = false;
+    string pt = Form("%f",jet->pt());
+    string eta = Form("%f",jet->eta());
+    debug_ += "jet pt = " + pt  + " eta = " + eta + "\n";  
+    debug_ += "CMG\n";
+    string nConstituents = Form("%i",jet->nConstituents());
+    debug_ += "number of Daughters : nConstituents() = " + nConstituents + "\n";
+    double NHF_cmg = jet->component(5).fraction() + jet->component(6).fraction();
+    string NHF2string_cmg = Form("%f",NHF_cmg);
+    debug_ += "NHF(<0.99) : component(5).fraction() + component(6).fraction() = " + NHF2string_cmg + "\n";
+    string component4fraction = Form("%f",jet->component(4).fraction()); 
+    debug_ += "NEF(<0.99) : component(4).fraction() = " + component4fraction + "\n";
+    string component2fraction = Form("%f",jet->component(2).fraction());
+    debug_ += "CEF(<0.99) : component(2).fraction() = " + component2fraction + "\n";
+    string component1fraction = Form("%f",jet->component(1).fraction());
+    debug_ += "CHF(>0)    : component(1).fraction() = " + component1fraction + "\n";
+    string component1number = Form("%i",jet->component(1).number());
+    debug_ += "NCH(>0)    : component(1).number() = " + component1number + "\n";
+
+/*
+    debug_ += "PAT\n";
+    string numberOfDaughters = Form("%i",(int)jet->sourcePtr()->get()->numberOfDaughters());
+    debug_ += "numberOfDaughters= " + numberOfDaughters + "\n";
+    double NHF = (jet->sourcePtr()->get()->neutralHadronEnergy() + jet->sourcePtr()->get()->HFHadronEnergy() ) / jet->sourcePtr()->get()->energy();
+    string NHF2string = Form("%f",NHF);
+    debug_ += "NHF(<0.99) = " + NHF2string +"\n";
+    string neutralEmEnergyFraction = Form("%f",jet->sourcePtr()->get()->neutralEmEnergyFraction());
+    debug_ += "NEF(<0.99) = " + neutralEmEnergyFraction +"\n";
+    string chargedEmEnergyFraction = Form("%f",jet->sourcePtr()->get()->chargedEmEnergyFraction());
+    debug_ += "CEF(<0.99) = " + chargedEmEnergyFraction +"\n";
+    string chargedHadronEnergyFraction = Form("%f",jet->sourcePtr()->get()->chargedHadronEnergyFraction()) ;
+    debug_ += "CHF(>0) = " + chargedHadronEnergyFraction+"\n";
+    string chargedMultiplicity = Form("%i",jet->sourcePtr()->get()->chargedMultiplicity());
+    debug_ += "NCH(>0) = " + chargedMultiplicity +"\n"; 
+*/
     if( (jet->component(5).fraction() + jet->component(6).fraction()) < 0.99
        &&jet->component(4).fraction() < 0.99
        &&jet->nConstituents() > 1
        &&(jet->component(1).fraction() > 0 || abs(jet->eta()) > 2.4)
        &&(jet->component(1).number() > 0 || abs(jet->eta()) > 2.4)
        &&(jet->component(2).fraction() < 0.99 || abs(jet->eta()) > 2.4)        
-       )return 1;
-    else return 0;
+    ) out = true;
+
+    string tmp = "false";
+    if(out) tmp = "true";
+    debug_ += "PASS= " + tmp  + "\n";
+
+    return out;
 }
 
 //define this as a plug-in
