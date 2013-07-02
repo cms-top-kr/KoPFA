@@ -13,7 +13,7 @@
 //
 // Original Author:  Tae Jeong Kim
 //         Created:  Mon Dec 14 01:29:35 CET 2009
-// $Id: CMGJetFilter.cc,v 1.7 2013/06/09 14:14:47 tjkim Exp $
+// $Id: CMGJetFilter.cc,v 1.8 2013/07/02 07:28:43 tjkim Exp $
 //
 //
 
@@ -214,6 +214,7 @@ CMGJetFilter::filter(edm::Event& iEvent, const edm::EventSetup& iSetup)
     cmg::PFJet correctedJet = *it;
 
     if(fabs(it->eta()) >= absetacut_) continue;
+    if( it->pt() < 20 ) continue;
 
     //pat::strbitset looseJetIdSel = looseJetIdSelector_.getBitTemplate();
     //bool passId = looseJetIdSelector_( *it, looseJetIdSel);
@@ -225,6 +226,7 @@ CMGJetFilter::filter(edm::Event& iEvent, const edm::EventSetup& iSetup)
     passId  = checkPFJetId( &correctedJet);
     passLooseId = it->getSelection("cuts_looseJetId");
 
+    if(!passId) continue;
     //reco::Candidate::LorentzVector uncorrJet = it->sourcePtr()->get()->correctedP4(0);
     //cout << "jet uncorrected pt = " << uncorrJet.pt() << endl;
 
@@ -238,6 +240,9 @@ CMGJetFilter::filter(edm::Event& iEvent, const edm::EventSetup& iSetup)
         break;
       }
     }
+ 
+    if(overlap) continue;
+
     for (unsigned int i=0; i < muons_->size(); ++i){
       cmg::Muon muon = muons_->at(i);
       double dR =  deltaR(muon.eta(), muon.phi(), it->eta(), it->phi());
@@ -249,10 +254,7 @@ CMGJetFilter::filter(edm::Event& iEvent, const edm::EventSetup& iSetup)
 
     //cout << "jet pt = " << it->pt() << " eta = " << it->eta() << " pass= " << passId << " looseJetId= " << passLooseId << " overlap= " << overlap << endl;
 
-    if(!passId) continue;
     if(overlap) continue;
-
-
 
     //double scaleF = 1.0;
     //if(doJecFly_){
@@ -322,9 +324,9 @@ CMGJetFilter::filter(edm::Event& iEvent, const edm::EventSetup& iSetup)
 
   // Jets passing identification criteria are sorted by decreasing pT
   std::sort(corrJets->begin(), corrJets->end(), GreaterByPt<cmg::PFJet>());
-  std::sort(corrbJets->begin(), corrbJets->end(), GreaterByPt<cmg::PFJet>());
 
   if( bJetFirst_ ){
+    std::sort(corrbJets->begin(), corrbJets->end(), GreaterByPt<cmg::PFJet>());
     corrJets->insert( corrJets->begin(), corrbJets->begin(), corrbJets->end());
   }
 
