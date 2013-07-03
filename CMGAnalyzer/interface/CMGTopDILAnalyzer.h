@@ -13,7 +13,7 @@
 //
 // Original Author:  Tae Jeong Kim,40 R-A32,+41227678602,
 //         Created:  Fri Jun  4 17:19:29 CEST 2010
-// $Id: CMGTopDILAnalyzer.h,v 1.43 2013/06/22 05:37:42 youngjo Exp $
+// $Id: CMGTopDILAnalyzer.h,v 1.44 2013/07/02 15:56:17 tjkim Exp $
 //
 //
 
@@ -293,7 +293,32 @@ class CMGTopDILAnalyzer : public edm::EDFilter {
     tree->Branch("csvweightHFdw",&csvweightHFdw,"csvweightHFdw/d");
     tree->Branch("csvweightup",&csvweightup,"csvweightup/d");
     tree->Branch("csvweightdw",&csvweightdw,"csvweightdw/d");
+    tree->Branch("csvweightup2",&csvweightup2,"csvweightup2/d");
+    tree->Branch("csvweightdw2",&csvweightdw2,"csvweightdw2/d");
 
+
+    tree->Branch("csvweightJESup",       &csvweightJESup       ,"csvweightJESup/d");
+    tree->Branch("csvweightJESdown",     &csvweightJESdown     ,"csvweightJESdown/d");
+    tree->Branch("csvweightHFStats1up",  &csvweightHFStats1up  ,"csvweightHFStats1up/d");
+    tree->Branch("csvweightHFStats1down",&csvweightHFStats1down,"csvweightHFStats1down/d");
+    tree->Branch("csvweightHFStats2up",  &csvweightHFStats2up  ,"csvweightHFStats2up/d");
+    tree->Branch("csvweightHFStats2down",&csvweightHFStats2down,"csvweightHFStats2down/d");
+    tree->Branch("csvweightLFStats1up",  &csvweightLFStats1up  ,"csvweightLFStats1up/d");
+    tree->Branch("csvweightLFStats1down",&csvweightLFStats1down,"csvweightLFStats1down/d");
+    tree->Branch("csvweightLFStats2up",  &csvweightLFStats2up  ,"csvweightLFStats2up/d");
+    tree->Branch("csvweightLFStats2down",&csvweightLFStats2down,"csvweightLFStats2down/d");
+
+
+
+    tree->Branch("csvweightNew",&csvweightNew    ,"csvweightNew/d");
+    tree->Branch("csvweightNewLFup",&csvweightNewLFup,"csvweightNewLFup/d");
+    tree->Branch("csvweightNewLFdw",&csvweightNewLFdw,"csvweightNewLFdw/d");
+    tree->Branch("csvweightNewHFup",&csvweightNewHFup,"csvweightNewHFup/d");
+    tree->Branch("csvweightNewHFdw",&csvweightNewHFdw,"csvweightNewHFdw/d");
+    //tree->Branch("csvweightNewUp",&csvweightNewUp  ,"csvweightNewUp/d");
+    //tree->Branch("csvweightNewDw",&csvweightNewDw  ,"csvweightNewDw/d");
+    //tree->Branch("csvweightNewUp2",&csvweightNewUp2 ,"csvweightNewUp2/d");
+    //tree->Branch("csvweightNewDw2",&csvweightNewDw2 ,"csvweightNewDw2/d");
 
 
     tree->Branch("jets_secvtxmass","std::vector<double>",&jets_secvtxmass);
@@ -559,8 +584,36 @@ class CMGTopDILAnalyzer : public edm::EDFilter {
          csvweightHFdw=csvWgt->GetCSVweight(Jets,sysType::CSVHFdown);
          csvweightup=csvWgt->GetCSVweight(Jets,sysType::CSVup);
          csvweightdw=csvWgt->GetCSVweight(Jets,sysType::CSVdown);
+         csvweightup2=csvWgt->GetCSVweight(Jets,sysType::CSVup2);
+         csvweightdw2=csvWgt->GetCSVweight(Jets,sysType::CSVdown2);
+
+         csvweightJESup        =csvWgt->GetCSVweight(Jets,sysType::JESup);
+         csvweightJESdown      =csvWgt->GetCSVweight(Jets,sysType::JESdown);
+
+         csvweightHFStats1up   =csvWgt->GetCSVweight(Jets,sysType::CSVHFStats1up);
+         csvweightHFStats1down =csvWgt->GetCSVweight(Jets,sysType::CSVHFStats1down);
+         csvweightHFStats2up   =csvWgt->GetCSVweight(Jets,sysType::CSVHFStats2up);
+         csvweightHFStats2down =csvWgt->GetCSVweight(Jets,sysType::CSVHFStats2down);
  
- 
+         csvweightLFStats1up   =csvWgt->GetCSVweight(Jets,sysType::CSVLFStats1up);
+         csvweightLFStats1down =csvWgt->GetCSVweight(Jets,sysType::CSVLFStats1down);
+         csvweightLFStats2up   =csvWgt->GetCSVweight(Jets,sysType::CSVLFStats2up);
+         csvweightLFStats2down =csvWgt->GetCSVweight(Jets,sysType::CSVLFStats2down);
+
+
+         // for New CSV SF
+        //double GetNewCSVweight(edm::Handle<std::vector<cmg::PFJet> >& iJets, int iLF=0, int iHF=0){
+         csvweightNew     = csvWgt->GetNewCSVweight(Jets, 0);
+         csvweightNewLFup = csvWgt->GetNewCSVweight(Jets, 3);
+         csvweightNewLFdw = csvWgt->GetNewCSVweight(Jets, 4);
+         csvweightNewHFup = csvWgt->GetNewCSVweight(Jets, 1);
+         csvweightNewHFdw = csvWgt->GetNewCSVweight(Jets, 2);
+
+/*       csvweightNewUp   = csvWgt->GetNewCSVweight(Jets, 1);
+         csvweightNewDw   = csvWgt->GetNewCSVweight(Jets, 2);
+         csvweightNewUp2  = csvWgt->GetNewCSVweight(Jets, 1);
+         csvweightNewDw2  = csvWgt->GetNewCSVweight(Jets, 2);
+ */
          //cout << "csvweight : " << csvweight << endl;
     }
 
@@ -1209,8 +1262,32 @@ class CMGTopDILAnalyzer : public edm::EDFilter {
     csvweightLFdw = 1.0;
     csvweightHFup = 1.0;
     csvweightHFdw = 1.0;
-    csvweightup = 1.0;
-    csvweightdw = 1.0;
+    csvweightup   = 1.0;
+    csvweightdw   = 1.0;
+    csvweightup2  = 1.0;
+    csvweightdw2  = 1.0;
+
+    csvweightJESup        = 1.0;        
+    csvweightJESdown      = 1.0;
+    csvweightHFStats1up   = 1.0;
+    csvweightHFStats1down = 1.0;
+    csvweightHFStats2up   = 1.0;
+    csvweightHFStats2down = 1.0;
+    csvweightLFStats1up   = 1.0;
+    csvweightLFStats1down = 1.0;
+    csvweightLFStats2up   = 1.0; 
+    csvweightLFStats2down = 1.0;
+
+    csvweightNew     = 1.0;
+    csvweightNewLFup = 1.0;
+    csvweightNewLFdw = 1.0;
+    csvweightNewHFup = 1.0;
+    csvweightNewHFdw = 1.0;
+    //csvweightNewUp   = 1.0;
+    //csvweightNewDw   = 1.0;
+    //csvweightNewUp2  = 1.0;
+    //csvweightNewDw2  = 1.0;
+ 
  
     kin_ttbar_mass = -999;
     kin_ttbar_dphi = -999;
@@ -1472,6 +1549,32 @@ class CMGTopDILAnalyzer : public edm::EDFilter {
   double csvweightHFdw;
   double csvweightup;
   double csvweightdw;
+  double csvweightup2;
+  double csvweightdw2;
+
+
+   double csvweightJESup        ;
+   double csvweightJESdown      ;
+   double csvweightHFStats1up   ;
+   double csvweightHFStats1down ;
+   double csvweightHFStats2up   ;
+   double csvweightHFStats2down ;
+   double csvweightLFStats1up   ;
+   double csvweightLFStats1down ;
+   double csvweightLFStats2up   ;
+   double csvweightLFStats2down ;
+
+
+  double csvweightNew     ;
+  double csvweightNewLFup ;
+  double csvweightNewLFdw ;
+  double csvweightNewHFup ;
+  double csvweightNewHFdw ;
+  //double csvweightNewUp   ;
+  //double csvweightNewDw   ;
+  //double csvweightNewUp2  ;
+  //double csvweightNewDw2  ;
+ 
 
   double kin_ttbar_mass;
   double kin_ttbar_dphi;

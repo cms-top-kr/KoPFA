@@ -26,7 +26,7 @@
 
 typedef vector<cmg::PFJet>::const_iterator JI;
 
-namespace sysType{ enum sysType{ NA, JERup, JERdown, JESup, JESdown, hfSFup, hfSFdown, lfSFdown, lfSFup, TESup, TESdown, CSVLFup, CSVLFdown, CSVHFup, CSVHFdown, CSVHFStats1up, CSVHFStats1down, CSVLFStats1up, CSVLFStats1down, CSVHFStats2up, CSVHFStats2down, CSVLFStats2up, CSVLFStats2down, CSVup, CSVdown }; }
+namespace sysType{ enum sysType{ NA, JERup, JERdown, JESup, JESdown, hfSFup, hfSFdown, lfSFdown, lfSFup, TESup, TESdown, CSVLFup, CSVLFdown, CSVHFup, CSVHFdown, CSVHFStats1up, CSVHFStats1down, CSVLFStats1up, CSVLFStats1down, CSVHFStats2up, CSVHFStats2down, CSVLFStats2up, CSVLFStats2down, CSVup, CSVdown, CSVup2, CSVdown2 }; }
 
 using namespace std;
 
@@ -94,6 +94,28 @@ void SetUpCSVreweighting(){
 
     }
 
+//////////////////////
+// new CSV SF
+  f_new_CSV_SF = new TFile ((string(getenv("CMSSW_BASE")) + "/src/KoPFA/CommonTools/data/new_CSV_SF.root").c_str());
+  for(int iPt=0;iPt<3;iPt++) for(int iEta=0;iEta<3;iEta++)
+  {
+     h_LF_CSV_SF[0][iPt][iEta] = (TH1F*) f_new_CSV_SF->Get(Form("LFPt%dEta%d",iPt,iEta));
+     h_HF_CSV_SF[0][iPt][iEta] = (TH1F*) f_new_CSV_SF->Get(Form("HFPt%dEta%d",iPt,iEta));
+
+     int bin = h_LF_CSV_SF[0][iPt][iEta]->GetNbinsX();
+     h_LF_CSV_SF[1][iPt][iEta] = (TH1F *) f_new_CSV_SF->Get(Form("LFPt%dEta%dHFup",iPt,iEta));
+     h_LF_CSV_SF[2][iPt][iEta] = (TH1F *) f_new_CSV_SF->Get(Form("LFPt%dEta%dHFdw",iPt,iEta));
+
+     h_HF_CSV_SF[1][iPt][iEta] = (TH1F *) f_new_CSV_SF->Get(Form("HFPt%dEta%dHFup",iPt,iEta));
+     h_HF_CSV_SF[2][iPt][iEta] = (TH1F *) f_new_CSV_SF->Get(Form("HFPt%dEta%dHFdw",iPt,iEta));
+
+     h_LF_CSV_SF[3][iPt][iEta] = (TH1F *) f_new_CSV_SF->Get(Form("LFPt%dEta%dLFup",iPt,iEta));
+     h_LF_CSV_SF[4][iPt][iEta] = (TH1F *) f_new_CSV_SF->Get(Form("LFPt%dEta%dLFdw",iPt,iEta));
+
+     h_HF_CSV_SF[3][iPt][iEta] = (TH1F *) f_new_CSV_SF->Get(Form("HFPt%dEta%dLFup",iPt,iEta));
+     h_HF_CSV_SF[4][iPt][iEta] = (TH1F *) f_new_CSV_SF->Get(Form("HFPt%dEta%dLFdw",iPt,iEta));
+ 
+  }
 ///////////////////////
   // CSV reweighting
   for( int iSys=0; iSys<9; iSys++ ){
@@ -146,8 +168,67 @@ void SetUpCSVreweighting(){
   }
 
 }
+////////////////////////
+//for new CSV SF
+double GetNewCSVweight(edm::Handle<std::vector<cmg::PFJet> >& iJets, int iSys=0){
+// iLF : 0(normal), 1(up), 2(dw)
+// iHF : 0(normal), 1(up), 2(dw)
+  double csvWgthf = 1.;
+  double csvWgtlf = 1.;
+
+  for( JI iJet = iJets->begin(); iJet != iJets->end(); ++iJet ){ 
+    double csv = iJet->bDiscriminator("combinedSecondaryVertexBJetTags");
+    double jetPt = iJet->p4().pt();
+    double jetAbsEta = fabs( iJet->p4().eta() );
+    int flavor = abs( iJet->partonFlavour());
+    int iPt = -1; int iEta = -1;
+    if (jetPt >=30 && jetPt<50) iPt = 0;
+    else if (jetPt >=50 && jetPt<80) iPt = 1;
+    else if (jetPt >=80) iPt = 2;
+
+    if (jetAbsEta >=0 &&  jetAbsEta<0.8) iEta = 0;
+    else if ( jetAbsEta>=0.8 && jetAbsEta<1.6) iEta = 1;
+    else if ( jetAbsEta>=1.6 && jetAbsEta<2.5) iEta = 2;
+
+    if (iPt < 0 || iEta < 0) std::cout << "Error, couldn't find Pt, Eta bins for this b-flavor jet, jetPt = " << jetPt << ", jetAbsEta = " << jetAbsEta << std::endl;
+
+    if ( (abs(flavor) == 5) ){
+      int useCSVBin = (csv>=0.) ? h_HF_CSV_SF[iSys][iPt][iEta]->FindBin(csv) : 1;
+      double iCSVWgtHF = h_HF_CSV_SF[iSys][iPt][iEta]->GetBinContent(useCSVBin);
+      if( iCSVWgtHF>0.05 ) csvWgthf *= iCSVWgtHF;
+
+      // if( iSysHF==0 ) printf(" iJet,\t flavor=%d,\t pt=%.1f,\t eta=%.2f,\t csv=%.3f,\t wgt=%.2f \n",
+      //                          flavor, jetPt, iJet->eta, csv, iCSVWgtHF );
+    }
+    else if ( (abs(flavor) == 4) ){
+      int useCSVBin = (csv>=0.) ? h_LF_CSV_SF[iSys][iPt][iEta]->FindBin(csv) : 1;
+      double iCSVWgtHF = h_LF_CSV_SF[iSys][iPt][iEta]->GetBinContent(useCSVBin);
+      //if(iHF==1) iCSVWgtHF+= h_HF_CSV_SF[0][iPt][iEta]->GetBinError(useCSVBin); 
+      //if(iHF==2) iCSVWgtHF-= h_HF_CSV_SF[iHF][iPt][iEta]->GetBinError(useCSVBin);
+      if( iCSVWgtHF>0.05 ) csvWgthf *= iCSVWgtHF;
+
+      // if( iSysHF==0 ) printf(" iJet,\t flavor=%d,\t pt=%.1f,\t eta=%.2f,\t csv=%.3f,\t wgt=%.2f \n",
+      //                          flavor, jetPt, iJet->eta, csv, iCSVWgtHF );
+    }
+    else {
+      if (iPt >=2) iPt=2;       /// [30-40], [40-60] and [60-10000] only 3 Pt bins for lf
+      int useCSVBin = (csv>=0.) ? h_LF_CSV_SF[iSys][iPt][iEta]->FindBin(csv) : 1;
+      double iCSVWgtLF = h_LF_CSV_SF[iSys][iPt][iEta]->GetBinContent(useCSVBin);
+      if( iCSVWgtLF>0.05 ) csvWgtlf *= iCSVWgtLF;
+
+      // if( iSysLF==0 ) printf(" iJet,\t flavor=%d,\t pt=%.1f,\t eta=%.2f,\t csv=%.3f,\t wgt=%.2f \n",
+      //                          flavor, jetPt, iJet->eta, csv, iCSVWgtLF );
+    }
+  }
+
+  double csvWgtTotal = csvWgthf* csvWgtlf;
+
+  return csvWgtTotal;
+}
 
 
+
+/////////////////////////
 double GetCSVweight(edm::Handle<std::vector<cmg::PFJet> >& iJets, const sysType::sysType iSysType, const bool & lightonly = false){
   //if (isData) return 1.0;
 
@@ -166,6 +247,8 @@ double GetCSVweight(edm::Handle<std::vector<cmg::PFJet> >& iJets, const sysType:
   case sysType::CSVHFStats2down: iSysHF=8; break;
   case sysType::CSVup:         iSysHF=4; break;
   case sysType::CSVdown:       iSysHF=3; break;
+  case sysType::CSVup2:         iSysHF=3; break;
+  case sysType::CSVdown2:       iSysHF=4; break;
   default : iSysHF = 0; break;
   }
 
@@ -181,6 +264,8 @@ double GetCSVweight(edm::Handle<std::vector<cmg::PFJet> >& iJets, const sysType:
   case sysType::CSVLFStats2down: iSysLF=8; break;
   case sysType::CSVup:         iSysLF=4; break;
   case sysType::CSVdown:       iSysLF=3; break;
+  case sysType::CSVup2:         iSysLF=4; break;
+  case sysType::CSVdown2:       iSysLF=3; break;
   default : iSysLF = 0; break;
   }
 
@@ -311,7 +396,11 @@ double CSVshape(double csv, double pt, double eta, int flavor, int JetN, double 
        TH1F* h_ttbb_csv_LF_SF[2][2][4];
        TH1F* h_ttbb_csv_LF_SFup[2][2][4];
        TH1F* h_ttbb_csv_LF_SFdw[2][2][4];
-       TFile* f_ttbb_csv; 
+       TFile* f_ttbb_csv;
+
+       TFile *f_new_CSV_SF;
+       TH1F *h_LF_CSV_SF[5][3][3];
+       TH1F *h_HF_CSV_SF[5][3][3];
 };
 #endif
 
