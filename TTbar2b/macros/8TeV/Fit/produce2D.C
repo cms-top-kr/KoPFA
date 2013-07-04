@@ -1,6 +1,6 @@
 void produce2D(){
 
-  TFile * f_MC[11];
+  TFile * f_MC[12];
   TFile * f_RD[3];
 
   TString path = "/afs/cern.ch/work/y/youngjo/public/For8Tev/v20130613_HFupdw/";
@@ -16,8 +16,9 @@ void produce2D(){
   f_MC[8] = new TFile(path+"vallot_ZZ.root");
   f_MC[9] = new TFile(path+"vallot_SingleToptW.root");
   f_MC[10] = new TFile(path+"vallot_SingleTopBartW.root");
+  f_MC[11] = new TFile(path+"vallot_TTH.root");
 
-  double norm[11];
+  double norm[12];
   double lumi = 19619.0;
   norm[0] = getNorm( f_MC[0], 3503.0,   lumi, "MuMu");
   norm[1] = getNorm( f_MC[1], 860.0,    lumi, "MuMu");
@@ -30,12 +31,13 @@ void produce2D(){
   norm[8] = getNorm( f_MC[8], 8.1,      lumi, "MuMu");
   norm[9] = getNorm( f_MC[9], 11.1,     lumi, "MuMu");
   norm[10]= getNorm( f_MC[10], 11.1,     lumi, "MuMu");
+  norm[11]= getNorm( f_MC[11], 0.1302,     lumi, "MuMu");
 
   f_RD[0] = new TFile(path+"vallot_Run2012MuMu.root");
   f_RD[1] = new TFile(path+"vallot_Run2012ElEl.root");
   f_RD[2] = new TFile(path+"vallot_Run2012MuEl.root");
 
-  TTree * t_MC[3][11];
+  TTree * t_MC[3][12];
   TTree * t_RD[3];
 
   TCut visible = "nGenJet20 >= 4 && nGenbJet20 >=2 && genLep1_pt > 20 && genLep2_pt > 20 && abs( genLep1_eta ) < 2.4 && abs( genLep2_eta ) < 2.4" ;
@@ -63,6 +65,9 @@ void produce2D(){
   TH1F * x_ttb[3];
   TH1F * y_ttb[3];
   TH2F * xy_ttb[3];
+  TH1F * x_ttcc[3];
+  TH1F * y_ttcc[3];
+  TH2F * xy_ttcc[3];
   TH1F * x_ttLF[3];
   TH1F * y_ttLF[3];
   TH2F * xy_ttLF[3];
@@ -99,6 +104,9 @@ void produce2D(){
   TH1F * x_QCD[3];
   TH1F * y_QCD[3];
   TH2F * xy_QCD[3];
+  TH1F * x_tth[3];
+  TH1F * y_tth[3];
+  TH2F * xy_tth[3];
  
   TH1F * x_data_all = new TH1F("x_data_all","x_data_all",10,0.0,1.0);
   TH1F * y_data_all = new TH1F("y_data_all","y_data_all",10,0.0,1.0);
@@ -112,6 +120,9 @@ void produce2D(){
   TH1F * x_ttb_all = new TH1F("x_ttb_all","x_ttb_all",10,0.0,1.0);
   TH1F * y_ttb_all = new TH1F("y_ttb_all","y_ttb_all",10,0.0,1.0);
   TH2F * xy_ttb_all = new TH2F("xy_ttb_all","xy_ttb_all",10,0.0,1.0,10,0.0,1.0);
+  TH1F * x_ttcc_all = new TH1F("x_ttcc_all","x_ttcc_all",10,0.0,1.0);
+  TH1F * y_ttcc_all = new TH1F("y_ttcc_all","y_ttcc_all",10,0.0,1.0);
+  TH2F * xy_ttcc_all = new TH2F("xy_ttcc_all","xy_ttcc_all",10,0.0,1.0,10,0.0,1.0);
   TH1F * x_ttLF_all = new TH1F("x_ttLF_all","x_ttLF_all",10,0.0,1.0);
   TH1F * y_ttLF_all = new TH1F("y_ttLF_all","y_ttLF_all",10,0.0,1.0);
   TH2F * xy_ttLF_all = new TH2F("xy_ttLF_all","xy_ttLF_all",10,0.0,1.0,10,0.0,1.0);
@@ -127,6 +138,10 @@ void produce2D(){
   TH1F * x_QCD_all = new TH1F("x_QCD_all","x_QCD_all",10,0.0,1.0);
   TH1F * y_QCD_all = new TH1F("y_QCD_all","y_QCD_all",10,0.0,1.0);
   TH2F * xy_QCD_all = new TH2F("xy_QCD_all","xy_QCD_all",10,0.0,1.0,10,0.0,1.0);
+  TH1F * x_tth_all = new TH1F("x_tth_all","x_tth_all",10,0.0,1.0);
+  TH1F * y_tth_all = new TH1F("y_tth_all","y_tth_all",10,0.0,1.0);
+  TH2F * xy_tth_all = new TH2F("xy_tth_all","xy_tth_all",10,0.0,1.0,10,0.0,1.0);
+
 
   cout << "fill...." << endl; 
   for(int i=0 ; i < 3; i++){
@@ -166,6 +181,7 @@ void produce2D(){
     t_MC[i][8] = (TTree*) f_MC[8]->Get(Form("%s/tree",decay.Data()));
     t_MC[i][9] = (TTree*) f_MC[9]->Get(Form("%s/tree",decay.Data()));
     t_MC[i][10] = (TTree*) f_MC[10]->Get(Form("%s/tree",decay.Data()));
+    t_MC[i][11] = (TTree*) f_MC[11]->Get(Form("%s/tree",decay.Data()));
 
     x_data[i] = new TH1F(Form("x_data_%s",decay.Data()),Form("x_data_%s",decay.Data()),10,0.0,1.0);
     y_data[i] = new TH1F(Form("y_data_%s",decay.Data()),Form("y_data_%s",decay.Data()),10,0.0,1.0);
@@ -186,6 +202,10 @@ void produce2D(){
     x_ttb[i] = new TH1F(Form("x_ttb_%s",decay.Data()),Form("x_ttb_%s",decay.Data()),10,0.0,1.0);
     y_ttb[i] = new TH1F(Form("y_ttb_%s",decay.Data()),Form("y_ttb_%s",decay.Data()),10,0.0,1.0);
     xy_ttb[i] = new TH2F(Form("xy_ttb_%s",decay.Data()),Form("xy_ttb_%s",decay.Data()),10,0.0,1.0,10,0.0,1.0);
+
+    x_ttcc[i] = new TH1F(Form("x_ttcc_%s",decay.Data()),Form("x_ttcc_%s",decay.Data()),10,0.0,1.0);
+    y_ttcc[i] = new TH1F(Form("y_ttcc_%s",decay.Data()),Form("y_ttcc_%s",decay.Data()),10,0.0,1.0);
+    xy_ttcc[i] = new TH2F(Form("xy_ttcc_%s",decay.Data()),Form("xy_ttcc_%s",decay.Data()),10,0.0,1.0,10,0.0,1.0);
 
     x_ttLF[i] = new TH1F(Form("x_ttLF_%s",decay.Data()),Form("x_ttLF_%s",decay.Data()),10,0.0,1.0);
     y_ttLF[i] = new TH1F(Form("y_ttLF_%s",decay.Data()),Form("y_ttLF_%s",decay.Data()),10,0.0,1.0);
@@ -235,6 +255,10 @@ void produce2D(){
     y_QCD[i] = new TH1F(Form("y_QCD_%s",decay.Data()),Form("y_QCD_%s",decay.Data()),10,0.0,1.0);
     xy_QCD[i] = new TH2F(Form("xy_QCD_%s",decay.Data()),Form("xy_QCD_%s",decay.Data()),10,0.0,1.0,10,0.0,1.0);
 
+    x_tth[i] = new TH1F(Form("x_tth_%s",decay.Data()),Form("x_tth_%s",decay.Data()),10,0.0,1.0);
+    y_tth[i] = new TH1F(Form("y_tth_%s",decay.Data()),Form("y_tth_%s",decay.Data()),10,0.0,1.0);
+    xy_tth[i] = new TH2F(Form("xy_tth_%s",decay.Data()),Form("xy_tth_%s",decay.Data()),10,0.0,1.0,10,0.0,1.0);
+
     t_RD[i]->Project(Form("xy_data_%s",decay.Data()),"jets_bDiscriminatorCSV[csvd_jetid[3]]:jets_bDiscriminatorCSV[csvd_jetid[2]]",sel);
     t_RD[i]->Project(Form("x_data_%s",decay.Data()),"jets_bDiscriminatorCSV[csvd_jetid[2]]",sel);
     t_RD[i]->Project(Form("y_data_%s",decay.Data()),"jets_bDiscriminatorCSV[csvd_jetid[3]]",sel);
@@ -257,8 +281,13 @@ void produce2D(){
     TString cutStr_ttb ;
     cutStr_ttb = cut_ttb;
     TCut cut_ttbStr = Form("puweight*lepweight*csvweight*(%s)", cutStr_ttb.Data()); 
+
+    TCut cut_ttcc = sel+visible+!sigcut+!ttb+ttcc;
+    TString cutStr_ttcc ;
+    cutStr_ttcc = cut_ttcc;
+    TCut cut_ttccStr = Form("puweight*lepweight*csvweight*(%s)", cutStr_ttcc.Data());
  
-    TCut cut_ttLF = sel+visible+!sigcut+!ttb;
+    TCut cut_ttLF = sel+visible+!sigcut+!ttb+!ttcc;
     TString cutStr_ttLF ;
     cutStr_ttLF = cut_ttLF;
     TCut cut_ttLFStr = Form("puweight*lepweight*csvweight*(%s)", cutStr_ttLF.Data());
@@ -283,6 +312,10 @@ void produce2D(){
     t_MC[i][2]->Project(Form("xy_ttb_%s",decay.Data()),"jets_bDiscriminatorCSV[csvd_jetid[3]]:jets_bDiscriminatorCSV[csvd_jetid[2]]",cut_ttbStr);
     t_MC[i][2]->Project(Form("x_ttb_%s",decay.Data()),"jets_bDiscriminatorCSV[csvd_jetid[2]]",cut_ttbStr);
     t_MC[i][2]->Project(Form("y_ttb_%s",decay.Data()),"jets_bDiscriminatorCSV[csvd_jetid[3]]",cut_ttbStr);
+
+    t_MC[i][2]->Project(Form("xy_ttcc_%s",decay.Data()),"jets_bDiscriminatorCSV[csvd_jetid[3]]:jets_bDiscriminatorCSV[csvd_jetid[2]]",cut_ttccStr);
+    t_MC[i][2]->Project(Form("x_ttcc_%s",decay.Data()),"jets_bDiscriminatorCSV[csvd_jetid[2]]",cut_ttccStr);
+    t_MC[i][2]->Project(Form("y_ttcc_%s",decay.Data()),"jets_bDiscriminatorCSV[csvd_jetid[3]]",cut_ttccStr);
 
     t_MC[i][2]->Project(Form("xy_ttLF_%s",decay.Data()),"jets_bDiscriminatorCSV[csvd_jetid[3]]:jets_bDiscriminatorCSV[csvd_jetid[2]]", cut_ttLFStr);
     t_MC[i][2]->Project(Form("x_ttLF_%s",decay.Data()),"jets_bDiscriminatorCSV[csvd_jetid[2]]",cut_ttLFStr);
@@ -324,6 +357,10 @@ void produce2D(){
     t_MC[i][10]->Project(Form("x_singleTopBar_%s",decay.Data()),"jets_bDiscriminatorCSV[csvd_jetid[2]]",cut_selStr);
     t_MC[i][10]->Project(Form("y_singleTopBar_%s",decay.Data()),"jets_bDiscriminatorCSV[csvd_jetid[3]]",cut_selStr);
 
+    t_MC[i][11]->Project(Form("xy_tth_%s",decay.Data()),"jets_bDiscriminatorCSV[csvd_jetid[3]]:jets_bDiscriminatorCSV[csvd_jetid[2]]",cut_selStr);
+    t_MC[i][11]->Project(Form("x_tth_%s",decay.Data()),"jets_bDiscriminatorCSV[csvd_jetid[2]]",cut_selStr);
+    t_MC[i][11]->Project(Form("y_tth_%s",decay.Data()),"jets_bDiscriminatorCSV[csvd_jetid[3]]",cut_selStr);
+
     cout << "scale" << endl;
     y_DY[i]->Scale(norm[0]);
     x_DY[i]->Scale(norm[0]);
@@ -337,6 +374,9 @@ void produce2D(){
     y_ttb[i]->Scale(norm[2]);
     x_ttb[i]->Scale(norm[2]);
     xy_ttb[i]->Scale(norm[2]);
+    y_ttcc[i]->Scale(norm[2]);
+    x_ttcc[i]->Scale(norm[2]);
+    xy_ttcc[i]->Scale(norm[2]);
     y_ttLF[i]->Scale(norm[2]);
     x_ttLF[i]->Scale(norm[2]);
     xy_ttLF[i]->Scale(norm[2]);
@@ -367,6 +407,9 @@ void produce2D(){
     y_singleTopBar[i]->Scale(norm[10]);
     x_singleTopBar[i]->Scale(norm[10]);
     xy_singleTopBar[i]->Scale(norm[10]);
+    y_tth[i]->Scale(norm[11]);
+    x_tth[i]->Scale(norm[11]);
+    xy_tth[i]->Scale(norm[11]);
 
     y_QCD[i]->Scale(qcdscale);
     x_QCD[i]->Scale(qcdscale);
@@ -407,9 +450,11 @@ void produce2D(){
     cout << "add..." << endl;
     double ndata = xy_data[i]->GetEntries();
     double nttbb = xy_ttbb[i]->GetEntries();
+    double nttb = xy_ttb[i]->GetEntries();
+    double nttcc = xy_ttcc[i]->GetEntries();
     double nttLF = xy_ttLF[i]->GetEntries();
     double nttOthers = xy_ttOthers[i]->GetEntries();
-    cout << "ndata= " << ndata << " nttbb= " << nttbb << " nttLF= " << nttLF << " nttOthers= " << nttOthers << endl;
+    cout << "ndata= " << ndata << " nttbb= " << nttbb << " nttb= " << nttb << " nttcc= " << nttcc << " nttLF= " << nttLF << " nttOthers= " << nttOthers << endl;
     x_data_all->Add(x_data[i]);
     y_data_all->Add(y_data[i]);
     xy_data_all->Add(xy_data[i]);
@@ -422,6 +467,9 @@ void produce2D(){
     x_ttb_all->Add(x_ttb[i]);
     y_ttb_all->Add(y_ttb[i]);
     xy_ttb_all->Add(xy_ttb[i]);
+   x_ttcc_all->Add(x_ttcc[i]);
+    y_ttcc_all->Add(y_ttcc[i]);
+    xy_ttcc_all->Add(xy_ttcc[i]);
     x_ttLF_all->Add(x_ttLF[i]);
     y_ttLF_all->Add(y_ttLF[i]);
     xy_ttLF_all->Add(xy_ttLF[i]);
@@ -437,7 +485,9 @@ void produce2D(){
     x_QCD_all->Add(x_QCD[i]);
     y_QCD_all->Add(y_QCD[i]);
     xy_QCD_all->Add(xy_QCD[i]);
-
+    x_tth_all->Add(x_tth[i]);
+    y_tth_all->Add(y_tth[i]);
+    xy_tth_all->Add(xy_tth[i]);
   }
    
   cout << "write..." << endl;
@@ -456,6 +506,9 @@ void produce2D(){
   xy_ttb_all->Write();
   x_ttb_all->Write();
   y_ttb_all->Write();
+  xy_ttcc_all->Write();
+  x_ttcc_all->Write();
+  y_ttcc_all->Write();
   xy_ttLF_all->Write();
   x_ttLF_all->Write();
   y_ttLF_all->Write();
@@ -471,8 +524,10 @@ void produce2D(){
   xy_QCD_all->Write();
   x_QCD_all->Write();
   y_QCD_all->Write();
+  xy_tth_all->Write();
+  x_tth_all->Write();
+  y_tth_all->Write();
 
-  
 }
 
 double getNorm( TFile * file, double X, double lumi, const TString & dir){

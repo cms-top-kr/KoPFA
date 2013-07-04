@@ -14,6 +14,9 @@ void roo2Dfit(){
   TH1* x_ttb = (TH1*) f->Get("x_ttb_all");
   TH1* y_ttb = (TH1*) f->Get("x_ttb_all");
   TH2* xy_ttb = (TH2*) f->Get("xy_ttb_all");
+  TH1* x_ttcc = (TH1*) f->Get("x_ttcc_all");
+  TH1* y_ttcc = (TH1*) f->Get("x_ttcc_all");
+  TH2* xy_ttcc = (TH2*) f->Get("xy_ttcc_all");
   TH1* x_ttLF = (TH1*) f->Get("x_ttLF_all");
   TH1* y_ttLF = (TH1*) f->Get("x_ttLF_all");
   TH2* xy_ttLF = (TH2*) f->Get("xy_ttLF_all");
@@ -29,7 +32,11 @@ void roo2Dfit(){
   TH1* x_QCD = (TH1*) f->Get("x_QCD_all");
   TH1* y_QCD = (TH1*) f->Get("x_QCD_all");
   TH2* xy_QCD = (TH2*) f->Get("xy_QCD_all");
-
+  TH1* x_tth = (TH1*) f->Get("x_tth_all");
+  TH1* y_tth = (TH1*) f->Get("x_tth_all");
+  TH2* xy_tth = (TH2*) f->Get("xy_tth_all");
+ 
+  xy_ttLF->Add(xy_ttcc);
   TH2F * xy_mcbkg = new TH2F("x_mcbkg","x_mcbkg",10,0.0,1.0,10,0.0,1.0);
   TH2F * xy_databkg = new TH2F("x_databkg","x_databkg",10,0.0,1.0,10,0.0,1.0);
   xy_mcbkg->Add(xy_bkg);
@@ -51,20 +58,27 @@ void roo2Dfit(){
   double nDataBkg = xy_databkg->Integral();
   double nDY  = xy_DY->Integral();
   double nQCD = xy_QCD->Integral();
+  double nTth = xy_tth->Integral();
   double eR = 0.382948;
   //double eR = 0.3888;
+  double eR2 = 0.638661;
   //basic
   RooRealVar x("x","x",0,1) ; 
   RooRealVar y("y","y",0,1) ; 
-  RooRealVar R("R","R",0.1,0.,1.);
-  RooRealVar effR("effR","acceptance ratio",eR,eR,eR);
-  RooFormulaVar fsig("fsig","fraction of signal","R/effR",RooArgList(R,effR));
-  RooRealVar fttb("fttb","fraction of ttb",rttb,0.0,1.0);
+  RooRealVar R("R","R",0.16,0.,1.);
+  RooRealVar effR("effR","acceptance ratio for ttbb",eR,eR,eR);
+  RooFormulaVar fsig("fsig","fraction of signal ttbb","R/effR",RooArgList(R,effR));
+  RooRealVar R2("R2","R2",0.048,0.,1.);
+  RooRealVar effR2("effR2","acceptance ratio for ttb",eR2,eR2,eR2);
+  RooFormulaVar fsig2("fsig2","fraction of signal ttb","R2/effR2",RooArgList(R2,effR2));
   RooRealVar k("k","normalization factor", 1.0, 0.0, 2.0) ;
   RooRealVar nttjj("nttjj","number of nttjj events", nVisible, nVisible, nVisible) ;
   RooFormulaVar knttjj("knttjj","number of ttjj events after fitting","k*nttjj",RooArgList(k,nttjj));
   RooRealVar nmcbkg("nmcbkg","number of mc background events", nMCBkg, nMCBkg, nMCBkg) ;
   RooFormulaVar knmcbkg("knmcbkg","number of mc background events after fitting","k*nmcbkg",RooArgList(k,nmcbkg) );
+
+  //tth
+  RooRealVar ntth("ntth","number of mc tth events", nTth, nTth, nTth) ;
 
   //ttbar and single top separate
   RooRealVar nttbar("nttbar","number of ttbar events", nTtbar , nTtbar, nTtbar) ;
@@ -85,6 +99,7 @@ void roo2Dfit(){
   RooDataHist singleTop("singleTop","singleTop set with (x,y)", RooArgList(x,y), xy_singleTop);
   RooDataHist mcbkg("mcbkg","bkg set with (x,y)", RooArgList(x,y), xy_mcbkg);
   RooDataHist databkg("databkg","bkg set with (x,y)", RooArgList(x,y), xy_databkg);
+  RooDataHist tth("tth","tth set with (x,y)", RooArgList(x,y), xy_tth);
 
   //pdf 
   RooHistPdf ttbbpdf("ttbbpdf","ttbbpdf", RooArgList(x,y), ttbb);
@@ -94,12 +109,15 @@ void roo2Dfit(){
   RooHistPdf singleToppdf("singleToppdf","singleToppdf", RooArgList(x,y), singleTop);
   RooHistPdf mcbkgpdf("mcbkgpdf","mcbkgpdf", RooArgList(x,y), mcbkg);
   RooHistPdf databkgpdf("databkgpdf","databkgpdf", RooArgList(x,y), databkg);
+  RooHistPdf tthpdf("tthpdf","tthpdf", RooArgList(x,y), tth);
 
   //RooAddPdf ttLFmodel("ttLF", "R*ttb+(1-R)*ttLF",RooArgList( ttbpdf, ttLFpdf), RooArgList(fttb));
   //RooAddPdf model("model", "R*sig+(1-R)*bkg",RooArgList( ttbbpdf, ttLFmodel), RooArgList(fsig));
-  RooAddPdf model("model", "R*sig+Rb*ttb+(1-R-Rb)*bkg",RooArgList( ttbbpdf, ttbpdf, ttLFpdf), RooArgList(fsig,fttb));
+  RooAddPdf model("model", "R*sig+Rb*ttb+(1-R-Rb)*bkg",RooArgList( ttbbpdf, ttbpdf, ttLFpdf), RooArgList(fsig,fsig2));
   RooAddPdf model2("model2","k*nttjj*(R*sig+(1-R)*bkg)+k*nmcbkg*bkgpdf",RooArgList( model, mcbkgpdf), RooArgList(knttjj, knmcbkg) );
   RooAddPdf model3("model3","k*nttjj*(R*sig+(1-R)*bkg)+k*nmcbkg*bkgpdf+ndatabkg*databkgpdf",RooArgList( model, mcbkgpdf, databkgpdf), RooArgList(knttjj, knmcbkg, ndatabkg) ) ;
+  //tth
+  RooAddPdf modeltth("modeltth","k*nttjj*(R*sig+(1-R)*bkg)+k*nmcbkg*bkgpdf+ndatabkg*databkgpdf+ntth*tthpdf",RooArgList( model, mcbkgpdf, databkgpdf,tthpdf), RooArgList(knttjj, knmcbkg, ndatabkg,ntth) ) ;
   //separate single top
   RooAddPdf model4("model4","k*nttjj*(R*sig+(1-R)*bkg)+k*nmcbkg*bkgpdf+s*nsingeTop*singleToppdf+ndatabkg*databkgpdf",RooArgList( model, mcbkgpdf, singleToppdf, databkgpdf), RooArgList(knttjj, knmcbkg, snsingleTop, ndatabkg) ) ;
 
@@ -125,6 +143,8 @@ void roo2Dfit(){
   c->Divide(2) ; 
   c->cd(1) ; xframe->Draw() ; 
   c->cd(2) ; yframe->Draw() ; 
+
+  c->Print("fit2d_result.eps");
 
   RooArgSet* params = model3.getVariables() ; 
   params->Print("v"); 
