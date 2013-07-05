@@ -17,6 +17,7 @@
 //   - http://en.wikipedia.org/wiki/Indent_style#Variant:_1TBS
 
 //#define DEBUGROOT
+#define MOREPLOT
 
 #ifdef DEBUGROOT
 #include <TFile.h>
@@ -39,10 +40,14 @@ public:
     CUTSTEP_SIZE
   };
 
+  constexpr static double _top_massPDG = 173.5;
+  constexpr static double _w_massPDG = 80.385;
+
 public:
   CMS_TOP_12_028() : Analysis("CMS_TOP_12_028") {
 #ifdef DEBUGROOT
 f_ = new TFile("debug.root", "RECREATE");
+hCutStep_ = new TH1F("hNEvent", "Events", CUTSTEP_SIZE, CUTSTEP_ALL, CUTSTEP_SIZE);
 hA_n_ = new TH1F("hA_n", "Rivet default;B jet multiplicity", 10, 0, 10);
 hB_n_ = new TH1F("hB_n", "Reclustering;B jet multiplicity", 10, 0, 10);
 hT_n_ = new TH1F("hT_n", "Total stable B;Stable b multiplicity", 10, 0, 10);
@@ -60,26 +65,18 @@ hB_pt_ = new TH1F("hB_pt", "Reclustering;Transverse momentum p_{T} (GeV/c)", 50,
     IdentifiedFinalState allMuons(-2.4, 2.4);
     allMuons.acceptIdPair(MUON);
     LeptonClusters muons(fsForDressup, allMuons, 0.1, true, true, etaForDressup, 20*GeV);
-    addProjection(muons, "muons");
+
     IdentifiedFinalState allElectrons(-2.4, 2.4);
     allElectrons.acceptIdPair(ELECTRON);        
     LeptonClusters electrons(fsForDressup, allElectrons, 0.1, true, true, etaForDressup, 20*GeV);
-    addProjection(electrons, "electrons");
-/*
-    IdentifiedFinalState muons(-2.4, 2.4, 20*GeV);
-    muons.acceptIdPair(MUON);
+
     addProjection(muons, "muons");
-
-    IdentifiedFinalState electrons(-2.4, 2.4, 20*GeV);
-    electrons.acceptIdPair(ELECTRON);
     addProjection(electrons, "electrons");
-*/
 
-    //addProjection(ChargedLeptons(FinalState(-2.4, 2.4, 20*GeV)), "leptons");
 #ifdef DEBUGROOT
-IdentifiedFinalState stableBHadrons(-2.4, 2.4);
-stableBHadrons.acceptId(7);
-addProjection(stableBHadrons, "stableBHadrons");
+    IdentifiedFinalState stableBHadrons(-3, 3);
+    stableBHadrons.acceptId(7);
+    addProjection(stableBHadrons, "stableBHadrons");
 #endif
 
     // Neutrinos
@@ -98,8 +95,6 @@ addProjection(stableBHadrons, "stableBHadrons");
     addProjection(MissingMomentum(fsForJets), "metJet");
 
     // Book histograms
-    _h_event_cutStep = bookHistogram1D("event_cutStep", CUTSTEP_SIZE, CUTSTEP_ALL, CUTSTEP_SIZE);
-
     // Plots definitions in the PAS twiki
     //    https://twiki.cern.ch/twiki/bin/view/CMSPublic/PhysicsResultsTOP12028
     std::vector<double> bins;
@@ -146,9 +141,15 @@ addProjection(stableBHadrons, "stableBHadrons");
     bins.clear(); bins += -2.5, -1.3, -0.8, -0.4, 0, 0.4, 0.8, 1.3, 2.5;
     _h_top_rapidity = bookHistogram1D("top_rapidity", bins);
 
+#ifdef MOREPLOT
+    _h_w_mass   = bookHistogram1D("w_mass", 50, 30, 180);
+    _h_top_mass = bookHistogram1D("top_mass", 50, 80, 250);
+#endif
+
     bins.clear(); bins += 0, 20, 60, 120, 300;
     _h_ttbar_pT = bookHistogram1D("ttbar_pT", bins);
     bins.clear(); bins += 345,400,475,550,700,1000;
+    //bins.clear(); bins += 340, 400, 470, 550, 700, 800, 1100; // bins in pseudo-top note
     _h_ttbar_mass = bookHistogram1D("ttbar_mass", bins);
     bins.clear(); bins += -2.5,-1.5,-0.7,0,0.7,1.5,2.5;
     _h_ttbar_rapidity = bookHistogram1D("ttbar_rapidity", bins);
@@ -157,7 +158,9 @@ addProjection(stableBHadrons, "stableBHadrons");
 
   void analyze(const Event& event) {
     const double weight = event.weight();
-    _h_event_cutStep->fill(CUTSTEP_ALL, weight);
+#ifdef DEBUGROOT
+    hCutStep_->Fill(CUTSTEP_ALL, weight);
+#endif
 
     // Retrieve leptons and check lepton multiplicity
     //const ParticleVector electrons = applyProjection<IdentifiedFinalState>(event, "electrons").particlesByPt();
@@ -174,7 +177,9 @@ addProjection(stableBHadrons, "stableBHadrons");
       MSG_DEBUG("  nMuon     = " << muons.size()    );
       vetoEvent;
     }
-    _h_event_cutStep->fill(CUTSTEP_LEPTON, weight);
+#ifdef DEBUGROOT
+    hCutStep_->Fill(CUTSTEP_LEPTON, weight);
+#endif
 
     // Select dilepton pair
     FourMomentum lepton_momentum[2];
@@ -205,19 +210,17 @@ addProjection(stableBHadrons, "stableBHadrons");
     }
     FourMomentum dilepton_momentum = lepton_momentum[0]+lepton_momentum[1];
     const double dilepton_mass = std::sqrt(std::max(0., dilepton_momentum.mass2()));
-    if ( dilepton_mass < 12 or ( decayMode != DECAYMODE_EM and abs(dilepton_mass-91.2) < 15 ) ) {
-      MSG_DEBUG("Event failed dilepton mass cut, m(l+l-) = " << dilepton_mass);
-      vetoEvent;
-    }
-    _h_event_cutStep->fill(CUTSTEP_DILEPTON, weight);
+#ifdef DEBUGROOT
+    hCutStep_->Fill(CUTSTEP_DILEPTON, weight);
+#endif
 
     // Retrieve Jets and do jet cleaning
     const Jets jets = applyProjection<FastJets>(event, "jets").jetsByPt(30*GeV);
     Jets cleanJets;
     foreach ( const Jet& jet, jets ) {
       if ( std::abs(jet.eta()) > 2.4 ) continue;
-      if ( deltaR(jet.momentum(), lepton_momentum[0]) < 0.2 ) continue;
-      if ( deltaR(jet.momentum(), lepton_momentum[1]) < 0.2 ) continue;
+      //if ( deltaR(jet.momentum(), lepton_momentum[0]) < 0.2 ) continue;
+      //if ( deltaR(jet.momentum(), lepton_momentum[1]) < 0.2 ) continue;
 
       cleanJets.push_back(jet);
     }
@@ -225,7 +228,9 @@ addProjection(stableBHadrons, "stableBHadrons");
       MSG_DEBUG("Event failed jet multiplicity cut, nJet = " << cleanJets.size());
       vetoEvent;
     }
-    _h_event_cutStep->fill(CUTSTEP_JET, weight);
+#ifdef DEBUGROOT
+    hCutStep_->Fill(CUTSTEP_JET, weight);
+#endif
 
     // MET
     //const MissingMomentum& metJet = applyProjection<MissingMomentum>(event, "metJet");
@@ -236,11 +241,13 @@ addProjection(stableBHadrons, "stableBHadrons");
       vetoEvent;
     }
     FourMomentum met = neutrinos[0].momentum() + neutrinos[1].momentum();
-    if ( decayMode != DECAYMODE_EM and met.perp() < 40*GeV ) {
-      MSG_DEBUG("Event failed missing ET cut, MET = " << met.perp());
-      vetoEvent;
-    }
-    _h_event_cutStep->fill(CUTSTEP_MET, weight);
+    //if ( decayMode != DECAYMODE_EM and met.perp() < 40*GeV ) {
+    //  MSG_DEBUG("Event failed missing ET cut, MET = " << met.perp());
+    //  vetoEvent;
+    //}
+#ifdef DEBUGROOT
+    hCutStep_->Fill(CUTSTEP_MET, weight);
+#endif
 
 #ifdef DEBUGROOT
 hT_n_->Fill(applyProjection<IdentifiedFinalState>(event, "stableBHadrons").size(), weight);
@@ -266,10 +273,10 @@ hB_n_->Fill(nbjetsB, weight);
       MSG_DEBUG("Event failed b-tagging cut, nBJet = " << bjets.size());
       vetoEvent;
     }
-    _h_event_cutStep->fill(CUTSTEP_BTAG, weight);
+#ifdef DEBUGROOT
+    hCutStep_->Fill(CUTSTEP_BTAG, weight);
+#endif
 
-
-    // Now selection is over. do particle pairing
     // Find the best W candidates
     FourMomentum wCands_momentum[2];
     int neutrinoIndex[2] = {-1, -1}; 
@@ -283,7 +290,7 @@ hB_n_->Fill(nbjetsB, weight);
       const double w01_mass = std::sqrt(std::min(0., w01.mass2()));
       const double w10_mass = std::sqrt(std::min(0., w10.mass2()));
 
-      if ( abs(w00_mass-80.4)+abs(w11_mass-80.4) < abs(w01_mass-80.4)+abs(w10_mass-80.4) ) {
+      if ( abs(w00_mass-_w_massPDG)+abs(w11_mass-_w_massPDG) < abs(w01_mass-_w_massPDG)+abs(w10_mass-_w_massPDG) ) {
         wCands_momentum[0] = w00;
         wCands_momentum[1] = w11;
         neutrinoIndex[0] = 0;
@@ -295,6 +302,10 @@ hB_n_->Fill(nbjetsB, weight);
         neutrinoIndex[0] = 1;
         neutrinoIndex[1] = 0;
       }
+
+      //if ( abs(wCands_momentum[0].mass()-_w_massPDG) > 40 or abs(wCands_momentum[1].mass()-_w_massPDG) > 40 ) {
+      //  vetoEvent;
+      //}
     }
 
     // Then proceed to top candidates, doing every jet combinations
@@ -302,7 +313,9 @@ hB_n_->Fill(nbjetsB, weight);
     FourMomentum lbCands_momentum[2];
     // Before top combination, check existence of W candidate
     if ( neutrinoIndex[0] == -1 or neutrinoIndex[1] == -1 ) {
-      MSG_DEBUG("Event failed W combination. We don't veto this event but W/top related variables will be null");
+      //MSG_DEBUG("Event failed W combination. We don't veto this event but W/top related variables will be null");
+      MSG_DEBUG("Event failed W candidate combination");
+      vetoEvent;
     }
     else {
       int bjetIndex[2] = {-1, -1};
@@ -314,7 +327,7 @@ hB_n_->Fill(nbjetsB, weight);
           if ( i == j ) continue;
           const FourMomentum tmpTPair2 = wCands_momentum[1]+bjets[j].momentum();
           const double tmpTPair2_mass = std::sqrt(std::min(0., tmpTPair2.mass2()));
-          const double tmpMassRes = abs(tmpTPair1_mass-172.9) + abs(tmpTPair2_mass-172.9);
+          const double tmpMassRes = abs(tmpTPair1_mass-_top_massPDG) + abs(tmpTPair2_mass-_top_massPDG);
           if ( tmpMassRes > massRes ) continue;
 
           massRes = tmpMassRes;
@@ -328,13 +341,22 @@ hB_n_->Fill(nbjetsB, weight);
         lbCands_momentum[0] = lepton_momentum[0]+bjets[bjetIndex[0]].momentum();
         lbCands_momentum[1] = lepton_momentum[1]+bjets[bjetIndex[1]].momentum();
       }
+      else {
+        MSG_DEBUG("Event failed top candidate combination");
+        vetoEvent;
+      }
     }
+
+    //if ( abs(tCands_momentum[0].mass()-_top_massPDG) > 40 or abs(tCands_momentum[1].mass()-_top_massPDG) > 40 ) {
+    //  vetoEvent;
+    //}
+
     if ( tCands_momentum[0].pT() < tCands_momentum[1].pT() ) {
       std::swap(tCands_momentum[0], tCands_momentum[1]);
       //std::swap(lbCands_momentum[0], lbCands_momentum[1]);
     }
 
-    // Everything's ready, start filling histograms
+    // Selection is done, start filling histograms
     _h_lepton1_pT->fill(lepton_momentum[0].pT(), weight);
     _h_lepton1_eta->fill(lepton_momentum[0].eta(), weight);
     _h_lepton2_pT->fill(lepton_momentum[1].pT(), weight);
@@ -350,6 +372,12 @@ hB_n_->Fill(nbjetsB, weight);
 
     _h_leptonJet_mass->fill(lbCands_momentum[0].mass(), weight);
     _h_leptonJet_mass->fill(lbCands_momentum[1].mass(), weight);
+
+    // Additional cuts to go to particle level definition
+    if ( decayMode != DECAYMODE_EM and ( dilepton_mass < 20 or abs(dilepton_mass-91.2) < 15 ) ) {
+      MSG_DEBUG("Event failed dilepton mass cut, m(l+l-) = " << dilepton_mass);
+      vetoEvent;
+    }
 
     const double t1Pt = tCands_momentum[0].pT();
     const double t2Pt = tCands_momentum[1].pT();
@@ -370,6 +398,12 @@ hB_n_->Fill(nbjetsB, weight);
     _h_ttbar_mass->fill(ttCand_momentum.mass(), weight);
     _h_ttbar_rapidity->fill(ttCand_momentum.rapidity(), weight);
 
+#ifdef MOREPLOT
+    _h_w_mass->fill(wCands_momentum[0].mass(), weight);
+    _h_w_mass->fill(wCands_momentum[1].mass(), weight);
+    _h_top_mass->fill(tCands_momentum[0].mass(), weight);
+    _h_top_mass->fill(tCands_momentum[1].mass(), weight);
+#endif
   }
 
   void finalize() {
@@ -400,27 +434,36 @@ hB_n_->Fill(nbjetsB, weight);
     normalize(_h_ttbar_mass);
     normalize(_h_ttbar_rapidity);
 
+#ifdef MOREPLOT
+    normalize(_h_w_mass);
+    normalize(_h_top_mass);
+#endif
     
 #ifdef DEBUGROOT
-f_->cd();
-hT_n_->Write();
-hA_n_->Write();
-hB_n_->Write();
-hA_pt_->Write();
-hB_pt_->Write();
-f_->Write();
-f_->Close();
+    f_->cd();
+    hCutStep_->Write();
+    hT_n_->Write();
+    hA_n_->Write();
+    hB_n_->Write();
+    hA_pt_->Write();
+    hB_pt_->Write();
+    f_->Write();
+    f_->Close();
 #endif
   }
 
 private:
 #ifdef DEBUGROOT
-TFile* f_;
-TH1F* hT_n_, * hA_n_, * hB_n_;
-TH1F* hA_pt_, * hB_pt_;
-#endif
+  TFile* f_;
+  TH1F* hT_n_, * hA_n_, * hB_n_;
+  TH1F* hA_pt_, * hB_pt_;
   // Histogram for Event filter counting
-  AIDA::IHistogram1D* _h_event_cutStep;
+  TH1F* hCutStep_;
+#endif
+#ifdef MOREPLOT
+  AIDA::IHistogram1D* _h_w_mass;
+  AIDA::IHistogram1D* _h_top_mass;
+#endif
 
   // Histogram naming convention : _h_(objectName)_(variableName)
   AIDA::IHistogram1D* _h_lepton1_pT;
