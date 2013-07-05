@@ -62,18 +62,25 @@ void roo2Dfit(){
   double nDY  = xy_DY->Integral();
   double nQCD = xy_QCD->Integral();
   double nTth = xy_tth->Integral();
-  double eR = 0.382948;
-  //double eR = 0.3888;
+  //double eR = 0.382948 (old without taula);
+  double eR = 0.3888;
   double eR2 = 0.638661;
   //basic
   RooRealVar x("x","x",0,1) ; 
   RooRealVar y("y","y",0,1) ; 
-  RooRealVar R("R","R",0.16,0.,1.);
+  RooRealVar initR("R","R",0.016,0.016,0.016);
+  RooRealVar initR2("initR2","initR2",0.048, 0.048, 0.048);
+  RooRealVar RttbReco("RttbReco","RttbReco",rttb, rttb, rttb);
+
+  RooRealVar R("R","R",0.016,0.,1.);
   RooRealVar effR("effR","acceptance ratio for ttbb",eR,eR,eR);
   RooFormulaVar fsig("fsig","fraction of signal ttbb","R/effR",RooArgList(R,effR));
+
   RooRealVar R2("R2","R2",0.048,0.,1.);
   RooRealVar effR2("effR2","acceptance ratio for ttb",eR2,eR2,eR2);
-  RooFormulaVar fsig2("fsig2","fraction of signal ttb","R2/effR2",RooArgList(R2,effR2));
+  //RooFormulaVar fsig2("fsig2","fraction of signal ttb","R2/effR2",RooArgList(R2,effR2));
+  //RooFormulaVar fsig2("fsig2","fraction of signal ttb","@0/@1*@2/@3",RooArgList(R,initR,initR2,effR));
+  RooFormulaVar fsig2("fsig2","fraction of signal ttb","@0/@1*@2",RooArgList(R,initR,RttbReco));
   RooRealVar k("k","normalization factor", 1.0, 0.0, 2.0) ;
   RooRealVar nttjj("nttjj","number of nttjj events", nVisible, nVisible, nVisible) ;
   RooFormulaVar knttjj("knttjj","number of ttjj events after fitting","k*nttjj",RooArgList(k,nttjj));
