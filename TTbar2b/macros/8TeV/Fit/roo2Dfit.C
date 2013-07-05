@@ -35,6 +35,9 @@ void roo2Dfit(){
   TH1* x_tth = (TH1*) f->Get("x_tth_all");
   TH1* y_tth = (TH1*) f->Get("x_tth_all");
   TH2* xy_tth = (TH2*) f->Get("xy_tth_all");
+
+  bool separatettb = true;
+  if( !separatettb ) xy_ttLF->Add(xy_ttb);
  
   xy_ttLF->Add(xy_ttcc);
   TH2F * xy_mcbkg = new TH2F("x_mcbkg","x_mcbkg",10,0.0,1.0,10,0.0,1.0);
@@ -111,17 +114,24 @@ void roo2Dfit(){
   RooHistPdf databkgpdf("databkgpdf","databkgpdf", RooArgList(x,y), databkg);
   RooHistPdf tthpdf("tthpdf","tthpdf", RooArgList(x,y), tth);
 
-  //RooAddPdf ttLFmodel("ttLF", "R*ttb+(1-R)*ttLF",RooArgList( ttbpdf, ttLFpdf), RooArgList(fttb));
-  //RooAddPdf model("model", "R*sig+(1-R)*bkg",RooArgList( ttbbpdf, ttLFmodel), RooArgList(fsig));
-  RooAddPdf model("model", "R*sig+Rb*ttb+(1-R-Rb)*bkg",RooArgList( ttbbpdf, ttbpdf, ttLFpdf), RooArgList(fsig,fsig2));
-  RooAddPdf model2("model2","k*nttjj*(R*sig+(1-R)*bkg)+k*nmcbkg*bkgpdf",RooArgList( model, mcbkgpdf), RooArgList(knttjj, knmcbkg) );
-  RooAddPdf model3("model3","k*nttjj*(R*sig+(1-R)*bkg)+k*nmcbkg*bkgpdf+ndatabkg*databkgpdf",RooArgList( model, mcbkgpdf, databkgpdf), RooArgList(knttjj, knmcbkg, ndatabkg) ) ;
-  //tth
-  RooAddPdf modeltth("modeltth","k*nttjj*(R*sig+(1-R)*bkg)+k*nmcbkg*bkgpdf+ndatabkg*databkgpdf+ntth*tthpdf",RooArgList( model, mcbkgpdf, databkgpdf,tthpdf), RooArgList(knttjj, knmcbkg, ndatabkg,ntth) ) ;
-  //separate single top
-  RooAddPdf model4("model4","k*nttjj*(R*sig+(1-R)*bkg)+k*nmcbkg*bkgpdf+s*nsingeTop*singleToppdf+ndatabkg*databkgpdf",RooArgList( model, mcbkgpdf, singleToppdf, databkgpdf), RooArgList(knttjj, knmcbkg, snsingleTop, ndatabkg) ) ;
+  if(separatettb){
+    //RooAddPdf ttLFmodel("ttLF", "R*ttb+(1-R)*ttLF",RooArgList( ttbpdf, ttLFpdf), RooArgList(fttb));
+    //RooAddPdf model("model", "R*sig+(1-R)*bkg",RooArgList( ttbbpdf, ttLFmodel), RooArgList(fsig));
+    RooAddPdf model("model", "R*sig+Rb*ttb+(1-R-Rb)*bkg",RooArgList( ttbbpdf, ttbpdf, ttLFpdf), RooArgList(fsig,fsig2));
+    RooAddPdf model2("model2","k*nttjj*(R*sig+(1-R)*bkg)+k*nmcbkg*bkgpdf",RooArgList( model, mcbkgpdf), RooArgList(knttjj, knmcbkg) );
+    RooAddPdf model3("model3","k*nttjj*(R*sig+(1-R)*bkg)+k*nmcbkg*bkgpdf+ndatabkg*databkgpdf",RooArgList( model, mcbkgpdf, databkgpdf), RooArgList(knttjj, knmcbkg, ndatabkg) ) ;
+    //tth
+    RooAddPdf modeltth("modeltth","k*nttjj*(R*sig+(1-R)*bkg)+k*nmcbkg*bkgpdf+ndatabkg*databkgpdf+ntth*tthpdf",RooArgList( model, mcbkgpdf, databkgpdf,tthpdf), RooArgList(knttjj, knmcbkg, ndatabkg,ntth) ) ;
+    //separate single top
+    RooAddPdf model4("model4","k*nttjj*(R*sig+(1-R)*bkg)+k*nmcbkg*bkgpdf+s*nsingeTop*singleToppdf+ndatabkg*databkgpdf",RooArgList( model, mcbkgpdf, singleToppdf, databkgpdf), RooArgList(knttjj, knmcbkg, snsingleTop, ndatabkg) ) ;
 
-  model3.fitTo(data);
+    model3.fitTo(data);
+  }else{
+    RooAddPdf model("model", "R*sig+(1-R)*bkg",RooArgList( ttbbpdf, ttLFpdf), RooArgList(fsig));
+    RooAddPdf model2("model2","k*nttjj*(R*sig+(1-R)*bkg)+k*nmcbkg*bkgpdf",RooArgList( model, mcbkgpdf), RooArgList(knttjj, knmcbkg) );
+    RooAddPdf model3("model3","k*nttjj*(R*sig+(1-R)*bkg)+k*nmcbkg*bkgpdf+ndatabkg*databkgpdf",RooArgList( model, mcbkgpdf, databkgpdf), RooArgList(knttjj, knmcbkg, ndatabkg) ) ;
+    model3.fitTo(data);
+  }
 
   RooPlot * xframe = x.frame();
   //data.plotOn(xframe, DataError(RooAbsData::SumW2) ) ;
