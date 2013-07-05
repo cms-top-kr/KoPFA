@@ -53,7 +53,9 @@ void roo2Dfit(){
   double nVisible = xy_ttbb->Integral() + xy_ttLF->Integral() + xy_ttb->Integral();
   double nTtLF = xy_ttLF->Integral();
   double nTtb = xy_ttb->Integral();
+  double nTtbb = xy_ttbb->Integral();
   double rttb = nTtb/nVisible;
+  double rttbb = nTtbb/nVisible;
   double nOthers = xy_ttOthers->Integral();
   double nTtbar = nVisible + nOthers;
   double nSingleTop = xy_singleTop->Integral();
@@ -70,17 +72,27 @@ void roo2Dfit(){
   RooRealVar y("y","y",0,1) ; 
   RooRealVar initR("R","R",0.016,0.016,0.016);
   RooRealVar initR2("initR2","initR2",0.048, 0.048, 0.048);
+  RooRealVar RttbbReco("RttbbReco","RttbbReco",rttbb, rttbb, rttbb);
   RooRealVar RttbReco("RttbReco","RttbReco",rttb, rttb, rttb);
 
-  RooRealVar R("R","R",0.016,0.,1.);
-  RooRealVar effR("effR","acceptance ratio for ttbb",eR,eR,eR);
-  RooFormulaVar fsig("fsig","fraction of signal ttbb","R/effR",RooArgList(R,effR));
+  //taking into account in fit
+  //RooRealVar R("R","R",0.016,0.,1.);
+  //RooRealVar effR("effR","acceptance ratio for ttbb",eR,eR,eR);
+  //RooFormulaVar fsig("fsig","fraction of signal ttbb","R/effR",RooArgList(R,effR));
 
-  RooRealVar R2("R2","R2",0.048,0.,1.);
-  RooRealVar effR2("effR2","acceptance ratio for ttb",eR2,eR2,eR2);
+  //RooRealVar R2("R2","R2",0.048,0.,1.);
+  //RooRealVar effR2("effR2","acceptance ratio for ttb",eR2,eR2,eR2);
   //RooFormulaVar fsig2("fsig2","fraction of signal ttb","R2/effR2",RooArgList(R2,effR2));
-  //RooFormulaVar fsig2("fsig2","fraction of signal ttb","@0/@1*@2/@3",RooArgList(R,initR,initR2,effR));
-  RooFormulaVar fsig2("fsig2","fraction of signal ttb","@0/@1*@2",RooArgList(R,initR,RttbReco));
+  //taking into account correlation with ttbb
+  //RooFormulaVar fsig2("fsig2","fsig2","@0/@1*@2/@3",RooArgList(fsig, RttbbReco, initR2, effR2) );
+  
+  //reconstruction level and later multiply by the efficiency ratio 
+  RooRealVar fsig("fsig","fsig",rttbb,0.0,1.0);
+  //RooRealVar fsig2("fsig2","fsig2",rttb,0.0,1.0);
+  //taking into account correlation with ttbb
+  RooFormulaVar fsig2("fsig2","fsig2","@0/@1*@2",RooArgList(fsig, RttbbReco, RttbReco) );
+   
+
   RooRealVar k("k","normalization factor", 1.0, 0.0, 2.0) ;
   RooRealVar nttjj("nttjj","number of nttjj events", nVisible, nVisible, nVisible) ;
   RooFormulaVar knttjj("knttjj","number of ttjj events after fitting","k*nttjj",RooArgList(k,nttjj));
@@ -139,6 +151,12 @@ void roo2Dfit(){
     RooAddPdf model3("model3","k*nttjj*(R*sig+(1-R)*bkg)+k*nmcbkg*bkgpdf+ndatabkg*databkgpdf",RooArgList( model, mcbkgpdf, databkgpdf), RooArgList(knttjj, knmcbkg, ndatabkg) ) ;
     model3.fitTo(data);
   }
+
+  double recoR = fsig.getVal();
+  double genR = recoR*eR;
+ 
+  cout << "FINAL RESULT" << endl;  
+  cout << "R= " << genR <<  endl;
 
   RooPlot * xframe = x.frame();
   //data.plotOn(xframe, DataError(RooAbsData::SumW2) ) ;
