@@ -153,10 +153,18 @@ void roo2Dfit(){
   }
 
   double recoR = fsig.getVal();
+  double recoRerror = fsig.getError();
   double genR = recoR*eR;
- 
-  cout << "FINAL RESULT" << endl;  
-  cout << "R= " << genR <<  endl;
+  double genRerror = recoR*eR*recoRerror/recoR;
+  double kVal = k.getVal();
+  double kValerror = k.getError();
+
+  // genR= efficiency ratio(ttjj/ttbb) * recoR 
+  cout << "FINAL : RESULT" << endl;  
+  cout << "FINAL : Rreco= " << recoR <<  " +- " << recoRerror << endl;
+  cout << "FINAL : R= "     << genR <<  " +- "  << genRerror << endl;
+  cout << "FINAL : k= "     << kVal <<  " +- "  << kValerror << endl;
+  
 
   RooPlot * xframe = x.frame();
   //data.plotOn(xframe, DataError(RooAbsData::SumW2) ) ;
