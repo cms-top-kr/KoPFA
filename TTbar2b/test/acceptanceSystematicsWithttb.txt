@@ -1,0 +1,56 @@
+TTbarFullLepMGDecays
+nTT= 1.19679e+07 nTTDIL= 1.19679e+07 nTTJJ= 710108 nTTBB= 10968  nTTB= 34000
+Ratio (nTTDIL/nTT)   = 1
+Ratio (nTTDILVIS/nTTDIL)   = 0.226105
+Ratio (nTTJJ/nTTDILVIS)   = 0.26242
+Ratio (nTTBB/nTTJJ) = 0.0154455
+Ratio (nTTB/nTTJJ) = 0.04788
+CUT: S1
+
+total= 1.19679e+07 den(TTJJ)= 710108 den(TTBB)= 10968
+Ratio (in reco nTTBB/nTTJJ) = 0.015492 Ratio (in reco nTTB/nTTJJ) = 0.0466892
+acceptance (ttjj)   = 0.707298(502258/710108)
+acceptance (ttbb)   = 0.709427(7781/10968)
+acceptance (ttb)   = 0.689706(23450/34000)
+acceptance (ttcc)   = 0.708135(18420/26012)
+Ratio (Attjj/Attbb) = 0.996998 Ratio (Attjj/Attb) = 1.02551
+CUT: S2
+total= 1.19679e+07 den(TTJJ)= 710108 den(TTBB)= 10968
+Ratio (in reco nTTBB/nTTJJ) = 0.0154517 Ratio (in reco nTTB/nTTJJ) = 0.0467135
+acceptance (ttjj)   = 0.628489(446295/710108)
+acceptance (ttbb)   = 0.628738(6896/10968)
+acceptance (ttb)   = 0.613176(20848/34000)
+acceptance (ttcc)   = 0.631324(16422/26012)
+Ratio (Attjj/Attbb) = 0.999604 Ratio (Attjj/Attb) = 1.02497
+CUT: S3
+total= 1.19679e+07 den(TTJJ)= 710108 den(TTBB)= 10968
+Ratio (in reco nTTBB/nTTJJ) = 0.0154881 Ratio (in reco nTTB/nTTJJ) = 0.0467667
+acceptance (ttjj)   = 0.596187(423357/710108)
+acceptance (ttbb)   = 0.59783(6557/10968)
+acceptance (ttb)   = 0.582324(19799/34000)
+acceptance (ttcc)   = 0.598531(15569/26012)
+Ratio (Attjj/Attbb) = 0.997251 Ratio (Attjj/Attb) = 1.02381
+CUT: S4
+total= 1.19679e+07 den(TTJJ)= 710108 den(TTBB)= 10968
+Ratio (in reco nTTBB/nTTJJ) = 0.0205944 Ratio (in reco nTTB/nTTJJ) = 0.0506305
+acceptance (ttjj)   = 0.278168(197529/710108)
+acceptance (ttbb)   = 0.370897(4068/10968)
+acceptance (ttb)   = 0.294147(10001/34000)
+acceptance (ttcc)   = 0.366831(9542/26012)
+Ratio (Attjj/Attbb) = 0.749986 Ratio (Attjj/Attb) = 0.945675
+CUT: S5M
+total= 1.19679e+07 den(TTJJ)= 710108 den(TTBB)= 10968
+Ratio (in reco nTTBB/nTTJJ) = 0.0329746 Ratio (in reco nTTB/nTTJJ) = 0.0670357
+acceptance (ttjj)   = 0.123124(87431/710108)
+acceptance (ttbb)   = 0.262856(2883/10968)
+acceptance (ttb)   = 0.172382(5861/34000)
+acceptance (ttcc)   = 0.169383(4406/26012)
+Ratio (Attjj/Attbb) = 0.468407 Ratio (Attjj/Attb) = 0.714247
+CUT: S5
+total= 1.19679e+07 den(TTJJ)= 710108 den(TTBB)= 10968
+Ratio (in reco nTTBB/nTTJJ) = 0.0397305 Ratio (in reco nTTB/nTTJJ) = 0.0749694
+acceptance (ttjj)   = 0.0689754(48980/710108)
+acceptance (ttbb)   = 0.177425(1946/10968)
+acceptance (ttb)   = 0.108(3672/34000)
+acceptance (ttcc)   = 0.0878825(2286/26012)
+Ratio (Attjj/Attbb) = 0.388758 Ratio (Attjj/Attb) = 0.638661
