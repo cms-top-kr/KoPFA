@@ -13,7 +13,7 @@
 //
 // Original Author:  Tae Jeong Kim,40 R-A32,+41227678602,
 //         Created:  Fri Jun  4 17:19:29 CEST 2010
-// $Id: CMGTopDILAnalyzer.h,v 1.44 2013/07/02 15:56:17 tjkim Exp $
+// $Id: CMGTopDILAnalyzer.h,v 1.45 2013/07/03 19:43:24 youngjo Exp $
 //
 //
 
@@ -309,6 +309,11 @@ class CMGTopDILAnalyzer : public edm::EDFilter {
     tree->Branch("csvweightLFStats2down",&csvweightLFStats2down,"csvweightLFStats2down/d");
 
 
+    tree->Branch("csvweightCErr1up",&csvweightCErr1up,"csvweightCErr1up/d");
+    tree->Branch("csvweightCErr1down",&csvweightCErr1down,"csvweightCErr1down/d");
+    tree->Branch("csvweightCErr2up",&csvweightCErr2up,"csvweightCErr2up/d");
+    tree->Branch("csvweightCErr2down",&csvweightCErr2down,"csvweightCErr2down/d");
+
 
     tree->Branch("csvweightNew",&csvweightNew    ,"csvweightNew/d");
     tree->Branch("csvweightNewLFup",&csvweightNewLFup,"csvweightNewLFup/d");
@@ -599,6 +604,12 @@ class CMGTopDILAnalyzer : public edm::EDFilter {
          csvweightLFStats1down =csvWgt->GetCSVweight(Jets,sysType::CSVLFStats1down);
          csvweightLFStats2up   =csvWgt->GetCSVweight(Jets,sysType::CSVLFStats2up);
          csvweightLFStats2down =csvWgt->GetCSVweight(Jets,sysType::CSVLFStats2down);
+
+
+         csvweightCErr1up   =csvWgt->GetCSVweight(Jets,sysType::CSVCErr1up);
+         csvweightCErr1down =csvWgt->GetCSVweight(Jets,sysType::CSVCErr1down);
+         csvweightCErr2up   =csvWgt->GetCSVweight(Jets,sysType::CSVCErr2up);
+         csvweightCErr2down =csvWgt->GetCSVweight(Jets,sysType::CSVCErr2down);
 
 
          // for New CSV SF
@@ -1278,6 +1289,12 @@ class CMGTopDILAnalyzer : public edm::EDFilter {
     csvweightLFStats2up   = 1.0; 
     csvweightLFStats2down = 1.0;
 
+    csvweightCErr1up   =1.0; 
+    csvweightCErr1down =1.0;
+    csvweightCErr2up   =1.0; 
+    csvweightCErr2down =1.0;
+
+
     csvweightNew     = 1.0;
     csvweightNewLFup = 1.0;
     csvweightNewLFdw = 1.0;
@@ -1563,6 +1580,11 @@ class CMGTopDILAnalyzer : public edm::EDFilter {
    double csvweightLFStats1down ;
    double csvweightLFStats2up   ;
    double csvweightLFStats2down ;
+
+   double csvweightCErr1up   ;
+   double csvweightCErr1down ;
+   double csvweightCErr2up   ;
+   double csvweightCErr2down ;
 
 
   double csvweightNew     ;
