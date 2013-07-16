@@ -13,7 +13,7 @@
 //
 // Original Author:  Tae Jeong Kim
 //         Created:  Mon Dec 14 01:29:35 CET 2009
-// $Id: CMGJetFilter.cc,v 1.8 2013/07/02 07:28:43 tjkim Exp $
+// $Id: CMGJetFilter.cc,v 1.9 2013/07/02 07:53:48 tjkim Exp $
 //
 //
 
@@ -276,11 +276,12 @@ CMGJetFilter::filter(edm::Event& iEvent, const edm::EventSetup& iSetup)
     //correctedJet.scaleEnergy( scaleF );
 
     if(doJecUnc_){
-      jecUnc_->setJetEta(correctedJet.eta());
-      jecUnc_->setJetPt(correctedJet.pt());
+      //jecUnc_->setJetEta(correctedJet.eta());
+      //jecUnc_->setJetPt(correctedJet.pt());
       met_x += correctedJet.px();
       met_y += correctedJet.py();
-      double unc = jecUnc_->getUncertainty(up_);
+      //double unc = jecUnc_->getUncertainty(up_);
+      double unc = correctedJet.uncOnFourVectorScale();
       double ptscaleunc = 0;
       if(up_) ptscaleunc = 1 + unc;
       else ptscaleunc = 1 - unc;
