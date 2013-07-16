@@ -144,19 +144,24 @@ void GenParticles2HepMCConverter::produce(edm::Event& event, const edm::EventSet
     genCandToHepMCMap[p] = hepmc_particle;
   }
 
-  // Put incident beam particles to null vertex
-  hepmc_particles[0]->set_status(4);
-  hepmc_particles[1]->set_status(4);
+  // Put incident beam particles : proton -> parton vertex
+  const reco::Candidate* parton1 = genParticlesHandle->at(0).daughter(0);
+  const reco::Candidate* parton2 = genParticlesHandle->at(1).daughter(0);
+  HepMC::GenVertex* vertex1 = new HepMC::GenVertex(FourVector(10*parton1->vertex()));
+  HepMC::GenVertex* vertex2 = new HepMC::GenVertex(FourVector(10*parton2->vertex()));
+  hepmc_event->add_vertex(vertex1);
+  hepmc_event->add_vertex(vertex2);
+  //hepmc_particles[0]->set_status(4);
+  //hepmc_particles[1]->set_status(4);
+  vertex1->add_particle_in(hepmc_particles[0]);
+  vertex2->add_particle_in(hepmc_particles[1]);
   hepmc_event->set_beam_particles(hepmc_particles[0], hepmc_particles[1]);
-  HepMC::GenVertex* firstVertex = new HepMC::GenVertex(FourVector(genParticlesHandle->at(0).vertex()));
-  firstVertex->add_particle_out(hepmc_particles[0]);
-  firstVertex->add_particle_out(hepmc_particles[1]);
-  hepmc_event->add_vertex(firstVertex);
 
   // Prepare vertex list
   typedef std::map<const reco::Candidate*, HepMC::GenVertex*> ParticleToVertexMap;
   ParticleToVertexMap particleToVertexMap;
-  particleToVertexMap[&genParticlesHandle->at(0)] = firstVertex;
+  particleToVertexMap[parton1] = vertex1;
+  particleToVertexMap[parton2] = vertex2;
   for ( unsigned int i=2, n=genParticlesHandle->size(); i<n; ++i )
   {
     const reco::Candidate* p = &genParticlesHandle->at(i);
@@ -174,7 +179,7 @@ void GenParticles2HepMCConverter::produce(edm::Event& event, const edm::EventSet
     HepMC::GenVertex* vertex = 0;
     if ( particleToVertexMap.find(elder) == particleToVertexMap.end() )
     {
-      vertex = new HepMC::GenVertex(FourVector(elder->vertex()));
+      vertex = new HepMC::GenVertex(FourVector(10*elder->vertex()));
       hepmc_event->add_vertex(vertex);
       particleToVertexMap[elder] = vertex;
       for ( unsigned int j=0, m=elder->numberOfMothers(); j<m; ++j )
@@ -190,6 +195,9 @@ void GenParticles2HepMCConverter::produce(edm::Event& event, const edm::EventSet
 
     vertex->add_particle_out(hepmc_particles[i]);
   }
+
+  // Finalize HepMC event record
+  hepmc_event->set_signal_process_vertex(*(vertex1->vertices_begin()));
 
   std::auto_ptr<edm::HepMCProduct> hepmc_product(new edm::HepMCProduct());
   hepmc_product->addHepMCData(hepmc_event);
