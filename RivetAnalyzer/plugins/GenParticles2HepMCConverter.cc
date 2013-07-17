@@ -44,7 +44,7 @@ private:
 private:
   inline HepMC::FourVector FourVector(const reco::Candidate::Point& point)
   {
-    return HepMC::FourVector(point.x(), point.y(), point.z(), point.r());
+    return HepMC::FourVector(10*point.x(), 10*point.y(), 10*point.z(), 0);
   };
 
   inline HepMC::FourVector FourVector(const reco::Candidate::LorentzVector& lvec)
@@ -147,8 +147,8 @@ void GenParticles2HepMCConverter::produce(edm::Event& event, const edm::EventSet
   // Put incident beam particles : proton -> parton vertex
   const reco::Candidate* parton1 = genParticlesHandle->at(0).daughter(0);
   const reco::Candidate* parton2 = genParticlesHandle->at(1).daughter(0);
-  HepMC::GenVertex* vertex1 = new HepMC::GenVertex(FourVector(10*parton1->vertex()));
-  HepMC::GenVertex* vertex2 = new HepMC::GenVertex(FourVector(10*parton2->vertex()));
+  HepMC::GenVertex* vertex1 = new HepMC::GenVertex(FourVector(parton1->vertex()));
+  HepMC::GenVertex* vertex2 = new HepMC::GenVertex(FourVector(parton2->vertex()));
   hepmc_event->add_vertex(vertex1);
   hepmc_event->add_vertex(vertex2);
   //hepmc_particles[0]->set_status(4);
@@ -179,7 +179,7 @@ void GenParticles2HepMCConverter::produce(edm::Event& event, const edm::EventSet
     HepMC::GenVertex* vertex = 0;
     if ( particleToVertexMap.find(elder) == particleToVertexMap.end() )
     {
-      vertex = new HepMC::GenVertex(FourVector(10*elder->vertex()));
+      vertex = new HepMC::GenVertex(FourVector(elder->vertex()));
       hepmc_event->add_vertex(vertex);
       particleToVertexMap[elder] = vertex;
       for ( unsigned int j=0, m=elder->numberOfMothers(); j<m; ++j )
