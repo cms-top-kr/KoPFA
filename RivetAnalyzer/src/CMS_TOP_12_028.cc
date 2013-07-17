@@ -3,11 +3,13 @@
 #include "Rivet/Projections/ChargedLeptons.hh"
 #include "Rivet/Projections/FastJets.hh"
 #include "Rivet/Projections/IdentifiedFinalState.hh"
+#include "Rivet/Projections/UnstableFinalState.hh"
 #include "Rivet/Projections/LeptonClusters.hh"
 #include "Rivet/AnalysisLoader.hh"
 #include "Rivet/Projections/MissingMomentum.hh"
 #include "Rivet/Tools/ParticleIdUtils.hh"
 #include "Rivet/RivetAIDA.hh"
+#include "Rivet/Particle.fhh"
 
 #include <boost/assign/list_inserter.hpp>
 #include <boost/assign.hpp>
@@ -42,6 +44,7 @@ public:
 
   constexpr static double _top_massPDG = 173.5;
   constexpr static double _w_massPDG = 80.385;
+  constexpr static int _ghost_b_id = 7;
 
 public:
   CMS_TOP_12_028() : Analysis("CMS_TOP_12_028") {
@@ -54,6 +57,18 @@ hT_n_ = new TH1F("hT_n", "Total stable B;Stable b multiplicity", 10, 0, 10);
 hA_pt_ = new TH1F("hA_pt", "Rivet default;Transverse momentum p_{T} (GeV/c)", 50, 0, 100);
 hB_pt_ = new TH1F("hB_pt", "Reclustering;Transverse momentum p_{T} (GeV/c)", 50, 0, 100);
 #endif
+  }
+
+  bool hasBDescendants(const GenParticle* p)
+  {
+    const GenVertex* v = p->end_vertex();
+    if ( !v ) return false;
+    for ( HepMC::GenVertex::particles_out_const_iterator dau = v->particles_out_const_begin();
+          dau != v->particles_out_const_end(); ++dau ) {
+      if ( PID::hasBottom((*dau)->pdg_id()) ) return true;
+      else if ( hasBDescendants(*dau) ) return true;
+    }
+    return false;
   }
 
   void init() {
@@ -73,12 +88,6 @@ hB_pt_ = new TH1F("hB_pt", "Reclustering;Transverse momentum p_{T} (GeV/c)", 50,
     addProjection(muons, "muons");
     addProjection(electrons, "electrons");
 
-#ifdef DEBUGROOT
-    IdentifiedFinalState stableBHadrons(-3, 3);
-    stableBHadrons.acceptId(7);
-    addProjection(stableBHadrons, "stableBHadrons");
-#endif
-
     // Neutrinos
     IdentifiedFinalState neutrinos(-5.0, 5.0, 0*GeV);
     neutrinos.acceptIdPair(NU_MU);
@@ -91,8 +100,12 @@ hB_pt_ = new TH1F("hB_pt", "Reclustering;Transverse momentum p_{T} (GeV/c)", 50,
     fsForJets.addVetoOnThisFinalState(muons);
     fsForJets.addVetoOnThisFinalState(electrons);
     addProjection(fsForJets, "fsForJets");
-    addProjection(FastJets(fsForJets, FastJets::ANTIKT, 0.5), "jets");
+    //addProjection(FastJets(fsForJets, FastJets::ANTIKT, 0.5), "jets");
     addProjection(MissingMomentum(fsForJets), "metJet");
+
+    // For the B hadrons
+    UnstableFinalState ufs(-2.5, 2.5);
+    addProjection(ufs, "unstables");
 
     // Book histograms
     // Plots definitions in the PAS twiki
@@ -214,18 +227,26 @@ hB_pt_ = new TH1F("hB_pt", "Reclustering;Transverse momentum p_{T} (GeV/c)", 50,
     hCutStep_->Fill(CUTSTEP_DILEPTON, weight);
 #endif
 
-    // Retrieve Jets and do jet cleaning
-    const Jets jets = applyProjection<FastJets>(event, "jets").jetsByPt(30*GeV);
-    Jets cleanJets;
-    foreach ( const Jet& jet, jets ) {
-      if ( std::abs(jet.eta()) > 2.4 ) continue;
-      //if ( deltaR(jet.momentum(), lepton_momentum[0]) < 0.2 ) continue;
-      //if ( deltaR(jet.momentum(), lepton_momentum[1]) < 0.2 ) continue;
+    // Find jets. Do the jet clustering after inserting ghost B hadrons into the event
+    const VetoedFinalState& fsForJets = applyProjection<VetoedFinalState>(event, "fsForJets");
+    ParticleVector particlesForJets = fsForJets.particles();
+    const UnstableFinalState& ufs = applyProjection<UnstableFinalState>(event, "unstables");
+    foreach ( const Particle& p, ufs.particles() ) {
+      if ( !PID::hasBottom(p.pdgId()) ) continue;
+      if ( hasBDescendants(&p.genParticle()) ) continue; // Avoid double counting like B*->B+gamma
 
-      cleanJets.push_back(jet);
+      // Put ghost b hadrons into particle collection for jets
+      // These ghost b hadrons acts as pointing vectors not to change jet clustering (arXiv:0802.1188)
+      Particle ghostB(_ghost_b_id, 1e-20*p.momentum());
+      particlesForJets.push_back(ghostB);
     }
-    if ( cleanJets.size() < 2 ) {
-      MSG_DEBUG("Event failed jet multiplicity cut, nJet = " << cleanJets.size());
+    // Do the FastJet algorithm.
+    // The "fsForJets" are dummy here. This constructor can be replaced from Rivet 2.0
+    FastJets jetAlg(fsForJets, FastJets::ANTIKT, 0.5); 
+    jetAlg.calc(particlesForJets);
+    const Jets jets = jetAlg.jetsByPt(30*GeV, MAXDOUBLE, -2.4, 2.4);
+    if ( jets.size() < 2 ) {
+      MSG_DEBUG("Event failed jet multiplicity cut, nJet = " << jets.size());
       vetoEvent;
     }
 #ifdef DEBUGROOT
@@ -254,15 +275,13 @@ hT_n_->Fill(applyProjection<IdentifiedFinalState>(event, "stableBHadrons").size(
 int nbjetsA = 0, nbjetsB = 0;
 #endif
 
-    // Select b-jets from jet collection
     Jets bjets;
-    foreach ( const Jet& jet, cleanJets ) {
+    foreach ( const Jet& jet, jets ) {
 #ifdef DEBUGROOT
 if ( jet.containsBottom() ) { hA_pt_->Fill(jet.momentum().perp(), weight); ++nbjetsA; }
-if ( jet.containsParticleId(7) ) { hB_pt_->Fill(jet.momentum().perp(), weight); ++nbjetsB; }
+if ( jet.containsParticleId(_ghost_b_id) ) { hB_pt_->Fill(jet.momentum().perp(), weight); ++nbjetsB; }
 #endif
-      //if ( !jet.containsBottom() ) continue; // FIXME : this bjet definition is inconsistent with pseudo-top
-      if ( !jet.containsParticleId(7) ) continue; // Find phantom b hadrons as stable bprime
+      if ( !jet.containsParticleId(_ghost_b_id) ) continue; // Find ghost b hadrons as stable bprime
       bjets.push_back(jet);
     }
 #ifdef DEBUGROOT
