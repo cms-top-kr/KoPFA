@@ -50,10 +50,8 @@ process.load('KoPFA.CommonTools.genJetsWithGhostBHadrons_cff')
 process.genParticlesWithGhostB.userPdgId = 7
 
 ### Rebuild HepMC
-#process.load('Configuration.GenProduction.EightTeV.Hadronizer_MgmMatchTuneZ2star_8TeV_madgraph_tauola_cff')
 process.load("SimGeneral.HepPDTESSource.pythiapdt_cfi")
 process.load('KoPFA.RivetAnalyzer.GenParticles2HepMC_cfi')
-process.generator.genParticles = 'genParticlesWithGhostB'
 
 ## Setup RIVET analyzer
 process.load("GeneratorInterface.RivetInterface.rivetAnalyzer_cfi")
@@ -64,6 +62,5 @@ process.rivetAnalyzer.CrossSection = cms.double(13.43)
 #process.rivetAnalyzer.CrossSection = cms.double(165)
 process.rivetAnalyzer.OutputFile = '%s.aida' % suffix
 
-process.p = cms.Path(process.topDecayGenFilter + process.genParticlesWithGhostB * process.generator * process.rivetAnalyzer)
-#process.p = cms.Path(process.generator * process.rivetAnalyzer)
+process.p = cms.Path(process.topDecayGenFilter + process.generator * process.rivetAnalyzer)
 
