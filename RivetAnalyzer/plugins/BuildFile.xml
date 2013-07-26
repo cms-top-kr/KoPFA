@@ -12,7 +12,7 @@
   <use   name="PhysicsTools/HepMCCandAlgos"/>
   <use   name="PhysicsTools/JetMCUtils"/>
 
-<library   file="*.cc" name="GeneratorInterfaceRivetInterface_plugins">
+<library   file="*.cc" name="KoPFAGeneratorInterfaceRivetInterface_plugins">
   <flags   EDM_PLUGIN="1"/>
 </library>
 
