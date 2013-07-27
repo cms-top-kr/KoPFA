@@ -1,5 +1,5 @@
 #include "FWCore/Framework/interface/Frameworkfwd.h"
-#include "FWCore/Framework/interface/EDFilter.h"
+#include "FWCore/Framework/interface/EDAnalyzer.h"
 
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/Framework/interface/MakerMacros.h"
@@ -17,13 +17,13 @@
 
 using namespace std;
 
-class HepMC2HepMCValidator : public edm::EDFilter
+class HepMC2HepMCValidator : public edm::EDAnalyzer
 {
 public:
   HepMC2HepMCValidator(const edm::ParameterSet& pset);
   ~HepMC2HepMCValidator() {};
 
-  bool filter(edm::Event& event, const edm::EventSetup& eventSetup);
+  void analyze(const edm::Event& event, const edm::EventSetup& eventSetup);
   void endJob();
 
 private:
@@ -39,9 +39,9 @@ private:
   void checkDifference(const char* title, const double value1, const double value2)
   {
   // Ignore if relative error is below 1% level.
-    if ( std::abs(value1 - value2) <= 2e-2*(std::abs(value1)+std::abs(value2)) ) return; 
+    if ( std::abs(value1 - value2) <= 2e-2*(std::abs(value1)+std::abs(value2)) ) return;
 
-    cout << "@@@ " << "(D) Run:" << runNumber_ << " Lumi:" << lumiNumber_ << " Event:" << eventNumber_ 
+    cout << "(D) Run:" << runNumber_ << " Lumi:" << lumiNumber_ << " Event:" << eventNumber_
          << " " << title << "    " << value1 << ":" << value2 << endl;
     isDifferent_ = true;
   }
@@ -50,7 +50,7 @@ private:
   {
     if ( value1 == value2 ) return;
 
-    cout << "@@@ " << "(I) Run:" << runNumber_ << " Lumi:" << lumiNumber_ << " Event:" << eventNumber_ 
+    cout << "(I) Run:" << runNumber_ << " Lumi:" << lumiNumber_ << " Event:" << eventNumber_
          << " " << title << "    " << value1 << ":" << value2 << endl;
     isDifferent_ = true;
   }
@@ -64,7 +64,7 @@ HepMC2HepMCValidator::HepMC2HepMCValidator(const edm::ParameterSet& pset)
   nEvent_ = 0;
 }
 
-bool HepMC2HepMCValidator::filter(edm::Event& event, const edm::EventSetup& eventSetup)
+void HepMC2HepMCValidator::analyze(const edm::Event& event, const edm::EventSetup& eventSetup)
 {
   ++nEvent_;
 
@@ -119,7 +119,7 @@ bool HepMC2HepMCValidator::filter(edm::Event& event, const edm::EventSetup& even
     ++ptclItr1;
     ++ptclItr2;
   }
-  
+
   checkDifference("nVertex", genEvent1->vertices_size(), genEvent2->vertices_size());
   HepMC::GenEvent::vertex_const_iterator vtxItr1 = genEvent1->vertices_begin();
   HepMC::GenEvent::vertex_const_iterator vtxItr2 = genEvent2->vertices_begin();
@@ -141,31 +141,25 @@ bool HepMC2HepMCValidator::filter(edm::Event& event, const edm::EventSetup& even
     ++vtxItr2;
   }
 
-  if ( isDifferent_ ) 
-  {
-    differentEvents_.push_back(eventNumber_);
-    return true; // Keep event with different HepMC contents
-  }
+  if ( isDifferent_ ) differentEvents_.push_back(eventNumber_);
 
-  return false;
 }
 
 void HepMC2HepMCValidator::endJob()
 {
-  cout << "@@@ " << "===== HepMC2HepMCValidator =====" << endl;
-  cout << "@@@ " << " Analyzed  : " << nEvent_ << " events" << endl;
-  cout << "@@@ " << " Different : " << differentEvents_.size() << " events found" << endl;
+  cout << "===== HepMC2HepMCValidator =====" << endl;
+  cout << " Analyzed  : " << nEvent_ << " events" << endl;
+  cout << " Different : " << differentEvents_.size() << " events found" << endl;
   if ( !differentEvents_.empty() )
   {
-    cout << "@@@ " << " List of events with different contents : " << endl;
+    cout << " List of events with different contents : " << endl;
     for ( int i=0, n=differentEvents_.size()-1; i<n; ++i )
     {
-      cout << "@@@ " << differentEvents_[i] << ", ";
+      cout << differentEvents_[i] << ", ";
     }
-    cout << "@@@ " << differentEvents_.back() << endl;
+    cout << differentEvents_.back() << endl;
   }
-  cout << "@@@ " << "================================" << endl;
+  cout << "================================" << endl;
 }
 
 DEFINE_FWK_MODULE(HepMC2HepMCValidator);
-
