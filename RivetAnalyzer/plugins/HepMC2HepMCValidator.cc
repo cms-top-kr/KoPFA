@@ -1,5 +1,5 @@
 #include "FWCore/Framework/interface/Frameworkfwd.h"
-#include "FWCore/Framework/interface/EDAnalyzer.h"
+#include "FWCore/Framework/interface/EDFilter.h"
 
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/Framework/interface/MakerMacros.h"
@@ -17,13 +17,13 @@
 
 using namespace std;
 
-class HepMC2HepMCValidator : public edm::EDAnalyzer
+class HepMC2HepMCValidator : public edm::EDFilter
 {
 public:
   HepMC2HepMCValidator(const edm::ParameterSet& pset);
   ~HepMC2HepMCValidator() {};
 
-  void analyze(const edm::Event& event, const edm::EventSetup& eventSetup);
+  bool filter(edm::Event& event, const edm::EventSetup& eventSetup);
   void endJob();
 
 private:
@@ -64,7 +64,7 @@ HepMC2HepMCValidator::HepMC2HepMCValidator(const edm::ParameterSet& pset)
   nEvent_ = 0;
 }
 
-void HepMC2HepMCValidator::analyze(const edm::Event& event, const edm::EventSetup& eventSetup)
+bool HepMC2HepMCValidator::filter(edm::Event& event, const edm::EventSetup& eventSetup)
 {
   ++nEvent_;
 
@@ -141,8 +141,13 @@ void HepMC2HepMCValidator::analyze(const edm::Event& event, const edm::EventSetu
     ++vtxItr2;
   }
 
-  if ( isDifferent_ ) differentEvents_.push_back(eventNumber_);
+  if ( isDifferent_ )
+  {
+    differentEvents_.push_back(eventNumber_);
+    return true;
+  }
 
+  return false;
 }
 
 void HepMC2HepMCValidator::endJob()
