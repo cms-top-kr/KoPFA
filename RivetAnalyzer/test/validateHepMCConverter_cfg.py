@@ -29,6 +29,10 @@ process.out = cms.OutputModule("PoolOutputModule",
     fileName = cms.untracked.string("badEvents.root"),
     outputCommands = cms.untracked.vstring(
         "keep *",
+        "drop *_*_*_USER",
+    ),
+    SelectEvents = cms.untracked.PSet(
+        SelectEvents = cms.vstring('p'),
     ),
 )
 
