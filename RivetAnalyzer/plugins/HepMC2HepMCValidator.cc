@@ -11,7 +11,9 @@
 #include "SimDataFormats/GeneratorProducts/interface/HepMCProduct.h"
 #include "HepMC/SimpleVector.h"
 #include "HepMC/GenEvent.h"
+#include "HepMC/IO_GenEvent.h"
 
+#include <string>
 #include <iostream>
 #include <map>
 
@@ -29,11 +31,15 @@ public:
 private:
   edm::InputTag genEventLabel1_;
   edm::InputTag genEventLabel2_;
+  bool verbose_;
 
   int nEvent_;
   int runNumber_, lumiNumber_, eventNumber_;
   bool isDifferent_;
   std::vector<int> differentEvents_;
+
+  HepMC::IO_GenEvent* asciiFile1_;
+  HepMC::IO_GenEvent* asciiFile2_;
 
 private:
   void checkDifference(const char* title, const double value1, const double value2)
@@ -41,8 +47,11 @@ private:
   // Ignore if relative error is below 1% level.
     if ( std::abs(value1 - value2) <= 2e-2*(std::abs(value1)+std::abs(value2)) ) return;
 
-    cout << "(D) Run:" << runNumber_ << " Lumi:" << lumiNumber_ << " Event:" << eventNumber_
-         << " " << title << "    " << value1 << ":" << value2 << endl;
+    if ( verbose_ )
+    {
+      cout << "(D) Run:" << runNumber_ << " Lumi:" << lumiNumber_ << " Event:" << eventNumber_
+           << " " << title << "    " << value1 << ":" << value2 << endl;
+    }
     isDifferent_ = true;
   }
 
@@ -50,8 +59,11 @@ private:
   {
     if ( value1 == value2 ) return;
 
-    cout << "(I) Run:" << runNumber_ << " Lumi:" << lumiNumber_ << " Event:" << eventNumber_
-         << " " << title << "    " << value1 << ":" << value2 << endl;
+    if ( verbose_ )
+    {
+      cout << "(I) Run:" << runNumber_ << " Lumi:" << lumiNumber_ << " Event:" << eventNumber_
+           << " " << title << "    " << value1 << ":" << value2 << endl;
+    }
     isDifferent_ = true;
   }
 };
@@ -60,6 +72,15 @@ HepMC2HepMCValidator::HepMC2HepMCValidator(const edm::ParameterSet& pset)
 {
   genEventLabel1_ = pset.getParameter<edm::InputTag>("genEvent1");
   genEventLabel2_ = pset.getParameter<edm::InputTag>("genEvent2");
+
+  verbose_ = pset.getUntrackedParameter<bool>("verbose");
+  const std::string prefix = pset.getUntrackedParameter<std::string>("asciiFilePrefix", "");
+  asciiFile1_ = asciiFile2_ = 0;
+  if ( !prefix.empty() )
+  {
+    asciiFile1_ = new HepMC::IO_GenEvent((prefix+"1.dat").c_str());
+    asciiFile2_ = new HepMC::IO_GenEvent((prefix+"2.dat").c_str());
+  }
 
   nEvent_ = 0;
 }
@@ -81,6 +102,9 @@ bool HepMC2HepMCValidator::filter(edm::Event& event, const edm::EventSetup& even
   edm::Handle<edm::HepMCProduct> genEventHandle2;
   event.getByLabel(genEventLabel2_, genEventHandle2);
   const HepMC::GenEvent* genEvent2 = genEventHandle2->GetEvent();
+
+  if ( asciiFile1_ ) asciiFile1_->write_event(genEvent1);
+  if ( asciiFile2_ ) asciiFile2_->write_event(genEvent2);
 
   checkDifference("Process Id", genEvent1->signal_process_id(), genEvent2->signal_process_id());
   checkDifference("Event number", genEvent1->event_number(), genEvent2->event_number());
