@@ -21,6 +21,8 @@ process.load("Configuration.Generator.Hadronizer_MgmMatchTuneZ2star_8TeV_madgrap
 process.load("Configuration.StandardSequences.Generator_cff")
 
 process.hepmc2hepmcValidator = cms.EDFilter("HepMC2HepMCValidator",
+    verbose = cms.untracked.bool(False),
+    asciiFilePrefix = cms.untracked.string('hepmc'),
     genEvent1 = cms.InputTag("generator"),
     genEvent2 = cms.InputTag("generatorConverter"),
 )
@@ -30,16 +32,32 @@ process.out = cms.OutputModule("PoolOutputModule",
     outputCommands = cms.untracked.vstring(
         "keep *",
         "drop *_*_*_USER",
+        "keep *_generator_*_*",
     ),
     SelectEvents = cms.untracked.PSet(
         SelectEvents = cms.vstring('p'),
     ),
 )
 
+process.printTree = cms.EDAnalyzer("ParticleListDrawer",
+    #src = cms.InputTag("genParticlesPruned"),
+    src = cms.InputTag("genParticles"),
+    maxEventsToPrint  = cms.untracked.int32(1)
+)
+
+process.genParticlesFromConverter = process.genParticles.clone(
+    src = cms.InputTag("generatorConverter")
+)
+process.printTreeFromConverter = process.printTree.clone(
+    src = cms.InputTag("genParticlesFromConverter"),
+)
+
 process.p = cms.Path(
     process.generator * process.genParticles
   * process.generatorConverter
+  * process.genParticlesFromConverter
   * process.hepmc2hepmcValidator
+  * process.printTree + process.printTreeFromConverter
 )
 
 process.outPath = cms.EndPath(process.out)
