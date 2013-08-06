@@ -76,7 +76,7 @@ void GenParticles2HepMCConverter::beginRun(edm::Run& run, const edm::EventSetup&
   // const double xsecLOErr = genRunInfoHandle->externalXSecLO().error();
   // const double xsecNLO = genRunInfoHandle->externalXSecNLO().value();
   // const double xsecNLOErr = genRunInfoHandle->externalXSecNLO().error();
-  
+
   eventSetup.getData(pTable_);
 }
 
@@ -165,8 +165,10 @@ void GenParticles2HepMCConverter::produce(edm::Event& event, const edm::EventSet
   for ( unsigned int i=2, n=genParticlesHandle->size(); i<n; ++i )
   {
     const reco::Candidate* p = &genParticlesHandle->at(i);
-    const reco::Candidate* elder = p;
-    if ( p->numberOfMothers() != 0 ) elder = p->mother(0)->daughter(0);
+    // There can be orphan particles (very rare),
+    // whom will be associated to the vertex of daughter particles
+    if ( p->numberOfMothers() == 0 ) continue;
+    const reco::Candidate* elder = p->mother(0)->daughter(0);
 
     HepMC::GenVertex* vertex = 0;
     if ( particleToVertexMap.find(elder) == particleToVertexMap.end() )
