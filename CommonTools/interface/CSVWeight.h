@@ -26,7 +26,7 @@
 
 typedef vector<cmg::PFJet>::const_iterator JI;
 
-namespace sysType{ enum sysType{ NA, JERup, JERdown, JESup, JESdown, hfSFup, hfSFdown, lfSFdown, lfSFup, TESup, TESdown, CSVLFup, CSVLFdown, CSVHFup, CSVHFdown, CSVHFStats1up, CSVHFStats1down, CSVLFStats1up, CSVLFStats1down, CSVHFStats2up, CSVHFStats2down, CSVLFStats2up, CSVLFStats2down, CSVup, CSVdown, CSVup2, CSVdown2, CSVCErr1up, CSVCErr1down, CSVCErr2up, CSVCErr2down }; }
+namespace sysType{ enum sysType{ NA, JERup, JERdown, JESup, JESdown, hfSFup, hfSFdown, lfSFdown, lfSFup, TESup, TESdown, CSVLFup, CSVLFdown, CSVHFup, CSVHFdown, CSVHFStats1up, CSVHFStats1down, CSVLFStats1up, CSVLFStats1down, CSVHFStats2up, CSVHFStats2down, CSVLFStats2up, CSVLFStats2down, CSVup, CSVdown, CSVup2, CSVdown2, CSVCErr1up, CSVCErr1down, CSVCErr2up, CSVCErr2down,bOrigin }; }
 
 using namespace std;
 
@@ -42,11 +42,11 @@ class CSVWeight
                for( int iEta=0; iEta<3; iEta++ )h_csv_wgt_lf[iSys][iPt][iEta] = NULL;
           }
        }
-       for( int iSys=0; iSys<5; iSys++ )
+/*       for( int iSys=0; iSys<5; iSys++ )
        {
           for( int iPt=0; iPt<5; iPt++ ) c_csv_wgt_hf[iSys][iPt] = NULL;
        }
-
+*/
        f_CSVwgt_HF = NULL;
        f_CSVwgt_LF = NULL;
     }
@@ -100,6 +100,10 @@ void SetUpCSVreweighting(){
     }
 
 //////////////////////
+// adderror
+  f_addError = new TFile ((string(getenv("CMSSW_BASE")) + "/src/KoPFA/CommonTools/data/adderror.root").c_str());
+  h_adderr = (TH1F*) f_addError->Get(Form("SFbfTnfT"));
+
 // new CSV SF
   f_new_CSV_SF = new TFile ((string(getenv("CMSSW_BASE")) + "/src/KoPFA/CommonTools/data/new_CSV_SF.root").c_str());
   for(int iPt=0;iPt<3;iPt++) for(int iEta=0;iEta<3;iEta++)
@@ -172,9 +176,9 @@ void SetUpCSVreweighting(){
 
     for( int iPt=0; iPt<5; iPt++ ) h_csv_wgt_hf[iSys][iPt] = (TH1D*)f_CSVwgt_HF->Get( Form("csv_ratio_Pt%i_Eta0_%s",iPt,syst_csv_suffix_hf.Data()) );
   
-    if( iSys<5 ){
-     for( int iPt=0; iPt<5; iPt++ ) c_csv_wgt_hf[iSys][iPt] = (TH1D*)f_CSVwgt_HF->Get( Form("c_csv_ratio_Pt%i_Eta0_%s",iPt,syst_csv_suffix_c.Data()) );
-    }
+//    if( iSys<5 ){
+//     for( int iPt=0; iPt<5; iPt++ ) c_csv_wgt_hf[iSys][iPt] = (TH1D*)f_CSVwgt_HF->Get( Form("c_csv_ratio_Pt%i_Eta0_%s",iPt,syst_csv_suffix_c.Data()) );
+//    }
     for( int iPt=0; iPt<3; iPt++ ){
       for( int iEta=0; iEta<3; iEta++ )h_csv_wgt_lf[iSys][iPt][iEta] = (TH1D*)f_CSVwgt_LF->Get( Form("csv_ratio_Pt%i_Eta%i_%s",iPt,iEta,syst_csv_suffix_lf.Data()) );
     }
@@ -247,6 +251,7 @@ double GetCSVweight(edm::Handle<std::vector<cmg::PFJet> >& iJets, const sysType:
   //CheckSetUp();
   // IMPORTANT! iJets is the *SELECTED* jet collection which you use for your analysis
 
+  bool usAdEr = false;
   int iSysHF = 0;
   switch(iSysType){
   case sysType::JESup:             iSysHF=1; break;
@@ -261,6 +266,7 @@ double GetCSVweight(edm::Handle<std::vector<cmg::PFJet> >& iJets, const sysType:
   case sysType::CSVdown:       iSysHF=3; break;
   case sysType::CSVup2:         iSysHF=3; break;
   case sysType::CSVdown2:       iSysHF=4; break;
+  case sysType::bOrigin:       iSysHF=1; usAdEr=true; break;
   default : iSysHF = 0; break;
   }
 
@@ -312,22 +318,29 @@ double GetCSVweight(edm::Handle<std::vector<cmg::PFJet> >& iJets, const sysType:
 
     if (iPt < 0 || iEta < 0) std::cout << "Error, couldn't find Pt, Eta bins for this b-flavor jet, jetPt = " << jetPt << ", jetAbsEta = " << jetAbsEta << std::endl;
     //else if ( lightonly == false && (abs(flavor) == 5 || abs(flavor) == 4) ){
-    else if ( lightonly == false && (abs(flavor) == 5) ){
+    else if ( lightonly == false && (abs(flavor) == 5 ||  abs(flavor) == 4) ){
       int useCSVBin = (csv>=0.) ? h_csv_wgt_hf[iSysHF][iPt]->FindBin(csv) : 1;
       double iCSVWgtHF = h_csv_wgt_hf[iSysHF][iPt]->GetBinContent(useCSVBin);
-      if( iCSVWgtHF!=0 ) csvWgthf *= iCSVWgtHF;
+
+      int useCSVBin2 = (csv>=0.) ? h_adderr->FindBin(csv) : -1;
+      double iCSVWgtHF2 = 1.;//h_adderr->GetBinContent(useCSVBin2);
+      if(useCSVBin2>0) iCSVWgtHF2 = h_adderr->GetBinContent(useCSVBin2);
+
+      if( iCSVWgtHF!=0 && usAdEr && iCSVWgtHF2!=0) csvWgthf *= iCSVWgtHF*iCSVWgtHF2;
+      else if( iCSVWgtHF!=0 )                      csvWgthf *= iCSVWgtHF;
+
 
       // if( iSysHF==0 ) printf(" iJet,\t flavor=%d,\t pt=%.1f,\t eta=%.2f,\t csv=%.3f,\t wgt=%.2f \n",
       //                          flavor, jetPt, iJet->eta, csv, iCSVWgtHF );
     }
-    else if( abs(flavor) == 4 ){
+  /*  else if( abs(flavor) == 4 ){
       // do nothing
       int useCSVBin = (csv>=0.) ? c_csv_wgt_hf[iSysC][iPt]->FindBin(csv) : 1;
       double iCSVWgtC = c_csv_wgt_hf[iSysC][iPt]->GetBinContent(useCSVBin);
       if( iCSVWgtC!=0 ) csvWgtC *= iCSVWgtC;
       // if( iSysC==0 ) printf(" iJet,\t flavor=%d,\t pt=%.1f,\t eta=%.2f,\t csv=%.3f,\t wgt=%.2f \n",
       //                             flavor, jetPt, iJet->eta, csv, iCSVWgtC );
-    }
+    }*/
     else {
       if (iPt >=2) iPt=2;       /// [30-40], [40-60] and [60-10000] only 3 Pt bins for lf
       int useCSVBin = (csv>=0.) ? h_csv_wgt_lf[iSysLF][iPt][iEta]->FindBin(csv) : 1;
@@ -422,7 +435,7 @@ double CSVshape(double csv, double pt, double eta, int flavor, int JetN, double 
   private:
         // CSV reweighting
        TH1D* h_csv_wgt_hf[9][5];
-       TH1D* c_csv_wgt_hf[9][5];
+//       TH1D* c_csv_wgt_hf[9][5];
        TH1D* h_csv_wgt_lf[9][3][3];
        TFile* f_CSVwgt_HF;
        TFile* f_CSVwgt_LF;
@@ -434,6 +447,10 @@ double CSVshape(double csv, double pt, double eta, int flavor, int JetN, double 
        TFile *f_new_CSV_SF;
        TH1F *h_LF_CSV_SF[5][3][3];
        TH1F *h_HF_CSV_SF[5][3][3];
+
+       TFile *f_addError;
+       TH1F *h_adderr;
+
 };
 #endif
 
