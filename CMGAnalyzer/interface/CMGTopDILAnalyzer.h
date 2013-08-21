@@ -13,7 +13,7 @@
 //
 // Original Author:  Tae Jeong Kim,40 R-A32,+41227678602,
 //         Created:  Fri Jun  4 17:19:29 CEST 2010
-// $Id: CMGTopDILAnalyzer.h,v 1.45 2013/07/03 19:43:24 youngjo Exp $
+// $Id: CMGTopDILAnalyzer.h,v 1.46 2013/07/11 14:14:13 youngjo Exp $
 //
 //
 
@@ -314,6 +314,8 @@ class CMGTopDILAnalyzer : public edm::EDFilter {
     tree->Branch("csvweightCErr2up",&csvweightCErr2up,"csvweightCErr2up/d");
     tree->Branch("csvweightCErr2down",&csvweightCErr2down,"csvweightCErr2down/d");
 
+    tree->Branch("csvweightbOrigin",&csvweightbOrigin,"csvweightbOrigin/d");
+
 
     tree->Branch("csvweightNew",&csvweightNew    ,"csvweightNew/d");
     tree->Branch("csvweightNewLFup",&csvweightNewLFup,"csvweightNewLFup/d");
@@ -610,6 +612,8 @@ class CMGTopDILAnalyzer : public edm::EDFilter {
          csvweightCErr1down =csvWgt->GetCSVweight(Jets,sysType::CSVCErr1down);
          csvweightCErr2up   =csvWgt->GetCSVweight(Jets,sysType::CSVCErr2up);
          csvweightCErr2down =csvWgt->GetCSVweight(Jets,sysType::CSVCErr2down);
+
+         csvweightbOrigin =csvWgt->GetCSVweight(Jets,sysType::bOrigin);
 
 
          // for New CSV SF
@@ -1293,6 +1297,7 @@ class CMGTopDILAnalyzer : public edm::EDFilter {
     csvweightCErr1down =1.0;
     csvweightCErr2up   =1.0; 
     csvweightCErr2down =1.0;
+    csvweightbOrigin =1.0;
 
 
     csvweightNew     = 1.0;
@@ -1585,6 +1590,7 @@ class CMGTopDILAnalyzer : public edm::EDFilter {
    double csvweightCErr1down ;
    double csvweightCErr2up   ;
    double csvweightCErr2down ;
+   double csvweightbOrigin ;
 
 
   double csvweightNew     ;
