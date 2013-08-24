@@ -13,7 +13,9 @@ process.MessageLogger.cerr.FwkReport.reportEvery = 10000
 
 ## Input and output ##
 process.source = cms.Source("PoolSource", fileNames = cms.untracked.vstring(),)
-process.source.fileNames = ['/store/cmst3/user/cmgtools/CMG//SingleElectron/Run2012D-PromptReco-v1/AOD/PAT_CMG_V5_12_0/cmgTuple_1.root',]
+#process.source.fileNames = ['/store/cmst3/user/cmgtools/CMG/SingleElectron/Run2012D-PromptReco-v1/AOD/PAT_CMG_V5_12_0/cmgTuple_1.root',]
+#process.source.fileNames = ['/store/cmst3/user/cmgtools/CMG//SingleElectron/Run2012A-22Jan2013-v1/AOD/PAT_CMG_V5_16_0/cmgTuple_1.root',]
+process.source.fileNames = ['/store/cmst3/user/cmgtools/CMG//SingleElectron/Run2012D-22Jan2013-v1/AOD/PAT_CMG_V5_16_0/cmgTuple_1.root',]
 
 process.TFileService = cms.Service("TFileService",
     fileName = cms.string("ntuple.root"),
@@ -240,11 +242,8 @@ process.tnpNh = cms.EDAnalyzer("TagProbeFitTreeProducer",
 process.tnpNh0Mva = process.tnpNh.clone(
     tagProbePairs = cms.InputTag("zNh0"),
     flags = cms.PSet(
-          mvam01 = cms.string('electronID("mvaTrigV0") > -0.1'),
           mva00 = cms.string('electronID("mvaTrigV0") > 0.0'),
-          mva03 = cms.string('electronID("mvaTrigV0") > 0.3'),
           mva05 = cms.string('electronID("mvaTrigV0") > 0.5'),
-          mva07 = cms.string('electronID("mvaTrigV0") > 0.7'),
           mva09 = cms.string('electronID("mvaTrigV0") > 0.9'),
     ),
 )
@@ -254,17 +253,14 @@ process.tnpNh0Mva05Iso = process.tnpNh.clone(
     flags = cms.PSet(
         iso10 = cms.string('userIsolation("User1Iso") < 0.10'),
         iso15 = cms.string('userIsolation("User1Iso") < 0.15'),
-        iso17 = cms.string('userIsolation("User1Iso") < 0.17'),
         iso20 = cms.string('userIsolation("User1Iso") < 0.20'),
 
         diso10 = cms.string('userIsolation("User2Iso") < 0.10'),
         diso15 = cms.string('userIsolation("User2Iso") < 0.15'),
-        diso17 = cms.string('userIsolation("User2Iso") < 0.17'),
         diso20 = cms.string('userIsolation("User2Iso") < 0.20'),
 
         riso10 = cms.string('userIsolation("User3Iso") < 0.10'),
         riso15 = cms.string('userIsolation("User3Iso") < 0.15'),
-        riso17 = cms.string('userIsolation("User3Iso") < 0.17'),
         riso20 = cms.string('userIsolation("User3Iso") < 0.20'),
     ),
 )
@@ -329,7 +325,7 @@ process.tnpNh0Mva09Riso15PfDZ = process.tnpNh0Mva05Riso15PfHL.clone(tagProbePair
 
 process.goodJets = cms.EDFilter("CMGCleanJetSelector",
     debug = cms.untracked.bool(False),
-    doFilter = cms.bool(True),
+    doFilter = cms.bool(False),
     src = cms.InputTag("cmgPFJetSelCHS"),
     cut = cms.string(
         " abs(eta) < 2.5 && pt > 30 && nConstituents > 1"
@@ -348,7 +344,7 @@ process.goodJets = cms.EDFilter("CMGCleanJetSelector",
     #cleanMethod = cms.untracked.string(""),
     minPt = cms.untracked.double(30),
     maxEta = cms.untracked.double(2.5),
-    minNumber = cms.uint32(2),
+    minNumber = cms.uint32(0),
     maxNumber = cms.uint32(999),
 )
 
@@ -463,41 +459,20 @@ process.pB2G = cms.Path(
   * process.zSTrg * process.tnpSTrg
 )
 
-def loadDataset(dataset):
-    files = []
-    for line in open("/afs/cern.ch/user/j/jhgoh/public/sources/CMG/V5_13_0/%s.txt" % dataset).readlines():
-        line = line.strip()
-        if '.root' not in line: continue
-        if line[0] == '#': continue
-
-        files.append(line)
-    return files
-
-if 'DATASET' in os.environ:
-    section = int(os.environ['SECTION'])
-    begin = int(os.environ['BEGIN'])
-    end = int(os.environ['END'])
-    dataset = os.environ['DATASET']
-    triggerMode = os.environ['TRIGGERMODE']
-
-    process.source.fileNames = loadDataset(dataset)[begin:end]
-    print dataset, section
-    print process.source.fileNames[0]
-    print process.source.fileNames[-1]
-
-    process.TFileService.fileName = cms.string("ntuple/unmerged/ntuple_%s_%03d.root" % (dataset, section))
-
-    if 'Run' in dataset:
-        from CMGTools.Common.Tools.applyJSON_cff import *
-        json = '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions12/8TeV/Prompt/Cert_190456-208686_8TeV_PromptReco_Collisions12_JSON.txt'
-        applyJSON(process, json)
-
-    if triggerMode == 'DoubleElectron':
-        process.hltHighLevel.HLTPaths = ["HLT_Ele17_CaloIdVT_CaloIsoVT_TrkIdT_TrkIsoVT_Ele8_Mass50_v*",]
-        # Require tag to matched to hard leg of HLT_Ele17_CaloIdVT_CaloIsoVT_TrkIdT_TrkIsoVT_Ele8_Mass50_v* path
-        process.tag.cut = process.tag.cut.value() + ' && !triggerObjectMatchesByFilter("hltEle17CaloIdVTCaloIsoVTTrkIdTTrkIsoVTEle8TrackIsoFilter").empty()'
+if 'Run' in process.source.fileNames[0]:
+    from CMGTools.Common.Tools.applyJSON_cff import *
+    jsonBaseDir = '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions12/8TeV'
+    if 'Prompt' in process.source.fileNames[0]:
+        json = jsonBaseDir + '/Prompt/Cert_190456-208686_8TeV_PromptReco_Collisions12_JSON.txt'
     else:
-        process.hltHighLevel.HLTPaths = ["HLT_Ele27_WP80_v*",]
-        process.tag.cut = process.tag.cut.value() + ' && !triggerObjectMatchesByPath("HLT_Ele27_WP80_v*", 1, 0).empty()'
+        json = jsonBaseDir + '/Reprocessing/Cert_190456-208686_8TeV_22Jan2013ReReco_Collisions12_JSON.txt'
+    applyJSON(process, json)
+
+#process.hltHighLevel.HLTPaths = ["HLT_Ele17_CaloIdVT_CaloIsoVT_TrkIdT_TrkIsoVT_Ele8_Mass50_v*",]
+# Require tag to matched to hard leg of HLT_Ele17_CaloIdVT_CaloIsoVT_TrkIdT_TrkIsoVT_Ele8_Mass50_v* path
+#process.tag.cut = process.tag.cut.value() + ' && !triggerObjectMatchesByFilter("hltEle17CaloIdVTCaloIsoVTTrkIdTTrkIsoVTEle8TrackIsoFilter").empty()'
+
+process.hltHighLevel.HLTPaths = ["HLT_Ele27_WP80_v*",]
+process.tag.cut = process.tag.cut.value() + ' && !triggerObjectMatchesByPath("HLT_Ele27_WP80_v*", 1, 0).empty()'
 
 
