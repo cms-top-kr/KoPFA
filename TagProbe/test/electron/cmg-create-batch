@@ -1,0 +1,89 @@
+#!/usr/bin/env python
+
+import sys, os
+from math import ceil
+
+if len(sys.argv) < 3:
+    print "Usage: %s CONFIGFILE_cfg.py NFILES_PER_SECTION [CMG_DATASET_PATH]"
+    print "\nIf CMG_DATASET_PATH is not given, root files in the cfg file will be used"
+    sys.exit()
+
+configFile = sys.argv[1]
+scratchDir = configFile.replace('_cfg.py', '')
+prefix = scratchDir
+nFilePerSection = int(sys.argv[2])
+if len(sys.argv) > 3:
+    datasetName = sys.argv[3]
+    scratchDir += '_'+datasetName.replace('/', '_')
+else:
+    print "Using dataset defined in the configuration file"
+    datasetName = None
+jobQueue = "8nh"
+
+## Prepare scratch area
+if os.path.exists(scratchDir):
+    print "Output directory %s already exists." % scratchDir
+    while True:
+        yn = raw_input("Remove it?[y/n] ").lower()
+        if yn == 'y':
+            os.system("rm -rf %s" % scratchDir)
+            break
+        elif yn == 'n':
+            print "Please rename existing directory."
+            print "User canceled job creation."
+            sys.exit()
+os.makedirs(scratchDir)
+scratchDirFullPath = os.path.abspath(scratchDir)
+
+## Write run script
+runScript = open("%s/%s.sh" % (scratchDir, prefix), "w")
+print>>runScript, "#!/bin/bash"
+print>>runScript, "cd %s/src" % os.environ["CMSSW_BASE"]
+print>>runScript, "eval `scram runtime -sh`"
+print>>runScript, "cd %s" % scratchDirFullPath
+print>>runScript, "SECTION=$1"
+print>>runScript, "cmsRun %s_${SECTION}_cfg.py" % prefix
+runScript = None
+os.system("chmod +x %s/%s.sh" % (scratchDir, prefix))
+
+## Load configuration file
+sys.path.append('.')
+process = __import__(configFile.replace('.py', '')).process
+
+if datasetName == None:
+    ## Input root files are already defined in the config file
+    fileNames = process.source.fileNames[:]
+else:
+    ## If dataset name is specified, load dataset names from eos
+    eosCmd = '/afs/cern.ch/project/eos/installation/0.2.31/bin/eos.select'
+    dataPath = '/store/cmst3/user/cmgtools/CMG/' + datasetName
+    fileNames = os.popen("%s ls %s | sort -n -k2 -t_" % (eosCmd, dataPath)).readlines()
+    fileNames = ["%s/%s" % (dataPath, x.strip()) for x in fileNames if 'root' in x]
+
+if len(fileNames) == 0:
+    print "Input file list is empty. Please check your dataset"
+    os.system("rm -rf %s" % scratchDir)
+    sys.exit()
+
+## Write run configuration files, split jobs
+submitScript = open("%s/submit.sh" % scratchDir, "w")
+print>>submitScript, "#!/bin/bash"
+nFiles = len(fileNames)
+nSection = int(ceil(1.0*nFiles/nFilePerSection)) ## round up, cover up remaining job fragment if exists
+for section in range(nSection):
+    jobName = "%s %d" % (datasetName, section+1)
+    logFileName = "%s_%03d.log" % (prefix, section+1)
+    print>>submitScript, "bsub -q %s -oo %s -J \"%s\" %s.sh %03d" % (jobQueue, logFileName, jobName, prefix, section+1)
+    runConfig = open("%s/%s_%03d_cfg.py" % (scratchDir, prefix, section+1), "w")
+    begin = section*nFilePerSection
+    if section < nSection-1:
+        end = begin+nFilePerSection
+        process.source.fileNames = fileNames[begin:end]
+    else:
+        process.source.fileNames = fileNames[begin:]
+    process.TFileService.fileName = '%s_%03d.root' % (prefix, section+1)
+    runConfig.write(process.dumpPython())
+    runConfig = None
+submitScript = None
+os.system("chmod +x %s/submit.sh" % scratchDir)
+
