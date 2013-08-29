@@ -40,7 +40,7 @@ process.patElectronsWithRelIso = cms.EDFilter("PatRelIsoElectronSelector",
     rho = cms.InputTag("kt6PFJets", "rho"),
     src = cms.InputTag("patElectronsWithTrigger"),
     cut = cms.string(
-        'abs(eta) < 2.5 && dB < 0.04 && passConversionVeto'
+        'abs(eta) < 2.5 && passConversionVeto'
     ),
     vertexLabel = cms.untracked.InputTag("goodOfflinePrimaryVertices"),
     coneSize = cms.double(0.3),
@@ -52,7 +52,7 @@ process.patMuonsWithRelIso = cms.EDFilter("PatRelIsoMuonSelector",
     rho = cms.InputTag("kt6PFJets", "rho"),
     src = cms.InputTag("patMuonsWithTrigger"),
     cut = cms.string(
-        'abs(eta) < 2.5 && dB < 0.04 && pt > 20'
+        'abs(eta) < 2.5 && pt > 20'
         ' && isPFMuon && (isGlobalMuon || isTrackerMuon)'
     ),
     vertexLabel = cms.untracked.InputTag("goodOfflinePrimaryVertices"),
@@ -404,15 +404,15 @@ process.p05 = cms.Path(
 ## Special path for B2G reference
 process.tagS = cms.EDFilter("PATElectronSelector",
     src = cms.InputTag("tag"),
-    cut = cms.string('dB < 0.02 && electronID("mvaTrigV0") > 0.9'),
+    cut = cms.string('electronID("mvaTrigV0") > 0.9'),
 )
 
 process.probeS = process.probe.clone(
-    cut = cms.string('pt > 20 && dB < 0.02')
+    cut = cms.string('pt > 20')
 )
 process.probeSIdIso = process.probe.clone(
     cut = cms.string(
-        ' dB < 0.02 && electronID("mvaTrigV0") > 0.9 '
+        ' electronID("mvaTrigV0") > 0.9 '
         ' && gsfTrack.trackerExpectedHitsInner.numberOfHits <= 0 '
         ' && userIsolation("User3Iso") < 0.10 '
         ' && isPF'
