@@ -459,15 +459,6 @@ process.pB2G = cms.Path(
   * process.zSTrg * process.tnpSTrg
 )
 
-if 'Run' in process.source.fileNames[0]:
-    from CMGTools.Common.Tools.applyJSON_cff import *
-    jsonBaseDir = '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions12/8TeV'
-    if 'Prompt' in process.source.fileNames[0]:
-        json = jsonBaseDir + '/Prompt/Cert_190456-208686_8TeV_PromptReco_Collisions12_JSON.txt'
-    else:
-        json = jsonBaseDir + '/Reprocessing/Cert_190456-208686_8TeV_22Jan2013ReReco_Collisions12_JSON.txt'
-    applyJSON(process, json)
-
 #process.hltHighLevel.HLTPaths = ["HLT_Ele17_CaloIdVT_CaloIsoVT_TrkIdT_TrkIsoVT_Ele8_Mass50_v*",]
 # Require tag to matched to hard leg of HLT_Ele17_CaloIdVT_CaloIsoVT_TrkIdT_TrkIsoVT_Ele8_Mass50_v* path
 #process.tag.cut = process.tag.cut.value() + ' && !triggerObjectMatchesByFilter("hltEle17CaloIdVTCaloIsoVTTrkIdTTrkIsoVTEle8TrackIsoFilter").empty()'
