@@ -5,6 +5,7 @@
 #include "Rivet/Projections/IdentifiedFinalState.hh"
 #include "Rivet/Projections/UnstableFinalState.hh"
 #include "Rivet/Projections/LeptonClusters.hh"
+#include "Rivet/Projections/VetoedFinalState.hh"
 #include "Rivet/AnalysisLoader.hh"
 #include "Rivet/Projections/MissingMomentum.hh"
 #include "Rivet/Tools/ParticleIdUtils.hh"
@@ -33,7 +34,7 @@ namespace Rivet {
 class CMS_TOP_12_028 : public Analysis {
 public:
   enum DECAYMODE {
-    DECAYMODE_NONE = 0, DECAYMODE_EE, DECAYMODE_MM, DECAYMODE_EM, 
+    DECAYMODE_NONE = 0, DECAYMODE_EE, DECAYMODE_MM, DECAYMODE_EM,
     DECAYMODE_SIZE
   };
 
@@ -79,11 +80,11 @@ hB_pt_ = new TH1F("hB_pt", "Reclustering;Transverse momentum p_{T} (GeV/c)", 50,
 
     IdentifiedFinalState allMuons(-2.4, 2.4);
     allMuons.acceptIdPair(MUON);
-    LeptonClusters muons(fsForDressup, allMuons, 0.1, true, true, etaForDressup, 20*GeV);
+    LeptonClusters muons(fsForDressup, allMuons, 0.1, true, etaForDressup, 20*GeV);
 
     IdentifiedFinalState allElectrons(-2.4, 2.4);
-    allElectrons.acceptIdPair(ELECTRON);        
-    LeptonClusters electrons(fsForDressup, allElectrons, 0.1, true, true, etaForDressup, 20*GeV);
+    allElectrons.acceptIdPair(ELECTRON);
+    LeptonClusters electrons(fsForDressup, allElectrons, 0.1, true, etaForDressup, 20*GeV);
 
     addProjection(muons, "muons");
     addProjection(electrons, "electrons");
@@ -125,7 +126,7 @@ hB_pt_ = new TH1F("hB_pt", "Reclustering;Transverse momentum p_{T} (GeV/c)", 50,
     _h_dilepton_pT = bookHistogram1D("dilepton_pT", bins);
     bins.clear(); bins += 12, 50, 76, 106, 200, 400;
     _h_dilepton_mass = bookHistogram1D("dilepton_mass", bins);
-  
+
     bins.clear(); bins += 20, 85, 120, 180, 240, 300, 400;
     _h_bjet1_pT = bookHistogram1D("bjet1_pT", bins);
     bins.clear(); bins += -2.4, -1.8, -1.2, -0.6, 0, 0.6, 1.2, 1.8, 2.4;
@@ -242,7 +243,7 @@ hB_pt_ = new TH1F("hB_pt", "Reclustering;Transverse momentum p_{T} (GeV/c)", 50,
     }
     // Do the FastJet algorithm.
     // The "fsForJets" are dummy here. This constructor can be replaced from Rivet 2.0
-    FastJets jetAlg(fsForJets, FastJets::ANTIKT, 0.5); 
+    FastJets jetAlg(fsForJets, FastJets::ANTIKT, 0.5);
     jetAlg.calc(particlesForJets);
     const Jets jets = jetAlg.jetsByPt(30*GeV, MAXDOUBLE, -2.4, 2.4);
     if ( jets.size() < 2 ) {
@@ -298,7 +299,7 @@ hB_n_->Fill(nbjetsB, weight);
 
     // Find the best W candidates
     FourMomentum wCands_momentum[2];
-    int neutrinoIndex[2] = {-1, -1}; 
+    int neutrinoIndex[2] = {-1, -1};
     if ( true ) { // Trick to hide temp variables
       const FourMomentum w00 = lepton_momentum[0]+neutrinos[0].momentum();
       const FourMomentum w11 = lepton_momentum[1]+neutrinos[1].momentum();
@@ -376,21 +377,21 @@ hB_n_->Fill(nbjetsB, weight);
     }
 
     // Selection is done, start filling histograms
-    _h_lepton1_pT->fill(lepton_momentum[0].pT(), weight);
-    _h_lepton1_eta->fill(lepton_momentum[0].eta(), weight);
-    _h_lepton2_pT->fill(lepton_momentum[1].pT(), weight);
-    _h_lepton2_eta->fill(lepton_momentum[1].eta(), weight);
+    fillCrossSection(_h_lepton1_pT, lepton_momentum[0].pT(), weight);
+    fillCrossSection(_h_lepton1_eta, lepton_momentum[0].eta(), weight);
+    fillCrossSection(_h_lepton2_pT, lepton_momentum[1].pT(), weight);
+    fillCrossSection(_h_lepton2_eta, lepton_momentum[1].eta(), weight);
 
-    _h_dilepton_pT->fill(dilepton_momentum.pT(), weight);
-    _h_dilepton_mass->fill(dilepton_mass, weight);
+    fillCrossSection(_h_dilepton_pT, dilepton_momentum.pT(), weight);
+    fillCrossSection(_h_dilepton_mass, dilepton_mass, weight);
 
-    _h_bjet1_pT->fill(bjets[0].momentum().pT(), weight);
-    _h_bjet1_eta->fill(bjets[0].momentum().eta(), weight);
-    _h_bjet2_pT->fill(bjets[1].momentum().pT(), weight);
-    _h_bjet2_eta->fill(bjets[1].momentum().eta(), weight);
+    fillCrossSection(_h_bjet1_pT, bjets[0].momentum().pT(), weight);
+    fillCrossSection(_h_bjet1_eta, bjets[0].momentum().eta(), weight);
+    fillCrossSection(_h_bjet2_pT, bjets[1].momentum().pT(), weight);
+    fillCrossSection(_h_bjet2_eta, bjets[1].momentum().eta(), weight);
 
-    _h_leptonJet_mass->fill(lbCands_momentum[0].mass(), weight);
-    _h_leptonJet_mass->fill(lbCands_momentum[1].mass(), weight);
+    fillCrossSection(_h_leptonJet_mass, lbCands_momentum[0].mass(), weight);
+    fillCrossSection(_h_leptonJet_mass, lbCands_momentum[1].mass(), weight);
 
     // Additional cuts to go to particle level definition
     if ( decayMode != DECAYMODE_EM and ( dilepton_mass < 20 or abs(dilepton_mass-91.2) < 15 ) ) {
@@ -402,26 +403,26 @@ hB_n_->Fill(nbjetsB, weight);
     const double t2Pt = tCands_momentum[1].pT();
     const double t1Rapidity = tCands_momentum[0].rapidity();
     const double t2Rapidity = tCands_momentum[1].rapidity();
-    _h_top1_pT->fill(t1Pt, weight);
-    _h_top1_rapidity->fill(t1Rapidity, weight);
-    _h_top2_pT->fill(t2Pt, weight);
-    _h_top2_rapidity->fill(t2Rapidity, weight);
+    fillCrossSection(_h_top1_pT, t1Pt, weight);
+    fillCrossSection(_h_top1_rapidity, t1Rapidity, weight);
+    fillCrossSection(_h_top2_pT, t2Pt, weight);
+    fillCrossSection(_h_top2_rapidity, t2Rapidity, weight);
 
-    _h_top_pT->fill(t1Pt, weight);
-    _h_top_rapidity->fill(t1Rapidity, weight);
-    _h_top_pT->fill(t2Pt, weight);
-    _h_top_rapidity->fill(t2Rapidity, weight);
+    fillCrossSection(_h_top_pT, t1Pt, weight);
+    fillCrossSection(_h_top_rapidity, t1Rapidity, weight);
+    fillCrossSection(_h_top_pT, t2Pt, weight);
+    fillCrossSection(_h_top_rapidity, t2Rapidity, weight);
 
     const FourMomentum ttCand_momentum = tCands_momentum[0]+tCands_momentum[1];
-    _h_ttbar_pT->fill(ttCand_momentum.pT(), weight);
-    _h_ttbar_mass->fill(ttCand_momentum.mass(), weight);
-    _h_ttbar_rapidity->fill(ttCand_momentum.rapidity(), weight);
+    fillCrossSection(_h_ttbar_pT, ttCand_momentum.pT(), weight);
+    fillCrossSection(_h_ttbar_mass, ttCand_momentum.mass(), weight);
+    fillCrossSection(_h_ttbar_rapidity, ttCand_momentum.rapidity(), weight);
 
 #ifdef MOREPLOT
-    _h_w_mass->fill(wCands_momentum[0].mass(), weight);
-    _h_w_mass->fill(wCands_momentum[1].mass(), weight);
-    _h_top_mass->fill(tCands_momentum[0].mass(), weight);
-    _h_top_mass->fill(tCands_momentum[1].mass(), weight);
+    fillCrossSection(_h_w_mass, wCands_momentum[0].mass(), weight);
+    fillCrossSection(_h_w_mass, wCands_momentum[1].mass(), weight);
+    fillCrossSection(_h_top_mass, tCands_momentum[0].mass(), weight);
+    fillCrossSection(_h_top_mass, tCands_momentum[1].mass(), weight);
 #endif
   }
 
@@ -457,7 +458,7 @@ hB_n_->Fill(nbjetsB, weight);
     normalize(_h_w_mass);
     normalize(_h_top_mass);
 #endif
-    
+
 #ifdef DEBUGROOT
     f_->cd();
     hCutStep_->Write();
@@ -469,6 +470,13 @@ hB_n_->Fill(nbjetsB, weight);
     f_->Write();
     f_->Close();
 #endif
+  }
+
+  void fillCrossSection(AIDA::IHistogram1D* h, const double x, const double w) {
+    const AIDA::IAxis& axis = h->axis();
+    const int binToFill = axis.coordToIndex(x);
+    const double binWidth = axis.binWidth(binToFill);
+    h->fill(x, w/binWidth);
   }
 
 private:
