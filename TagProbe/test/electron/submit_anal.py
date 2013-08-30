@@ -5,35 +5,38 @@ import sys, os
 datasets = [
 #    'DoubleElectron_MC',
 #    'DoubleElectron_RD',
-    'MC',
-    'RD',
+#    'MC',
+#    'RD',
+    'ZJets', 'Run2012A', 'Run2012B', 'Run2012C', 'Run2012D',
 ]
 
-categoryMap = {
-    'Nh'                :['nh0', 'nh1', 'allIdIso09', 'allIdIso05', 'allIdIso00',],
-    'Nh0Mva'            :['mvam01', 'mva00', 'mva03', 'mva05', 'mva07', 'mva09'],
-    'Nh0Mva05Iso'       :['iso15' , 'diso15', 'riso15',],
-    'Nh0Mva05Riso15Pf'  :['pf'],
+## Load list of TnP module configurations from prod configuration file
+sys.path.append(".")
+from prod_cfg import process
+paths = dict(process.paths_())
 
-    'Nh0Mva05Riso15PfCharge':['chargeConsistency'],
-    'Nh0Mva00Iso'       :['iso15' , 'diso15', 'riso15',],
-    'Nh0Mva00Riso15Pf'  :['pf'],
+tnpProducers = []
+for key in paths:
+    path = paths[key]
+    for moduleName in path.moduleNames():
+        module = getattr(process, moduleName)
+        moduleType = module.type_()
+        if moduleType != 'TagProbeFitTreeProducer': continue
 
-    'Nh0Mva05Riso15PfHL':['TS', 'HL'],
-    'Nh0Mva05Riso15PfSL':['SL'],
-    'Nh0Mva05Riso15PfDZ':['DZ'],
+        tnpProducers.append(module)
 
-    'Nh0Mva00Riso15PfHL':['TS', 'HL'],
-    'Nh0Mva00Riso15PfSL':['SL'],
-    'Nh0Mva00Riso15PfDZ':['DZ'],
+## Now we have full list of TnP producers
+categoryMap = {}
+for module in tnpProducers:
+    moduleLabel = module.label()
+    selections = []
+    flags = module.flags
+    for p in flags.parameterNames_():
+        selections.append(p)
+    categoryMap[moduleLabel.replace('tnp', '')] = selections
+print categoryMap
 
-    'Nh0Mva09Riso15PfHL':['TS', 'HL'],
-    'Nh0Mva09Riso15PfSL':['SL'],
-    'Nh0Mva09Riso15PfDZ':['DZ'],
-
-    'S'   :['idIso'],
-    'STrg':['TS'],
-}
+exit()
 
 ## Prepare run environment
 if not os.path.exists("result/unmerged"): os.makedirs("result/unmerged")
