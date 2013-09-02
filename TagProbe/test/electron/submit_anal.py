@@ -36,8 +36,6 @@ for module in tnpProducers:
     categoryMap[moduleLabel.replace('tnp', '')] = selections
 print categoryMap
 
-exit()
-
 ## Prepare run environment
 if not os.path.exists("result/unmerged"): os.makedirs("result/unmerged")
 if not os.path.exists("log/anal"): os.makedirs("log/anal")
