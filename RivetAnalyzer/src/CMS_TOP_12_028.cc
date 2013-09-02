@@ -171,10 +171,28 @@ hB_pt_ = new TH1F("hB_pt", "Reclustering;Transverse momentum p_{T} (GeV/c)", 50,
   }
 
   void analyze(const Event& event) {
-    const double weight = event.weight();
+    double weight = event.weight();
 #ifdef DEBUGROOT
     hCutStep_->Fill(CUTSTEP_ALL, weight);
 #endif
+
+    // Figure out generator internal information
+    const GenEvent& genEvent = event.genEvent();
+    // Separate samples by production mechanism
+    const int parton1Id = genEvent.pdf_info()->id1();
+    const int parton2Id = genEvent.pdf_info()->id2();
+    if ( parton1Id == 0 and parton2Id == 0 ) {
+      // Gluon-Gluon collision
+    }
+    else if ( parton1Id != 0 and parton2Id != 0 ) {
+      // Quark-Quark collision
+      weight = 0;
+    }
+    else
+    {
+      // Quark-Gluon collision
+      weight = 0;
+    }
 
     // Retrieve leptons and check lepton multiplicity
     //const ParticleVector electrons = applyProjection<IdentifiedFinalState>(event, "electrons").particlesByPt();
