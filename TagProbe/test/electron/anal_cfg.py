@@ -32,8 +32,8 @@ def tnpEffPSet(category):
         EfficiencyCategoryAndState = cms.vstring(category, "pass"),
         UnbinnedVariables = cms.vstring("mass", "weight"),
         BinnedVariables = cms.PSet(
-            #pt = cms.vdouble(20, 25, 30, 35, 40, 50, 150),
-            pt = cms.vdouble(5, 7, 10, 15, 20, 30, 40, 50, 200),
+            pt = cms.vdouble(20, 25, 30, 35, 40, 50, 200),
+            #pt = cms.vdouble(5, 7, 10, 15, 20, 30, 40, 50, 200),
         ),
         #BinToPDFmap = cms.vstring("bwResCBTurnOn", "*pt_bin7*", "bwResCBPoly")
         BinToPDFmap = cms.vstring("bwResCBTurnOn")
@@ -43,7 +43,8 @@ def tnpEffPSet(category):
         EfficiencyCategoryAndState = cms.vstring(category, "pass"),
         UnbinnedVariables = cms.vstring("mass", "weight"),
         BinnedVariables = cms.PSet(
-            abseta = cms.vdouble(0.0, 0.8, 1.478, 2.5)
+        #    abseta = cms.vdouble(0.0, 0.8, 1.478, 2.5)
+            abseta = cms.vdouble(0.0, 0.8, 1.4442, 1.5660, 2.5)
         ),
         BinToPDFmap = cms.vstring("bwResCBTurnOn")
     ))
@@ -52,9 +53,10 @@ def tnpEffPSet(category):
         EfficiencyCategoryAndState = cms.vstring(category, "pass"),
         UnbinnedVariables = cms.vstring("mass", "weight"),
         BinnedVariables = cms.PSet(
-            #pt = cms.vdouble(20, 25, 30, 35, 40, 50, 150),
-            pt = cms.vdouble(5, 7, 10, 15, 20, 30, 40, 50, 200),
-            abseta = cms.vdouble(0.0, 0.8, 1.478, 2.5)
+            pt = cms.vdouble(20, 25, 30, 35, 40, 50, 200),
+            #pt = cms.vdouble(5, 7, 10, 15, 20, 30, 40, 50, 200),
+            #abseta = cms.vdouble(0.0, 0.8, 1.478, 2.5)
+            abseta = cms.vdouble(0.0, 0.8, 1.4442, 1.5660, 2.5)
             #abseta = cms.vdouble(0.0, 1.5, 2.4)
         ),
         BinToPDFmap = cms.vstring("bwResCBTurnOn")
@@ -82,8 +84,7 @@ def tnpEffPSet(category):
 
 def makeTnPFitter(process, suffix, category):
     fitter = cms.EDAnalyzer("TagProbeFitTreeAnalyzer",
-        #InputFileNames = cms.vstring("ntuple/0j/tnpTree_%s.root" % mode),
-        InputFileNames = cms.vstring("ntuple/ntuple_%s.root" % mode),
+        InputFileNames = cms.vstring("/afs/cern.ch/work/j/jhgoh/public/20130830/prod_%s.root" % mode),
         InputDirectoryName = cms.string("tnp"+suffix),
         InputTreeName = cms.string("fitter_tree"),
         OutputFileName = cms.string("result/unmerged/result_%s_%s_%s.root" % (suffix, category, mode)),
