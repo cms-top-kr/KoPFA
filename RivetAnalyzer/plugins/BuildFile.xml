@@ -11,6 +11,7 @@
 <use   name="SimDataFormats/Track"/>
 <use   name="PhysicsTools/HepMCCandAlgos"/>
 <use   name="PhysicsTools/JetMCUtils"/>
+<use   name="CommonTools/UtilAlgos" />
 
 <library   file="*.cc" name="KoPFAGeneratorInterfaceRivetInterface_plugins">
   <flags   EDM_PLUGIN="1"/>
