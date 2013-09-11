@@ -1,0 +1,18 @@
+<use   name="FWCore/Framework"/>
+<use   name="FWCore/ServiceRegistry"/>
+<use   name="SimDataFormats/GeneratorProducts"/>
+<use   name="GeneratorInterface/Core"/>
+<use   name="DataFormats/Common"/>
+<use   name="gsl"/>
+<use   name="DataFormats/HepMCCandidate"/>
+<use   name="SimGeneral/HepPDTRecord"/>
+<use   name="SimDataFormats/Track"/>
+<use   name="PhysicsTools/HepMCCandAlgos"/>
+<use   name="PhysicsTools/JetMCUtils"/>
+<use   name="CommonTools/UtilAlgos" />
+
+<library   file="*.cc" name="KoPFAGeneratorTools_plugins">
+  <flags   EDM_PLUGIN="1"/>
+</library>
+
+
