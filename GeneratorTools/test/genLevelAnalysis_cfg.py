@@ -7,7 +7,7 @@ process.MessageLogger.cerr.FwkReport.reportEvery = cms.untracked.int32(10000)
 process.maxEvents = cms.untracked.PSet(input = cms.untracked.int32(-1))
 process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(
-        'file:E87AF0D3-4C4D-E211-95FA-003048D37694.root',
+        '/store/cmst3/user/cmgtools/CMG//TTJets_FullLeptMGDecays_8TeV-madgraph-tauola/Summer12_DR53X-PU_S10_START53_V7C-v2/AODSIM/V5_B/PAT_CMG_V5_13_0/patTuple_2.root', 
     )
 )
 
@@ -15,18 +15,15 @@ process.load("Configuration.StandardSequences.Services_cff")
 process.load("KoPFA.GeneratorTools.genJetsWithGhostBHadrons_cff")
 
 process.genAnalysis = cms.EDAnalyzer("TTbarGenLevelAnalyzer",
-    genParticles = cms.InputTag("genParticles"),
-    genJets = cms.InputTag("genJetsWithGhost"),
-    leptonMinPt = cms.untracked.double(20),
-    leptonMaxEta = cms.untracked.double(2.5),
-    neutrinoMaxEta = cms.untracked.double(5),
-    jetMinPt = cms.untracked.double(30),
-    jetMaxEta = cms.untracked.double(2.5),
+    genParticles = cms.untracked.InputTag("genParticles"),
+    genJets = cms.untracked.InputTag("ak5GenJets::USER"),
 )
 
-process.TFileService = cms.Serivce("TFileService",
-    fileName = cms.untracked.fileName("genLevel.root"),
+process.TFileService = cms.Service("TFileService",
+    fileName = cms.string("genLevel.root"),
 )
 
 process.p = cms.Path(
+    process.genParticlesWithGhostB * process.genParticlesForJets * process.ak5GenJets
+  * process.genAnalysis
 )
