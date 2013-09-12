@@ -4,7 +4,7 @@ from Configuration.StandardSequences.Generator_cff import *
 
 genParticlesWithGhostB = cms.EDProducer("GhostBHadronProducer",
     src = cms.InputTag("genParticles"),
-    userPdgId = cms.untracked.int32(0),
+    userPdgId = cms.untracked.int32(7),
 )
 
 genParticlesForJets.src = cms.InputTag("genParticlesWithGhostB")
