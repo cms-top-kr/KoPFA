@@ -58,14 +58,14 @@ private:
 
 TTbarGenLevelAnalyzer::TTbarGenLevelAnalyzer(const edm::ParameterSet& pset)
 {
-  genParticlesLabel_ = pset.getParameter<edm::InputTag>("genParticles");
-  genJetsLabel_ = pset.getParameter<edm::InputTag>("genJets");
+  genParticlesLabel_ = pset.getUntrackedParameter<edm::InputTag>("genParticles");
+  genJetsLabel_ = pset.getUntrackedParameter<edm::InputTag>("genJets");
 
-  leptonMinPt_  = pset.getParameter<double>("leptonMinPt");
-  leptonMaxEta_ = pset.getParameter<double>("leptonMaxEta");
-  neutrinoMaxEta_ = pset.getParameter<double>("neutrinoMaxEta");
-  jetMinPt_  = pset.getParameter<double>("jetMinPt");
-  jetMaxEta_ = pset.getParameter<double>("jetMaxEta");
+  leptonMinPt_  = pset.getUntrackedParameter<double>("leptonMinPt", 20);
+  leptonMaxEta_ = pset.getUntrackedParameter<double>("leptonMaxEta", 2.5);
+  neutrinoMaxEta_ = pset.getUntrackedParameter<double>("neutrinoMaxEta", 5.0);
+  jetMinPt_  = pset.getUntrackedParameter<double>("jetMinPt", 30);
+  jetMaxEta_ = pset.getUntrackedParameter<double>("jetMaxEta", 2.5);
 
   electrons_ = new LorentzVectors();
   muons_     = new LorentzVectors();
@@ -81,16 +81,16 @@ TTbarGenLevelAnalyzer::TTbarGenLevelAnalyzer(const edm::ParameterSet& pset)
 
   edm::Service<TFileService> fs;
   tree_ = fs->make<TTree>("tree", "tree");
-  tree_->Branch("electrons", "std::vector<math::XYZTLorentzVector>", &electrons_);
-  tree_->Branch("muons"    , "std::vector<math::XYZTLorentzVector>", &muons_    );
-  tree_->Branch("bjets"    , "std::vector<math::XYZTLorentzVector>", &bjets_    );
-  tree_->Branch("mets"     , "std::vector<math::XYZTLorentzVector>", &mets_     );
+  tree_->Branch("electrons", "std::vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >", &electrons_);
+  tree_->Branch("muons"    , "std::vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >", &muons_    );
+  tree_->Branch("bjets"    , "std::vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >", &bjets_    );
+  tree_->Branch("mets"     , "std::vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >", &mets_     );
 
-  tree_->Branch("dileptons", "std::vector<math::XYZTLorentzVector>", &dileptons_);
-  tree_->Branch("lbCands"  , "std::vector<math::XYZTLorentzVector>", &lbCands_  );
-  tree_->Branch("wCands"   , "std::vector<math::XYZTLorentzVector>", &wCands_   );
-  tree_->Branch("tCands"   , "std::vector<math::XYZTLorentzVector>", &tCands_   );
-  tree_->Branch("ttCands"  , "std::vector<math::XYZTLorentzVector>", &ttCands_  );
+  tree_->Branch("dileptons", "std::vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >", &dileptons_);
+  tree_->Branch("lbCands"  , "std::vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >", &lbCands_  );
+  tree_->Branch("wCands"   , "std::vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >", &wCands_   );
+  tree_->Branch("tCands"   , "std::vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >", &tCands_   );
+  tree_->Branch("ttCands"  , "std::vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >", &ttCands_  );
 
 }
 
@@ -174,8 +174,8 @@ void TTbarGenLevelAnalyzer::analyze(const edm::Event& event, const edm::EventSet
   for ( unsigned int i=0, n=genJetsHandle->size(); i<n; ++i )
   {
     const reco::GenJet& jet = genJetsHandle->at(i);
-    if ( jet.pt() < jetMinPt_ or abs(jet.eta()) < jetMaxEta_ ) continue;
-    if ( deltaR(jet.p4(), lepton1) < 0.5 or deltaR(jet.p4(), lepton2) < 0.5 ) continue;
+    if ( jet.pt() < jetMinPt_ or abs(jet.eta()) > jetMaxEta_ ) continue;
+    //if ( deltaR(jet.p4(), lepton1) < 0.5 or deltaR(jet.p4(), lepton2) < 0.5 ) continue;
     if ( !hasStableB(jet) ) continue;
 
     bjets_->push_back(jet.p4());
