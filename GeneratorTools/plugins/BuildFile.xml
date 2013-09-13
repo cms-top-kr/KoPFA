@@ -1,6 +1,7 @@
 <use   name="FWCore/Framework"/>
 <use   name="FWCore/ServiceRegistry"/>
 <use   name="SimGeneral/HepPDTRecord"/>
+<use   name="SimDataFormats/GeneratorProducts" />
 <use   name="PhysicsTools/HepMCCandAlgos"/>
 <use   name="PhysicsTools/JetMCUtils"/>
 <use   name="CommonTools/UtilAlgos" />

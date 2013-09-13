@@ -12,6 +12,7 @@
 #include "DataFormats/HepMCCandidate/interface/GenParticle.h"
 #include "DataFormats/JetReco/interface/GenJet.h"
 #include "DataFormats/Math/interface/deltaR.h"
+#include "SimDataFormats/GeneratorProducts/interface/GenEventInfoProduct.h"
 
 #include "TTree.h"
 
@@ -35,6 +36,7 @@ private:
   bool hasStableB(const reco::GenJet& jet);
 
 private:
+  edm::InputTag genEventInfoLabel_;
   edm::InputTag genParticlesLabel_;
   edm::InputTag genJetsLabel_;
 
@@ -47,7 +49,8 @@ private:
 
 private:
   TTree* tree_;
-  int decayMode_;
+  int prodMode_, decayMode_;
+  double qScale_;
   LorentzVectors* electrons_, * muons_;
   LorentzVectors* bjets_;
   LorentzVectors* neutrinos_, * mets_;
@@ -58,6 +61,7 @@ private:
 
 TTbarGenLevelAnalyzer::TTbarGenLevelAnalyzer(const edm::ParameterSet& pset)
 {
+  genEventInfoLabel_ = pset.getUntrackedParameter<edm::InputTag>("genEventInfo");
   genParticlesLabel_ = pset.getUntrackedParameter<edm::InputTag>("genParticles");
   genJetsLabel_ = pset.getUntrackedParameter<edm::InputTag>("genJets");
 
@@ -81,6 +85,10 @@ TTbarGenLevelAnalyzer::TTbarGenLevelAnalyzer(const edm::ParameterSet& pset)
 
   edm::Service<TFileService> fs;
   tree_ = fs->make<TTree>("tree", "tree");
+  tree_->Branch("decayMode", &decayMode_, "decayMode/I");
+  tree_->Branch("prodMode" , &prodMode_ , "prodMode/I" );
+  tree_->Branch("qScale"   , &qScale_   , "qScale/D"   );
+
   tree_->Branch("electrons", "std::vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >", &electrons_);
   tree_->Branch("muons"    , "std::vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >", &muons_    );
   tree_->Branch("bjets"    , "std::vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >", &bjets_    );
@@ -109,11 +117,22 @@ void TTbarGenLevelAnalyzer::analyze(const edm::Event& event, const edm::EventSet
   tCands_->clear();
   ttCands_->clear();
 
+  edm::Handle<GenEventInfoProduct> genEventInfoHandle;
+  event.getByLabel(genEventInfoLabel_, genEventInfoHandle);
+
   edm::Handle<reco::GenParticleCollection> genParticlesHandle;
   event.getByLabel(genParticlesLabel_, genParticlesHandle);
 
   edm::Handle<reco::GenJetCollection> genJetsHandle;
   event.getByLabel(genJetsLabel_, genJetsHandle);
+
+  const gen::PdfInfo* pdf = genEventInfoHandle->pdf();
+  const int parton1Id = pdf->id.first;
+  const int parton2Id = pdf->id.second;
+  if ( parton1Id == 0 and parton2Id == 0 ) prodMode_ = 1; // gg fusion
+  else if ( parton1Id != 0 and parton2Id != 0 ) prodMode_ = 3; // qq collision
+  else prodMode_ = 2; // gq scattering
+  qScale_ = pdf->scalePDF;
 
   // Collect stable particles for the particle level analysis
   GenParticlesPtr stableLeptons;
@@ -222,6 +241,8 @@ void TTbarGenLevelAnalyzer::analyze(const edm::Event& event, const edm::EventSet
   }
   // Skip if no B jet combination found
   if ( topBIndex[0] == -1 or topBIndex[1] == -1 ) return;
+  lbCands_->push_back(lepton1+bjets_->at(topBIndex[0]));
+  lbCands_->push_back(lepton2+bjets_->at(topBIndex[1]));
   tCands_->push_back(wCands_->at(0)+bjets_->at(topBIndex[0]));
   tCands_->push_back(wCands_->at(1)+bjets_->at(topBIndex[1]));
 

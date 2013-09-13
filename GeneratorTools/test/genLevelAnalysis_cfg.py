@@ -15,6 +15,7 @@ process.load("Configuration.StandardSequences.Services_cff")
 process.load("KoPFA.GeneratorTools.genJetsWithGhostBHadrons_cff")
 
 process.genAnalysis = cms.EDAnalyzer("TTbarGenLevelAnalyzer",
+    genEventInfo = cms.untracked.InputTag("generator"),
     genParticles = cms.untracked.InputTag("genParticles"),
     genJets = cms.untracked.InputTag("ak5GenJets::USER"),
 )
