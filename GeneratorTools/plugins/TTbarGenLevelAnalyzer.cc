@@ -84,6 +84,7 @@ TTbarGenLevelAnalyzer::TTbarGenLevelAnalyzer(const edm::ParameterSet& pset)
   tree_->Branch("electrons", "std::vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >", &electrons_);
   tree_->Branch("muons"    , "std::vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >", &muons_    );
   tree_->Branch("bjets"    , "std::vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >", &bjets_    );
+  tree_->Branch("neutrinos", "std::vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >", &neutrinos_);
   tree_->Branch("mets"     , "std::vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >", &mets_     );
 
   tree_->Branch("dileptons", "std::vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >", &dileptons_);
@@ -99,6 +100,7 @@ void TTbarGenLevelAnalyzer::analyze(const edm::Event& event, const edm::EventSet
   electrons_->clear();
   muons_->clear();
   bjets_->clear();
+  neutrinos_->clear();
   mets_->clear();
   
   dileptons_->clear();
@@ -222,6 +224,8 @@ void TTbarGenLevelAnalyzer::analyze(const edm::Event& event, const edm::EventSet
   if ( topBIndex[0] == -1 or topBIndex[1] == -1 ) return;
   tCands_->push_back(wCands_->at(0)+bjets_->at(topBIndex[0]));
   tCands_->push_back(wCands_->at(1)+bjets_->at(topBIndex[1]));
+
+  ttCands_->push_back(tCands_->at(0)+tCands_->at(1));
 
   tree_->Fill();
 }
