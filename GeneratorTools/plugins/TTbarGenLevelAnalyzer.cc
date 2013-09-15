@@ -15,6 +15,7 @@
 #include "SimDataFormats/GeneratorProducts/interface/GenEventInfoProduct.h"
 
 #include "TTree.h"
+#include "TH2F.h"
 
 #include <iostream>
 #include <vector>
@@ -34,6 +35,8 @@ private:
   typedef std::vector<math::XYZTLorentzVector> LorentzVectors;
   void dressup(math::XYZTLorentzVector& lv, const GenParticlesPtr& photons);
   bool hasStableB(const reco::GenJet& jet);
+  void matchAndFill(TH2F* h, const math::XYZTLorentzVector& p,
+                    const math::XYZTLorentzVector& v1, const math::XYZTLorentzVector& v2);
 
 private:
   edm::InputTag genEventInfoLabel_;
@@ -57,6 +60,16 @@ private:
   LorentzVectors* dileptons_, * lbCands_; 
   LorentzVectors* wCands_, * tCands_;
   LorentzVectors* ttCands_;
+
+  TH2F* hPartonElectronPt_DressedElectronPt_;
+  TH2F* hPartonMuonPt_DressedMuonPt_;
+  TH2F* hDressedElectronPt_BaldElectronPt_;
+  TH2F* hDressedMuonPt_BaldMuonPt_;
+  TH2F* hPartonBPt_ParticleBPt_;
+  TH2F* hPartonWPt_ParticleWPt_;
+  TH2F* hPartonTopPt_ParticleTopPt_;
+  TH2F* hPartonTTbarM_ParticleTTbarM_;
+  TH2F* hPartonTTbarPt_ParticleTTbarPt_;
 };
 
 TTbarGenLevelAnalyzer::TTbarGenLevelAnalyzer(const edm::ParameterSet& pset)
@@ -100,6 +113,16 @@ TTbarGenLevelAnalyzer::TTbarGenLevelAnalyzer(const edm::ParameterSet& pset)
   tree_->Branch("wCands"   , "std::vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >", &wCands_   );
   tree_->Branch("tCands"   , "std::vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >", &tCands_   );
   tree_->Branch("ttCands"  , "std::vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >", &ttCands_  );
+
+  hPartonElectronPt_DressedElectronPt_ = fs->make<TH2F>("hPartonElectronPt_DressedElectronPt", "Compared electrons;Parton electron p_{T} (GeV/c);Dressed electron p_{T} (GeV/c)", 100, 0, 500, 100, 0, 500);
+  hPartonMuonPt_DressedMuonPt_ = fs->make<TH2F>("hPartonMuonPt_DressedMuonPt", "Compared muons;Parton muon p_{T} (GeV/c);Dressed muon p_{T} (GeV/c)", 100, 0, 500, 100, 0, 500);
+  hDressedElectronPt_BaldElectronPt_ = fs->make<TH2F>("hDressedElectronPt_BaldElectronPt", "Compared electrons;Dressed electron p_{T} (GeV/c);Bald electron p_{T} (GeV/c)", 100, 0, 500, 100, 0, 500);
+  hDressedMuonPt_BaldMuonPt_ = fs->make<TH2F>("hDressedMuonPt_BaldMuonPt", "Compared muons;Dressed muon p_{T} (GeV/c);Bald muon p_{T} (GeV/c)", 100, 0, 500, 100, 0, 500);
+  hPartonBPt_ParticleBPt_ = fs->make<TH2F>("hPartonBPt_ParticleBPt", "Compared b jets;B quark p_{T} (GeV/c);B jet p_{T} (GeV/c)", 100, 0, 500, 100, 0, 500);
+  hPartonWPt_ParticleWPt_ = fs->make<TH2F>("hPartonWPt_ParticleWPt", "Compared top;Parton W p_{T} (GeV/c);Particle W p_{T} (GeV/c)", 100, 0, 500, 100, 0, 500);
+  hPartonTopPt_ParticleTopPt_ = fs->make<TH2F>("hPartonTopPt_ParticleTopPt", "Compared top;Parton top p_{T} (GeV/c);Particle top p_{T} (GeV/c)", 100, 0, 500, 100, 0, 500);
+  hPartonTTbarM_ParticleTTbarM_ = fs->make<TH2F>("hPartonTTbarM_ParticleTTbarM", "Compared ttbar;Parton t#bar{t} M (GeV/c^{2});Particle t#bar{t} M(GeV/c^{2})", 400, 0, 2000, 400, 0, 2000);
+  hPartonTTbarPt_ParticleTTbarPt_ = fs->make<TH2F>("hPartonTTbarPt_ParticleTTbarPt", "Compared t#bar{t};Parton t#bar{t} p_{T} (GeV/c);Particle t#bar{t} p_{T} (GeV/c)", 100, 0, 500, 100, 0, 500);
 
 }
 
@@ -160,8 +183,16 @@ void TTbarGenLevelAnalyzer::analyze(const edm::Event& event, const edm::EventSet
     if ( p4.pt() < leptonMinPt_ or abs(p4.eta()) > leptonMaxEta_ ) continue;
 
     const unsigned int absPdgId = abs(p->pdgId());
-    if ( absPdgId == 11 ) electrons_->push_back(p4);
-    else if ( absPdgId == 13 ) muons_->push_back(p4);
+    if ( absPdgId == 11 ) 
+    {
+      electrons_->push_back(p4);
+      hDressedElectronPt_BaldElectronPt_->Fill(p4.pt(), p->pt());
+    }
+    else if ( absPdgId == 13 )
+    {
+      muons_->push_back(p4);
+      hDressedMuonPt_BaldMuonPt_->Fill(p4.pt(), p->pt());
+    }
   }
   // Determine decay mode
   math::XYZTLorentzVector lepton1, lepton2;
@@ -248,6 +279,46 @@ void TTbarGenLevelAnalyzer::analyze(const edm::Event& event, const edm::EventSet
 
   ttCands_->push_back(tCands_->at(0)+tCands_->at(1));
 
+  // Collect parton level objects
+  math::XYZTLorentzVector parton_m1, parton_m2;
+  math::XYZTLorentzVector parton_e1, parton_e2;
+  math::XYZTLorentzVector parton_b1, parton_b2;
+  math::XYZTLorentzVector parton_w1, parton_w2;
+  math::XYZTLorentzVector parton_t1, parton_t2;
+  for ( unsigned int i=0, n=genParticlesHandle->size(); i<n; ++i )
+  {
+    const reco::GenParticle* p = &genParticlesHandle->at(i);
+    if ( p->status() != 3 ) continue;
+    const math::XYZTLorentzVector p4 = p->p4();
+    switch ( p->pdgId() )
+    {
+      case   6 : parton_t1 = p4; break;
+      case  -6 : parton_t2 = p4; break;
+      case   5 : parton_b1 = p4; break;
+      case  -5 : parton_b2 = p4; break;
+      case  11 : parton_e1 = p4; break;
+      case -11 : parton_e2 = p4; break;
+      case  13 : parton_m1 = p4; break;
+      case -13 : parton_m2 = p4; break;
+      case  24 : parton_w1 = p4; break;
+      case -24 : parton_w2 = p4; break;
+    }
+  }
+  math::XYZTLorentzVector parton_tt = parton_t1 + parton_t2;
+
+  matchAndFill(hPartonElectronPt_DressedElectronPt_, parton_e1, lepton1, lepton2);
+  matchAndFill(hPartonElectronPt_DressedElectronPt_, parton_e2, lepton1, lepton2);
+  matchAndFill(hPartonMuonPt_DressedMuonPt_, parton_m1, lepton1, lepton2);
+  matchAndFill(hPartonMuonPt_DressedMuonPt_, parton_m2, lepton1, lepton2);
+  matchAndFill(hPartonBPt_ParticleBPt_, parton_b1, bjets_->at(0), bjets_->at(1));
+  matchAndFill(hPartonBPt_ParticleBPt_, parton_b2, bjets_->at(0), bjets_->at(1));
+  matchAndFill(hPartonWPt_ParticleWPt_, parton_w1, wCands_->at(0), wCands_->at(1));
+  matchAndFill(hPartonWPt_ParticleWPt_, parton_w2, wCands_->at(0), wCands_->at(1));
+  matchAndFill(hPartonTopPt_ParticleTopPt_, parton_t1, tCands_->at(0), tCands_->at(1));
+  matchAndFill(hPartonTopPt_ParticleTopPt_, parton_t2, tCands_->at(0), tCands_->at(1));
+  hPartonTTbarPt_ParticleTTbarPt_->Fill(parton_tt.pt(), ttCands_->at(0).pt());
+  hPartonTTbarM_ParticleTTbarM_->Fill(parton_tt.mass(), ttCands_->at(0).mass());
+
   tree_->Fill();
 }
 
@@ -269,6 +340,14 @@ bool TTbarGenLevelAnalyzer::hasStableB(const reco::GenJet& jet)
     if ( p->pdgId() == 7 ) return true;
   }
   return false;
+}
+
+void TTbarGenLevelAnalyzer::matchAndFill(TH2F* h, const math::XYZTLorentzVector& p, 
+                                         const math::XYZTLorentzVector& v1, const math::XYZTLorentzVector& v2)
+{
+  if ( p.pt() <= 0.01 ) return; 
+  if ( v1.pt() > 0.01 and deltaR(p, v1) < 0.1 ) h->Fill(p.pt(), v1.pt());
+  if ( v2.pt() > 0.01 and deltaR(p, v2) < 0.1 ) h->Fill(p.pt(), v2.pt());
 }
 
 #include "FWCore/Framework/interface/MakerMacros.h"
