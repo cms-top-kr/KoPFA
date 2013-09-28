@@ -19,13 +19,7 @@
 //   - https://rivet.hepforge.org/trac/wiki/CodingStyleGuide
 //   - http://en.wikipedia.org/wiki/Indent_style#Variant:_1TBS
 
-//#define DEBUGROOT
 #define MOREPLOT
-
-#ifdef DEBUGROOT
-#include <TFile.h>
-#include <TH1F.h>
-#endif
 
 using namespace std;
 
@@ -49,15 +43,6 @@ public:
 
 public:
   CMS_TOP_12_028() : Analysis("CMS_TOP_12_028") {
-#ifdef DEBUGROOT
-f_ = new TFile("debug.root", "RECREATE");
-hCutStep_ = new TH1F("hNEvent", "Events", CUTSTEP_SIZE, CUTSTEP_ALL, CUTSTEP_SIZE);
-hA_n_ = new TH1F("hA_n", "Rivet default;B jet multiplicity", 10, 0, 10);
-hB_n_ = new TH1F("hB_n", "Reclustering;B jet multiplicity", 10, 0, 10);
-hT_n_ = new TH1F("hT_n", "Total stable B;Stable b multiplicity", 10, 0, 10);
-hA_pt_ = new TH1F("hA_pt", "Rivet default;Transverse momentum p_{T} (GeV/c)", 50, 0, 100);
-hB_pt_ = new TH1F("hB_pt", "Reclustering;Transverse momentum p_{T} (GeV/c)", 50, 0, 100);
-#endif
   }
 
   bool hasBDescendants(const GenParticle* p)
@@ -172,9 +157,6 @@ hB_pt_ = new TH1F("hB_pt", "Reclustering;Transverse momentum p_{T} (GeV/c)", 50,
 
   void analyze(const Event& event) {
     double weight = event.weight();
-#ifdef DEBUGROOT
-    hCutStep_->Fill(CUTSTEP_ALL, weight);
-#endif
 
     // Figure out generator internal information
     const GenEvent& genEvent = event.genEvent();
@@ -209,9 +191,6 @@ hB_pt_ = new TH1F("hB_pt", "Reclustering;Transverse momentum p_{T} (GeV/c)", 50,
       MSG_DEBUG("  nMuon     = " << muons.size()    );
       vetoEvent;
     }
-#ifdef DEBUGROOT
-    hCutStep_->Fill(CUTSTEP_LEPTON, weight);
-#endif
 
     // Select dilepton pair
     FourMomentum lepton_momentum[2];
@@ -242,9 +221,6 @@ hB_pt_ = new TH1F("hB_pt", "Reclustering;Transverse momentum p_{T} (GeV/c)", 50,
     }
     FourMomentum dilepton_momentum = lepton_momentum[0]+lepton_momentum[1];
     const double dilepton_mass = std::sqrt(std::max(0., dilepton_momentum.mass2()));
-#ifdef DEBUGROOT
-    hCutStep_->Fill(CUTSTEP_DILEPTON, weight);
-#endif
 
     // Find jets. Do the jet clustering after inserting ghost B hadrons into the event
     const VetoedFinalState& fsForJets = applyProjection<VetoedFinalState>(event, "fsForJets");
@@ -268,9 +244,6 @@ hB_pt_ = new TH1F("hB_pt", "Reclustering;Transverse momentum p_{T} (GeV/c)", 50,
       MSG_DEBUG("Event failed jet multiplicity cut, nJet = " << jets.size());
       vetoEvent;
     }
-#ifdef DEBUGROOT
-    hCutStep_->Fill(CUTSTEP_JET, weight);
-#endif
 
     // MET
     //const MissingMomentum& metJet = applyProjection<MissingMomentum>(event, "metJet");
@@ -285,35 +258,16 @@ hB_pt_ = new TH1F("hB_pt", "Reclustering;Transverse momentum p_{T} (GeV/c)", 50,
     //  MSG_DEBUG("Event failed missing ET cut, MET = " << met.perp());
     //  vetoEvent;
     //}
-#ifdef DEBUGROOT
-    hCutStep_->Fill(CUTSTEP_MET, weight);
-#endif
-
-#ifdef DEBUGROOT
-hT_n_->Fill(applyProjection<IdentifiedFinalState>(event, "stableBHadrons").size(), weight);
-int nbjetsA = 0, nbjetsB = 0;
-#endif
 
     Jets bjets;
     foreach ( const Jet& jet, jets ) {
-#ifdef DEBUGROOT
-if ( jet.containsBottom() ) { hA_pt_->Fill(jet.momentum().perp(), weight); ++nbjetsA; }
-if ( jet.containsParticleId(_ghost_b_id) ) { hB_pt_->Fill(jet.momentum().perp(), weight); ++nbjetsB; }
-#endif
       if ( !jet.containsParticleId(_ghost_b_id) ) continue; // Find ghost b hadrons as stable bprime
       bjets.push_back(jet);
     }
-#ifdef DEBUGROOT
-hA_n_->Fill(nbjetsA, weight);
-hB_n_->Fill(nbjetsB, weight);
-#endif
     if ( bjets.size() < 2 ) {
       MSG_DEBUG("Event failed b-tagging cut, nBJet = " << bjets.size());
       vetoEvent;
     }
-#ifdef DEBUGROOT
-    hCutStep_->Fill(CUTSTEP_BTAG, weight);
-#endif
 
     // Find the best W candidates
     FourMomentum wCands_momentum[2];
@@ -477,27 +431,9 @@ hB_n_->Fill(nbjetsB, weight);
     normalize(_h_top_mass);
 #endif
 
-#ifdef DEBUGROOT
-    f_->cd();
-    hCutStep_->Write();
-    hT_n_->Write();
-    hA_n_->Write();
-    hB_n_->Write();
-    hA_pt_->Write();
-    hB_pt_->Write();
-    f_->Write();
-    f_->Close();
-#endif
   }
 
 private:
-#ifdef DEBUGROOT
-  TFile* f_;
-  TH1F* hT_n_, * hA_n_, * hB_n_;
-  TH1F* hA_pt_, * hB_pt_;
-  // Histogram for Event filter counting
-  TH1F* hCutStep_;
-#endif
 #ifdef MOREPLOT
   AIDA::IHistogram1D* _h_w_mass;
   AIDA::IHistogram1D* _h_top_mass;
