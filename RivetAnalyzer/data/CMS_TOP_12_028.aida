@@ -1,0 +1,780 @@
+<?xml version="1.0" ?>
+<!DOCTYPE aida SYSTEM "http://aida.freehep.org/schemas/3.3/aida.dtd">
+<aida version="3.3">
+  <implementation version="1.1" package="Rivet"/>
+  <dataPointSet name="lepton1_pT" dimension="2"
+      path="/REF/CMS_TOP_12_028" title="Transverse momentum of leading lepton">
+    <dimension dim="0" title="Leading lepton transverse momentum $p_T^{Lead.l}$ (GeV/c)"/>
+    <dimension dim="1" title="$1/\sigma d\sigma/dp_T^{Lead.l}$ (1/GeV/c)"/>
+    <annotation>
+      <item key="Title" value="Transverse momentum of leading lepton" sticky="true"/>
+      <item key="AidaPath" value="/REF/CMS_TOP_12_028/lepton1_pT" sticky="true"/>
+    </annotation>
+  <dataPoint>
+    <measurement value="3.000000e+01" errorPlus="1.000000e+01" errorMinus="1.000000e+01"/>
+    <measurement value="7.088300e-03" errorPlus="4.061596e-04" errorMinus="4.061596e-04"/>
+  </dataPoint>
+  <dataPoint>
+    <measurement value="5.500000e+01" errorPlus="1.500000e+01" errorMinus="1.500000e+01"/>
+    <measurement value="1.472700e-02" errorPlus="2.606679e-04" errorMinus="2.606679e-04"/>
+  </dataPoint>
+  <dataPoint>
+    <measurement value="9.500000e+01" errorPlus="2.500000e+01" errorMinus="2.500000e+01"/>
+    <measurement value="6.493400e-03" errorPlus="1.402574e-04" errorMinus="1.402574e-04"/>
+  </dataPoint>
+  <dataPoint>
+    <measurement value="1.500000e+02" errorPlus="3.000000e+01" errorMinus="3.000000e+01"/>
+    <measurement value="1.207000e-03" errorPlus="6.517800e-05" errorMinus="6.517800e-05"/>
+  </dataPoint>
+  <dataPoint>
+    <measurement value="2.900000e+02" errorPlus="1.100000e+02" errorMinus="1.100000e+02"/>
+    <measurement value="8.938600e-05" errorPlus="1.108386e-05" errorMinus="1.108386e-05"/>
+  </dataPoint>
+  </dataPointSet>
+  <dataPointSet name="lepton2_pT" dimension="2"
+      path="/REF/CMS_TOP_12_028" title="Transverse momentum of next leading lepton">
+    <dimension dim="0" title="Next leading lepton transverse momentum $p_T^{NLead.l}$ (GeV/c)"/>
+    <dimension dim="1" title="$1/\sigma d\sigma/dp_T^{NLead.l}$ (1/GeV/c)"/>
+    <annotation>
+      <item key="Title" value="Transverse momentum of next leading lepton" sticky="true"/>
+      <item key="AidaPath" value="/REF/CMS_TOP_12_028/lepton2_pT" sticky="true"/>
+    </annotation>
+  <dataPoint>
+    <measurement value="3.000000e+01" errorPlus="1.000000e+01" errorMinus="1.000000e+01"/>
+    <measurement value="2.986600e-02" errorPlus="8.332614e-04" errorMinus="8.332614e-04"/>
+  </dataPoint>
+  <dataPoint>
+    <measurement value="5.500000e+01" errorPlus="1.500000e+01" errorMinus="1.500000e+01"/>
+    <measurement value="1.087900e-02" errorPlus="3.687981e-04" errorMinus="3.687981e-04"/>
+  </dataPoint>
+  <dataPoint>
+    <measurement value="9.500000e+01" errorPlus="2.500000e+01" errorMinus="2.500000e+01"/>
+    <measurement value="1.332000e-03" errorPlus="6.380280e-05" errorMinus="6.380280e-05"/>
+  </dataPoint>
+  <dataPoint>
+    <measurement value="1.500000e+02" errorPlus="3.000000e+01" errorMinus="3.000000e+01"/>
+    <measurement value="1.403300e-04" errorPlus="1.641861e-05" errorMinus="1.641861e-05"/>
+  </dataPoint>
+  <dataPoint>
+    <measurement value="2.900000e+02" errorPlus="1.100000e+02" errorMinus="1.100000e+02"/>
+    <measurement value="5.142100e-06" errorPlus="1.717461e-06" errorMinus="1.717461e-06"/>
+  </dataPoint>
+  </dataPointSet>
+  <dataPointSet name="lepton1_eta" dimension="2"
+      path="/REF/CMS_TOP_12_028" title="Pseudorapidity of leading lepton">
+    <dimension dim="0" title="Leading lepton pseudorapidity $\eta^{Lead.l}$"/>
+    <dimension dim="1" title="$1/\sigma d\sigma/d\eta_T^{Lead.l}$"/>
+    <annotation>
+      <item key="Title" value="Pseudorapidity of leading lepton" sticky="true"/>
+      <item key="AidaPath" value="/REF/CMS_TOP_12_028/lepton1_eta" sticky="true"/>
+    </annotation>
+  <dataPoint>
+    <measurement value="-2.100000e+00" errorPlus="3.000000e-01" errorMinus="3.000000e-01"/>
+    <measurement value="6.787800e-02" errorPlus="5.579572e-03" errorMinus="5.579572e-03"/>
+  </dataPoint>
+  <dataPoint>
+    <measurement value="-1.500000e+00" errorPlus="3.000000e-01" errorMinus="3.000000e-01"/>
+    <measurement value="1.569600e-01" errorPlus="6.608016e-03" errorMinus="6.608016e-03"/>
+  </dataPoint>
+  <dataPoint>
+    <measurement value="-9.000000e-01" errorPlus="3.000000e-01" errorMinus="3.000000e-01"/>
+    <measurement value="2.724400e-01" errorPlus="7.165172e-03" errorMinus="7.165172e-03"/>
+  </dataPoint>
+  <dataPoint>
+    <measurement value="-3.000000e-01" errorPlus="3.000000e-01" errorMinus="3.000000e-01"/>
+    <measurement value="3.390100e-01" errorPlus="8.712557e-03" errorMinus="8.712557e-03"/>
+  </dataPoint>
+  <dataPoint>
+    <measurement value="3.000000e-01" errorPlus="3.000000e-01" errorMinus="3.000000e-01"/>
+    <measurement value="3.394500e-01" errorPlus="8.893590e-03" errorMinus="8.893590e-03"/>
+  </dataPoint>
+  <dataPoint>
+    <measurement value="9.000000e-01" errorPlus="3.000000e-01" errorMinus="3.000000e-01"/>
+    <measurement value="2.700000e-01" errorPlus="6.723000e-03" errorMinus="6.723000e-03"/>
+  </dataPoint>
+  <dataPoint>
+    <measurement value="1.500000e+00" errorPlus="3.000000e-01" errorMinus="3.000000e-01"/>
+    <measurement value="1.536200e-01" errorPlus="6.528850e-03" errorMinus="6.528850e-03"/>
+  </dataPoint>
+  <dataPoint>
+    <measurement value="2.100000e+00" errorPlus="3.000000e-01" errorMinus="3.000000e-01"/>
+    <measurement value="6.647900e-02" errorPlus="5.098939e-03" errorMinus="5.098939e-03"/>
+  </dataPoint>
+  </dataPointSet>
+  <dataPointSet name="lepton2_eta" dimension="2"
+      path="/REF/CMS_TOP_12_028" title="Pseudorapidity of next leading lepton">
+    <dimension dim="0" title="Next leading lepton pseudorapidity $\eta^{NLead.l}$"/>
+    <dimension dim="1" title="$1/\sigma d\sigma/d\eta_T^{NLead.l}$"/>
+    <annotation>
+      <item key="Title" value="Pseudorapidity of next leading lepton" sticky="true"/>
+      <item key="AidaPath" value="/REF/CMS_TOP_12_028/lepton2_eta" sticky="true"/>
+    </annotation>
+  <dataPoint>
+    <measurement value="-2.100000e+00" errorPlus="3.000000e-01" errorMinus="3.000000e-01"/>
+    <measurement value="8.489300e-02" errorPlus="5.764235e-03" errorMinus="5.764235e-03"/>
+  </dataPoint>
+  <dataPoint>
+    <measurement value="-1.500000e+00" errorPlus="3.000000e-01" errorMinus="3.000000e-01"/>
+    <measurement value="1.744700e-01" errorPlus="8.496689e-03" errorMinus="8.496689e-03"/>
+  </dataPoint>
+  <dataPoint>
+    <measurement value="-9.000000e-01" errorPlus="3.000000e-01" errorMinus="3.000000e-01"/>
+    <measurement value="2.669600e-01" errorPlus="1.161276e-02" errorMinus="1.161276e-02"/>
+  </dataPoint>
+  <dataPoint>
+    <measurement value="-3.000000e-01" errorPlus="3.000000e-01" errorMinus="3.000000e-01"/>
+    <measurement value="3.188700e-01" errorPlus="1.058648e-02" errorMinus="1.058648e-02"/>
+  </dataPoint>
+  <dataPoint>
+    <measurement value="3.000000e-01" errorPlus="3.000000e-01" errorMinus="3.000000e-01"/>
+    <measurement value="3.144900e-01" errorPlus="1.075556e-02" errorMinus="1.075556e-02"/>
+  </dataPoint>
+  <dataPoint>
+    <measurement value="9.000000e-01" errorPlus="3.000000e-01" errorMinus="3.000000e-01"/>
+    <measurement value="2.630000e-01" errorPlus="1.117750e-02" errorMinus="1.117750e-02"/>
+  </dataPoint>
+  <dataPoint>
+    <measurement value="1.500000e+00" errorPlus="3.000000e-01" errorMinus="3.000000e-01"/>
+    <measurement value="1.616800e-01" errorPlus="8.358856e-03" errorMinus="8.358856e-03"/>
+  </dataPoint>
+  <dataPoint>
+    <measurement value="2.100000e+00" errorPlus="3.000000e-01" errorMinus="3.000000e-01"/>
+    <measurement value="8.280700e-02" errorPlus="5.821332e-03" errorMinus="5.821332e-03"/>
+  </dataPoint>
+  </dataPointSet>
+  <dataPointSet name="dilepton_pT" dimension="2"
+      path="/REF/CMS_TOP_12_028" title="">
+    <dimension dim="0" title="Dilepton transverse momentum (GeV/c)"/>
+    <dimension dim="1" title="$1/\sigma d\sigma/dp_T^{\ell\ell} (1/GeV/c)$"/>
+    <annotation>
+      <item key="Title" value="" sticky="true"/>
+      <item key="AidaPath" value="/REF/CMS_TOP_12_028/dilepton_pT" sticky="true"/>
+    </annotation>
+  <dataPoint>
+    <measurement value="5.000000e+00" errorPlus="5.000000e+00" errorMinus="5.000000e+00"/>
+    <measurement value="1.857300e-03" errorPlus="1.734718e-04" errorMinus="1.734718e-04"/>
+  </dataPoint>
+  <dataPoint>
+    <measurement value="1.500000e+01" errorPlus="5.000000e+00" errorMinus="5.000000e+00"/>
+    <measurement value="4.639400e-03" errorPlus="3.108398e-04" errorMinus="3.108398e-04"/>
+  </dataPoint>
+  <dataPoint>
+    <measurement value="3.000000e+01" errorPlus="1.000000e+01" errorMinus="1.000000e+01"/>
+    <measurement value="7.672700e-03" errorPlus="3.368315e-04" errorMinus="3.368315e-04"/>
+  </dataPoint>
+  <dataPoint>
+    <measurement value="5.000000e+01" errorPlus="1.000000e+01" errorMinus="1.000000e+01"/>
+    <measurement value="1.059700e-02" errorPlus="4.026860e-04" errorMinus="4.026860e-04"/>
+  </dataPoint>
+  <dataPoint>
+    <measurement value="8.000000e+01" errorPlus="2.000000e+01" errorMinus="2.000000e+01"/>
+    <measurement value="9.794800e-03" errorPlus="2.693570e-04" errorMinus="2.693570e-04"/>
+  </dataPoint>
+  <dataPoint>
+    <measurement value="1.250000e+02" errorPlus="2.500000e+01" errorMinus="2.500000e+01"/>
+    <measurement value="2.978300e-03" errorPlus="1.730392e-04" errorMinus="1.730392e-04"/>
+  </dataPoint>
+  <dataPoint>
+    <measurement value="2.750000e+02" errorPlus="1.250000e+02" errorMinus="1.250000e+02"/>
+    <measurement value="1.211600e-04" errorPlus="1.136481e-05" errorMinus="1.136481e-05"/>
+  </dataPoint>
+  </dataPointSet>
+  <dataPointSet name="dilepton_mass" dimension="2"
+      path="/REF/CMS_TOP_12_028" title="">
+    <dimension dim="0" title="Dilepton invariant mass $(GeV/c^2)$"/>
+    <dimension dim="1" title="$1/\sigma d\sigma/dm^{\ell\ell} (1/GeV/c^2)$"/>
+    <annotation>
+      <item key="Title" value="" sticky="true"/>
+      <item key="AidaPath" value="/REF/CMS_TOP_12_028/dilepton_mass" sticky="true"/>
+    </annotation>
+  <dataPoint>
+    <measurement value="3.100000e+01" errorPlus="1.900000e+01" errorMinus="1.900000e+01"/>
+    <measurement value="4.115500e-03" errorPlus="2.255294e-04" errorMinus="2.255294e-04"/>
+  </dataPoint>
+  <dataPoint>
+    <measurement value="6.300000e+01" errorPlus="1.300000e+01" errorMinus="1.300000e+01"/>
+    <measurement value="7.450900e-03" errorPlus="2.734480e-04" errorMinus="2.734480e-04"/>
+  </dataPoint>
+  <dataPoint>
+    <measurement value="9.100000e+01" errorPlus="1.500000e+01" errorMinus="1.500000e+01"/>
+    <measurement value="7.318000e-03" errorPlus="2.685706e-04" errorMinus="2.685706e-04"/>
+  </dataPoint>
+  <dataPoint>
+    <measurement value="1.530000e+02" errorPlus="4.700000e+01" errorMinus="4.700000e+01"/>
+    <measurement value="3.435500e-03" errorPlus="9.585045e-05" errorMinus="9.585045e-05"/>
+  </dataPoint>
+  <dataPoint>
+    <measurement value="3.000000e+02" errorPlus="1.000000e+02" errorMinus="1.000000e+02"/>
+    <measurement value="4.480000e-04" errorPlus="1.921920e-05" errorMinus="1.921920e-05"/>
+  </dataPoint>
+  </dataPointSet>
+  <dataPointSet name="bjet1_pT" dimension="2"
+      path="/REF/CMS_TOP_12_028" title="">
+    <dimension dim="0" title="Leading b jet transverse momentum $p_T$ (GeV/c)"/>
+    <dimension dim="1" title="$1/\sigma d\sigma/dp_T^{b~{Lead.b-jet}} (1/GeV/c)$"/>
+    <annotation>
+      <item key="Title" value="" sticky="true"/>
+      <item key="AidaPath" value="/REF/CMS_TOP_12_028/bjet1_pT" sticky="true"/>
+    </annotation>
+  <dataPoint>
+    <measurement value="5.250000e+01" errorPlus="3.250000e+01" errorMinus="3.250000e+01"/>
+    <measurement value="6.724600e-03" errorPlus="2.488102e-04" errorMinus="2.488102e-04"/>
+  </dataPoint>
+  <dataPoint>
+    <measurement value="1.025000e+02" errorPlus="1.750000e+01" errorMinus="1.750000e+01"/>
+    <measurement value="8.907900e-03" errorPlus="5.923754e-04" errorMinus="5.923754e-04"/>
+  </dataPoint>
+  <dataPoint>
+    <measurement value="1.500000e+02" errorPlus="3.000000e+01" errorMinus="3.000000e+01"/>
+    <measurement value="3.039100e-03" errorPlus="1.859929e-04" errorMinus="1.859929e-04"/>
+  </dataPoint>
+  <dataPoint>
+    <measurement value="2.100000e+02" errorPlus="3.000000e+01" errorMinus="3.000000e+01"/>
+    <measurement value="6.435500e-04" errorPlus="8.108730e-05" errorMinus="8.108730e-05"/>
+  </dataPoint>
+  <dataPoint>
+    <measurement value="2.700000e+02" errorPlus="3.000000e+01" errorMinus="3.000000e+01"/>
+    <measurement value="1.858400e-04" errorPlus="3.753968e-05" errorMinus="3.753968e-05"/>
+  </dataPoint>
+  <dataPoint>
+    <measurement value="3.500000e+02" errorPlus="5.000000e+01" errorMinus="5.000000e+01"/>
+    <measurement value="4.708200e-05" errorPlus="1.412460e-05" errorMinus="1.412460e-05"/>
+  </dataPoint>
+  </dataPointSet>
+  <dataPointSet name="bjet2_pT" dimension="2"
+      path="/REF/CMS_TOP_12_028" title="">
+    <dimension dim="0" title="Next leading b jet transverse momentum $p_T$ (GeV/c)"/>
+    <dimension dim="1" title="$1/\sigma d\sigma/dp_T^{b~{NLead.b-jet}} (1/GeV/c)$"/>
+    <annotation>
+      <item key="Title" value="" sticky="true"/>
+      <item key="AidaPath" value="/REF/CMS_TOP_12_028/bjet2_pT" sticky="true"/>
+    </annotation>
+  <dataPoint>
+    <measurement value="5.250000e+01" errorPlus="3.250000e+01" errorMinus="3.250000e+01"/>
+    <measurement value="1.293200e-02" errorPlus="4.034784e-04" errorMinus="4.034784e-04"/>
+  </dataPoint>
+  <dataPoint>
+    <measurement value="1.125000e+02" errorPlus="2.750000e+01" errorMinus="2.750000e+01"/>
+    <measurement value="2.377200e-03" errorPlus="1.954058e-04" errorMinus="1.954058e-04"/>
+  </dataPoint>
+  <dataPoint>
+    <measurement value="1.700000e+02" errorPlus="3.000000e+01" errorMinus="3.000000e+01"/>
+    <measurement value="3.504900e-04" errorPlus="5.467644e-05" errorMinus="5.467644e-05"/>
+  </dataPoint>
+  <dataPoint>
+    <measurement value="2.350000e+02" errorPlus="3.500000e+01" errorMinus="3.500000e+01"/>
+    <measurement value="5.458800e-05" errorPlus="1.364700e-05" errorMinus="1.364700e-05"/>
+  </dataPoint>
+  <dataPoint>
+    <measurement value="3.350000e+02" errorPlus="6.500000e+01" errorMinus="6.500000e+01"/>
+    <measurement value="1.456800e-06" errorPlus="2.418288e-06" errorMinus="2.418288e-06"/>
+  </dataPoint>
+  </dataPointSet>
+  <dataPointSet name="bjet1_eta" dimension="2"
+      path="/REF/CMS_TOP_12_028" title="">
+    <dimension dim="0" title="Leading b jet pseudorapidity"/>
+    <dimension dim="1" title="$1/\sigma d\sigma/d\eta^{Lead.b-jet}$"/>
+    <annotation>
+      <item key="Title" value="" sticky="true"/>
+      <item key="AidaPath" value="/REF/CMS_TOP_12_028/bjet1_eta" sticky="true"/>
+    </annotation>
+  <dataPoint>
+    <measurement value="-2.100000e+00" errorPlus="3.000000e-01" errorMinus="3.000000e-01"/>
+    <measurement value="6.907100e-02" errorPlus="7.114313e-03" errorMinus="7.114313e-03"/>
+  </dataPoint>
+  <dataPoint>
+    <measurement value="-1.500000e+00" errorPlus="3.000000e-01" errorMinus="3.000000e-01"/>
+    <measurement value="1.623400e-01" errorPlus="1.251641e-02" errorMinus="1.251641e-02"/>
+  </dataPoint>
+  <dataPoint>
+    <measurement value="-9.000000e-01" errorPlus="3.000000e-01" errorMinus="3.000000e-01"/>
+    <measurement value="2.527100e-01" errorPlus="1.579437e-02" errorMinus="1.579437e-02"/>
+  </dataPoint>
+  <dataPoint>
+    <measurement value="-3.000000e-01" errorPlus="3.000000e-01" errorMinus="3.000000e-01"/>
+    <measurement value="3.257600e-01" errorPlus="1.742816e-02" errorMinus="1.742816e-02"/>
+  </dataPoint>
+  <dataPoint>
+    <measurement value="3.000000e-01" errorPlus="3.000000e-01" errorMinus="3.000000e-01"/>
+    <measurement value="3.186600e-01" errorPlus="1.755817e-02" errorMinus="1.755817e-02"/>
+  </dataPoint>
+  <dataPoint>
+    <measurement value="9.000000e-01" errorPlus="3.000000e-01" errorMinus="3.000000e-01"/>
+    <measurement value="2.750900e-01" errorPlus="1.672547e-02" errorMinus="1.672547e-02"/>
+  </dataPoint>
+  <dataPoint>
+    <measurement value="1.500000e+00" errorPlus="3.000000e-01" errorMinus="3.000000e-01"/>
+    <measurement value="1.552900e-01" errorPlus="1.234556e-02" errorMinus="1.234556e-02"/>
+  </dataPoint>
+  <dataPoint>
+    <measurement value="2.100000e+00" errorPlus="3.000000e-01" errorMinus="3.000000e-01"/>
+    <measurement value="7.125100e-02" errorPlus="7.481355e-03" errorMinus="7.481355e-03"/>
+  </dataPoint>
+  </dataPointSet>
+  <dataPointSet name="bjet2_eta" dimension="2"
+      path="/REF/CMS_TOP_12_028" title="">
+    <dimension dim="0" title="Next leading b jet pseudorapidity"/>
+    <dimension dim="1" title="$1/\sigma d\sigma/d\eta^{NLead.b-jet}$"/>
+    <annotation>
+      <item key="Title" value="" sticky="true"/>
+      <item key="AidaPath" value="/REF/CMS_TOP_12_028/bjet2_eta" sticky="true"/>
+    </annotation>
+  <dataPoint>
+    <measurement value="-2.100000e+00" errorPlus="3.000000e-01" errorMinus="3.000000e-01"/>
+    <measurement value="9.643000e-02" errorPlus="1.128231e-02" errorMinus="1.128231e-02"/>
+  </dataPoint>
+  <dataPoint>
+    <measurement value="-1.500000e+00" errorPlus="3.000000e-01" errorMinus="3.000000e-01"/>
+    <measurement value="1.799600e-01" errorPlus="1.259720e-02" errorMinus="1.259720e-02"/>
+  </dataPoint>
+  <dataPoint>
+    <measurement value="-9.000000e-01" errorPlus="3.000000e-01" errorMinus="3.000000e-01"/>
+    <measurement value="2.586300e-01" errorPlus="1.991451e-02" errorMinus="1.991451e-02"/>
+  </dataPoint>
+  <dataPoint>
+    <measurement value="-3.000000e-01" errorPlus="3.000000e-01" errorMinus="3.000000e-01"/>
+    <measurement value="3.003800e-01" errorPlus="2.015550e-02" errorMinus="2.015550e-02"/>
+  </dataPoint>
+  <dataPoint>
+    <measurement value="3.000000e-01" errorPlus="3.000000e-01" errorMinus="3.000000e-01"/>
+    <measurement value="2.954200e-01" errorPlus="1.943864e-02" errorMinus="1.943864e-02"/>
+  </dataPoint>
+  <dataPoint>
+    <measurement value="9.000000e-01" errorPlus="3.000000e-01" errorMinus="3.000000e-01"/>
+    <measurement value="2.452300e-01" errorPlus="1.898080e-02" errorMinus="1.898080e-02"/>
+  </dataPoint>
+  <dataPoint>
+    <measurement value="1.500000e+00" errorPlus="3.000000e-01" errorMinus="3.000000e-01"/>
+    <measurement value="1.704600e-01" errorPlus="1.235835e-02" errorMinus="1.235835e-02"/>
+  </dataPoint>
+  <dataPoint>
+    <measurement value="2.100000e+00" errorPlus="3.000000e-01" errorMinus="3.000000e-01"/>
+    <measurement value="9.005500e-02" errorPlus="1.089665e-02" errorMinus="1.089665e-02"/>
+  </dataPoint>
+  </dataPointSet>
+  <dataPointSet name="leptonJet_mass" dimension="2"
+      path="/REF/CMS_TOP_12_028" title="">
+    <dimension dim="0" title="Lepton+b jet system invariant mass $(GeV/c^2)$"/>
+    <dimension dim="1" title="$1/\sigma d\sigma/dm^{\ell b } (1/GeV/c^2)$"/>
+    <annotation>
+      <item key="Title" value="" sticky="true"/>
+      <item key="AidaPath" value="/REF/CMS_TOP_12_028/leptonJet_mass" sticky="true"/>
+    </annotation>
+  <dataPoint>
+    <measurement value="3.500000e+01" errorPlus="3.500000e+01" errorMinus="3.500000e+01"/>
+    <measurement value="2.599900e-03" errorPlus="2.113719e-04" errorMinus="2.113719e-04"/>
+  </dataPoint>
+  <dataPoint>
+    <measurement value="9.300000e+01" errorPlus="2.300000e+01" errorMinus="2.300000e+01"/>
+    <measurement value="7.729800e-03" errorPlus="4.954802e-04" errorMinus="4.954802e-04"/>
+  </dataPoint>
+  <dataPoint>
+    <measurement value="1.330000e+02" errorPlus="1.700000e+01" errorMinus="1.700000e+01"/>
+    <measurement value="6.920300e-03" errorPlus="4.193702e-04" errorMinus="4.193702e-04"/>
+  </dataPoint>
+  <dataPoint>
+    <measurement value="2.750000e+02" errorPlus="1.250000e+02" errorMinus="1.250000e+02"/>
+    <measurement value="8.481600e-04" errorPlus="1.017792e-04" errorMinus="1.017792e-04"/>
+  </dataPoint>
+  </dataPointSet>
+  <dataPointSet name="top_pT" dimension="2"
+      path="/REF/AN-12_384" title="">
+    <dimension dim="0" title="top quark transverse momentum p_T (GeV/c)"/>
+    <dimension dim="1" title="$1/\sigma d\sigma/dp_T^{t} (1/GeV/c)$"/>
+    <annotation>
+      <item key="Title" value="" sticky="true"/>
+      <item key="AidaPath" value="/REF/AN-12_384/top_pT" sticky="true"/>
+    </annotation>
+  <dataPoint>
+    <measurement value="4.000000e+01" errorPlus="4.000000e+01" errorMinus="4.000000e+01"/>
+    <measurement value="4.034300e-03" errorPlus="7.221397e-05" errorMinus="7.221397e-05"/>
+  </dataPoint>
+  <dataPoint>
+    <measurement value="1.050000e+02" errorPlus="2.500000e+01" errorMinus="2.500000e+01"/>
+    <measurement value="6.355000e-03" errorPlus="8.579250e-05" errorMinus="8.579250e-05"/>
+  </dataPoint>
+  <dataPoint>
+    <measurement value="1.650000e+02" errorPlus="3.500000e+01" errorMinus="3.500000e+01"/>
+    <measurement value="3.884600e-03" errorPlus="3.725331e-05" errorMinus="3.725331e-05"/>
+  </dataPoint>
+  <dataPoint>
+    <measurement value="2.500000e+02" errorPlus="5.000000e+01" errorMinus="5.000000e+01"/>
+    <measurement value="7.807900e-04" errorPlus="1.069682e-05" errorMinus="1.069682e-05"/>
+  </dataPoint>
+  <dataPoint>
+    <measurement value="3.500000e+02" errorPlus="5.000000e+01" errorMinus="5.000000e+01"/>
+    <measurement value="7.901000e-05" errorPlus="1.398477e-06" errorMinus="1.398477e-06"/>
+  </dataPoint>
+  </dataPointSet>
+  <dataPointSet name="top1_pT" dimension="2"
+      path="/REF/CMS_TOP_12_028" title="">
+    <dimension dim="0" title="Leading top quark transverse momentum (GeV/c)"/>
+    <dimension dim="1" title="$1/\sigma d\sigma/dp_T^{t~{Lead.t}} (1/GeV/c)$"/>
+    <annotation>
+      <item key="Title" value="" sticky="true"/>
+      <item key="AidaPath" value="/REF/CMS_TOP_12_028/top1_pT" sticky="true"/>
+    </annotation>
+  <dataPoint>
+    <measurement value="4.000000e+01" errorPlus="4.000000e+01" errorMinus="4.000000e+01"/>
+    <measurement value="3.605500e-03" errorPlus="3.392776e-04" errorMinus="3.392776e-04"/>
+  </dataPoint>
+  <dataPoint>
+    <measurement value="1.050000e+02" errorPlus="2.500000e+01" errorMinus="2.500000e+01"/>
+    <measurement value="6.413500e-03" errorPlus="2.668016e-04" errorMinus="2.668016e-04"/>
+  </dataPoint>
+  <dataPoint>
+    <measurement value="1.650000e+02" errorPlus="3.500000e+01" errorMinus="3.500000e+01"/>
+    <measurement value="3.749400e-03" errorPlus="1.908445e-04" errorMinus="1.908445e-04"/>
+  </dataPoint>
+  <dataPoint>
+    <measurement value="2.500000e+02" errorPlus="5.000000e+01" errorMinus="5.000000e+01"/>
+    <measurement value="1.137200e-03" errorPlus="5.492676e-05" errorMinus="5.492676e-05"/>
+  </dataPoint>
+  <dataPoint>
+    <measurement value="3.500000e+02" errorPlus="5.000000e+01" errorMinus="5.000000e+01"/>
+    <measurement value="2.357000e-04" errorPlus="1.885600e-05" errorMinus="1.885600e-05"/>
+  </dataPoint>
+  </dataPointSet>
+  <dataPointSet name="top2_pT" dimension="2"
+      path="/REF/CMS_TOP_12_028" title="">
+    <dimension dim="0" title="Next leading top quark transverse momentum (GeV/c)"/>
+    <dimension dim="1" title="$1/\sigma d\sigma/dp_T^{t~{NLead.t}} (1/GeV/c)$"/>
+    <annotation>
+      <item key="Title" value="" sticky="true"/>
+      <item key="AidaPath" value="/REF/CMS_TOP_12_028/top2_pT" sticky="true"/>
+    </annotation>
+  <dataPoint>
+    <measurement value="4.000000e+01" errorPlus="4.000000e+01" errorMinus="4.000000e+01"/>
+    <measurement value="6.623500e-03" errorPlus="2.768623e-04" errorMinus="2.768623e-04"/>
+  </dataPoint>
+  <dataPoint>
+    <measurement value="1.050000e+02" errorPlus="2.500000e+01" errorMinus="2.500000e+01"/>
+    <measurement value="5.120900e-03" errorPlus="4.275951e-04" errorMinus="4.275951e-04"/>
+  </dataPoint>
+  <dataPoint>
+    <measurement value="1.650000e+02" errorPlus="3.500000e+01" errorMinus="3.500000e+01"/>
+    <measurement value="2.329500e-03" errorPlus="1.437302e-04" errorMinus="1.437302e-04"/>
+  </dataPoint>
+  <dataPoint>
+    <measurement value="2.500000e+02" errorPlus="5.000000e+01" errorMinus="5.000000e+01"/>
+    <measurement value="5.546100e-04" errorPlus="3.571688e-05" errorMinus="3.571688e-05"/>
+  </dataPoint>
+  <dataPoint>
+    <measurement value="3.500000e+02" errorPlus="5.000000e+01" errorMinus="5.000000e+01"/>
+    <measurement value="8.971100e-05" errorPlus="1.507145e-05" errorMinus="1.507145e-05"/>
+  </dataPoint>
+  </dataPointSet>
+  <dataPointSet name="top_rapidity" dimension="2"
+      path="/REF/AN-12_384" title="">
+    <dimension dim="0" title="Top quark rapidity"/>
+    <dimension dim="1" title="$1/\sigma d\sigma/dy^{t}$"/>
+    <annotation>
+      <item key="Title" value="" sticky="true"/>
+      <item key="AidaPath" value="/REF/AN-12_384/top_rapidity" sticky="true"/>
+    </annotation>
+  <dataPoint>
+    <measurement value="-1.900000e+00" errorPlus="6.000000e-01" errorMinus="6.000000e-01"/>
+    <measurement value="9.908300e-02" errorPlus="1.852852e-02" errorMinus="1.852852e-02"/>
+  </dataPoint>
+  <dataPoint>
+    <measurement value="-1.050000e+00" errorPlus="2.500000e-01" errorMinus="2.500000e-01"/>
+    <measurement value="4.186000e-01" errorPlus="3.746470e-02" errorMinus="3.746470e-02"/>
+  </dataPoint>
+  <dataPoint>
+    <measurement value="-6.000000e-01" errorPlus="2.000000e-01" errorMinus="2.000000e-01"/>
+    <measurement value="3.244000e-01" errorPlus="2.218896e-02" errorMinus="2.218896e-02"/>
+  </dataPoint>
+  <dataPoint>
+    <measurement value="-2.000000e-01" errorPlus="2.000000e-01" errorMinus="2.000000e-01"/>
+    <measurement value="9.065600e-02" errorPlus="1.550218e-02" errorMinus="1.550218e-02"/>
+  </dataPoint>
+  <dataPoint>
+    <measurement value="2.000000e-01" errorPlus="2.000000e-01" errorMinus="2.000000e-01"/>
+    <measurement value="1.102400e-01" errorPlus="1.719744e-02" errorMinus="1.719744e-02"/>
+  </dataPoint>
+  <dataPoint>
+    <measurement value="6.000000e-01" errorPlus="2.000000e-01" errorMinus="2.000000e-01"/>
+    <measurement value="3.511300e-01" errorPlus="2.419286e-02" errorMinus="2.419286e-02"/>
+  </dataPoint>
+  <dataPoint>
+    <measurement value="1.050000e+00" errorPlus="2.500000e-01" errorMinus="2.500000e-01"/>
+    <measurement value="4.119200e-01" errorPlus="3.468366e-02" errorMinus="3.468366e-02"/>
+  </dataPoint>
+  <dataPoint>
+    <measurement value="1.900000e+00" errorPlus="6.000000e-01" errorMinus="6.000000e-01"/>
+    <measurement value="9.590600e-02" errorPlus="1.611221e-02" errorMinus="1.611221e-02"/>
+  </dataPoint>
+  </dataPointSet>
+  <dataPointSet name="top1_rapidity" dimension="2"
+      path="/REF/CMS_TOP_12_028" title="">
+    <dimension dim="0" title="Leading top quark rapidity"/>
+    <dimension dim="1" title="$1/\sigma d\sigma/dy^{t~{Lead.t}}$"/>
+    <annotation>
+      <item key="Title" value="" sticky="true"/>
+      <item key="AidaPath" value="/REF/CMS_TOP_12_028/top1_rapidity" sticky="true"/>
+    </annotation>
+  <dataPoint>
+    <measurement value="-1.900000e+00" errorPlus="6.000000e-01" errorMinus="6.000000e-01"/>
+    <measurement value="1.025600e-01" errorPlus="9.691920e-03" errorMinus="9.691920e-03"/>
+  </dataPoint>
+  <dataPoint>
+    <measurement value="-1.050000e+00" errorPlus="2.500000e-01" errorMinus="2.500000e-01"/>
+    <measurement value="2.316400e-01" errorPlus="2.133404e-02" errorMinus="2.133404e-02"/>
+  </dataPoint>
+  <dataPoint>
+    <measurement value="-6.000000e-01" errorPlus="2.000000e-01" errorMinus="2.000000e-01"/>
+    <measurement value="2.935400e-01" errorPlus="2.219162e-02" errorMinus="2.219162e-02"/>
+  </dataPoint>
+  <dataPoint>
+    <measurement value="-2.000000e-01" errorPlus="2.000000e-01" errorMinus="2.000000e-01"/>
+    <measurement value="3.410300e-01" errorPlus="2.448595e-02" errorMinus="2.448595e-02"/>
+  </dataPoint>
+  <dataPoint>
+    <measurement value="2.000000e-01" errorPlus="2.000000e-01" errorMinus="2.000000e-01"/>
+    <measurement value="3.719300e-01" errorPlus="2.480773e-02" errorMinus="2.480773e-02"/>
+  </dataPoint>
+  <dataPoint>
+    <measurement value="6.000000e-01" errorPlus="2.000000e-01" errorMinus="2.000000e-01"/>
+    <measurement value="3.189200e-01" errorPlus="2.548171e-02" errorMinus="2.548171e-02"/>
+  </dataPoint>
+  <dataPoint>
+    <measurement value="1.050000e+00" errorPlus="2.500000e-01" errorMinus="2.500000e-01"/>
+    <measurement value="2.294100e-01" errorPlus="2.011926e-02" errorMinus="2.011926e-02"/>
+  </dataPoint>
+  <dataPoint>
+    <measurement value="1.900000e+00" errorPlus="6.000000e-01" errorMinus="6.000000e-01"/>
+    <measurement value="9.312300e-02" errorPlus="8.409007e-03" errorMinus="8.409007e-03"/>
+  </dataPoint>
+  </dataPointSet>
+  <dataPointSet name="top2_rapidity" dimension="2"
+      path="/REF/CMS_TOP_12_028" title="">
+    <dimension dim="0" title="Next leading top quark rapidity"/>
+    <dimension dim="1" title="$1/\sigma d\sigma/dy^{t~{NLead.t}}$"/>
+    <annotation>
+      <item key="Title" value="" sticky="true"/>
+      <item key="AidaPath" value="/REF/CMS_TOP_12_028/top2_rapidity" sticky="true"/>
+    </annotation>
+  <dataPoint>
+    <measurement value="-1.900000e+00" errorPlus="6.000000e-01" errorMinus="6.000000e-01"/>
+    <measurement value="9.496200e-02" errorPlus="1.177529e-02" errorMinus="1.177529e-02"/>
+  </dataPoint>
+  <dataPoint>
+    <measurement value="-1.050000e+00" errorPlus="2.500000e-01" errorMinus="2.500000e-01"/>
+    <measurement value="2.360800e-01" errorPlus="2.153050e-02" errorMinus="2.153050e-02"/>
+  </dataPoint>
+  <dataPoint>
+    <measurement value="-6.000000e-01" errorPlus="2.000000e-01" errorMinus="2.000000e-01"/>
+    <measurement value="3.230600e-01" errorPlus="2.807391e-02" errorMinus="2.807391e-02"/>
+  </dataPoint>
+  <dataPoint>
+    <measurement value="-2.000000e-01" errorPlus="2.000000e-01" errorMinus="2.000000e-01"/>
+    <measurement value="3.458900e-01" errorPlus="3.389722e-02" errorMinus="3.389722e-02"/>
+  </dataPoint>
+  <dataPoint>
+    <measurement value="2.000000e-01" errorPlus="2.000000e-01" errorMinus="2.000000e-01"/>
+    <measurement value="3.211300e-01" errorPlus="3.211300e-02" errorMinus="3.211300e-02"/>
+  </dataPoint>
+  <dataPoint>
+    <measurement value="6.000000e-01" errorPlus="2.000000e-01" errorMinus="2.000000e-01"/>
+    <measurement value="3.139600e-01" errorPlus="2.828780e-02" errorMinus="2.828780e-02"/>
+  </dataPoint>
+  <dataPoint>
+    <measurement value="1.050000e+00" errorPlus="2.500000e-01" errorMinus="2.500000e-01"/>
+    <measurement value="2.409500e-01" errorPlus="2.395043e-02" errorMinus="2.395043e-02"/>
+  </dataPoint>
+  <dataPoint>
+    <measurement value="1.900000e+00" errorPlus="6.000000e-01" errorMinus="6.000000e-01"/>
+    <measurement value="9.622800e-02" errorPlus="1.154736e-02" errorMinus="1.154736e-02"/>
+  </dataPoint>
+  </dataPointSet>
+  <dataPointSet name="ttbar_pT" dimension="2"
+      path="/REF/CMS_TOP_12_028" title="">
+    <dimension dim="0" title="$t\bar{t} transverse momentum p_T (GeV/c)$"/>
+    <dimension dim="1" title="$1/\sigma d\sigma/dp_T^{t\bar{t}} (1/GeV/c)$"/>
+    <annotation>
+      <item key="Title" value="" sticky="true"/>
+      <item key="AidaPath" value="/REF/CMS_TOP_12_028/ttbar_pT" sticky="true"/>
+    </annotation>
+  <dataPoint>
+    <measurement value="1.000000e+01" errorPlus="1.000000e+01" errorMinus="1.000000e+01"/>
+    <measurement value="1.356200e-02" errorPlus="1.410448e-03" errorMinus="1.410448e-03"/>
+  </dataPoint>
+  <dataPoint>
+    <measurement value="4.000000e+01" errorPlus="2.000000e+01" errorMinus="2.000000e+01"/>
+    <measurement value="9.904300e-03" errorPlus="5.873250e-04" errorMinus="5.873250e-04"/>
+  </dataPoint>
+  <dataPoint>
+    <measurement value="9.000000e+01" errorPlus="3.000000e+01" errorMinus="3.000000e+01"/>
+    <measurement value="3.478300e-03" errorPlus="1.561757e-04" errorMinus="1.561757e-04"/>
+  </dataPoint>
+  <dataPoint>
+    <measurement value="2.100000e+02" errorPlus="9.000000e+01" errorMinus="9.000000e+01"/>
+    <measurement value="6.043900e-04" errorPlus="4.121940e-05" errorMinus="4.121940e-05"/>
+  </dataPoint>
+  </dataPointSet>
+  <dataPointSet name="ttbar_rapidity" dimension="2"
+      path="/REF/CMS_TOP_12_028" title="">
+    <dimension dim="0" title="$t\bar{t} rapidity$"/>
+    <dimension dim="1" title="$1/\sigma d\sigma/dy^{t\bar{t}}$"/>
+    <annotation>
+      <item key="Title" value="" sticky="true"/>
+      <item key="AidaPath" value="/REF/CMS_TOP_12_028/ttbar_rapidity" sticky="true"/>
+    </annotation>
+  <dataPoint>
+    <measurement value="-1.900000e+00" errorPlus="6.000000e-01" errorMinus="6.000000e-01"/>
+    <measurement value="9.908300e-02" errorPlus="1.852852e-02" errorMinus="1.852852e-02"/>
+  </dataPoint>
+  <dataPoint>
+    <measurement value="-1.050000e+00" errorPlus="2.500000e-01" errorMinus="2.500000e-01"/>
+    <measurement value="4.186000e-01" errorPlus="3.746470e-02" errorMinus="3.746470e-02"/>
+  </dataPoint>
+  <dataPoint>
+    <measurement value="-6.000000e-01" errorPlus="2.000000e-01" errorMinus="2.000000e-01"/>
+    <measurement value="3.244000e-01" errorPlus="2.218896e-02" errorMinus="2.218896e-02"/>
+  </dataPoint>
+  <dataPoint>
+    <measurement value="-2.000000e-01" errorPlus="2.000000e-01" errorMinus="2.000000e-01"/>
+    <measurement value="9.065600e-02" errorPlus="1.550218e-02" errorMinus="1.550218e-02"/>
+  </dataPoint>
+  <dataPoint>
+    <measurement value="2.000000e-01" errorPlus="2.000000e-01" errorMinus="2.000000e-01"/>
+    <measurement value="1.102400e-01" errorPlus="1.719744e-02" errorMinus="1.719744e-02"/>
+  </dataPoint>
+  <dataPoint>
+    <measurement value="6.000000e-01" errorPlus="2.000000e-01" errorMinus="2.000000e-01"/>
+    <measurement value="3.511300e-01" errorPlus="2.419286e-02" errorMinus="2.419286e-02"/>
+  </dataPoint>
+  <dataPoint>
+    <measurement value="1.050000e+00" errorPlus="2.500000e-01" errorMinus="2.500000e-01"/>
+    <measurement value="4.119200e-01" errorPlus="3.468366e-02" errorMinus="3.468366e-02"/>
+  </dataPoint>
+  <dataPoint>
+    <measurement value="1.900000e+00" errorPlus="6.000000e-01" errorMinus="6.000000e-01"/>
+    <measurement value="9.590600e-02" errorPlus="1.611221e-02" errorMinus="1.611221e-02"/>
+  </dataPoint>
+  </dataPointSet>
+  <dataPointSet name="ttbar_mass" dimension="2"
+      path="/REF/CMS_TOP_12_028" title="">
+    <dimension dim="0" title="$t\bar{t} invariant mass (GeV/c^{2})$"/>
+    <dimension dim="1" title="$1/\sigma d\sigma/dm^{t\bar{t}} (1/GeV/c^{2})$"/>
+    <annotation>
+      <item key="Title" value="" sticky="true"/>
+      <item key="AidaPath" value="/REF/CMS_TOP_12_028/ttbar_mass" sticky="true"/>
+    </annotation>
+  <dataPoint>
+    <measurement value="3.725000e+02" errorPlus="2.750000e+01" errorMinus="2.750000e+01"/>
+    <measurement value="4.959800e-03" errorPlus="5.108594e-04" errorMinus="5.108594e-04"/>
+  </dataPoint>
+  <dataPoint>
+    <measurement value="4.375000e+02" errorPlus="3.750000e+01" errorMinus="3.750000e+01"/>
+    <measurement value="4.326400e-03" errorPlus="2.504986e-04" errorMinus="2.504986e-04"/>
+  </dataPoint>
+  <dataPoint>
+    <measurement value="5.125000e+02" errorPlus="3.750000e+01" errorMinus="3.750000e+01"/>
+    <measurement value="2.380000e-03" errorPlus="2.027760e-04" errorMinus="2.027760e-04"/>
+  </dataPoint>
+  <dataPoint>
+    <measurement value="6.250000e+02" errorPlus="7.500000e+01" errorMinus="7.500000e+01"/>
+    <measurement value="1.014200e-03" errorPlus="8.184594e-05" errorMinus="8.184594e-05"/>
+  </dataPoint>
+  <dataPoint>
+    <measurement value="8.500000e+02" errorPlus="1.500000e+02" errorMinus="1.500000e+02"/>
+    <measurement value="2.223500e-04" errorPlus="1.950009e-05" errorMinus="1.950009e-05"/>
+  </dataPoint>
+  </dataPointSet>
+  <dataPointSet name="ttbar_pT" dimension="2"
+      path="/REF/AN_12_384" title="">
+    <dimension dim="0" title="$\ttbar transverse momentum p_T (GeV/c)$"/>
+    <dimension dim="1" title="$1/\sigma d\sigma/dp_T^{\ttbar} (1/GeV/c)$"/>
+    <annotation>
+      <item key="Title" value="" sticky="true"/>
+      <item key="AidaPath" value="/REF/AN_12_384/ttbar_pT" sticky="true"/>
+    </annotation>
+  <dataPoint>
+    <measurement value="1.000000e+01" errorPlus="1.000000e+01" errorMinus="1.000000e+01"/>
+    <measurement value="7.304800e-03" errorPlus="3.162978e-04" errorMinus="3.162978e-04"/>
+  </dataPoint>
+  <dataPoint>
+    <measurement value="4.000000e+01" errorPlus="2.000000e+01" errorMinus="2.000000e+01"/>
+    <measurement value="1.305500e-02" errorPlus="1.246753e-04" errorMinus="1.246753e-04"/>
+  </dataPoint>
+  <dataPoint>
+    <measurement value="9.000000e+01" errorPlus="3.000000e+01" errorMinus="3.000000e+01"/>
+    <measurement value="4.284600e-03" errorPlus="4.498830e-05" errorMinus="4.498830e-05"/>
+  </dataPoint>
+  <dataPoint>
+    <measurement value="2.100000e+02" errorPlus="9.000000e+01" errorMinus="9.000000e+01"/>
+    <measurement value="3.977800e-04" errorPlus="5.409808e-06" errorMinus="5.409808e-06"/>
+  </dataPoint>
+  </dataPointSet>
+  <dataPointSet name="ttbar_rapidity" dimension="2"
+      path="/REF/AN_12_384" title="">
+    <dimension dim="0" title="$\ttbar rapidity$"/>
+    <dimension dim="1" title="$1/\sigma d\sigma/dy^{\ttbar}$"/>
+    <annotation>
+      <item key="Title" value="" sticky="true"/>
+      <item key="AidaPath" value="/REF/AN_12_384/ttbar_rapidity" sticky="true"/>
+    </annotation>
+  <dataPoint>
+    <measurement value="-2.000000e+00" errorPlus="5.000000e-01" errorMinus="5.000000e-01"/>
+    <measurement value="1.283800e-02" errorPlus="4.005456e-04" errorMinus="4.005456e-04"/>
+  </dataPoint>
+  <dataPoint>
+    <measurement value="-1.100000e+00" errorPlus="4.000000e-01" errorMinus="4.000000e-01"/>
+    <measurement value="2.258300e-01" errorPlus="3.929442e-03" errorMinus="3.929442e-03"/>
+  </dataPoint>
+  <dataPoint>
+    <measurement value="-3.500000e-01" errorPlus="3.500000e-01" errorMinus="3.500000e-01"/>
+    <measurement value="4.466800e-01" errorPlus="6.298188e-03" errorMinus="6.298188e-03"/>
+  </dataPoint>
+  <dataPoint>
+    <measurement value="3.500000e-01" errorPlus="3.500000e-01" errorMinus="3.500000e-01"/>
+    <measurement value="4.350900e-01" errorPlus="6.047751e-03" errorMinus="6.047751e-03"/>
+  </dataPoint>
+  <dataPoint>
+    <measurement value="1.100000e+00" errorPlus="4.000000e-01" errorMinus="4.000000e-01"/>
+    <measurement value="2.210900e-01" errorPlus="3.824857e-03" errorMinus="3.824857e-03"/>
+  </dataPoint>
+  <dataPoint>
+    <measurement value="2.000000e+00" errorPlus="5.000000e-01" errorMinus="5.000000e-01"/>
+    <measurement value="1.197800e-02" errorPlus="3.425708e-04" errorMinus="3.425708e-04"/>
+  </dataPoint>
+  </dataPointSet>
+  <dataPointSet name="ttbar_mass" dimension="2"
+      path="/REF/AN_12_384" title="">
+    <dimension dim="0" title="$\ttbar invariant mass (GeV/c^{2})$"/>
+    <dimension dim="1" title="$1/\sigma d\sigma/dm^{\ttbar} (1/GeV/c^{2})$"/>
+    <annotation>
+      <item key="Title" value="" sticky="true"/>
+      <item key="AidaPath" value="/REF/AN_12_384/ttbar_mass" sticky="true"/>
+    </annotation>
+  <dataPoint>
+    <measurement value="3.700000e+02" errorPlus="3.000000e+01" errorMinus="3.000000e+01"/>
+    <measurement value="3.908200e-03" errorPlus="1.629719e-04" errorMinus="1.629719e-04"/>
+  </dataPoint>
+  <dataPoint>
+    <measurement value="4.350000e+02" errorPlus="3.500000e+01" errorMinus="3.500000e+01"/>
+    <measurement value="4.476000e-03" errorPlus="1.768020e-04" errorMinus="1.768020e-04"/>
+  </dataPoint>
+  <dataPoint>
+    <measurement value="5.100000e+02" errorPlus="4.000000e+01" errorMinus="4.000000e+01"/>
+    <measurement value="2.699700e-03" errorPlus="7.532163e-05" errorMinus="7.532163e-05"/>
+  </dataPoint>
+  <dataPoint>
+    <measurement value="6.000000e+02" errorPlus="5.000000e+01" errorMinus="5.000000e+01"/>
+    <measurement value="1.447700e-03" errorPlus="2.562429e-05" errorMinus="2.562429e-05"/>
+  </dataPoint>
+  <dataPoint>
+    <measurement value="7.500000e+02" errorPlus="5.000000e+01" errorMinus="5.000000e+01"/>
+    <measurement value="4.357500e-04" errorPlus="9.978675e-06" errorMinus="9.978675e-06"/>
+  </dataPoint>
+  <dataPoint>
+    <measurement value="9.500000e+02" errorPlus="1.500000e+02" errorMinus="1.500000e+02"/>
+    <measurement value="4.813300e-05" errorPlus="1.472870e-06" errorMinus="1.472870e-06"/>
+  </dataPoint>
+  <dataPoint>
+    <measurement value="1.350000e+03" errorPlus="2.500000e+02" errorMinus="2.500000e+02"/>
+    <measurement value="1.320200e-06" errorPlus="4.633902e-08" errorMinus="4.633902e-08"/>
+  </dataPoint>
+  </dataPointSet>
+</aida>
