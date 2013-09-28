@@ -395,21 +395,21 @@ hB_n_->Fill(nbjetsB, weight);
     }
 
     // Selection is done, start filling histograms
-    fillCrossSection(_h_lepton1_pT, lepton_momentum[0].pT(), weight);
-    fillCrossSection(_h_lepton1_eta, lepton_momentum[0].eta(), weight);
-    fillCrossSection(_h_lepton2_pT, lepton_momentum[1].pT(), weight);
-    fillCrossSection(_h_lepton2_eta, lepton_momentum[1].eta(), weight);
+    _h_lepton1_pT->fill(lepton_momentum[0].pT(), weight);
+    _h_lepton1_eta->fill(lepton_momentum[0].eta(), weight);
+    _h_lepton2_pT->fill(lepton_momentum[1].pT(), weight);
+    _h_lepton2_eta->fill(lepton_momentum[1].eta(), weight);
 
-    fillCrossSection(_h_dilepton_pT, dilepton_momentum.pT(), weight);
-    fillCrossSection(_h_dilepton_mass, dilepton_mass, weight);
+    _h_dilepton_pT->fill(dilepton_momentum.pT(), weight);
+    _h_dilepton_mass->fill(dilepton_mass, weight);
 
-    fillCrossSection(_h_bjet1_pT, bjets[0].momentum().pT(), weight);
-    fillCrossSection(_h_bjet1_eta, bjets[0].momentum().eta(), weight);
-    fillCrossSection(_h_bjet2_pT, bjets[1].momentum().pT(), weight);
-    fillCrossSection(_h_bjet2_eta, bjets[1].momentum().eta(), weight);
+    _h_bjet1_pT->fill(bjets[0].momentum().pT(), weight);
+    _h_bjet1_eta->fill(bjets[0].momentum().eta(), weight);
+    _h_bjet2_pT->fill(bjets[1].momentum().pT(), weight);
+    _h_bjet2_eta->fill(bjets[1].momentum().eta(), weight);
 
-    fillCrossSection(_h_leptonJet_mass, lbCands_momentum[0].mass(), weight);
-    fillCrossSection(_h_leptonJet_mass, lbCands_momentum[1].mass(), weight);
+    _h_leptonJet_mass->fill(lbCands_momentum[0].mass(), weight);
+    _h_leptonJet_mass->fill(lbCands_momentum[1].mass(), weight);
 
     // Additional cuts to go to particle level definition
     if ( decayMode != DECAYMODE_EM and ( dilepton_mass < 20 or abs(dilepton_mass-91.2) < 15 ) ) {
@@ -421,26 +421,26 @@ hB_n_->Fill(nbjetsB, weight);
     const double t2Pt = tCands_momentum[1].pT();
     const double t1Rapidity = tCands_momentum[0].rapidity();
     const double t2Rapidity = tCands_momentum[1].rapidity();
-    fillCrossSection(_h_top1_pT, t1Pt, weight);
-    fillCrossSection(_h_top1_rapidity, t1Rapidity, weight);
-    fillCrossSection(_h_top2_pT, t2Pt, weight);
-    fillCrossSection(_h_top2_rapidity, t2Rapidity, weight);
+    _h_top1_pT->fill(t1Pt, weight);
+    _h_top1_rapidity->fill(t1Rapidity, weight);
+    _h_top2_pT->fill(t2Pt, weight);
+    _h_top2_rapidity->fill(t2Rapidity, weight);
 
-    fillCrossSection(_h_top_pT, t1Pt, weight);
-    fillCrossSection(_h_top_rapidity, t1Rapidity, weight);
-    fillCrossSection(_h_top_pT, t2Pt, weight);
-    fillCrossSection(_h_top_rapidity, t2Rapidity, weight);
+    _h_top_pT->fill(t1Pt, weight);
+    _h_top_rapidity->fill(t1Rapidity, weight);
+    _h_top_pT->fill(t2Pt, weight);
+    _h_top_rapidity->fill(t2Rapidity, weight);
 
     const FourMomentum ttCand_momentum = tCands_momentum[0]+tCands_momentum[1];
-    fillCrossSection(_h_ttbar_pT, ttCand_momentum.pT(), weight);
-    fillCrossSection(_h_ttbar_mass, ttCand_momentum.mass(), weight);
-    fillCrossSection(_h_ttbar_rapidity, ttCand_momentum.rapidity(), weight);
+    _h_ttbar_pT->fill(ttCand_momentum.pT(), weight);
+    _h_ttbar_mass->fill(ttCand_momentum.mass(), weight);
+    _h_ttbar_rapidity->fill(ttCand_momentum.rapidity(), weight);
 
 #ifdef MOREPLOT
-    fillCrossSection(_h_w_mass, wCands_momentum[0].mass(), weight);
-    fillCrossSection(_h_w_mass, wCands_momentum[1].mass(), weight);
-    fillCrossSection(_h_top_mass, tCands_momentum[0].mass(), weight);
-    fillCrossSection(_h_top_mass, tCands_momentum[1].mass(), weight);
+    _h_w_mass->fill(wCands_momentum[0].mass(), weight);
+    _h_w_mass->fill(wCands_momentum[1].mass(), weight);
+    _h_top_mass->fill(tCands_momentum[0].mass(), weight);
+    _h_top_mass->fill(tCands_momentum[1].mass(), weight);
 #endif
   }
 
@@ -488,13 +488,6 @@ hB_n_->Fill(nbjetsB, weight);
     f_->Write();
     f_->Close();
 #endif
-  }
-
-  void fillCrossSection(AIDA::IHistogram1D* h, const double x, const double w) {
-    const AIDA::IAxis& axis = h->axis();
-    const int binToFill = axis.coordToIndex(x);
-    const double binWidth = axis.binWidth(binToFill);
-    h->fill(x, w/binWidth);
   }
 
 private:
