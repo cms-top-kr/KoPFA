@@ -95,41 +95,63 @@ public:
     // Book histograms
     // Plots definitions in the PAS twiki
     //    https://twiki.cern.ch/twiki/bin/view/CMSPublic/PhysicsResultsTOP12028
-    int nHist = 0;
-    _h_lepton1_pT = bookHistogram1D("lepton1_pT", ++nHist, 1, 1);
-    _h_lepton1_eta = bookHistogram1D("lepton1_eta", ++nHist, 1, 1);
+    std::vector<double> bins;
+    bins.clear(); bins += 20, 40, 70, 120, 180, 400;
+    _h_lepton1_pT = bookHistogram1D("lepton1_pT", bins);
+    bins.clear(); bins += -2.4, -1.8, -1.2, -0.6, 0, 0.6, 1.2, 1.8, 2.4;
+    _h_lepton1_eta = bookHistogram1D("lepton1_eta", bins);
 
-    _h_lepton2_pT = bookHistogram1D("lepton2_pT", ++nHist, 1, 1);
-    _h_lepton2_eta = bookHistogram1D("lepton2_eta", ++nHist, 1, 1);
+    bins.clear(); bins += 20, 40, 70, 120, 180, 400;
+    _h_lepton2_pT = bookHistogram1D("lepton2_pT", bins);
+    bins.clear(); bins += -2.4, -1.8, -1.2, -0.6, 0, 0.6, 1.2, 1.8, 2.4;
+    _h_lepton2_eta = bookHistogram1D("lepton2_eta", bins);
 
-    _h_dilepton_pT = bookHistogram1D("dilepton_pT", ++nHist, 1, 1);
-    _h_dilepton_mass = bookHistogram1D("dilepton_mass", ++nHist, 1, 1);
+    bins.clear(); bins += 0, 10, 20, 40, 60, 100, 150, 400;
+    _h_dilepton_pT = bookHistogram1D("dilepton_pT", bins);
+    bins.clear(); bins += 12, 50, 76, 106, 200, 400;
+    _h_dilepton_mass = bookHistogram1D("dilepton_mass", bins);
 
-    _h_bjet1_pT = bookHistogram1D("bjet1_pT", ++nHist, 1, 1);
-    _h_bjet1_eta = bookHistogram1D("bjet1_eta", ++nHist, 1, 1);
+    bins.clear(); bins += 20, 85, 120, 180, 240, 300, 400;
+    _h_bjet1_pT = bookHistogram1D("bjet1_pT", bins);
+    bins.clear(); bins += -2.4, -1.8, -1.2, -0.6, 0, 0.6, 1.2, 1.8, 2.4;
+    _h_bjet1_eta = bookHistogram1D("bjet1_eta", bins);
 
-    _h_bjet2_pT = bookHistogram1D("bjet2_pT", ++nHist, 1, 1);
-    _h_bjet2_eta = bookHistogram1D("bjet2_eta", ++nHist, 1, 1);
+    bins.clear(); bins += 20, 85, 140, 200, 270, 400;
+    _h_bjet2_pT = bookHistogram1D("bjet2_pT", bins);
+    bins.clear(); bins += -2.4, -1.8, -1.2, -0.6, 0, 0.6, 1.2, 1.8, 2.4;
+    _h_bjet2_eta = bookHistogram1D("bjet2_eta", bins);
 
-    _h_leptonJet_mass = bookHistogram1D("leptonJet_mass", ++nHist, 1, 1);
+    bins.clear(); bins += 0, 70, 116, 150, 400;
+    _h_leptonJet_mass = bookHistogram1D("leptonJet_mass", bins);
 
-    _h_top1_pT = bookHistogram1D("top1_pT", ++nHist, 1, 1);
-    _h_top1_rapidity = bookHistogram1D("top1_rapidity", ++nHist, 1, 1);
+    bins.clear(); bins += 0, 80, 130, 200, 300, 400;
+    _h_top1_pT = bookHistogram1D("top1_pT", bins);
+    bins.clear(); bins += -2.5, -1.3, -0.8, -0.4, 0, 0.4, 0.8, 1.3, 2.5;
+    _h_top1_rapidity = bookHistogram1D("top1_rapidity", bins);
 
-    _h_top2_pT = bookHistogram1D("top2_pT", ++nHist, 1, 1);
-    _h_top2_rapidity = bookHistogram1D("top2_rapidity", ++nHist, 1, 1);
+    bins.clear(); bins += 0, 80, 130, 200, 300, 400;
+    _h_top2_pT = bookHistogram1D("top2_pT", bins);
+    bins.clear(); bins += -2.5, -1.3, -0.8, -0.4, 0, 0.4, 0.8, 1.3, 2.5;
+    _h_top2_rapidity = bookHistogram1D("top2_rapidity", bins);
 
-    _h_top_pT = bookHistogram1D("top_pT", ++nHist, 1, 1);
-    _h_top_rapidity = bookHistogram1D("top_rapidity", ++nHist, 1, 1);
+    bins.clear(); bins += 0, 80, 130, 200, 300, 400;
+    _h_top_pT = bookHistogram1D("top_pT", bins);
+    bins.clear(); bins += -2.5, -1.3, -0.8, -0.4, 0, 0.4, 0.8, 1.3, 2.5;
+    _h_top_rapidity = bookHistogram1D("top_rapidity", bins);
 
 #ifdef MOREPLOT
     _h_w_mass   = bookHistogram1D("w_mass", 50, 30, 180);
     _h_top_mass = bookHistogram1D("top_mass", 50, 80, 250);
 #endif
 
-    _h_ttbar_pT = bookHistogram1D("ttbar_pT", ++nHist, 1, 1);
-    _h_ttbar_mass = bookHistogram1D("ttbar_mass", ++nHist, 1, 1);
-    _h_ttbar_rapidity = bookHistogram1D("ttbar_rapidity", ++nHist, 1, 1);
+    bins.clear(); bins += 0, 20, 60, 120, 300;
+    _h_ttbar_pT = bookHistogram1D("ttbar_pT", bins);
+    bins.clear(); bins += 345,400,475,550,700,1000;
+    //bins.clear(); bins += 340, 400, 470, 550, 700, 800, 1100; // bins in pseudo-top note
+    _h_ttbar_mass = bookHistogram1D("ttbar_mass", bins);
+    bins.clear(); bins += -2.5,-1.5,-0.7,0,0.7,1.5,2.5;
+    _h_ttbar_rapidity = bookHistogram1D("ttbar_rapidity", bins);
+
   }
 
   void analyze(const Event& event) {
