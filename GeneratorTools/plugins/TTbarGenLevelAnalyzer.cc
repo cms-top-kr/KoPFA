@@ -47,6 +47,7 @@ private:
   double neutrinoMaxEta_;
   double jetMinPt_, jetMaxEta_;
 
+  constexpr static double zMassPDG_ = 91.2;
   constexpr static double wMassPDG_ = 80.4;
   constexpr static double tMassPDG_ = 172.5;
 
@@ -63,17 +64,20 @@ private:
 
   TH2F* hPartonElectronPt_DressedElectronPt_;
   TH2F* hPartonMuonPt_DressedMuonPt_;
-  TH2F* hDressedElectronPt_BaldElectronPt_;
-  TH2F* hDressedMuonPt_BaldMuonPt_;
+  TH2F* hDressedElectronPt_BareElectronPt_;
+  TH2F* hDressedMuonPt_BareMuonPt_;
   TH2F* hPartonBPt_ParticleBPt_;
   TH2F* hPartonWPt_ParticleWPt_;
   TH2F* hPartonTopPt_ParticleTopPt_;
   TH2F* hPartonTTbarM_ParticleTTbarM_;
   TH2F* hPartonTTbarPt_ParticleTTbarPt_;
+
 };
 
 TTbarGenLevelAnalyzer::TTbarGenLevelAnalyzer(const edm::ParameterSet& pset)
 {
+  bool doTree = pset.getUntrackedParameter<bool>("doTree", false);
+
   genEventInfoLabel_ = pset.getUntrackedParameter<edm::InputTag>("genEventInfo");
   genParticlesLabel_ = pset.getUntrackedParameter<edm::InputTag>("genParticles");
   genJetsLabel_ = pset.getUntrackedParameter<edm::InputTag>("genJets");
@@ -97,27 +101,31 @@ TTbarGenLevelAnalyzer::TTbarGenLevelAnalyzer(const edm::ParameterSet& pset)
   ttCands_   = new LorentzVectors();
 
   edm::Service<TFileService> fs;
-  tree_ = fs->make<TTree>("tree", "tree");
-  tree_->Branch("decayMode", &decayMode_, "decayMode/I");
-  tree_->Branch("prodMode" , &prodMode_ , "prodMode/I" );
-  tree_->Branch("qScale"   , &qScale_   , "qScale/D"   );
+  tree_ = 0;
+  if ( doTree )
+  {
+    tree_ = fs->make<TTree>("tree", "tree");
+    tree_->Branch("decayMode", &decayMode_, "decayMode/I");
+    tree_->Branch("prodMode" , &prodMode_ , "prodMode/I" );
+    tree_->Branch("qScale"   , &qScale_   , "qScale/D"   );
 
-  tree_->Branch("electrons", "std::vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >", &electrons_);
-  tree_->Branch("muons"    , "std::vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >", &muons_    );
-  tree_->Branch("bjets"    , "std::vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >", &bjets_    );
-  tree_->Branch("neutrinos", "std::vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >", &neutrinos_);
-  tree_->Branch("mets"     , "std::vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >", &mets_     );
+    tree_->Branch("electrons", "std::vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >", &electrons_);
+    tree_->Branch("muons"    , "std::vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >", &muons_    );
+    tree_->Branch("bjets"    , "std::vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >", &bjets_    );
+    tree_->Branch("neutrinos", "std::vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >", &neutrinos_);
+    tree_->Branch("mets"     , "std::vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >", &mets_     );
 
-  tree_->Branch("dileptons", "std::vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >", &dileptons_);
-  tree_->Branch("lbCands"  , "std::vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >", &lbCands_  );
-  tree_->Branch("wCands"   , "std::vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >", &wCands_   );
-  tree_->Branch("tCands"   , "std::vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >", &tCands_   );
-  tree_->Branch("ttCands"  , "std::vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >", &ttCands_  );
+    tree_->Branch("dileptons", "std::vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >", &dileptons_);
+    tree_->Branch("lbCands"  , "std::vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >", &lbCands_  );
+    tree_->Branch("wCands"   , "std::vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >", &wCands_   );
+    tree_->Branch("tCands"   , "std::vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >", &tCands_   );
+    tree_->Branch("ttCands"  , "std::vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >", &ttCands_  );
+  }
 
   hPartonElectronPt_DressedElectronPt_ = fs->make<TH2F>("hPartonElectronPt_DressedElectronPt", "Compared electrons;Parton electron p_{T} (GeV/c);Dressed electron p_{T} (GeV/c)", 100, 0, 500, 100, 0, 500);
   hPartonMuonPt_DressedMuonPt_ = fs->make<TH2F>("hPartonMuonPt_DressedMuonPt", "Compared muons;Parton muon p_{T} (GeV/c);Dressed muon p_{T} (GeV/c)", 100, 0, 500, 100, 0, 500);
-  hDressedElectronPt_BaldElectronPt_ = fs->make<TH2F>("hDressedElectronPt_BaldElectronPt", "Compared electrons;Dressed electron p_{T} (GeV/c);Bald electron p_{T} (GeV/c)", 100, 0, 500, 100, 0, 500);
-  hDressedMuonPt_BaldMuonPt_ = fs->make<TH2F>("hDressedMuonPt_BaldMuonPt", "Compared muons;Dressed muon p_{T} (GeV/c);Bald muon p_{T} (GeV/c)", 100, 0, 500, 100, 0, 500);
+  hDressedElectronPt_BareElectronPt_ = fs->make<TH2F>("hDressedElectronPt_BareElectronPt", "Compared electrons;Dressed electron p_{T} (GeV/c);Bare electron p_{T} (GeV/c)", 100, 0, 500, 100, 0, 500);
+  hDressedMuonPt_BareMuonPt_ = fs->make<TH2F>("hDressedMuonPt_BareMuonPt", "Compared muons;Dressed muon p_{T} (GeV/c);Bare muon p_{T} (GeV/c)", 100, 0, 500, 100, 0, 500);
   hPartonBPt_ParticleBPt_ = fs->make<TH2F>("hPartonBPt_ParticleBPt", "Compared b jets;B quark p_{T} (GeV/c);B jet p_{T} (GeV/c)", 100, 0, 500, 100, 0, 500);
   hPartonWPt_ParticleWPt_ = fs->make<TH2F>("hPartonWPt_ParticleWPt", "Compared top;Parton W p_{T} (GeV/c);Particle W p_{T} (GeV/c)", 100, 0, 500, 100, 0, 500);
   hPartonTopPt_ParticleTopPt_ = fs->make<TH2F>("hPartonTopPt_ParticleTopPt", "Compared top;Parton top p_{T} (GeV/c);Particle top p_{T} (GeV/c)", 100, 0, 500, 100, 0, 500);
@@ -189,13 +197,13 @@ void TTbarGenLevelAnalyzer::analyze(const edm::Event& event, const edm::EventSet
     {
       electrons_->push_back(p4);
       electronsQ.push_back(p->charge());
-      hDressedElectronPt_BaldElectronPt_->Fill(p4.pt(), p->pt());
+      hDressedElectronPt_BareElectronPt_->Fill(p4.pt(), p->pt());
     }
     else if ( absPdgId == 13 )
     {
       muons_->push_back(p4);
       muonsQ.push_back(p->charge());
-      hDressedMuonPt_BaldMuonPt_->Fill(p4.pt(), p->pt());
+      hDressedMuonPt_BareMuonPt_->Fill(p4.pt(), p->pt());
     }
   }
   // Determine decay mode
@@ -223,8 +231,13 @@ void TTbarGenLevelAnalyzer::analyze(const edm::Event& event, const edm::EventSet
     dileptonQ = electronsQ[0] + muonsQ[0];
   }
   else return;
+  // Opposite charge
   if ( dileptonQ != 0 ) return;
+
   dileptons_->push_back(lepton1+lepton2);
+  const double dileptonMass = dileptons_->at(0).mass();
+  // Z veto
+  if ( decayMode_ != 3 and (dileptonMass < 20 or std::abs(dileptonMass-zMassPDG_) < 10) ) return;
 
   // Calculate MET
   if ( neutrinos_->size() < 2 ) return;
@@ -328,7 +341,7 @@ void TTbarGenLevelAnalyzer::analyze(const edm::Event& event, const edm::EventSet
   hPartonTTbarPt_ParticleTTbarPt_->Fill(parton_tt.pt(), ttCands_->at(0).pt());
   hPartonTTbarM_ParticleTTbarM_->Fill(parton_tt.mass(), ttCands_->at(0).mass());
 
-  tree_->Fill();
+  if ( tree_ ) tree_->Fill();
 }
 
 double TTbarGenLevelAnalyzer::dressup(math::XYZTLorentzVector& lv, const GenParticlesPtr& particles)
