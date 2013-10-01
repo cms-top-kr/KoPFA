@@ -35,7 +35,7 @@ private:
   typedef std::vector<math::XYZTLorentzVector> LorentzVectors;
   double dressup(math::XYZTLorentzVector& lv, const GenParticlesPtr& particles);
   bool hasStableB(const reco::GenJet& jet);
-  void matchAndFill(TH2F* h, const math::XYZTLorentzVector& p,
+  void matchAndFill(TH2F* hxy, TH2F* hres, const math::XYZTLorentzVector& p,
                     const math::XYZTLorentzVector& v1, const math::XYZTLorentzVector& v2);
 
 private:
@@ -62,15 +62,25 @@ private:
   LorentzVectors* wCands_, * tCands_;
   LorentzVectors* ttCands_;
 
-  TH2F* hPartonElectronPt_DressedElectronPt_;
-  TH2F* hPartonMuonPt_DressedMuonPt_;
-  TH2F* hDressedElectronPt_BareElectronPt_;
-  TH2F* hDressedMuonPt_BareMuonPt_;
-  TH2F* hPartonBPt_ParticleBPt_;
-  TH2F* hPartonWPt_ParticleWPt_;
-  TH2F* hPartonTopPt_ParticleTopPt_;
-  TH2F* hPartonTTbarM_ParticleTTbarM_;
-  TH2F* hPartonTTbarPt_ParticleTTbarPt_;
+  TH2F* hPtonElPt_DrsdElPt_;
+  TH2F* hPtonMuPt_DrsdMuPt_;
+  TH2F* hDrsdElPt_BareElPt_;
+  TH2F* hDrsdMuPt_BareMuPt_;
+  TH2F* hPtonBPt_PtclBPt_;
+  TH2F* hPtonWPt_PtclWPt_;
+  TH2F* hPtonTopPt_PtclTopPt_;
+  TH2F* hPtonTTbarM_PtclTTbarM_;
+  TH2F* hPtonTTbarPt_PtclTTbarPt_;
+
+  TH2F* hPtonElPt_DrsdElPtRes_;
+  TH2F* hPtonMuPt_DrsdMuPtRes_;
+  TH2F* hDrsdElPt_BareElPtRes_;
+  TH2F* hDrsdMuPt_BareMuPtRes_;
+  TH2F* hPtonBPt_PtclBPtRes_;
+  TH2F* hPtonWPt_PtclWPtRes_;
+  TH2F* hPtonTopPt_PtclTopPtRes_;
+  TH2F* hPtonTTbarM_PtclTTbarMRes_;
+  TH2F* hPtonTTbarPt_PtclTTbarPtRes_;
 
 };
 
@@ -122,15 +132,25 @@ TTbarGenLevelAnalyzer::TTbarGenLevelAnalyzer(const edm::ParameterSet& pset)
     tree_->Branch("ttCands"  , "std::vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >", &ttCands_  );
   }
 
-  hPartonElectronPt_DressedElectronPt_ = fs->make<TH2F>("hPartonElectronPt_DressedElectronPt", "Compared electrons;Parton electron p_{T} (GeV/c);Dressed electron p_{T} (GeV/c)", 100, 0, 500, 100, 0, 500);
-  hPartonMuonPt_DressedMuonPt_ = fs->make<TH2F>("hPartonMuonPt_DressedMuonPt", "Compared muons;Parton muon p_{T} (GeV/c);Dressed muon p_{T} (GeV/c)", 100, 0, 500, 100, 0, 500);
-  hDressedElectronPt_BareElectronPt_ = fs->make<TH2F>("hDressedElectronPt_BareElectronPt", "Compared electrons;Dressed electron p_{T} (GeV/c);Bare electron p_{T} (GeV/c)", 100, 0, 500, 100, 0, 500);
-  hDressedMuonPt_BareMuonPt_ = fs->make<TH2F>("hDressedMuonPt_BareMuonPt", "Compared muons;Dressed muon p_{T} (GeV/c);Bare muon p_{T} (GeV/c)", 100, 0, 500, 100, 0, 500);
-  hPartonBPt_ParticleBPt_ = fs->make<TH2F>("hPartonBPt_ParticleBPt", "Compared b jets;B quark p_{T} (GeV/c);B jet p_{T} (GeV/c)", 100, 0, 500, 100, 0, 500);
-  hPartonWPt_ParticleWPt_ = fs->make<TH2F>("hPartonWPt_ParticleWPt", "Compared top;Parton W p_{T} (GeV/c);Particle W p_{T} (GeV/c)", 100, 0, 500, 100, 0, 500);
-  hPartonTopPt_ParticleTopPt_ = fs->make<TH2F>("hPartonTopPt_ParticleTopPt", "Compared top;Parton top p_{T} (GeV/c);Particle top p_{T} (GeV/c)", 100, 0, 500, 100, 0, 500);
-  hPartonTTbarM_ParticleTTbarM_ = fs->make<TH2F>("hPartonTTbarM_ParticleTTbarM", "Compared ttbar;Parton t#bar{t} M (GeV/c^{2});Particle t#bar{t} M(GeV/c^{2})", 400, 0, 2000, 400, 0, 2000);
-  hPartonTTbarPt_ParticleTTbarPt_ = fs->make<TH2F>("hPartonTTbarPt_ParticleTTbarPt", "Compared t#bar{t};Parton t#bar{t} p_{T} (GeV/c);Particle t#bar{t} p_{T} (GeV/c)", 100, 0, 500, 100, 0, 500);
+  hPtonElPt_DrsdElPt_ = fs->make<TH2F>("hPtonElPt_DrsdElPt", "Compared electrons;Parton electron p_{T} (GeV/c);Drsd electron p_{T} (GeV/c)", 100, 0, 500, 100, 0, 500);
+  hPtonMuPt_DrsdMuPt_ = fs->make<TH2F>("hPtonMuPt_DrsdMuPt", "Compared muons;Parton muon p_{T} (GeV/c);Drsd muon p_{T} (GeV/c)", 100, 0, 500, 100, 0, 500);
+  hDrsdElPt_BareElPt_ = fs->make<TH2F>("hDrsdElPt_BareElPt", "Compared electrons;Drsd electron p_{T} (GeV/c);Bare electron p_{T} (GeV/c)", 100, 0, 500, 100, 0, 500);
+  hDrsdMuPt_BareMuPt_ = fs->make<TH2F>("hDrsdMuPt_BareMuPt", "Compared muons;Drsd muon p_{T} (GeV/c);Bare muon p_{T} (GeV/c)", 100, 0, 500, 100, 0, 500);
+  hPtonBPt_PtclBPt_ = fs->make<TH2F>("hPtonBPt_PtclBPt", "Compared b jets;B quark p_{T} (GeV/c);B jet p_{T} (GeV/c)", 100, 0, 500, 100, 0, 500);
+  hPtonWPt_PtclWPt_ = fs->make<TH2F>("hPtonWPt_PtclWPt", "Compared top;Parton W p_{T} (GeV/c);Particle W p_{T} (GeV/c)", 100, 0, 500, 100, 0, 500);
+  hPtonTopPt_PtclTopPt_ = fs->make<TH2F>("hPtonTopPt_PtclTopPt", "Compared top;Parton top p_{T} (GeV/c);Particle top p_{T} (GeV/c)", 100, 0, 500, 100, 0, 500);
+  hPtonTTbarM_PtclTTbarM_ = fs->make<TH2F>("hPtonTTbarM_PtclTTbarM", "Compared ttbar;Parton t#bar{t} M (GeV/c^{2});Particle t#bar{t} M(GeV/c^{2})", 400, 0, 2000, 400, 0, 2000);
+  hPtonTTbarPt_PtclTTbarPt_ = fs->make<TH2F>("hPtonTTbarPt_PtclTTbarPt", "Compared t#bar{t};Parton t#bar{t} p_{T} (GeV/c);Particle t#bar{t} p_{T} (GeV/c)", 100, 0, 500, 100, 0, 500);
+
+  hPtonElPt_DrsdElPtRes_ = fs->make<TH2F>("hPtonElPt_DrsdElPtRes", "Compared electrons;Parton electron p_{T} (GeV/c);Drsd electron p_{T} residual (GeV/c)", 100, 0, 500, 100, -50, 50);
+  hPtonMuPt_DrsdMuPtRes_ = fs->make<TH2F>("hPtonMuPt_DrsdMuPtRes", "Compared muons;Parton muon p_{T} (GeV/c);Drsd muon p_{T} residual (GeV/c)", 100, 0, 500, 100, -50, 50);
+  hDrsdElPt_BareElPtRes_ = fs->make<TH2F>("hDrsdElPt_BareElPtRes", "Compared electrons;Drsd electron p_{T} residual (GeV/c);Bare electron p_{T} (GeV/c)", 100, 0, 500, 100, -50, 50);
+  hDrsdMuPt_BareMuPtRes_ = fs->make<TH2F>("hDrsdMuPt_BareMuPtRes", "Compared muons;Drsd muon p_{T} (GeV/c);Bare muon p_{T} residual (GeV/c)", 100, 0, 500, 100, -50, 50);
+  hPtonBPt_PtclBPtRes_ = fs->make<TH2F>("hPtonBPt_PtclBPtRes", "Compared b jets;B quark p_{T} (GeV/c);B jet p_{T} residual (GeV/c)", 100, 0, 500, 100, -50, 50);
+  hPtonWPt_PtclWPtRes_ = fs->make<TH2F>("hPtonWPt_PtclWPtRes", "Compared top;Parton W p_{T} (GeV/c);Particle W p_{T} residual (GeV/c)", 100, 0, 500, 100, -50, 50);
+  hPtonTopPt_PtclTopPtRes_ = fs->make<TH2F>("hPtonTopPt_PtclTopPtRes", "Compared top;Parton top p_{T} (GeV/c);Particle top p_{T} residual (GeV/c)", 100, 0, 500, 100, -50, 50);
+  hPtonTTbarM_PtclTTbarMRes_ = fs->make<TH2F>("hPtonTTbarM_PtclTTbarMRes", "Compared ttbar;Parton t#bar{t} M (GeV/c^{2});Particle t#bar{t} M residual(GeV/c^{2})", 400, 0, 2000, 200, -100, 100);
+  hPtonTTbarPt_PtclTTbarPtRes_ = fs->make<TH2F>("hPtonTTbarPt_PtclTTbarPtRes", "Compared t#bar{t};Parton t#bar{t} p_{T} (GeV/c);Particle t#bar{t} p_{T} residual (GeV/c)", 100, 0, 500, 100, -50, 50);
 
 }
 
@@ -197,13 +217,13 @@ void TTbarGenLevelAnalyzer::analyze(const edm::Event& event, const edm::EventSet
     {
       electrons_->push_back(p4);
       electronsQ.push_back(p->charge());
-      hDressedElectronPt_BareElectronPt_->Fill(p4.pt(), p->pt());
+      hDrsdElPt_BareElPt_->Fill(p4.pt(), p->pt());
     }
     else if ( absPdgId == 13 )
     {
       muons_->push_back(p4);
       muonsQ.push_back(p->charge());
-      hDressedMuonPt_BareMuonPt_->Fill(p4.pt(), p->pt());
+      hDrsdMuPt_BareMuPt_->Fill(p4.pt(), p->pt());
     }
   }
   // Determine decay mode
@@ -328,18 +348,20 @@ void TTbarGenLevelAnalyzer::analyze(const edm::Event& event, const edm::EventSet
   }
   math::XYZTLorentzVector parton_tt = parton_t1 + parton_t2;
 
-  matchAndFill(hPartonElectronPt_DressedElectronPt_, parton_e1, lepton1, lepton2);
-  matchAndFill(hPartonElectronPt_DressedElectronPt_, parton_e2, lepton1, lepton2);
-  matchAndFill(hPartonMuonPt_DressedMuonPt_, parton_m1, lepton1, lepton2);
-  matchAndFill(hPartonMuonPt_DressedMuonPt_, parton_m2, lepton1, lepton2);
-  matchAndFill(hPartonBPt_ParticleBPt_, parton_b1, bjets_->at(0), bjets_->at(1));
-  matchAndFill(hPartonBPt_ParticleBPt_, parton_b2, bjets_->at(0), bjets_->at(1));
-  matchAndFill(hPartonWPt_ParticleWPt_, parton_w1, wCands_->at(0), wCands_->at(1));
-  matchAndFill(hPartonWPt_ParticleWPt_, parton_w2, wCands_->at(0), wCands_->at(1));
-  matchAndFill(hPartonTopPt_ParticleTopPt_, parton_t1, tCands_->at(0), tCands_->at(1));
-  matchAndFill(hPartonTopPt_ParticleTopPt_, parton_t2, tCands_->at(0), tCands_->at(1));
-  hPartonTTbarPt_ParticleTTbarPt_->Fill(parton_tt.pt(), ttCands_->at(0).pt());
-  hPartonTTbarM_ParticleTTbarM_->Fill(parton_tt.mass(), ttCands_->at(0).mass());
+  matchAndFill(hPtonElPt_DrsdElPt_, hPtonElPt_DrsdElPtRes_, parton_e1, lepton1, lepton2);
+  matchAndFill(hPtonElPt_DrsdElPt_, hPtonElPt_DrsdElPtRes_, parton_e2, lepton1, lepton2);
+  matchAndFill(hPtonMuPt_DrsdMuPt_, hPtonMuPt_DrsdMuPtRes_, parton_m1, lepton1, lepton2);
+  matchAndFill(hPtonMuPt_DrsdMuPt_, hPtonMuPt_DrsdMuPtRes_, parton_m2, lepton1, lepton2);
+  matchAndFill(hPtonBPt_PtclBPt_, hPtonBPt_PtclBPtRes_, parton_b1, bjets_->at(0), bjets_->at(1));
+  matchAndFill(hPtonBPt_PtclBPt_, hPtonBPt_PtclBPtRes_, parton_b2, bjets_->at(0), bjets_->at(1));
+  matchAndFill(hPtonWPt_PtclWPt_, hPtonWPt_PtclWPtRes_, parton_w1, wCands_->at(0), wCands_->at(1));
+  matchAndFill(hPtonWPt_PtclWPt_, hPtonWPt_PtclWPtRes_, parton_w2, wCands_->at(0), wCands_->at(1));
+  matchAndFill(hPtonTopPt_PtclTopPt_, hPtonTopPt_PtclTopPtRes_, parton_t1, tCands_->at(0), tCands_->at(1));
+  matchAndFill(hPtonTopPt_PtclTopPt_, hPtonTopPt_PtclTopPtRes_, parton_t2, tCands_->at(0), tCands_->at(1));
+  hPtonTTbarPt_PtclTTbarPt_->Fill(parton_tt.pt(), ttCands_->at(0).pt());
+  hPtonTTbarM_PtclTTbarM_->Fill(parton_tt.mass(), ttCands_->at(0).mass());
+  hPtonTTbarPt_PtclTTbarPt_->Fill(parton_tt.pt(), ttCands_->at(0).pt()-parton_tt.pt());
+  hPtonTTbarM_PtclTTbarM_->Fill(parton_tt.mass(), ttCands_->at(0).mass()-parton_tt.mass());
 
   if ( tree_ ) tree_->Fill();
 }
@@ -375,12 +397,20 @@ bool TTbarGenLevelAnalyzer::hasStableB(const reco::GenJet& jet)
   return false;
 }
 
-void TTbarGenLevelAnalyzer::matchAndFill(TH2F* h, const math::XYZTLorentzVector& p, 
+void TTbarGenLevelAnalyzer::matchAndFill(TH2F* hxy, TH2F* hres, const math::XYZTLorentzVector& p, 
                                          const math::XYZTLorentzVector& v1, const math::XYZTLorentzVector& v2)
 {
   if ( p.pt() <= 0.01 ) return; 
-  if ( v1.pt() > 0.01 and deltaR(p, v1) < 0.1 ) h->Fill(p.pt(), v1.pt());
-  if ( v2.pt() > 0.01 and deltaR(p, v2) < 0.1 ) h->Fill(p.pt(), v2.pt());
+  if ( v1.pt() > 0.01 and deltaR(p, v1) < 0.1 )
+  {
+    hxy->Fill(p.pt(), v1.pt());
+    hres->Fill(p.pt(), v1.pt()-p.pt());
+  }
+  if ( v2.pt() > 0.01 and deltaR(p, v2) < 0.1 )
+  {
+    hxy->Fill(p.pt(), v2.pt());
+    hres->Fill(p.pt(), v2.pt()-p.pt());
+  }
 }
 
 #include "FWCore/Framework/interface/MakerMacros.h"
