@@ -56,34 +56,67 @@ public:
     return false;
   }
 
+  ParticleVector makeDressedLeptons(const ParticleVector& allLeptons, const ParticleVector& fsForDressup) {
+    ParticleVector dressedLeptons;
+    foreach ( const Particle& lepton, allLeptons ) {
+      FourMomentum leptonP4 = lepton.momentum();
+      double isolation = 0;
+
+      foreach ( const Particle& p, fsForDressup ) {
+        const FourMomentum& p4 = p.momentum();
+        const double dR = deltaR(leptonP4, p4);
+        if ( dR < 0.1 ) {
+          if ( p.pdgId() == 22 ) leptonP4 += p4;
+        }
+        else if ( dR < 0.3 ) {
+          const double pt = p4.perp();
+          if ( pt > 0.5 ) isolation += pt;
+        }
+      }
+
+      if ( leptonP4.perp() < 20*GeV or abs(leptonP4.eta()) > 2.4 ) continue;
+      if ( isolation > 0.15*leptonP4.perp() ) continue;
+
+      dressedLeptons.push_back(Particle(lepton.pdgId(), leptonP4));
+    }
+    std::sort(dressedLeptons.begin(), dressedLeptons.end(), Particle::byPTDescending());
+
+    return dressedLeptons;
+  }
+
   void init() {
     // Leptons
-    FinalState fsForDressup;
-    std::vector<std::pair<double, double> > etaForDressup;
-    etaForDressup.push_back(std::make_pair(-2.5, 2.5));
+    //FinalState fsForDressup;
+    //std::vector<std::pair<double, double> > etaForDressup;
+    //etaForDressup.push_back(std::make_pair(-2.5, 2.5));
 
     IdentifiedFinalState allMuons(-2.4, 2.4);
     allMuons.acceptIdPair(MUON);
-    LeptonClusters muons(fsForDressup, allMuons, 0.1, true, etaForDressup, 20*GeV);
+    //LeptonClusters muons(fsForDressup, allMuons, 0.1, true, etaForDressup, 20*GeV);
 
     IdentifiedFinalState allElectrons(-2.4, 2.4);
     allElectrons.acceptIdPair(ELECTRON);
-    LeptonClusters electrons(fsForDressup, allElectrons, 0.1, true, etaForDressup, 20*GeV);
+    //LeptonClusters electrons(fsForDressup, allElectrons, 0.1, true, etaForDressup, 20*GeV);
 
-    addProjection(muons, "muons");
-    addProjection(electrons, "electrons");
+    VetoedFinalState fsForDressup(FinalState(-3, 3));
+    fsForDressup.vetoNeutrinos();
+
+    addProjection(allMuons, "allMuons");
+    addProjection(allElectrons, "allElectrons");
+    addProjection(fsForDressup, "fsForDressup");
 
     // Neutrinos
     IdentifiedFinalState neutrinos(-5.0, 5.0, 0*GeV);
     neutrinos.acceptIdPair(NU_MU);
     neutrinos.acceptIdPair(NU_E);
+    neutrinos.acceptIdPair(NU_TAU);
     addProjection(neutrinos, "neutrinos");
 
     // Jets
     VetoedFinalState fsForJets(FinalState(-5.0, 5.0));
     fsForJets.vetoNeutrinos();
-    fsForJets.addVetoOnThisFinalState(muons);
-    fsForJets.addVetoOnThisFinalState(electrons);
+    //fsForJets.addVetoOnThisFinalState(muons);
+    //fsForJets.addVetoOnThisFinalState(electrons);
     addProjection(fsForJets, "fsForJets");
     //addProjection(FastJets(fsForJets, FastJets::ANTIKT, 0.5), "jets");
     addProjection(MissingMomentum(fsForJets), "metJet");
@@ -148,9 +181,14 @@ public:
     _h_ttbar_rapidity = bookHistogram1D("ttbar_rapidity", bins);
 
 #ifdef MOREPLOT
+    _h_n_electron = bookHistogram1D("n_electron", 10, 0, 10);
+    _h_n_muon     = bookHistogram1D("n_muon", 10, 0, 10);
+    _h_n_jet      = bookHistogram1D("n_jet", 10, 0, 10);
+    _h_n_bjet     = bookHistogram1D("n_bjet", 10, 0, 10);
+
     _h_w_mass   = bookHistogram1D("w_mass", 50, 30, 180);
     _h_top_mass = bookHistogram1D("top_mass", 50, 80, 250);
-    _h_nEvent = bookHistogram1D("nEvent", 2, 0, 2);
+    _h_nEvent = bookHistogram1D("nEvent", 10, 0, 10);
     _h_production = bookHistogram1D("production", 3, 0, 3);
 #endif
 
@@ -159,8 +197,7 @@ public:
   void analyze(const Event& event) {
     double weight = event.weight();
 #ifdef MOREPLOT
-    _h_nEvent->fill(0);
-    _h_nEvent->fill(1, weight);
+    _h_nEvent->fill(0, weight);
 
     // Figure out generator internal information
     const GenEvent& genEvent = event.genEvent();
@@ -183,10 +220,18 @@ public:
 #endif
 
     // Retrieve leptons and check lepton multiplicity
-    //const ParticleVector electrons = applyProjection<IdentifiedFinalState>(event, "electrons").particlesByPt();
-    //const ParticleVector muons     = applyProjection<IdentifiedFinalState>(event, "muons"    ).particlesByPt();
-    const ParticleVector electrons = applyProjection<LeptonClusters>(event, "electrons").particlesByPt();
-    const ParticleVector muons     = applyProjection<LeptonClusters>(event, "muons"    ).particlesByPt();
+    const ParticleVector allElectrons   = applyProjection<IdentifiedFinalState>(event, "allElectrons").particlesByPt();
+    const ParticleVector allMuons       = applyProjection<IdentifiedFinalState>(event, "allMuons"    ).particlesByPt();
+    const ParticleVector fsForDressup   = applyProjection<FinalState>(event, "fsForDressup").particles();
+    //const ParticleVector electrons = applyProjection<LeptonClusters>(event, "electrons").particlesByPt();
+    //const ParticleVector muons     = applyProjection<LeptonClusters>(event, "muons"    ).particlesByPt();
+    const ParticleVector electrons = makeDressedLeptons(allElectrons, fsForDressup);
+    const ParticleVector muons = makeDressedLeptons(allMuons, fsForDressup);
+#ifdef MOREPLOT
+    _h_n_electron->fill(electrons.size(), weight);
+    _h_n_muon->fill(muons.size(), weight);
+#endif
+
     DECAYMODE decayMode = DECAYMODE_NONE;
     if ( electrons.size() == 2 and muons.size() == 0 ) decayMode = DECAYMODE_EE;
     else if ( electrons.size() == 0 and muons.size() == 2 ) decayMode = DECAYMODE_MM;
@@ -246,6 +291,9 @@ public:
     FastJets jetAlg(fsForJets, FastJets::ANTIKT, 0.5);
     jetAlg.calc(particlesForJets);
     const Jets jets = jetAlg.jetsByPt(30*GeV, MAXDOUBLE, -2.4, 2.4);
+#ifdef MOREPLOT
+    _h_n_jet->fill(jets.size());
+#endif
     if ( jets.size() < 2 ) {
       MSG_DEBUG("Event failed jet multiplicity cut, nJet = " << jets.size());
       vetoEvent;
@@ -270,6 +318,9 @@ public:
       if ( !jet.containsParticleId(_ghost_b_id) ) continue; // Find ghost b hadrons as stable bprime
       bjets.push_back(jet);
     }
+#ifdef MOREPLOT
+    _h_n_bjet->fill(bjets.size(), weight);
+#endif
     if ( bjets.size() < 2 ) {
       MSG_DEBUG("Event failed b-tagging cut, nBJet = " << bjets.size());
       vetoEvent;
@@ -311,7 +362,6 @@ public:
     FourMomentum lbCands_momentum[2];
     // Before top combination, check existence of W candidate
     if ( neutrinoIndex[0] == -1 or neutrinoIndex[1] == -1 ) {
-      //MSG_DEBUG("Event failed W combination. We don't veto this event but W/top related variables will be null");
       MSG_DEBUG("Event failed W candidate combination");
       vetoEvent;
     }
@@ -372,9 +422,9 @@ public:
     _h_leptonJet_mass->fill(lbCands_momentum[1].mass(), weight);
 
     // Additional cuts to go to particle level definition
-    if ( decayMode != DECAYMODE_EM and ( dilepton_mass < 20 or abs(dilepton_mass-91.2) < 15 ) ) {
+    if ( decayMode != DECAYMODE_EM and ( dilepton_mass <= 20 or abs(dilepton_mass-91.2) < 10 ) ) {
       MSG_DEBUG("Event failed dilepton mass cut, m(l+l-) = " << dilepton_mass);
-      //vetoEvent;
+      vetoEvent;
     }
 
     const double t1Pt = tCands_momentum[0].pT();
@@ -441,6 +491,11 @@ public:
 
 private:
 #ifdef MOREPLOT
+  AIDA::IHistogram1D* _h_n_electron;
+  AIDA::IHistogram1D* _h_n_muon;
+  AIDA::IHistogram1D* _h_n_jet;
+  AIDA::IHistogram1D* _h_n_bjet;
+
   AIDA::IHistogram1D* _h_w_mass;
   AIDA::IHistogram1D* _h_top_mass;
   AIDA::IHistogram1D* _h_nEvent;
