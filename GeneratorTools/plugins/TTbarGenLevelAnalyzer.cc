@@ -33,7 +33,7 @@ public:
 private:
   typedef std::vector<const reco::GenParticle*> GenParticlesPtr;
   typedef std::vector<math::XYZTLorentzVector> LorentzVectors;
-  void dressup(math::XYZTLorentzVector& lv, const GenParticlesPtr& photons);
+  double dressup(math::XYZTLorentzVector& lv, const GenParticlesPtr& particles);
   bool hasStableB(const reco::GenJet& jet);
   void matchAndFill(TH2F* h, const math::XYZTLorentzVector& p,
                     const math::XYZTLorentzVector& v1, const math::XYZTLorentzVector& v2);
@@ -79,10 +79,10 @@ TTbarGenLevelAnalyzer::TTbarGenLevelAnalyzer(const edm::ParameterSet& pset)
   genJetsLabel_ = pset.getUntrackedParameter<edm::InputTag>("genJets");
 
   leptonMinPt_  = pset.getUntrackedParameter<double>("leptonMinPt", 20);
-  leptonMaxEta_ = pset.getUntrackedParameter<double>("leptonMaxEta", 2.5);
+  leptonMaxEta_ = pset.getUntrackedParameter<double>("leptonMaxEta", 2.4);
   neutrinoMaxEta_ = pset.getUntrackedParameter<double>("neutrinoMaxEta", 5.0);
   jetMinPt_  = pset.getUntrackedParameter<double>("jetMinPt", 30);
-  jetMaxEta_ = pset.getUntrackedParameter<double>("jetMaxEta", 2.5);
+  jetMaxEta_ = pset.getUntrackedParameter<double>("jetMaxEta", 2.4);
 
   electrons_ = new LorentzVectors();
   muons_     = new LorentzVectors();
@@ -159,14 +159,14 @@ void TTbarGenLevelAnalyzer::analyze(const edm::Event& event, const edm::EventSet
 
   // Collect stable particles for the particle level analysis
   GenParticlesPtr stableLeptons;
-  GenParticlesPtr stablePhotons;
+  GenParticlesPtr allStables;
   for ( unsigned int i=0, n=genParticlesHandle->size(); i<n; ++i )
   {
     const reco::GenParticle* p = &genParticlesHandle->at(i);
     if ( p->status() != 1 ) continue;
+    allStables.push_back(p);
     const unsigned int absPdgId = abs(p->pdgId());
     if ( absPdgId == 11 or absPdgId == 13 ) stableLeptons.push_back(p);
-    else if ( absPdgId == 22 ) stablePhotons.push_back(p);
     else if ( absPdgId == 12 or absPdgId == 14 or absPdgId == 16 )
     {
       if ( abs(p->eta()) > neutrinoMaxEta_ ) continue;
@@ -175,46 +175,55 @@ void TTbarGenLevelAnalyzer::analyze(const edm::Event& event, const edm::EventSet
   }
 
   // Do dressup and keep leptons
+  std::vector<int> electronsQ, muonsQ;
   for ( unsigned int i=0, n=stableLeptons.size(); i<n; ++i )
   {
     const reco::GenParticle* p = stableLeptons.at(i);
     math::XYZTLorentzVector p4 = p->p4();
-    dressup(p4, stablePhotons);
+    const double isolation = dressup(p4, allStables);
     if ( p4.pt() < leptonMinPt_ or abs(p4.eta()) > leptonMaxEta_ ) continue;
+    if ( isolation > 0.2*p4.pt() ) continue;
 
     const unsigned int absPdgId = abs(p->pdgId());
     if ( absPdgId == 11 ) 
     {
       electrons_->push_back(p4);
+      electronsQ.push_back(p->charge());
       hDressedElectronPt_BaldElectronPt_->Fill(p4.pt(), p->pt());
     }
     else if ( absPdgId == 13 )
     {
       muons_->push_back(p4);
+      muonsQ.push_back(p->charge());
       hDressedMuonPt_BaldMuonPt_->Fill(p4.pt(), p->pt());
     }
   }
   // Determine decay mode
+  int dileptonQ;
   math::XYZTLorentzVector lepton1, lepton2;
   if ( electrons_->size() == 2 and muons_->size() == 0 )
   {
     decayMode_ = 1;
     lepton1 = electrons_->at(0);
     lepton2 = electrons_->at(1);
+    dileptonQ = electronsQ[0]+electronsQ[1];
   }
   else if ( electrons_->size() == 0 and muons_->size() == 2 )
   {
     decayMode_ = 2;
     lepton1 = muons_->at(0);
     lepton2 = muons_->at(1);
+    dileptonQ = muonsQ[0] + muonsQ[1];
   }
   else if ( electrons_->size() == 1 and muons_->size() == 1 )
   {
     decayMode_ = 3;
     lepton1 = electrons_->at(0);
     lepton2 = muons_->at(0);
+    dileptonQ = electronsQ[0] + muonsQ[0];
   }
   else return;
+  if ( dileptonQ != 0 ) return;
   dileptons_->push_back(lepton1+lepton2);
 
   // Calculate MET
@@ -322,14 +331,25 @@ void TTbarGenLevelAnalyzer::analyze(const edm::Event& event, const edm::EventSet
   tree_->Fill();
 }
 
-void TTbarGenLevelAnalyzer::dressup(math::XYZTLorentzVector& lv, const GenParticlesPtr& photons)
+double TTbarGenLevelAnalyzer::dressup(math::XYZTLorentzVector& lv, const GenParticlesPtr& particles)
 {
-  for ( int i=0, n=photons.size(); i<n; ++i )
+  double isolation = 0;
+  for ( int i=0, n=particles.size(); i<n; ++i )
   {
-    const math::XYZTLorentzVector p4 = photons.at(i)->p4();
-    if ( deltaR(lv, p4) > 0.1 ) continue;
-    lv += p4;
+    const reco::GenParticle* p = particles.at(i);
+    const math::XYZTLorentzVector p4 = p->p4();
+    const double dR = deltaR(lv, p4);
+    if ( dR < 0.1 )
+    {
+      if ( p->pdgId() == 22 ) lv += p4;
+    }
+    else if ( dR < 0.3 )
+    {
+      const double pt = p->pt();
+      if ( pt > 0.5 ) isolation += pt;
+    }
   }
+  return isolation;
 }
 
 bool TTbarGenLevelAnalyzer::hasStableB(const reco::GenJet& jet)
