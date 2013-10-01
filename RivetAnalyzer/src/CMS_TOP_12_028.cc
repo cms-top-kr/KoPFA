@@ -139,11 +139,6 @@ public:
     bins.clear(); bins += -2.5, -1.3, -0.8, -0.4, 0, 0.4, 0.8, 1.3, 2.5;
     _h_top_rapidity = bookHistogram1D("top_rapidity", bins);
 
-#ifdef MOREPLOT
-    _h_w_mass   = bookHistogram1D("w_mass", 50, 30, 180);
-    _h_top_mass = bookHistogram1D("top_mass", 50, 80, 250);
-#endif
-
     bins.clear(); bins += 0, 20, 60, 120, 300;
     _h_ttbar_pT = bookHistogram1D("ttbar_pT", bins);
     bins.clear(); bins += 345,400,475,550,700,1000;
@@ -152,10 +147,20 @@ public:
     bins.clear(); bins += -2.5,-1.5,-0.7,0,0.7,1.5,2.5;
     _h_ttbar_rapidity = bookHistogram1D("ttbar_rapidity", bins);
 
+#ifdef MOREPLOT
+    _h_w_mass   = bookHistogram1D("w_mass", 50, 30, 180);
+    _h_top_mass = bookHistogram1D("top_mass", 50, 80, 250);
+    _h_nEvent = bookHistogram1D("nEvent", 2, 0, 2);
+    _h_production = bookHistogram1D("production", 3, 0, 3);
+#endif
+
   }
 
   void analyze(const Event& event) {
     double weight = event.weight();
+#ifdef MOREPLOT
+    _h_nEvent->fill(0);
+    _h_nEvent->fill(1, weight);
 
     // Figure out generator internal information
     const GenEvent& genEvent = event.genEvent();
@@ -164,16 +169,18 @@ public:
     const int parton2Id = genEvent.pdf_info()->id2();
     if ( parton1Id == 0 and parton2Id == 0 ) {
       // Gluon-Gluon collision
+      _h_production->fill(0, weight);
     }
     else if ( parton1Id != 0 and parton2Id != 0 ) {
       // Quark-Quark collision
-      weight = 0;
+      _h_production->fill(1, weight);
     }
     else
     {
       // Quark-Gluon collision
-      weight = 0;
+      _h_production->fill(2, weight);
     }
+#endif
 
     // Retrieve leptons and check lepton multiplicity
     //const ParticleVector electrons = applyProjection<IdentifiedFinalState>(event, "electrons").particlesByPt();
@@ -367,7 +374,7 @@ public:
     // Additional cuts to go to particle level definition
     if ( decayMode != DECAYMODE_EM and ( dilepton_mass < 20 or abs(dilepton_mass-91.2) < 15 ) ) {
       MSG_DEBUG("Event failed dilepton mass cut, m(l+l-) = " << dilepton_mass);
-      vetoEvent;
+      //vetoEvent;
     }
 
     const double t1Pt = tCands_momentum[0].pT();
@@ -436,6 +443,8 @@ private:
 #ifdef MOREPLOT
   AIDA::IHistogram1D* _h_w_mass;
   AIDA::IHistogram1D* _h_top_mass;
+  AIDA::IHistogram1D* _h_nEvent;
+  AIDA::IHistogram1D* _h_production;
 #endif
 
   // Histogram naming convention : _h_(objectName)_(variableName)
