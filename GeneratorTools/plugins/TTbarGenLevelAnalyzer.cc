@@ -86,7 +86,7 @@ private:
 
 TTbarGenLevelAnalyzer::TTbarGenLevelAnalyzer(const edm::ParameterSet& pset)
 {
-  bool doTree = pset.getUntrackedParameter<bool>("doTree", false);
+  bool doTree = pset.getUntrackedParameter<bool>("doTree", true);
 
   genEventInfoLabel_ = pset.getUntrackedParameter<edm::InputTag>("genEventInfo");
   genParticlesLabel_ = pset.getUntrackedParameter<edm::InputTag>("genParticles");
@@ -218,12 +218,14 @@ void TTbarGenLevelAnalyzer::analyze(const edm::Event& event, const edm::EventSet
       electrons_->push_back(p4);
       electronsQ.push_back(p->charge());
       hDrsdElPt_BareElPt_->Fill(p4.pt(), p->pt());
+      hDrsdElPt_BareElPtRes_->Fill(p4.pt(), p->pt()-p4.pt());
     }
     else if ( absPdgId == 13 )
     {
       muons_->push_back(p4);
       muonsQ.push_back(p->charge());
       hDrsdMuPt_BareMuPt_->Fill(p4.pt(), p->pt());
+      hDrsdMuPt_BareMuPtRes_->Fill(p4.pt(), p->pt()-p4.pt());
     }
   }
   // Determine decay mode
@@ -360,8 +362,8 @@ void TTbarGenLevelAnalyzer::analyze(const edm::Event& event, const edm::EventSet
   matchAndFill(hPtonTopPt_PtclTopPt_, hPtonTopPt_PtclTopPtRes_, parton_t2, tCands_->at(0), tCands_->at(1));
   hPtonTTbarPt_PtclTTbarPt_->Fill(parton_tt.pt(), ttCands_->at(0).pt());
   hPtonTTbarM_PtclTTbarM_->Fill(parton_tt.mass(), ttCands_->at(0).mass());
-  hPtonTTbarPt_PtclTTbarPt_->Fill(parton_tt.pt(), ttCands_->at(0).pt()-parton_tt.pt());
-  hPtonTTbarM_PtclTTbarM_->Fill(parton_tt.mass(), ttCands_->at(0).mass()-parton_tt.mass());
+  hPtonTTbarPt_PtclTTbarPtRes_->Fill(parton_tt.pt(), ttCands_->at(0).pt()-parton_tt.pt());
+  hPtonTTbarM_PtclTTbarMRes_->Fill(parton_tt.mass(), ttCands_->at(0).mass()-parton_tt.mass());
 
   if ( tree_ ) tree_->Fill();
 }
