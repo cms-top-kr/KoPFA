@@ -37,9 +37,12 @@ public:
     CUTSTEP_SIZE
   };
 
-  constexpr static double _top_massPDG = 173.5;
+  constexpr static double _z_massPDG = 91.2;
   constexpr static double _w_massPDG = 80.385;
+  constexpr static double _top_massPDG = 172.5;
   constexpr static int _ghost_b_id = 7;
+
+  double eventCount_[12];
 
 public:
   CMS_TOP_12_028() : Analysis("CMS_TOP_12_028") {
@@ -75,7 +78,7 @@ public:
       }
 
       if ( leptonP4.perp() < 20*GeV or abs(leptonP4.eta()) > 2.4 ) continue;
-      if ( isolation > 0.15*leptonP4.perp() ) continue;
+      if ( isolation > 0.2*leptonP4.perp() ) continue;
 
       dressedLeptons.push_back(Particle(lepton.pdgId(), leptonP4));
     }
@@ -85,16 +88,18 @@ public:
   }
 
   void init() {
+    for ( int i=0; i<12; ++i ) eventCount_[i] = 0;
+
     // Leptons
     //FinalState fsForDressup;
     //std::vector<std::pair<double, double> > etaForDressup;
     //etaForDressup.push_back(std::make_pair(-2.5, 2.5));
 
-    IdentifiedFinalState allMuons(-2.4, 2.4);
+    IdentifiedFinalState allMuons(-2.7, 2.7); // Collect muons, to be dressed up
     allMuons.acceptIdPair(MUON);
     //LeptonClusters muons(fsForDressup, allMuons, 0.1, true, etaForDressup, 20*GeV);
 
-    IdentifiedFinalState allElectrons(-2.4, 2.4);
+    IdentifiedFinalState allElectrons(-2.7, 2.7); // Collect electrons, to be dressed up
     allElectrons.acceptIdPair(ELECTRON);
     //LeptonClusters electrons(fsForDressup, allElectrons, 0.1, true, etaForDressup, 20*GeV);
 
@@ -114,7 +119,7 @@ public:
 
     // Jets
     VetoedFinalState fsForJets(FinalState(-5.0, 5.0));
-    fsForJets.vetoNeutrinos();
+    //fsForJets.vetoNeutrinos();
     //fsForJets.addVetoOnThisFinalState(muons);
     //fsForJets.addVetoOnThisFinalState(electrons);
     addProjection(fsForJets, "fsForJets");
@@ -196,6 +201,7 @@ public:
 
   void analyze(const Event& event) {
     double weight = event.weight();
+    eventCount_[0] += weight;
 #ifdef MOREPLOT
     _h_nEvent->fill(0, weight);
 
@@ -233,45 +239,68 @@ public:
 #endif
 
     DECAYMODE decayMode = DECAYMODE_NONE;
-    if ( electrons.size() == 2 and muons.size() == 0 ) decayMode = DECAYMODE_EE;
-    else if ( electrons.size() == 0 and muons.size() == 2 ) decayMode = DECAYMODE_MM;
-    else if ( electrons.size() == 1 and muons.size() == 1 ) decayMode = DECAYMODE_EM;
-    else {
-      MSG_DEBUG("Event failed lepton multiplicity cut");
-      MSG_DEBUG("  nElectron = " << electrons.size());
-      MSG_DEBUG("  nMuon     = " << muons.size()    );
-      vetoEvent;
-    }
-
-    // Select dilepton pair
     FourMomentum lepton_momentum[2];
     int dilepton_charge;
-    if ( decayMode == DECAYMODE_EE ) {
+    if ( electrons.size() == 2 and muons.size() == 0 ) {
+      decayMode = DECAYMODE_EE;
       dilepton_charge = PID::threeCharge(electrons[0]) + PID::threeCharge(electrons[1]);
       lepton_momentum[0] = electrons[0].momentum();
       lepton_momentum[1] = electrons[1].momentum();
     }
-    else if ( decayMode == DECAYMODE_MM ) {
+    else if ( electrons.size() == 0 and muons.size() == 2 ) {
+      decayMode = DECAYMODE_MM;
       dilepton_charge = PID::threeCharge(muons[0]) + PID::threeCharge(muons[1]);
       lepton_momentum[0] = muons[0].momentum();
       lepton_momentum[1] = muons[1].momentum();
     }
-    else
-    {
-      dilepton_charge = PID::threeCharge(electrons[0]) + PID::threeCharge(electrons[0]);
+    else if ( electrons.size() == 1 and muons.size() == 1 ) {
+      decayMode = DECAYMODE_EM;
+      dilepton_charge = PID::threeCharge(electrons[0]) + PID::threeCharge(muons[0]);
       lepton_momentum[0] = electrons[0].momentum();
       lepton_momentum[1] = muons[0].momentum();
       if ( lepton_momentum[0].pT() < lepton_momentum[1].pT() ) {
         std::swap(lepton_momentum[0], lepton_momentum[1]);
       }
     }
+    else {
+      MSG_DEBUG("Event failed lepton multiplicity cut");
+      MSG_DEBUG("  nElectron = " << electrons.size());
+      MSG_DEBUG("  nMuon     = " << muons.size()    );
+      vetoEvent;
+    }
+    eventCount_[1] += weight;
+
     dilepton_charge /= 3;
     if ( dilepton_charge != 0 ) {
       MSG_DEBUG("Event failed opposite signed lepton cut, charge = " << dilepton_charge);
       vetoEvent;
     }
+    eventCount_[2] += weight;
+
     FourMomentum dilepton_momentum = lepton_momentum[0]+lepton_momentum[1];
     const double dilepton_mass = std::sqrt(std::max(0., dilepton_momentum.mass2()));
+    // Additional cuts to go to particle level definition
+    if ( decayMode != DECAYMODE_EM and ( dilepton_mass <= 20 or abs(dilepton_mass-_z_massPDG) < 10 ) ) {
+      MSG_DEBUG("Event failed dilepton mass cut, m(l+l-) = " << dilepton_mass);
+      vetoEvent;
+    }
+    eventCount_[3] += weight;
+
+    // MET
+    //const MissingMomentum& metJet = applyProjection<MissingMomentum>(event, "metJet");
+    //FourMomentum met = -metJet.visibleMomentum(); // This MET definition is inconsistent with pseudo-top
+    const ParticleVector neutrinos = applyProjection<IdentifiedFinalState>(event, "neutrinos").particlesByPt();
+    if ( neutrinos.size() < 2 ) {
+      MSG_DEBUG("Event failed neutrino multiplicity cut, nNeutrino = " << neutrinos.size());
+      vetoEvent;
+    }
+    eventCount_[4] += weight;
+    FourMomentum met = neutrinos[0].momentum() + neutrinos[1].momentum();
+    //if ( decayMode != DECAYMODE_EM and met.perp() < 40*GeV ) {
+    //  MSG_DEBUG("Event failed missing ET cut, MET = " << met.perp());
+    //  vetoEvent;
+    //}
+    //eventCount_[5] += weight;
 
     // Find jets. Do the jet clustering after inserting ghost B hadrons into the event
     const VetoedFinalState& fsForJets = applyProjection<VetoedFinalState>(event, "fsForJets");
@@ -298,20 +327,7 @@ public:
       MSG_DEBUG("Event failed jet multiplicity cut, nJet = " << jets.size());
       vetoEvent;
     }
-
-    // MET
-    //const MissingMomentum& metJet = applyProjection<MissingMomentum>(event, "metJet");
-    //FourMomentum met = -metJet.visibleMomentum(); // This MET definition is inconsistent with pseudo-top
-    const ParticleVector neutrinos = applyProjection<IdentifiedFinalState>(event, "neutrinos").particlesByPt();
-    if ( neutrinos.size() < 2 ) {
-      MSG_DEBUG("Event failed neutrino multiplicity cut, nNeutrino = " << neutrinos.size());
-      vetoEvent;
-    }
-    FourMomentum met = neutrinos[0].momentum() + neutrinos[1].momentum();
-    //if ( decayMode != DECAYMODE_EM and met.perp() < 40*GeV ) {
-    //  MSG_DEBUG("Event failed missing ET cut, MET = " << met.perp());
-    //  vetoEvent;
-    //}
+    eventCount_[5] += weight;
 
     Jets bjets;
     foreach ( const Jet& jet, jets ) {
@@ -325,6 +341,7 @@ public:
       MSG_DEBUG("Event failed b-tagging cut, nBJet = " << bjets.size());
       vetoEvent;
     }
+    eventCount_[6] += weight;
 
     // Find the best W candidates
     FourMomentum wCands_momentum[2];
@@ -356,16 +373,17 @@ public:
       //  vetoEvent;
       //}
     }
-
-    // Then proceed to top candidates, doing every jet combinations
-    FourMomentum tCands_momentum[2];
-    FourMomentum lbCands_momentum[2];
     // Before top combination, check existence of W candidate
     if ( neutrinoIndex[0] == -1 or neutrinoIndex[1] == -1 ) {
       MSG_DEBUG("Event failed W candidate combination");
       vetoEvent;
     }
-    else {
+    eventCount_[7] += weight;
+
+    // Then proceed to top candidates, doing every jet combinations
+    FourMomentum tCands_momentum[2];
+    FourMomentum lbCands_momentum[2];
+    if ( true ) {
       int bjetIndex[2] = {-1, -1};
       double massRes = 1e9;
       for ( int i=0, n=bjets.size(); i<n; ++i ) {
@@ -383,21 +401,22 @@ public:
           bjetIndex[1] = j;
         }
       }
-      if ( bjetIndex[0] != -1 and bjetIndex[1] != -1 ) {
-        tCands_momentum[0] = wCands_momentum[0]+bjets[bjetIndex[0]].momentum();
-        tCands_momentum[1] = wCands_momentum[1]+bjets[bjetIndex[1]].momentum();
-        lbCands_momentum[0] = lepton_momentum[0]+bjets[bjetIndex[0]].momentum();
-        lbCands_momentum[1] = lepton_momentum[1]+bjets[bjetIndex[1]].momentum();
-      }
-      else {
+      if ( bjetIndex[0] == -1 or bjetIndex[1] == -1 ) {
         MSG_DEBUG("Event failed top candidate combination");
         vetoEvent;
       }
+      eventCount_[8] += weight;
+
+      tCands_momentum[0] = wCands_momentum[0]+bjets[bjetIndex[0]].momentum();
+      tCands_momentum[1] = wCands_momentum[1]+bjets[bjetIndex[1]].momentum();
+      lbCands_momentum[0] = lepton_momentum[0]+bjets[bjetIndex[0]].momentum();
+      lbCands_momentum[1] = lepton_momentum[1]+bjets[bjetIndex[1]].momentum();
     }
 
     //if ( abs(tCands_momentum[0].mass()-_top_massPDG) > 40 or abs(tCands_momentum[1].mass()-_top_massPDG) > 40 ) {
     //  vetoEvent;
     //}
+    //eventCount_[9] += weight;
 
     if ( tCands_momentum[0].pT() < tCands_momentum[1].pT() ) {
       std::swap(tCands_momentum[0], tCands_momentum[1]);
@@ -420,12 +439,6 @@ public:
 
     _h_leptonJet_mass->fill(lbCands_momentum[0].mass(), weight);
     _h_leptonJet_mass->fill(lbCands_momentum[1].mass(), weight);
-
-    // Additional cuts to go to particle level definition
-    if ( decayMode != DECAYMODE_EM and ( dilepton_mass <= 20 or abs(dilepton_mass-91.2) < 10 ) ) {
-      MSG_DEBUG("Event failed dilepton mass cut, m(l+l-) = " << dilepton_mass);
-      vetoEvent;
-    }
 
     const double t1Pt = tCands_momentum[0].pT();
     const double t2Pt = tCands_momentum[1].pT();
@@ -486,6 +499,8 @@ public:
     normalize(_h_w_mass);
     normalize(_h_top_mass);
 #endif
+
+    for ( int i=0; i<12; ++i ) cout << "Step" << i << "   " << eventCount_[i] << endl;
 
   }
 
