@@ -6,6 +6,7 @@
 #include "FWCore/Utilities/interface/InputTag.h"
 #include "FWCore/ServiceRegistry/interface/Service.h"
 #include "CommonTools/UtilAlgos/interface/TFileService.h"
+#include "CommonTools/Utils/interface/PtComparator.h"
 
 #include "DataFormats/Common/interface/Handle.h"
 #include "DataFormats/Candidate/interface/Candidate.h"
@@ -29,6 +30,10 @@ public:
   ~TTbarGenLevelAnalyzer() {};
 
   void analyze(const edm::Event& event, const edm::EventSetup& eventSetup);
+  void endJob() 
+  {
+    for ( int i=0; i<12; ++i ) cout << "Step " << i << "   " << eventCount_[i] << endl;
+  };
 
 private:
   typedef std::vector<const reco::GenParticle*> GenParticlesPtr;
@@ -48,8 +53,10 @@ private:
   double jetMinPt_, jetMaxEta_;
 
   constexpr static double zMassPDG_ = 91.2;
-  constexpr static double wMassPDG_ = 80.4;
+  constexpr static double wMassPDG_ = 80.385;
   constexpr static double tMassPDG_ = 172.5;
+
+  double eventCount_[12];
 
 private:
   TTree* tree_;
@@ -86,6 +93,8 @@ private:
 
 TTbarGenLevelAnalyzer::TTbarGenLevelAnalyzer(const edm::ParameterSet& pset)
 {
+  for ( int i=0; i<12; ++i ) eventCount_[i] = 0;
+
   bool doTree = pset.getUntrackedParameter<bool>("doTree", true);
 
   genEventInfoLabel_ = pset.getUntrackedParameter<edm::InputTag>("genEventInfo");
@@ -156,6 +165,8 @@ TTbarGenLevelAnalyzer::TTbarGenLevelAnalyzer(const edm::ParameterSet& pset)
 
 void TTbarGenLevelAnalyzer::analyze(const edm::Event& event, const edm::EventSetup& eventSetup)
 {
+  eventCount_[0] += 1;
+
   electrons_->clear();
   muons_->clear();
   bjets_->clear();
@@ -180,8 +191,8 @@ void TTbarGenLevelAnalyzer::analyze(const edm::Event& event, const edm::EventSet
   const gen::PdfInfo* pdf = genEventInfoHandle->pdf();
   const int parton1Id = pdf->id.first;
   const int parton2Id = pdf->id.second;
-  if ( parton1Id == 0 and parton2Id == 0 ) prodMode_ = 1; // gg fusion
-  else if ( parton1Id != 0 and parton2Id != 0 ) prodMode_ = 3; // qq collision
+  if ( parton1Id == 0 and parton2Id == 0 ) prodMode_ = 0; // gg fusion
+  else if ( parton1Id != 0 and parton2Id != 0 ) prodMode_ = 1; // qq collision
   else prodMode_ = 2; // gq scattering
   qScale_ = pdf->scalePDF;
 
@@ -201,6 +212,7 @@ void TTbarGenLevelAnalyzer::analyze(const edm::Event& event, const edm::EventSet
       neutrinos_->push_back(p->p4());
     }
   }
+  std::sort(neutrinos_->begin(), neutrinos_->end(), GreaterByPt<math::XYZTLorentzVector>());
 
   // Do dressup and keep leptons
   std::vector<int> electronsQ, muonsQ;
@@ -233,6 +245,11 @@ void TTbarGenLevelAnalyzer::analyze(const edm::Event& event, const edm::EventSet
   math::XYZTLorentzVector lepton1, lepton2;
   if ( electrons_->size() == 2 and muons_->size() == 0 )
   {
+    if ( electrons_->at(0).pt() < electrons_->at(1).pt() )
+    {
+      std::swap(electrons_->at(0), electrons_->at(1));
+      std::swap(electronsQ[0], electronsQ[1]);
+    }
     decayMode_ = 1;
     lepton1 = electrons_->at(0);
     lepton2 = electrons_->at(1);
@@ -240,6 +257,11 @@ void TTbarGenLevelAnalyzer::analyze(const edm::Event& event, const edm::EventSet
   }
   else if ( electrons_->size() == 0 and muons_->size() == 2 )
   {
+    if ( muons_->at(0).pt() < muons_->at(1).pt() )
+    {
+      std::swap(muons_->at(0), muons_->at(1));
+      std::swap(muonsQ[0], muonsQ[1]);
+    }
     decayMode_ = 2;
     lepton1 = muons_->at(0);
     lepton2 = muons_->at(1);
@@ -251,59 +273,82 @@ void TTbarGenLevelAnalyzer::analyze(const edm::Event& event, const edm::EventSet
     lepton1 = electrons_->at(0);
     lepton2 = muons_->at(0);
     dileptonQ = electronsQ[0] + muonsQ[0];
+    if ( lepton1.pt() < lepton2.pt() ) std::swap(lepton1, lepton2);
   }
   else return;
+  eventCount_[1] += 1;
+
   // Opposite charge
   if ( dileptonQ != 0 ) return;
+  eventCount_[2] += 1;
 
   dileptons_->push_back(lepton1+lepton2);
   const double dileptonMass = dileptons_->at(0).mass();
   // Z veto
   if ( decayMode_ != 3 and (dileptonMass < 20 or std::abs(dileptonMass-zMassPDG_) < 10) ) return;
+  eventCount_[3] += 1;
 
   // Calculate MET
   if ( neutrinos_->size() < 2 ) return;
+  eventCount_[4] += 1;
   const math::XYZTLorentzVector metLVec = neutrinos_->at(0) + neutrinos_->at(1);
   mets_->push_back(metLVec);
 
   // Find bjets
+  int nJets = 0;
   for ( unsigned int i=0, n=genJetsHandle->size(); i<n; ++i )
   {
     const reco::GenJet& jet = genJetsHandle->at(i);
     if ( jet.pt() < jetMinPt_ or abs(jet.eta()) > jetMaxEta_ ) continue;
     //if ( deltaR(jet.p4(), lepton1) < 0.5 or deltaR(jet.p4(), lepton2) < 0.5 ) continue;
+    ++nJets;
     if ( !hasStableB(jet) ) continue;
 
     bjets_->push_back(jet.p4());
   }
+  if ( nJets < 2 ) return;
+  eventCount_[5] += 1;
   if ( bjets_->size() < 2 ) return;
+  eventCount_[6] += 1;
 
   // Now we are ready for W/top combination.
   // Start from W candidate building
-  const math::XYZTLorentzVector w00 = lepton1+neutrinos_->at(0);
-  const math::XYZTLorentzVector w11 = lepton2+neutrinos_->at(1);
-  const math::XYZTLorentzVector w01 = lepton1+neutrinos_->at(1);
-  const math::XYZTLorentzVector w10 = lepton2+neutrinos_->at(0);
-  if ( abs(w00.mass() - wMassPDG_) + abs(w11.mass() - wMassPDG_) 
-     < abs(w01.mass() - wMassPDG_) + abs(w10.mass() - wMassPDG_) )
-  {
-    wCands_->push_back(w00);
-    wCands_->push_back(w11);
+  int neutrinoIndex[2] = {-1, -1};
+  if ( true ) { // Track to hide temp variables
+    const math::XYZTLorentzVector w00 = lepton1+neutrinos_->at(0);
+    const math::XYZTLorentzVector w11 = lepton2+neutrinos_->at(1);
+    const math::XYZTLorentzVector w01 = lepton1+neutrinos_->at(1);
+    const math::XYZTLorentzVector w10 = lepton2+neutrinos_->at(0);
+    if ( abs(w00.mass() - wMassPDG_) + abs(w11.mass() - wMassPDG_) 
+       < abs(w01.mass() - wMassPDG_) + abs(w10.mass() - wMassPDG_) )
+    {
+      wCands_->push_back(w00);
+      wCands_->push_back(w11);
+      neutrinoIndex[0] = 0;
+      neutrinoIndex[1] = 1;
+    }
+    else
+    {
+      wCands_->push_back(w01);
+      wCands_->push_back(w10);
+      neutrinoIndex[0] = 1;
+      neutrinoIndex[1] = 0;
+    }
+
+    //if ( abs(wCands_->at(0).mass()-wMassPDG_) > 40 or abs(wCands_at(1).mass()-wMassPDG) > 40 ) return;
   }
-  else
-  {
-    wCands_->push_back(w01);
-    wCands_->push_back(w10);
-  }
+  if ( neutrinoIndex[0] == -1 or neutrinoIndex[1] == -1 ) return;
+  eventCount_[7] += 1;
+
   // Then proceed to top quark combination
   int topBIndex[] = {-1, -1};
   double minResMtop = 1e9;
   for ( unsigned int i=0, n=bjets_->size(); i<n; ++i )
   {
+    const math::XYZTLorentzVector tPair1 = wCands_->at(0)+bjets_->at(i);
     for ( unsigned int j=0; j<n; ++j )
     {
       if ( i == j ) continue;
-      const math::XYZTLorentzVector tPair1 = wCands_->at(0)+bjets_->at(i);
       const math::XYZTLorentzVector tPair2 = wCands_->at(1)+bjets_->at(j);
       const double resMtop = abs(tPair1.mass() - tMassPDG_) + abs(tPair2.mass() - tMassPDG_);
       if ( resMtop < minResMtop )
@@ -316,6 +361,8 @@ void TTbarGenLevelAnalyzer::analyze(const edm::Event& event, const edm::EventSet
   }
   // Skip if no B jet combination found
   if ( topBIndex[0] == -1 or topBIndex[1] == -1 ) return;
+  eventCount_[8] += 1;
+
   lbCands_->push_back(lepton1+bjets_->at(topBIndex[0]));
   lbCands_->push_back(lepton2+bjets_->at(topBIndex[1]));
   tCands_->push_back(wCands_->at(0)+bjets_->at(topBIndex[0]));
