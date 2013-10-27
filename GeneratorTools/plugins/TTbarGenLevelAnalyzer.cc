@@ -30,7 +30,7 @@ public:
   ~TTbarGenLevelAnalyzer() {};
 
   void analyze(const edm::Event& event, const edm::EventSetup& eventSetup);
-  void endJob() 
+  void endJob()
   {
     for ( int i=0; i<12; ++i ) cout << "Step " << i << "   " << eventCount_[i] << endl;
   };
@@ -62,10 +62,10 @@ private:
   TTree* tree_;
   int prodMode_, decayMode_;
   double qScale_;
-  LorentzVectors* electrons_, * muons_;
+  LorentzVectors* electrons_, * muons_, * leptons_;
   LorentzVectors* bjets_;
   LorentzVectors* neutrinos_, * mets_;
-  LorentzVectors* dileptons_, * lbCands_; 
+  LorentzVectors* dileptons_, * lbCands_;
   LorentzVectors* wCands_, * tCands_;
   LorentzVectors* ttCands_;
 
@@ -109,6 +109,7 @@ TTbarGenLevelAnalyzer::TTbarGenLevelAnalyzer(const edm::ParameterSet& pset)
 
   electrons_ = new LorentzVectors();
   muons_     = new LorentzVectors();
+  leptons_   = new LorentzVectors();
   bjets_     = new LorentzVectors();
   neutrinos_ = new LorentzVectors();
 
@@ -130,6 +131,7 @@ TTbarGenLevelAnalyzer::TTbarGenLevelAnalyzer(const edm::ParameterSet& pset)
 
     tree_->Branch("electrons", "std::vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >", &electrons_);
     tree_->Branch("muons"    , "std::vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >", &muons_    );
+    tree_->Branch("leptons"  , "std::vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >", &leptons_  );
     tree_->Branch("bjets"    , "std::vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >", &bjets_    );
     tree_->Branch("neutrinos", "std::vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >", &neutrinos_);
     tree_->Branch("mets"     , "std::vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > >", &mets_     );
@@ -169,10 +171,11 @@ void TTbarGenLevelAnalyzer::analyze(const edm::Event& event, const edm::EventSet
 
   electrons_->clear();
   muons_->clear();
+  leptons_->clear();
   bjets_->clear();
   neutrinos_->clear();
   mets_->clear();
-  
+
   dileptons_->clear();
   lbCands_->clear();
   wCands_->clear();
@@ -208,7 +211,7 @@ void TTbarGenLevelAnalyzer::analyze(const edm::Event& event, const edm::EventSet
     if ( absPdgId == 11 or absPdgId == 13 ) stableLeptons.push_back(p);
     else if ( absPdgId == 12 or absPdgId == 14 or absPdgId == 16 )
     {
-      if ( abs(p->eta()) > neutrinoMaxEta_ ) continue;
+      if ( std::abs(p->eta()) > neutrinoMaxEta_ ) continue;
       neutrinos_->push_back(p->p4());
     }
   }
@@ -221,11 +224,11 @@ void TTbarGenLevelAnalyzer::analyze(const edm::Event& event, const edm::EventSet
     const reco::GenParticle* p = stableLeptons.at(i);
     math::XYZTLorentzVector p4 = p->p4();
     const double isolation = dressup(p4, allStables);
-    if ( p4.pt() < leptonMinPt_ or abs(p4.eta()) > leptonMaxEta_ ) continue;
+    if ( p4.pt() < leptonMinPt_ or std::abs(p4.eta()) > leptonMaxEta_ ) continue;
     if ( isolation > 0.2*p4.pt() ) continue;
 
     const unsigned int absPdgId = abs(p->pdgId());
-    if ( absPdgId == 11 ) 
+    if ( absPdgId == 11 )
     {
       electrons_->push_back(p4);
       electronsQ.push_back(p->charge());
@@ -277,6 +280,8 @@ void TTbarGenLevelAnalyzer::analyze(const edm::Event& event, const edm::EventSet
   }
   else return;
   eventCount_[1] += 1;
+  leptons_->push_back(lepton1);
+  leptons_->push_back(lepton2);
 
   // Opposite charge
   if ( dileptonQ != 0 ) return;
@@ -285,7 +290,7 @@ void TTbarGenLevelAnalyzer::analyze(const edm::Event& event, const edm::EventSet
   dileptons_->push_back(lepton1+lepton2);
   const double dileptonMass = dileptons_->at(0).mass();
   // Z veto
-  if ( decayMode_ != 3 and (dileptonMass < 20 or std::abs(dileptonMass-zMassPDG_) < 10) ) return;
+  if ( decayMode_ != 3 and (dileptonMass <= 20 or std::abs(dileptonMass-zMassPDG_) < 10) ) return;
   eventCount_[3] += 1;
 
   // Calculate MET
@@ -299,8 +304,8 @@ void TTbarGenLevelAnalyzer::analyze(const edm::Event& event, const edm::EventSet
   for ( unsigned int i=0, n=genJetsHandle->size(); i<n; ++i )
   {
     const reco::GenJet& jet = genJetsHandle->at(i);
-    if ( jet.pt() < jetMinPt_ or abs(jet.eta()) > jetMaxEta_ ) continue;
-    //if ( deltaR(jet.p4(), lepton1) < 0.5 or deltaR(jet.p4(), lepton2) < 0.5 ) continue;
+    if ( jet.pt() < jetMinPt_ or std::abs(jet.eta()) > jetMaxEta_ ) continue;
+    if ( deltaR(jet.p4(), lepton1) < 0.5 or deltaR(jet.p4(), lepton2) < 0.5 ) continue;
     ++nJets;
     if ( !hasStableB(jet) ) continue;
 
@@ -319,8 +324,8 @@ void TTbarGenLevelAnalyzer::analyze(const edm::Event& event, const edm::EventSet
     const math::XYZTLorentzVector w11 = lepton2+neutrinos_->at(1);
     const math::XYZTLorentzVector w01 = lepton1+neutrinos_->at(1);
     const math::XYZTLorentzVector w10 = lepton2+neutrinos_->at(0);
-    if ( abs(w00.mass() - wMassPDG_) + abs(w11.mass() - wMassPDG_) 
-       < abs(w01.mass() - wMassPDG_) + abs(w10.mass() - wMassPDG_) )
+    if ( std::abs(w00.mass() - wMassPDG_) + std::abs(w11.mass() - wMassPDG_)
+       < std::abs(w01.mass() - wMassPDG_) + std::abs(w10.mass() - wMassPDG_) )
     {
       wCands_->push_back(w00);
       wCands_->push_back(w11);
@@ -335,7 +340,7 @@ void TTbarGenLevelAnalyzer::analyze(const edm::Event& event, const edm::EventSet
       neutrinoIndex[1] = 0;
     }
 
-    //if ( abs(wCands_->at(0).mass()-wMassPDG_) > 40 or abs(wCands_at(1).mass()-wMassPDG) > 40 ) return;
+    //if ( std::abs(wCands_->at(0).mass()-wMassPDG_) > 40 or std::abs(wCands_at(1).mass()-wMassPDG) > 40 ) return;
   }
   if ( neutrinoIndex[0] == -1 or neutrinoIndex[1] == -1 ) return;
   eventCount_[7] += 1;
@@ -350,7 +355,7 @@ void TTbarGenLevelAnalyzer::analyze(const edm::Event& event, const edm::EventSet
     {
       if ( i == j ) continue;
       const math::XYZTLorentzVector tPair2 = wCands_->at(1)+bjets_->at(j);
-      const double resMtop = abs(tPair1.mass() - tMassPDG_) + abs(tPair2.mass() - tMassPDG_);
+      const double resMtop = std::abs(tPair1.mass() - tMassPDG_) + std::abs(tPair2.mass() - tMassPDG_);
       if ( resMtop < minResMtop )
       {
         minResMtop = resMtop;
@@ -367,6 +372,10 @@ void TTbarGenLevelAnalyzer::analyze(const edm::Event& event, const edm::EventSet
   lbCands_->push_back(lepton2+bjets_->at(topBIndex[1]));
   tCands_->push_back(wCands_->at(0)+bjets_->at(topBIndex[0]));
   tCands_->push_back(wCands_->at(1)+bjets_->at(topBIndex[1]));
+  if ( tCands_->at(0).pt() < tCands_->at(1).pt() )
+  {
+    std::swap(tCands_->at(0), tCands_->at(1));
+  }
 
   ttCands_->push_back(tCands_->at(0)+tCands_->at(1));
 
@@ -430,6 +439,8 @@ double TTbarGenLevelAnalyzer::dressup(math::XYZTLorentzVector& lv, const GenPart
     else if ( dR < 0.3 )
     {
       const double pt = p->pt();
+      const unsigned int absPdgId = abs(p->pdgId());
+      if ( absPdgId == 12 or absPdgId == 14 or absPdgId == 16 ) continue;
       if ( pt > 0.5 ) isolation += pt;
     }
   }
@@ -446,10 +457,10 @@ bool TTbarGenLevelAnalyzer::hasStableB(const reco::GenJet& jet)
   return false;
 }
 
-void TTbarGenLevelAnalyzer::matchAndFill(TH2F* hxy, TH2F* hres, const math::XYZTLorentzVector& p, 
+void TTbarGenLevelAnalyzer::matchAndFill(TH2F* hxy, TH2F* hres, const math::XYZTLorentzVector& p,
                                          const math::XYZTLorentzVector& v1, const math::XYZTLorentzVector& v2)
 {
-  if ( p.pt() <= 0.01 ) return; 
+  if ( p.pt() <= 0.01 ) return;
   if ( v1.pt() > 0.01 and deltaR(p, v1) < 0.1 )
   {
     hxy->Fill(p.pt(), v1.pt());

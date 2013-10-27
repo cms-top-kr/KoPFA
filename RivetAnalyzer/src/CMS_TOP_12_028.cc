@@ -72,13 +72,13 @@ public:
           if ( p.pdgId() == 22 ) leptonP4 += p4;
         }
         else if ( dR < 0.3 ) {
-          const double pt = p4.perp();
+          const double pt = p4.pT();
           if ( pt > 0.5 ) isolation += pt;
         }
       }
 
-      if ( leptonP4.perp() < 20*GeV or abs(leptonP4.eta()) > 2.4 ) continue;
-      if ( isolation > 0.2*leptonP4.perp() ) continue;
+      if ( leptonP4.pT() < 20*GeV or abs(leptonP4.eta()) > 2.4 ) continue;
+      if ( isolation > 0.2*leptonP4.pT() ) continue;
 
       dressedLeptons.push_back(Particle(lepton.pdgId(), leptonP4));
     }
@@ -119,7 +119,7 @@ public:
 
     // Jets
     VetoedFinalState fsForJets(FinalState(-5.0, 5.0));
-    //fsForJets.vetoNeutrinos();
+    fsForJets.vetoNeutrinos();
     //fsForJets.addVetoOnThisFinalState(muons);
     //fsForJets.addVetoOnThisFinalState(electrons);
     addProjection(fsForJets, "fsForJets");
@@ -191,8 +191,12 @@ public:
     _h_n_jet      = bookHistogram1D("n_jet", 10, 0, 10);
     _h_n_bjet     = bookHistogram1D("n_bjet", 10, 0, 10);
 
+    _h_neutrino1_pT = bookHistogram1D("neutrino1_pT", 50, 0, 500);
+    _h_neutrino2_pT = bookHistogram1D("neutrino2_pT", 50, 0, 500);
     _h_w_mass   = bookHistogram1D("w_mass", 50, 30, 180);
-    _h_top_mass = bookHistogram1D("top_mass", 50, 80, 250);
+    _h_top1_mass = bookHistogram1D("top1_mass", 50, 80, 250);
+    _h_top2_mass = bookHistogram1D("top2_mass", 50, 80, 250);
+    _h_met_pt = bookHistogram1D("met_pt", 50, 0, 500);
     _h_nEvent = bookHistogram1D("nEvent", 10, 0, 10);
     _h_production = bookHistogram1D("production", 3, 0, 3);
 #endif
@@ -280,7 +284,7 @@ public:
     FourMomentum dilepton_momentum = lepton_momentum[0]+lepton_momentum[1];
     const double dilepton_mass = std::sqrt(std::max(0., dilepton_momentum.mass2()));
     // Additional cuts to go to particle level definition
-    if ( decayMode != DECAYMODE_EM and ( dilepton_mass <= 20 or abs(dilepton_mass-_z_massPDG) < 10 ) ) {
+    if ( decayMode != DECAYMODE_EM and ( dilepton_mass <= 20 or std::abs(dilepton_mass-_z_massPDG) < 10 ) ) {
       MSG_DEBUG("Event failed dilepton mass cut, m(l+l-) = " << dilepton_mass);
       vetoEvent;
     }
@@ -296,8 +300,9 @@ public:
     }
     eventCount_[4] += weight;
     FourMomentum met = neutrinos[0].momentum() + neutrinos[1].momentum();
-    //if ( decayMode != DECAYMODE_EM and met.perp() < 40*GeV ) {
-    //  MSG_DEBUG("Event failed missing ET cut, MET = " << met.perp());
+
+    //if ( decayMode != DECAYMODE_EM and met.pT() < 40*GeV ) {
+    //  MSG_DEBUG("Event failed missing ET cut, MET = " << met.pT());
     //  vetoEvent;
     //}
     //eventCount_[5] += weight;
@@ -320,20 +325,23 @@ public:
     FastJets jetAlg(fsForJets, FastJets::ANTIKT, 0.5);
     jetAlg.calc(particlesForJets);
     const Jets jets = jetAlg.jetsByPt(30*GeV, MAXDOUBLE, -2.4, 2.4);
+    int nJets = 0;
+    Jets bjets;
+    foreach ( const Jet& jet, jets ) {
+      if ( deltaR(jet.momentum(), lepton_momentum[0]) < 0.5 or deltaR(jet.momentum(), lepton_momentum[1]) < 0.5 ) continue;
+      ++nJets;
+      if ( !jet.containsParticleId(_ghost_b_id) ) continue; // Find ghost b hadrons as stable bprime
+      bjets.push_back(jet);
+    }
 #ifdef MOREPLOT
-    _h_n_jet->fill(jets.size());
+    _h_n_jet->fill(nJets);
 #endif
-    if ( jets.size() < 2 ) {
-      MSG_DEBUG("Event failed jet multiplicity cut, nJet = " << jets.size());
+    if ( nJets < 2 ) {
+      MSG_DEBUG("Event failed jet multiplicity cut, nJet = " << nJets);
       vetoEvent;
     }
     eventCount_[5] += weight;
 
-    Jets bjets;
-    foreach ( const Jet& jet, jets ) {
-      if ( !jet.containsParticleId(_ghost_b_id) ) continue; // Find ghost b hadrons as stable bprime
-      bjets.push_back(jet);
-    }
 #ifdef MOREPLOT
     _h_n_bjet->fill(bjets.size(), weight);
 #endif
@@ -351,12 +359,12 @@ public:
       const FourMomentum w11 = lepton_momentum[1]+neutrinos[1].momentum();
       const FourMomentum w01 = lepton_momentum[0]+neutrinos[1].momentum();
       const FourMomentum w10 = lepton_momentum[1]+neutrinos[0].momentum();
-      const double w00_mass = std::sqrt(std::min(0., w00.mass2()));
-      const double w11_mass = std::sqrt(std::min(0., w11.mass2()));
-      const double w01_mass = std::sqrt(std::min(0., w01.mass2()));
-      const double w10_mass = std::sqrt(std::min(0., w10.mass2()));
+      const double w00_mass = std::sqrt(std::max(0., w00.mass2()));
+      const double w11_mass = std::sqrt(std::max(0., w11.mass2()));
+      const double w01_mass = std::sqrt(std::max(0., w01.mass2()));
+      const double w10_mass = std::sqrt(std::max(0., w10.mass2()));
 
-      if ( abs(w00_mass-_w_massPDG)+abs(w11_mass-_w_massPDG) < abs(w01_mass-_w_massPDG)+abs(w10_mass-_w_massPDG) ) {
+      if ( std::abs(w00_mass-_w_massPDG)+std::abs(w11_mass-_w_massPDG) < std::abs(w01_mass-_w_massPDG)+std::abs(w10_mass-_w_massPDG) ) {
         wCands_momentum[0] = w00;
         wCands_momentum[1] = w11;
         neutrinoIndex[0] = 0;
@@ -388,11 +396,11 @@ public:
       double massRes = 1e9;
       for ( int i=0, n=bjets.size(); i<n; ++i ) {
         const FourMomentum tmpTPair1 = wCands_momentum[0]+bjets[i].momentum();
-        const double tmpTPair1_mass = std::sqrt(std::min(0., tmpTPair1.mass2()));
+        const double tmpTPair1_mass = std::sqrt(std::max(0., tmpTPair1.mass2()));
         for ( int j=0; j<n; ++j ) {
           if ( i == j ) continue;
           const FourMomentum tmpTPair2 = wCands_momentum[1]+bjets[j].momentum();
-          const double tmpTPair2_mass = std::sqrt(std::min(0., tmpTPair2.mass2()));
+          const double tmpTPair2_mass = std::sqrt(std::max(0., tmpTPair2.mass2()));
           const double tmpMassRes = abs(tmpTPair1_mass-_top_massPDG) + abs(tmpTPair2_mass-_top_massPDG);
           if ( tmpMassRes > massRes ) continue;
 
@@ -429,6 +437,9 @@ public:
     _h_lepton2_pT->fill(lepton_momentum[1].pT(), weight);
     _h_lepton2_eta->fill(lepton_momentum[1].eta(), weight);
 
+    _h_neutrino1_pT->fill(neutrinos[0].momentum().pT(), weight);
+    _h_neutrino2_pT->fill(neutrinos[1].momentum().pT(), weight);
+
     _h_dilepton_pT->fill(dilepton_momentum.pT(), weight);
     _h_dilepton_mass->fill(dilepton_mass, weight);
 
@@ -462,8 +473,9 @@ public:
 #ifdef MOREPLOT
     _h_w_mass->fill(wCands_momentum[0].mass(), weight);
     _h_w_mass->fill(wCands_momentum[1].mass(), weight);
-    _h_top_mass->fill(tCands_momentum[0].mass(), weight);
-    _h_top_mass->fill(tCands_momentum[1].mass(), weight);
+    _h_top1_mass->fill(tCands_momentum[0].mass(), weight);
+    _h_top2_mass->fill(tCands_momentum[1].mass(), weight);
+    _h_met_pt->fill(met.pT(), weight);
 #endif
   }
 
@@ -497,7 +509,11 @@ public:
 
 #ifdef MOREPLOT
     normalize(_h_w_mass);
-    normalize(_h_top_mass);
+    normalize(_h_neutrino1_pT);
+    normalize(_h_neutrino2_pT);
+    normalize(_h_top1_mass);
+    normalize(_h_top2_mass);
+    normalize(_h_met_pt);
 #endif
 
     for ( int i=0; i<12; ++i ) cout << "Step" << i << "   " << eventCount_[i] << endl;
@@ -512,9 +528,13 @@ private:
   AIDA::IHistogram1D* _h_n_bjet;
 
   AIDA::IHistogram1D* _h_w_mass;
-  AIDA::IHistogram1D* _h_top_mass;
+  AIDA::IHistogram1D* _h_top1_mass;
+  AIDA::IHistogram1D* _h_top2_mass;
+  AIDA::IHistogram1D* _h_met_pt;
   AIDA::IHistogram1D* _h_nEvent;
   AIDA::IHistogram1D* _h_production;
+  AIDA::IHistogram1D* _h_neutrino1_pT;
+  AIDA::IHistogram1D* _h_neutrino2_pT;
 #endif
 
   // Histogram naming convention : _h_(objectName)_(variableName)
