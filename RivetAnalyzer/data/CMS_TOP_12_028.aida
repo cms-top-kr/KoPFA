@@ -613,12 +613,12 @@
   </dataPoint>
   </dataPointSet>
   <dataPointSet name="ttbar_rapidity" dimension="2"
-      path="/REF/CMS_TOP_12_028" title="">
-    <dimension dim="0" title="$t\bar{t} rapidity$"/>
-    <dimension dim="1" title="$1/\sigma d\sigma/dy^{t\bar{t}}$"/>
+      path="/REF/CMS_TTOP_12_028" title="">
+    <dimension dim="0" title="$\ttbar rapidity$"/>
+    <dimension dim="1" title="$1/\sigma d\sigma/dy^{\ttbar}$"/>
     <annotation>
       <item key="Title" value="" sticky="true"/>
-      <item key="AidaPath" value="/REF/CMS_TOP_12_028/ttbar_rapidity" sticky="true"/>
+      <item key="AidaPath" value="/REF/CMS_TTOP_12_028/ttbar_rapidity" sticky="true"/>
     </annotation>
   <dataPoint>
     <measurement value="-1.900000e+00" errorPlus="6.000000e-01" errorMinus="6.000000e-01"/>
@@ -651,6 +651,39 @@
   <dataPoint>
     <measurement value="1.900000e+00" errorPlus="6.000000e-01" errorMinus="6.000000e-01"/>
     <measurement value="9.590600e-02" errorPlus="1.611221e-02" errorMinus="1.611221e-02"/>
+  </dataPoint>
+  </dataPointSet>
+  <dataPointSet name="ttbar_rapidity" dimension="2"
+      path="/REF/CMS_TOP_12_028" title="">
+    <dimension dim="0" title="$t\bar{t} rapidity$"/>
+    <dimension dim="1" title="$1/\sigma d\sigma/dy^{t\bar{t}}$"/>
+    <annotation>
+      <item key="Title" value="" sticky="true"/>
+      <item key="AidaPath" value="/REF/CMS_TOP_12_028/ttbar_rapidity" sticky="true"/>
+    </annotation>
+  <dataPoint>
+    <measurement value="-2.000000e+00" errorPlus="5.000000e-01" errorMinus="5.000000e-01"/>
+    <measurement value="4.437900e-02" errorPlus="7.087260e-03" errorMinus="7.087260e-03"/>
+  </dataPoint>
+  <dataPoint>
+    <measurement value="-1.100000e+00" errorPlus="4.000000e-01" errorMinus="4.000000e-01"/>
+    <measurement value="2.190300e-01" errorPlus="1.775524e-02" errorMinus="1.775524e-02"/>
+  </dataPoint>
+  <dataPoint>
+    <measurement value="-3.500000e-01" errorPlus="3.500000e-01" errorMinus="3.500000e-01"/>
+    <measurement value="3.940900e-01" errorPlus="2.303573e-02" errorMinus="2.303573e-02"/>
+  </dataPoint>
+  <dataPoint>
+    <measurement value="3.500000e-01" errorPlus="3.500000e-01" errorMinus="3.500000e-01"/>
+    <measurement value="4.031100e-01" errorPlus="2.252786e-02" errorMinus="2.252786e-02"/>
+  </dataPoint>
+  <dataPoint>
+    <measurement value="1.100000e+00" errorPlus="4.000000e-01" errorMinus="4.000000e-01"/>
+    <measurement value="2.084100e-01" errorPlus="1.677831e-02" errorMinus="1.677831e-02"/>
+  </dataPoint>
+  <dataPoint>
+    <measurement value="2.000000e+00" errorPlus="5.000000e-01" errorMinus="5.000000e-01"/>
+    <measurement value="4.116000e-02" errorPlus="8.149950e-03" errorMinus="8.149950e-03"/>
   </dataPoint>
   </dataPointSet>
   <dataPointSet name="ttbar_mass" dimension="2"
