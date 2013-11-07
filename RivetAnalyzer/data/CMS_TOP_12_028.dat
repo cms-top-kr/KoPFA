@@ -312,8 +312,8 @@ ErrorBars=1
      120     300     0.00060439    4.12194e-05
 # END HISTOGRAM
 
-# BEGIN HISTOGRAM /REF/CMS_TOP_12_028/ttbar_rapidity
-AidaPath=/REF/CMS_TOP_12_028/ttbar_rapidity
+# BEGIN HISTOGRAM /REF/CMS_TTOP_12_028/ttbar_rapidity
+AidaPath=/REF/CMS_TTOP_12_028/ttbar_rapidity
 XLabel=$\ttbar rapidity$
 YLabel=$1/\sigma d\sigma/dy^{\ttbar}$
 PolyMarker=*
@@ -329,6 +329,23 @@ ErrorBars=1
      0.4     0.8        0.35113   0.024192857
      0.8     1.3        0.41192   0.034683664
      1.3     2.5       0.095906   0.016112208
+# END HISTOGRAM
+
+# BEGIN HISTOGRAM /REF/CMS_TOP_12_028/ttbar_rapidity
+AidaPath=/REF/CMS_TOP_12_028/ttbar_rapidity
+XLabel=$\ttbar rapidity$
+YLabel=$1/\sigma d\sigma/dy^{\ttbar}$
+PolyMarker=*
+ErrorBars=1
+## Area: 1.000000e+00
+## Num bins: 6
+## xlow   xhigh     val     errminus  errplus
+    -2.5    -1.5       0.044379    0.00708726
+    -1.5    -0.7        0.21903    0.01775524
+    -0.7     0.0        0.39409    0.02303573
+     0.0     0.7        0.40311    0.02252786
+     0.7     1.5        0.20841    0.01677831
+     1.5     2.5        0.04116    0.00814995
 # END HISTOGRAM
 
 # BEGIN HISTOGRAM /REF/CMS_TOP_12_028/ttbar_mass
