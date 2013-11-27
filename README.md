@@ -3,8 +3,8 @@ KoPFA
 
 KoPFA
 
-
-#Initializing
+# Install
+##1. Initializing
 <pre><code>
 cmsrel CMSSW_5_3_12_patch1
 
@@ -13,11 +13,11 @@ git remote add origin git@github.com:cbernet/cmg-cmssw.git
 git config core.sparsecheckout true
 </code></pre>
 
-##IF at CERN,
+###IF at CERN,
 <pre><code>
 cp /afs/cern.ch/user/c/cbern/public/Git/SparseCheckouts/CMG_PAT_from-CMSSW_5_3_12_patch1 .git/info/sparse-checkout
 </code></pre>
-##OR at other place,
+###OR at other place,
 <pre><code>
 cat > .git/info/sparse-checkout
 
@@ -40,11 +40,10 @@ TauAnalysis/CandidateTools/
 TauAnalysis/SVFitStandAlone/
 </code></pre>
 
-## next
+## 2. Fetch, checkout and clone KoPFA
 <pre><code>
 git fetch origin
 git checkout origin/CMG_PAT_from-CMSSW_5_3_12_patch1
 git checkout -b master
-git remote add my-kopfa git@github.com/geonmo/KoPFA.git
-git clone https://github.com/geonmo/KoPFA.git
+git clone https://github.com/geonmo/KoPFA.git Ryu_JPsiMethod
 </code></pre>
