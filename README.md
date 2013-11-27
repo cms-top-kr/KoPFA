@@ -45,6 +45,5 @@ TauAnalysis/SVFitStandAlone/
 git fetch origin
 git checkout origin/CMG_PAT_from-CMSSW_5_3_12_patch1
 git checkout -b master
-git remote add my-kopfa git@github.com/geonmo/KoPFA.git
-git clone https://github.com/geonmo/KoPFA.git
+git clone https://github.com/geonmo/KoPFA.git Ryu_JPsiMethod
 </code></pre>
