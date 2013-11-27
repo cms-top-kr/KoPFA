@@ -4,8 +4,8 @@ KoPFA
 KoPFA
 
 
-Initialie :
-
+#Initializing
+<pre><code>
 cmsrel CMSSW_5_3_12_patch1
 
 git init
@@ -18,7 +18,7 @@ cp /afs/cern.ch/user/c/cbern/public/Git/SparseCheckouts/CMG_PAT_from-CMSSW_5_3_1
 ##OR at other place,
 cat > .git/info/sparse-checkout
 
-<verbatim>
+
 AnalysisDataFormats/CMGTools/
 CMGTools/Common/
 CMGTools/External/
@@ -35,10 +35,11 @@ RecoParticleFlow/PFProducer/
 RecoParticleFlow/PostProcessing/
 TauAnalysis/CandidateTools/
 TauAnalysis/SVFitStandAlone/
-</verbatim>
+
 
 
 git fetch origin
 
 git clone https://github.com/geonmo/KoPFA.git .
 (Do not missing "." )
+</code></pre>
