@@ -12,14 +12,14 @@ git init
 git remote add origin git@github.com:cbernet/cmg-cmssw.git
 git config core.sparsecheckout true
 
-##IF on CERN,
+##IF at CERN,
 cp /afs/cern.ch/user/c/cbern/public/Git/SparseCheckouts/CMG_PAT_from-CMSSW_5_3_12_patch1 .git/info/sparse-checkout
 
-##OR on other,
+##OR at other place,
 cat > .git/info/sparse-checkout
 
-
-AnalysisDataFormats/CMGTools/\
+<verbatim>
+AnalysisDataFormats/CMGTools/
 CMGTools/Common/
 CMGTools/External/
 CMGTools/H2TauTau/
@@ -35,7 +35,7 @@ RecoParticleFlow/PFProducer/
 RecoParticleFlow/PostProcessing/
 TauAnalysis/CandidateTools/
 TauAnalysis/SVFitStandAlone/
-
+</verbatim>
 
 
 git fetch origin
