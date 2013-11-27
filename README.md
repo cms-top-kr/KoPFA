@@ -20,21 +20,21 @@ cat > .git/info/sparse-checkout
 
 
 AnalysisDataFormats/CMGTools/\
-CMGTools/Common/\
-CMGTools/External/\
-CMGTools/H2TauTau/\
-CMGTools/Production/\
-CMGTools/RootTools/\
-CMGTools/Utilities/\
-CMGTools/GitTests/\
-CommonTools/ParticleFlow/\
-EgammaAnalysis/ElectronTools/\
-FWCore/Version/\
-Muon/MuonAnalysisTools/\
-RecoParticleFlow/PFProducer/\
-RecoParticleFlow/PostProcessing/\
-TauAnalysis/CandidateTools/\
-TauAnalysis/SVFitStandAlone/\
+CMGTools/Common/
+CMGTools/External/
+CMGTools/H2TauTau/
+CMGTools/Production/
+CMGTools/RootTools/
+CMGTools/Utilities/
+CMGTools/GitTests/
+CommonTools/ParticleFlow/
+EgammaAnalysis/ElectronTools/
+FWCore/Version/
+Muon/MuonAnalysisTools/
+RecoParticleFlow/PFProducer/
+RecoParticleFlow/PostProcessing/
+TauAnalysis/CandidateTools/
+TauAnalysis/SVFitStandAlone/
 
 
 
