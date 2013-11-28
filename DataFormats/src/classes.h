@@ -1,6 +1,8 @@
 #include "DataFormats/Common/interface/Wrapper.h"
 
 #include "KoPFA/DataFormats/interface/ZCandidate.h"
+#include "KoPFA/DataFormats/interface/JPsiCandidate.h"
+#include "KoPFA/DataFormats/interface/LepJPsiCandidate.h"
 #include "KoPFA/DataFormats/interface/Lepton.h"
 #include "KoPFA/DataFormats/interface/METCandidate.h"
 #include "KoPFA/DataFormats/interface/TTbarGenEvent.h"
@@ -20,6 +22,18 @@ namespace {
     std::vector<vallot::ZCandidate> dummyZCandidateCollection;
     edm::Wrapper<std::vector<vallot::ZCandidate> > dummyZCandidateCollectionWrapper;
     edm::Ptr<vallot::ZCandidate> dummyZCandidatePtr;
+
+    vallot::JPsiCandidate dummyJPsiCandidate;
+    edm::Wrapper<vallot::JPsiCandidate> dummyJPsiCandidateWrapper;
+    std::vector<vallot::JPsiCandidate> dummyJPsiCandidateCollection;
+    edm::Wrapper<std::vector<vallot::JPsiCandidate> > dummyJPsiCandidateCollectionWrapper;
+    edm::Ptr<vallot::JPsiCandidate> dummyJPsiCandidatePtr;
+
+    vallot::LepJPsiCandidate dummyLepJPsiCandidate;
+    edm::Wrapper<vallot::LepJPsiCandidate> dummyLepJPsiCandidateWrapper;
+    std::vector<vallot::LepJPsiCandidate> dummyLepJPsiCandidateCollection;
+    edm::Wrapper<std::vector<vallot::LepJPsiCandidate> > dummyLepJPsiCandidateCollectionWrapper;
+    edm::Ptr<vallot::LepJPsiCandidate> dummyLepJPsiCandidatePtr;
 
     vallot::Lepton dummyLepton;
     edm::Wrapper<vallot::Lepton> dummyLeptonWrapper;

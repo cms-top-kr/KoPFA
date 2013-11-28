@@ -14,7 +14,10 @@
 <use   name="HLTrigger/HLTcore" />
 <use   name="KoPFA/DataFormats"/>
 <use   name="KoPFA/CMGDataFormats"/>
+<use   name="KoPFA/TopAnalyzer"/>
 <use   name="KoPFA/CommonTools"/>
+<use   name="TrackingTools/Records"/>
+<use   name="TrackingTools/TransientTrack"/>
 <use   name="TopQuarkAnalysis/TopKinFitter"/>
 <use   name="TopQuarkAnalysis/TopJetCombination"/>
 <use   name="AnalysisDataFormats/CMGTools"/>
@@ -24,4 +27,5 @@
 <use   name="rootrflx"/>
 <use   name="rootminuit"/>
 <use   name="rootminuit2"/>
+<use   name="RecoVertex/KalmanVertexFit"/>
 <flags   EDM_PLUGIN="1"/>

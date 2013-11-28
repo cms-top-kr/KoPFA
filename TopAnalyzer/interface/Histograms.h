@@ -72,6 +72,23 @@ struct Histograms
     hmaosM = dir->make<TH1F>("hmaosM", "ttbar invariant mass;t#bar{t} invariant mass (GeV/c^{2});Events/1 GeV", 5000, 0, 5000);
     htopMass1 = dir->make<TH1F>("htopMass1", "blv mass;blv mass (GeV/c^{2});Events/1 GeV", 300, 0, 300);
     htopMass2 = dir->make<TH1F>("htopMass2", "blv mass;blv mass (GeV/c^{2});Events/1 GeV", 300, 0, 300);
+
+    // Top mass by JPsi
+    hNLepton3 = dir->make<TH1F>("hNLepton3", "Number of lepton3;Number of leptons;Events", 10, 0, 10);
+    hNLepton4 = dir->make<TH1F>("hNLepton4", "Number of lepton4;Number of leptons;Events", 10, 0, 10);
+    hNJPsi = dir->make<TH1F>("hNJPsi", "Number of JPsis;Number of JPsis;Events", 10, 0, 10);
+    hNLepJPsi1 = dir->make<TH1F>("hNLepJPsi1", "Number of LepJPsi1;Number of LepJPsi1;Events", 10, 0, 10);
+    hNLepJPsi2 = dir->make<TH1F>("hNLepJPsi2", "Number of LepJPsi2;Number of LepJPsi2;Events", 10, 0, 10);
+    hpt3 = dir->make<TH1F>("hpt3", "Leading J/Psi lepton p_{T};p_{T} (GeV/c);Events/1 GeV/c", 100, 0, 100);
+    heta3 = dir->make<TH1F>("heta3", "Second leading J/Psi lepton #eta;#eta;Events/0.2", 35, -3.5, 3.5);
+    hpt4 = dir->make<TH1F>("hpt4", "Leading J/Psi lepton p_{T};p_{T} (GeV/c);Events/1 GeV/c", 100, 0, 100);
+    heta4 = dir->make<TH1F>("heta4", "Second leading J/Psi lepton #eta;#eta;Events/0.2", 35, -3.5, 3.5);
+    hJPsiMass = dir->make<TH1F>("hJPsiMass", "Dilepton mass;Dilepton Mass (GeV/c^{2});Events/0.1", 100, 0, 10);
+    hLepJPsiMass1 = dir->make<TH1F>("hLepJPsiMass1", "lepton+JPsi mass 1;Dilepton Mass (GeV/c^{2});Events", 150, 0, 150);
+    hLepJPsiMass2 = dir->make<TH1F>("hLepJPsiMass2", "lepton+JPsi mass 2;Dilepton Mass (GeV/c^{2});Events", 150, 0, 150);
+    hgenRecobJPsiDR = dir->make<TH1F>("hgenRecobJPsiDR", "#Delta R for BtoJPsi MC Truth;#Delta R;Events/0.1", 100, 0, 10);
+    hgenbJPsiLepId = dir->make<TH1F>("hgenbJPsiLepId", "gen B->JPsi lepton ID;ID;#Events",20,0,20);
+
   }
 
   typedef TH1F* H;
@@ -105,6 +122,9 @@ struct Histograms
 
   H hvsumM, hmaosM;
   H htopMass1, htopMass2;
+
+  H hNLepton3, hNLepton4, hpt3, heta3, hpt4, heta4;
+  H hNJPsi, hNLepJPsi1, hNLepJPsi2, hJPsiMass, hLepJPsiMass1, hLepJPsiMass2, hgenRecobJPsiDR, hgenbJPsiLepId;
 };
 
 #endif

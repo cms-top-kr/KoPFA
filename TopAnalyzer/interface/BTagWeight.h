@@ -6,11 +6,13 @@
 #include <iostream>
 using namespace std;
 
-class BTagWeight
+class BTagWeight  
 {
 
   public:
-    BTagWeight(){};
+    BTagWeight();  
+
+
     ~BTagWeight(){};
 
     enum AlgoType {
@@ -27,12 +29,10 @@ class BTagWeight
       UPLight
     };
 
-    static const int nbin = 14;
-    static const int nalgo = 3;
-    static const float ptmin[nbin];
-    static const float ptmax[nbin];
-    static const double addSFb_error[nalgo][nbin];
-    static const double SFb_error[nalgo][nbin];
+     std::vector<float> ptmin;
+     std::vector<float> ptmax;
+     std::vector< std::vector<double> > addSFb_error;
+     std::vector< std::vector<double> > SFb_error;
 
     double reweight(const std::vector<double> &jetpt, const std::vector<double> &jeteta,  const std::vector<int> &jetflavor, int ntag, AlgoType algo, SYS sys = NORM, bool addberr = false){
       algo_ = algo;
@@ -413,108 +413,6 @@ class BTagWeight
       bool addberr_;
 };
 
-const float BTagWeight::ptmin[BTagWeight::nbin] = {30, 40, 50, 60, 70, 80, 100, 120, 160, 210, 260, 320, 400, 500};
-const float BTagWeight::ptmax[BTagWeight::nbin] = {40, 50, 60, 70, 80,100, 120, 160, 210, 260, 320, 400, 500, 670};
-const double BTagWeight::addSFb_error[BTagWeight::nalgo][BTagWeight::nbin] = {
-	{
-          0.0188743,
-          0.0161816,
-          0.0139824,
-          0.0152644,
-          0.0161226,
-          0.0157396,
-          0.0161619,
-          0.0168747,
-          0.0257175,
-          0.026424,
-          0.0264928,
-          0.0315127,
-          0.030734,
-          0.0438259
-        },	
-	{
-          0.0406352,
-          0.0484605,
-          0.0611548,
-          0.0771357,
-          0.0952684,
-          0.114691,
-          0.144759,
-          0.183734,
-          0.232564,
-          0.265411,
-          0.226111,
-          0.113314,
-          0.144885,
-          0.144885
-        },
-	{
-          0.0785076,
-          0.0709218,
-          0.0752186,
-          0.0873988,
-          0.105107,
-          0.126819,
-          0.164604,
-          0.22064,
-          0.306062,
-          0.400132,
-          0.384858,
-          0.190207,
-          0.0384921,
-          0.0384921
-        }
-};
 
-const double BTagWeight::SFb_error[BTagWeight::nalgo][BTagWeight::nbin] = {
-	{
-          0.0188743,
-          0.0161816,
-          0.0139824,
-          0.0152644,
-          0.0161226,
-          0.0157396,
-          0.0161619,
-          0.0168747,
-          0.0257175,
-          0.026424,
-          0.0264928,
-          0.0315127,
-          0.030734,
-          0.0438259
-        },
-	{
-          0.0295675,
-          0.0295095,
-          0.0210867,
-          0.0219349,
-          0.0227033,
-          0.0204062,
-          0.0185857,
-          0.0256242,
-          0.0383341,
-          0.0409675,
-          0.0420284,
-          0.0541299,
-          0.0578761,
-          0.0655432
-        },
-	{
-          0.0364717,
-          0.0362281,
-          0.0232876,
-          0.0249618,
-          0.0261482,
-          0.0290466,
-          0.0300033,
-          0.0453252,
-          0.0685143,
-          0.0653621,
-          0.0712586,
-          0.094589,
-          0.0777011,
-          0.0866563
-        }
-};
 #endif
 
