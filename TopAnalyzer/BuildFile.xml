@@ -15,7 +15,6 @@
 <use   name="rootminuit2"/>
 <use   name="TopQuarkAnalysis/TopKinFitter"/>
 <use   name="TopQuarkAnalysis/TopJetCombination"/>
-<flags   EDM_PLUGIN="1"/>
 <export>
   <lib   name="1"/>
 </export>

@@ -4,6 +4,7 @@
 <use   name="FWCore/ParameterSet"/>
 <use   name="FWCore/Framework"/>
 <use   name="KoPFA/DataFormats"/>
+<use   name="KoPFA/TopAnalyzer"/>
 <use   name="AnalysisDataFormats/CMGTools"/>
 <library   file="*.cc" name="KoPFACMGAnalyzerPlugins">
   <flags   EDM_PLUGIN="1"/>

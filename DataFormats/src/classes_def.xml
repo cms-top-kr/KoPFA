@@ -6,6 +6,18 @@
   <class name="edm::Wrapper<std::vector<vallot::ZCandidate> >"/>
   <class name="edm::Ptr<vallot::ZCandidate>"/>
 
+  <class name="vallot::JPsiCandidate"/>
+  <class name="std::vector<vallot::JPsiCandidate>"/>
+  <class name="edm::Wrapper<vallot::JPsiCandidate>"/>
+  <class name="edm::Wrapper<std::vector<vallot::JPsiCandidate> >"/>
+  <class name="edm::Ptr<vallot::JPsiCandidate>"/>
+
+  <class name="vallot::LepJPsiCandidate"/>
+  <class name="std::vector<vallot::LepJPsiCandidate>"/>
+  <class name="edm::Wrapper<vallot::LepJPsiCandidate>"/>
+  <class name="edm::Wrapper<std::vector<vallot::LepJPsiCandidate> >"/>
+  <class name="edm::Ptr<vallot::LepJPsiCandidate>"/>
+
   <class name="vallot::Lepton"/>
   <class name="std::vector<vallot::Lepton>"/>
   <class name="edm::Wrapper<vallot::Lepton>"/>

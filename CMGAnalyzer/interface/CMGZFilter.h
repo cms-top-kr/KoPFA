@@ -13,7 +13,7 @@
 //
 // Original Author:  Tae Jeong Kim,40 R-A32,+41227678602,
 //         Created:  Fri Jun  4 17:19:29 CEST 2010
-// $Id: CMGZFilter.h,v 1.5 2012/11/15 09:34:27 youngjo Exp $
+// $Id: CMGZFilter.h,v 1.6 2013/02/07 09:53:21 tjkim Exp $
 //
 //
 
@@ -72,7 +72,7 @@
 #include "TTree.h"
 #include "TH1.h"
 #include "TLorentzVector.h"
-#include "EGamma/EGammaAnalysisTools/interface/ElectronEffectiveArea.h"
+#include "EgammaAnalysis/ElectronTools/interface/ElectronEffectiveArea.h"
 
 
 //

@@ -19,6 +19,3 @@
 <use   name="JetMETCorrections/Algorithms" />
 <use   name="KoPFA/DataFormats"/>
 <flags   EDM_PLUGIN="1"/>
-<export>
-  <lib   name="1"/>
-</export>

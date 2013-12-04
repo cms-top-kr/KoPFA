@@ -16,13 +16,9 @@
 <use   name="KoPFA/CMGDataFormats"/>
 <use   name="KoPFA/CommonTools"/>
 <use   name="AnalysisDataFormats/CMGTools"/>
-<use   name="EGamma/EGammaAnalysisTools"/>
+<use   name="EgammaAnalysis/ElectronTools"/>
 <use   name="MuonAnalysis/MuonAssociators"/>
 <use   name="rootrflx"/>
 <use   name="rootminuit"/>
 <use   name="rootminuit2"/>
 <flags   EDM_PLUGIN="1"/>
-<export>
-  <lib   name="1"/>
-  <use   name="KoPFA/TopAnalyzer"/>
-</export>
