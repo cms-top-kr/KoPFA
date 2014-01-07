@@ -31,7 +31,7 @@ process.load("KoPFA.CMGAnalyzer.ZFilter_cfi")
 process.load("KoPFA.CMGAnalyzer.ttbar2bFilter_cfi")
 process.load("KoPFA.CMGAnalyzer.ttbarJPsiFilter_cfi") #jkim
 process.load("KoPFA.CMGAnalyzer.JPsiFilter_cfi")    #jkim
-process.load("KoPFA.CMGAnalyzer.topHLTfilter_cff")  # geonmo
+process.load("KoPFA.CMGAnalyzer.topHLTfilter_cff")  
 from KoPFA.CommonTools.PileUpWeight_cff import *
 
 runOnMC = True 
@@ -298,7 +298,6 @@ process.p8 = cms.Path(
     process.EventFilterElEl*
 #    process.goodOfflinePrimaryVerticesElEl*
     process.nEventsFilterElEl*
-    process.MuonsElEl*
     process.ElectronsElEl*
     process.ElElJPsiMuMu*
     process.CMGFinalLeptonsElElJPsiMuMu*
@@ -345,46 +344,6 @@ process.TFileService = cms.Service("TFileService",
     fileName = cms.string('vallot_FullttbarPythia6.root')
 )
 
-#############This is only for combining three channels#######################
-
-#process.MuonsMuMu.ptcut = cms.untracked.double(0) #jkim
-#process.MuonsMuEl.ptcut = cms.untracked.double(0) #jkim
-#process.MuonsElEl.ptcut = cms.untracked.double(0) #jkim
-#process.ElectronsMuMu.ptcut = cms.untracked.double(0) #jkim
-#process.ElectronsMuEl.ptcut = cms.untracked.double(0) #jkim
-#process.ElectronsElEl.ptcut = cms.untracked.double(0) #jkim
-
-process.kinSolutionTtFullLepEventMuMu.mumuChannel = True
-process.kinSolutionTtFullLepEventMuMu.jets = cms.InputTag("JetEnergyScaleMuMu","Jets")
-process.kinSolutionTtFullLepEventMuMu.electrons = cms.InputTag("CMGFinalLeptonsMuMu","Electrons")
-process.kinSolutionTtFullLepEventMuMu.muons = cms.InputTag("CMGFinalLeptonsMuMu","Muons")
-process.kinSolutionTtFullLepEventMuMu.mets = cms.InputTag("JetEnergyScaleMuMu","MET")
-process.kinSolutionTtFullLepEventMuEl.emuChannel  = True
-process.kinSolutionTtFullLepEventMuEl.jets = cms.InputTag("JetEnergyScaleMuEl","Jets")
-process.kinSolutionTtFullLepEventMuEl.electrons = cms.InputTag("CMGFinalLeptonsMuEl","Electrons")
-process.kinSolutionTtFullLepEventMuEl.muons = cms.InputTag("CMGFinalLeptonsMuEl","Muons")
-process.kinSolutionTtFullLepEventMuEl.mets = cms.InputTag("JetEnergyScaleMuEl","MET")
-process.kinSolutionTtFullLepEventElEl.eeChannel  = True
-process.kinSolutionTtFullLepEventElEl.jets = cms.InputTag("JetEnergyScaleElEl","Jets")
-process.kinSolutionTtFullLepEventElEl.electrons = cms.InputTag("CMGFinalLeptonsElEl","Electrons")
-process.kinSolutionTtFullLepEventElEl.muons = cms.InputTag("CMGFinalLeptonsElEl","Muons")
-process.kinSolutionTtFullLepEventElEl.mets = cms.InputTag("JetEnergyScaleElEl","MET")
-
-process.maosSolutionTtFullLepEventMuMu.mumuChannel = True
-process.maosSolutionTtFullLepEventMuMu.jets = cms.InputTag("JetEnergyScaleMuMu","Jets")
-process.maosSolutionTtFullLepEventMuMu.electrons = cms.InputTag("CMGFinalLeptonsMuMu","Electrons")
-process.maosSolutionTtFullLepEventMuMu.muons = cms.InputTag("CMGFinalLeptonsMuMu","Muons")
-process.maosSolutionTtFullLepEventMuMu.mets = cms.InputTag("JetEnergyScaleMuMu","MET")
-process.maosSolutionTtFullLepEventMuEl.emuChannel  = True
-process.maosSolutionTtFullLepEventMuEl.jets = cms.InputTag("JetEnergyScaleMuEl","Jets")
-process.maosSolutionTtFullLepEventMuEl.electrons = cms.InputTag("CMGFinalLeptonsMuEl","Electrons")
-process.maosSolutionTtFullLepEventMuEl.muons = cms.InputTag("CMGFinalLeptonsMuEl","Muons")
-process.maosSolutionTtFullLepEventMuEl.mets = cms.InputTag("JetEnergyScaleMuEl","MET")
-process.maosSolutionTtFullLepEventElEl.eeChannel  = True
-process.maosSolutionTtFullLepEventElEl.jets = cms.InputTag("JetEnergyScaleElEl","Jets")
-process.maosSolutionTtFullLepEventElEl.electrons = cms.InputTag("CMGFinalLeptonsElEl","Electrons")
-process.maosSolutionTtFullLepEventElEl.muons = cms.InputTag("CMGFinalLeptonsElEl","Muons")
-process.maosSolutionTtFullLepEventElEl.mets = cms.InputTag("JetEnergyScaleElEl","MET")
 
 process.JetEnergyScaleMuMu.electronLabel = cms.InputTag("CMGFinalLeptonsMuMu","Electrons")
 process.JetEnergyScaleMuMu.muonLabel = cms.InputTag("CMGFinalLeptonsMuMu","Muons")
