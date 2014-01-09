@@ -100,10 +100,11 @@ void SetUpCSVreweighting(){
     }
 
 //////////////////////
+/*
 // adderror
   f_addError = new TFile ((string(getenv("CMSSW_BASE")) + "/src/KoPFA/CommonTools/data/adderror.root").c_str());
   h_adderr = (TH1F*) f_addError->Get(Form("SFbfTnfT"));
-
+*/
 // new CSV SF
   f_new_CSV_SF = new TFile ((string(getenv("CMSSW_BASE")) + "/src/KoPFA/CommonTools/data/new_CSV_SF.root").c_str());
   for(int iPt=0;iPt<3;iPt++) for(int iEta=0;iEta<3;iEta++)

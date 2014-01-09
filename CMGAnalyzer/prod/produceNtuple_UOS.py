@@ -125,8 +125,8 @@ def applyFilter(sample, process):
 
 def processSample( sample, dir):
     os.system("rm -rf "+dir+"/"+sample)
-    os.system("rfmkdir "+dir+"/"+sample)
-    os.system("rfmkdir "+dir+"/"+sample+"/Res")
+    os.system("mkdir "+dir+"/"+sample)
+    os.system("mkdir "+dir+"/"+sample+"/Res")
     out = open(dir+'/cmg2kcms_'+sample+'_cfg.py','w')
     process.TFileService.fileName = cms.string('vallot_'+sample+'.root')
     process.load(samplePath[sample]) 
@@ -149,8 +149,8 @@ outdir = currdir+"/Out/"
 #outdir = "/castor/cern.ch/user/t/tjkim/ntuple/top/Out/"
 
 #to save log information in local
-os.system("rfmkdir Out")
-os.system("rfmkdir "+outdir)
+os.system("mkdir Out")
+os.system("mkdir "+outdir)
 
 if input == "mc":
   for s in mclist:
