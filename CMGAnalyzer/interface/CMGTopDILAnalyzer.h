@@ -414,9 +414,10 @@ class CMGTopDILAnalyzer : public edm::EDFilter {
     tree->Branch("MET",&MET,"MET/d");
     tree->Branch("metphi",&metphi,"metphi/d");
 
+/*
     csvWgt = new CSVWeight(); 
     csvWgt->SetUpCSVreweighting();
-
+*/
   } 
 
   virtual bool filter(edm::Event& iEvent, const edm::EventSetup& iSetup)
