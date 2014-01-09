@@ -18,10 +18,7 @@ from IOMC.RandomEngine.RandomServiceHelper import RandomNumberServiceHelper
 def batchScriptUOS(remoteDir, index):
    os.system("cp /tmp/x509*`id -u` /pnfs/user/cert")
    script = """#!/usr/bin/env bash
-##PBS -l platform=LINUX,u_sps_cmsf,M=2000MB,T=2000000
 #PBS -q batch
-##PBS -eo %s
-##PBS -me
 #PBS -V
 
 source $HOME/.bash_profile

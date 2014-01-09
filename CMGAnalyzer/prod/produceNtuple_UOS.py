@@ -149,7 +149,7 @@ outdir = currdir+"/Out/"
 #outdir = "/castor/cern.ch/user/t/tjkim/ntuple/top/Out/"
 
 #to save log information in local
-os.system("mkdir Out")
+#os.system("mkdir Out")
 os.system("mkdir "+outdir)
 
 if input == "mc":
