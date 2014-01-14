@@ -20,22 +20,23 @@ def batchScriptUOS(remoteDir, index):
    script = """#!/usr/bin/env bash
 #PBS -q batch
 #PBS -V
+#PBS -j oe
 
 source $HOME/.bash_profile
 
 echo '***********************'
 
-ulimit -v 3000000
+ulimit -v unlimited
 
 # coming back to submission dir do setup the env
-cd %s/../Log/Job_%s
+cd $PBS_O_WORKDIR
 eval `scramv1 ru -sh`
 cp /pnfs/user/cert/x509*`id -u`* /tmp
-cmsRun run_cfg.py
+cmsRun run_cfg.py > $PBS_JOBID.out 2>&1
 
 # copy job dir do disk
-cp -r ../Job_%s %s
-"""%(remoteDir,index,index,remoteDir)
+cp -r ../Job_%s $PBS_O_WORKDIR/../../Res
+"""%(index,index)
    return script
 
 
