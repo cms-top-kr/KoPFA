@@ -36,7 +36,7 @@ cmsRun run_cfg.py > $PBS_JOBID.out 2>&1
 
 # copy job dir do disk
 cp -r ../Job_%s $PBS_O_WORKDIR/../../Res
-"""%(index,index)
+"""%(index)
    return script
 
 
