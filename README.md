@@ -45,5 +45,5 @@ TauAnalysis/SVFitStandAlone/
 git fetch origin
 git checkout origin/CMG_PAT_from-CMSSW_5_3_12_patch1
 git checkout -b master
-git clone https://github.com/geonmo/KoPFA.git
+git clone git@github.com:geonmo/KoPFA.git
 </code></pre>
