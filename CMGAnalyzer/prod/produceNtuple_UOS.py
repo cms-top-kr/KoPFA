@@ -6,6 +6,7 @@ import re
 import sys
 import time
 import os,commands
+import socket
 
 from cmg2kcms_cfg import *
 
