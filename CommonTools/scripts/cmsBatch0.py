@@ -2,7 +2,7 @@
 # Colin
 # batch mode for cmsRun, March 2009
 
-
+import socket
 import os, sys,  imp, re, pprint, string
 from optparse import OptionParser
 
@@ -15,6 +15,32 @@ import FWCore.ParameterSet.Config as cms
 from IOMC.RandomEngine.RandomServiceHelper import RandomNumberServiceHelper
 
 
+def batchScriptUOS(remoteDir, index):
+   os.system("cp /tmp/x509*`id -u` /pnfs/user/cert")
+   script = """#!/usr/bin/env bash
+#PBS -q batch
+#PBS -V
+#PBS -j oe
+
+source $HOME/.bash_profile
+
+echo '***********************'
+
+ulimit -v unlimited
+
+# coming back to submission dir do setup the env
+cd $PBS_O_WORKDIR
+eval `scramv1 ru -sh`
+cp /pnfs/user/cert/x509*`id -u`* /tmp
+cmsRun run_cfg.py > $PBS_JOBID.out 2>&1
+
+# copy job dir do disk
+for file in *.root; do
+newFileName=`echo $file | sed -r -e 's/\./_%s\./'`
+cp $file ../../Res/$newFileName 
+done
+"""%(index)
+   return script
 
 
 def batchScriptCCIN2P3():
@@ -160,9 +186,15 @@ class MyBatchManager( BatchManager ):
              print '@ CERN'
              scriptFile.write( batchScriptCERN( self.remoteOutputDir_,
                                                 value) )
-       else: 
-          print '@ local'
-          scriptFile.write( batchScriptLocal( self.remoteOutputDir_,
+       else:
+          hostname = socket.gethostname()
+          if ( socket.gethostname().split('.')[2] == 'uos') :
+            print '@ UOS'
+            scriptFile.write( batchScriptUOS( self.remoteOutputDir_,
+                                              value) ) 
+          else :
+            print '@ local'
+            scriptFile.write( batchScriptLocal( self.remoteOutputDir_,
                                               value) )          
        
        scriptFile.close()
