@@ -125,8 +125,14 @@ def applyFilter(sample, process):
   #    process.GenZmassFilterElEl.decayMode = [11,13]
 
 def processSample( sample, dir):
-    os.system("rm -rf "+dir+"/"+sample)
-    os.system("mkdir -p "+dir+"/"+sample+"/Res")
+    if ( site == 'cern') :
+        os.system("rm -rf "+dir+"/"+sample)
+        os.system("rfmkdir "+dir+"/"+sample)
+        os.system("rfmkdir "+dir+"/"+sample+"/Res")
+    else :
+        os.system("rm -rf "+dir+"/"+sample)
+        os.system("mkdir -p "+dir+"/"+sample+"/Res")
+
     out = open(dir+'/cmg2kcms_'+sample+'_cfg.py','w')
     process.TFileService.fileName = cms.string('vallot_'+sample+'.root')
     process.load(samplePath[sample]) 
@@ -136,12 +142,16 @@ def processSample( sample, dir):
 
     out.write(process.dumpPython())
     out.close()
-    os.system("cmsBatch0.py 3 "+dir+'/cmg2kcms_'+sample+'_cfg.py'+" -o "+dir+"/"+sample+"/Log -r "+dir+"/"+sample+"/Res -b 'qsub -q batch batchScript.sh'")
-    #os.system("cmsBatch0.py 3 "+dir+'/cmg2kcms_'+sample+'_cfg.py'+" -o "+dir+"/"+sample+"/Log -r "+dir+"/"+sample+"/Res -b 'bsub -q 1nh -oo "+dir+"/"+"log < batchScript.sh'")
-    #os.system("cmsBatch0.py 1 "+dir+'/cmg2kcms_'+sample+'_cfg.py'+" -o "+dir+"/"+sample+"/Log -r "+dir+"/"+sample+"/Res -b 'bsub -G u_zh -q 1nh < batchScript.sh'")
+    if ( site == 'sscc' ) :
+        os.system("cmsBatch0.py 3 "+dir+'/cmg2kcms_'+sample+'_cfg.py'+" -o "+dir+"/"+sample+"/Log -r "+dir+"/"+sample+"/Res -b 'qsub -q batch batchScript.sh'")
+    elif ( sitet == 'cern' ) :
+        os.system("cmsBatch0.py 3 "+dir+'/cmg2kcms_'+sample+'_cfg.py'+" -o "+dir+"/"+sample+"/Log -r "+dir+"/"+sample+"/Res -b 'bsub -q 1nh -oo "+dir+"/"+"log < batchScript.sh'")
+        #os.system("cmsBatch0.py 1 "+dir+'/cmg2kcms_'+sample+'_cfg.py'+" -o "+dir+"/"+sample+"/Log -r "+dir+"/"+sample+"/Res -b 'bsub -G u_zh -q 1nh < batchScript.sh'")
+    else :
+        pass
 
 def waitingProcess( ) :
-    if ( socket.gethostname().split('.')[2] != 'uos') :
+    if ( site != 'sscc') :
         time.sleep(60)
     else :    # at UOS
         while True :
@@ -165,6 +175,8 @@ outdir = currdir+"/Out/"
 #to save log information in local
 #os.system("mkdir Out")
 os.system("mkdir -p  "+outdir)
+
+site = socket.gethostname().split('.')[1]
 
 if input == "mc":
   for s in mclist:

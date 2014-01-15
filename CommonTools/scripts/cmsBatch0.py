@@ -35,7 +35,10 @@ cp /pnfs/user/cert/x509*`id -u`* /tmp
 cmsRun run_cfg.py > $PBS_JOBID.out 2>&1
 
 # copy job dir do disk
-cp -r ../Job_%s $PBS_O_WORKDIR/../../Res
+for file in *.root; do
+newFileName=`echo $file | sed -r -e 's/\./_%s\./'`
+cp $file ../../Res/$newFileName 
+done
 """%(index)
    return script
 
