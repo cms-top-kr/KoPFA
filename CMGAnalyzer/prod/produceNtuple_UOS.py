@@ -6,7 +6,7 @@ import re
 import sys
 import time
 import os,commands
-
+import socket
 from cmg2kcms_cfg import *
 
 input = sys.argv[1]
@@ -135,8 +135,8 @@ def processSample( sample, dir):
 
     out.write(process.dumpPython())
     out.close()
-    os.system("cmsBatch0.py 3 "+dir+'/cmg2kcms_'+sample+'_cfg.py'+" -o "+dir+"/"+sample+"/Log -r "+dir+"/"+sample+"/Res -b 'qsub -q batch batchScript.sh'")
-    #os.system("cmsBatch0.py 3 "+dir+'/cmg2kcms_'+sample+'_cfg.py'+" -o "+dir+"/"+sample+"/Log -r "+dir+"/"+sample+"/Res -b 'bsub -q 1nh -oo "+dir+"/"+"log < batchScript.sh'")
+    #os.system("cmsBatch0.py 3 "+dir+'/cmg2kcms_'+sample+'_cfg.py'+" -o "+dir+"/"+sample+"/Log -r "+dir+"/"+sample+"/Res -b 'qsub -q batch batchScript.sh'")
+    os.system("cmsBatch0.py 3 "+dir+'/cmg2kcms_'+sample+'_cfg.py'+" -o "+dir+"/"+sample+"/Log -r "+dir+"/"+sample+"/Res -b 'bsub -q 1nh -oo "+dir+"/"+"log < batchScript.sh'")
     #os.system("cmsBatch0.py 1 "+dir+'/cmg2kcms_'+sample+'_cfg.py'+" -o "+dir+"/"+sample+"/Log -r "+dir+"/"+sample+"/Res -b 'bsub -G u_zh -q 1nh < batchScript.sh'")
 
 def waitingProcess( ) :
@@ -150,7 +150,7 @@ def waitingProcess( ) :
                 break
             else : 
                 time.sleep( 60 )
-                print "Sleeping 1 min due to many queue." 
+                print "Sleeping 1 minute due to many queues." 
 
 
 currdir = commands.getoutput('pwd') 
@@ -159,7 +159,7 @@ print currdir
 outdir = currdir+"/Out/"
 
 #if you want to save ntuple in castor
-#outdir = "/castor/cern.ch/user/t/tjkim/ntuple/top/Out/"
+#outdir = "/castor/cern.ch/user/g/geonmo/ntuple/top/Out/"
 
 #to save log information in local
 #os.system("mkdir Out")
