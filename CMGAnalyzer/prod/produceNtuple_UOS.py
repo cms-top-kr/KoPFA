@@ -135,9 +135,23 @@ def processSample( sample, dir):
 
     out.write(process.dumpPython())
     out.close()
-    os.system("cmsBatch0.py 1 "+dir+'/cmg2kcms_'+sample+'_cfg.py'+" -o "+dir+"/"+sample+"/Log -r "+dir+"/"+sample+"/Res -b 'qsub -q batch batchScript.sh'")
+    os.system("cmsBatch0.py 3 "+dir+'/cmg2kcms_'+sample+'_cfg.py'+" -o "+dir+"/"+sample+"/Log -r "+dir+"/"+sample+"/Res -b 'qsub -q batch batchScript.sh'")
     #os.system("cmsBatch0.py 3 "+dir+'/cmg2kcms_'+sample+'_cfg.py'+" -o "+dir+"/"+sample+"/Log -r "+dir+"/"+sample+"/Res -b 'bsub -q 1nh -oo "+dir+"/"+"log < batchScript.sh'")
     #os.system("cmsBatch0.py 1 "+dir+'/cmg2kcms_'+sample+'_cfg.py'+" -o "+dir+"/"+sample+"/Log -r "+dir+"/"+sample+"/Res -b 'bsub -G u_zh -q 1nh < batchScript.sh'")
+
+def waitingProcess( ) :
+    if ( socket.gethostname().split('.')[2] != 'uos') :
+        time.sleep(60)
+    else :    # at UOS
+        while True :
+            text=os.popen("qstat -q | grep batch  | awk '{ print $7 }'")  
+            value = int(text.readline())
+            if (value < 100 ) :
+                break
+            else : 
+                time.sleep( 60 )
+                print "Sleeping 1 min due to many queue." 
+
 
 currdir = commands.getoutput('pwd') 
 print currdir
@@ -154,17 +168,17 @@ os.system("mkdir -p  "+outdir)
 if input == "mc":
   for s in mclist:
     processSample(s, outdir)
-    time.sleep(60)
+    waitingProcess()
 elif input == "data":
   for s in rdlist:
     processSample(s, outdir)  
-    time.sleep(60)
+    waitingProcess()
 elif input == "all":
   for s in mclist:
     processSample(s, outdir)
-    time.sleep(60)
+    waitingProcess()
   for s in rdlist:
     processSample(s, outdir)
-    time.sleep(60)
+    waitingProcess()
 
 
